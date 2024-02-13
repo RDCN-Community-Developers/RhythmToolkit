@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Sprite": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\vb.net\\RDLevel\\Sprite\\bin\\Debug\\net8.0\\settings.json"
+    }
+  }
+}

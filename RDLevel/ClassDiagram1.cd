@@ -1,0 +1,437 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Module Name="RDLevel.RhythmDoctorObjects.Events">
+    <Position X="3.25" Y="1.75" Width="3" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.PulseCamera" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.ContentModes" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.CallCustomMethod" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.MoveRow" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ShowHands" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetOneshotWave" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetCountingSound" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetRowXs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetHandOwner" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.AddClassicBeat" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetCrotchetsPerBar" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.InvertColors" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetRoomPerspective" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetVFXPreset" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetHeartExplodeInterval" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.FadeRoom" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.NewWindowDance" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.FlipScreen" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.UnknownObject" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.BaseRows" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.Tabs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetPlayStyle" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.MoveRoom" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ShakeScreen" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ShowSubdivisionsRows" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.PaintHands" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.BaseEvent" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.AddFreeTimeBeat" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.PlayAnimation" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetBackgroundColor" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetHeartExplodeVolume" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.PlayExpression" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.BaseBeatsPerMinute" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetBeatSound" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.BaseBeats" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ReadNarration" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.AnchorType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.PulseFreeTimeBeat" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetSpeed" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.RowType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ShowDialogue" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.EventType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.TagAction" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ShowRooms" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.SubdivisionRowMode" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetRoomContentMode" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.Move">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.PlaySong" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetVisible" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.MoveCamera" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetClapSounds" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.Comment" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.MaskRoom" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.Stutter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ShowStatusSign" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SayReadyGetSetGo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.BassDrop" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.Tint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.WindowResize" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.PlayerHands" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetTheme" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.NarrationCategory" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.FinishLevel" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.AdvanceText" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.CustomFlash" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.HideRow" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.TextExplosion" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.Borders" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ReorderRooms" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.Flash" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.AddOneshotBeat" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.BaseRowAnimations" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetGameSound" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.FloatingText">
+        <Compartments>
+          <Compartment Name="Fields" Collapsed="true" />
+          <Compartment Name="Methods" Collapsed="true" />
+        </Compartments>
+        <NestedTypes>
+          <Enum Name="RDLevel.RhythmDoctorObjects.Events.FloatingText.OutMode" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Events.vb</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+        </NestedTypes>
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.BaseDecorationActions" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.PlaySound" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetForeground" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.ChangePlayersRows" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.TilingTypes" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.SetBeatsPerMinute" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="RDLevel.RhythmDoctorObjects.Events.DefaultAudios" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="RDLevel.RhythmDoctorObjects.Events.TintRows" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Events.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Events.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
