@@ -1009,7 +1009,7 @@ Namespace Objects
 			''' 颜色
 			''' </summary>
 			''' <returns></returns>
-			Public Property Color As PanelColor
+			Public ReadOnly Property Color As New PanelColor(False)
 			''' <summary>
 			''' X值
 			''' </summary>
@@ -1102,7 +1102,7 @@ Namespace Objects
 			Public Property Ease As EaseType
 			Public Property ContentMode As ContentModes
 			Public Property Filter As FilterModes '?
-			Public Property Color As PanelColor
+			Public ReadOnly Property Color As New PanelColor(True)
 			Public Property Interval As Single
 			Public Property BackgroundType As BackgroundTypes
 			''' <summary>
@@ -1124,7 +1124,7 @@ Namespace Objects
 			Public Overrides ReadOnly Property Rooms As New Rooms(False, True)
 			Public Property ContentMode As ContentModes
 			Public Property TilingType As TilingTypes
-			Public Property Color As PanelColor
+			Public ReadOnly Property Color As New PanelColor(True)
 			Public Property Image As List(Of String)
 			Public Property Fps As Integer
 			Public Property ScrollX As Integer
@@ -1182,9 +1182,9 @@ Namespace Objects
 			''' 缓动类型
 			''' </summary>
 			Public Property Ease As EaseType
-			Public Property StartColor As PanelColor
+			Public ReadOnly Property StartColor As New PanelColor(False)
 			Public Property Background As Boolean
-			Public Property EndColor As PanelColor
+			Public ReadOnly Property EndColor As New PanelColor(False)
 			''' <summary>
 			''' 持续时间
 			''' </summary>
@@ -1290,13 +1290,13 @@ Namespace Objects
 		Public Class TintRows
 			Inherits BaseRowAnimations
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-			Public Property TintColor As PanelColor
+			Public ReadOnly Property TintColor As New PanelColor(True)
 			''' <summary>
 			''' 缓动类型
 			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Border As Borders
-			Public Property BorderColor As PanelColor
+			Public ReadOnly Property BorderColor As New PanelColor(True)
 			Public Property Opacity As Integer
 			Public Property Tint As Boolean
 			''' <summary>
@@ -1391,7 +1391,7 @@ Namespace Objects
 			End Enum
 			<JsonProperty>
 			Public Overrides ReadOnly Property Rooms As New Rooms(False, True)
-			Public Property Color As PanelColor
+			Public ReadOnly Property Color As New PanelColor(False)
 			Public Property Text As String
 			Public Property Direction As Directions
 			Public Property Mode As Modes
@@ -1482,10 +1482,10 @@ Namespace Objects
 			<JsonProperty>
 			Public Overrides ReadOnly Property Rooms As New Rooms(True, True)
 			Public Property FadeOutRate As Single
-			Public Property Color As PanelColor = New SKColor(&HFF, &HFF, &HFF, &HFF)
+			Public ReadOnly Property Color As New PanelColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 			Public Property Angle As INumberOrExpression
 			Public Property Size As UInteger
-			Public Property OutlineColor As PanelColor = New SKColor(0, 0, 0, &HFF)
+			Public ReadOnly Property OutlineColor As New PanelColor(True) With {.Color = New SKColor(0, 0, 0, &HFF)}
 			Public Property Id As Integer
 				Get
 					Return GeneratedId
@@ -1623,7 +1623,7 @@ Namespace Objects
 					Return MyBase.Target
 				End Get
 			End Property
-			Public Property Color As PanelColor
+			Public ReadOnly Property Color As New PanelColor(False)
 			Public Overrides ReadOnly Property Type As EventType = EventType.Comment
 			Public Function ShouldSerializeTarget() As Boolean
 				Return Tab = Tabs.Sprites
@@ -1674,13 +1674,13 @@ Namespace Objects
 				Outline
 				Glow
 			End Enum
-			Public Property TintColor As PanelColor
+			Public ReadOnly Property TintColor As New PanelColor(True)
 			''' <summary>
 			''' 缓动类型
 			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Border As Borders
-			Public Property BorderColor As PanelColor
+			Public ReadOnly Property BorderColor As New PanelColor(True)
 			Public Property Opacity As Integer
 			Public Property Tint As Boolean
 			Public Property Duration As Integer
@@ -1852,6 +1852,8 @@ Namespace Objects
 			''' 缓动类型
 			''' </summary>
 			Public Property Ease As EaseType
+			Private Sub New()
+			End Sub
 		End Class
 		Public Class PlayAnimation
 			Inherits BaseDecorationActions
@@ -1869,10 +1871,10 @@ Namespace Objects
 			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Border As Borders
-			Public Property BorderColor As PanelColor
+			Public ReadOnly Property BorderColor As New PanelColor(True)
 			Public Property Opacity As Integer
 			Public Property Tint As Boolean
-			Public Property TintColor As PanelColor = New SKColor(&HFF, &HFF, &HFF, &HFF)
+			Public ReadOnly Property TintColor As New PanelColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 			''' <summary>
 			''' 持续时间
 			''' </summary>
@@ -1888,9 +1890,6 @@ Namespace Objects
 			Public Function ShouldSerializeTintColor() As Boolean
 				Return True
 			End Function
-			Public Sub New()
-				TintColor = New SKColor(&HFF, &HFF, &HFF, &HFF)
-			End Sub
 		End Class
 		Public Class Move
 			Inherits BaseDecorationActions
@@ -2429,7 +2428,7 @@ Namespace Objects
 			Public Property SourceRoom As Integer
 			Public Property Image As List(Of String)
 			Public Property Fps As Integer
-			Public Property KeyColor As PanelColor
+			Public ReadOnly Property KeyColor As New PanelColor(False)
 			Public Property ColorCutoff As Integer
 			Public Property ColorFeathering As Integer
 			Public Property ContentMode As ContentModes

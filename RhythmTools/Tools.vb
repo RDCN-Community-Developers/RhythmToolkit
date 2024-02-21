@@ -204,7 +204,7 @@ Public Module Tools
 								Dim tempEvent = CType(item, TintRows)
 								Dim CharEvent As Tint = part.deco.CreateChildren(Of Tint)(item)
 								CharEvent.Border = tempEvent.Border
-								CharEvent.BorderColor = tempEvent.BorderColor
+								CharEvent.BorderColor.Color = tempEvent.BorderColor.Color
 								CharEvent.Tint = tempEvent.Tint
 								CharEvent.Opacity = tempEvent.Opacity
 								CharEvent.Ease = tempEvent.Ease
