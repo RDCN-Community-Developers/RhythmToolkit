@@ -631,131 +631,131 @@ Namespace Objects
 		End Function
 	End Class
 	Public Class Row
-			Public Enum PlayerMode
-				P1
-				P2
-				CPU
-			End Enum
-			<JsonIgnore>
-			Public ParentCollection As List(Of Row)
-			<JsonIgnore>
-			Public ReadOnly Children As New List(Of BaseRows)
-			Public Property Character As String
-			Public Property RowType As RowType
-			Public ReadOnly Property Row As SByte
-				Get
-					Return ParentCollection.IndexOf(Me)
-				End Get
-			End Property
+		Public Enum PlayerMode
+			P1
+			P2
+			CPU
+		End Enum
+		<JsonIgnore>
+		Public ParentCollection As List(Of Row)
+		<JsonIgnore>
+		Public ReadOnly Children As New List(Of BaseRows)
+		Public Property Character As String
+		Public Property RowType As RowType
+		Public ReadOnly Property Row As SByte
+			Get
+				Return ParentCollection.IndexOf(Me)
+			End Get
+		End Property
 		Public Property Rooms As New Rooms(False, False)
 		Public Property HideAtStart As Boolean
-			Public Property Player As PlayerMode
-			<JsonIgnore>
-			Public Property PlayerType As PlayerMode
-				Get
-					Return _Player
-				End Get
-				Set(value As PlayerMode)
-					_Player = value
-				End Set
-			End Property
-			<JsonIgnore>
-			Public Property Sound As New Audio
-			Public Property MuteBeats As Boolean
-			Public Property PulseSound As String
-				Get
-					Return Sound.Filename
-				End Get
-				Set(value As String)
-					Sound.Filename = value
-				End Set
-			End Property
-			Public Property PulseSoundVolume As Integer
-				Get
-					Return Sound.Volume
-				End Get
-				Set(value As Integer)
-					Sound.Volume = value
-				End Set
-			End Property
-			Public Property PulseSoundPitch As Integer
-				Get
-					Return Sound.Pitch
-				End Get
-				Set(value As Integer)
-					Sound.Pitch = value
-				End Set
-			End Property
-			Public Property PulseSoundPan As Integer
-				Get
-					Return Sound.Pan
-				End Get
-				Set(value As Integer)
-					Sound.Pan = value
-				End Set
-			End Property
-			Public Property PulseSoundOffset As Integer
-				Get
-					Return Sound.Offset
-				End Get
-				Set(value As Integer)
-					Sound.Offset = value
-				End Set
-			End Property
-			Public Sub New()
-			End Sub
-			Private Function ClassicBeats() As IEnumerable(Of BaseBeats)
-				Return Children.Where(Function(i)
-										  Return (i.Type = EventType.AddClassicBeat Or
+		Public Property Player As PlayerMode
+		<JsonIgnore>
+		Public Property PlayerType As PlayerMode
+			Get
+				Return _Player
+			End Get
+			Set(value As PlayerMode)
+				_Player = value
+			End Set
+		End Property
+		<JsonIgnore>
+		Public Property Sound As New Audio
+		Public Property MuteBeats As Boolean
+		Public Property PulseSound As String
+			Get
+				Return Sound.Filename
+			End Get
+			Set(value As String)
+				Sound.Filename = value
+			End Set
+		End Property
+		Public Property PulseSoundVolume As Integer
+			Get
+				Return Sound.Volume
+			End Get
+			Set(value As Integer)
+				Sound.Volume = value
+			End Set
+		End Property
+		Public Property PulseSoundPitch As Integer
+			Get
+				Return Sound.Pitch
+			End Get
+			Set(value As Integer)
+				Sound.Pitch = value
+			End Set
+		End Property
+		Public Property PulseSoundPan As Integer
+			Get
+				Return Sound.Pan
+			End Get
+			Set(value As Integer)
+				Sound.Pan = value
+			End Set
+		End Property
+		Public Property PulseSoundOffset As Integer
+			Get
+				Return Sound.Offset
+			End Get
+			Set(value As Integer)
+				Sound.Offset = value
+			End Set
+		End Property
+		Public Sub New()
+		End Sub
+		Private Function ClassicBeats() As IEnumerable(Of BaseBeats)
+			Return Children.Where(Function(i)
+									  Return (i.Type = EventType.AddClassicBeat Or
 													i.Type = EventType.AddFreeTimeBeat Or
 													i.Type = EventType.PulseFreeTimeBeat) AndAlso
 													CType(i, BaseBeats).Pulsable
-									  End Function)
-			End Function
-			Private Function OneshotBeats() As IEnumerable(Of BaseBeats)
-				Return Children.Where(Function(i)
-										  Return i.Type = EventType.AddOneshotBeat AndAlso
+								  End Function)
+		End Function
+		Private Function OneshotBeats() As IEnumerable(Of BaseBeats)
+			Return Children.Where(Function(i)
+									  Return i.Type = EventType.AddOneshotBeat AndAlso
 													CType(i, BaseBeats).Pulsable
-									  End Function)
-			End Function
-			Public Function PulseBeats() As IEnumerable(Of Pulse)
-				Select Case _RowType
-					Case RowType.Classic
-						Return ClassicBeats().Select(Function(i) i.PulseTime)
-					Case RowType.Oneshot
-						Return OneshotBeats().Select(Function(i) i.PulseTime)
-					Case Else
-						Throw New RhythmDoctorExcception("How?")
-				End Select
-			End Function
-			Public Function PulseEvents() As IEnumerable(Of BaseBeats)
-				Select Case _RowType
-					Case RowType.Classic
-						Return ClassicBeats()
-					Case RowType.Oneshot
-						Return OneshotBeats()
-					Case Else
-						Throw New RhythmDoctorExcception("How?")
-				End Select
-			End Function
-			Public Function ShouldSerializeMuteBeats() As Boolean
-				Return MuteBeats
-			End Function
-			Public Function ShouldSerializeHideAtStart() As Boolean
-				Return HideAtStart
-			End Function
-			Public Function CreateChildren(Of T As {BaseRows, New})(beatOnly As Single) As T
-				Dim temp = New T With {
+								  End Function)
+		End Function
+		Public Function PulseBeats() As IEnumerable(Of Pulse)
+			Select Case _RowType
+				Case RowType.Classic
+					Return ClassicBeats().Select(Function(i) i.PulseTime)
+				Case RowType.Oneshot
+					Return OneshotBeats().Select(Function(i) i.PulseTime)
+				Case Else
+					Throw New RhythmDoctorExcception("How?")
+			End Select
+		End Function
+		Public Function PulseEvents() As IEnumerable(Of BaseBeats)
+			Select Case _RowType
+				Case RowType.Classic
+					Return ClassicBeats()
+				Case RowType.Oneshot
+					Return OneshotBeats()
+				Case Else
+					Throw New RhythmDoctorExcception("How?")
+			End Select
+		End Function
+		Public Function ShouldSerializeMuteBeats() As Boolean
+			Return MuteBeats
+		End Function
+		Public Function ShouldSerializeHideAtStart() As Boolean
+			Return HideAtStart
+		End Function
+		Public Function CreateChildren(Of T As {BaseRows, New})(beatOnly As Single) As T
+			Dim temp = New T With {
 					.BeatOnly = beatOnly,
 					.Parent = Me
 				}
-				Me.Children.Add(temp)
-				Return New T
-			End Function
-			Public Overrides Function ToString() As String
-				Return $"{_RowType}: {Character}"
-			End Function
-		End Class
+			Me.Children.Add(temp)
+			Return New T
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"{_RowType}: {Character}"
+		End Function
+	End Class
 	Public Class Bookmark
 		Enum BookmarkColors
 			Blue
@@ -775,45 +775,45 @@ Namespace Objects
 		PlayerMode
 	End Enum
 	Public MustInherit Class BaseConditional
-			<JsonIgnore>
-			Public ParentCollection As List(Of BaseConditional)
-			Public MustOverride ReadOnly Property Type As ConditionalType
-			Public Property Tag As String 'throw new NotImplementedException()
-			Public Property Name As String
-			Public ReadOnly Property Id As Integer
-				Get
-					Return ParentCollection.IndexOf(Me) + 1
-				End Get
-			End Property
-			<JsonIgnore>
-			Public Property Children As New List(Of BaseEvent)
-			Public Overrides Function ToString() As String
-				Return Name
-			End Function
-		End Class
-		Public Class LastHit
-			Inherits BaseConditional
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.LastHit
-		End Class
+		<JsonIgnore>
+		Public ParentCollection As List(Of BaseConditional)
+		Public MustOverride ReadOnly Property Type As ConditionalType
+		Public Property Tag As String 'throw new NotImplementedException()
+		Public Property Name As String
+		Public ReadOnly Property Id As Integer
+			Get
+				Return ParentCollection.IndexOf(Me) + 1
+			End Get
+		End Property
+		<JsonIgnore>
+		Public Property Children As New List(Of BaseEvent)
+		Public Overrides Function ToString() As String
+			Return Name
+		End Function
+	End Class
+	Public Class LastHit
+		Inherits BaseConditional
+		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.LastHit
+	End Class
 
-		Public Class Custom
-			Inherits BaseConditional
-			Public Property Expression As String
+	Public Class Custom
+		Inherits BaseConditional
+		Public Property Expression As String
 
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Custom
-		End Class
+		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Custom
+	End Class
 
-		Public Class TimesExecuted
-			Inherits BaseConditional
-			Public Property MaxTimes As Integer
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.TimesExecuted
-		End Class
+	Public Class TimesExecuted
+		Inherits BaseConditional
+		Public Property MaxTimes As Integer
+		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.TimesExecuted
+	End Class
 
-		Public Class Language
-			Inherits BaseConditional
-			Public Property Language As String
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Language
-		End Class
+	Public Class Language
+		Inherits BaseConditional
+		Public Property Language As String
+		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Language
+	End Class
 
 	Public Class PlayerMode
 		Inherits BaseConditional
@@ -1004,30 +1004,30 @@ Namespace Objects
 		End Class
 	End Module
 	Public Class Settings
-			Public Property Version As Integer
-			Public Property Artist As String 'Done
-			Public Property Song As String 'Done
-			Public Property SpecialArtistType As String 'Enum
-			Public Property ArtistPermission As String '?
-			Public Property ArtistLinks As String '?
-			Public Property Author As String 'Done
-			Public Property Difficulty As String 'Enum
-			Public Property SeizureWarning As Boolean
-			Public Property PreviewImage As String 'FilePath
-			Public Property SyringeIcon As String 'FilePath
-			Public Property PreviewSong As String 'Done
-			Public Property PreviewSongStartTime As Single
-			Public Property PreviewSongDuration As Single
-			Public Property SongNameHue As Single
-			Public Property SongLabelGrayscale As Boolean
-			Public Property Description As String 'Done
-			Public Property Tags As String 'Done
-			Public Property Separate2PLevelFilename As String 'FilePath
-			Public Property CanBePlayedOn As String 'Enum
-			Public Property FirstBeatBehavior As String 'Enum
-			Public Property MultiplayerAppearance As String 'Enum
-			Public Property LevelVolume As Integer
-			Public Property RankMaxMistakes As New LimitedList(Of Integer)(4, 20)
-			Public Property RankDescription As New LimitedList(Of String)(6, "")
+		Public Property Version As Integer
+		Public Property Artist As String 'Done
+		Public Property Song As String 'Done
+		Public Property SpecialArtistType As String 'Enum
+		Public Property ArtistPermission As String '?
+		Public Property ArtistLinks As String '?
+		Public Property Author As String 'Done
+		Public Property Difficulty As String 'Enum
+		Public Property SeizureWarning As Boolean
+		Public Property PreviewImage As String 'FilePath
+		Public Property SyringeIcon As String 'FilePath
+		Public Property PreviewSong As String 'Done
+		Public Property PreviewSongStartTime As Single
+		Public Property PreviewSongDuration As Single
+		Public Property SongNameHue As Single
+		Public Property SongLabelGrayscale As Boolean
+		Public Property Description As String 'Done
+		Public Property Tags As String 'Done
+		Public Property Separate2PLevelFilename As String 'FilePath
+		Public Property CanBePlayedOn As String 'Enum
+		Public Property FirstBeatBehavior As String 'Enum
+		Public Property MultiplayerAppearance As String 'Enum
+		Public Property LevelVolume As Integer
+		Public Property RankMaxMistakes As New LimitedList(Of Integer)(4, 20)
+		Public Property RankDescription As New LimitedList(Of String)(6, "")
 		End Class
 End Namespace
