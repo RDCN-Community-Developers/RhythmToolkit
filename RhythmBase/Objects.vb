@@ -235,16 +235,38 @@ Namespace Objects
 		End Sub
 	End Class
 	Public Class PanelColor
-		Public Property Parent As LimitedList(Of SKColor)
+		'	Public Property Parent As LimitedList(Of SKColor)
+		Private _panel As Integer
+		Private _color As SKColor
 		Public Property Color As SKColor?
-		Public Property Panel As Integer = -1
-		Public Property PanelEnabled As Boolean = Panel >= 0
-		Public Shared Widening Operator CType(color As SKColor) As PanelColor
-			Dim out As New PanelColor With {.Color = color}
-			Return out
-		End Operator
+			Get
+				Return _color
+			End Get
+			Set(value As SKColor?)
+				Panel = -1
+				_color = value?.WithAlpha(255)
+			End Set
+		End Property
+		Public Property Panel As Integer
+			Get
+				Return _panel
+			End Get
+			Set(value As Integer)
+				_color = Nothing
+				_panel = value
+			End Set
+		End Property
+		Public ReadOnly Property EnableAlpha As Boolean
+		Public ReadOnly Property PanelEnabled As Boolean
+			Get
+				Return Panel >= 0
+			End Get
+		End Property
+		Public Sub New(enableAlpha As Boolean)
+			Me.EnableAlpha = enableAlpha
+		End Sub
 		Public Overrides Function ToString() As String
-			Return If(Panel < 0, Color?.ToString, Parent(Panel).ToString)
+			Return If(Panel < 0, Color?.ToString, Panel.ToString)
 		End Function
 	End Class
 	Public Class Rooms
@@ -750,8 +772,8 @@ Namespace Objects
 					.Parent = Me
 				}
 				Me.Children.Add(temp)
-				Return New T
-			End Function
+			Return temp
+		End Function
 			Public Overrides Function ToString() As String
 				Return $"{_RowType}: {Character}"
 			End Function
@@ -837,7 +859,7 @@ Namespace Objects
 		Public Class RDLevel
 			Implements ICollection(Of BaseEvent)
 			Dim _path As IO.FileInfo
-			Public Property Settings As Settings
+			Public Property Settings As New Settings
 			Public Property Rows As New List(Of Row)
 			Public Property Decorations As New List(Of Decoration)
 			Public Property Events As New List(Of BaseEvent)
@@ -944,10 +966,10 @@ Namespace Objects
 				Return ConcatAll.Where(predicate)
 			End Function
 			Public Function Where(Of T As BaseEvent)() As IEnumerable(Of T)
-				Return ConcatAll.Where(Function(i) i.GetType = GetType(T))
+				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) OrElse i.GetType.IsAssignableTo(GetType(T))).Select(Function(i) CType(i, T))
 			End Function
 			Public Function Where(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) AndAlso predicate(i))
+				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) AndAlso predicate(i)).Select(Function(i) CType(i, T))
 			End Function
 			Public Function FirstOrDefault() As BaseEvent
 				Return Events.FirstOrDefault()
@@ -1005,28 +1027,28 @@ Namespace Objects
 	End Module
 	Public Class Settings
 			Public Property Version As Integer
-			Public Property Artist As String 'Done
-			Public Property Song As String 'Done
-			Public Property SpecialArtistType As String 'Enum
-			Public Property ArtistPermission As String '?
-			Public Property ArtistLinks As String '?
-			Public Property Author As String 'Done
-			Public Property Difficulty As String 'Enum
-			Public Property SeizureWarning As Boolean
-			Public Property PreviewImage As String 'FilePath
-			Public Property SyringeIcon As String 'FilePath
-			Public Property PreviewSong As String 'Done
-			Public Property PreviewSongStartTime As Single
+		Public Property Artist As String = "" 'Done
+		Public Property Song As String = "" 'Done
+		Public Property SpecialArtistType As String = "" 'Enum
+		Public Property ArtistPermission As String = "" '?
+		Public Property ArtistLinks As String = "" '?
+		Public Property Author As String = "" 'done
+		Public Property Difficulty As String = "" 'Enum
+		Public Property SeizureWarning As Boolean
+		Public Property PreviewImage As String = "" 'FilePath
+		Public Property SyringeIcon As String = "" 'FilePath
+		Public Property PreviewSong As String = "" 'Done
+		Public Property PreviewSongStartTime As Single
 			Public Property PreviewSongDuration As Single
 			Public Property SongNameHue As Single
 			Public Property SongLabelGrayscale As Boolean
-			Public Property Description As String 'Done
-			Public Property Tags As String 'Done
-			Public Property Separate2PLevelFilename As String 'FilePath
-			Public Property CanBePlayedOn As String 'Enum
-			Public Property FirstBeatBehavior As String 'Enum
-			Public Property MultiplayerAppearance As String 'Enum
-			Public Property LevelVolume As Integer
+		Public Property Description As String = "" 'Done
+		Public Property Tags As String = "" 'Done
+		Public Property Separate2PLevelFilename As String = "" 'FilePath
+		Public Property CanBePlayedOn As String = "" 'Enum
+		Public Property FirstBeatBehavior As String = "" 'Enum
+		Public Property MultiplayerAppearance As String = "" 'Enum
+		Public Property LevelVolume As Integer
 			Public Property RankMaxMistakes As New LimitedList(Of Integer)(4, 20)
 			Public Property RankDescription As New LimitedList(Of String)(6, "")
 		End Class

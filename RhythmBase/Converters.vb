@@ -117,7 +117,6 @@ Namespace Objects
 					.Add(New INumberOrExpressionConverter)
 					.Add(New NumberOrExpressionPairConverter)
 					.Add(New PanelColorConverter)
-					'.Add(New FileConverter)
 					.Add(New RoomConverter)
 					.Add(New TagActionConverter(SetCPB))
 					.Add(New ConditionConverter)
@@ -188,29 +187,29 @@ Namespace Objects
 					Dim TempEvent As BaseEvent = item.ToObject(SubClassType, EventsSerializer)
 					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(If(item("beat"), 1)), SetCPB)
 					'色盘
-					For Each info In SubClassType.GetProperties.Where(Function(i) i.PropertyType = GetType(PanelColor))
-						Dim PColor As New PanelColor
-						Dim name = ToCamelCase(info.Name, False)
-						If item(name) IsNot Nothing Then
-							Dim panelName = item(ToCamelCase(info.Name, False)).ToString
-							Dim match = Regex.Match(item(name).ToString, "pal(?<index>[\d]+)")
-							If match.Success Then
-								PColor.Panel = match.Groups("index").Value
-								info.SetValue(TempEvent, PColor)
-							Else
-								Dim S = RgbaToArgb(Convert.ToInt32(item(name).ToString.PadRight(8, "f"c), 16))
-								PColor.Color = SKColor.Parse(item(name))
-								PColor.Panel = -1
-							End If
-							PColor.Parent = Level.ColorPalette
-							info.SetValue(TempEvent, PColor)
-						Else
-							PColor.Panel = -1
-							PColor.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)
-							PColor.Parent = Level.ColorPalette
-							info.SetValue(TempEvent, PColor)
-						End If
-					Next
+					'For Each info In SubClassType.GetProperties.Where(Function(i) i.PropertyType = GetType(PanelColor))
+					'	Dim PColor As New PanelColor
+					'	Dim name = ToCamelCase(info.Name, False)
+					'	If item(name) IsNot Nothing Then
+					'		Dim panelName = item(ToCamelCase(info.Name, False)).ToString
+					'		Dim match = Regex.Match(item(name).ToString, "pal(?<index>[\d]+)")
+					'		If match.Success Then
+					'			PColor.Panel = match.Groups("index").Value
+					'			info.SetValue(TempEvent, PColor)
+					'		Else
+					'			Dim S = RgbaToArgb(Convert.ToInt32(item(name).ToString.PadRight(8, "f"c), 16))
+					'			PColor.Color = SKColor.Parse(item(name))
+					'			PColor.Panel = -1
+					'		End If
+					'		PColor.Parent = Level.ColorPalette
+					'		info.SetValue(TempEvent, PColor)
+					'	Else
+					'		PColor.Panel = -1
+					'		PColor.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)
+					'		PColor.Parent = Level.ColorPalette
+					'		info.SetValue(TempEvent, PColor)
+					'	End If
+					'Next
 					'条件
 					If item("if") IsNot Nothing Then
 						Dim ConditionIds = Regex.Matches(item("if").ToString, "~?\d+(?=[&d])")
@@ -393,16 +392,38 @@ Namespace Objects
 		Public Class PanelColorConverter
 			Inherits JsonConverter(Of PanelColor)
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As PanelColor, serializer As JsonSerializer)
-				If value.Panel >= 0 Then
+				If value.PanelEnabled Then
 					writer.WriteValue($"pal{value.Panel}")
 				Else
-					Dim S As New JsonSerializerSettings
-					S.Converters.Add(New ColorConverter)
-					writer.WriteRawValue(JsonConvert.SerializeObject(value.Color, S))
+					Dim s = value.Color.Value.ToString.Replace("#", "")
+					Dim alpha = s.Substring(0, 2)
+					Dim rgb = s.Substring(2)
+					If value.EnableAlpha Then
+						writer.WriteValue(rgb + alpha)
+					Else
+						writer.WriteValue(rgb)
+					End If
 				End If
 			End Sub
 			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As PanelColor, hasExistingValue As Boolean, serializer As JsonSerializer) As PanelColor
-				Return New PanelColor
+				Dim JString = JToken.Load(reader).Value(Of String)
+				Dim reg = Regex.Match(JString, "pal(\d+)")
+				If reg.Success Then
+					existingValue.Panel = reg.Groups(1).Value
+				Else
+					Dim s = JString.Replace("#", "")
+					Dim alpha As String = ""
+					If s.Length > 6 Then
+						alpha = s.Substring(6)
+					End If
+					Dim rgb = s.Substring(0, 6)
+					existingValue.Color = SKColor.Parse(alpha + rgb)
+					If s.Length > 6 Then
+						existingValue.Color = SKColor.Parse(rgb)
+					End If
+					'	existingValue.Color = SKColor.Parse(JString)
+				End If
+					Return existingValue
 			End Function
 		End Class
 		'Public Class FileConverter
@@ -418,13 +439,13 @@ Namespace Objects
 			Inherits JsonConverter(Of SKColor)
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As SKColor, serializer As JsonSerializer)
 				Dim JString = value.ToString
-				Dim Reg = Regex.Match(JString, "([0-9A-Fa-f]{2})([0-9A-Fa-f]{1})")
-				writer.WriteValue(Reg.Groups(2).Value + Reg.Groups(1).Value)
+				Dim Reg = Regex.Match(JString, "([0-9A-Fa-f]{2})([0-9A-Fa-f]{6})")
+				writer.WriteValue(Reg.Groups(1).Value + Reg.Groups(2).Value)
 			End Sub
 			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As SKColor, hasExistingValue As Boolean, serializer As JsonSerializer) As SKColor
 				Dim JString = JToken.Load(reader).Value(Of String)
 				Dim Reg = Regex.Match(JString, "([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})")
-				Return SKColor.Parse(Reg.Groups(2).Value + Reg.Groups(1).Value)
+				Return SKColor.Parse(Reg.Groups(1).Value + Reg.Groups(2).Value)
 			End Function
 		End Class
 		Public Class DecorationConverter
