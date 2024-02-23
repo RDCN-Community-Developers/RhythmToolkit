@@ -23,9 +23,11 @@ Public Module Util
 		Private Sub Initialize(CPBs As IEnumerable(Of SetCrotchetsPerBar), BPMs As IEnumerable(Of BaseBeatsPerMinute))
 			Me.CPBs = CPBs.OrderBy(Function(i) i.BeatOnly)
 			Me.BPMs = BPMs.OrderBy(Function(i) i.BeatOnly)
-			Dim preCPB As New SetCrotchetsPerBar(1, 0, 8, 1)
+			Initialize(CPBs)
+		End Sub
+		Public Shared Sub Initialize(CPBs As IEnumerable(Of SetCrotchetsPerBar))
 			For Each item In CPBs
-				item.Bar = BeatOnly_BarBeat(item.BeatOnly).bar
+				item.Bar = BeatOnly_BarBeat(item.BeatOnly, CPBs).bar
 			Next
 		End Sub
 		Public Function BarBeat_BeatOnly(bar As UInteger, beat As Single) As Single

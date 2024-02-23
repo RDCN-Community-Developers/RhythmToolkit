@@ -21,7 +21,7 @@ Module Program
 		txt1.Id = t
 		txt1.Mode = FloatingText.OutMode.HideAbruptly
 		txt1.FadeOutRate = 1
-		txt1.AnchorType = AnchorType.Left Or AnchorType.Upper
+		txt1.AnchorType = FloatingText.AnchorTypes.Left Or FloatingText.AnchorTypes.Upper
 		txt1.Text = (C.BeatOnly_Time(finish) - TimeSpan.FromSeconds(t / interval)).ToString
 		leve2.add(txt1)
 		Dim txt2 As New FloatingText With {
@@ -32,7 +32,7 @@ Module Program
 			.Id = t,
 			.Mode = FloatingText.OutMode.HideAbruptly,
 			.FadeOutRate = 1,
-			.AnchorType = AnchorType.Left Or AnchorType.Upper,
+			.AnchorType = FloatingText.AnchorTypes.Left Or FloatingText.AnchorTypes.Upper,
 			.Text = C.BeatOnly_BarBeat(txt1.BeatOnly).ToString
 		}
 		txt2.Rooms(0) = True

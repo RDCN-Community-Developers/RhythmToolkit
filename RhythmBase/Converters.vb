@@ -392,7 +392,7 @@ Namespace Objects
 		Public Class PanelColorConverter
 			Inherits JsonConverter(Of PanelColor)
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As PanelColor, serializer As JsonSerializer)
-				If value.PanelEnabled Then
+				If value.EnablePanel Then
 					writer.WriteValue($"pal{value.Panel}")
 				Else
 					Dim s = value.Color.Value.ToString.Replace("#", "")
@@ -417,13 +417,14 @@ Namespace Objects
 						alpha = s.Substring(6)
 					End If
 					Dim rgb = s.Substring(0, 6)
-					existingValue.Color = SKColor.Parse(alpha + rgb)
 					If s.Length > 6 Then
+						existingValue.Color = SKColor.Parse(alpha + rgb) ' UInteger.Parse(rgb, Globalization.NumberStyles.HexNumber) '+ UInteger.Parse(alpha, Globalization.NumberStyles.HexNumber) << 24
+					Else
 						existingValue.Color = SKColor.Parse(rgb)
 					End If
 					'	existingValue.Color = SKColor.Parse(JString)
 				End If
-					Return existingValue
+				Return existingValue
 			End Function
 		End Class
 		'Public Class FileConverter
@@ -572,13 +573,13 @@ Namespace Objects
 			End Function
 		End Class
 		Public Class ConditionConverter
-			Inherits JsonConverter(Of Conditions)
-			Public Overrides Sub WriteJson(writer As JsonWriter, value As Conditions, serializer As JsonSerializer)
+			Inherits JsonConverter(Of Condition)
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As Condition, serializer As JsonSerializer)
 				writer.WriteValue(value.ToString)
 			End Sub
-			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Conditions, hasExistingValue As Boolean, serializer As JsonSerializer) As Conditions
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Condition, hasExistingValue As Boolean, serializer As JsonSerializer) As Condition
 				Dim J = JToken.Load(reader)
-				Return Conditions.Load(J)
+				Return Condition.Load(J)
 			End Function
 		End Class
 	End Module

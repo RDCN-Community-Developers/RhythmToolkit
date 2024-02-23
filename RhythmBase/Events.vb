@@ -6,73 +6,22 @@ Imports SkiaSharp
 
 Namespace Objects
 	Public Module Events
-		''' <summary>
-		''' 事件类型的枚举
-		''' </summary>
 		Public Enum EventType
-			''' <summary>
-			''' 播放音乐
-			''' </summary>
 			PlaySong
-			''' <summary>
-			''' 设置音节长度
-			''' </summary>
 			SetCrotchetsPerBar
-			''' <summary>
-			''' 播放音效
-			''' </summary>
 			PlaySound
-			''' <summary>
-			''' 设置每分钟节拍数
-			''' </summary>
 			SetBeatsPerMinute
-			''' <summary>
-			''' 设置按拍音效
-			''' </summary>
 			SetClapSounds
-			''' <summary>
-			''' 设置心跳音量
-			''' </summary>
 			SetHeartExplodeVolume
-			''' <summary>
-			''' 设置心跳间隔
-			''' </summary>
 			SetHeartExplodeInterval
-			''' <summary>
-			''' 护士语音设置
-			''' </summary>
 			SayReadyGetSetGo
-			''' <summary>
-			''' 设置游戏音效
-			''' </summary>
 			SetGameSound
-			''' <summary>
-			''' 设置节拍音效
-			''' </summary>
 			SetBeatSound
-			''' <summary>
-			''' 设置数拍音效
-			''' </summary>
 			SetCountingSound
-			''' <summary>
-			''' 增加普通节拍
-			''' </summary>
 			AddClassicBeat
-			''' <summary>
-			''' 设置单发节拍
-			''' </summary>
 			AddOneshotBeat
-			''' <summary>
-			''' 设置单发波
-			''' </summary>
 			SetOneshotWave
-			''' <summary>
-			''' 设置自由节拍
-			''' </summary>
 			AddFreeTimeBeat
-			''' <summary>
-			''' 设置自由节拍脉冲
-			''' </summary>
 			PulseFreeTimeBeat
 			SetRowXs
 			SetTheme
@@ -170,72 +119,23 @@ Namespace Objects
 			Outline
 			Glow
 		End Enum
-		Enum RowEffect
-			None
-			Electric
-#If Not DEBUG Then
-			Smoke
-#End If
-		End Enum
-		<Flags>
-		Public Enum AnchorType
-			[Default] = &B0
-			Lower = &B1
-			Upper = &B10
-			Middle = &B11
-			Right = &B100
-			Left = &B1000
-			Center = &B1100
-		End Enum
 		Public MustInherit Class BaseEvent
 			<JsonIgnore>
 			Public _Origin As JObject
 			<JsonIgnore>
 			Public PrivateData As New Dictionary(Of String, Object)
-			''' <summary>
-			''' 事件类型
-			''' </summary>
-			''' <returns></returns>
 			<JsonProperty("type")>
 			Public MustOverride ReadOnly Property Type As EventType
-			''' <summary>
-			''' 所属事件栏
-			''' </summary>
-			''' <returns></returns>
 			<JsonIgnore>
 			Public MustOverride ReadOnly Property Tab As Tabs
-			''' <summary>
-			''' 临时：纯节拍数
-			''' </summary>
-			''' <returns></returns>
 			<JsonIgnore>
 			Public Property BeatOnly As Single
-			''' <summary>
-			''' 事件排列高度
-			''' </summary>
-			''' <returns></returns>
 			Public Overridable Property Y As UInteger
-			''' <summary>
-			''' 房间
-			''' </summary>
-			''' <returns></returns>
 			Public MustOverride ReadOnly Property Rooms As Rooms
-			''' <summary>
-			''' 标签
-			''' </summary>
-			''' <returns></returns>
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 			Public Property Tag As String
-			''' <summary>
-			''' 条件
-			''' </summary>
-			''' <returns></returns>
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-			Public Property [If] As Conditions
-			''' <summary>
-			''' 激活
-			''' </summary>
-			''' <returns></returns>
+			Public Property [If] As Condition
 			Public Property Active As Boolean = True
 			Protected Sub New()
 				_BeatOnly = 0
@@ -464,7 +364,7 @@ Namespace Objects
 				OtherSound
 			End Enum
 			Public Property IsCustom As Boolean
-			Public Property SustomSoundType As CustomSoundTypes
+			Public Property CustomSoundType As CustomSoundTypes
 			Public Property Sound As Audio
 			Public Overrides ReadOnly Property Type As EventType = EventType.PlaySound
 			<JsonIgnore>
@@ -712,6 +612,7 @@ Namespace Objects
 		Public Class SetCountingSound
 			Inherits BaseRows
 			Enum VoiceSources
+				'ClassicBeat
 				JyiCount
 				JyiCountFast
 				JyiCountCalm
@@ -731,12 +632,16 @@ Namespace Objects
 				WrenCount
 				CanaryCount
 				JyiCountLegacy
+				'OnshotBeat
+				JyiCountEnglish
+				IanCountEnglish
+				IanCountEnglishCalm
+				IanCountEnglishSlow
 			End Enum
 			Public Property VoiceSource As VoiceSources
 			Public Property Enabled As Boolean
-			Public Property SubdivOffset As Single '?
+			Public Property SubdivOffset As Single
 			Public Property Volume As Integer
-
 			Public Overrides ReadOnly Property Type As EventType = EventType.SetCountingSound
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 
@@ -802,7 +707,7 @@ Namespace Objects
 			Public Overrides ReadOnly Property Type As EventType = Events.EventType.SetTheme
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 			<JsonProperty>
-			Public Overrides ReadOnly Property Rooms As New Rooms (False,true)
+			Public Overrides ReadOnly Property Rooms As New Rooms(False, True)
 			Public Overrides Function ToString() As String
 				Return MyBase.ToString() + $" {Preset}"
 			End Function
@@ -810,223 +715,64 @@ Namespace Objects
 		Public Class SetVFXPreset
 			Inherits BaseEvent
 			Enum Presets
-				''' <summary>
-				''' 心跳剪影
-				''' </summary>
 				SilhouettesOnHBeat
-				''' <summary>
-				''' 晕影
-				''' </summary>
 				Vignette
-				''' <summary>
-				''' 闪烁晕影
-				''' </summary>
 				VignetteFlicker
-				''' <summary>
-				''' 彩色冲击波
-				''' </summary>
 				ColourfulShockwaves
-				''' <summary>
-				''' 按键重低音
-				''' </summary>
 				BassDropOnHit
-				''' <summary>
-				''' 心跳震屏
-				''' </summary>
 				ShakeOnHeartBeat
-				''' <summary>
-				''' 按键震屏
-				''' </summary>
 				ShakeOnHit
-				''' <summary>
-				''' 轨道浮动
-				''' </summary>
 				WavyRows
-				''' <summary>
-				''' 垂直亮纹
-				''' </summary>
 				LightStripVert
-				''' <summary>
-				''' VHS
-				''' </summary>
 				VHS
-				''' <summary>
-				''' 过场模式
-				''' </summary>
 				CutsceneMode
-				''' <summary>
-				''' 色调偏移
-				''' </summary>
 				HueShift
-				''' <summary>
-				''' 亮度
-				''' </summary>
 				Brightness
-				''' <summary>
-				''' 对比度
-				''' </summary>
 				Contrast
-				''' <summary>
-				''' 饱和度
-				''' </summary>
 				Saturation
-				''' <summary>
-				''' 噪点
-				''' </summary>
 				Noise
-				''' <summary>
-				''' 干扰
-				''' </summary>
 				GlitchObstruction
-				''' <summary>
-				''' 落雨
-				''' </summary>
 				Rain
-				''' <summary>
-				''' 矩阵
-				''' </summary>
 				Matrix
-				''' <summary>
-				''' 纸屑
-				''' </summary>
 				Confetti
-				''' <summary>
-				''' 落花
-				''' </summary>
 				FallingPetals
-				''' <summary>
-				''' 落花-即刻
-				''' </summary>
 				FallingPetalsInstant
-				''' <summary>
-				''' 飘雪
-				''' </summary>
 				FallingPetalsSnow
-				''' <summary>
-				''' 雪花
-				''' </summary>
 				Snow
-				''' <summary>
-				''' 高光
-				''' </summary>
 				Bloom
-				''' <summary>
-				''' 橙色高光
-				''' </summary>
 				OrangeBloom
-				''' <summary>
-				''' 蓝色高光
-				''' </summary>
 				BlueBloom
-				''' <summary>
-				''' 镜厅
-				''' </summary>
 				HallOfMirrors
-				''' <summary>
-				''' 自定义屏幕块
-				''' </summary>
 				TileN
-				''' <summary>
-				''' 怀旧
-				''' </summary>
 				Sepia
-				''' <summary>
-				''' 自定义滚屏
-				''' </summary>
 				CustomScreenScroll
-				''' <summary>
-				''' JPEG 失真
-				''' </summary>
 				JPEG
-				''' <summary>
-				''' 脉冲计数
-				''' </summary>
 				NumbersAbovePulses
-				''' <summary>
-				''' 马赛克
-				''' </summary>
 				Mosaic
-				''' <summary>
-				''' 海底波浪
-				''' </summary>
 				ScreenWaves
-				''' <summary>
-				''' 放克
-				''' </summary>
 				Funk
-				''' <summary>
-				''' 电影噪点
-				''' </summary>
 				Grain
-				''' <summary>
-				''' 暴风雪
-				''' </summary>
 				Blizzard
-				''' <summary>
-				''' 素描
-				''' </summary>
 				Drawing
-				''' <summary>
-				''' 色像差
-				''' </summary>
 				Aberration
-				''' <summary>
-				''' 模糊
-				''' </summary>
 				Blur
-				''' <summary>
-				''' 径向模糊
-				''' </summary>
 				RadialBlur
-				''' <summary>
-				''' 点阵
-				''' </summary>
 				Dots
-				''' <summary>
-				''' 禁用全部
-				''' </summary>
 				DisableAll
+
+				BlackAndWhite
+				Blackout
 			End Enum
 			<JsonProperty>
 			Public Overrides ReadOnly Property Rooms As New Rooms(True, True)
-			''' <summary>
-			''' 预设
-			''' </summary>
-			''' <returns></returns>
 			Public Property Preset As Presets
-			''' <summary>
-			''' 启用
-			''' </summary>
-			''' <returns></returns>
 			Public Property Enable As Boolean
-			''' <summary>
-			''' 强度
-			''' </summary>
-			''' <returns></returns>
 			Public Property Threshold As Single
 			Public Property Intensity As Single
-			''' <summary>
-			''' 颜色
-			''' </summary>
-			''' <returns></returns>
 			Public ReadOnly Property Color As New PanelColor(False)
-			''' <summary>
-			''' X值
-			''' </summary>
-			''' <returns></returns>
 			Public Property FloatX As Single
-			''' <summary>
-			''' Y值
-			''' </summary>
-			''' <returns></returns>
 			Public Property FloatY As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Overrides ReadOnly Property Type As EventType = EventType.SetVFXPreset
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
@@ -1096,18 +842,12 @@ Namespace Objects
 			End Enum
 			<JsonProperty>
 			Public Overrides ReadOnly Property Rooms As New Rooms(False, True)
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Property ContentMode As ContentModes
 			Public Property Filter As FilterModes '?
 			Public ReadOnly Property Color As New PanelColor(True)
 			Public Property Interval As Single
 			Public Property BackgroundType As BackgroundTypes
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Property Fps As Integer
 			Public Property Image As List(Of String)
@@ -1129,14 +869,8 @@ Namespace Objects
 			Public Property Fps As Integer
 			Public Property ScrollX As Integer
 			Public Property ScrollY As Integer
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Property Interval As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Overrides ReadOnly Property Type As EventType = EventType.SetForeground
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
@@ -1144,14 +878,8 @@ Namespace Objects
 		End Class
 		Public Class SetSpeed
 			Inherits BaseEvent
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Speed As Single
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Overrides ReadOnly Property Type As EventType = EventType.SetSpeed
 			<JsonIgnore>
@@ -1178,16 +906,10 @@ Namespace Objects
 			Inherits BaseEvent
 			<JsonProperty>
 			Public Overrides ReadOnly Property Rooms As New Rooms(True, True)
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public ReadOnly Property StartColor As New PanelColor(False)
 			Public Property Background As Boolean
 			Public ReadOnly Property EndColor As New PanelColor(False)
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Property StartOpacity As Integer
 			Public Property EndOpacity As Integer
@@ -1206,9 +928,6 @@ Namespace Objects
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 			Public Property Angle As INumberOrExpression
 			Public Property Duration As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 
 			Public Overrides ReadOnly Property Type As EventType = EventType.MoveCamera
@@ -1251,13 +970,7 @@ Namespace Objects
 			Public Property Angle As INumberOrExpression
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 			Public Property Pivot As Single?
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Overrides ReadOnly Property Type As EventType = EventType.MoveRow
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
@@ -1289,19 +1002,20 @@ Namespace Objects
 		End Class
 		Public Class TintRows
 			Inherits BaseRowAnimations
+			Enum RowEffect
+				None
+				Electric
+#If DEBUG Then
+				Smoke
+#End If
+			End Enum
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 			Public ReadOnly Property TintColor As New PanelColor(True)
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Border As Borders
 			Public ReadOnly Property BorderColor As New PanelColor(True)
 			Public Property Opacity As Integer
 			Public Property Tint As Boolean
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Property Effect As RowEffect
 			Public Overrides ReadOnly Property Type As EventType = EventType.TintRows
@@ -1449,9 +1163,6 @@ Namespace Objects
 			Public Property UseBeats As Boolean = True
 			Public Property Narrate As Boolean = True
 			Public Property Text As String
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Overrides ReadOnly Property Type As EventType = EventType.ShowStatusSign
 			<JsonIgnore>
@@ -1466,10 +1177,20 @@ Namespace Objects
 				FadeOut
 				HideAbruptly
 			End Enum
+			<Flags>
+			Public Enum AnchorTypes
+				[Default] = &B0
+				Lower = &B1
+				Upper = &B10
+				Middle = &B11
+				Right = &B100
+				Left = &B1000
+				Center = &B1100
+			End Enum
 			Private Shared _PrivateId As UInteger = 0
 			Private ReadOnly GeneratedId As UInteger
 			Private ReadOnly _children As New List(Of AdvanceText)
-			Private _anchor As AnchorType
+			Private _anchor As AnchorTypes
 			Private _mode As OutMode = OutMode.FadeOut
 			Public Overrides ReadOnly Property Type As EventType = Events.EventType.FloatingText
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
@@ -1499,19 +1220,19 @@ Namespace Objects
 					If (_anchor And &B1100 = 0) Or (_anchor And &B11 = 0) Then
 						Throw New RhythmDoctorExcception("Anchor cannot be null.")
 					End If
-					Return (_anchor And AnchorType.Middle).ToString + (_anchor And AnchorType.Center).ToString
+					Return (_anchor And AnchorTypes.Middle).ToString + (_anchor And AnchorTypes.Center).ToString
 				End Get
 				Set(value As String)
 					Dim Split = Regex.Matches(value, "[A-Z][a-z]+")
-					_anchor = [Enum].Parse(GetType(AnchorType), Split(0).Value) Or [Enum].Parse(GetType(AnchorType), Split(1).Value)
+					_anchor = [Enum].Parse(GetType(AnchorTypes), Split(0).Value) Or [Enum].Parse(GetType(AnchorTypes), Split(1).Value)
 				End Set
 			End Property
 			<JsonIgnore>
-			Public Property AnchorType As AnchorType
+			Public Property AnchorType As AnchorTypes
 				Get
 					Return _anchor
 				End Get
-				Set(value As AnchorType)
+				Set(value As AnchorTypes)
 					_anchor = value
 				End Set
 			End Property
@@ -1651,6 +1372,8 @@ Namespace Objects
 			Enum Actions
 				Show
 				Hide
+				Raise
+				Lower
 			End Enum
 			Enum Extents
 				Full
@@ -1675,9 +1398,6 @@ Namespace Objects
 				Glow
 			End Enum
 			Public ReadOnly Property TintColor As New PanelColor(True)
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Border As Borders
 			Public ReadOnly Property BorderColor As New PanelColor(True)
@@ -1806,7 +1526,9 @@ Namespace Objects
 			<JsonIgnore>
 			Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
-
+			Public Sub Run(variables As Variables)
+				Throw New NotImplementedException
+			End Sub
 		End Class
 		Public Class NewWindowDance
 			Inherits BaseEvent
@@ -1824,9 +1546,6 @@ Namespace Objects
 			Public Property EaseType As String
 			Public Property SubEase As String
 			Public Property EasingDuration As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Overrides ReadOnly Property Type As EventType = EventType.NewWindowDance
 			<JsonIgnore>
@@ -1844,13 +1563,7 @@ Namespace Objects
 			Public Property Scale As NumberOrExpressionPair
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 			Public Property Pivot As NumberOrExpressionPair
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Private Sub New()
 			End Sub
@@ -1866,18 +1579,12 @@ Namespace Objects
 		End Class
 		Public Class Tint
 			Inherits BaseDecorationActions
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Border As Borders
 			Public ReadOnly Property BorderColor As New PanelColor(True)
 			Public Property Opacity As Integer
 			Public Property Tint As Boolean
 			Public ReadOnly Property TintColor As New PanelColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Overrides ReadOnly Property Type As EventType = EventType.Tint
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
@@ -1886,9 +1593,6 @@ Namespace Objects
 			End Function
 			Public Function ShouldSerializeEase() As Boolean
 				Return Duration <> 0
-			End Function
-			Public Function ShouldSerializeTintColor() As Boolean
-				Return True
 			End Function
 		End Class
 		Public Class Move
@@ -1903,13 +1607,7 @@ Namespace Objects
 			Public Property Angle As INumberOrExpression
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 			Public Property Pivot As NumberOrExpressionPair
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			<JsonIgnore>
 			Public Overrides Property Y As UInteger
@@ -1998,11 +1696,13 @@ Namespace Objects
 			End Property
 			Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
 				Dim X = RowXs
-				Dim Synco = X.SyncoSwing
+				Dim Synco As Single
 				If X.SyncoBeat >= 0 Then
-					Synco = 0.5
+					Synco = If(X.SyncoSwing = 0, 0.5, X.SyncoSwing)
+				Else
+					Synco = 0
 				End If
-				Return New List(Of Pulse) From {New Pulse(BeatOnly + _Tick * 6 - _Tick * Synco, Hold)}.AsEnumerable
+				Return New List(Of Pulse) From {New Pulse(Me, BeatOnly + _Tick * 6 - _Tick * Synco, Hold)}.AsEnumerable
 			End Function
 			Public Function Split() As IEnumerable(Of BaseBeats)
 				Return Split(RowXs)
@@ -2174,7 +1874,7 @@ Namespace Objects
 				Dim L As New List(Of Objects.Pulse)
 				For i As UInteger = 0 To _Loops
 					For j As SByte = 0 To _Subdivisions - 1
-						L.Add(New Objects.Pulse(BeatOnly + i * _Interval + _Tick + _delay + j * (_Tick / _Subdivisions), 0))
+						L.Add(New Objects.Pulse(Me, BeatOnly + i * _Interval + _Tick + _delay + j * (_Tick / _Subdivisions), 0))
 					Next
 				Next
 				Return L.AsEnumerable
@@ -2236,7 +1936,7 @@ Namespace Objects
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
 			Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
 				If Pulse = 6 Then
-					Return New List(Of Pulse) From {New Pulse(BeatOnly, Hold)}.AsEnumerable
+					Return New List(Of Pulse) From {New Pulse(Me, BeatOnly, Hold)}.AsEnumerable
 				End If
 				Return New List(Of Pulse)
 			End Function
@@ -2265,7 +1965,7 @@ Namespace Objects
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
 			Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
 				If Pulsable Then
-					Return New List(Of Pulse) From {New Pulse(BeatOnly, Hold)}
+					Return New List(Of Pulse) From {New Pulse(Me, BeatOnly, Hold)}
 				End If
 				Return New List(Of Pulse)
 			End Function
@@ -2341,9 +2041,6 @@ Namespace Objects
 			Inherits BaseEvent
 			<JsonProperty>
 			Public Overrides ReadOnly Property Rooms As New Rooms(False, True)
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Heights As New List(Of Integer)(4)
 			Public Property TransitionTime As Integer
@@ -2367,13 +2064,7 @@ Namespace Objects
 			Public Property Scale As NumberOrExpressionPair
 			Public Property Angle As INumberOrExpression
 			Public Property Pivot As NumberOrExpressionPair
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Overrides ReadOnly Property Type As EventType = EventType.MoveRoom
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
@@ -2416,21 +2107,25 @@ Namespace Objects
 			Inherits BaseEvent
 			Enum MaskTypes
 				Image
+				Room
+				Color
+				None
 			End Enum
 			Enum AlphaModes
 				Normal
+				Inverted
 			End Enum
 			Enum ContentModes
 				ScaleToFill
 			End Enum
 			Public Property MaskType As MaskTypes
 			Public Property AlphaMode As AlphaModes
-			Public Property SourceRoom As Integer
+			Public Property SourceRoom As Byte
 			Public Property Image As List(Of String)
-			Public Property Fps As Integer
+			Public Property Fps As UInteger
 			Public ReadOnly Property KeyColor As New PanelColor(False)
-			Public Property ColorCutoff As Integer
-			Public Property ColorFeathering As Integer
+			Public Property ColorCutoff As Single
+			Public Property ColorFeathering As Single
 			Public Property ContentMode As ContentModes
 			Public Overrides ReadOnly Property Type As EventType = EventType.MaskRoom
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
@@ -2440,18 +2135,11 @@ Namespace Objects
 					Return New Rooms(Y)
 				End Get
 			End Property
-
 		End Class
 		Public Class FadeRoom
 			Inherits BaseEvent
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Property Opacity As UInteger
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
 			Public Overrides ReadOnly Property Type As EventType = EventType.FadeRoom
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
@@ -2466,13 +2154,7 @@ Namespace Objects
 		Public Class SetRoomPerspective
 			Inherits BaseEvent
 			Public Property CornerPositions As New List(Of NumberOrExpressionPair)(4)
-			''' <summary>
-			''' 持续时间
-			''' </summary>
 			Public Property Duration As Single
-			''' <summary>
-			''' 缓动类型
-			''' </summary>
 			Public Property Ease As EaseType
 			Public Overrides ReadOnly Property Type As EventType = EventType.SetRoomPerspective
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
