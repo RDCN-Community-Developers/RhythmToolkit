@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\RhythmBase\RhythmBase.vbproj" />
+    <ProjectReference Include="..\..\RhythmLocalization\RhythmLocalization.vbproj" />
     <ProjectReference Include="..\..\RhythmTools\RhythmTools.vbproj" />
   </ItemGroup>
 

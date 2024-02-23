@@ -51,13 +51,45 @@ Namespace Objects
 		Public booleansDefaultToTrue As Boolean
 		Public adaptRowsToRoomHeight As Boolean
 
+		Public Property Value(variableName As String) As Object
+			Get
+				Dim match = Regex.Match(variableName, "^([ifb])(\d{2})$")
+				If match.Success Then
+					Select Case match.Groups(1).Value
+						Case "i"
+							Return i(match.Groups(2).Value)
+						Case "f"
+							Return f(match.Groups(2).Value)
+						Case "b"
+							Return b(match.Groups(2).Value)
+					End Select
+				End If
+				Return Me.GetType.GetField(variableName)?.GetValue(Me)
+			End Get
+			Set(value As Object)
+				Dim match = Regex.Match(variableName, "^([ifb])(\d{2})$")
+				If match.Success Then
+					Select Case match.Groups(1).Value
+						Case "i"
+							i(match.Groups(2).Value) = value
+						Case "f"
+							f(match.Groups(2).Value) = value
+						Case "b"
+							b(match.Groups(2).Value) = value
+					End Select
+				Else
+					Me.GetType.GetField(variableName)?.SetValue(Me, value)
+				End If
+			End Set
+		End Property
 	End Class
 	Public Interface INumberOrExpression
 		Function Serialize()
+		Function GetValue(variables As Variables) As Single
 	End Interface
 	Public Class Number
 		Implements INumberOrExpression
-		Private value As Single
+		Private ReadOnly value As Single
 		Public Sub New(value As String)
 			Me.value = value
 		End Sub
@@ -68,6 +100,9 @@ Namespace Objects
 			Return value
 		End Function
 		Public Function Serialize() As Object Implements INumberOrExpression.Serialize
+			Return value
+		End Function
+		Public Function GetValue(variables As Variables) As Single Implements INumberOrExpression.GetValue
 			Return value
 		End Function
 		Public Shared Widening Operator CType(value As Single) As Number
@@ -91,7 +126,7 @@ Namespace Objects
 	End Class
 	Public Class Expression
 		Implements INumberOrExpression
-		Private value As String
+		Private ReadOnly value As String
 		Public Sub New(value As String)
 			Me.value = Regex.Match(value, "^\{(.*)\}$").Groups(1).Value
 		End Sub
@@ -103,6 +138,9 @@ Namespace Objects
 		End Function
 		Public Function Serialize() As Object Implements INumberOrExpression.Serialize
 			Return $"""{{{value}}}"""
+		End Function
+		Public Function GetValue(variables As Variables) As Single Implements INumberOrExpression.GetValue
+			Throw New NotImplementedException
 		End Function
 		Public Shared Widening Operator CType(value As String) As Expression
 			Return New Expression(value)
@@ -135,6 +173,9 @@ Namespace Objects
 				Throw New RhythmDoctorExcception
 			End If
 		End Sub
+		Public Function GetValue(variables As Variables) As NumberOrExpressionPair
+			Return (X.GetValue(variables), Y.GetValue(variables))
+		End Function
 		Public Shared Widening Operator CType(value As (x As INumberOrExpression, y As INumberOrExpression)) As NumberOrExpressionPair
 			Return New NumberOrExpressionPair(value.x, value.y)
 		End Operator
@@ -145,106 +186,64 @@ Namespace Objects
 			Return $"{{{X},{Y}}}"
 		End Function
 	End Class
-	Public Class FunctionalPointF
-		Public X_Expression As String
-		Public Y_Expression As String
-		Public X As Single?
-		Public Y As Single?
-		Public Sub New(x As Single?, y As Single?)
-			Me.X = x
-			Me.Y = y
-		End Sub
-		Public Sub New(x As String, y As Single?)
-			Me.X_Expression = x
-			Me.Y = y
-		End Sub
-		Public Sub New(x As Single?, y As String)
-			Me.X = x
-			Me.Y_Expression = y
-		End Sub
-		Public Sub New(x As String, y As String)
-			Me.X_Expression = x
-			Me.Y_Expression = y
-		End Sub
-		Public Shared Widening Operator CType(array As (Single?, Single?)) As FunctionalPointF
-			Return New FunctionalPointF(array.Item1, array.Item2)
-		End Operator
-		Public Shared Widening Operator CType(array As (String, Single?)) As FunctionalPointF
-			Return New FunctionalPointF(array.Item1, array.Item2)
-		End Operator
-		Public Shared Widening Operator CType(array As (Single?, String)) As FunctionalPointF
-			Return New FunctionalPointF(array.Item1, array.Item2)
-		End Operator
-		Public Shared Widening Operator CType(array As (String, String)) As FunctionalPointF
-			Return New FunctionalPointF(array.Item1, array.Item2)
-		End Operator
-		Public Shared Widening Operator CType(point As System.Drawing.Point) As FunctionalPointF
-			Return New FunctionalPointF(point.X, point.Y)
-		End Operator
-		Public Shared Widening Operator CType(point As System.Drawing.PointF) As FunctionalPointF
-			Return New FunctionalPointF(point.X, point.Y)
-		End Operator
-		Public Shared Widening Operator CType(point As System.Drawing.Size) As FunctionalPointF
-			Return New FunctionalPointF(point.Width, point.Height)
-		End Operator
-		Public Shared Widening Operator CType(point As System.Drawing.SizeF) As FunctionalPointF
-			Return New FunctionalPointF(point.Width, point.Height)
-		End Operator
-		Public Shared Widening Operator CType(self As FunctionalPointF) As System.Drawing.PointF
-			Return New System.Drawing.PointF(self.X, self.Y)
-		End Operator
-		Public Function PositionReverse() As FunctionalPointF
-			Dim copy = Me.MemberwiseClone
-			copy.Y = 100 - Y
-			Return copy
-		End Function
-		Public Overrides Function ToString() As String
-			Return $"{X}, {Y}"
-		End Function
-	End Class
-	Public Class Functionalsingle
-		Public value_Expression As String
-		Public value As Single?
-		Public Sub New(value As Single?)
-			Me.value = value
-		End Sub
-		Public Sub New(value As String)
-			Me.value_Expression = value
-		End Sub
-		Public Shared Widening Operator CType(value As Single?) As Functionalsingle
-			Return New Functionalsingle(value)
-		End Operator
-		Public Shared Widening Operator CType(value As String) As Functionalsingle
-			Return New Functionalsingle(value)
-		End Operator
-		Public Overrides Function ToString() As String
-			Return value
-		End Function
+	Public Class MultipleEnum
+
 	End Class
 	Public Class Pulse
 		Public beatOnly As Single
 		Public hold As Single
+		Public Parent As BaseBeats
 		Public ReadOnly Property Holdable As Boolean
 			Get
 				Return hold > 0
 			End Get
 		End Property
-		Public Sub New(beatOnly As Single, Optional hold As Single = 0)
+		Public Sub New(parent As BaseBeats, beatOnly As Single, Optional hold As Single = 0)
+			Me.Parent = parent
 			Me.beatOnly = beatOnly
 			Me.hold = hold
 		End Sub
+		Public Overrides Function ToString() As String
+			Return $"{{{beatOnly}, {Parent}}}"
+		End Function
 	End Class
 	Public Class PanelColor
-		Public Property Parent As LimitedList(Of SKColor)
+		'	Public Property Parent As LimitedList(Of SKColor)
+		Private _panel As Integer
+		Private _color As SKColor
 		Public Property Color As SKColor?
-		Public Property Panel As Integer = -1
-		Public Property PanelEnabled As Boolean = Panel >= 0
-		Public Shared Widening Operator CType(color As SKColor) As PanelColor
-			Dim out As New PanelColor With {.Color = color}
-			Return out
-		End Operator
+			Get
+				Return _color
+			End Get
+			Set(value As SKColor?)
+				Panel = -1
+				If EnableAlpha Then
+					_color = value
+				Else
+					_color = value?.WithAlpha(255)
+				End If
+			End Set
+		End Property
+		Public Property Panel As Integer
+			Get
+				Return _panel
+			End Get
+			Set(value As Integer)
+				_color = Nothing
+				_panel = value
+			End Set
+		End Property
+		Public ReadOnly Property EnableAlpha As Boolean
+		Public ReadOnly Property EnablePanel As Boolean
+			Get
+				Return Panel >= 0
+			End Get
+		End Property
+		Public Sub New(enableAlpha As Boolean)
+			Me.EnableAlpha = enableAlpha
+		End Sub
 		Public Overrides Function ToString() As String
-			Return If(Panel < 0, Color?.ToString, Parent(Panel).ToString)
+			Return If(Panel < 0, Color?.ToString, Panel.ToString)
 		End Function
 	End Class
 	Public Class Rooms
@@ -525,11 +524,11 @@ Namespace Objects
 			Return ShouldSerialize()
 		End Function
 	End Class
-	Public Class Conditions
+	Public Class Condition
 		Public Property ConditionLists As New List(Of (Enabled As Boolean, Conditional As BaseConditional))
 		Public Property Duration As Single
-		Public Shared Function Load(text As String) As Conditions
-			Dim out As New Conditions
+		Public Shared Function Load(text As String) As Condition
+			Dim out As New Condition
 			Dim Matches = Regex.Matches(text, "(~?\d+)(?=[&d])")
 			If Matches.Count > 0 Then
 				out.Duration = CDbl(Regex.Match(text, "[\d\.]").Value)
@@ -592,7 +591,7 @@ Namespace Objects
 		Private Sub New()
 		End Sub
 		Sub New(room As Rooms, parent As ISprite, Optional depth As Integer = 0, Optional visible As Boolean = True)
-
+			Me.Rooms._data = room._data
 			_id = Me.GetHashCode
 			_Depth = depth
 			_Visible = visible
@@ -710,20 +709,20 @@ Namespace Objects
 													i.Type = EventType.AddFreeTimeBeat Or
 													i.Type = EventType.PulseFreeTimeBeat) AndAlso
 													CType(i, BaseBeats).Pulsable
-								  End Function)
+								  End Function).Cast(Of BaseBeats)
 		End Function
 		Private Function OneshotBeats() As IEnumerable(Of BaseBeats)
 			Return Children.Where(Function(i)
 									  Return i.Type = EventType.AddOneshotBeat AndAlso
 													CType(i, BaseBeats).Pulsable
-								  End Function)
+								  End Function).Cast(Of BaseBeats)
 		End Function
 		Public Function PulseBeats() As IEnumerable(Of Pulse)
 			Select Case _RowType
 				Case RowType.Classic
-					Return ClassicBeats().Select(Function(i) i.PulseTime)
+					Return ClassicBeats().Select(Function(i) i.PulseTime).SelectMany(Function(i) i)
 				Case RowType.Oneshot
-					Return OneshotBeats().Select(Function(i) i.PulseTime)
+					Return OneshotBeats().Select(Function(i) i.PulseTime).SelectMany(Function(i) i)
 				Case Else
 					Throw New RhythmDoctorExcception("How?")
 			End Select
@@ -750,7 +749,7 @@ Namespace Objects
 					.Parent = Me
 				}
 			Me.Children.Add(temp)
-			Return New T
+			Return temp
 		End Function
 		Public Overrides Function ToString() As String
 			Return $"{_RowType}: {Character}"
@@ -793,7 +792,18 @@ Namespace Objects
 	End Class
 	Public Class LastHit
 		Inherits BaseConditional
+		Enum HitResult
+			Perfect
+			SlightlyEarly
+			SlightlyLate
+			VeryEarly
+			VeryLate
+			AnyEarlyOrLate
+			Missed
+		End Enum
 		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.LastHit
+		Public Property Row As SByte
+		Public Property Result As HitResult
 	End Class
 
 	Public Class Custom
@@ -811,6 +821,17 @@ Namespace Objects
 
 	Public Class Language
 		Inherits BaseConditional
+		Enum Languages
+			English
+			Spanish
+			Portuguese
+			ChineseSimplified
+			ChineseTraditional
+			Korean
+			Polish
+			Japanese
+			German
+		End Enum
 		Public Property Language As String
 		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Language
 	End Class
@@ -818,7 +839,6 @@ Namespace Objects
 	Public Class PlayerMode
 		Inherits BaseConditional
 		Public Property TwoPlayerMode As Boolean
-
 		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.PlayerMode
 	End Class
 	Public Module Level
@@ -837,7 +857,7 @@ Namespace Objects
 		Public Class RDLevel
 			Implements ICollection(Of BaseEvent)
 			Dim _path As IO.FileInfo
-			Public Property Settings As Settings
+			Public Property Settings As New Settings
 			Public Property Rows As New List(Of Row)
 			Public Property Decorations As New List(Of Decoration)
 			Public Property Events As New List(Of BaseEvent)
@@ -854,12 +874,16 @@ Namespace Objects
 			Public Property CPBs As New List(Of SetCrotchetsPerBar)
 			<JsonIgnore>
 			Public Property BPMs As New List(Of BaseBeatsPerMinute)
+			<JsonIgnore>
 			Public ReadOnly Property Count As Integer Implements ICollection(Of BaseEvent).Count
 				Get
 					Return CPBs.Count + BPMs.Count + Events.Count
 				End Get
 			End Property
+			<JsonIgnore>
 			Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of BaseEvent).IsReadOnly
+			<JsonIgnore>
+			Public ReadOnly Property Variables As New Variables
 			Public Function GetTaggedEvents(name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, BaseEvent))
 				If direct Then
 					Return Where(Function(i) i.Tag = name).GroupBy(Function(i) i.Tag)
@@ -944,10 +968,10 @@ Namespace Objects
 				Return ConcatAll.Where(predicate)
 			End Function
 			Public Function Where(Of T As BaseEvent)() As IEnumerable(Of T)
-				Return ConcatAll.Where(Function(i) i.GetType = GetType(T))
+				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) OrElse i.GetType.IsAssignableTo(GetType(T))).Select(Function(i) CType(i, T))
 			End Function
 			Public Function Where(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) AndAlso predicate(i))
+				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) AndAlso predicate(i)).Select(Function(i) CType(i, T))
 			End Function
 			Public Function FirstOrDefault() As BaseEvent
 				Return Events.FirstOrDefault()
@@ -998,36 +1022,62 @@ Namespace Objects
 			Public Function GetEnumerator() As IEnumerator(Of BaseEvent) Implements IEnumerable(Of BaseEvent).GetEnumerator
 				Return ConcatAll.GetEnumerator
 			End Function
+			Public Sub RefreshCPBs()
+				BeatCalculator.Initialize(CPBs)
+			End Sub
 			Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
 				Return GetEnumerator()
 			End Function
 		End Class
 	End Module
+	Public Enum SpecialArtistType
+		None
+		AuthorIsArtist
+		PublicLicense
+	End Enum
+	Public Enum Difficulty
+		Easy
+		Medium
+		Tough
+		VeryTough
+	End Enum
+	Public Enum CanBePlayedOn
+		OnePlayerOnly
+		TwoPlayerOnly
+		BothModes
+	End Enum
+	Public Enum FirstBeatBehavior
+		RunNormally
+	End Enum
+	Public Enum MultiplayerAppearance
+		HorizontalStrips
+	End Enum
 	Public Class Settings
 		Public Property Version As Integer
-		Public Property Artist As String 'Done
-		Public Property Song As String 'Done
-		Public Property SpecialArtistType As String 'Enum
-		Public Property ArtistPermission As String '?
-		Public Property ArtistLinks As String '?
-		Public Property Author As String 'Done
-		Public Property Difficulty As String 'Enum
-		Public Property SeizureWarning As Boolean
-		Public Property PreviewImage As String 'FilePath
-		Public Property SyringeIcon As String 'FilePath
-		Public Property PreviewSong As String 'Done
+		Public Property Artist As String = "" 'Done
+		Public Property Song As String = "" 'Done
+		Public Property SpecialArtistType As SpecialArtistType = SpecialArtistType.None 'Enum
+		Public Property ArtistPermission As String = "" 'Done
+		Public Property ArtistLinks As String = "" 'Link
+		Public Property Author As String = "" 'done
+		Public Property Difficulty As Difficulty = Difficulty.Easy 'Enum
+		Public Property SeizureWarning As Boolean = False
+		Public Property PreviewImage As String = "" 'FilePath
+		Public Property SyringeIcon As String = "" 'FilePath
+		Public Property PreviewSong As String = "" 'Done
 		Public Property PreviewSongStartTime As Single
 		Public Property PreviewSongDuration As Single
 		Public Property SongNameHue As Single
 		Public Property SongLabelGrayscale As Boolean
-		Public Property Description As String 'Done
-		Public Property Tags As String 'Done
-		Public Property Separate2PLevelFilename As String 'FilePath
-		Public Property CanBePlayedOn As String 'Enum
-		Public Property FirstBeatBehavior As String 'Enum
-		Public Property MultiplayerAppearance As String 'Enum
-		Public Property LevelVolume As Integer
+		Public Property Description As String = "" 'Done
+		Public Property Tags As String = "" 'Done
+		Public Property Separate2PLevelFilename As String = "" 'FilePath
+		Public Property CanBePlayedOn As CanBePlayedOn = CanBePlayedOn.OnePlayerOnly 'Enum
+		Public Property FirstBeatBehavior As FirstBeatBehavior = FirstBeatBehavior.RunNormally 'Enum
+		Public Property MultiplayerAppearance As MultiplayerAppearance = MultiplayerAppearance.HorizontalStrips 'Enum
+		Public Property LevelVolume As Single = 1
 		Public Property RankMaxMistakes As New LimitedList(Of Integer)(4, 20)
 		Public Property RankDescription As New LimitedList(Of String)(6, "")
-		End Class
+		Public Property Mods As List(Of String)
+	End Class
 End Namespace

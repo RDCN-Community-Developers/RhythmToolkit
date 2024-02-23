@@ -9,11 +9,13 @@ Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "WaveProducer", "WaveProduce
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "RhythmToolsUI", "RDLevelToolsUI\RDLevelToolsUI\RhythmToolsUI.vbproj", "{2CFA9DBE-ECCC-4280-9201-E0822725E29B}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "RhythmBase", "RhythmBase\RhythmBase.vbproj", "{84EA0FBA-960F-4FD8-8A44-326B67E4CE77}"
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "RhythmBase", "RhythmBase\RhythmBase.vbproj", "{84EA0FBA-960F-4FD8-8A44-326B67E4CE77}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "RhythmSprite", "RhythmSprite\RhythmSprite.vbproj", "{52343E60-52B3-48CC-A944-C7019BE6FA83}"
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "RhythmSprite", "RhythmSprite\RhythmSprite.vbproj", "{52343E60-52B3-48CC-A944-C7019BE6FA83}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "RhythmTools", "RhythmTools\RhythmTools.vbproj", "{EEA70834-7EAE-465E-B90A-D1421A259B09}"
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "RhythmTools", "RhythmTools\RhythmTools.vbproj", "{EEA70834-7EAE-465E-B90A-D1421A259B09}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "RhythmLocalization", "RhythmLocalization\RhythmLocalization.vbproj", "{3911AA58-7F28-4929-AD83-B42C4683E5F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3911AA58-7F28-4929-AD83-B42C4683E5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3911AA58-7F28-4929-AD83-B42C4683E5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3911AA58-7F28-4929-AD83-B42C4683E5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3911AA58-7F28-4929-AD83-B42C4683E5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

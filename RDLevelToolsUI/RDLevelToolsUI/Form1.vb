@@ -1,4 +1,5 @@
 ﻿Imports RhythmBase.Objects
+Imports RhythmLocalization
 Imports RhythmBase.Util
 Imports RhythmTools.Tools
 Imports System.Reflection
@@ -98,12 +99,16 @@ Public Class Form1
 		End If
 		ShowEvent(viewIndex)
 	End Sub
+	Public Shared Manager As New TranaslationManager("D:\vb.net\RDLevel\RhythmBase\bin\Debug\net8.0\zh-cn.json")
 	Private Sub ShowEvent(index As Integer)
 		TableLayoutPanel1.Controls.Clear()
 		Dim processingEvent = processingLevel.Events(viewIndex)
 		Dim T As Type = processingEvent.GetType
+
+		Dim enump = GetType(EventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
+
 		Dim nameLabel As New Label With {
-			.Text = processingEvent.Type.ToString
+			.Text = Manager.GetValue(enump)
 		}
 		Dim propertyLabel As New Label With {
 			.Text = Calculator.BeatOnly_BarBeat(processingEvent.BeatOnly).ToString
@@ -112,9 +117,10 @@ Public Class Form1
 		TableLayoutPanel1.Controls.Add(propertyLabel)
 		For Each p In T.GetProperties(BindingFlags.Public Or BindingFlags.Instance)
 			If p.CanRead AndAlso p.CanWrite Then
-				Dim pLabel = New Label With {
-					.Text = p.Name
-				}
+
+				Dim pLabel As New Label With {
+					.Text = Manager.GetValue(p)
+					}
 
 				Dim editorControl As Control
 				Dim editorType = p.PropertyType
@@ -124,9 +130,10 @@ Public Class Form1
 					pTextBox.DataBindings.Add("Text", processingEvent, p.Name)
 					editorControl = pTextBox
 				ElseIf editorType.IsEnum Then
+					Dim pairType = GetType(EnumNamePair(Of )).MakeGenericType(editorType)
 					Dim pComboBox = New ComboBox With {
-						.DataSource = [Enum].GetValues(editorType),
-						.DropDownStyle = ComboBoxStyle.DropDownList
+						.DataSource = pairType.GetMethod("GetEnumNamePair").Invoke(Nothing, Nothing),
+					.DropDownStyle = ComboBoxStyle.DropDownList
 					}
 					pComboBox.DataBindings.Add("SelectedItem", processingEvent, p.Name)
 					editorControl = pComboBox
@@ -152,7 +159,7 @@ Public Class Form1
 					editorControl = pNumericUpDown
 				ElseIf editorType = GetType(Single) Then
 					Dim pNumericUpDown = New NumericUpDown With {
-						.DecimalPlaces = 4,
+						.DecimalPlaces = 2,
 						.Minimum = -32768,
 						.Maximum = 32767
 					}
@@ -162,8 +169,19 @@ Public Class Form1
 					Dim pTextBox = New TextBox
 					pTextBox.DataBindings.Add("Text", processingEvent, p.Name)
 					editorControl = pTextBox
+					'ElseIf editorType = GetType(NumberOrExpressionPair) Then
+					'	Dim pPanel = New TableLayoutPanel
+					'	Dim pTextBoxX = New TextBox
+					'	'pTextBoxX.DataBindings.Add("Text", p.GetValue(processingEvent), NameOf(NumberOrExpressionPair.X))
+					'	Dim pTextBoxY = New TextBox
+					'	'pTextBoxY.DataBindings.Add("Text", p.GetValue(processingEvent), NameOf(NumberOrExpressionPair.Y))
+					'	pPanel.Controls.Add(pTextBoxX)
+					'	pPanel.Controls.Add(pTextBoxY)
+					'	editorControl = pPanel
 				Else
-					Continue For
+					Dim pValue = New Label
+					pValue.Text = "搁这画个饼先"
+					editorControl = pValue
 				End If
 				TableLayoutPanel1.Controls.Add(pLabel)
 				TableLayoutPanel1.Controls.Add(editorControl)
@@ -171,4 +189,51 @@ Public Class Form1
 		Next
 
 	End Sub
+	Private Function GetEnumNames(enumType As Type) As List(Of String)
+		Return [Enum].GetValues(enumType).Cast(Of Integer).Select(Function(i) Manager.GetValue(enumType.GetMember([Enum].GetName(enumType, i)).FirstOrDefault))
+	End Function
+	'Private Class EnumNamePair
+	'	Public ReadOnly Name As String
+	'	Public ReadOnly Value As Structure
+	'	Public ReadOnly T As Type
+	'	Public Sub New(T As Type, value As Object)
+	'		Me.Value = value
+	'		Me.T = T
+	'		Me.Name = Manager.GetValue(T.GetMember(value.ToString).FirstOrDefault)
+	'	End Sub
+	'	Public Shared Function GetEnumNamePair(T As Type) As List(Of EnumNamePair)
+	'		Dim L As New List(Of EnumNamePair)
+	'		For Each item In [Enum].GetValues(T)
+	'			L.Add(New EnumNamePair(T, item))
+	'		Next
+	'		Return L
+	'	End Function
+	'	Public Overrides Function ToString() As String
+	'		Return Name
+	'	End Function
+	'	Public Shared Widening Operator CType(value As EnumNamePair) As Object
+	'		Return value.Value
+	'	End Operator
+	'End Class
+	Private Class EnumNamePair(Of T)
+		Public ReadOnly Name As String
+		Public ReadOnly Value As T
+		Public Sub New(value As T)
+			Me.Value = value
+			Me.Name = Manager.GetValue(GetType(T).GetMember(value.ToString).FirstOrDefault)
+		End Sub
+		Public Shared Function GetEnumNamePair() As List(Of EnumNamePair(Of T))
+			Dim L As New List(Of EnumNamePair(Of T))
+			For Each item As T In [Enum].GetValues(GetType(T))
+				L.Add(New EnumNamePair(Of T)(item))
+			Next
+			Return L
+		End Function
+		Public Overrides Function ToString() As String
+			Return Name
+		End Function
+		Public Shared Widening Operator CType(value As EnumNamePair(Of T)) As T
+			Return value.Value
+		End Operator
+	End Class
 End Class
