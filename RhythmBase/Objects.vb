@@ -51,13 +51,45 @@ Namespace Objects
 		Public booleansDefaultToTrue As Boolean
 		Public adaptRowsToRoomHeight As Boolean
 
+		Public Property Value(variableName As String) As Object
+			Get
+				Dim match = Regex.Match(variableName, "^([ifb])(\d{2})$")
+				If match.Success Then
+					Select Case match.Groups(1).Value
+						Case "i"
+							Return i(match.Groups(2).Value)
+						Case "f"
+							Return f(match.Groups(2).Value)
+						Case "b"
+							Return b(match.Groups(2).Value)
+					End Select
+				End If
+				Return Me.GetType.GetField(variableName)?.GetValue(Me)
+			End Get
+			Set(value As Object)
+				Dim match = Regex.Match(variableName, "^([ifb])(\d{2})$")
+				If match.Success Then
+					Select Case match.Groups(1).Value
+						Case "i"
+							i(match.Groups(2).Value) = value
+						Case "f"
+							f(match.Groups(2).Value) = value
+						Case "b"
+							b(match.Groups(2).Value) = value
+					End Select
+				Else
+					Me.GetType.GetField(variableName)?.SetValue(Me, value)
+				End If
+			End Set
+		End Property
 	End Class
 	Public Interface INumberOrExpression
-		Function Serialize()
+		Function Serialize() As String
+		Function GetValue(variables As Variables) As Single
 	End Interface
 	Public Class Number
 		Implements INumberOrExpression
-		Private value As Single
+		Private ReadOnly value As Single
 		Public Sub New(value As String)
 			Me.value = value
 		End Sub
@@ -67,7 +99,10 @@ Namespace Objects
 		Public Overrides Function ToString() As String
 			Return value
 		End Function
-		Public Function Serialize() As Object Implements INumberOrExpression.Serialize
+		Public Function Serialize() As String Implements INumberOrExpression.Serialize
+			Return value
+		End Function
+		Public Function GetValue(variables As Variables) As Single Implements INumberOrExpression.GetValue
 			Return value
 		End Function
 		Public Shared Widening Operator CType(value As Single) As Number
@@ -91,7 +126,7 @@ Namespace Objects
 	End Class
 	Public Class Expression
 		Implements INumberOrExpression
-		Private value As String
+		Private ReadOnly value As String
 		Public Sub New(value As String)
 			Me.value = Regex.Match(value, "^\{(.*)\}$").Groups(1).Value
 		End Sub
@@ -101,8 +136,11 @@ Namespace Objects
 		Public Overrides Function ToString() As String
 			Return value
 		End Function
-		Public Function Serialize() As Object Implements INumberOrExpression.Serialize
+		Public Function Serialize() As String Implements INumberOrExpression.Serialize
 			Return $"""{{{value}}}"""
+		End Function
+		Public Function GetValue(variables As Variables) As Single Implements INumberOrExpression.GetValue
+			Throw New NotImplementedException
 		End Function
 		Public Shared Widening Operator CType(value As String) As Expression
 			Return New Expression(value)
@@ -135,6 +173,9 @@ Namespace Objects
 				Throw New RhythmDoctorExcception
 			End If
 		End Sub
+		Public Function GetValue(variables As Variables) As (X As Single, Y As Single)
+			Return (X.GetValue(variables), Y.GetValue(variables))
+		End Function
 		Public Shared Widening Operator CType(value As (x As INumberOrExpression, y As INumberOrExpression)) As NumberOrExpressionPair
 			Return New NumberOrExpressionPair(value.x, value.y)
 		End Operator
@@ -145,94 +186,26 @@ Namespace Objects
 			Return $"{{{X},{Y}}}"
 		End Function
 	End Class
-	Public Class FunctionalPointF
-		Public X_Expression As String
-		Public Y_Expression As String
-		Public X As Single?
-		Public Y As Single?
-		Public Sub New(x As Single?, y As Single?)
-			Me.X = x
-			Me.Y = y
-		End Sub
-		Public Sub New(x As String, y As Single?)
-			Me.X_Expression = x
-			Me.Y = y
-		End Sub
-		Public Sub New(x As Single?, y As String)
-			Me.X = x
-			Me.Y_Expression = y
-		End Sub
-		Public Sub New(x As String, y As String)
-			Me.X_Expression = x
-			Me.Y_Expression = y
-		End Sub
-		Public Shared Widening Operator CType(array As (Single?, Single?)) As FunctionalPointF
-			Return New FunctionalPointF(array.Item1, array.Item2)
-		End Operator
-		Public Shared Widening Operator CType(array As (String, Single?)) As FunctionalPointF
-			Return New FunctionalPointF(array.Item1, array.Item2)
-		End Operator
-		Public Shared Widening Operator CType(array As (Single?, String)) As FunctionalPointF
-			Return New FunctionalPointF(array.Item1, array.Item2)
-		End Operator
-		Public Shared Widening Operator CType(array As (String, String)) As FunctionalPointF
-			Return New FunctionalPointF(array.Item1, array.Item2)
-		End Operator
-		Public Shared Widening Operator CType(point As System.Drawing.Point) As FunctionalPointF
-			Return New FunctionalPointF(point.X, point.Y)
-		End Operator
-		Public Shared Widening Operator CType(point As System.Drawing.PointF) As FunctionalPointF
-			Return New FunctionalPointF(point.X, point.Y)
-		End Operator
-		Public Shared Widening Operator CType(point As System.Drawing.Size) As FunctionalPointF
-			Return New FunctionalPointF(point.Width, point.Height)
-		End Operator
-		Public Shared Widening Operator CType(point As System.Drawing.SizeF) As FunctionalPointF
-			Return New FunctionalPointF(point.Width, point.Height)
-		End Operator
-		Public Shared Widening Operator CType(self As FunctionalPointF) As System.Drawing.PointF
-			Return New System.Drawing.PointF(self.X, self.Y)
-		End Operator
-		Public Function PositionReverse() As FunctionalPointF
-			Dim copy = Me.MemberwiseClone
-			copy.Y = 100 - Y
-			Return copy
-		End Function
-		Public Overrides Function ToString() As String
-			Return $"{X}, {Y}"
-		End Function
-	End Class
-	Public Class Functionalsingle
-		Public value_Expression As String
-		Public value As Single?
-		Public Sub New(value As Single?)
-			Me.value = value
-		End Sub
-		Public Sub New(value As String)
-			Me.value_Expression = value
-		End Sub
-		Public Shared Widening Operator CType(value As Single?) As Functionalsingle
-			Return New Functionalsingle(value)
-		End Operator
-		Public Shared Widening Operator CType(value As String) As Functionalsingle
-			Return New Functionalsingle(value)
-		End Operator
-		Public Overrides Function ToString() As String
-			Return value
-		End Function
+	Public Class MultipleEnum
+
 	End Class
 	Public Class Pulse
-		Public beatOnly As Single
-		Public hold As Single
+		Public BeatOnly As Single
+		Public Hold As Single
+		Public Parent As BaseBeat
 		Public ReadOnly Property Holdable As Boolean
 			Get
-				Return hold > 0
+				Return Hold > 0
 			End Get
 		End Property
-		Public Sub New(beatOnly As Single, Optional hold As Single = 0)
-			Me.beatOnly = beatOnly
-			Me.hold = hold
+		Public Sub New(parent As BaseBeat, beatOnly As Single, Optional hold As Single = 0)
+			Me.Parent = parent
+			Me.BeatOnly = beatOnly
+			Me.Hold = hold
 		End Sub
+		Public Overrides Function ToString() As String
+			Return $"{{{BeatOnly}, {Parent}}}"
+		End Function
 	End Class
 	Public Class PanelColor
 		'	Public Property Parent As LimitedList(Of SKColor)
@@ -244,7 +217,11 @@ Namespace Objects
 			End Get
 			Set(value As SKColor?)
 				Panel = -1
-				_color = value?.WithAlpha(255)
+				If EnableAlpha Then
+					_color = value
+				Else
+					_color = value?.WithAlpha(255)
+				End If
 			End Set
 		End Property
 		Public Property Panel As Integer
@@ -257,7 +234,7 @@ Namespace Objects
 			End Set
 		End Property
 		Public ReadOnly Property EnableAlpha As Boolean
-		Public ReadOnly Property PanelEnabled As Boolean
+		Public ReadOnly Property EnablePanel As Boolean
 			Get
 				Return Panel >= 0
 			End Get
@@ -280,12 +257,13 @@ Namespace Objects
 			RoomTop = &B10000
 			RoomNotAvaliable = &B1111111
 		End Enum
-		Public _data As RoomIndex
+		Private _data As RoomIndex
 		Public ReadOnly EnableTop As Boolean
 		Public ReadOnly Multipy As Boolean
+		Private _avaliable As Boolean
 		Default Public Property Room(Index As Byte) As Boolean
 			Get
-				If Not Avaliable Then
+				If Not _avaliable Then
 					Return False
 				End If
 				Return _data.HasFlag(CType([Enum].Parse(GetType(RoomIndex), 1 << Index), RoomIndex))
@@ -301,19 +279,14 @@ Namespace Objects
 				End If
 			End Set
 		End Property
-		Public Property Avaliable As Boolean
+		Public ReadOnly Property Avaliable As Boolean
 			Get
 				Return Not _data = RoomIndex.RoomNotAvaliable
 			End Get
-			Set(value As Boolean)
-				If Not value Then
-					_data = RoomIndex.RoomNotAvaliable
-				End If
-			End Set
 		End Property
 		Public ReadOnly Property Rooms As List(Of Byte)
 			Get
-				If Not Avaliable Then
+				If Not _avaliable Then
 					Return New List(Of Byte)
 				End If
 				Dim L As New List(Of Byte)
@@ -331,7 +304,7 @@ Namespace Objects
 		Public Shared ReadOnly Property [Default] As Rooms
 			Get
 				Return New Rooms(Array.Empty(Of Byte)) With {
-					.Avaliable = False
+					._avaliable = False
 				}
 			End Get
 		End Property
@@ -344,12 +317,12 @@ Namespace Objects
 				Room(item) = True
 			Next
 		End Sub
-		Public Function Contains(R As Rooms) As Boolean
+		Public Function Contains(rooms As Rooms) As Boolean
 			If _data = Objects.Rooms.RoomIndex.RoomNotAvaliable Then
 				Return False
 			End If
 			For i = 0 To 4
-				If Not Me.Room(i) = R.Room(i) Then
+				If Not Me.Room(i) = rooms.Room(i) Then
 					Return False
 				End If
 			Next
@@ -374,16 +347,6 @@ Namespace Objects
 		Public Property Pitch As Integer
 		Public Property Pan As Integer
 		Public Property Offset As Integer
-		Friend Sub New()
-		End Sub
-		Sub New(filename As String, offset As Integer, Optional volume As Integer = 100, Optional pitch As Integer = 100, Optional pan As Integer = 100)
-			_Filename = filename
-			_Volume = volume
-			_Pitch = pitch
-			_Pan = pan
-			_Offset = offset
-		End Sub
-
 	End Class
 	Public Class LimitedList(Of T)
 		Implements IEnumerable(Of T)
@@ -531,27 +494,29 @@ Namespace Objects
 		Private Function ShouldSerialize() As Boolean
 			Return Used
 		End Function
-		Public Function ShouldSerializeFilename() As Boolean
+		Friend Function ShouldSerializeFilename() As Boolean
 			Return ShouldSerialize()
 		End Function
-		Public Function ShouldSerializeVolume() As Boolean
+		Friend Function ShouldSerializeVolume() As Boolean
 			Return ShouldSerialize()
 		End Function
-		Public Function ShouldSerializePitch() As Boolean
+		Friend Function ShouldSerializePitch() As Boolean
 			Return ShouldSerialize()
 		End Function
-		Public Function ShouldSerializePan() As Boolean
+		Friend Function ShouldSerializePan() As Boolean
 			Return ShouldSerialize()
 		End Function
-		Public Function ShouldSerializeOffset() As Boolean
+		Friend Function ShouldSerializeOffset() As Boolean
 			Return ShouldSerialize()
 		End Function
 	End Class
-	Public Class Conditions
+	Public Class Condition
 		Public Property ConditionLists As New List(Of (Enabled As Boolean, Conditional As BaseConditional))
 		Public Property Duration As Single
-		Public Shared Function Load(text As String) As Conditions
-			Dim out As New Conditions
+		Private Sub New()
+		End Sub
+		Public Shared Function Load(text As String) As Condition
+			Dim out As New Condition
 			Dim Matches = Regex.Matches(text, "(~?\d+)(?=[&d])")
 			If Matches.Count > 0 Then
 				out.Duration = CDbl(Regex.Match(text, "[\d\.]").Value)
@@ -578,7 +543,7 @@ Namespace Objects
 		Public Parent As ISprite
 		Private _id As String
 		<JsonIgnore>
-		Public ReadOnly Property Children As New List(Of BaseDecorationActions)
+		Public ReadOnly Property Children As New List(Of BaseDecorationAction)
 		<JsonProperty("id")>
 		Public Property Id As String
 			Get
@@ -586,8 +551,6 @@ Namespace Objects
 			End Get
 			Set(value As String)
 				_id = value
-				For Each Item In _Children
-				Next
 			End Set
 		End Property
 		<JsonIgnore>
@@ -603,7 +566,7 @@ Namespace Objects
 			End Get
 		End Property
 		Public Property Row As ULong
-		Public Property Rooms As New Rooms(False, False)
+		Public ReadOnly Property Rooms As New Rooms(False, False)
 		Public ReadOnly Property Filename As String ' FileLocator
 			Get
 				Return Parent?.Name
@@ -614,7 +577,8 @@ Namespace Objects
 		Private Sub New()
 		End Sub
 		Sub New(room As Rooms, parent As ISprite, Optional depth As Integer = 0, Optional visible As Boolean = True)
-
+			Throw New NotImplementedException
+			'Me.Rooms._data = room._data
 			_id = Me.GetHashCode
 			_Depth = depth
 			_Visible = visible
@@ -624,15 +588,15 @@ Namespace Objects
 			Me.New(room, parent, depth, visible)
 			_id = id
 		End Sub
-		Public Function CreateChildren(Of T As {BaseDecorationActions, New})(beatOnly As Single) As T
+		Public Function CreateChildren(Of T As {BaseDecorationAction, New})(beatOnly As Single) As T
 			Dim Temp As New T With {
-					.BeatOnly = beatOnly,
-					.Parent = Me
-				}
+				.BeatOnly = beatOnly,
+				.Parent = Me
+			}
 			Me.Children.Add(Temp)
 			Return Temp
 		End Function
-		Public Function CreateChildren(Of T As {BaseDecorationActions, New})(item As BaseEvent) As T
+		Public Function CreateChildren(Of T As {BaseDecorationAction, New})(item As BaseEvent) As T
 			Dim Temp As T = item.Copy(Of T)
 			Temp.Parent = Me
 			Me.Children.Add(Temp)
@@ -658,12 +622,21 @@ Namespace Objects
 			P2
 			CPU
 		End Enum
+		Private _rowType As RowType
 		<JsonIgnore>
-		Public ParentCollection As List(Of Row)
+		Friend ParentCollection As List(Of Row)
 		<JsonIgnore>
-		Public ReadOnly Children As New List(Of BaseRows)
+		Public ReadOnly Children As New List(Of BaseRowAction)
 		Public Property Character As String
 		Public Property RowType As RowType
+			Get
+				Return _rowType
+			End Get
+			Set(value As RowType)
+				Children.Clear()
+				_rowType = value
+			End Set
+		End Property
 		Public ReadOnly Property Row As SByte
 			Get
 				Return ParentCollection.IndexOf(Me)
@@ -672,15 +645,6 @@ Namespace Objects
 		Public Property Rooms As New Rooms(False, False)
 		Public Property HideAtStart As Boolean
 		Public Property Player As PlayerMode
-		<JsonIgnore>
-		Public Property PlayerType As PlayerMode
-			Get
-				Return _Player
-			End Get
-			Set(value As PlayerMode)
-				_Player = value
-			End Set
-		End Property
 		<JsonIgnore>
 		Public Property Sound As New Audio
 		Public Property MuteBeats As Boolean
@@ -726,31 +690,31 @@ Namespace Objects
 		End Property
 		Public Sub New()
 		End Sub
-		Private Function ClassicBeats() As IEnumerable(Of BaseBeats)
+		Private Function ClassicBeats() As IEnumerable(Of BaseBeat)
 			Return Children.Where(Function(i)
 									  Return (i.Type = EventType.AddClassicBeat Or
 													i.Type = EventType.AddFreeTimeBeat Or
 													i.Type = EventType.PulseFreeTimeBeat) AndAlso
-													CType(i, BaseBeats).Pulsable
-								  End Function)
+													CType(i, BaseBeat).Pulsable
+								  End Function).Cast(Of BaseBeat)
 		End Function
-		Private Function OneshotBeats() As IEnumerable(Of BaseBeats)
+		Private Function OneshotBeats() As IEnumerable(Of BaseBeat)
 			Return Children.Where(Function(i)
 									  Return i.Type = EventType.AddOneshotBeat AndAlso
-													CType(i, BaseBeats).Pulsable
-								  End Function)
+													CType(i, BaseBeat).Pulsable
+								  End Function).Cast(Of BaseBeat)
 		End Function
 		Public Function PulseBeats() As IEnumerable(Of Pulse)
 			Select Case _RowType
 				Case RowType.Classic
-					Return ClassicBeats().Select(Function(i) i.PulseTime)
+					Return ClassicBeats().Select(Function(i) i.PulseTime).SelectMany(Function(i) i)
 				Case RowType.Oneshot
-					Return OneshotBeats().Select(Function(i) i.PulseTime)
+					Return OneshotBeats().Select(Function(i) i.PulseTime).SelectMany(Function(i) i)
 				Case Else
 					Throw New RhythmDoctorExcception("How?")
 			End Select
 		End Function
-		Public Function PulseEvents() As IEnumerable(Of BaseBeats)
+		Public Function PulseEvents() As IEnumerable(Of BaseBeat)
 			Select Case _RowType
 				Case RowType.Classic
 					Return ClassicBeats()
@@ -760,19 +724,25 @@ Namespace Objects
 					Throw New RhythmDoctorExcception("How?")
 			End Select
 		End Function
-		Public Function ShouldSerializeMuteBeats() As Boolean
+		Friend Function ShouldSerializeMuteBeats() As Boolean
 			Return MuteBeats
 		End Function
-		Public Function ShouldSerializeHideAtStart() As Boolean
+		Friend Function ShouldSerializeHideAtStart() As Boolean
 			Return HideAtStart
 		End Function
-		Public Function CreateChildren(Of T As {BaseRows, New})(beatOnly As Single) As T
+		Public Function CreateChildren(Of T As {BaseRowAction, New})(beatOnly As Single) As T
 			Dim temp = New T With {
 					.BeatOnly = beatOnly,
 					.Parent = Me
 				}
 			Me.Children.Add(temp)
 			Return temp
+		End Function
+		Public Function CreateChildren(Of T As {BaseRowAction, New})(item As BaseRowAction) As T
+			Dim Temp As T = item.Copy(Of T)
+			Temp.Parent = Me
+			Me.Children.Add(Temp)
+			Return Temp
 		End Function
 		Public Overrides Function ToString() As String
 			Return $"{_RowType}: {Character}"
@@ -789,14 +759,14 @@ Namespace Objects
 		Public Property Beat As UInteger
 		Public Property Color As BookmarkColors
 	End Class
-	Public Enum ConditionalType
-		LastHit
-		Custom
-		TimesExecuted
-		Language
-		PlayerMode
-	End Enum
 	Public MustInherit Class BaseConditional
+		Public Enum ConditionalType
+			LastHit
+			Custom
+			TimesExecuted
+			Language
+			PlayerMode
+		End Enum
 		<JsonIgnore>
 		Public ParentCollection As List(Of BaseConditional)
 		Public MustOverride ReadOnly Property Type As ConditionalType
@@ -815,7 +785,18 @@ Namespace Objects
 	End Class
 	Public Class LastHit
 		Inherits BaseConditional
+		Enum HitResult
+			Perfect
+			SlightlyEarly
+			SlightlyLate
+			VeryEarly
+			VeryLate
+			AnyEarlyOrLate
+			Missed
+		End Enum
 		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.LastHit
+		Public Property Row As SByte
+		Public Property Result As HitResult
 	End Class
 
 	Public Class Custom
@@ -833,6 +814,17 @@ Namespace Objects
 
 	Public Class Language
 		Inherits BaseConditional
+		Enum Languages
+			English
+			Spanish
+			Portuguese
+			ChineseSimplified
+			ChineseTraditional
+			Korean
+			Polish
+			Japanese
+			German
+		End Enum
 		Public Property Language As String
 		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Language
 	End Class
@@ -840,7 +832,6 @@ Namespace Objects
 	Public Class PlayerMode
 		Inherits BaseConditional
 		Public Property TwoPlayerMode As Boolean
-
 		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.PlayerMode
 	End Class
 	Public Module Level
@@ -860,12 +851,12 @@ Namespace Objects
 			Implements ICollection(Of BaseEvent)
 			Dim _path As IO.FileInfo
 			Public Property Settings As New Settings
-			Public Property Rows As New List(Of Row)
-			Public Property Decorations As New List(Of Decoration)
-			Public Property Events As New List(Of BaseEvent)
-			Public Property Conditionals As New List(Of BaseConditional)
-			Public Property Bookmarks As New List(Of Bookmark)
-			Public Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
+			Public ReadOnly Property Rows As New List(Of Row)
+			Public ReadOnly Property Decorations As New List(Of Decoration)
+			Friend ReadOnly Property Events As New List(Of BaseEvent)
+			Public ReadOnly Property Conditionals As New List(Of BaseConditional)
+			Public ReadOnly Property Bookmarks As New List(Of Bookmark)
+			Public ReadOnly Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
 			<JsonIgnore>
 			Public ReadOnly Property Path As IO.FileInfo
 				Get
@@ -873,23 +864,30 @@ Namespace Objects
 				End Get
 			End Property
 			<JsonIgnore>
-			Public Property CPBs As New List(Of SetCrotchetsPerBar)
+			Friend Property CPBs As New List(Of SetCrotchetsPerBar)
 			<JsonIgnore>
-			Public Property BPMs As New List(Of BaseBeatsPerMinute)
+			Friend Property BPMs As New List(Of BaseBeatsPerMinute)
+			<JsonIgnore>
 			Public ReadOnly Property Count As Integer Implements ICollection(Of BaseEvent).Count
 				Get
 					Return CPBs.Count + BPMs.Count + Events.Count
 				End Get
 			End Property
+			<JsonIgnore>
 			Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of BaseEvent).IsReadOnly
+			<JsonIgnore>
+			Public ReadOnly Property Variables As New Variables
 			Public Function GetTaggedEvents(name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, BaseEvent))
+				If name Is Nothing Then
+					Return Nothing
+				End If
 				If direct Then
 					Return Where(Function(i) i.Tag = name).GroupBy(Function(i) i.Tag)
 				Else
 					Return Where(Function(i) If(i.Tag, "").Contains(name)).GroupBy(Function(i) i.Tag)
 				End If
 			End Function
-			Public Function ToRDLevelJson(settings As InputSettings.LevelInputSettings) As String
+			Private Function ToRDLevelJson(settings As InputSettings.LevelInputSettings) As String
 				Dim LevelSerializerSettings = New JsonSerializerSettings() With {
 					.Converters = {
 						New RDLevelConverter(_path, settings)
@@ -931,8 +929,8 @@ Namespace Objects
 				Next
 				Return L
 			End Function
-			Public Function GetPulseEvents() As IEnumerable(Of BaseBeats)
-				Return Where(Of BaseBeats).Where(Function(i) i.Pulsable)
+			Public Function GetPulseEvents() As IEnumerable(Of BaseBeat)
+				Return Where(Of BaseBeat).Where(Function(i) i.Pulsable)
 			End Function
 			Public Sub Add(item As BaseEvent) Implements ICollection(Of BaseEvent).Add
 				Select Case item.Type
@@ -947,10 +945,9 @@ Namespace Objects
 				End Select
 			End Sub
 			Public Sub AddRange(items As IEnumerable(Of BaseEvent))
-				BPMs.AddRange(items.Where(Function(i) i.Type = EventType.SetBeatsPerMinute))
-				BPMs.AddRange(items.Where(Function(i) i.Type = EventType.PlaySong))
-				CPBs.AddRange(items.Where(Function(i) i.Type = EventType.SetBeatsPerMinute))
-				Events.AddRange(items.Where(Function(i) {
+				BPMs.AddRange(items.Where(Function(i) i.Type = EventType.SetBeatsPerMinute Or i.Type = EventType.PlaySong).Cast(Of BaseBeatsPerMinute))
+				CPBs.AddRange(items.Where(Function(i) i.Type = EventType.SetBeatsPerMinute).Cast(Of SetCrotchetsPerBar))
+				Events.AddRange(items.Where(Function(i) Not {
 												EventType.SetBeatsPerMinute,
 												EventType.PlaySong,
 												EventType.SetBeatsPerMinute
@@ -960,7 +957,7 @@ Namespace Objects
 				Events.Clear()
 			End Sub
 			Public Function Contains(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Contains
-				Return CPBs.Contains(item) OrElse BPMs.Contains(item) OrElse Events.Contains(item)
+				Return ConcatAll.Contains(item)
 			End Function
 			Public Function Where(predicate As Func(Of BaseEvent, Boolean)) As IEnumerable(Of BaseEvent)
 				Return ConcatAll.Where(predicate)
@@ -971,31 +968,82 @@ Namespace Objects
 			Public Function Where(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
 				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) AndAlso predicate(i)).Select(Function(i) CType(i, T))
 			End Function
+			Public Function First() As BaseEvent
+				Return ConcatAll.First
+			End Function
+			Public Function First(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+				Return ConcatAll.First(predicate)
+			End Function
+			Public Function First(Of T As BaseEvent)() As T
+				Return Where(Of T).First
+			End Function
+			Public Function First(Of T As BaseEvent)(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+				Return Where(Of T).First(predicate)
+			End Function
 			Public Function FirstOrDefault() As BaseEvent
-				Return Events.FirstOrDefault()
+				Return ConcatAll.FirstOrDefault()
 			End Function
 			Public Function FirstOrDefault(defaultValue As BaseEvent) As BaseEvent
-				Return Events.FirstOrDefault(defaultValue)
+				Return ConcatAll.FirstOrDefault(defaultValue)
 			End Function
 			Public Function FirstOrDefault(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
-				Return Events.FirstOrDefault(predicate)
+				Return ConcatAll.FirstOrDefault(predicate)
 			End Function
 			Public Function FirstOrDefault(predicate As Func(Of BaseEvent, Boolean), defaultValue As BaseEvent) As BaseEvent
-				Return Events.FirstOrDefault(predicate, defaultValue)
+				Return ConcatAll.FirstOrDefault(predicate, defaultValue)
 			End Function
 			Public Function FirstOrDefault(Of T As BaseEvent)() As T
 				Return Where(Of T).FirstOrDefault()
 			End Function
-			Public Function FirstOrDefault(Of T As BaseEvent)(defaultValue As BaseEvent) As BaseEvent
+			Public Function FirstOrDefault(Of T As BaseEvent)(defaultValue As T) As T
 				Return Where(Of T).FirstOrDefault(defaultValue)
 			End Function
-			Public Function FirstOrDefault(Of T As BaseEvent)(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+			Public Function FirstOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As T
 				Return Where(Of T).FirstOrDefault(predicate)
 			End Function
-			Public Function FirstOrDefault(Of T As BaseEvent)(predicate As Func(Of BaseEvent, Boolean), defaultValue As BaseEvent) As BaseEvent
+			Public Function FirstOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean), defaultValue As BaseEvent) As T
 				Return Where(Of T).FirstOrDefault(predicate, defaultValue)
 			End Function
-			Public Function ConcatAll() As IEnumerable(Of BaseEvent)
+			Public Function Last() As BaseEvent
+				Return ConcatAll.Last
+			End Function
+			Public Function Last(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+				Return ConcatAll.Last(predicate)
+			End Function
+			Public Function Last(Of T As BaseEvent)() As T
+				Return Where(Of T).Last
+			End Function
+			Public Function Last(Of T As BaseEvent)(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+				Return Where(Of T).Last(predicate)
+			End Function
+			Public Function LastOrDefault() As BaseEvent
+				Return ConcatAll.LastOrDefault()
+			End Function
+			Public Function LastOrDefault(defaultValue As BaseEvent) As BaseEvent
+				Return ConcatAll.LastOrDefault(defaultValue)
+			End Function
+			Public Function LastOrDefault(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+				Return ConcatAll.LastOrDefault(predicate)
+			End Function
+			Public Function LastOrDefault(predicate As Func(Of BaseEvent, Boolean), defaultValue As BaseEvent) As BaseEvent
+				Return ConcatAll.LastOrDefault(predicate, defaultValue)
+			End Function
+			Public Function LastOrDefault(Of T As BaseEvent)() As T
+				Return Where(Of T).LastOrDefault()
+			End Function
+			Public Function LastOrDefault(Of T As BaseEvent)(defaultValue As T) As T
+				Return Where(Of T).LastOrDefault(defaultValue)
+			End Function
+			Public Function LastOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As T
+				Return Where(Of T).LastOrDefault(predicate)
+			End Function
+			Public Function LastOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean), defaultValue As BaseEvent) As T
+				Return Where(Of T).LastOrDefault(predicate, defaultValue)
+			End Function
+			Public Function [Select](Of T)(predicate As Func(Of BaseEvent, T)) As IEnumerable(Of T)
+				Return Events.Select(predicate)
+			End Function
+			Private Function ConcatAll() As IEnumerable(Of BaseEvent)
 				Dim L As New List(Of BaseEvent)
 				Return L.Concat(CPBs).Concat(BPMs).Concat(Events)
 			End Function
@@ -1017,24 +1065,52 @@ Namespace Objects
 			Public Function Remove(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Remove
 				Return CPBs.Remove(item) OrElse BPMs.Remove(item) OrElse Events.Remove(item)
 			End Function
-			Public Function GetEnumerator() As IEnumerator(Of BaseEvent) Implements IEnumerable(Of BaseEvent).GetEnumerator
+			Public Function RemoveAll(predicate As Predicate(Of BaseEvent)) As Integer
+				Return CPBs.RemoveAll(predicate) + BPMs.RemoveAll(predicate) + Events.RemoveAll(predicate)
+			End Function
+			Friend Function GetEnumerator() As IEnumerator(Of BaseEvent) Implements IEnumerable(Of BaseEvent).GetEnumerator
 				Return ConcatAll.GetEnumerator
 			End Function
+			Public Sub RefreshCPBs()
+				BeatCalculator.Initialize(CPBs)
+			End Sub
 			Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
 				Return GetEnumerator()
 			End Function
 		End Class
 	End Module
+	Public Enum SpecialArtistType
+		None
+		AuthorIsArtist
+		PublicLicense
+	End Enum
+	Public Enum Difficulty
+		Easy
+		Medium
+		Tough
+		VeryTough
+	End Enum
+	Public Enum CanBePlayedOn
+		OnePlayerOnly
+		TwoPlayerOnly
+		BothModes
+	End Enum
+	Public Enum FirstBeatBehavior
+		RunNormally
+	End Enum
+	Public Enum MultiplayerAppearance
+		HorizontalStrips
+	End Enum
 	Public Class Settings
 		Public Property Version As Integer
 		Public Property Artist As String = "" 'Done
 		Public Property Song As String = "" 'Done
-		Public Property SpecialArtistType As String = "" 'Enum
-		Public Property ArtistPermission As String = "" '?
-		Public Property ArtistLinks As String = "" '?
+		Public Property SpecialArtistType As SpecialArtistType = SpecialArtistType.None 'Enum
+		Public Property ArtistPermission As String = "" 'Done
+		Public Property ArtistLinks As String = "" 'Link
 		Public Property Author As String = "" 'done
-		Public Property Difficulty As String = "" 'Enum
-		Public Property SeizureWarning As Boolean
+		Public Property Difficulty As Difficulty = Difficulty.Easy 'Enum
+		Public Property SeizureWarning As Boolean = False
 		Public Property PreviewImage As String = "" 'FilePath
 		Public Property SyringeIcon As String = "" 'FilePath
 		Public Property PreviewSong As String = "" 'Done
@@ -1045,11 +1121,12 @@ Namespace Objects
 		Public Property Description As String = "" 'Done
 		Public Property Tags As String = "" 'Done
 		Public Property Separate2PLevelFilename As String = "" 'FilePath
-		Public Property CanBePlayedOn As String = "" 'Enum
-		Public Property FirstBeatBehavior As String = "" 'Enum
-		Public Property MultiplayerAppearance As String = "" 'Enum
-		Public Property LevelVolume As Integer
+		Public Property CanBePlayedOn As CanBePlayedOn = CanBePlayedOn.OnePlayerOnly 'Enum
+		Public Property FirstBeatBehavior As FirstBeatBehavior = FirstBeatBehavior.RunNormally 'Enum
+		Public Property MultiplayerAppearance As MultiplayerAppearance = MultiplayerAppearance.HorizontalStrips 'Enum
+		Public Property LevelVolume As Single = 1
 		Public Property RankMaxMistakes As New LimitedList(Of Integer)(4, 20)
 		Public Property RankDescription As New LimitedList(Of String)(6, "")
+		Public Property Mods As List(Of String)
 	End Class
 End Namespace

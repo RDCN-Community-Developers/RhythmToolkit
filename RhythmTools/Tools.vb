@@ -3,8 +3,10 @@ Imports RhythmBase.Util
 Public Module Tools
 	Public Class RDLevelHandler
 		Private ReadOnly Level As RDLevel
+		Private ReadOnly Calculator As BeatCalculator
 		Public Sub New(level As RDLevel)
-			Me.level = level
+			Me.Level = level
+			Calculator = New BeatCalculator(level)
 		End Sub
 		''' <summary>
 		''' 拆分护士语音提示
@@ -23,7 +25,7 @@ Public Module Tools
 		''' 拆分七拍子
 		''' </summary>
 		Public Sub SplitClassicBeat()
-			Dim Adds As New List(Of BaseBeats)
+			Dim Adds As New List(Of BaseBeat)
 			For Each item In Level.Where(Of AddClassicBeat)()
 				Adds.AddRange(item.Split)
 				item.Active = False
@@ -34,7 +36,7 @@ Public Module Tools
 		''' 拆分二拍子
 		''' </summary>
 		Public Sub SplitOneShotBeat()
-			Dim Adds As New List(Of BaseBeats)
+			Dim Adds As New List(Of BaseBeat)
 			For Each item In Level.Where(Of AddOneshotBeat)()
 				Adds.AddRange(item.Split)
 				item.Active = False
@@ -45,7 +47,7 @@ Public Module Tools
 		''' 移除未激活事件
 		''' </summary>
 		Public Sub RemoveUnactive()
-			Level.Events.RemoveAll(Function(i) i.Active = False)
+			Level.RemoveAll(Function(i) Not i.Active)
 		End Sub
 		''' <summary>
 		''' 释放标签事件
@@ -107,11 +109,10 @@ Public Module Tools
 		''' 在七拍子的每一拍按键！
 		''' </summary>
 		Public Sub PressOnEveryBeat()
-			Dim Add1 As New List(Of BaseBeats)
+			Dim Add1 As New List(Of BaseBeat)
 			Dim Add2 As New List(Of AddFreeTimeBeat)
-			Dim Xs = Level.Where(Of SetRowXs)
 			For Each item In Level.Where(Of AddClassicBeat)()
-				Add1.AddRange(item.Split(Xs.Last(Function(i) i.BeatOnly < item.BeatOnly)))
+				Add1.AddRange(item.Split())
 				item.Active = False
 			Next
 			For Each item In Add1
@@ -125,7 +126,7 @@ Public Module Tools
 		''' [未完成] 拆分轨道为精灵图
 		''' </summary>
 		Public Sub SplitRow(Character As RhythmSprite.ISprite, ClassicBeat As RhythmSprite.ISprite, Heart As RhythmSprite.ISprite, beatSettings As SplitRowSettings)
-			For Each row In level.Rows.Where(Function(i) i.RowType = RowType.Classic)
+			For Each row In Level.Rows.Where(Function(i) i.RowType = RowType.Classic)
 				Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
 				Dim Decos As New List(Of (deco As Decoration, left As Double)) From {
 					(New Decoration(row.Rooms, Character,,), 0),
@@ -139,9 +140,9 @@ Public Module Tools
 					(New Decoration(row.Rooms, Heart,,), 282)
 				}
 				For Each item In Decos
-					item.deco.Rooms = row.Rooms
+					'item.deco.Rooms = row.Rooms
 					item.deco.Visible = False
-					level.Decorations.Add(item.deco)
+					Level.Decorations.Add(item.deco)
 					Dim visible As SetVisible = item.deco.CreateChildren(Of SetVisible)(1)
 					visible.Visible = Not row.HideAtStart
 					Level.Add(visible)
@@ -232,6 +233,7 @@ Public Module Tools
 		End Sub
 		Private Function GetExpression(names As SplitRowSettings, before As SetRowXs, after As SetRowXs, index As Byte) As String
 			'If before Then
+			Throw New NotImplementedException
 		End Function
 		''' <summary>
 		''' 添加浮动文字式计时器
@@ -240,7 +242,7 @@ Public Module Tools
 		''' <param name="interval">细分间隔，每秒事件数</param>
 		''' <param name="increase">递增(true)或递减(false)</param>
 		Public Sub AddTimer(copy As FloatingText, interval As UInteger, increase As Boolean)
-			Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel, Level.Events.Last).BeatOnly
+			Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel, Level.Last).BeatOnly
 			Dim t As Integer = 0
 			Dim C As New BeatCalculator(Level)
 
@@ -285,7 +287,7 @@ Public Module Tools
 		''' <param name="visible">精灵的初始可见性</param>
 		Public Sub AddLotsOfDecos(room As Rooms, sprite As RhythmSprite.Sprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
 			For i As UInteger = 0 To count
-				level.Decorations.Add(New Decoration(room, sprite, depth, visible))
+				Level.Decorations.Add(New Decoration(room, sprite, depth, visible))
 			Next
 		End Sub
 		''' <summary>
@@ -295,9 +297,40 @@ Public Module Tools
 		''' <param name="count">个数</param>
 		Public Sub AddLotsOfDecos(decoration As Decoration, count As UInteger)
 			For i As UInteger = 0 To count
-				level.Decorations.Add(decoration.copy)
+				Level.Decorations.Add(decoration.Copy)
 			Next
 		End Sub
+		''' <summary>
+		''' 全局更改拍号和移动事件
+		''' </summary>
+		Public Sub MoveBeats(cpb As UInteger, offset As Integer)
+			For Each item In Level.Where(Of SetCrotchetsPerBar)
+				item.CrotchetsPerBar = cpb
+			Next
+			For Each item In Level
+				item.BeatOnly += offset
+			Next
+			If offset > 0 Then
+				Level.Add(New SetCrotchetsPerBar(1, 0, cpb, 1))
+			End If
+		End Sub
+		''' <summary>
+		''' 检查最短按拍间隔(包括长按)
+		''' </summary>
+		''' <returns></returns>
+		Public Function GetLevelMinIntervalTime() As IEnumerable(Of (Pulse, Pulse, TimeSpan))
+			Dim Pulses As New List(Of Pulse)
+			Dim PulsesInterval As New List(Of (Pulse, Pulse, TimeSpan))
+			For Each row In Level.Rows
+				Pulses.AddRange(row.PulseBeats)
+			Next
+			Pulses = Pulses.GroupBy(Function(i) i.BeatOnly).Select(Function(i) i.First).OrderBy(Function(i) i.BeatOnly).ToList
+			For i = 0 To Pulses.Count - 2
+				PulsesInterval.Add((Pulses(i), Pulses(i + 1), Calculator.BeatOnly_Time(Pulses(i + 1).BeatOnly + Pulses(i + 1).Hold) - Calculator.BeatOnly_Time(Pulses(i).BeatOnly)))
+			Next
+			Dim min = PulsesInterval.Min(Function(i) i.Item3)
+			Return PulsesInterval.Where(Function(i) i.Item3 = min)
+		End Function
 		Public Class SplitRowSettings
 
 			Public Line As String

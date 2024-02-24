@@ -17,15 +17,17 @@ Public Module Util
 		Public Sub New(CPBCollection As IEnumerable(Of SetCrotchetsPerBar), BPMCollection As IEnumerable(Of BaseBeatsPerMinute))
 			Initialize(CPBCollection, BPMCollection)
 		End Sub
-		Public Sub New(level As Objects.RDLevel)
+		Public Sub New(level As RDLevel)
 			Initialize(level.CPBs, level.BPMs)
 		End Sub
 		Private Sub Initialize(CPBs As IEnumerable(Of SetCrotchetsPerBar), BPMs As IEnumerable(Of BaseBeatsPerMinute))
 			Me.CPBs = CPBs.OrderBy(Function(i) i.BeatOnly)
 			Me.BPMs = BPMs.OrderBy(Function(i) i.BeatOnly)
-			Dim preCPB As New SetCrotchetsPerBar(1, 0, 8, 1)
+			Initialize(CPBs)
+		End Sub
+		Public Shared Sub Initialize(CPBs As IEnumerable(Of SetCrotchetsPerBar))
 			For Each item In CPBs
-				item.Bar = BeatOnly_BarBeat(item.BeatOnly).bar
+				item.Bar = BeatOnly_BarBeat(item.BeatOnly, CPBs).bar
 			Next
 		End Sub
 		Public Function BarBeat_BeatOnly(bar As UInteger, beat As Single) As Single
@@ -53,11 +55,11 @@ Public Module Util
 			result = LastCPB.BeatOnly + (bar - LastCPB.Bar) * LastCPB.CrotchetsPerBar + beat - 1
 			Return result
 		End Function
-		Public Shared Function BeatOnly_BarBeat(beat As Single, CPBCollection As IEnumerable(Of SetCrotchetsPerBar)) As (bar As UInteger, beat As Single)
+		Public Shared Function BeatOnly_BarBeat(beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As (bar As UInteger, beat As Single)
 			Dim foreCPB As New SetCrotchetsPerBar(1, 0, 8, 1)
 			Dim result As (bar As UInteger, beat As Single) = (1, 1)
 
-			Dim LastCPB = CPBCollection.LastOrDefault(Function(i) i.Active AndAlso i.BeatOnly < beat, foreCPB)
+			Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.BeatOnly < beat, foreCPB)
 
 			result.bar = LastCPB.Bar + Math.Floor((beat - LastCPB.BeatOnly) / LastCPB.CrotchetsPerBar)
 			result.beat = (beat - LastCPB.BeatOnly) Mod LastCPB.CrotchetsPerBar + 1
@@ -97,13 +99,13 @@ Public Module Util
 	Public Function PercentToPixel(point As (X As Single?, Y As Single?)) As (X As Single?, Y As Single?)
 		Return PercentToPixel(point, (352, 198))
 	End Function
-	Public Function PercentToPixel(point As (X As Single?, Y As Single?), size As (X As Single?, Y As Single?)) As (X As Single?, Y As Single?)
+	Public Function PercentToPixel(point As (X As Single?, Y As Single?), size As (X As Single, Y As Single)) As (X As Single?, Y As Single?)
 		Return (point.X * size.X / 100, point.Y * size.Y / 100)
 	End Function
 	Public Function PixelToPercent(point As (X As Single?, Y As Single?)) As (X As Single?, Y As Single?)
 		Return PixelToPercent(point, (352, 198))
 	End Function
-	Public Function PixelToPercent(point As (X As Single?, Y As Single?), size As (X As Single?, Y As Single?)) As (X As Single?, Y As Single?)
+	Public Function PixelToPercent(point As (X As Single?, Y As Single?), size As (X As Single, Y As Single)) As (X As Single?, Y As Single?)
 		Return (point.X * 100 / size.X, point.Y * 100 / size.Y)
 	End Function
 	Public Function FixFraction(number As Single, splitBase As UInteger) As Single

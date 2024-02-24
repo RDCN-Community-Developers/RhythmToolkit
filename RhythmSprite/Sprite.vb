@@ -7,39 +7,39 @@ Imports SkiaSharp
 Imports RhythmSprite.Exceptions
 #Disable Warning CA1416
 Namespace Converters
-		Class SpriteConverter(Of T As Sprite)
-			Inherits JsonConverter(Of T)
+	Class SpriteConverter(Of T As Sprite)
+		Inherits JsonConverter(Of T)
 		Private tempImageList As HashSet(Of SKBitmap)
 		Public Sub New(imageList As HashSet(Of SKBitmap))
 			tempImageList = imageList
 		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As T, serializer As JsonSerializer)
-				Dim Setting As New JsonSerializerSettings With {
-					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
-					.Formatting = Formatting.Indented
-				}
-				With Setting.Converters
-					.Add(New Vector2Converter)
-					.Add(New ClipListConverter(tempImageList))
-				End With
-				writer.WriteRawValue(JsonConvert.SerializeObject(value, Setting))
-			End Sub
-			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
-				Dim Setting As New JsonSerializer With {
-						.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
-				}
-				With Setting.Converters
-					.Add(New Vector2Converter)
-					.Add(New ClipListConverter(tempImageList))
-				End With
-				Return JObject.Load(reader).ToObject(Of T)(Setting)
-			End Function
-		End Class
-		Class ClipListConverter
+			Dim Setting As New JsonSerializerSettings With {
+				.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
+				.Formatting = Formatting.Indented
+			}
+			With Setting.Converters
+				.Add(New Vector2Converter)
+				.Add(New ClipListConverter(tempImageList))
+			End With
+			writer.WriteRawValue(JsonConvert.SerializeObject(value, Setting))
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+			Dim Setting As New JsonSerializer With {
+					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
+			}
+			With Setting.Converters
+				.Add(New Vector2Converter)
+				.Add(New ClipListConverter(tempImageList))
+			End With
+			Return JObject.Load(reader).ToObject(Of T)(Setting)
+		End Function
+	End Class
+	Class ClipListConverter
 		Inherits JsonConverter(Of HashSet(Of Sprite.Clip))
 		Private Shared Function CamelCase(s As String) As String
-				Return String.Concat(s(0).ToString.ToLower, s.AsSpan(1))
-			End Function
+			Return String.Concat(s(0).ToString.ToLower, s.AsSpan(1))
+		End Function
 		Private tempImageList As List(Of SKBitmap)
 		Public Sub New(imageList As HashSet(Of SKBitmap))
 			tempImageList = imageList.ToList

@@ -48,10 +48,10 @@ Module Test
 						.PortraitSize = New Numerics.Vector2(2, 2)
 						})
 		Next
-		A.AddDefaultClip("neutral")
-		A.AddDefaultClip("happy")
-		A.AddDefaultClip("barely")
-		A.AddDefaultClip("missed")
+		A.AddBlankClip("neutral")
+		A.AddBlankClip("happy")
+		A.AddBlankClip("barely")
+		A.AddBlankClip("missed")
 		A.WriteJson("C:\Users\30698\OneDrive\ÎÄµµ\rdlevels\Characters\Output.png", Sets)
 	End Sub
 	Sub SubMain1(args As String())
