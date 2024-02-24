@@ -129,11 +129,14 @@ Namespace Objects
 					Throw New RhythmDoctorExcception($"Might not support. Version is too low ({Level.Settings.Version}).")
 				End If
 				With Level
-					.Rows = J("rows").ToObject(Of List(Of Row))(RowsSerializer)
-					.Decorations = J("decorations").ToObject(Of List(Of Decoration))(DecorationsSerializer)
-					.Conditionals = J("conditionals").ToObject(Of List(Of BaseConditional))(ConditionalsSerializer)
-					.Bookmarks = J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer)
-					.ColorPalette = J("colorPalette").ToObject(Of LimitedList(Of SKColor))(ColorPaletteSerializer)
+					.Rows.AddRange(J("rows").ToObject(Of List(Of Row))(RowsSerializer))
+					.Decorations.AddRange(J("decorations").ToObject(Of List(Of Decoration))(DecorationsSerializer))
+					.Conditionals.AddRange(J("conditionals").ToObject(Of List(Of BaseConditional))(ConditionalsSerializer))
+					.Bookmarks.AddRange(J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer))
+					For Each item In J("colorPalette").ToObject(Of LimitedList(Of SKColor))(ColorPaletteSerializer)
+						.ColorPalette.Add(item)
+					Next
+
 				End With
 
 
@@ -232,8 +235,8 @@ Namespace Objects
 					'End If
 					Dim Added As Boolean = False
 					'轨道事件关联
-					If SubClassType.IsAssignableTo(GetType(BaseRows)) Then
-						Dim SubTempEvent As BaseRows = CType(TempEvent, BaseRows)
+					If SubClassType.IsAssignableTo(GetType(BaseRowAction)) Then
+						Dim SubTempEvent As BaseRowAction = CType(TempEvent, BaseRowAction)
 						If item("row").Value(Of Integer) >= 0 Then
 							Dim Parent = Level.Rows(item("row"))
 							Parent.Children.Add(TempEvent)
@@ -243,8 +246,8 @@ Namespace Objects
 						Added = True
 					End If
 					'精灵事件关联
-					If SubClassType.IsAssignableTo(GetType(BaseDecorationActions)) Then
-						Dim SubTempEvent As BaseDecorationActions = CType(TempEvent, BaseDecorationActions)
+					If SubClassType.IsAssignableTo(GetType(BaseDecorationAction)) Then
+						Dim SubTempEvent As BaseDecorationAction = CType(TempEvent, BaseDecorationAction)
 						If item("target") IsNot Nothing Then
 							Dim Parent = Level.Decorations.FirstOrDefault(Function(i) i.Id = item("target"))
 							If Parent IsNot Nothing Then
@@ -392,7 +395,7 @@ Namespace Objects
 		Public Class PanelColorConverter
 			Inherits JsonConverter(Of PanelColor)
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As PanelColor, serializer As JsonSerializer)
-				If value.PanelEnabled Then
+				If value.EnablePanel Then
 					writer.WriteValue($"pal{value.Panel}")
 				Else
 					Dim s = value.Color.Value.ToString.Replace("#", "")
@@ -417,13 +420,14 @@ Namespace Objects
 						alpha = s.Substring(6)
 					End If
 					Dim rgb = s.Substring(0, 6)
-					existingValue.Color = SKColor.Parse(alpha + rgb)
 					If s.Length > 6 Then
+						existingValue.Color = SKColor.Parse(alpha + rgb) ' UInteger.Parse(rgb, Globalization.NumberStyles.HexNumber) '+ UInteger.Parse(alpha, Globalization.NumberStyles.HexNumber) << 24
+					Else
 						existingValue.Color = SKColor.Parse(rgb)
 					End If
 					'	existingValue.Color = SKColor.Parse(JString)
 				End If
-					Return existingValue
+				Return existingValue
 			End Function
 		End Class
 		'Public Class FileConverter
@@ -572,25 +576,19 @@ Namespace Objects
 			End Function
 		End Class
 		Public Class ConditionConverter
-			Inherits JsonConverter(Of Conditions)
-			Public Overrides Sub WriteJson(writer As JsonWriter, value As Conditions, serializer As JsonSerializer)
+			Inherits JsonConverter(Of Condition)
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As Condition, serializer As JsonSerializer)
 				writer.WriteValue(value.ToString)
 			End Sub
-			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Conditions, hasExistingValue As Boolean, serializer As JsonSerializer) As Conditions
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Condition, hasExistingValue As Boolean, serializer As JsonSerializer) As Condition
 				Dim J = JToken.Load(reader)
-				Return Conditions.Load(J)
+				Return Condition.Load(J)
 			End Function
 		End Class
 	End Module
 End Namespace
 Namespace InputSettings
 	Public Class LevelInputSettings
-		Public SpriteSettings As New SpriteInputSettings
-	End Class
-	Public Class SpriteInputSettings
-		''' <summary>
-		''' 启用精灵占位符，以换取更快的读取速度。精灵将不可更改，精灵表情将无法读取。禁用则会读取完整精灵图。
-		''' </summary>
-		Public PlaceHolder As Boolean
+		Public SpriteSettings As New RhythmSprite.SpriteInputSettings
 	End Class
 End Namespace

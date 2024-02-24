@@ -9,8 +9,8 @@ Imports RhythmSprite.Exceptions
 Namespace Converters
 		Class SpriteConverter(Of T As Sprite)
 			Inherits JsonConverter(Of T)
-		Private tempImageList As List(Of SKBitmap)
-		Public Sub New(imageList As List(Of SKBitmap))
+		Private tempImageList As HashSet(Of SKBitmap)
+		Public Sub New(imageList As HashSet(Of SKBitmap))
 			tempImageList = imageList
 		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As T, serializer As JsonSerializer)
@@ -36,15 +36,15 @@ Namespace Converters
 			End Function
 		End Class
 		Class ClipListConverter
-			Inherits JsonConverter(Of List(Of Sprite.Clip))
-			Private Shared Function CamelCase(s As String) As String
+		Inherits JsonConverter(Of HashSet(Of Sprite.Clip))
+		Private Shared Function CamelCase(s As String) As String
 				Return String.Concat(s(0).ToString.ToLower, s.AsSpan(1))
 			End Function
 		Private tempImageList As List(Of SKBitmap)
-		Public Sub New(imageList As List(Of SKBitmap))
-			tempImageList = imageList
+		Public Sub New(imageList As HashSet(Of SKBitmap))
+			tempImageList = imageList.ToList
 		End Sub
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As List(Of Sprite.Clip), serializer As JsonSerializer)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As HashSet(Of Sprite.Clip), serializer As JsonSerializer)
 			Dim Setting As New JsonSerializerSettings With {
 					.Formatting = Formatting.None,
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
@@ -89,7 +89,7 @@ Namespace Converters
 
 			End If
 		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As List(Of Sprite.Clip), hasExistingValue As Boolean, serializer As JsonSerializer) As List(Of Sprite.Clip)
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As HashSet(Of Sprite.Clip), hasExistingValue As Boolean, serializer As JsonSerializer) As HashSet(Of Sprite.Clip)
 			Dim Setting As New JsonSerializer With {
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 				}
@@ -98,7 +98,7 @@ Namespace Converters
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 			End With
 			Dim Arr As JArray = JToken.ReadFrom(reader)
-			Dim Output As New List(Of Sprite.Clip)
+			Dim Output As New HashSet(Of Sprite.Clip)
 			For Each item As Object In Arr
 				Dim L As List(Of UInteger) = CType(item("frames"), JArray).ToObject(Of List(Of UInteger))
 				Dim ClipImageList As New List(Of SKBitmap)
@@ -186,6 +186,67 @@ Public Module ImageUtil
 			image.Encode(SKEncodedImageFormat.Png, 100).SaveTo(stream)
 		End Using
 	End Sub
+	Public Function OutLine(image As SKBitmap) As SKBitmap
+		Dim img As SKBitmap = image.Copy
+		For x = 0 To img.Width - 1
+			For y = 0 To img.Height - 1
+				If image.GetPixel(x, y).Alpha = 0 AndAlso
+					(image.GetPixel(Math.Max(0, x - 1), y).Alpha OrElse
+					image.GetPixel(Math.Min(x + 1, img.Width - 1), y).Alpha OrElse
+					image.GetPixel(x, Math.Max(0, y - 1)).Alpha OrElse
+					image.GetPixel(x, Math.Min(y + 1, img.Width - 1)).Alpha) Then
+					img.SetPixel(x, y, New SKColor(&HFF, &HFF, &HFF, &HFF))
+				Else
+					image.SetPixel(x, y, New SKColor)
+				End If
+			Next
+		Next
+		Return img
+	End Function
+	Public Function OutGlow(image As SKBitmap) As SKBitmap
+		Dim Img As SKBitmap = image.Copy
+		Dim radius = 4
+		Dim core As Single(,) = Kernel(radius)
+		Dim sum As Single = 0
+		For Each i In core
+			sum += i
+		Next
+		For x = 0 To Img.Width - 1
+			For y = 0 To Img.Height - 1
+				If Img.GetPixel(x, y).Alpha = 255 Then
+					Img.SetPixel(x, y, SKColor.Parse("FFFFFFFF"))
+				Else
+					Dim alpha As Single = Math.Min(GetPixelAlpha(radius, x, y, image, core, sum), 255)
+					Img.SetPixel(x, y, New SKColor(&HFF, &HFF, &HFF, alpha))
+				End If
+			Next
+		Next
+		Return Img
+	End Function
+	Private Function Kernel(radius As UInteger) As Single(,)
+		Dim core(radius * 2, radius * 2) As Single
+		Dim sigma = 2
+		For x = -radius To radius
+			For y = -radius To radius
+				core(radius + x, radius + y) = 1 / (2 * Math.PI * sigma ^ 2) * Math.Exp(-(x ^ 2 + y ^ 2) / (2 * sigma ^ 2))
+				'core(radius + x, radius + y) = 1 / Math.Sqrt((radius + x) ^ 2 + (radius + y) ^ 2)
+			Next
+		Next
+		Return core
+	End Function
+	Private Function GetPixelAlpha(radius As UInteger, x As Integer, y As Integer, image As SKBitmap, core As Single(,), sum As Single) As Single
+		Dim result As Single = 0
+		For i = If(0 <= x - radius, x - radius, 0) To If(x + radius <= image.Width - 1, x + radius, image.Width - 1)
+			For j = If(0 <= y - radius, y - radius, 0) To If(y + radius <= image.Height - 1, y + radius, image.Height - 1)
+				If i = x And j = y Then
+				Else
+					result += image.GetPixel(i, j).Alpha * core(i + radius - x, j + radius - y)
+				End If
+			Next
+		Next
+		Return result / sum
+	End Function
+
 End Module
 Public Interface ISprite
 	ReadOnly Property FileInfo As IO.FileInfo
@@ -217,17 +278,17 @@ Public Class Sprite
 		End Get
 	End Property
 	<JsonIgnore>
-	Public Property Images As New List(Of SKBitmap)
+	Public Property Images As New HashSet(Of SKBitmap)
 	<JsonIgnore>
-	Public Property Images_Freeze As New List(Of SKBitmap)
+	Public Property Images_Freeze As New SKBitmap
 	<JsonIgnore>
-	Public Property Images_Glow As SKBitmap
+	Public Property Images_Glow As HashSet(Of SKBitmap)
 	<JsonIgnore>
-	Public Property Images_Outline As New List(Of SKBitmap)
+	Public Property Images_Outline As New HashSet(Of SKBitmap)
 	Public Property Size As Vector2 Implements ISprite.Size
 	Public Property RowPreviewFrame As UInteger?
 	Public Property RowPreviewOffset As Vector2
-	Public Property Clips As New List(Of Clip)
+	Public Property Clips As New HashSet(Of Clip)
 	Private Shared ReadOnly stringArray As String() = {"neutral", "happy", "barely", "missed"}
 	Public Class Clip
 		Public Property Name As String
@@ -239,10 +300,10 @@ Public Class Sprite
 		Public Property PortraitSize As Vector2
 		Public Property Frames As New List(Of SKBitmap)
 	End Class
-	Public Function ShouldSerializeRowPreviewFrame() As Boolean
+	Friend Function ShouldSerializeRowPreviewFrame() As Boolean
 		Return RowPreviewFrame IsNot Nothing
 	End Function
-	Public Function ShouldSerializeRowPreviewOffset() As Boolean
+	Friend Function ShouldSerializeRowPreviewOffset() As Boolean
 		Return RowPreviewFrame IsNot Nothing
 	End Function
 	Public Shared Function CanRead(path As String) As Boolean
@@ -271,7 +332,7 @@ Public Class Sprite
 		If Not imageFile.Exists Then
 			Throw New IO.FileNotFoundException($"Could not find file at path '{imageFile.FullName}'. Please check whether the file exists and that you have adequate permissions to access it.")
 		End If
-		Dim TempImages As New List(Of SKBitmap)
+		Dim TempImages As New HashSet(Of SKBitmap)
 		Dim Setting As New JsonSerializerSettings
 		With Setting.Converters
 			.Add(New Converters.SpriteConverter(Of Sprite)(TempImages))
@@ -286,9 +347,9 @@ Public Class Sprite
 		Temp.Images = TempImages
 		Return Temp
 	End Function
-	Private Shared Function SplitImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As List(Of SKBitmap)
+	Private Shared Function SplitImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
 		Dim Transparent As New SKBitmap(CInt(size.X), CInt(size.Y))
-		Dim L As New List(Of SKBitmap)
+		Dim L As New HashSet(Of SKBitmap)
 		Dim countSize As New Vector2(img.Width \ size.X, img.Height \ size.Y)
 		Select Case inputMode
 			Case ImageInputOption.HORIZONTAL
@@ -337,7 +398,7 @@ Public Class Sprite
 		}
 		Return Output
 	End Function
-	Public Function AddDefaultClip(name As String) As Clip
+	Public Function AddBlankClip(name As String) As Clip
 		Dim C As New Clip With {.Name = name}
 		Clips.Add(C)
 		Return C
@@ -357,20 +418,20 @@ Public Class Sprite
 		End If
 
 		If settings.Sort Then
-			Clips = Clips.OrderBy(Function(i) i.Name, StringComparer.Create(CultureInfo.CurrentCulture, True)).ToList
+			Dim SortedClips = Clips.OrderBy(Function(i) i.Name, StringComparer.Create(CultureInfo.CurrentCulture, True)).ToList
 			For Each expressionName In stringArray.Reverse
-				Dim expression = Clips.FirstOrDefault(Function(i) i.Name = expressionName)
+				Dim expression = SortedClips.FirstOrDefault(Function(i) i.Name = expressionName)
 				If expression IsNot Nothing Then
-					Clips.Remove(expression)
-					Clips.Insert(0, expression)
+					SortedClips.Remove(expression)
+					SortedClips.Insert(0, expression)
 				End If
 			Next
 			Dim TempList As New List(Of SKBitmap)
-			For Each item In Clips
+			For Each item In SortedClips
 				TempList.AddRange(item.Frames)
 			Next
 			TempList.AddRange(Images)
-			Images = TempList.Distinct().ToList
+			Images = TempList.Distinct()
 		End If
 
 		If settings.WithImage Then
@@ -438,66 +499,6 @@ Public Class Sprite
 	'Public Sub Save(path As String)
 	'	Dim T As New IO.FileStream("", IO.FileMode.OpenOrCreate, IO.FileAccess.Write)
 	'End Sub
-	Public Shared Function OutLine(image As SKBitmap) As SKBitmap
-		Dim img As SKBitmap = image.Copy
-		For x = 0 To img.Width - 1
-			For y = 0 To img.Height - 1
-				If image.GetPixel(x, y).Alpha = 0 AndAlso
-					(image.GetPixel(Math.Max(0, x - 1), y).Alpha OrElse
-					image.GetPixel(Math.Min(x + 1, img.Width - 1), y).Alpha OrElse
-					image.GetPixel(x, Math.Max(0, y - 1)).Alpha OrElse
-					image.GetPixel(x, Math.Min(y + 1, img.Width - 1)).Alpha) Then
-					img.SetPixel(x, y, New SKColor(&HFF, &HFF, &HFF, &HFF))
-				Else
-					image.SetPixel(x, y, New SKColor)
-				End If
-			Next
-		Next
-		Return img
-	End Function
-	Public Shared Function OutGlow(image As SKBitmap) As SKBitmap
-		Dim Img As SKBitmap = image.Copy
-		Dim radius = 4
-		Dim core As Single(,) = Kernel(radius)
-		Dim sum As Single = 0
-		For Each i In core
-			sum += i
-		Next
-		For x = 0 To Img.Width - 1
-			For y = 0 To Img.Height - 1
-				If Img.GetPixel(x, y).Alpha = 255 Then
-					Img.SetPixel(x, y, SKColor.Parse("FFFFFFFF"))
-				Else
-					Dim alpha As Single = Math.Min(GetPixelAlpha(radius, x, y, image, core, sum), 255)
-					Img.SetPixel(x, y, New SKColor(&HFF, &HFF, &HFF, alpha))
-				End If
-			Next
-		Next
-		Return Img
-	End Function
-	Private Shared Function Kernel(radius As UInteger) As Single(,)
-		Dim core(radius * 2, radius * 2) As Single
-		Dim sigma = 2
-		For x = -radius To radius
-			For y = -radius To radius
-				core(radius + x, radius + y) = 1 / (2 * Math.PI * sigma ^ 2) * Math.Exp(-(x ^ 2 + y ^ 2) / (2 * sigma ^ 2))
-				'core(radius + x, radius + y) = 1 / Math.Sqrt((radius + x) ^ 2 + (radius + y) ^ 2)
-			Next
-		Next
-		Return core
-	End Function
-	Private Shared Function GetPixelAlpha(radius As UInteger, x As Integer, y As Integer, image As SKBitmap, core As Single(,), sum As Single) As Single
-		Dim result As Single = 0
-		For i = If(0 <= x - radius, x - radius, 0) To If(x + radius <= image.Width - 1, x + radius, image.Width - 1)
-			For j = If(0 <= y - radius, y - radius, 0) To If(y + radius <= image.Height - 1, y + radius, image.Height - 1)
-				If i = x And j = y Then
-				Else
-					result += image.GetPixel(i, j).Alpha * core(i + radius - x, j + radius - y)
-				End If
-			Next
-		Next
-		Return result / sum
-	End Function
 End Class
 Public Class Image
 	Implements ISprite
@@ -574,16 +575,22 @@ Public Class Placeholder
 	End Property
 End Class
 Public Class SpriteOutputSettings
-		Public Enum OutputModes
-			HORIZONTAL
-			VERTICAL
-			PACKED
-		End Enum
-		Public Sort As Boolean = False
-		Public OverWrite As Boolean = False
-		Public OutputMode As OutputModes = OutputModes.HORIZONTAL
-		Public ExtraFile As Boolean = False
-		Public LimitedSize As New Vector2(16384, 16384)
-		Public LimitedCount As Vector2?
-		Public WithImage As Boolean = False
+	Public Enum OutputModes
+		HORIZONTAL
+		VERTICAL
+		PACKED
+	End Enum
+	Public Sort As Boolean = False
+	Public OverWrite As Boolean = False
+	Public OutputMode As OutputModes = OutputModes.HORIZONTAL
+	Public ExtraFile As Boolean = False
+	Public LimitedSize As New Vector2(16384, 16384)
+	Public LimitedCount As Vector2?
+	Public WithImage As Boolean = False
+End Class
+Public Class SpriteInputSettings
+	''' <summary>
+	''' 启用精灵占位符，以换取更快的读取速度。精灵将不可更改，精灵表情将无法读取。禁用则会读取完整精灵图。
+	''' </summary>
+	Public PlaceHolder As Boolean
 End Class
