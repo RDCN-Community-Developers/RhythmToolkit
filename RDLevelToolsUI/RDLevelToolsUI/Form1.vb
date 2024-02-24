@@ -84,8 +84,8 @@ Public Class Form1
 
 	Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
 		viewIndex += 1
-		If Not able OrElse viewIndex > processingLevel.Events.Count Then
-			viewIndex = processingLevel.Events.Count - 1
+		If Not able OrElse viewIndex > processingLevel.Count Then
+			viewIndex = processingLevel.Count - 1
 			Return
 		End If
 		ShowEvent(viewIndex)
@@ -102,7 +102,7 @@ Public Class Form1
 	Public Shared Manager As New TranaslationManager("D:\vb.net\RDLevel\RhythmBase\bin\Debug\net8.0\zh-cn.json")
 	Private Sub ShowEvent(index As Integer)
 		TableLayoutPanel1.Controls.Clear()
-		Dim processingEvent = processingLevel.Events(viewIndex)
+		Dim processingEvent = processingLevel(viewIndex)
 		Dim T As Type = processingEvent.GetType
 
 		Dim enump = GetType(EventType).GetMember(processingEvent.Type.ToString).FirstOrDefault

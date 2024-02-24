@@ -41,7 +41,7 @@ Public Class TranaslationManager
 	Public Function GetValue(p As MemberInfo)
 		Return GetValue(p, GetPath(p).Last)
 	End Function
-	Public Function GetPath(p As MemberInfo) As String()
+	Private Shared Function GetPath(p As MemberInfo) As String()
 		Return {p.DeclaringType.Namespace, p.DeclaringType.Name, p.Name}
 	End Function
 	Private Sub Save()

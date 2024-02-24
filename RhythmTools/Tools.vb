@@ -25,7 +25,7 @@ Public Module Tools
 		''' 拆分七拍子
 		''' </summary>
 		Public Sub SplitClassicBeat()
-			Dim Adds As New List(Of BaseBeats)
+			Dim Adds As New List(Of BaseBeat)
 			For Each item In Level.Where(Of AddClassicBeat)()
 				Adds.AddRange(item.Split)
 				item.Active = False
@@ -36,7 +36,7 @@ Public Module Tools
 		''' 拆分二拍子
 		''' </summary>
 		Public Sub SplitOneShotBeat()
-			Dim Adds As New List(Of BaseBeats)
+			Dim Adds As New List(Of BaseBeat)
 			For Each item In Level.Where(Of AddOneshotBeat)()
 				Adds.AddRange(item.Split)
 				item.Active = False
@@ -47,7 +47,7 @@ Public Module Tools
 		''' 移除未激活事件
 		''' </summary>
 		Public Sub RemoveUnactive()
-			Level.Events.RemoveAll(Function(i) i.Active = False)
+			Level.RemoveAll(Function(i) Not i.Active)
 		End Sub
 		''' <summary>
 		''' 释放标签事件
@@ -109,11 +109,10 @@ Public Module Tools
 		''' 在七拍子的每一拍按键！
 		''' </summary>
 		Public Sub PressOnEveryBeat()
-			Dim Add1 As New List(Of BaseBeats)
+			Dim Add1 As New List(Of BaseBeat)
 			Dim Add2 As New List(Of AddFreeTimeBeat)
-			Dim Xs = Level.Where(Of SetRowXs)
 			For Each item In Level.Where(Of AddClassicBeat)()
-				Add1.AddRange(item.Split(Xs.Last(Function(i) i.BeatOnly < item.BeatOnly)))
+				Add1.AddRange(item.Split())
 				item.Active = False
 			Next
 			For Each item In Add1
@@ -141,7 +140,7 @@ Public Module Tools
 					(New Decoration(row.Rooms, Heart,,), 282)
 				}
 				For Each item In Decos
-					item.deco.Rooms = row.Rooms
+					'item.deco.Rooms = row.Rooms
 					item.deco.Visible = False
 					Level.Decorations.Add(item.deco)
 					Dim visible As SetVisible = item.deco.CreateChildren(Of SetVisible)(1)
@@ -234,6 +233,7 @@ Public Module Tools
 		End Sub
 		Private Function GetExpression(names As SplitRowSettings, before As SetRowXs, after As SetRowXs, index As Byte) As String
 			'If before Then
+			Throw New NotImplementedException
 		End Function
 		''' <summary>
 		''' 添加浮动文字式计时器
@@ -242,7 +242,7 @@ Public Module Tools
 		''' <param name="interval">细分间隔，每秒事件数</param>
 		''' <param name="increase">递增(true)或递减(false)</param>
 		Public Sub AddTimer(copy As FloatingText, interval As UInteger, increase As Boolean)
-			Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel, Level.Events.Last).BeatOnly
+			Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel, Level.Last).BeatOnly
 			Dim t As Integer = 0
 			Dim C As New BeatCalculator(Level)
 
@@ -304,7 +304,7 @@ Public Module Tools
 		''' 全局更改拍号和移动事件
 		''' </summary>
 		Public Sub MoveBeats(cpb As UInteger, offset As Integer)
-			For Each item In Level.CPBs
+			For Each item In Level.Where(Of SetCrotchetsPerBar)
 				item.CrotchetsPerBar = cpb
 			Next
 			For Each item In Level
@@ -319,17 +319,17 @@ Public Module Tools
 		''' </summary>
 		''' <returns></returns>
 		Public Function GetLevelMinIntervalTime() As IEnumerable(Of (Pulse, Pulse, TimeSpan))
-			Dim l As New List(Of Pulse)
-			Dim j As New List(Of (Pulse, Pulse, TimeSpan))
+			Dim Pulses As New List(Of Pulse)
+			Dim PulsesInterval As New List(Of (Pulse, Pulse, TimeSpan))
 			For Each row In Level.Rows
-				l.AddRange(row.PulseBeats)
+				Pulses.AddRange(row.PulseBeats)
 			Next
-			l = l.GroupBy(Function(i) i.beatOnly).Select(Function(i) i.First).OrderBy(Function(i) i.beatOnly).ToList
-			For i = 0 To l.Count - 2
-				j.Add((l(i), l(i + 1), Calculator.BeatOnly_Time(l(i + 1).beatOnly + l(i + 1).hold) - Calculator.BeatOnly_Time(l(i).beatOnly)))
+			Pulses = Pulses.GroupBy(Function(i) i.BeatOnly).Select(Function(i) i.First).OrderBy(Function(i) i.BeatOnly).ToList
+			For i = 0 To Pulses.Count - 2
+				PulsesInterval.Add((Pulses(i), Pulses(i + 1), Calculator.BeatOnly_Time(Pulses(i + 1).BeatOnly + Pulses(i + 1).Hold) - Calculator.BeatOnly_Time(Pulses(i).BeatOnly)))
 			Next
-			Dim min = j.Min(Function(i) i.Item3)
-			Return j.Where(Function(i) i.Item3 = min)
+			Dim min = PulsesInterval.Min(Function(i) i.Item3)
+			Return PulsesInterval.Where(Function(i) i.Item3 = min)
 		End Function
 		Public Class SplitRowSettings
 

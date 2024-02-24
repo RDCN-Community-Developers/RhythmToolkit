@@ -14,7 +14,7 @@ Module Program
 		'Testlevel.RefreshCPBs()
 		For Each item In tools.GetLevelMinIntervalTime
 			Console.WriteLine(item.Item1.Parent.ToString + " >> " + item.Item2.Parent.ToString)
-			Console.WriteLine(tool1.BeatOnly_BarBeat(item.Item1.beatOnly).ToString + " >> " + tool1.BeatOnly_BarBeat(item.Item2.beatOnly).ToString)
+			Console.WriteLine(tool1.BeatOnly_BarBeat(item.Item1.BeatOnly).ToString + " >> " + tool1.BeatOnly_BarBeat(item.Item2.BeatOnly).ToString)
 			Console.WriteLine(item.Item3)
 			Console.WriteLine()
 		Next

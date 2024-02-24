@@ -157,7 +157,7 @@ Namespace Objects
 			Public Overrides Function ToString() As String
 				Return $"[{BeatOnly}]>>[{Type}]"
 			End Function
-			Public Function ShouldSerializeActive() As Boolean
+			Friend Function ShouldSerializeActive() As Boolean
 				Return Not Active
 			End Function
 		End Class
@@ -193,16 +193,26 @@ Namespace Objects
 			<JsonIgnore>
 			Public MustOverride Property BeatsPerMinute As Single
 		End Class
-		Public MustInherit Class BaseDecorationActions
+		Public MustInherit Class BaseDecorationAction
 			Inherits BaseEvent
+			Private _parent As Decoration
 			<JsonIgnore>
 			Public Property Parent As Decoration
+				Get
+					Return _parent
+				End Get
+				Set(value As Decoration)
+					_parent?.Children.Remove(Me)
+					value?.Children.Add(Me)
+					_parent = value
+				End Set
+			End Property
 			Public Overridable ReadOnly Property Target As String
 				Get
 					Return If(Parent Is Nothing, "", Parent.Id)
 				End Get
 			End Property
-			Public Overloads Function Copy(Of T As {BaseDecorationActions, New})() As T
+			Public Overloads Function Copy(Of T As {BaseDecorationAction, New})() As T
 				Dim Temp = MyBase.Copy(Of T)()
 				Temp.Parent = Parent
 				Return Temp
@@ -213,16 +223,21 @@ Namespace Objects
 					Return Parent.Rooms
 				End Get
 			End Property
-			Public Sub ChangeParentTo(deco As Decoration)
-				Parent.Children.Remove(Me)
-				deco.Children.Add(Me)
-				Parent = deco
-			End Sub
 		End Class
-		Public MustInherit Class BaseRows
+		Public MustInherit Class BaseRowAction
 			Inherits BaseEvent
+			Private _parent As Row
 			<JsonIgnore>
 			Public Property Parent As Row
+				Get
+					Return _parent
+				End Get
+				Set(value As Row)
+					_parent?.Children.Remove(Me)
+					value.Children.Add(Me)
+					_parent = value
+				End Set
+			End Property
 			<JsonIgnore>
 			Public Overrides ReadOnly Property Rooms As Rooms
 				Get
@@ -234,25 +249,20 @@ Namespace Objects
 					Return If(Parent Is Nothing, -1, Parent.Row)
 				End Get
 			End Property
-			Public Overloads Function Copy(Of T As {BaseRows, New})() As T
+			Public Overloads Function Copy(Of T As {BaseRowAction, New})() As T
 				Dim Temp = MyBase.Copy(Of T)()
 				Temp.Parent = Parent
 				Return Temp
 			End Function
-			Public Sub ChangeParentTo(row As Row)
-				Parent.Children.Remove(Me)
-				row.Children.Add(Me)
-				Parent = row
-			End Sub
 		End Class
-		Public MustInherit Class BaseBeats
-			Inherits BaseRows
+		Public MustInherit Class BaseBeat
+			Inherits BaseRowAction
 			MustOverride Function PulseTime() As IEnumerable(Of Pulse)
 			<JsonIgnore>
 			MustOverride ReadOnly Property Pulsable As Boolean
 		End Class
-		Public MustInherit Class BaseRowAnimations
-			Inherits BaseRows
+		Public MustInherit Class BaseRowAnimation
+			Inherits BaseRowAction
 		End Class
 		Public Class PlaySong
 			Inherits BaseBeatsPerMinute
@@ -584,25 +594,25 @@ Namespace Objects
 				SoundType = SoundTypes.FreezeshotSound Or
 				SoundType = SoundTypes.BurnshotSound)
 			End Function
-			Public Function ShouldSerializeFilename() As Boolean
+			Friend Function ShouldSerializeFilename() As Boolean
 				Return ShouldSerialize()
 			End Function
-			Public Function ShouldSerializeVolume() As Boolean
+			Friend Function ShouldSerializeVolume() As Boolean
 				Return ShouldSerialize()
 			End Function
-			Public Function ShouldSerializePitch() As Boolean
+			Friend Function ShouldSerializePitch() As Boolean
 				Return ShouldSerialize()
 			End Function
-			Public Function ShouldSerializePan() As Boolean
+			Friend Function ShouldSerializePan() As Boolean
 				Return ShouldSerialize()
 			End Function
-			Public Function ShouldSerializeOffset() As Boolean
+			Friend Function ShouldSerializeOffset() As Boolean
 				Return ShouldSerialize()
 			End Function
 
 		End Class
 		Public Class SetBeatSound
-			Inherits BaseRows
+			Inherits BaseRowAction
 			Public Property Sound As New Audio
 			Public Overrides ReadOnly Property Type As EventType = EventType.SetBeatSound
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
@@ -610,7 +620,7 @@ Namespace Objects
 		End Class
 
 		Public Class SetCountingSound
-			Inherits BaseRows
+			Inherits BaseRowAction
 			Enum VoiceSources
 				'ClassicBeat
 				JyiCount
@@ -779,32 +789,32 @@ Namespace Objects
 			Public Overrides Function ToString() As String
 				Return MyBase.ToString() + $" {Preset}"
 			End Function
-			Public Function ShouldSerializeEnable() As Boolean
+			Friend Function ShouldSerializeEnable() As Boolean
 				Return Preset <> Presets.DisableAll
 			End Function
-			Public Function ShouldSerializeThreshold() As Boolean
+			Friend Function ShouldSerializeThreshold() As Boolean
 				Return Preset = Presets.Bloom
 			End Function
-			Public Function ShouldSerializeIntensity() As Boolean
+			Friend Function ShouldSerializeIntensity() As Boolean
 				Return PropertyHasDuration() And
 					Preset <> Presets.TileN And
 					Preset <> Presets.CustomScreenScroll
 			End Function
-			Public Function ShouldSerializeColor() As Boolean
+			Friend Function ShouldSerializeColor() As Boolean
 				Return Preset = Presets.Bloom
 			End Function
-			Public Function ShouldSerializeFloatX() As Boolean
+			Friend Function ShouldSerializeFloatX() As Boolean
 				Return Preset = Presets.TileN Or
 					Preset = Presets.CustomScreenScroll
 			End Function
-			Public Function ShouldSerializeFloatY() As Boolean
+			Friend Function ShouldSerializeFloatY() As Boolean
 				Return Preset = Presets.TileN Or
 					Preset = Presets.CustomScreenScroll
 			End Function
-			Public Function ShouldSerializeEase() As Boolean
+			Friend Function ShouldSerializeEase() As Boolean
 				Return PropertyHasDuration()
 			End Function
-			Public Function ShouldSerializeDuration() As Boolean
+			Friend Function ShouldSerializeDuration() As Boolean
 				Return PropertyHasDuration()
 			End Function
 			Public Function PropertyHasDuration()
@@ -935,7 +945,7 @@ Namespace Objects
 
 		End Class
 		Public Class HideRow
-			Inherits BaseRowAnimations
+			Inherits BaseRowAnimation
 			Enum Transitions
 				Smooth
 				Instant
@@ -954,7 +964,7 @@ Namespace Objects
 
 		End Class
 		Public Class MoveRow
-			Inherits BaseRowAnimations
+			Inherits BaseRowAnimation
 			Enum Targets
 				WholeRow
 				Heart
@@ -992,7 +1002,7 @@ Namespace Objects
 		End Class
 
 		Public Class PlayExpression
-			Inherits BaseRowAnimations
+			Inherits BaseRowAnimation
 			Public Property Expression As String
 			Public Property Replace As Boolean
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
@@ -1001,7 +1011,7 @@ Namespace Objects
 
 		End Class
 		Public Class TintRows
-			Inherits BaseRowAnimations
+			Inherits BaseRowAnimation
 			Enum RowEffect
 				None
 				Electric
@@ -1020,10 +1030,10 @@ Namespace Objects
 			Public Property Effect As RowEffect
 			Public Overrides ReadOnly Property Type As EventType = EventType.TintRows
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
-			Public Function ShouldSerializeDuration() As Boolean
+			Friend Function ShouldSerializeDuration() As Boolean
 				Return Duration <> 0
 			End Function
-			Public Function ShouldSerializeEase() As Boolean
+			Friend Function ShouldSerializeEase() As Boolean
 				Return Duration <> 0
 			End Function
 			Public Overrides Function ToString() As String
@@ -1328,7 +1338,7 @@ Namespace Objects
 		End Class
 
 		Public Class Comment
-			Inherits BaseDecorationActions
+			Inherits BaseDecorationAction
 			<JsonProperty("tab")>
 			Public CustomTab As Tabs
 			<JsonIgnore>
@@ -1346,7 +1356,7 @@ Namespace Objects
 			End Property
 			Public ReadOnly Property Color As New PanelColor(False)
 			Public Overrides ReadOnly Property Type As EventType = EventType.Comment
-			Public Function ShouldSerializeTarget() As Boolean
+			Friend Function ShouldSerializeTarget() As Boolean
 				Return Tab = Tabs.Sprites
 			End Function
 
@@ -1569,7 +1579,7 @@ Namespace Objects
 			End Sub
 		End Class
 		Public Class PlayAnimation
-			Inherits BaseDecorationActions
+			Inherits BaseDecorationAction
 			Public Overrides ReadOnly Property Type As EventType = Events.EventType.PlayAnimation
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
 			Public Property Expression As String
@@ -1578,7 +1588,7 @@ Namespace Objects
 			End Function
 		End Class
 		Public Class Tint
-			Inherits BaseDecorationActions
+			Inherits BaseDecorationAction
 			Public Property Ease As EaseType
 			Public Property Border As Borders
 			Public ReadOnly Property BorderColor As New PanelColor(True)
@@ -1588,15 +1598,15 @@ Namespace Objects
 			Public Property Duration As Single
 			Public Overrides ReadOnly Property Type As EventType = EventType.Tint
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
-			Public Function ShouldSerializeDuration() As Boolean
+			Friend Function ShouldSerializeDuration() As Boolean
 				Return Duration <> 0
 			End Function
-			Public Function ShouldSerializeEase() As Boolean
+			Friend Function ShouldSerializeEase() As Boolean
 				Return Duration <> 0
 			End Function
 		End Class
 		Public Class Move
-			Inherits BaseDecorationActions
+			Inherits BaseDecorationAction
 			Public Overrides ReadOnly Property Type As EventType = EventType.Move
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
@@ -1623,7 +1633,7 @@ Namespace Objects
 			End Function
 		End Class
 		Public Class SetVisible
-			Inherits BaseDecorationActions
+			Inherits BaseDecorationAction
 			Private _visible As Boolean
 			Public Overrides ReadOnly Property Type As EventType = EventType.SetVisible
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
@@ -1641,7 +1651,7 @@ Namespace Objects
 			End Function
 		End Class
 		Public Class AddClassicBeat
-			Inherits BaseBeats
+			Inherits BaseBeat
 			Enum Patterns
 				ThreeBeat
 				FourBeat
@@ -1704,11 +1714,11 @@ Namespace Objects
 				End If
 				Return New List(Of Pulse) From {New Pulse(Me, BeatOnly + _Tick * 6 - _Tick * Synco, Hold)}.AsEnumerable
 			End Function
-			Public Function Split() As IEnumerable(Of BaseBeats)
+			Public Function Split() As IEnumerable(Of BaseBeat)
 				Return Split(RowXs)
 			End Function
-			Public Function Split(Xs As SetRowXs) As IEnumerable(Of BaseBeats)
-				Dim L As New List(Of BaseBeats)
+			Public Function Split(Xs As SetRowXs) As IEnumerable(Of BaseBeat)
+				Dim L As New List(Of BaseBeat)
 				Dim Head As AddFreeTimeBeat = Copy(Of AddFreeTimeBeat)()
 				Head.Pulse = 0
 				Head.Hold = Hold
@@ -1738,7 +1748,7 @@ Namespace Objects
 
 		End Class
 		Public Class SetRowXs
-			Inherits BaseBeats
+			Inherits BaseBeat
 			Enum Patterns
 				X
 				Up
@@ -1817,7 +1827,7 @@ Namespace Objects
 
 		End Class
 		Public Class AddOneshotBeat
-			Inherits BaseBeats
+			Inherits BaseBeat
 			Public Enum Pulse
 				Wave
 				Square
@@ -1902,7 +1912,7 @@ Namespace Objects
 
 		End Class
 		Public Class SetOneshotWave
-			Inherits BaseBeats
+			Inherits BaseBeat
 			Enum Waves
 				BoomAndRush
 				Ball
@@ -1929,7 +1939,7 @@ Namespace Objects
 
 		End Class
 		Public Class AddFreeTimeBeat
-			Inherits BaseBeats
+			Inherits BaseBeat
 			Public Property Hold As Single
 			Public Property Pulse As Byte
 			Public Overrides ReadOnly Property Type As EventType = EventType.AddFreeTimeBeat
@@ -1951,7 +1961,7 @@ Namespace Objects
 
 		End Class
 		Public Class PulseFreeTimeBeat
-			Inherits BaseBeats
+			Inherits BaseBeat
 			Enum ActionType
 				Increment
 				Decrement

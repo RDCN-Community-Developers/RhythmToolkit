@@ -9,8 +9,8 @@ Imports RhythmSprite.Exceptions
 Namespace Converters
 		Class SpriteConverter(Of T As Sprite)
 			Inherits JsonConverter(Of T)
-		Private tempImageList As List(Of SKBitmap)
-		Public Sub New(imageList As List(Of SKBitmap))
+		Private tempImageList As HashSet(Of SKBitmap)
+		Public Sub New(imageList As HashSet(Of SKBitmap))
 			tempImageList = imageList
 		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As T, serializer As JsonSerializer)
@@ -36,15 +36,15 @@ Namespace Converters
 			End Function
 		End Class
 		Class ClipListConverter
-			Inherits JsonConverter(Of List(Of Sprite.Clip))
-			Private Shared Function CamelCase(s As String) As String
+		Inherits JsonConverter(Of HashSet(Of Sprite.Clip))
+		Private Shared Function CamelCase(s As String) As String
 				Return String.Concat(s(0).ToString.ToLower, s.AsSpan(1))
 			End Function
 		Private tempImageList As List(Of SKBitmap)
-		Public Sub New(imageList As List(Of SKBitmap))
-			tempImageList = imageList
+		Public Sub New(imageList As HashSet(Of SKBitmap))
+			tempImageList = imageList.ToList
 		End Sub
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As List(Of Sprite.Clip), serializer As JsonSerializer)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As HashSet(Of Sprite.Clip), serializer As JsonSerializer)
 			Dim Setting As New JsonSerializerSettings With {
 					.Formatting = Formatting.None,
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
@@ -89,7 +89,7 @@ Namespace Converters
 
 			End If
 		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As List(Of Sprite.Clip), hasExistingValue As Boolean, serializer As JsonSerializer) As List(Of Sprite.Clip)
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As HashSet(Of Sprite.Clip), hasExistingValue As Boolean, serializer As JsonSerializer) As HashSet(Of Sprite.Clip)
 			Dim Setting As New JsonSerializer With {
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 				}
@@ -98,7 +98,7 @@ Namespace Converters
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 			End With
 			Dim Arr As JArray = JToken.ReadFrom(reader)
-			Dim Output As New List(Of Sprite.Clip)
+			Dim Output As New HashSet(Of Sprite.Clip)
 			For Each item As Object In Arr
 				Dim L As List(Of UInteger) = CType(item("frames"), JArray).ToObject(Of List(Of UInteger))
 				Dim ClipImageList As New List(Of SKBitmap)
@@ -217,17 +217,17 @@ Public Class Sprite
 		End Get
 	End Property
 	<JsonIgnore>
-	Public Property Images As New List(Of SKBitmap)
+	Public Property Images As New HashSet(Of SKBitmap)
 	<JsonIgnore>
-	Public Property Images_Freeze As New List(Of SKBitmap)
+	Public Property Images_Freeze As New SKBitmap
 	<JsonIgnore>
-	Public Property Images_Glow As SKBitmap
+	Public Property Images_Glow As HashSet(Of SKBitmap)
 	<JsonIgnore>
-	Public Property Images_Outline As New List(Of SKBitmap)
+	Public Property Images_Outline As New HashSet(Of SKBitmap)
 	Public Property Size As Vector2 Implements ISprite.Size
 	Public Property RowPreviewFrame As UInteger?
 	Public Property RowPreviewOffset As Vector2
-	Public Property Clips As New List(Of Clip)
+	Public Property Clips As New HashSet(Of Clip)
 	Private Shared ReadOnly stringArray As String() = {"neutral", "happy", "barely", "missed"}
 	Public Class Clip
 		Public Property Name As String
@@ -239,10 +239,10 @@ Public Class Sprite
 		Public Property PortraitSize As Vector2
 		Public Property Frames As New List(Of SKBitmap)
 	End Class
-	Public Function ShouldSerializeRowPreviewFrame() As Boolean
+	friend Function ShouldSerializeRowPreviewFrame() As Boolean
 		Return RowPreviewFrame IsNot Nothing
 	End Function
-	Public Function ShouldSerializeRowPreviewOffset() As Boolean
+	friend Function ShouldSerializeRowPreviewOffset() As Boolean
 		Return RowPreviewFrame IsNot Nothing
 	End Function
 	Public Shared Function CanRead(path As String) As Boolean
@@ -271,7 +271,7 @@ Public Class Sprite
 		If Not imageFile.Exists Then
 			Throw New IO.FileNotFoundException($"Could not find file at path '{imageFile.FullName}'. Please check whether the file exists and that you have adequate permissions to access it.")
 		End If
-		Dim TempImages As New List(Of SKBitmap)
+		Dim TempImages As New HashSet(Of SKBitmap)
 		Dim Setting As New JsonSerializerSettings
 		With Setting.Converters
 			.Add(New Converters.SpriteConverter(Of Sprite)(TempImages))
@@ -286,9 +286,9 @@ Public Class Sprite
 		Temp.Images = TempImages
 		Return Temp
 	End Function
-	Private Shared Function SplitImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As List(Of SKBitmap)
+	Private Shared Function SplitImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
 		Dim Transparent As New SKBitmap(CInt(size.X), CInt(size.Y))
-		Dim L As New List(Of SKBitmap)
+		Dim L As New HashSet(Of SKBitmap)
 		Dim countSize As New Vector2(img.Width \ size.X, img.Height \ size.Y)
 		Select Case inputMode
 			Case ImageInputOption.HORIZONTAL
@@ -337,7 +337,7 @@ Public Class Sprite
 		}
 		Return Output
 	End Function
-	Public Function AddDefaultClip(name As String) As Clip
+	Public Function AddBlankClip(name As String) As Clip
 		Dim C As New Clip With {.Name = name}
 		Clips.Add(C)
 		Return C
@@ -357,20 +357,20 @@ Public Class Sprite
 		End If
 
 		If settings.Sort Then
-			Clips = Clips.OrderBy(Function(i) i.Name, StringComparer.Create(CultureInfo.CurrentCulture, True)).ToList
+			Dim SortedClips = Clips.OrderBy(Function(i) i.Name, StringComparer.Create(CultureInfo.CurrentCulture, True)).ToList
 			For Each expressionName In stringArray.Reverse
-				Dim expression = Clips.FirstOrDefault(Function(i) i.Name = expressionName)
+				Dim expression = SortedClips.FirstOrDefault(Function(i) i.Name = expressionName)
 				If expression IsNot Nothing Then
-					Clips.Remove(expression)
-					Clips.Insert(0, expression)
+					SortedClips.Remove(expression)
+					SortedClips.Insert(0, expression)
 				End If
 			Next
 			Dim TempList As New List(Of SKBitmap)
-			For Each item In Clips
+			For Each item In SortedClips
 				TempList.AddRange(item.Frames)
 			Next
 			TempList.AddRange(Images)
-			Images = TempList.Distinct().ToList
+			Images = TempList.Distinct()
 		End If
 
 		If settings.WithImage Then

@@ -129,11 +129,14 @@ Namespace Objects
 					Throw New RhythmDoctorExcception($"Might not support. Version is too low ({Level.Settings.Version}).")
 				End If
 				With Level
-					.Rows = J("rows").ToObject(Of List(Of Row))(RowsSerializer)
-					.Decorations = J("decorations").ToObject(Of List(Of Decoration))(DecorationsSerializer)
-					.Conditionals = J("conditionals").ToObject(Of List(Of BaseConditional))(ConditionalsSerializer)
-					.Bookmarks = J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer)
-					.ColorPalette = J("colorPalette").ToObject(Of LimitedList(Of SKColor))(ColorPaletteSerializer)
+					.Rows.AddRange(J("rows").ToObject(Of List(Of Row))(RowsSerializer))
+					.Decorations.AddRange(J("decorations").ToObject(Of List(Of Decoration))(DecorationsSerializer))
+					.Conditionals.AddRange(J("conditionals").ToObject(Of List(Of BaseConditional))(ConditionalsSerializer))
+					.Bookmarks.AddRange(J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer))
+					For Each item In J("colorPalette").ToObject(Of LimitedList(Of SKColor))(ColorPaletteSerializer)
+						.ColorPalette.Add(item)
+					Next
+
 				End With
 
 
@@ -232,8 +235,8 @@ Namespace Objects
 					'End If
 					Dim Added As Boolean = False
 					'轨道事件关联
-					If SubClassType.IsAssignableTo(GetType(BaseRows)) Then
-						Dim SubTempEvent As BaseRows = CType(TempEvent, BaseRows)
+					If SubClassType.IsAssignableTo(GetType(BaseRowAction)) Then
+						Dim SubTempEvent As BaseRowAction = CType(TempEvent, BaseRowAction)
 						If item("row").Value(Of Integer) >= 0 Then
 							Dim Parent = Level.Rows(item("row"))
 							Parent.Children.Add(TempEvent)
@@ -243,8 +246,8 @@ Namespace Objects
 						Added = True
 					End If
 					'精灵事件关联
-					If SubClassType.IsAssignableTo(GetType(BaseDecorationActions)) Then
-						Dim SubTempEvent As BaseDecorationActions = CType(TempEvent, BaseDecorationActions)
+					If SubClassType.IsAssignableTo(GetType(BaseDecorationAction)) Then
+						Dim SubTempEvent As BaseDecorationAction = CType(TempEvent, BaseDecorationAction)
 						If item("target") IsNot Nothing Then
 							Dim Parent = Level.Decorations.FirstOrDefault(Function(i) i.Id = item("target"))
 							If Parent IsNot Nothing Then
