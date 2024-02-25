@@ -705,7 +705,7 @@ Namespace Objects
 								  End Function).Cast(Of BaseBeat)
 		End Function
 		Public Function PulseBeats() As IEnumerable(Of Pulse)
-			Select Case _RowType
+			Select Case _rowType
 				Case RowType.Classic
 					Return ClassicBeats().Select(Function(i) i.PulseTime).SelectMany(Function(i) i)
 				Case RowType.Oneshot
@@ -715,7 +715,7 @@ Namespace Objects
 			End Select
 		End Function
 		Public Function PulseEvents() As IEnumerable(Of BaseBeat)
-			Select Case _RowType
+			Select Case _rowType
 				Case RowType.Classic
 					Return ClassicBeats()
 				Case RowType.Oneshot
@@ -745,7 +745,7 @@ Namespace Objects
 			Return Temp
 		End Function
 		Public Overrides Function ToString() As String
-			Return $"{_RowType}: {Character}"
+			Return $"{_rowType}: {Character}"
 		End Function
 	End Class
 	Public Class Bookmark
@@ -907,7 +907,7 @@ Namespace Objects
 				Return level
 			End Function
 			Public Shared Function LoadFile(filepath As String)
-				Return LoadFile(filepath, New InputSettings.LevelInputSettings With {.SpriteSettings = New InputSettings.SpriteInputSettings})
+				Return LoadFile(filepath, New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings})
 			End Function
 			Public Shared Function LoadFile(file As String, settings As InputSettings.LevelInputSettings) As RDLevel
 				Dim path = New IO.FileInfo(file)
@@ -917,7 +917,7 @@ Namespace Objects
 				Return level
 			End Function
 			Public Sub SaveFile(filepath As String)
-				IO.File.WriteAllText(filepath, ToRDLevelJson(New InputSettings.LevelInputSettings With {.SpriteSettings = New InputSettings.SpriteInputSettings}))
+				IO.File.WriteAllText(filepath, ToRDLevelJson(New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings}))
 			End Sub
 			Public Sub SaveFile(filepath As String, settings As InputSettings.LevelInputSettings)
 				IO.File.WriteAllText(filepath, ToRDLevelJson(settings))

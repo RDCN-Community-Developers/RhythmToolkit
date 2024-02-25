@@ -1,4 +1,5 @@
 ﻿Imports Newtonsoft.Json
+Imports RhythmSprite
 Imports Newtonsoft.Json.Linq
 Imports SkiaSharp
 Imports System.Text.RegularExpressions
@@ -455,8 +456,8 @@ Namespace Objects
 		Public Class DecorationConverter
 			Inherits JsonConverter(Of Decoration)
 			Private ReadOnly fileLocation As IO.FileInfo
-			Private ReadOnly settings As InputSettings.SpriteInputSettings
-			Public Sub New(location As IO.FileInfo, settings As InputSettings.SpriteInputSettings)
+			Private ReadOnly settings As SpriteInputSettings
+			Public Sub New(location As IO.FileInfo, settings As SpriteInputSettings)
 				fileLocation = location
 				Me.settings = settings
 			End Sub
