@@ -2061,15 +2061,6 @@ Namespace Objects
 		End Class
 		Public Class MoveRoom
 			Inherits BaseEvent
-			'<JsonIgnore>
-			'Public Property Room As Rooms
-			'	Get
-			'		Return New Rooms(Y) (False,False)
-			'	End Get
-			'	Set(value As Rooms)
-
-			'	End Set
-			'End Property
 			Public Property RoomPosition As NumberOrExpressionPair
 			Public Property Scale As NumberOrExpressionPair
 			Public Property Angle As INumberOrExpression

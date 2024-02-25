@@ -1,6 +1,6 @@
+Imports System.Reflection
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
-Imports System.Reflection
 
 '<AttributeUsage(AttributeTargets.Property Or AttributeTargets.Field Or AttributeTargets.Enum)>
 'Public Class PropertyTranslationAttribute

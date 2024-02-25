@@ -1,8 +1,6 @@
-Imports System
-Imports RhythmTools.Tools
-Imports RhythmSprite
 Imports RhythmBase
 Imports RhythmBase.Objects
+Imports RhythmSprite
 Module Program
 	Sub Main(args As String())
 		Dim Testlevel As RDLevel = RDLevel.LoadFile("E:\Download\Aiobahn feat. KOTOKO - INTERNET YAMERO\main.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})

@@ -1,5 +1,3 @@
-Imports System
-Imports RhythmSprite
 Imports RhythmSprite.Converters
 #Disable Warning ca1416
 Module Test

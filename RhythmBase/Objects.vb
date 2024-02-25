@@ -1,6 +1,6 @@
-﻿Imports Newtonsoft.Json
+﻿Imports System.Text.RegularExpressions
+Imports Newtonsoft.Json
 Imports RhythmSprite
-Imports System.Text.RegularExpressions
 Imports SkiaSharp
 #Disable Warning CA1507
 

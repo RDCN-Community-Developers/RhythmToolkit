@@ -3,8 +3,8 @@ Imports System.Numerics
 Imports System.Reflection
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
-Imports SkiaSharp
 Imports RhythmSprite.Exceptions
+Imports SkiaSharp
 #Disable Warning CA1416
 Namespace Converters
 	Class SpriteConverter(Of T As Sprite)

@@ -1,8 +1,8 @@
-﻿Imports Newtonsoft.Json
-Imports RhythmSprite
+﻿Imports System.Text.RegularExpressions
+Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
+Imports RhythmSprite
 Imports SkiaSharp
-Imports System.Text.RegularExpressions
 
 Namespace Objects
 	Module Converters

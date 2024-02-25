@@ -1,12 +1,10 @@
-﻿Imports System.Diagnostics.Eventing
-Imports RhythmBase.Objects
-Imports RhythmBase.Ease
+﻿Imports RhythmBase.Objects
 Class EaseValueProperty
 	Private ReadOnly variables As Variables
 	Public Property Ease As EaseType
 	Private ReadOnly targetValue As INumberOrExpression
 	Public Function GetTargetValue() As Single
-		Return TargetValue.GetValue(variables)
+		Return targetValue.GetValue(variables)
 	End Function
 
 	Public ReadOnly Property StartBeat As Single
@@ -19,17 +17,17 @@ Class EaseValueProperty
 	Public Sub New(startBeat As Single, duration As Single, target As INumberOrExpression, ease As EaseType)
 		Me.StartBeat = startBeat
 		Me.Ease = ease
-		Me.TargetValue = target
+		Me.targetValue = target
 		Me.Duration = duration
 	End Sub
 	Public Function Current(startValue As Single, time As Single) As Single
 		If time > Duration Then
-			Return TargetValue.GetValue(variables)
+			Return targetValue.GetValue(variables)
 		End If
 		Return RhythmBase.Ease.Ease(time / Duration, startValue, GetTargetValue(), Ease)
 	End Function
 	Public Overrides Function ToString() As String
-		Return $"{Duration},{TargetValue}"
+		Return $"{Duration},{targetValue}"
 	End Function
 End Class
 Class EaseValueList
