@@ -1,12 +1,13 @@
 Imports System
 Imports RhythmBase.Objects
+Imports RhythmSprite
 Imports System.Data.Common
 Imports RhythmBase.Util
 Module Program
 	Sub Main1(args As String())
 
 		Dim leve2 As Objects.RDLevel = RDLevel.LoadFile("C:\Users\30698\OneDrive\文档\rdlevels\新年快乐\level.rdlevel", New InputSettings.LevelInputSettings With {
-														.SpriteSettings = New InputSettings.SpriteInputSettings With {
+														.SpriteSettings = New SpriteInputSettings With {
 														.PlaceHolder = True}})
 		Dim finish = leve2.firstordefault(Function(i) i.Type = EventType.FinishLevel).BeatOnly
 		Dim t As Integer = 0
@@ -45,21 +46,21 @@ Module Program
 			t += 1
 		Loop Until C.BeatOnly_Time(finish) - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
 
-		leve2.SaveFile("C:\Users\30698\OneDrive\文档\rdlevels\新年快乐\levelEdited.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New InputSettings.SpriteInputSettings With {.PlaceHolder = True}})
+		leve2.SaveFile("C:\Users\30698\OneDrive\文档\rdlevels\新年快乐\levelEdited.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
 
 	End Sub
 	Sub Main(args As String())
 		Console.WriteLine("输入 RDLevel 文件路径 (.rdlevel):")
 		Console.WriteLine()
 		Dim Path = "C:\Users\30698\OneDrive\文档\rdlevels\xnkl\level.rdlevel" ' Console.ReadLine
-		Dim Level = RDLevel.LoadFile(Path, New InputSettings.LevelInputSettings With {.SpriteSettings = New InputSettings.SpriteInputSettings With {.PlaceHolder = True}})
+		Dim Level = RDLevel.LoadFile(Path, New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
 
 		Dim TypeList = Level.where(Function(i) i.Tab = Events.Tabs.Actions).GroupBy(Function(i) i.Type).Select(Function(i) i.First.Type).ToList
 		For Each item In Level.where(Function(i) i.Tab = Events.Tabs.Actions)
 			item.Y = TypeList.IndexOf(item.Type)
 		Next
 
-		Level.SaveFile("C:\Users\30698\OneDrive\文档\rdlevels\xnkl\levelEdited.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New InputSettings.SpriteInputSettings With {.PlaceHolder = True}}) '"output.rdlevel")
+		Level.SaveFile("C:\Users\30698\OneDrive\文档\rdlevels\xnkl\levelEdited.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}}) '"output.rdlevel")
 		Console.WriteLine()
 		Console.WriteLine("已保存至本程序下的 output.rdlevel。")
 	End Sub

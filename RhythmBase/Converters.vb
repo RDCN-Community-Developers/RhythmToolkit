@@ -590,12 +590,6 @@ Namespace Objects
 End Namespace
 Namespace InputSettings
 	Public Class LevelInputSettings
-		Public SpriteSettings As New SpriteInputSettings
-	End Class
-	Public Class SpriteInputSettings
-		''' <summary>
-		''' 启用精灵占位符，以换取更快的读取速度。精灵将不可更改，精灵表情将无法读取。禁用则会读取完整精灵图。
-		''' </summary>
-		Public PlaceHolder As Boolean
+		Public SpriteSettings As New RhythmSprite.SpriteInputSettings
 	End Class
 End Namespace
