@@ -1,10 +1,11 @@
 Imports System
 Imports RhythmTools.Tools
+Imports RhythmSprite
 Imports RhythmBase
 Imports RhythmBase.Objects
 Module Program
 	Sub Main(args As String())
-		Dim Testlevel As RDLevel = RDLevel.LoadFile("E:\Download\Aiobahn feat. KOTOKO - INTERNET YAMERO\main.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New InputSettings.SpriteInputSettings With {.PlaceHolder = True}})
+		Dim Testlevel As RDLevel = RDLevel.LoadFile("E:\Download\Aiobahn feat. KOTOKO - INTERNET YAMERO\main.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
 		Dim tools As New RDLevelHandler(Testlevel)
 		Dim tool1 As New BeatCalculator(Testlevel)
 		Dim l = Testlevel.Where(Of CustomFlash)
