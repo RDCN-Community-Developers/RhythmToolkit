@@ -1,5 +1,7 @@
 ﻿Imports RhythmBase.Objects
 Imports RhythmBase.Util
+Imports RhythmAsset.Sprites
+Imports RhythmAsset
 Public Module Tools
 	Public Class RDLevelHandler
 		Private ReadOnly Level As RDLevel
@@ -99,8 +101,8 @@ Public Module Tools
 		''' <param name="magnification"></param>
 		Public Sub ZoomSprite(magnification As Single)
 			For Each deco In Level.Decorations
-				If deco.GetType = GetType(RhythmSprite.Sprite) Then
-					For Each image In CType(deco.Parent, RhythmSprite.Sprite).Images
+				If deco.GetType = GetType(Sprite) Then
+					For Each image In CType(deco.Parent, Sprite).Images
 					Next
 				End If
 			Next
@@ -125,7 +127,7 @@ Public Module Tools
 		''' <summary>
 		''' [未完成] 拆分轨道为精灵图
 		''' </summary>
-		Public Sub SplitRow(Character As RhythmSprite.ISprite, ClassicBeat As RhythmSprite.ISprite, Heart As RhythmSprite.ISprite, beatSettings As SplitRowSettings)
+		Public Sub SplitRow(Character As ISprite, ClassicBeat As ISprite, Heart As ISprite, beatSettings As SplitRowSettings)
 			For Each row In Level.Rows.Where(Function(i) i.RowType = RowType.Classic)
 				Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
 				Dim Decos As New List(Of (deco As Decoration, left As Double)) From {
@@ -285,7 +287,7 @@ Public Module Tools
 		''' <param name="count">个数</param>
 		''' <param name="depth">精灵深度</param>
 		''' <param name="visible">精灵的初始可见性</param>
-		Public Sub AddLotsOfDecos(room As Rooms, sprite As RhythmSprite.Sprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
+		Public Sub AddLotsOfDecos(room As Rooms, sprite As Sprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
 			For i As UInteger = 0 To count
 				Level.Decorations.Add(New Decoration(room, sprite, depth, visible))
 			Next

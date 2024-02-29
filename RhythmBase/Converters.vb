@@ -1,7 +1,8 @@
 ﻿Imports System.Text.RegularExpressions
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
-Imports RhythmSprite
+Imports RhythmAsset
+Imports RhythmAsset.Sprites
 Imports SkiaSharp
 
 Namespace Objects
@@ -26,12 +27,16 @@ Namespace Objects
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 				}
 				With RowsSerializer.Converters
-					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 					.Add(New RoomConverter)
 				End With
 				Dim DecorationsSerializer As New JsonSerializerSettings With {
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 				}
+				With DecorationsSerializer.Converters
+					.Add(New AssetConverter(fileLocation, Me.settings.SpriteSettings, value.Assets))
+					.Add(New RoomConverter)
+				End With
 				With DecorationsSerializer.Converters
 					.Add(New RoomConverter)
 				End With
@@ -58,7 +63,7 @@ Namespace Objects
 					.NullValueHandling = NullValueHandling.Ignore
 				}
 				With EventsSerializer.Converters
-					.Add(New EventConverter(value.CPBs, value.BPMs))
+					.Add(New EventConverter(value.CPBs, value.BPMs, value.Path, settings.SpriteSettings, value.Assets))
 				End With
 
 				With writer
@@ -81,8 +86,9 @@ Namespace Objects
 				End With
 			End Sub
 			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDLevel, hasExistingValue As Boolean, serializer As JsonSerializer) As RDLevel
-				Dim SetCPB As New List(Of SetCrotchetsPerBar)
-				Dim SetBPM As New List(Of BaseBeatsPerMinute)
+				Dim SetCPBCollection As New List(Of SetCrotchetsPerBar)
+				Dim SetBPMCollection As New List(Of BaseBeatsPerMinute)
+				Dim assetsCollection As New HashSet(Of ISprite)
 				Dim J = JObject.Load(reader)
 				Dim SettingsSerializer As New JsonSerializer
 				With SettingsSerializer.Converters
@@ -91,12 +97,13 @@ Namespace Objects
 				End With
 				Dim RowsSerializer As New JsonSerializer
 				With RowsSerializer.Converters
-					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 					.Add(New RoomConverter)
 				End With
 				Dim DecorationsSerializer As New JsonSerializer
 				With DecorationsSerializer.Converters
-					.Add(New DecorationConverter(fileLocation, settings.SpriteSettings))
+					.Add(New AssetConverter(fileLocation, settings.SpriteSettings, assetsCollection))
+					.Add(New RoomConverter)
 				End With
 				Dim ConditionalsSerializer As New JsonSerializer
 				With ConditionalsSerializer.Converters
@@ -119,7 +126,9 @@ Namespace Objects
 					.Add(New NumberOrExpressionPairConverter)
 					.Add(New PanelColorConverter)
 					.Add(New RoomConverter)
-					.Add(New TagActionConverter(SetCPB))
+					.Add(New AssetConverter(fileLocation, settings.SpriteSettings, assetsCollection))
+					.Add(New AnchorStyleConverter)
+					.Add(New TagActionConverter(SetCPBCollection))
 					.Add(New ConditionConverter)
 					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
@@ -136,6 +145,9 @@ Namespace Objects
 					.Bookmarks.AddRange(J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer))
 					For Each item In J("colorPalette").ToObject(Of LimitedList(Of SKColor))(ColorPaletteSerializer)
 						.ColorPalette.Add(item)
+					Next
+					For Each item In assetsCollection
+						.Assets.Add(item)
 					Next
 
 				End With
@@ -156,26 +168,26 @@ Namespace Objects
 
 				For Each item In J("events").Where(Function(i) i("type") = NameOf(SetCrotchetsPerBar))
 					Dim TempEvent As SetCrotchetsPerBar = item.ToObject(GetType(SetCrotchetsPerBar), EventsSerializer)
-					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), 1, SetCPB)
-					SetCPB.Add(TempEvent)
+					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), 1, SetCPBCollection)
+					SetCPBCollection.Add(TempEvent)
 				Next
 
 
 				For Each item In J("events").Where(Function(i) i("type") = NameOf(SetBeatsPerMinute))
 					Dim TempEvent As BaseBeatsPerMinute = item.ToObject(GetType(SetBeatsPerMinute), EventsSerializer)
-					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(item("beat")), SetCPB)
-					SetBPM.Add(TempEvent)
+					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(item("beat")), SetCPBCollection)
+					SetBPMCollection.Add(TempEvent)
 				Next
 
 
 				For Each item In J("events").Where(Function(i) i("type") = NameOf(PlaySong))
 					Dim TempEvent As BaseBeatsPerMinute = item.ToObject(GetType(PlaySong), EventsSerializer)
-					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(item("beat")), SetCPB)
-					SetBPM.Add(TempEvent)
+					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(item("beat")), SetCPBCollection)
+					SetBPMCollection.Add(TempEvent)
 				Next
 
-				Level.BPMs = SetBPM
-				Level.CPBs = SetCPB
+				Level.BPMs = SetBPMCollection
+				Level.CPBs = SetCPBCollection
 
 				For Each item In J("events")
 
@@ -189,31 +201,7 @@ Namespace Objects
 
 					Dim SubClassType As Type = Type.GetType($"{BaseActionType.Namespace}.{NameOf(Events)}+{item("type")}")
 					Dim TempEvent As BaseEvent = item.ToObject(SubClassType, EventsSerializer)
-					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(If(item("beat"), 1)), SetCPB)
-					'色盘
-					'For Each info In SubClassType.GetProperties.Where(Function(i) i.PropertyType = GetType(PanelColor))
-					'	Dim PColor As New PanelColor
-					'	Dim name = ToCamelCase(info.Name, False)
-					'	If item(name) IsNot Nothing Then
-					'		Dim panelName = item(ToCamelCase(info.Name, False)).ToString
-					'		Dim match = Regex.Match(item(name).ToString, "pal(?<index>[\d]+)")
-					'		If match.Success Then
-					'			PColor.Panel = match.Groups("index").Value
-					'			info.SetValue(TempEvent, PColor)
-					'		Else
-					'			Dim S = RgbaToArgb(Convert.ToInt32(item(name).ToString.PadRight(8, "f"c), 16))
-					'			PColor.Color = SKColor.Parse(item(name))
-					'			PColor.Panel = -1
-					'		End If
-					'		PColor.Parent = Level.ColorPalette
-					'		info.SetValue(TempEvent, PColor)
-					'	Else
-					'		PColor.Panel = -1
-					'		PColor.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)
-					'		PColor.Parent = Level.ColorPalette
-					'		info.SetValue(TempEvent, PColor)
-					'	End If
-					'Next
+					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(If(item("beat"), 1)), SetCPBCollection)
 					'条件
 					If item("if") IsNot Nothing Then
 						Dim ConditionIds = Regex.Matches(item("if").ToString, "~?\d+(?=[&d])")
@@ -225,15 +213,6 @@ Namespace Objects
 						Next
 						TempEvent.If.Duration = Regex.Match(item("if").ToString, "(?<=d)[\d\.]+").Value
 					End If
-					'标签
-					'If item("tag") IsNot Nothing Then
-					'	Dim tagName = item("tag")
-					'	If Level.Tags.ContainsKey(tagName) Then
-					'		Level.Tags(tagName).Add(TempEvent)
-					'	Else
-					'		Level.Tags(tagName) = New List(Of BaseEvent) From {TempEvent}
-					'	End If
-					'End If
 					Dim Added As Boolean = False
 					'轨道事件关联
 					If SubClassType.IsAssignableTo(GetType(BaseRowAction)) Then
@@ -284,11 +263,53 @@ Namespace Objects
 				Return Level
 			End Function
 		End Class
+		Public Class AnchorStyleConverter
+			Inherits JsonConverter(Of FloatingText.AnchorStyle)
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As FloatingText.AnchorStyle, serializer As JsonSerializer)
+				Dim v1 = If(value And &B11, "Middle", [Enum].Parse(Of FloatingText.AnchorStyle)(value And &B11).ToString)
+				writer.WriteValue(If(value And &B11, [Enum].Parse(Of FloatingText.AnchorStyle)(value And &B11).ToString, "Middle") +
+								  [Enum].Parse(Of FloatingText.AnchorStyle)(value And &B1100).ToString)
+			End Sub
+
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As FloatingText.AnchorStyle, hasExistingValue As Boolean, serializer As JsonSerializer) As FloatingText.AnchorStyle
+				Dim JString As String = JToken.ReadFrom(reader).ToObject(Of String)
+				Dim match = Regex.Match(JString, "([A-Z][a-z]+)([A-Z][a-z]+)")
+				Dim middle As Boolean = False
+				Dim center As Boolean = False
+				Dim result As New FloatingText.AnchorStyle
+				Select Case match.Groups(1).Value
+					Case "Upper"
+						result = result Or FloatingText.AnchorStyle.Upper
+					Case "Lower"
+						result = result Or FloatingText.AnchorStyle.Lower
+					Case Else
+						middle = True
+				End Select
+				Select Case match.Groups(2).Value
+					Case "Left"
+						result = result Or FloatingText.AnchorStyle.Left
+					Case "Right"
+						result = result Or FloatingText.AnchorStyle.Right
+					Case Else
+						center = True
+				End Select
+				If center And middle Then
+					result = FloatingText.AnchorStyle.Center
+				End If
+				Return result
+			End Function
+		End Class
 		Public Class EventConverter
 			Inherits JsonConverter(Of List(Of BaseEvent))
 			Private ReadOnly setCPB As IEnumerable(Of SetCrotchetsPerBar)
 			Private ReadOnly setBPM As IEnumerable(Of BaseBeatsPerMinute)
-			Public Sub New(setCPBCollection As IEnumerable(Of SetCrotchetsPerBar), setBPMCollection As IEnumerable(Of BaseBeatsPerMinute))
+			Private ReadOnly fileLocation As IO.FileInfo
+			Private ReadOnly settings As SpriteInputSettings
+			Private ReadOnly assets As HashSet(Of ISprite)
+			Public Sub New(setCPBCollection As IEnumerable(Of SetCrotchetsPerBar), setBPMCollection As IEnumerable(Of BaseBeatsPerMinute), location As IO.FileInfo, settings As SpriteInputSettings, assets As HashSet(Of ISprite))
+				fileLocation = location
+				Me.settings = settings
+				Me.assets = assets
 				setCPB = setCPBCollection
 				setBPM = setBPMCollection
 			End Sub
@@ -305,6 +326,8 @@ Namespace Objects
 					.Add(New TagActionConverter(setCPB))
 					.Add(New RoomConverter)
 					.Add(New ConditionConverter)
+					.Add(New AssetConverter(fileLocation, settings, assets))
+					.Add(New AnchorStyleConverter)
 					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
 				With writer
@@ -422,24 +445,14 @@ Namespace Objects
 					End If
 					Dim rgb = s.Substring(0, 6)
 					If s.Length > 6 Then
-						existingValue.Color = SKColor.Parse(alpha + rgb) ' UInteger.Parse(rgb, Globalization.NumberStyles.HexNumber) '+ UInteger.Parse(alpha, Globalization.NumberStyles.HexNumber) << 24
+						existingValue.Color = SKColor.Parse(alpha + rgb)
 					Else
 						existingValue.Color = SKColor.Parse(rgb)
 					End If
-					'	existingValue.Color = SKColor.Parse(JString)
 				End If
 				Return existingValue
 			End Function
 		End Class
-		'Public Class FileConverter
-		'	Inherits JsonConverter(Of FileLocator)
-		'	Public Overrides Sub WriteJson(writer As JsonWriter, value As FileLocator, serializer As JsonSerializer)
-		'		writer.WriteRawValue(value.Name)
-		'	End Sub
-		'	Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As FileLocator, hasExistingValue As Boolean, serializer As JsonSerializer) As FileLocator
-		'		Return New FileLocator(reader.ReadAsString())
-		'	End Function
-		'End Class
 		Public Class ColorConverter
 			Inherits JsonConverter(Of SKColor)
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As SKColor, serializer As JsonSerializer)
@@ -453,13 +466,51 @@ Namespace Objects
 				Return SKColor.Parse(Reg.Groups(1).Value + Reg.Groups(2).Value)
 			End Function
 		End Class
+		Public Class AssetConverter
+			Inherits JsonConverter(Of ISprite)
+			Private ReadOnly fileLocation As IO.FileInfo
+			Private ReadOnly settings As SpriteInputSettings
+			Private ReadOnly assets As HashSet(Of ISprite)
+			Public Sub New(location As IO.FileInfo, settings As SpriteInputSettings, assets As HashSet(Of ISprite))
+				fileLocation = location
+				Me.settings = settings
+				Me.assets = assets
+			End Sub
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As ISprite, serializer As JsonSerializer)
+				writer.WriteValue(value.Name)
+			End Sub
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As ISprite, hasExistingValue As Boolean, serializer As JsonSerializer) As ISprite
+				Dim Json = JToken.ReadFrom(reader).ToObject(Of String)
+				Dim assetName = Json
+				Dim result As ISprite
+				If assets.Any(Function(i) i.Name = assetName) Then
+					result = assets.Single(Function(i) i.Name = assetName)
+				Else
+					Dim file = New IO.FileInfo(fileLocation.Directory.FullName + "\" + Json)
+					If Me.settings.PlaceHolder Then
+						result = New Placeholder(file)
+					ElseIf Image.CanRead(file) Then
+						result = Image.FromPath(file)
+					ElseIf Sprite.CanRead(file) Then
+						result = Sprite.FromPath(file)
+					Else
+						result = New NullAsset
+						'Throw New RhythmDoctorExcception($"Cannot read the file: ""{assetName}""")
+					End If
+					assets.Add(result)
+				End If
+				Return result
+			End Function
+		End Class
 		Public Class DecorationConverter
 			Inherits JsonConverter(Of Decoration)
 			Private ReadOnly fileLocation As IO.FileInfo
 			Private ReadOnly settings As SpriteInputSettings
-			Public Sub New(location As IO.FileInfo, settings As SpriteInputSettings)
+			Private ReadOnly assets As HashSet(Of ISprite)
+			Public Sub New(location As IO.FileInfo, settings As SpriteInputSettings, assets As HashSet(Of ISprite))
 				fileLocation = location
 				Me.settings = settings
+				Me.assets = assets
 			End Sub
 			Public Overrides ReadOnly Property CanWrite As Boolean = False
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As Decoration, serializer As JsonSerializer)
@@ -470,16 +521,9 @@ Namespace Objects
 				Dim settings As New JsonSerializer
 				With settings.Converters
 					.Add(New RoomConverter)
+					.Add(New AssetConverter(fileLocation, Me.settings, assets))
 				End With
 				Dim result = Json.ToObject(Of Decoration)(settings)
-				Dim file = fileLocation.Directory.FullName + "\" + Json("filename").ToString
-				If Me.settings.PlaceHolder Then
-					result.Parent = New RhythmSprite.Placeholder(file)
-				ElseIf RhythmSprite.Sprite.CanRead(file) Then
-					result.Parent = RhythmSprite.Sprite.FromPath(file)
-				ElseIf RhythmSprite.Image.CanRead(file) Then
-					result.Parent = RhythmSprite.Image.FromPath(file)
-				End If
 				Return result
 			End Function
 		End Class
@@ -489,9 +533,9 @@ Namespace Objects
 				writer.WriteRawValue($"[{String.Join(",", value.Rooms)}]")
 			End Sub
 			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Rooms, hasExistingValue As Boolean, serializer As JsonSerializer) As Rooms
-				Dim J = JArray.Load(reader)
+				Dim J = JArray.Load(reader).ToObject(Of Byte())
 				For Each item In J
-					existingValue(CType(item, Byte)) = True
+					existingValue(item) = True
 				Next
 				Return existingValue
 			End Function
@@ -590,6 +634,6 @@ Namespace Objects
 End Namespace
 Namespace InputSettings
 	Public Class LevelInputSettings
-		Public SpriteSettings As New RhythmSprite.SpriteInputSettings
+		Public SpriteSettings As New RhythmAsset.SpriteInputSettings
 	End Class
 End Namespace

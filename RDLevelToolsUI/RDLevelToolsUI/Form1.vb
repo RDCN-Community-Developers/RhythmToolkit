@@ -1,5 +1,6 @@
 ﻿Imports RhythmBase.Objects
 Imports RhythmLocalization
+Imports RhythmAsset
 Imports RhythmBase.Util
 Imports RhythmTools.Tools
 Imports System.Reflection
@@ -10,11 +11,11 @@ Public Class Form1
 	Private processingLevel As RDLevel
 	Private viewIndex As Integer = -1
 	Private Sub Button2_Click(sender As Object, e As EventArgs) Handles ImportButton.Click
-		OpenFileDialog1.Filter = "节奏医生游戏关卡文件|*.rdlevel"
+		OpenFileDialog1.Filter = "节奏医生游戏关卡文件|*.rdlevel|节奏医生游戏关卡压缩包文件|*.rdzip"
 		If OpenFileDialog1.ShowDialog <> DialogResult.OK Then
 			Return
 		End If
-		processingLevel = RDLevel.LoadFile(OpenFileDialog1.FileName)
+		processingLevel = RDLevel.LoadFile(New IO.FileInfo(OpenFileDialog1.FileName), New RhythmBase.InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = False}})
 		Dim file = New IO.FileInfo(OpenFileDialog1.FileName)
 		Text = file.Directory.Name + "\" + file.Name
 		LevelHandler = New RDLevelHandler(processingLevel)
@@ -60,14 +61,6 @@ Public Class Form1
 			Return
 		End If
 		LevelHandler.DisposeTags()
-		MsgBox("完成")
-	End Sub
-
-	Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
-		If Not able Then
-			Return
-		End If
-		LevelHandler.CombineToTag(TextBox2.Text, FilterCodeCSharp(TextBox1.Text), True)
 		MsgBox("完成")
 	End Sub
 
@@ -154,6 +147,14 @@ Public Class Form1
 						.DecimalPlaces = 0,
 						.Minimum = 0,
 						.Maximum = 65535
+					}
+					pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
+					editorControl = pNumericUpDown
+				ElseIf p.Name = NameOf(BaseBeat.BeatOnly) Then
+					Dim pNumericUpDown = New NumericUpDown With {
+						.DecimalPlaces = 2,
+						.Minimum = 1,
+						.Maximum = 32767
 					}
 					pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
 					editorControl = pNumericUpDown

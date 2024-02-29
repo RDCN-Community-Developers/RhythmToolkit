@@ -1,10 +1,6 @@
 ﻿Imports System.Drawing
 Imports RhythmBase.Objects
 Imports RhythmBase.Objects.Events
-'Imports Microsoft.CodeAnalysis.VisualBasic
-Imports Microsoft.CodeAnalysis.CSharp.Scripting
-Imports Microsoft.CodeAnalysis.Scripting
-Imports Microsoft.CodeAnalysis.CSharp
 Imports Microsoft.CodeAnalysis
 Imports System.Reflection
 ''' <summary>
@@ -152,121 +148,6 @@ Public Module Util
 			End If
 		Next
 		Return copy
-	End Function
-	'	'	Public Function FilterCode(code As String) As Func(Of BaseEvent, Boolean)
-	'	'		Dim provider As New VBCodeProvider
-	'	'		Dim parameters As New CompilerParameters With {
-	'	'			.GenerateExecutable = False,
-	'	'			.GenerateInMemory = True
-	'	'		}
-
-	'	'		With parameters.ReferencedAssemblies
-	'	'			.Add("mscorlib.dll")
-	'	'			.Add("system.dll")
-	'	'			.Add(GetType(BaseEvent).Assembly.Location)
-	'	'		End With
-
-	'	'		Dim sourceCode = $"Imports System
-	'	'Public Class Filters
-	'	'	Public Function EventFilter(e As BaseEvent) As Boolean
-	'	'		{code}
-	'	'	End Function
-	'	'End Class
-	'	'"
-	'	'		' 编译代码
-	'	'		Dim results As CompilerResults = provider.CompileAssemblyFromSource(parameters, sourceCode)
-
-	'	'		If results.Errors.HasErrors Then
-	'	'			Throw New Exception(String.Join(Environment.NewLine, results.Errors.Cast(Of CompilerError).Select(Function(err) $"{err.Line},{err.Column}: {err.ErrorText}")))
-	'	'		End If
-
-	'	'		' 从生成的程序集中加载类型并获取方法信息
-	'	'		Dim dynamicType As Type = results.CompiledAssembly.GetType("Filters")
-	'	'		Dim methodInfo As MethodInfo = dynamicType.GetMethod("EventFilter")
-
-	'	'		' 创建委托
-	'	'		Return DirectCast([Delegate].CreateDelegate(GetType(Func(Of BaseEvent, Boolean)), methodInfo), Func(Of BaseEvent, Boolean))
-
-	'	'	End Function
-	'	Public Function FilterCodeVisualBasic(code As String) As Func(Of BaseEvent, Boolean)
-	'		Dim fullCode =
-	'$"
-	'Imports System
-	'Namespace RDLevel
-	'    Public Class Filters
-	'		Public Shared Function EventFilter(e As BaseEvent) As Boolean
-	'				{code}
-	'		End Function
-	'	End Class
-	'End Namespace
-	'		"
-	'		Dim synt As SyntaxTree = VisualBasicSyntaxTree.ParseText(fullCode)
-	'		Dim references = AppDomain.CurrentDomain.GetAssemblies.Where(Function(i) Not i.IsDynamic AndAlso i.Location IsNot Nothing).Select(Function(i) MetadataReference.CreateFromFile(i.Location)).Concat({MetadataReference.CreateFromFile(GetType(BaseEvent).Assembly.Location)})
-	'		Dim compilation = VisualBasicCompilation.Create("DynamicCode", {}, references, New VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-	'		Using ms As New IO.MemoryStream
-	'			Dim result As EmitResult = compilation.Emit(ms)
-	'			If Not result.Success Then
-	'				Throw New Exception("Failed to compile code. Errors: " +
-	'					String.Join(Environment.NewLine, result.Diagnostics.Where(Function(d) d.IsWarningAsError OrElse d.Severity = DiagnosticSeverity.Error).Select(Function(d) $"{d.Id}: {d.GetMessage()}")))
-	'			End If
-
-	'			ms.Seek(0, IO.SeekOrigin.Begin)
-	'			Dim assembly1 = Assembly.Load(ms.ToArray)
-	'			Dim type = assembly1.GetType("RDLevel.Filters")
-	'			Dim methodInfo = type.GetMethod("EventFilter")
-
-	'			Dim parameter As ParameterExpression = Expression.Parameter(GetType(BaseEvent), "baseEvent")
-	'			Dim methodCall As MethodCallExpression = Expression.Call(Nothing, methodInfo, parameter)
-	'			Dim lambda As LambdaExpression = Expression.Lambda(Of Func(Of BaseEvent, Boolean))(methodCall, parameter)
-
-	'			Return lambda.Compile()
-	'		End Using
-	'	End Function
-	'	Public Function FilterCodeCSharp(code As String) As Func(Of BaseEvent, Boolean)
-	'		Dim fullCode =
-	'$"
-	'using System
-	'namespace RDLevel{{
-	'    public static class Filters{{
-	'		public static bool EventFilter(BaseEvent e){{
-	'				{code}
-	'		}}
-	'	}}
-	'}}
-	'		"
-	'		Dim synt As SyntaxTree = CSharpSyntaxTree.ParseText(fullCode)
-	'		Dim references = AppDomain.CurrentDomain.GetAssemblies.Where(Function(i) Not i.IsDynamic AndAlso i.Location IsNot Nothing).Select(Function(i) MetadataReference.CreateFromFile(i.Location)).Concat({MetadataReference.CreateFromFile(GetType(BaseEvent).Assembly.Location)})
-	'		Dim compilation = CSharpCompilation.Create("DynamicCode", {}, references, New CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-	'		Using ms As New IO.MemoryStream
-	'			Dim result As EmitResult = compilation.Emit(ms)
-	'			If Not result.Success Then
-	'				Throw New Exception("Failed to compile code. Errors: " +
-	'					String.Join(Environment.NewLine, result.Diagnostics.Where(Function(d) d.IsWarningAsError OrElse d.Severity = DiagnosticSeverity.Error).Select(Function(d) $"{d.Id}: {d.GetMessage()}")))
-	'			End If
-
-	'			ms.Seek(0, IO.SeekOrigin.Begin)
-	'			Dim assembly1 = Assembly.Load(ms.ToArray)
-	'			Dim A = assembly1.GetExportedTypes
-	'			For Each item In assembly1.GetExportedTypes
-	'				Console.WriteLine(item.ToString)
-	'			Next
-	'			Dim type = assembly1.GetType("RDLevel.Filters")
-	'			Dim methodInfo = type.GetMethod("EventFilter")
-
-	'			Dim parameter As ParameterExpression = Expression.Parameter(GetType(BaseEvent), "baseEvent")
-	'			Dim methodCall As MethodCallExpression = Expression.Call(Nothing, methodInfo, parameter)
-	'			Dim lambda As LambdaExpression = Expression.Lambda(Of Func(Of BaseEvent, Boolean))(methodCall, parameter)
-
-	'			Return lambda.Compile()
-	'		End Using
-	'	End Function
-	Public Function FilterCodeCSharp(code As String) As Func(Of BaseEvent, Boolean)
-		Dim script = CSharpScript.Create(code, globalsType:=GetType(BaseEvent),
-		options:=ScriptOptions.Default.WithReferences(GetType(BaseEvent).Assembly).WithImports("RDLevel.RhythmDoctorObjects"))
-		script.Compile()
-		Return Function(i As BaseEvent)
-				   Return script.RunAsync(i).Result.ReturnValue
-			   End Function
 	End Function
 	Public Class ModulesException
 		Inherits Exception

@@ -1,12 +1,13 @@
 Imports System
 Imports RhythmBase.Objects
-Imports RhythmSprite
+Imports RhythmAsset.Sprites
+Imports RhythmAsset
 Imports System.Data.Common
 Imports RhythmBase.Util
 Module Program
 	Sub Main1(args As String())
 
-		Dim leve2 As Objects.RDLevel = RDLevel.LoadFile("C:\Users\30698\OneDrive\文档\rdlevels\新年快乐\level.rdlevel", New InputSettings.LevelInputSettings With {
+		Dim leve2 As Objects.RDLevel = RDLevel.LoadFile(New IO.FileInfo("C:\Users\30698\OneDrive\文档\rdlevels\新年快乐\level.rdlevel"), New InputSettings.LevelInputSettings With {
 														.SpriteSettings = New SpriteInputSettings With {
 														.PlaceHolder = True}})
 		Dim finish = leve2.firstordefault(Function(i) i.Type = EventType.FinishLevel).BeatOnly
@@ -22,9 +23,9 @@ Module Program
 		txt1.Id = t
 		txt1.Mode = FloatingText.OutMode.HideAbruptly
 		txt1.FadeOutRate = 1
-		txt1.AnchorType = FloatingText.AnchorTypes.Left Or FloatingText.AnchorTypes.Upper
+		txt1.Anchor = FloatingText.AnchorStyle.Left Or FloatingText.AnchorStyle.Upper
 		txt1.Text = (C.BeatOnly_Time(finish) - TimeSpan.FromSeconds(t / interval)).ToString
-		leve2.add(txt1)
+		leve2.Add(txt1)
 		Dim txt2 As New FloatingText With {
 			.Y = 1,
 			.BeatOnly = txt1.BeatOnly,
@@ -33,7 +34,7 @@ Module Program
 			.Id = t,
 			.Mode = FloatingText.OutMode.HideAbruptly,
 			.FadeOutRate = 1,
-			.AnchorType = FloatingText.AnchorTypes.Left Or FloatingText.AnchorTypes.Upper,
+			.Anchor = FloatingText.AnchorStyle.Left Or FloatingText.AnchorStyle.Upper,
 			.Text = C.BeatOnly_BarBeat(txt1.BeatOnly).ToString
 		}
 		txt2.Rooms(0) = True
@@ -53,7 +54,7 @@ Module Program
 		Console.WriteLine("输入 RDLevel 文件路径 (.rdlevel):")
 		Console.WriteLine()
 		Dim Path = "C:\Users\30698\OneDrive\文档\rdlevels\xnkl\level.rdlevel" ' Console.ReadLine
-		Dim Level = RDLevel.LoadFile(Path, New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
+		Dim Level = RDLevel.LoadFile(New IO.FileInfo(Path), New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
 
 		Dim TypeList = Level.where(Function(i) i.Tab = Events.Tabs.Actions).GroupBy(Function(i) i.Type).Select(Function(i) i.First.Type).ToList
 		For Each item In Level.where(Function(i) i.Tab = Events.Tabs.Actions)

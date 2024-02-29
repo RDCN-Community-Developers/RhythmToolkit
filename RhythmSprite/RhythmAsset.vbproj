@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <RootNamespace>RhythmSprite</RootNamespace>
+    <RootNamespace>RhythmAsset</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
     <UseApplicationFramework>False</UseApplicationFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SkiaSharp" Version="3.0.0-preview.1.8" />
   </ItemGroup>

@@ -7,11 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SkiaSharp" Version="3.0.0-preview.1.8" />
+    <PackageReference Include="SkiaSharp" Version="3.0.0-preview.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
+    <ProjectReference Include="..\RhythmSprite\RhythmAsset.vbproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RhythmAsset">
+      <HintPath>..\RhythmSprite\bin\Debug\net6.0\RhythmAsset.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

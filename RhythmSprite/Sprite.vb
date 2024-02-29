@@ -1,19 +1,21 @@
 ﻿Imports System.Globalization
+Imports System.IO
 Imports System.Numerics
 Imports System.Reflection
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
-Imports RhythmSprite.Exceptions
+Imports RhythmAsset.Exceptions
+Imports RhythmAsset.Sprites
 Imports SkiaSharp
 #Disable Warning CA1416
 Namespace Converters
-	Class SpriteConverter(Of T As Sprite)
-		Inherits JsonConverter(Of T)
+	Class SpriteConverter
+		Inherits JsonConverter(Of Sprite)
 		Private tempImageList As HashSet(Of SKBitmap)
 		Public Sub New(imageList As HashSet(Of SKBitmap))
 			tempImageList = imageList
 		End Sub
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As T, serializer As JsonSerializer)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As Sprite, serializer As JsonSerializer)
 			Dim Setting As New JsonSerializerSettings With {
 				.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
 				.Formatting = Formatting.Indented
@@ -22,9 +24,15 @@ Namespace Converters
 				.Add(New Vector2Converter)
 				.Add(New ClipListConverter(tempImageList))
 			End With
-			writer.WriteRawValue(JsonConvert.SerializeObject(value, Setting))
+			Dim rowPreviewFrame As UInteger = value.Images.ToList.IndexOf(value.Preview)
+			value.RowPreviewFrame = Nothing
+			Dim Jobj = JObject.FromObject(value)
+			If value.ShouldSerializeRowPreviewFrame Then
+				Jobj("rowPreviewFrame") = rowPreviewFrame
+			End If
+			writer.WriteRawValue(Jobj)
 		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Sprite, hasExistingValue As Boolean, serializer As JsonSerializer) As Sprite
 			Dim Setting As New JsonSerializer With {
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 			}
@@ -32,7 +40,13 @@ Namespace Converters
 				.Add(New Vector2Converter)
 				.Add(New ClipListConverter(tempImageList))
 			End With
-			Return JObject.Load(reader).ToObject(Of T)(Setting)
+			Dim JObj = JObject.Load(reader).ToObject(Of JObject)
+			Dim index As UInteger?
+			index = JObj("rowPreviewFrame")?.ToObject(Of UInteger?)
+			JObj.Remove("rowPreviewFrame")
+			Dim result = JObj.ToObject(Of Sprite)(Setting)
+			result.RowPreviewFrame = If(index, result.Images.ToList(index), Nothing)
+			Return result
 		End Function
 	End Class
 	Class ClipListConverter
@@ -175,14 +189,14 @@ Public Enum ImageInputOption
 	HORIZONTAL
 	VERTICAL
 End Enum
-Public Module ImageUtil
-	Public Function LoadImage(path As String) As SKBitmap
-		Using stream = IO.File.OpenRead(path)
+Public Module ImageUtils
+	Public Function LoadImage(path As FileInfo) As SKBitmap
+		Using stream = path.OpenRead
 			Return SKBitmap.Decode(stream)
 		End Using
 	End Function
-	Public Sub SaveImage(image As SKBitmap, path As String)
-		Using stream = IO.File.OpenWrite(path)
+	Public Sub SaveImage(image As SKBitmap, path As FileInfo)
+		Using stream = path.OpenWrite
 			image.Encode(SKEncodedImageFormat.Png, 100).SaveTo(stream)
 		End Using
 	End Sub
@@ -191,13 +205,13 @@ Public Module ImageUtil
 		For x = 0 To img.Width - 1
 			For y = 0 To img.Height - 1
 				If image.GetPixel(x, y).Alpha = 0 AndAlso
-					(image.GetPixel(Math.Max(0, x - 1), y).Alpha OrElse
-					image.GetPixel(Math.Min(x + 1, img.Width - 1), y).Alpha OrElse
-					image.GetPixel(x, Math.Max(0, y - 1)).Alpha OrElse
-					image.GetPixel(x, Math.Min(y + 1, img.Width - 1)).Alpha) Then
+					(image.GetPixel(Math.Max(0, x - 1), y).Alpha = 255 OrElse
+					image.GetPixel(Math.Min(x + 1, img.Width - 1), y).Alpha = 255 OrElse
+					image.GetPixel(x, Math.Max(0, y - 1)).Alpha = 255 OrElse
+					image.GetPixel(x, Math.Min(y + 1, img.Width - 1)).Alpha = 255) Then
 					img.SetPixel(x, y, New SKColor(&HFF, &HFF, &HFF, &HFF))
 				Else
-					image.SetPixel(x, y, New SKColor)
+					img.SetPixel(x, y, New SKColor)
 				End If
 			Next
 		Next
@@ -248,332 +262,387 @@ Public Module ImageUtil
 	End Function
 
 End Module
-Public Interface ISprite
-	ReadOnly Property FileInfo As IO.FileInfo
-	Property Size As Vector2
-	<JsonIgnore>
-	ReadOnly Property Name As String
-	<JsonIgnore>
-	ReadOnly Property Expressions As IEnumerable(Of String)
-End Interface
-Public Class Sprite
-	Implements ISprite
-	Dim _File As IO.FileInfo
-	<JsonIgnore>
-	Public ReadOnly Property FileInfo As IO.FileInfo Implements ISprite.FileInfo
-		Get
-			Return _File
-		End Get
-	End Property
-	<JsonIgnore>
-	Public ReadOnly Property Expressions As IEnumerable(Of String) Implements ISprite.Expressions
-		Get
-			Return Clips.Select(Function(i) i.Name)
-		End Get
-	End Property
-	<JsonIgnore>
-	Public ReadOnly Property Name As String Implements ISprite.Name
-		Get
-			Return IO.Path.GetFileNameWithoutExtension(_File.Name)
-		End Get
-	End Property
-	<JsonIgnore>
-	Public Property Images As New HashSet(Of SKBitmap)
-	<JsonIgnore>
-	Public Property Images_Freeze As New SKBitmap
-	<JsonIgnore>
-	Public Property Images_Glow As HashSet(Of SKBitmap)
-	<JsonIgnore>
-	Public Property Images_Outline As New HashSet(Of SKBitmap)
-	Public Property Size As Vector2 Implements ISprite.Size
-	Public Property RowPreviewFrame As UInteger?
-	Public Property RowPreviewOffset As Vector2
-	Public Property Clips As New HashSet(Of Clip)
-	Private Shared ReadOnly stringArray As String() = {"neutral", "happy", "barely", "missed"}
-	Public Class Clip
-		Public Property Name As String
-		Public Property [Loop] As LoopOption
-		Public Property Fps As Integer
-		Public Property LoopStart As Integer
-		Public Property PortraitOffset As Vector2
-		Public Property PortraitScale As Integer
-		Public Property PortraitSize As Vector2
-		Public Property Frames As New List(Of SKBitmap)
-	End Class
-	Friend Function ShouldSerializeRowPreviewFrame() As Boolean
-		Return RowPreviewFrame IsNot Nothing
-	End Function
-	Friend Function ShouldSerializeRowPreviewOffset() As Boolean
-		Return RowPreviewFrame IsNot Nothing
-	End Function
-	Public Shared Function CanRead(path As String) As Boolean
-		Dim file As New IO.FileInfo(path)
-		Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
-		Dim fileExtension = file.Extension
-		Dim jsonFile As New IO.FileInfo(WithoutExtension + ".json")
-		If Not jsonFile.Exists Then
-			Return False
-		End If
-		Dim imageFile As New IO.FileInfo(WithoutExtension + ".png")
-		If Not imageFile.Exists Then
-			Return False
-		End If
-		Return True
-	End Function
-	Public Shared Function FromPath(path As String) As Sprite
-		Dim file As New IO.FileInfo(path)
-		Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
-		Dim fileExtension = file.Extension
-		Dim jsonFile As New IO.FileInfo(WithoutExtension + ".json")
-		If Not jsonFile.Exists Then
-			Throw New Exceptions.FileExtensionMismatchException($"Imported file should have a '.json' extension but found '{file.Extension}'.")
-		End If
-		Dim imageFile As New IO.FileInfo(WithoutExtension + ".png")
-		If Not imageFile.Exists Then
-			Throw New IO.FileNotFoundException($"Could not find file at path '{imageFile.FullName}'. Please check whether the file exists and that you have adequate permissions to access it.")
-		End If
-		Dim TempImages As New HashSet(Of SKBitmap)
-		Dim Setting As New JsonSerializerSettings
-		With Setting.Converters
-			.Add(New Converters.SpriteConverter(Of Sprite)(TempImages))
-		End With
-		Dim ReadedSize As JToken = CType(JsonConvert.DeserializeObject(IO.File.ReadAllText(jsonFile.FullName), Setting), JObject)("size")
-		Using img As SKBitmap = LoadImage(WithoutExtension + ".png")
-			Dim size As New Vector2(ReadedSize(0), ReadedSize(1))
-			TempImages = SplitImage(img, size)
-		End Using
-		Dim Temp = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(jsonFile.FullName), Setting)
-		Temp._File = jsonFile
-		Temp.Images = TempImages
-		Return Temp
-	End Function
-	Private Shared Function SplitImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
-		Dim Transparent As New SKBitmap(CInt(size.X), CInt(size.Y))
-		Dim L As New HashSet(Of SKBitmap)
-		Dim countSize As New Vector2(img.Width \ size.X, img.Height \ size.Y)
-		Select Case inputMode
-			Case ImageInputOption.HORIZONTAL
-				For i = 0 To countSize.X * countSize.Y - 1
-					Dim Area = New SKRect((i Mod countSize.X) * size.X, (i \ countSize.X) * size.Y, size.X, size.Y)
-					Dim tmpimg As New SKBitmap(size.X, size.Y)
-					Using g As New SKCanvas(tmpimg)
-						g.DrawBitmap(img, Area)
-					End Using
-					If TotallyTransparentImage(tmpimg) Then
-						L.Add(Transparent)
-					Else
-						L.Add(tmpimg)
-					End If
-				Next
-			Case ImageInputOption.VERTICAL
-				For i = 0 To countSize.X * countSize.Y - 1
-					Dim Area = New SKRect((i \ countSize.Y) * size.X, (i Mod countSize.Y) * size.Y, size.X, size.Y)
-					Dim tmpimg As New SKBitmap(size.X, size.Y)
-					Using g As New SKCanvas(tmpimg)
-						g.DrawBitmap(img, Area)
-					End Using
-					If TotallyTransparentImage(tmpimg) Then
-						L.Add(Transparent)
-					Else
-						L.Add(tmpimg)
-					End If
-				Next
-		End Select
-		Return L
-	End Function
-	Private Shared Function TotallyTransparentImage(img As SKBitmap) As Boolean
-		For x = 0 To img.Width - 1
-			For y = 0 To img.Height - 1
-				If img.GetPixel(x, y).Alpha > 0 Then
-					Return False
-				End If
-			Next
-		Next
-		Return True
-	End Function
-	Public Shared Function FromImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As Sprite
-		Dim Output As New Sprite With {
-			.Size = size,
-			.Images = SplitImage(img, size, inputMode)
-		}
-		Return Output
-	End Function
-	Public Function AddBlankClip(name As String) As Clip
-		Dim C As New Clip With {.Name = name}
-		Clips.Add(C)
-		Return C
-	End Function
-	Public Sub WriteJson(path As String)
-		WriteJson(path, New SpriteOutputSettings)
-	End Sub
-	Public Sub WriteJson(path As String, settings As SpriteOutputSettings)
-
-		Dim file As New IO.FileInfo(path)
-		Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
-		If (
-			IO.File.Exists(WithoutExtension + ".json") OrElse
-			(settings.WithImage AndAlso IO.File.Exists(WithoutExtension + ".png"))
-			) And Not settings.OverWrite Then
-			Throw New OverwriteNotAllowedException($"Cannot save file '{path}' because overwriting is disabled by user configuration and a file with the same name already exists.")
-		End If
-
-		If settings.Sort Then
-			Dim SortedClips = Clips.OrderBy(Function(i) i.Name, StringComparer.Create(CultureInfo.CurrentCulture, True)).ToList
-			For Each expressionName In stringArray.Reverse
-				Dim expression = SortedClips.FirstOrDefault(Function(i) i.Name = expressionName)
-				If expression IsNot Nothing Then
-					SortedClips.Remove(expression)
-					SortedClips.Insert(0, expression)
-				End If
-			Next
-			Dim TempList As New List(Of SKBitmap)
-			For Each item In SortedClips
-				TempList.AddRange(item.Frames)
-			Next
-			TempList.AddRange(Images)
-			Images = TempList.Distinct()
-		End If
-
-		If settings.WithImage Then
-			Dim MaxCountSize As New Vector2(Math.Min(If(settings.LimitedCount, New Vector2(16384, 0)).X, settings.LimitedSize.X \ Size.X),
-											Math.Min(If(settings.LimitedCount, New Vector2(0, 16384)).Y, settings.LimitedSize.Y \ Size.Y))
-			Select Case settings.OutputMode
-				Case SpriteOutputSettings.OutputModes.HORIZONTAL
-					Dim png As New SKBitmap(CInt(Math.Min(Images.Count, MaxCountSize.X) * Size.X),
-										  CInt(Math.Ceiling(Images.Count / MaxCountSize.X) * Size.Y))
-					Dim g As New SKCanvas(png)
-					For i = 0 To Images.Count - 1
-						Dim index = Images
-						g.DrawBitmap(Images(i), (i Mod MaxCountSize.X) * Size.X, (i \ MaxCountSize.X) * Size.Y)
-					Next
-					SaveImage(png, WithoutExtension + ".png")
-				Case SpriteOutputSettings.OutputModes.VERTICAL
-					Dim png As New SKBitmap(CInt(Math.Ceiling(Images.Count / MaxCountSize.Y) * Size.X),
-										  CInt(Math.Min(Images.Count, MaxCountSize.Y) * Size.Y))
-					Dim g As New SKCanvas(png)
-					For i = 0 To Images.Count - 1
-						Dim index = Images
-						g.DrawBitmap(Images(i), (i \ MaxCountSize.Y) * Size.X, (i Mod MaxCountSize.Y) * Size.Y)
-					Next
-					SaveImage(png, WithoutExtension + ".png")
-				Case SpriteOutputSettings.OutputModes.PACKED
-					Dim BestCountSize As New Vector2
-					Do
-						If BestCountSize.X * Size.X < BestCountSize.Y * Size.Y Then
-							BestCountSize.X += 1
-						ElseIf BestCountSize.X * Size.X > BestCountSize.Y * Size.Y Then
-							BestCountSize.Y += 1
-						Else
-							BestCountSize.X += 1
-							BestCountSize.Y += 1
-						End If
-					Loop Until BestCountSize.X * BestCountSize.Y >= Images.Count - 1 Or BestCountSize.X = MaxCountSize.X Or BestCountSize.Y = MaxCountSize.Y
-					Dim png As New SKBitmap(CInt(Math.Min(Images.Count, BestCountSize.X) * Size.X),
-										  CInt(Math.Ceiling(Images.Count / BestCountSize.X) * Size.Y))
-					Dim g As New SKCanvas(png)
-					For i = 0 To Images.Count - 1
-						Dim index = Images
-						g.DrawBitmap(Images(i), (i Mod BestCountSize.X) * Size.X, (i \ BestCountSize.X) * Size.Y)
-					Next
-					SaveImage(png, WithoutExtension + ".png")
-			End Select
-		End If
-
-		Dim JSetting As New JsonSerializerSettings
-		With JSetting.Converters
-			.Add(New Converters.SpriteConverter(Of Sprite)(Me.Images))
-		End With
-		IO.File.WriteAllText(WithoutExtension + ".json", JsonConvert.SerializeObject(Me, JSetting))
-
-		'Dim S = file.Directory.CreateSubdirectory("Temp")
-		'Dim index = 0
-		'For Each image In Images
-		'	Dim Glowed As skbitmap = OutGlow(image)
-		'	Glowed.Save(S.FullName + "\TempDocs" + index.ToString + ".png")
-		'	index += 1
-		'	If index >= 20 Then
-		'		Exit For
-		'	End If
-		'Next
-	End Sub
-	'Public Sub Save(path As String)
-	'	Dim T As New IO.FileStream("", IO.FileMode.OpenOrCreate, IO.FileAccess.Write)
-	'End Sub
-End Class
-Public Class Image
-	Implements ISprite
-	Dim _File As IO.FileInfo
-	Public Image As SKBitmap
-	Public ReadOnly Property FileInfo As IO.FileInfo Implements ISprite.FileInfo
-		Get
-			Return _File
-		End Get
-	End Property
-	Public ReadOnly Property Name As String Implements ISprite.Name
-		Get
-			Return _File.Name
-		End Get
-	End Property
-	<JsonIgnore>
-	Public ReadOnly Property Expressions As IEnumerable(Of String) Implements ISprite.Expressions
-		Get
-			Return New List(Of String)
-		End Get
-	End Property
-	Public Property Size As Vector2 Implements ISprite.Size
-		Get
-			Return New Vector2(Image.Width, Image.Height)
-		End Get
-		Set(value As Vector2)
-			Throw New NotImplementedException()
-		End Set
-	End Property
-	Public Shared Function CanRead(path As String) As Boolean
-		Dim file As New IO.FileInfo(path)
-		If Not file.Extension = ".png" Then
-			Return False
-		End If
-		Return True
-	End Function
-	Public Shared Function FromPath(path As String) As Image
-		Return New Image With {._File = New IO.FileInfo(path), .Image = LoadImage(path)}
-	End Function
-End Class
-Public Class Placeholder
-	Implements ISprite
-	Private _File As IO.FileInfo
-	Public Sub New(path As String)
-		_File = New IO.FileInfo(path)
-	End Sub
-	<JsonIgnore>
-	Public ReadOnly Property Expressions As IEnumerable(Of String) Implements ISprite.Expressions
-		Get
-			Return New List(Of String)
-		End Get
-	End Property
-	Public ReadOnly Property FileInfo As IO.FileInfo Implements ISprite.FileInfo
-		Get
-			Return _File
-		End Get
-	End Property
-	Public Property Size As Vector2 Implements ISprite.Size
-		Get
-			Return New Vector2
-		End Get
-		Set(value As Vector2)
-			Throw New NotImplementedException()
-		End Set
-	End Property
-	Public ReadOnly Property Name As String Implements ISprite.Name
-		Get
-			If _File.Extension = ".json" Then
+Namespace Sprites
+	Public Interface ISprite
+		ReadOnly Property FileInfo As IO.FileInfo
+		Property Size As Vector2
+		ReadOnly Property Name As String
+		ReadOnly Property Expressions As IEnumerable(Of String)
+		ReadOnly Property Preview As SKBitmap
+	End Interface
+	Public Class Sprite
+		Implements ISprite
+		Dim _File As IO.FileInfo
+		<JsonIgnore>
+		Public ReadOnly Property FileInfo As IO.FileInfo Implements ISprite.FileInfo
+			Get
+				Return _File
+			End Get
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Expressions As IEnumerable(Of String) Implements ISprite.Expressions
+			Get
+				Return Clips.Select(Function(i) i.Name)
+			End Get
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Name As String Implements ISprite.Name
+			Get
 				Return IO.Path.GetFileNameWithoutExtension(_File.Name)
-			Else
-				Return _File.Name
+			End Get
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Preview As SKBitmap Implements ISprite.Preview
+			Get
+				Return If(RowPreviewFrame, New SKBitmap)
+			End Get
+		End Property
+		<JsonIgnore>
+		Public Property Images As New HashSet(Of SKBitmap)
+		<JsonIgnore>
+		Public Property Images_Freeze As New SKBitmap
+		<JsonIgnore>
+		Public Property Images_Glow As HashSet(Of SKBitmap)
+		<JsonIgnore>
+		Public Property Images_Outline As New HashSet(Of SKBitmap)
+		Public Property Size As Vector2 Implements ISprite.Size
+		Public Property RowPreviewFrame As SKBitmap
+		Public Property RowPreviewOffset As Vector2
+		Public Property Clips As New HashSet(Of Clip)
+		Private Shared ReadOnly stringArray As String() = {"neutral", "happy", "barely", "missed"}
+		Public Class Clip
+			Public Property Name As String
+			Public Property [Loop] As LoopOption
+			Public Property Fps As Integer
+			Public Property LoopStart As Integer
+			Public Property PortraitOffset As Vector2
+			Public Property PortraitScale As Integer
+			Public Property PortraitSize As Vector2
+			Public Property Frames As New List(Of SKBitmap)
+			Public Overrides Function ToString() As String
+				Return Name
+			End Function
+		End Class
+		Friend Function ShouldSerializeRowPreviewFrame() As Boolean
+			Return RowPreviewFrame IsNot Nothing
+		End Function
+		Friend Function ShouldSerializeRowPreviewOffset() As Boolean
+			Return RowPreviewFrame IsNot Nothing
+		End Function
+		Public Shared Function CanRead(path As FileInfo) As Boolean
+			Dim file = path
+			Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
+			Dim fileExtension = file.Extension
+			Dim jsonFile As New IO.FileInfo(WithoutExtension + ".json")
+			If Not jsonFile.Exists Then
+				Return False
 			End If
-		End Get
-	End Property
-End Class
+			Dim imageFile As New IO.FileInfo(WithoutExtension + ".png")
+			If Not imageFile.Exists Then
+				Return False
+			End If
+			Return True
+		End Function
+		Public Shared Function FromPath(path As FileInfo) As Sprite
+			Dim file = path
+			Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
+			Dim fileExtension = file.Extension
+			Dim jsonFile As New IO.FileInfo(WithoutExtension + ".json")
+			If Not jsonFile.Exists Then
+				Throw New Exceptions.FileExtensionMismatchException($"Imported file should have a '.json' extension but found '{file.Extension}'.")
+			End If
+			Dim imageFile As New IO.FileInfo(WithoutExtension + ".png")
+			If Not imageFile.Exists Then
+				Throw New IO.FileNotFoundException($"Could not find file at path '{imageFile.FullName}'. Please check whether the file exists and that you have adequate permissions to access it.")
+			End If
+			Dim TempImages As New HashSet(Of SKBitmap)
+			Dim Setting As New JsonSerializerSettings
+			With Setting.Converters
+				.Add(New Converters.SpriteConverter(TempImages))
+			End With
+			Dim ReadedSize As JToken = JsonConvert.DeserializeObject(Of JObject)(IO.File.ReadAllText(jsonFile.FullName))("size")
+			Using img As SKBitmap = LoadImage(New IO.FileInfo(WithoutExtension + ".png"))
+				Dim size As New Vector2(ReadedSize(0), ReadedSize(1))
+				TempImages = SplitImage(img, size)
+			End Using
+			Dim Temp = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(jsonFile.FullName), Setting)
+			Temp._File = jsonFile
+			Temp.Images = TempImages
+			Return Temp
+		End Function
+		Private Shared Function SplitImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
+			Dim Transparent As New SKBitmap(CInt(size.X), CInt(size.Y))
+			Dim L As New HashSet(Of SKBitmap)
+			Dim countSize As New Vector2(img.Width \ size.X, img.Height \ size.Y)
+			Select Case inputMode
+				Case ImageInputOption.HORIZONTAL
+					For i = 0 To countSize.X * countSize.Y - 1
+						Dim Area = New SKRect((i Mod countSize.X) * size.X, (i \ countSize.X) * size.Y, size.X, size.Y)
+						Dim tmpimg As New SKBitmap(size.X, size.Y)
+						Using g As New SKCanvas(tmpimg)
+							g.DrawBitmap(img, Area)
+						End Using
+						If TotallyTransparentImage(tmpimg) Then
+							L.Add(Transparent)
+						Else
+							L.Add(tmpimg)
+						End If
+					Next
+				Case ImageInputOption.VERTICAL
+					For i = 0 To countSize.X * countSize.Y - 1
+						Dim Area = New SKRect((i \ countSize.Y) * size.X, (i Mod countSize.Y) * size.Y, size.X, size.Y)
+						Dim tmpimg As New SKBitmap(size.X, size.Y)
+						Using g As New SKCanvas(tmpimg)
+							g.DrawBitmap(img, Area)
+						End Using
+						If TotallyTransparentImage(tmpimg) Then
+							L.Add(Transparent)
+						Else
+							L.Add(tmpimg)
+						End If
+					Next
+			End Select
+			Return L
+		End Function
+		Private Shared Function TotallyTransparentImage(img As SKBitmap) As Boolean
+			For x = 0 To img.Width - 1
+				For y = 0 To img.Height - 1
+					If img.GetPixel(x, y).Alpha > 0 Then
+						Return False
+					End If
+				Next
+			Next
+			Return True
+		End Function
+		Public Shared Function FromImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As Sprite
+			Dim Output As New Sprite With {
+				.Size = size,
+				.Images = SplitImage(img, size, inputMode)
+			}
+			Return Output
+		End Function
+		Public Function AddBlankClip(name As String) As Clip
+			Dim C As New Clip With {.Name = name}
+			Clips.Add(C)
+			Return C
+		End Function
+		Public Sub WriteJson(path As FileInfo)
+			WriteJson(path, New SpriteOutputSettings)
+		End Sub
+		Public Sub WriteJson(path As FileInfo, settings As SpriteOutputSettings)
+
+			Dim file = path
+			Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
+			If (
+				IO.File.Exists(WithoutExtension + ".json") OrElse
+				(settings.WithImage AndAlso IO.File.Exists(WithoutExtension + ".png"))
+				) And Not settings.OverWrite Then
+				Throw New OverwriteNotAllowedException($"Cannot save file '{path}' because overwriting is disabled by user configuration and a file with the same name already exists.")
+			End If
+
+			If settings.Sort Then
+				Dim SortedClips = Clips.OrderBy(Function(i) i.Name, StringComparer.Create(CultureInfo.CurrentCulture, True)).ToList
+				For Each expressionName In stringArray.Reverse
+					Dim expression = SortedClips.FirstOrDefault(Function(i) i.Name = expressionName)
+					If expression IsNot Nothing Then
+						SortedClips.Remove(expression)
+						SortedClips.Insert(0, expression)
+					End If
+				Next
+				Dim TempList As New List(Of SKBitmap)
+				For Each item In SortedClips
+					TempList.AddRange(item.Frames)
+				Next
+				TempList.AddRange(Images)
+				Images = TempList.Distinct()
+			End If
+
+			If settings.WithImage Then
+				Dim MaxCountSize As New Vector2(Math.Min(If(settings.LimitedCount, New Vector2(16384, 0)).X, settings.LimitedSize.X \ Size.X),
+												Math.Min(If(settings.LimitedCount, New Vector2(0, 16384)).Y, settings.LimitedSize.Y \ Size.Y))
+				Select Case settings.OutputMode
+					Case SpriteOutputSettings.OutputModes.HORIZONTAL
+						Dim png As New SKBitmap(CInt(Math.Min(Images.Count, MaxCountSize.X) * Size.X),
+											  CInt(Math.Ceiling(Images.Count / MaxCountSize.X) * Size.Y))
+						Dim g As New SKCanvas(png)
+						For i = 0 To Images.Count - 1
+							Dim index = Images
+							g.DrawBitmap(Images(i), (i Mod MaxCountSize.X) * Size.X, (i \ MaxCountSize.X) * Size.Y)
+						Next
+						SaveImage(png, New IO.FileInfo(WithoutExtension + ".png"))
+					Case SpriteOutputSettings.OutputModes.VERTICAL
+						Dim png As New SKBitmap(CInt(Math.Ceiling(Images.Count / MaxCountSize.Y) * Size.X),
+											  CInt(Math.Min(Images.Count, MaxCountSize.Y) * Size.Y))
+						Dim g As New SKCanvas(png)
+						For i = 0 To Images.Count - 1
+							Dim index = Images
+							g.DrawBitmap(Images(i), (i \ MaxCountSize.Y) * Size.X, (i Mod MaxCountSize.Y) * Size.Y)
+						Next
+						SaveImage(png, New IO.FileInfo(WithoutExtension + ".png"))
+					Case SpriteOutputSettings.OutputModes.PACKED
+						Dim BestCountSize As New Vector2
+						Do
+							If BestCountSize.X * Size.X < BestCountSize.Y * Size.Y Then
+								BestCountSize.X += 1
+							ElseIf BestCountSize.X * Size.X > BestCountSize.Y * Size.Y Then
+								BestCountSize.Y += 1
+							Else
+								BestCountSize.X += 1
+								BestCountSize.Y += 1
+							End If
+						Loop Until BestCountSize.X * BestCountSize.Y >= Images.Count - 1 Or BestCountSize.X = MaxCountSize.X Or BestCountSize.Y = MaxCountSize.Y
+						Dim png As New SKBitmap(CInt(Math.Min(Images.Count, BestCountSize.X) * Size.X),
+											  CInt(Math.Ceiling(Images.Count / BestCountSize.X) * Size.Y))
+						Dim g As New SKCanvas(png)
+						For i = 0 To Images.Count - 1
+							Dim index = Images
+							g.DrawBitmap(Images(i), (i Mod BestCountSize.X) * Size.X, (i \ BestCountSize.X) * Size.Y)
+						Next
+						SaveImage(png, New IO.FileInfo(WithoutExtension + ".png"))
+				End Select
+			End If
+
+			Dim JSetting As New JsonSerializerSettings
+			With JSetting.Converters
+				.Add(New Converters.SpriteConverter(Me.Images))
+			End With
+			IO.File.WriteAllText(WithoutExtension + ".json", JsonConvert.SerializeObject(Me, JSetting))
+
+			'Dim S = file.Directory.CreateSubdirectory("Temp")
+			'Dim index = 0
+			'For Each image In Images
+			'	Dim Glowed As skbitmap = OutGlow(image)
+			'	Glowed.Save(S.FullName + "\TempDocs" + index.ToString + ".png")
+			'	index += 1
+			'	If index >= 20 Then
+			'		Exit For
+			'	End If
+			'Next
+		End Sub
+		'Public Sub Save(path As String)
+		'	Dim T As New IO.FileStream("", IO.FileMode.OpenOrCreate, IO.FileAccess.Write)
+		'End Sub
+		Public Overrides Function ToString() As String
+			Return Name
+		End Function
+	End Class
+	Public Class Image
+		Implements ISprite
+		Dim _File As IO.FileInfo
+		Public Image As SKBitmap
+		Public ReadOnly Property FileInfo As IO.FileInfo Implements ISprite.FileInfo
+			Get
+				Return _File
+			End Get
+		End Property
+		Public ReadOnly Property Name As String Implements ISprite.Name
+			Get
+				Return _File.Name
+			End Get
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Expressions As IEnumerable(Of String) Implements ISprite.Expressions
+			Get
+				Return New List(Of String)
+			End Get
+		End Property
+		Public Property Size As Vector2 Implements ISprite.Size
+			Get
+				Return New Vector2(Image.Width, Image.Height)
+			End Get
+			Set(value As Vector2)
+				Throw New NotImplementedException()
+			End Set
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Preview As SKBitmap Implements ISprite.Preview
+			Get
+				Return Image
+			End Get
+		End Property
+		Public Shared Function CanRead(path As FileInfo) As Boolean
+			Dim file = path
+			If Not (file.Extension = ".png" OrElse
+				file.Extension = ".jpg" OrElse
+				file.Extension = ".jpeg" OrElse
+				file.Extension = ".gif") Then
+				Return False
+			End If
+			Return True
+		End Function
+		Public Shared Function FromPath(path As FileInfo) As Image
+			Return New Image With {._File = path, .Image = LoadImage(path)}
+		End Function
+		Public Overrides Function ToString() As String
+			Return Name
+		End Function
+	End Class
+	Public Class Placeholder
+		Implements ISprite
+		Private _File As IO.FileInfo
+		Public Sub New(path As FileInfo)
+			_File = path
+		End Sub
+		<JsonIgnore>
+		Public ReadOnly Property Expressions As IEnumerable(Of String) Implements ISprite.Expressions
+			Get
+				Return New List(Of String)
+			End Get
+		End Property
+		Public ReadOnly Property FileInfo As IO.FileInfo Implements ISprite.FileInfo
+			Get
+				Return _File
+			End Get
+		End Property
+		Public Property Size As Vector2 Implements ISprite.Size
+			Get
+				Return New Vector2
+			End Get
+			Set(value As Vector2)
+				Throw New NotImplementedException()
+			End Set
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Preview As New SKBitmap Implements ISprite.Preview
+		Public ReadOnly Property Name As String Implements ISprite.Name
+			Get
+				If _File.Extension = ".json" Then
+					Return IO.Path.GetFileNameWithoutExtension(_File.Name)
+				Else
+					Return _File.Name
+				End If
+			End Get
+		End Property
+		Public Function Read() As ISprite
+			Dim result As ISprite
+			If Sprite.CanRead(FileInfo) Then
+				result = Sprite.FromPath(FileInfo)
+			ElseIf Image.CanRead(FileInfo) Then
+				result = Image.FromPath(FileInfo)
+			Else result = New NullAsset
+			End If
+			Return result
+		End Function
+		Public Overrides Function ToString() As String
+			Return Name
+		End Function
+	End Class
+	Public Class NullAsset
+		Implements ISprite
+		Public ReadOnly Property FileInfo As FileInfo Implements ISprite.FileInfo
+			Get
+				Throw New NotImplementedException()
+			End Get
+		End Property
+
+		Public Property Size As New Vector2 Implements ISprite.Size
+		Public ReadOnly Property Name As String = "" Implements ISprite.Name
+		Public ReadOnly Property Expressions As IEnumerable(Of String) = New HashSet(Of String) Implements ISprite.Expressions
+		<JsonIgnore>
+		Public ReadOnly Property Preview As New SKBitmap Implements ISprite.Preview
+	End Class
+
+End Namespace
 Public Class SpriteOutputSettings
 	Public Enum OutputModes
 		HORIZONTAL

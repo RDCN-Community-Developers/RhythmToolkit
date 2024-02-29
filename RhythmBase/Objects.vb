@@ -1,7 +1,10 @@
 ﻿Imports System.Text.RegularExpressions
 Imports Newtonsoft.Json
-Imports RhythmSprite
+Imports RhythmAsset
+Imports RhythmAsset.Sprites
 Imports SkiaSharp
+Imports System.IO.Compression
+Imports System.IO
 #Disable Warning CA1507
 
 Namespace Objects
@@ -263,7 +266,7 @@ Namespace Objects
 		Private _avaliable As Boolean
 		Default Public Property Room(Index As Byte) As Boolean
 			Get
-				If Not _avaliable Then
+				If Not Avaliable Then
 					Return False
 				End If
 				Return _data.HasFlag(CType([Enum].Parse(GetType(RoomIndex), 1 << Index), RoomIndex))
@@ -286,7 +289,7 @@ Namespace Objects
 		End Property
 		Public ReadOnly Property Rooms As List(Of Byte)
 			Get
-				If Not _avaliable Then
+				If Not Avaliable Then
 					Return New List(Of Byte)
 				End If
 				Dim L As New List(Of Byte)
@@ -313,6 +316,10 @@ Namespace Objects
 			Me.Multipy = multipy
 		End Sub
 		Public Sub New(ParamArray rooms() As Byte)
+			If rooms.Count = 0 Then
+				_data = RoomIndex.RoomNotAvaliable
+				Exit Sub
+			End If
 			For Each item In rooms
 				Room(item) = True
 			Next
@@ -534,8 +541,11 @@ Namespace Objects
 		Public Sub New()
 			MyBase.New
 		End Sub
-		Public Sub New(Message As String)
-			MyBase.New(Message)
+		Public Sub New(message As String)
+			MyBase.New(message)
+		End Sub
+		Public Sub New(message As String, ex As Exception)
+			MyBase.New(message, ex)
 		End Sub
 	End Class
 	Public Class Decoration
@@ -567,11 +577,8 @@ Namespace Objects
 		End Property
 		Public Property Row As ULong
 		Public ReadOnly Property Rooms As New Rooms(False, False)
-		Public ReadOnly Property Filename As String ' FileLocator
-			Get
-				Return Parent?.Name
-			End Get
-		End Property
+		<JsonProperty("filename")>
+		Public Property File As ISprite ' FileLocator
 		Public Property Depth As Integer
 		Public Property Visible As Boolean
 		Private Sub New()
@@ -610,7 +617,7 @@ Namespace Objects
 		'	End If
 		'End Function
 		Public Overrides Function ToString() As String
-			Return $"{_id}, {_Row}, {_Rooms}, {Filename}"
+			Return $"{_id}, {_Row}, {_Rooms}, {File.Name}"
 		End Function
 		Public Function Copy() As Decoration
 			Return Me.MemberwiseClone
@@ -688,7 +695,7 @@ Namespace Objects
 				Sound.Offset = value
 			End Set
 		End Property
-		Public Sub New()
+		Sub New()
 		End Sub
 		Private Function ClassicBeats() As IEnumerable(Of BaseBeat)
 			Return Children.Where(Function(i)
@@ -834,8 +841,7 @@ Namespace Objects
 		Public Property TwoPlayerMode As Boolean
 		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.PlayerMode
 	End Class
-	Public Module Level
-		<Flags>
+	<Flags>
 		Public Enum WriteOption
 			none = &B0
 			writeSettings = &B1
@@ -847,238 +853,273 @@ Namespace Objects
 			writeColorPalette = &B1000000
 			all = &B1111111
 		End Enum
-		Public Class RDLevel
-			Implements ICollection(Of BaseEvent)
-			Dim _path As IO.FileInfo
-			Public Property Settings As New Settings
-			Public ReadOnly Property Rows As New List(Of Row)
-			Public ReadOnly Property Decorations As New List(Of Decoration)
-			Friend ReadOnly Property Events As New List(Of BaseEvent)
-			Public ReadOnly Property Conditionals As New List(Of BaseConditional)
-			Public ReadOnly Property Bookmarks As New List(Of Bookmark)
-			Public ReadOnly Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
-			<JsonIgnore>
-			Public ReadOnly Property Path As IO.FileInfo
-				Get
-					Return _path
-				End Get
-			End Property
-			<JsonIgnore>
-			Friend Property CPBs As New List(Of SetCrotchetsPerBar)
-			<JsonIgnore>
-			Friend Property BPMs As New List(Of BaseBeatsPerMinute)
-			<JsonIgnore>
-			Public ReadOnly Property Count As Integer Implements ICollection(Of BaseEvent).Count
-				Get
-					Return CPBs.Count + BPMs.Count + Events.Count
-				End Get
-			End Property
-			<JsonIgnore>
-			Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of BaseEvent).IsReadOnly
-			<JsonIgnore>
-			Public ReadOnly Property Variables As New Variables
-			Public Function GetTaggedEvents(name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, BaseEvent))
-				If name Is Nothing Then
-					Return Nothing
-				End If
-				If direct Then
-					Return Where(Function(i) i.Tag = name).GroupBy(Function(i) i.Tag)
-				Else
-					Return Where(Function(i) If(i.Tag, "").Contains(name)).GroupBy(Function(i) i.Tag)
-				End If
-			End Function
-			Private Function ToRDLevelJson(settings As InputSettings.LevelInputSettings) As String
-				Dim LevelSerializerSettings = New JsonSerializerSettings() With {
+	Public Class RDLevel
+		Implements ICollection(Of BaseEvent)
+		Dim _path As IO.FileInfo
+		Public Property Settings As New Settings
+		Public ReadOnly Property Rows As New List(Of Row)
+		Public ReadOnly Property Decorations As New List(Of Decoration)
+		Friend ReadOnly Property Events As New List(Of BaseEvent)
+		Public ReadOnly Property Conditionals As New List(Of BaseConditional)
+		Public ReadOnly Property Bookmarks As New List(Of Bookmark)
+		Public ReadOnly Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
+		<JsonIgnore>
+		Public ReadOnly Property Path As IO.FileInfo
+			Get
+				Return _path
+			End Get
+		End Property
+		<JsonIgnore>
+		Friend Property CPBs As New List(Of SetCrotchetsPerBar)
+		<JsonIgnore>
+		Friend Property BPMs As New List(Of BaseBeatsPerMinute)
+		<JsonIgnore>
+		Public ReadOnly Property Count As Integer Implements ICollection(Of BaseEvent).Count
+			Get
+				Return CPBs.Count + BPMs.Count + Events.Count
+			End Get
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Assets As New HashSet(Of ISprite)
+		<JsonIgnore>
+		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of BaseEvent).IsReadOnly
+		<JsonIgnore>
+		Public ReadOnly Property Variables As New Variables
+		Public Function GetTaggedEvents(name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, BaseEvent))
+			If name Is Nothing Then
+				Return Nothing
+			End If
+			If direct Then
+				Return Where(Function(i) i.Tag = name).GroupBy(Function(i) i.Tag)
+			Else
+				Return Where(Function(i) If(i.Tag, "").Contains(name)).GroupBy(Function(i) i.Tag)
+			End If
+		End Function
+		Private Function ToRDLevelJson(settings As InputSettings.LevelInputSettings) As String
+			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
 					.Converters = {
 						New RDLevelConverter(_path, settings)
 					}
 				}
-				Me.Events.RemoveAll(Function(i) i Is Nothing)
-				Return JsonConvert.SerializeObject(Me, LevelSerializerSettings)
-			End Function
-			Public Shared Function ReadFromString(json As String, fileLocation As IO.FileInfo, settings As InputSettings.LevelInputSettings) As RDLevel
-				Dim LevelSerializerSettings = New JsonSerializerSettings() With {
+			Me.Events.RemoveAll(Function(i) i Is Nothing)
+			Return JsonConvert.SerializeObject(Me, LevelSerializerSettings)
+		End Function
+		Public Shared Function ReadFromString(json As String, fileLocation As IO.FileInfo, settings As InputSettings.LevelInputSettings) As RDLevel
+			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
 					.Converters = {
 						New RDLevelConverter(fileLocation, settings)
 					}
 				}
-				json = Regex.Replace(json, ",(?=[ \n\r\t]*?[\]\)\}])", "")
-				Dim level As RDLevel = JsonConvert.DeserializeObject(Of RDLevel)(json, LevelSerializerSettings)
-				Return level
-			End Function
-			Public Shared Function LoadFile(filepath As String)
-				Return LoadFile(filepath, New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings})
-			End Function
-			Public Shared Function LoadFile(file As String, settings As InputSettings.LevelInputSettings) As RDLevel
-				Dim path = New IO.FileInfo(file)
-				Dim json = IO.File.ReadAllText(file)
-				Dim level = ReadFromString(json, path, settings)
-				level._path = path
-				Return level
-			End Function
-			Public Sub SaveFile(filepath As String)
-				IO.File.WriteAllText(filepath, ToRDLevelJson(New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings}))
-			End Sub
-			Public Sub SaveFile(filepath As String, settings As InputSettings.LevelInputSettings)
-				IO.File.WriteAllText(filepath, ToRDLevelJson(settings))
-			End Sub
-			Public Function GetPulseBeat() As IEnumerable(Of Pulse)
-				Dim L As New List(Of Pulse)
-				For Each item In Rows
-					L.AddRange(item.PulseBeats)
-				Next
-				Return L
-			End Function
-			Public Function GetPulseEvents() As IEnumerable(Of BaseBeat)
-				Return Where(Of BaseBeat).Where(Function(i) i.Pulsable)
-			End Function
-			Public Sub Add(item As BaseEvent) Implements ICollection(Of BaseEvent).Add
-				Select Case item.Type
-					Case EventType.PlaySong
-						BPMs.Add(item)
-					Case EventType.SetCrotchetsPerBar
-						CPBs.Add(item)
-					Case EventType.SetBeatsPerMinute
-						BPMs.Add(item)
-					Case Else
-						Events.Add(item)
-				End Select
-			End Sub
-			Public Sub AddRange(items As IEnumerable(Of BaseEvent))
-				BPMs.AddRange(items.Where(Function(i) i.Type = EventType.SetBeatsPerMinute Or i.Type = EventType.PlaySong).Cast(Of BaseBeatsPerMinute))
-				CPBs.AddRange(items.Where(Function(i) i.Type = EventType.SetBeatsPerMinute).Cast(Of SetCrotchetsPerBar))
-				Events.AddRange(items.Where(Function(i) Not {
+			json = Regex.Replace(json, ",(?=[ \n\r\t]*?[\]\)\}])", "")
+			Dim level As RDLevel
+			Try
+				level = JsonConvert.DeserializeObject(Of RDLevel)(json, LevelSerializerSettings)
+			Catch ex As Exception
+				Throw New RhythmDoctorExcception("File cannot be read.", ex)
+			End Try
+			level._path = fileLocation
+			Return level
+		End Function
+		Private Shared Function LoadZip(RDLevelFile As FileInfo) As FileInfo
+			Dim tempDirectoryName As String = RDLevelFile.FullName
+			Dim tempDirectory = New IO.DirectoryInfo(IO.Path.Combine(IO.Path.GetTempPath, IO.Path.GetRandomFileName))
+			tempDirectory.Create()
+			Try
+				ZipFile.ExtractToDirectory(RDLevelFile.FullName, tempDirectory.FullName)
+				Return tempDirectory.GetFiles.Where(Function(i) i.Name = "main.rdlevel").First
+			Catch ex As Exception
+				Throw New RhythmDoctorExcception("Cannot extract the file.", ex)
+			End Try
+		End Function
+		Public Shared Function LoadFile(RDLevelFile As FileInfo) As RDLevel
+			Return LoadFile(RDLevelFile, New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings})
+		End Function
+		Public Shared Function LoadFile(RDLevelFile As FileInfo, settings As InputSettings.LevelInputSettings) As RDLevel
+			Dim json As String
+			Select Case RDLevelFile.Extension
+				Case ".rdzip"
+					json = File.ReadAllText(LoadZip(RDLevelFile).FullName)
+				Case ".zip"
+					json = File.ReadAllText(LoadZip(RDLevelFile).FullName)
+				Case ".rdlevel"
+					json = File.ReadAllText(RDLevelFile.FullName)
+				Case Else
+					Throw New RhythmDoctorExcception("File not supported")
+			End Select
+			Dim level = ReadFromString(json, RDLevelFile, settings)
+			Return level
+		End Function
+		Public Sub SaveFile(filepath As String)
+			IO.File.WriteAllText(filepath, ToRDLevelJson(New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings}))
+		End Sub
+		Public Sub SaveFile(filepath As String, settings As InputSettings.LevelInputSettings)
+			IO.File.WriteAllText(filepath, ToRDLevelJson(settings))
+		End Sub
+		Public Function GetPulseBeat() As IEnumerable(Of Pulse)
+			Dim L As New List(Of Pulse)
+			For Each item In Rows
+				L.AddRange(item.PulseBeats)
+			Next
+			Return L
+		End Function
+		Public Function GetPulseEvents() As IEnumerable(Of BaseBeat)
+			Return Where(Of BaseBeat).Where(Function(i) i.Pulsable)
+		End Function
+		Public Sub Add(item As BaseEvent) Implements ICollection(Of BaseEvent).Add
+			Select Case item.Type
+				Case EventType.PlaySong
+					BPMs.Add(item)
+				Case EventType.SetCrotchetsPerBar
+					CPBs.Add(item)
+				Case EventType.SetBeatsPerMinute
+					BPMs.Add(item)
+				Case Else
+					Events.Add(item)
+			End Select
+		End Sub
+		Public Function CreateRow(character As String) As Row
+			Return New Row With {
+					.ParentCollection = Rows,
+					.Character = character
+				}
+		End Function
+		Public Sub AddRange(items As IEnumerable(Of BaseEvent))
+			BPMs.AddRange(items.Where(Function(i) {
+											  EventType.SetBeatsPerMinute,
+											  EventType.PlaySong
+											}.Contains(i.Type)).Cast(Of BaseBeatsPerMinute))
+			CPBs.AddRange(items.Where(Function(i) i.Type = EventType.SetBeatsPerMinute).Cast(Of SetCrotchetsPerBar))
+			Events.AddRange(items.Where(Function(i) Not {
 												EventType.SetBeatsPerMinute,
 												EventType.PlaySong,
 												EventType.SetBeatsPerMinute
 											}.Contains(i.Type)))
-			End Sub
-			Public Sub Clear() Implements ICollection(Of BaseEvent).Clear
-				Events.Clear()
-			End Sub
-			Public Function Contains(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Contains
-				Return ConcatAll.Contains(item)
-			End Function
-			Public Function Where(predicate As Func(Of BaseEvent, Boolean)) As IEnumerable(Of BaseEvent)
-				Return ConcatAll.Where(predicate)
-			End Function
-			Public Function Where(Of T As BaseEvent)() As IEnumerable(Of T)
-				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) OrElse i.GetType.IsAssignableTo(GetType(T))).Select(Function(i) CType(i, T))
-			End Function
-			Public Function Where(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-				Return ConcatAll.Where(Function(i) i.GetType = GetType(T) AndAlso predicate(i)).Select(Function(i) CType(i, T))
-			End Function
-			Public Function First() As BaseEvent
-				Return ConcatAll.First
-			End Function
-			Public Function First(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
-				Return ConcatAll.First(predicate)
-			End Function
-			Public Function First(Of T As BaseEvent)() As T
-				Return Where(Of T).First
-			End Function
-			Public Function First(Of T As BaseEvent)(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
-				Return Where(Of T).First(predicate)
-			End Function
-			Public Function FirstOrDefault() As BaseEvent
-				Return ConcatAll.FirstOrDefault()
-			End Function
-			Public Function FirstOrDefault(defaultValue As BaseEvent) As BaseEvent
-				Return ConcatAll.FirstOrDefault(defaultValue)
-			End Function
-			Public Function FirstOrDefault(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
-				Return ConcatAll.FirstOrDefault(predicate)
-			End Function
-			Public Function FirstOrDefault(predicate As Func(Of BaseEvent, Boolean), defaultValue As BaseEvent) As BaseEvent
-				Return ConcatAll.FirstOrDefault(predicate, defaultValue)
-			End Function
-			Public Function FirstOrDefault(Of T As BaseEvent)() As T
-				Return Where(Of T).FirstOrDefault()
-			End Function
-			Public Function FirstOrDefault(Of T As BaseEvent)(defaultValue As T) As T
-				Return Where(Of T).FirstOrDefault(defaultValue)
-			End Function
-			Public Function FirstOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As T
-				Return Where(Of T).FirstOrDefault(predicate)
-			End Function
-			Public Function FirstOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean), defaultValue As BaseEvent) As T
-				Return Where(Of T).FirstOrDefault(predicate, defaultValue)
-			End Function
-			Public Function Last() As BaseEvent
-				Return ConcatAll.Last
-			End Function
-			Public Function Last(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
-				Return ConcatAll.Last(predicate)
-			End Function
-			Public Function Last(Of T As BaseEvent)() As T
-				Return Where(Of T).Last
-			End Function
-			Public Function Last(Of T As BaseEvent)(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
-				Return Where(Of T).Last(predicate)
-			End Function
-			Public Function LastOrDefault() As BaseEvent
-				Return ConcatAll.LastOrDefault()
-			End Function
-			Public Function LastOrDefault(defaultValue As BaseEvent) As BaseEvent
-				Return ConcatAll.LastOrDefault(defaultValue)
-			End Function
-			Public Function LastOrDefault(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
-				Return ConcatAll.LastOrDefault(predicate)
-			End Function
-			Public Function LastOrDefault(predicate As Func(Of BaseEvent, Boolean), defaultValue As BaseEvent) As BaseEvent
-				Return ConcatAll.LastOrDefault(predicate, defaultValue)
-			End Function
-			Public Function LastOrDefault(Of T As BaseEvent)() As T
-				Return Where(Of T).LastOrDefault()
-			End Function
-			Public Function LastOrDefault(Of T As BaseEvent)(defaultValue As T) As T
-				Return Where(Of T).LastOrDefault(defaultValue)
-			End Function
-			Public Function LastOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As T
-				Return Where(Of T).LastOrDefault(predicate)
-			End Function
-			Public Function LastOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean), defaultValue As BaseEvent) As T
-				Return Where(Of T).LastOrDefault(predicate, defaultValue)
-			End Function
-			Public Function [Select](Of T)(predicate As Func(Of BaseEvent, T)) As IEnumerable(Of T)
-				Return Events.Select(predicate)
-			End Function
-			Private Function ConcatAll() As IEnumerable(Of BaseEvent)
-				Dim L As New List(Of BaseEvent)
-				Return L.Concat(CPBs).Concat(BPMs).Concat(Events)
-			End Function
-			Public Sub CopyTo(array() As BaseEvent, arrayIndex As Integer) Implements ICollection(Of BaseEvent).CopyTo
-				Dim index = 0
-				For Each item In CPBs
-					array(arrayIndex + index) = item
-					index += 1
-				Next
-				For Each item In BPMs
-					array(arrayIndex + index) = item
-					index += 1
-				Next
-				For Each item In Events
-					array(arrayIndex + index) = item
-					index += 1
-				Next
-			End Sub
-			Public Function Remove(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Remove
-				Return CPBs.Remove(item) OrElse BPMs.Remove(item) OrElse Events.Remove(item)
-			End Function
-			Public Function RemoveAll(predicate As Predicate(Of BaseEvent)) As Integer
-				Return CPBs.RemoveAll(predicate) + BPMs.RemoveAll(predicate) + Events.RemoveAll(predicate)
-			End Function
-			Friend Function GetEnumerator() As IEnumerator(Of BaseEvent) Implements IEnumerable(Of BaseEvent).GetEnumerator
-				Return ConcatAll.GetEnumerator
-			End Function
-			Public Sub RefreshCPBs()
-				BeatCalculator.Initialize(CPBs)
-			End Sub
-			Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
-				Return GetEnumerator()
-			End Function
-		End Class
-	End Module
+		End Sub
+		Public Sub Clear() Implements ICollection(Of BaseEvent).Clear
+			Events.Clear()
+		End Sub
+		Public Function Contains(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Contains
+			Return ConcatAll.Contains(item)
+		End Function
+		Public Function Where(predicate As Func(Of BaseEvent, Boolean)) As IEnumerable(Of BaseEvent)
+			Return ConcatAll.Where(predicate)
+		End Function
+		Public Function Where(Of T As BaseEvent)() As IEnumerable(Of T)
+			Return ConcatAll.Where(Function(i) i.GetType = GetType(T) OrElse i.GetType.IsAssignableTo(GetType(T))).Select(Function(i) CType(i, T))
+		End Function
+		Public Function Where(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+			Return ConcatAll.Where(Function(i) i.GetType = GetType(T) AndAlso predicate(i)).Select(Function(i) CType(i, T))
+		End Function
+		Public Function First() As BaseEvent
+			Return ConcatAll.First
+		End Function
+		Public Function First(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+			Return ConcatAll.First(predicate)
+		End Function
+		Public Function First(Of T As BaseEvent)() As T
+			Return Where(Of T).First
+		End Function
+		Public Function First(Of T As BaseEvent)(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+			Return Where(Of T).First(predicate)
+		End Function
+		Public Function FirstOrDefault() As BaseEvent
+			Return ConcatAll.FirstOrDefault()
+		End Function
+		Public Function FirstOrDefault(defaultValue As BaseEvent) As BaseEvent
+			Return ConcatAll.FirstOrDefault(defaultValue)
+		End Function
+		Public Function FirstOrDefault(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+			Return ConcatAll.FirstOrDefault(predicate)
+		End Function
+		Public Function FirstOrDefault(predicate As Func(Of BaseEvent, Boolean), defaultValue As BaseEvent) As BaseEvent
+			Return ConcatAll.FirstOrDefault(predicate, defaultValue)
+		End Function
+		Public Function FirstOrDefault(Of T As BaseEvent)() As T
+			Return Where(Of T).FirstOrDefault()
+		End Function
+		Public Function FirstOrDefault(Of T As BaseEvent)(defaultValue As T) As T
+			Return Where(Of T).FirstOrDefault(defaultValue)
+		End Function
+		Public Function FirstOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As T
+			Return Where(Of T).FirstOrDefault(predicate)
+		End Function
+		Public Function FirstOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean), defaultValue As BaseEvent) As T
+			Return Where(Of T).FirstOrDefault(predicate, defaultValue)
+		End Function
+		Public Function Last() As BaseEvent
+			Return ConcatAll.Last
+		End Function
+		Public Function Last(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+			Return ConcatAll.Last(predicate)
+		End Function
+		Public Function Last(Of T As BaseEvent)() As T
+			Return Where(Of T).Last
+		End Function
+		Public Function Last(Of T As BaseEvent)(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+			Return Where(Of T).Last(predicate)
+		End Function
+		Public Function LastOrDefault() As BaseEvent
+			Return ConcatAll.LastOrDefault()
+		End Function
+		Public Function LastOrDefault(defaultValue As BaseEvent) As BaseEvent
+			Return ConcatAll.LastOrDefault(defaultValue)
+		End Function
+		Public Function LastOrDefault(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
+			Return ConcatAll.LastOrDefault(predicate)
+		End Function
+		Public Function LastOrDefault(predicate As Func(Of BaseEvent, Boolean), defaultValue As BaseEvent) As BaseEvent
+			Return ConcatAll.LastOrDefault(predicate, defaultValue)
+		End Function
+		Public Function LastOrDefault(Of T As BaseEvent)() As T
+			Return Where(Of T).LastOrDefault()
+		End Function
+		Public Function LastOrDefault(Of T As BaseEvent)(defaultValue As T) As T
+			Return Where(Of T).LastOrDefault(defaultValue)
+		End Function
+		Public Function LastOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As T
+			Return Where(Of T).LastOrDefault(predicate)
+		End Function
+		Public Function LastOrDefault(Of T As BaseEvent)(predicate As Func(Of T, Boolean), defaultValue As BaseEvent) As T
+			Return Where(Of T).LastOrDefault(predicate, defaultValue)
+		End Function
+		Public Function [Select](Of T)(predicate As Func(Of BaseEvent, T)) As IEnumerable(Of T)
+			Return Events.Select(predicate)
+		End Function
+		Private Function ConcatAll() As IEnumerable(Of BaseEvent)
+			Dim L As New List(Of BaseEvent)
+			Return L.Concat(CPBs).Concat(BPMs).Concat(Events)
+		End Function
+		Public Sub CopyTo(array() As BaseEvent, arrayIndex As Integer) Implements ICollection(Of BaseEvent).CopyTo
+			Dim index = 0
+			For Each item In CPBs
+				array(arrayIndex + index) = item
+				index += 1
+			Next
+			For Each item In BPMs
+				array(arrayIndex + index) = item
+				index += 1
+			Next
+			For Each item In Events
+				array(arrayIndex + index) = item
+				index += 1
+			Next
+		End Sub
+		Public Function Remove(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Remove
+			Return CPBs.Remove(item) OrElse BPMs.Remove(item) OrElse Events.Remove(item)
+		End Function
+		Public Function RemoveAll(predicate As Predicate(Of BaseEvent)) As Integer
+			Return CPBs.RemoveAll(predicate) + BPMs.RemoveAll(predicate) + Events.RemoveAll(predicate)
+		End Function
+		Friend Function GetEnumerator() As IEnumerator(Of BaseEvent) Implements IEnumerable(Of BaseEvent).GetEnumerator
+			Return ConcatAll.GetEnumerator
+		End Function
+		Public Sub RefreshCPBs()
+			BeatCalculator.Initialize(CPBs)
+		End Sub
+		Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
+			Return GetEnumerator()
+		End Function
+	End Class
 	Public Enum SpecialArtistType
 		None
 		AuthorIsArtist

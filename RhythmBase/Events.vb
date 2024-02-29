@@ -1,8 +1,9 @@
 ﻿Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
+Imports RhythmAsset.Sprites
 Imports System.Text.RegularExpressions
 Imports SkiaSharp
-#Disable Warning CA1507
+'#Disable Warning CA1507
 
 Namespace Objects
 	Public Module Events
@@ -137,14 +138,6 @@ Namespace Objects
 			<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 			Public Property [If] As Condition
 			Public Property Active As Boolean = True
-			Protected Sub New()
-				_BeatOnly = 0
-				_Y = 0
-			End Sub
-			Public Sub New(beatOnly As Single, Y As UInteger)
-				_BeatOnly = beatOnly
-				_Y = Y
-			End Sub
 			Public Overridable Function Copy(Of T As {BaseEvent, New})() As T
 				Dim temp = New T With {.BeatOnly = BeatOnly, .Y = Y, .[If] = [If], .Tag = Tag, .Active = Active}
 				If Me.If IsNot Nothing Then
@@ -355,7 +348,8 @@ Namespace Objects
 				End Set
 			End Property
 			Public Sub New(beatOnly As Single, y As UInteger, crotchetsPerBar As UInteger, visualBeatMultiplier As Single)
-				MyBase.New(beatOnly, y)
+				Me.BeatOnly = beatOnly
+				Me.Y = y
 				Me.CrotchetsPerBar = crotchetsPerBar
 				Me.VisualBeatMultiplier = visualBeatMultiplier
 			End Sub
@@ -770,8 +764,22 @@ Namespace Objects
 				Dots
 				DisableAll
 
+				'旧版特效
 				BlackAndWhite
 				Blackout
+				ScreenScrollX
+				ScreenScroll
+				ScreenScrollXSansVHS
+				ScreenScrollSansVHS
+				RowGlowWhite
+				RowAllWhite
+				RowOutline
+				RowShadow
+				RowSilhouetteGlow
+				RowPlain
+				Tile2
+				Tile3
+				Tile4
 			End Enum
 			<JsonProperty>
 			Public Overrides ReadOnly Property Rooms As New Rooms(True, True)
@@ -839,7 +847,6 @@ Namespace Objects
 					Presets.Dots
 					}.Contains(Preset)
 			End Function
-
 		End Class
 		Public Class SetBackgroundColor
 			Inherits BaseEvent
@@ -860,7 +867,7 @@ Namespace Objects
 			Public Property BackgroundType As BackgroundTypes
 			Public Property Duration As Single
 			Public Property Fps As Integer
-			Public Property Image As List(Of String)
+			Public Property Image As List(Of ISprite)
 			Public Property ScrollX As Integer
 			Public Property ScrollY As Integer
 			Public Property TilingType As TilingTypes
@@ -875,10 +882,10 @@ Namespace Objects
 			Public Property ContentMode As ContentModes
 			Public Property TilingType As TilingTypes
 			Public ReadOnly Property Color As New PanelColor(True)
-			Public Property Image As List(Of String)
-			Public Property Fps As Integer
-			Public Property ScrollX As Integer
-			Public Property ScrollY As Integer
+			Public Property Image As List(Of ISprite)
+			Public Property Fps As Single
+			Public Property ScrollX As Single
+			Public Property ScrollY As Single
 			Public Property Duration As Single
 			Public Property Interval As Single
 			Public Property Ease As EaseType
@@ -986,12 +993,12 @@ Namespace Objects
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 
 		End Class
-		Public Enum SubdivisionRowMode
-			Mini
-			Normal
-		End Enum
 		Public Class ShowSubdivisionsRows
 			Inherits BaseEvent
+			Public Enum SubdivisionRowMode
+				Mini
+				Normal
+			End Enum
 			Public Overrides ReadOnly Property type As EventType = EventType.ShowSubdivisionsRows
 			Public Property Subdivisions As Integer
 			Public Property Mode As SubdivisionRowMode
@@ -1096,12 +1103,11 @@ Namespace Objects
 			Inherits BaseEvent
 			<JsonProperty>
 			Public Overrides ReadOnly Property Rooms As New Rooms(True, True)
-			Public Property Strength As Integer
+			Public Property Strength As Byte
 			Public Property Count As Integer
-			Public Property Frequency As Integer
+			Public Property Frequency As Single
 			Public Overrides ReadOnly Property Type As EventType = EventType.PulseCamera
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
-
 		End Class
 		Public Class TextExplosion
 			Inherits BaseEvent
@@ -1188,19 +1194,16 @@ Namespace Objects
 				HideAbruptly
 			End Enum
 			<Flags>
-			Public Enum AnchorTypes
-				[Default] = &B0
+			Public Enum AnchorStyle
 				Lower = &B1
 				Upper = &B10
-				Middle = &B11
-				Right = &B100
-				Left = &B1000
-				Center = &B1100
+				Left = &B100
+				Right = &B1000
+				Center = &B0
 			End Enum
 			Private Shared _PrivateId As UInteger = 0
 			Private ReadOnly GeneratedId As UInteger
 			Private ReadOnly _children As New List(Of AdvanceText)
-			Private _anchor As AnchorTypes
 			Private _mode As OutMode = OutMode.FadeOut
 			Public Overrides ReadOnly Property Type As EventType = Events.EventType.FloatingText
 			Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
@@ -1225,27 +1228,7 @@ Namespace Objects
 				End Set
 			End Property
 			Public Property TextPosition As NumberOrExpressionPair = (50, 50)
-			Public Property Anchor As String
-				Get
-					If (_anchor And &B1100 = 0) Or (_anchor And &B11 = 0) Then
-						Throw New RhythmDoctorExcception("Anchor cannot be null.")
-					End If
-					Return (_anchor And AnchorTypes.Middle).ToString + (_anchor And AnchorTypes.Center).ToString
-				End Get
-				Set(value As String)
-					Dim Split = Regex.Matches(value, "[A-Z][a-z]+")
-					_anchor = [Enum].Parse(GetType(AnchorTypes), Split(0).Value) Or [Enum].Parse(GetType(AnchorTypes), Split(1).Value)
-				End Set
-			End Property
-			<JsonIgnore>
-			Public Property AnchorType As AnchorTypes
-				Get
-					Return _anchor
-				End Get
-				Set(value As AnchorTypes)
-					_anchor = value
-				End Set
-			End Property
+			Public Property Anchor As AnchorStyle
 			Public Property Mode As OutMode
 				Get
 					Return _mode
@@ -1754,7 +1737,7 @@ Namespace Objects
 				Up
 				Down
 				Banana
-				r
+				[Return]
 				None
 			End Enum
 			Private _pattern As New LimitedList(Of Patterns)(6, Patterns.None)
@@ -1773,7 +1756,7 @@ Namespace Objects
 								out += "d"
 							Case Patterns.Banana
 								out += "b"
-							Case Patterns.r
+							Case Patterns.Return
 								out += "r"
 							Case Patterns.None
 								out += "-"
@@ -1794,7 +1777,7 @@ Namespace Objects
 							Case "b"c
 								L.Add(Patterns.Banana)
 							Case "r"c
-								L.Add(Patterns.r)
+								L.Add(Patterns.Return)
 							Case "-"c
 								L.Add(Patterns.None)
 						End Select
@@ -1847,6 +1830,7 @@ Namespace Objects
 			Public Property Tick As Single
 			Public Property Loops As UInteger
 			Public Property Interval As Single
+			Public Property Skipshot As Boolean
 			Public Property FreezeBurnMode As FreezeBurn?
 				Get
 					Return _freezeBurnMode
@@ -1905,6 +1889,9 @@ Namespace Objects
 					L.Add(T)
 				Next
 				Return L.AsEnumerable
+			End Function
+			Public Function ShouldSerializeSkipshot() As Boolean
+				Return Skipshot
 			End Function
 			Public Overrides Function ToString() As String
 				Return MyBase.ToString() + $" {_freezeBurnMode} {_PulseType}"
@@ -2122,7 +2109,7 @@ Namespace Objects
 			Public Property MaskType As MaskTypes
 			Public Property AlphaMode As AlphaModes
 			Public Property SourceRoom As Byte
-			Public Property Image As List(Of String)
+			Public Property Image As List(Of ISprite)
 			Public Property Fps As UInteger
 			Public ReadOnly Property KeyColor As New PanelColor(False)
 			Public Property ColorCutoff As Single
