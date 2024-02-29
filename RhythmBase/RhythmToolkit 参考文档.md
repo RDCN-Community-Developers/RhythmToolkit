@@ -42,13 +42,13 @@
             - RhythmAsset.ImageUtil
                 - [SpriteInputSettings](#spriteinputsettings)
                 - [SpriteOutputSettings](#spriteoutputsettings)
-        - 图像相关(需引入`RhythmAsset`库)
+        - 图像相关(`RhythmAsset.Sprites`)
             - [ISprite](#isprite)
             - [Sprite](#sprite)
             - [Image](#image)
             - [PlaceHolder](#placeholder)
             - [NullAsset](#nullasset)
-        - 音频相关(需引入`RhythmAsset`库)
+        - 音频相关(`RhythmAsset.Audio`)
             - 待完成。
         - 本地化相关(需引入`RhythmLocalization`库)
             - [TranaslationManager](#tranaslationmanager)
