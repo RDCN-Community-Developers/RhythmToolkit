@@ -159,7 +159,7 @@ Public Module Tools
 					CharEvent.Duration = 0
 					Level.Add(CharEvent)
 				Next
-				Dim tempRowXs As New SetRowXs With {.Pattern = "------"}
+				Dim tempRowXs As New SetRowXs
 				For i = 0 To 5
 					Dim tempExpression = Decos(i + 1).deco.CreateChildren(Of PlayAnimation)(1)
 					tempExpression.Expression = beatSettings.Line
@@ -222,7 +222,7 @@ Public Module Tools
 						Case EventType.SetRowXs
 							Dim tempEvent = CType(item, SetRowXs)
 							For i = 0 To 5
-								If tempEvent.PatternEnum(i) <> tempRowXs.PatternEnum(i) Then
+								If tempEvent.Pattern(i) <> tempRowXs.Pattern(i) Then
 									Dim tempAnimation = Decos(i + 1).deco.CreateChildren(Of PlayAnimation)(tempEvent)
 									'	tempAnimation.Expression =
 									Level.Add(tempAnimation)

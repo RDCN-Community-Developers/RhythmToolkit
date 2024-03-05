@@ -1193,6 +1193,7 @@ Namespace Objects
 	End Enum
 	Public Enum FirstBeatBehavior
 		RunNormally
+		RunEventsOnPrebar
 	End Enum
 	Public Enum MultiplayerAppearance
 		HorizontalStrips

@@ -23,7 +23,7 @@ Public Class Form1
 		If OpenFileDialog1.ShowDialog <> DialogResult.OK Then
 			Return
 		End If
-		processingLevel = RDLevel.LoadFile(New IO.FileInfo(OpenFileDialog1.FileName), New RhythmBase.InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = False}})
+		processingLevel = RDLevel.LoadFile(New IO.FileInfo(OpenFileDialog1.FileName), New RhythmBase.InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
 		Dim file = New IO.FileInfo(OpenFileDialog1.FileName)
 		Text = file.Directory.Name + "\" + file.Name
 		LevelHandler = New RDLevelHandler(processingLevel)
@@ -60,7 +60,7 @@ Public Class Form1
 		End If
 		ShowEvent(viewIndex)
 	End Sub
-	Public Shared Manager As New TranaslationManager(New IO.FileInfo("D:\vb.net\RDLevel\RhythmBase\bin\Debug\net8.0\zh-cn.json"))
+	Public Shared Manager As New TranaslationManager(New IO.FileInfo(Application.StartupPath + "\zh-cn.json"))
 	Private Sub ShowEvent(index As Integer)
 		TableLayoutPanel1.Controls.Clear()
 		If Not (0 <= viewIndex And viewIndex < processingLevel.Count) Then
@@ -159,7 +159,8 @@ Public Class Form1
 					pValue.Text = "搁这画个饼先"
 					editorControl = pValue
 				End If
-				editorControl.AccessibleName = $"属性{Manager.GetValue(p)}的值"
+				editorControl.AccessibleRole = AccessibleRole.None
+				editorControl.AccessibleName = Manager.GetValue(p)
 				TableLayoutPanel1.Controls.Add(pLabel)
 				TableLayoutPanel1.Controls.Add(editorControl)
 			End If

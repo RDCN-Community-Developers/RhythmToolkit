@@ -34,7 +34,7 @@ Partial Class Form1
 		' 
 		' ImportButton
 		' 
-		ImportButton.AccessibleDescription = "导入关卡"
+		ImportButton.AccessibleDescription = ""
 		ImportButton.AccessibleName = "导入"
 		ImportButton.AccessibleRole = AccessibleRole.PushButton
 		ImportButton.Location = New Point(93, 12)
@@ -50,7 +50,7 @@ Partial Class Form1
 		' 
 		' SaveFileButton
 		' 
-		SaveFileButton.AccessibleDescription = "导出关卡"
+		SaveFileButton.AccessibleDescription = ""
 		SaveFileButton.AccessibleName = "导出"
 		SaveFileButton.AccessibleRole = AccessibleRole.PushButton
 		SaveFileButton.Location = New Point(174, 12)
@@ -62,7 +62,7 @@ Partial Class Form1
 		' 
 		' PageUpButton
 		' 
-		PageUpButton.AccessibleDescription = "查看下一个事件"
+		PageUpButton.AccessibleDescription = ""
 		PageUpButton.AccessibleName = "下一个"
 		PageUpButton.AccessibleRole = AccessibleRole.PushButton
 		PageUpButton.Location = New Point(12, 70)
@@ -90,7 +90,7 @@ Partial Class Form1
 		' 
 		' PageDownButton
 		' 
-		PageDownButton.AccessibleDescription = "查看上一个事件"
+		PageDownButton.AccessibleDescription = ""
 		PageDownButton.AccessibleName = "上一个"
 		PageDownButton.AccessibleRole = AccessibleRole.PushButton
 		PageDownButton.Location = New Point(12, 41)

@@ -75,6 +75,7 @@ Namespace Events
 		WindowResize
 		ShowSubdivisionsRows
 		ReadNarration
+		NarrateRowInfo
 		UnknownObject
 	End Enum
 	Public Enum TilingTypes
@@ -1179,24 +1180,42 @@ Namespace Events
 		Public Property Mode As Modes
 		Public Overrides ReadOnly Property Type As EventType = EventType.TextExplosion
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
-
 	End Class
-	'NarrateRowInfo
-	'Tile
-	'MaskRoom
-	Public Enum NarrationCategory
-		Fallback
-		Navigation
-		Instruction
-		Notification
-		Dialogue
-		Description = 6
-		Subtitles
-	End Enum
+	Public Class NarrateRowInfo
+		Inherits BaseRowAction
+		Public Enum NarrateInfoType
+			Connect
+			Update
+			Disconnect
+			Online
+			Offline
+		End Enum
+		Public Overrides ReadOnly Property Type As EventType = EventType.NarrateRowInfo
+		Public Overrides ReadOnly Property Rooms As Rooms
+			Get
+				Return Parent.Rooms
+			End Get
+		End Property
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+		Public Property InfoType As NarrateInfoType
+		Public Property SoundOnly As Boolean
+		Public Property NarrateSkipBeats As String
+		Public Property CustomPattern As New LimitedList(Of Patterns)(6)
+		Public Property SkipsUnstable As Boolean
+	End Class
+
 	Public Class ReadNarration
 		Inherits BaseEvent
+		Public Enum NarrationCategory
+			Fallback
+			Navigation
+			Instruction
+			Notification
+			Dialogue
+			Description = 6
+			Subtitles
+		End Enum
 		Public Overrides ReadOnly Property Type As EventType = EventType.ReadNarration
-
 		Public Property Text As String
 		Public Property Category As NarrationCategory
 
@@ -1746,7 +1765,7 @@ Namespace Events
 	End Class
 	Public Class AddClassicBeat
 		Inherits BaseBeat
-		Enum Patterns
+		Enum ClassicBeatPatterns
 			ThreeBeat
 			FourBeat
 		End Enum
@@ -1754,36 +1773,30 @@ Namespace Events
 		Public Property Swing As Single
 		Public Property Hold As Single
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-		Public Property SetXs As Patterns?
+		Public Property SetXs As ClassicBeatPatterns?
 		<JsonIgnore>
 		Public ReadOnly Property Pattern As String
 			Get
-				If SetXs Is Nothing Then
-					Return CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetRowXs AndAlso Parent.Children.IndexOf(i) < Parent.Children.IndexOf(Me), New SetRowXs With {.Pattern = "------"}), SetRowXs).Pattern
-				Else
-					Select Case SetXs
-						Case Patterns.ThreeBeat
-							Return "-xx-xx"
-						Case Patterns.FourBeat
-							Return "-x-x-x"
-						Case Else
-							Throw New RhythmDoctorExcception("how")
-					End Select
-				End If
+				Return RowXs.GetPatternString
 			End Get
 		End Property
 		<JsonIgnore>
 		Public ReadOnly Property RowXs As SetRowXs
 			Get
 				If SetXs Is Nothing Then
-					Return CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetRowXs AndAlso Parent.Children.IndexOf(i) < Parent.Children.IndexOf(Me), New SetRowXs With {.Pattern = "------"}), SetRowXs)
+					Return CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetRowXs AndAlso Parent.Children.IndexOf(i) < Parent.Children.IndexOf(Me), New SetRowXs), SetRowXs)
 				Else
 					Dim T = Copy(Of SetRowXs)()
 					Select Case SetXs
-						Case Patterns.ThreeBeat
-							T.Pattern = "-xx-xx"
-						Case Patterns.FourBeat
-							T.Pattern = "-x-x-x"
+						Case ClassicBeatPatterns.ThreeBeat
+							T.Pattern(1) = Patterns.X
+							T.Pattern(2) = Patterns.X
+							T.Pattern(4) = Patterns.X
+							T.Pattern(5) = Patterns.X
+						Case ClassicBeatPatterns.FourBeat
+							T.Pattern(1) = Patterns.X
+							T.Pattern(3) = Patterns.X
+							T.Pattern(5) = Patterns.X
 						Case Else
 							Throw New RhythmDoctorExcception("how")
 					End Select
@@ -1819,7 +1832,7 @@ Namespace Events
 			L.Add(Head)
 			Dim tempBeat = BeatOnly
 			For i = 1 To 6
-				If i < 6 AndAlso Xs.PatternEnum(i) = SetRowXs.Patterns.X Then
+				If i < 6 AndAlso Xs.Pattern(i) = Patterns.X Then
 					Continue For
 				End If
 				Dim Pulse As PulseFreeTimeBeat = Copy(Of PulseFreeTimeBeat)()
@@ -1841,63 +1854,20 @@ Namespace Events
 		End Function
 
 	End Class
+	Public Enum Patterns
+		X
+		Up
+		Down
+		Banana
+		[Return]
+		None
+	End Enum
 	Public Class SetRowXs
 		Inherits BaseBeat
-		Enum Patterns
-			X
-			Up
-			Down
-			Banana
-			[Return]
-			None
-		End Enum
 		Private _pattern As New LimitedList(Of Patterns)(6, Patterns.None)
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetRowXs
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
-		Public Property Pattern As String
-			Get
-				Dim out = ""
-				For Each item In _pattern
-					Select Case item
-						Case Patterns.X
-							out += "x"
-						Case Patterns.Up
-							out += "u"
-						Case Patterns.Down
-							out += "d"
-						Case Patterns.Banana
-							out += "b"
-						Case Patterns.Return
-							out += "r"
-						Case Patterns.None
-							out += "-"
-					End Select
-				Next
-				Return out
-			End Get
-			Set(value As String)
-				Dim L As New LimitedList(Of Patterns)(6, Patterns.None)
-				For Each c In value
-					Select Case c
-						Case "x"c
-							L.Add(Patterns.X)
-						Case "u"c
-							L.Add(Patterns.Up)
-						Case "d"c
-							L.Add(Patterns.Down)
-						Case "b"c
-							L.Add(Patterns.Banana)
-						Case "r"c
-							L.Add(Patterns.Return)
-						Case "-"c
-							L.Add(Patterns.None)
-					End Select
-				Next
-				_pattern = L
-			End Set
-		End Property
-		<JsonIgnore>
-		Public Property PatternEnum As LimitedList(Of Patterns)
+		Public Property Pattern As LimitedList(Of Patterns)
 			Get
 				Return _pattern
 			End Get
@@ -1915,8 +1885,28 @@ Namespace Events
 		Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
 			Return New List(Of Pulse)
 		End Function
+		Public Function GetPatternString() As String
+			Dim out = ""
+			For Each item In _pattern
+				Select Case item
+					Case Patterns.X
+						out += "x"
+					Case Patterns.Up
+						out += "u"
+					Case Patterns.Down
+						out += "d"
+					Case Patterns.Banana
+						out += "b"
+					Case Patterns.Return
+						out += "r"
+					Case Patterns.None
+						out += "-"
+				End Select
+			Next
+			Return out
+		End Function
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString() + $" {Pattern}"
+			Return MyBase.ToString() + $" {GetPatternString()}"
 		End Function
 
 	End Class
@@ -1969,12 +1959,7 @@ Namespace Events
 		Public Overrides ReadOnly Property Type As EventType = EventType.AddOneshotBeat
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
 
-		Public Overrides ReadOnly Property Pulsable As Boolean
-			Get
-				Return True
-			End Get
-		End Property
-
+		Public Overrides ReadOnly Property Pulsable As Boolean = True
 		Public Overrides Function PulseTime() As IEnumerable(Of Objects.Pulse)
 			Dim L As New List(Of Objects.Pulse)
 			For i As UInteger = 0 To _Loops

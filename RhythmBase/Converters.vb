@@ -5,6 +5,7 @@ Imports RhythmBase.Events
 Imports RhythmAsset
 Imports RhythmAsset.Sprites
 Imports SkiaSharp
+Imports RhythmBase.Animation
 
 Namespace Objects
 	Module Converters
@@ -151,6 +152,7 @@ Namespace Objects
 					.Add(New AnchorStyleConverter)
 					.Add(New TagActionConverter(SetCPBCollection))
 					.Add(New ConditionConverter)
+					.Add(New PatternConverter)
 					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
 
@@ -330,6 +332,7 @@ Namespace Objects
 					.Add(New ConditionConverter)
 					.Add(New AssetConverter(fileLocation, settings, assets))
 					.Add(New AnchorStyleConverter)
+					.Add(New PatternConverter)
 					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
 				With writer
@@ -605,6 +608,49 @@ Namespace Objects
 				Obj.ActionTag = Json("Tag")
 				Obj.Tag = Json("tag")
 				Return Obj
+			End Function
+		End Class
+		Public Class PatternConverter
+			Inherits JsonConverter(Of LimitedList(Of Patterns))
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As LimitedList(Of Patterns), serializer As JsonSerializer)
+				Dim out = ""
+				For Each item In value
+					Select Case item
+						Case Patterns.X
+							out += "x"
+						Case Patterns.Up
+							out += "u"
+						Case Patterns.Down
+							out += "d"
+						Case Patterns.Banana
+							out += "b"
+						Case Patterns.Return
+							out += "r"
+						Case Patterns.None
+							out += "-"
+					End Select
+				Next
+				writer.WriteValue(out)
+			End Sub
+
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As LimitedList(Of Patterns), hasExistingValue As Boolean, serializer As JsonSerializer) As LimitedList(Of Patterns)
+				For Each c In JToken.ReadFrom(reader).ToObject(Of String)
+					Select Case c
+						Case "x"c
+							existingValue.Add(Patterns.X)
+						Case "u"c
+							existingValue.Add(Patterns.Up)
+						Case "d"c
+							existingValue.Add(Patterns.Down)
+						Case "b"c
+							existingValue.Add(Patterns.Banana)
+						Case "r"c
+							existingValue.Add(Patterns.Return)
+						Case "-"c
+							existingValue.Add(Patterns.None)
+					End Select
+				Next
+				Return existingValue
 			End Function
 		End Class
 		Public Class ConditionalConverter
