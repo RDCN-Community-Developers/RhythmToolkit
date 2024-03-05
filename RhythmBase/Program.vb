@@ -1,6 +1,6 @@
 Imports System
 Imports RhythmBase.Objects
-Imports RhythmAsset.Sprites
+Imports RhythmBase.Events
 Imports RhythmAsset
 Imports System.Data.Common
 Imports RhythmBase.Util

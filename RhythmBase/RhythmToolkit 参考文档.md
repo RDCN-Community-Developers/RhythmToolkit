@@ -12,12 +12,14 @@
             - [BaseRowAction](#baserowaction)
             - [BaseBeat](#basebeat)
             - [BaseRowAnimation](#baserowanimation)
+            - [IAnimation](#ianimation)
         - 事件属性
             - [LimitedList&lt;T&gt;](#limitedlistt)
             - [INumberOrExpression](#inumberorexpression)
             - [Number](#number)
             - [Expression](#expression)
             - [NumberOrExpressionPair](#numberorexpressionpair)
+            - [Function](#function)
             - [Pulse](#pulse)
             - [PanelColor](#panelcolor)
             - [Rooms](#rooms)
@@ -50,6 +52,14 @@
             - [NullAsset](#nullasset)
         - 音频相关(`RhythmAsset.Audio`)
             - 待完成。
+        - 动画相关(`RhythmBase.Animation`)
+            - [IAnimation](#ianimation-1)
+            - [Value](#value)
+            - [Color](#color)
+            - [Object](#object)
+            - [Pair](#pair)
+            - [Movement](#movement)
+            - [Gradient](#gradient)
         - 本地化相关(需引入`RhythmLocalization`库)
             - [TranaslationManager](#tranaslationmanager)
 - [示例](#示例)
@@ -58,6 +68,7 @@
     - [在每一拍按键](#在七拍子的每一拍按键)
     - [批量添加精灵](#批量添加精灵)
     - [最短按拍间隔](#获取关卡最短按拍间隔)
+- [更新日志](#更新日志)
 ## 正文
 
 ### 枚举
@@ -203,6 +214,25 @@ BPM值。
 
 ---
 
+#### `IAnimation`  
+动画属性接口。  
+此接口用于对接`RhythmBase.Animation.IAnimation`。  
+
+##### 属性和字段  
+
+**`Float`** `Start`  
+此动画属性的开始节拍。  
+
+**`Float`** `Duration`  
+此动画属性的持续节拍。  
+
+##### 方法
+
+[**`RhythmBase.Animation.IAnimation`**](#ianimation-1) `Animation`  
+此动画属性的缓动类型。  
+
+---
+
 #### `LimitedList<T>`  
 限制数量以及含有默认值的 List&lt;T&gt;
 
@@ -272,7 +302,7 @@ BPM值。
 
 ##### 构造
 
-`new(INumberOrExpression, INumberOrExpression)`  
+`new(INumberOrExpression x, INumberOrExpression y)`  
 构造一个表达式对的实例。  
 
 ##### 属性和字段
@@ -287,6 +317,18 @@ BPM值。
 
 **`（float X, float Y)`** `GetValue(Variables variables)`  
 返回此表达式对经变量或自定义方法求值后的结果(**NotImplemented**)。  
+
+---
+
+#### `Function`  
+实现了`INumberOrExpression`接口。  
+此对象可以用于动态求值。  
+如输出关卡文件时遇到此对象会执行给定函数并写入获得的结果。  
+
+##### 构造
+
+`new(Func<Float> function)`  
+构造一个表达式的实例。  
 
 ---
 
@@ -327,6 +369,9 @@ BPM值。
 
 *`readOnly`* **`bool`** `EnablePanel`  
 指示此颜色是否指向了调色板。  
+
+*`readOnly`* **`SKColor`** `Value`  
+返回此调色板的实际颜色。  
 
 ---
 
@@ -386,7 +431,7 @@ BPM值。
 [**`ISprite`**](#isprite) `Parent`  
 返回或设置装饰所用的父素材。  
 
-*`readonly`* **`List<BaseDecorationAction>`** `Children`  
+*`readonly`* [**`List<BaseDecorationAction>`**](#basedecorationaction) `Children`  
 返回此装饰下的子事件。  
 
 **`string`** `Id`  
@@ -401,10 +446,10 @@ BPM值。
 **`ulong`** `Row`  
 返回或设置装饰的Id。  
 
-*`readonly`* **`Rooms`** `Rooms`  
+*`readonly`* [**`Rooms`**](#rooms) `Rooms`  
 返回装饰的序号。  
 
-*`readonly`* **`ISprite`** `File`  
+*`readonly`* [**`ISprite`**](#isprite) `File`  
 返回装饰文件素材对象。  
 
 **`int`** `Depth`  
@@ -487,19 +532,19 @@ BPM值。
 *`readOnly`* [**`HashSet<ISprite>`**](#isprite) `Assets`  
 图像素材集合。  
 
-*`readOnly`* **`List<Rows>`** `Rows`  
+*`readOnly`* [**`IReadOnlyCollection<Row>`**](#row) `Rows`  
 轨道集合。  
 
-*`readOnly`* **`List<Decorations>`** `Decorations`  
+*`readOnly`* [**`IReadOnlyCollection<Decoration>`**](#decoration) `Decorations`  
 装饰集合。  
 
-*`readOnly`* **`List<Conditionals>`** `Conditionals`  
+*`readOnly`* **`List<Conditional>`** `Conditionals`  
 条件集合。  
 
-*`readOnly`* **`List<Bookmarks>`** `Bookmarks`  
+*`readOnly`* **`List<Bookmark>`** `Bookmarks`  
 书签集合。  
 
-*`readOnly`* **`List<ColorPalette>`** `ColorPalette`  
+*`readOnly`* **`List<Color>`** `ColorPalette`  
 调色盘集合。  
 
 *`readOnly`* **`FileInfo`** `Path`  
@@ -517,6 +562,21 @@ BPM值。
 变量和自定义方法。  
 
 ##### 方法
+
+[**`Decoration`**](#decoration) `CreateDecoration(Rooms room, ISprite parent, int depth = 0, bool visible = true)`  
+创建装饰。  
+
+[**`Decoration`**](#decoration) `CopyDecoration(Decoration decoration)`  
+复制装饰。  
+
+**`bool`** `RemoveDecoration(Decoration decoration)`  
+移除装饰。  
+
+[**`Row`**](#row) `CreateRow(Rooms room, string character, bool visible = true)`  
+创建轨道。  
+
+**`bool`** `RemoveRow(Row row)`  
+移除轨道。  
 
 **`IEnumerable<IGrouping<String, BaseEvent>>`** `GetTaggedEvents(string name, bool direct)`  
 以标签名获取标签事件。  
@@ -950,6 +1010,126 @@ BPM值。
 
 ---
 
+### 动画  
+提供了一些获取动画相关属性的方式。
+
+---
+
+#### `IAnimation`  
+动画属性接口。  
+此对象由部分带有缓动属性的事件下的`Animation`方法获取。  
+
+##### 属性和字段  
+
+*`readOnly`* **`BaseEvent`** `Parent`  
+指向此动画属性对象的父对象。  
+
+*`readOnly`* **`Float`** `Start`  
+此动画属性的开始节拍。  
+
+*`readOnly`* **`Float`** `Duration`  
+此动画属性的持续节拍。  
+
+*`readOnly`* **`Float`** `End`  
+此动画属性的结束节拍。  
+
+*`readOnly`* **`EaseType`** `Ease`  
+此动画属性的缓动类型。  
+
+---
+
+#### `Value`  
+值类型动画属性。  
+实现了`IAnimation`接口。  
+
+##### 属性和字段  
+
+*`readOnly`* [**`INumberOrExpression`**](#inumberorexpression) `Value`  
+此动画属性的值。  
+
+---
+
+#### `Color`  
+颜色类型动画属性。  
+实现了`IAnimation`接口。  
+
+##### 属性和字段  
+
+*`readOnly`* **`SKColor`** `Value`  
+此动画属性的值。  
+
+---
+
+#### `Object`  
+其他类型动画属性。  
+实现了`IAnimation`接口。  
+
+##### 属性和字段  
+
+*`readOnly`* **`Object`** `Value`  
+此动画属性的值。  
+
+---
+
+#### `Pair`  
+数对类型动画属性。  
+实现了`IAnimation`接口。  
+
+##### 属性和字段  
+
+*`readOnly`* [**`NumberOrExpressionPair`**](#numberorexpressionpair) `Value`  
+此动画属性的值。  
+
+*`readOnly`* [**`Value`**](#value) `X`  
+此动画属性的第一个值的动画属性。  
+
+*`readOnly`* [**`Value`**](#value) `Y`  
+此动画属性的第二个值的动画属性。  
+
+---
+
+#### `Movement`  
+位移变化类型动画属性。  
+实现了`IAnimation`接口。  
+
+##### 属性和字段  
+
+*`readOnly`* [**`Pair`**](#pair) `Location`  
+此动画属性的位置。  
+
+*`readOnly`* [**`Pair`**](#pair) `Size`  
+此动画属性的大小。  
+
+*`readOnly`* [**`Pair`**](#pair) `Pivot`  
+此动画属性的轴点。  
+
+*`readOnly`* [**`Value`**](#value) `Angle`  
+此动画属性的角度。  
+
+---
+
+#### `Gradient`  
+色彩类型动画属性。  
+实现了`IAnimation`接口。  
+
+##### 属性和字段  
+
+*`readOnly`* [**`Color`**](#color) `Color1`  
+此动画属性的颜色。  
+通常为填充色。  
+
+*`readOnly`* [**`Color`**](#color) `Color2`  
+此动画属性的颜色。  
+通常为描边色。  
+
+*`readOnly`* [**`Value`**](#value) `Value1`  
+此动画属性的值。  
+
+*`readOnly`* [**`Value`**](#value) `Value2`  
+此动画属性的值。  
+
+---
+
 ### 本地化
 
 #### `TranaslationManager`  
@@ -1130,3 +1310,15 @@ Public Function GetLevelMinIntervalTime(level as RDLevel) As IEnumerable(Of (Pul
 End Function
 ```
 在`BeatsViewer`，`RhythmTools`，`RhythmToolsUI`，`WaveProducer`内查看更多示例。  
+
+## 更新日志
+
+### 2024/03/05
+
+- 添加了[动画属性访问模块](#ianimation-1)。  
+- [部分事件](#ianimation)对动画模块进行了适配。
+- 将[`INumberOrExpression`](#inumberorexpression)下的类型替换为结构体。
+- 添加了实现了[`INumberOrExpression`](#inumberorexpression)的[`Function`](#function)类型，用于动态求值。
+- [`PanelColor`](#panelcolor)添加了`Value`属性。
+- 缩小了[`RDLevel`](#rdlevel)类型的`Decorations`和`Rows`属性的访问权限。  
+同时也移除了[`Decoration`](#decoration)和[`Row`](#row)的构造函数。

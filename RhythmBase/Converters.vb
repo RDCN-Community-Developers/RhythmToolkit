@@ -1,6 +1,7 @@
 ﻿Imports System.Text.RegularExpressions
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
+Imports RhythmBase.Events
 Imports RhythmAsset
 Imports RhythmAsset.Sprites
 Imports SkiaSharp
@@ -63,7 +64,7 @@ Namespace Objects
 					.NullValueHandling = NullValueHandling.Ignore
 				}
 				With EventsSerializer.Converters
-					.Add(New EventConverter(value.CPBs, value.BPMs, value.Path, settings.SpriteSettings, value.Assets))
+					.Add(New EventConverter(value.CPBs, value.BPMs, value.Path, settings.SpriteSettings, value.Assets, value.ColorPalette))
 				End With
 
 				With writer
@@ -117,21 +118,6 @@ Namespace Objects
 					.Add(New ColorConverter)
 					.Add(New LimitedListConverter(Of SKColor))
 				End With
-				Dim EventsSerializer As New JsonSerializer With {
-					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
-					.NullValueHandling = NullValueHandling.Ignore
-				}
-				With EventsSerializer.Converters
-					.Add(New INumberOrExpressionConverter)
-					.Add(New NumberOrExpressionPairConverter)
-					.Add(New PanelColorConverter)
-					.Add(New RoomConverter)
-					.Add(New AssetConverter(fileLocation, settings.SpriteSettings, assetsCollection))
-					.Add(New AnchorStyleConverter)
-					.Add(New TagActionConverter(SetCPBCollection))
-					.Add(New ConditionConverter)
-					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
-				End With
 
 				Dim Level As New RDLevel With {.Settings = J("settings").ToObject(Of Settings)(SettingsSerializer)}
 				'Level.Data.Add(J("settings").ToObject(Of Settings)(SettingsSerializer))
@@ -139,8 +125,8 @@ Namespace Objects
 					Throw New RhythmDoctorExcception($"Might not support. Version is too low ({Level.Settings.Version}).")
 				End If
 				With Level
-					.Rows.AddRange(J("rows").ToObject(Of List(Of Row))(RowsSerializer))
-					.Decorations.AddRange(J("decorations").ToObject(Of List(Of Decoration))(DecorationsSerializer))
+					._Rows.AddRange(J("rows").ToObject(Of List(Of Row))(RowsSerializer))
+					._Decorations.AddRange(J("decorations").ToObject(Of List(Of Decoration))(DecorationsSerializer))
 					.Conditionals.AddRange(J("conditionals").ToObject(Of List(Of BaseConditional))(ConditionalsSerializer))
 					.Bookmarks.AddRange(J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer))
 					For Each item In J("colorPalette").ToObject(Of LimitedList(Of SKColor))(ColorPaletteSerializer)
@@ -152,9 +138,24 @@ Namespace Objects
 
 				End With
 
+				Dim EventsSerializer As New JsonSerializer With {
+					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
+					.NullValueHandling = NullValueHandling.Ignore
+				}
+				With EventsSerializer.Converters
+					.Add(New INumberOrExpressionConverter)
+					.Add(New NumberOrExpressionPairConverter)
+					.Add(New PanelColorConverter(Level.ColorPalette))
+					.Add(New RoomConverter)
+					.Add(New AssetConverter(fileLocation, settings.SpriteSettings, assetsCollection))
+					.Add(New AnchorStyleConverter)
+					.Add(New TagActionConverter(SetCPBCollection))
+					.Add(New ConditionConverter)
+					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				End With
 
 				For Each item In Level.Rows
-					item.ParentCollection = Level.Rows
+					item.ParentCollection = Level._Rows
 				Next
 
 				For Each item In Level.Conditionals
@@ -199,7 +200,7 @@ Namespace Objects
 						Continue For
 					End If
 
-					Dim SubClassType As Type = Type.GetType($"{BaseActionType.Namespace}.{NameOf(Events)}+{item("type")}")
+					Dim SubClassType As Type = Type.GetType($"{BaseActionType.Namespace}.{item("type")}")
 					Dim TempEvent As BaseEvent = item.ToObject(SubClassType, EventsSerializer)
 					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(If(item("beat"), 1)), SetCPBCollection)
 					'条件
@@ -306,7 +307,8 @@ Namespace Objects
 			Private ReadOnly fileLocation As IO.FileInfo
 			Private ReadOnly settings As SpriteInputSettings
 			Private ReadOnly assets As HashSet(Of ISprite)
-			Public Sub New(setCPBCollection As IEnumerable(Of SetCrotchetsPerBar), setBPMCollection As IEnumerable(Of BaseBeatsPerMinute), location As IO.FileInfo, settings As SpriteInputSettings, assets As HashSet(Of ISprite))
+			Private ReadOnly colorList As LimitedList(Of SKColor)
+			Public Sub New(setCPBCollection As IEnumerable(Of SetCrotchetsPerBar), setBPMCollection As IEnumerable(Of BaseBeatsPerMinute), location As IO.FileInfo, settings As SpriteInputSettings, assets As HashSet(Of ISprite), list As LimitedList(Of SKColor))
 				fileLocation = location
 				Me.settings = settings
 				Me.assets = assets
@@ -321,7 +323,7 @@ Namespace Objects
 				With EventsSerializer.Converters
 					.Add(New NumberOrExpressionPairConverter)
 					.Add(New INumberOrExpressionConverter)
-					.Add(New PanelColorConverter)
+					.Add(New PanelColorConverter(colorList))
 					.Add(New ColorConverter)
 					.Add(New TagActionConverter(setCPB))
 					.Add(New RoomConverter)
@@ -391,25 +393,25 @@ Namespace Objects
 			End Function
 		End Class
 		Public Class NumberOrExpressionPairConverter
-			Inherits JsonConverter(Of NumberOrExpressionPair)
-			Public Overrides Sub WriteJson(writer As JsonWriter, value As NumberOrExpressionPair, serializer As JsonSerializer)
+			Inherits JsonConverter(Of NumberOrExpressionPair?)
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As NumberOrExpressionPair?, serializer As JsonSerializer)
 				With writer
 					.WriteStartArray()
-					If value.X Is Nothing Then
+					If value?.X Is Nothing Then
 						.WriteNull()
 					Else
-						.WriteRawValue(value.X.Serialize)
+						.WriteRawValue(value?.X.Serialize)
 					End If
-					If value.Y Is Nothing Then
+					If value?.Y Is Nothing Then
 						.WriteNull()
 					Else
-						.WriteRawValue(value.Y.Serialize)
+						.WriteRawValue(value?.Y.Serialize)
 					End If
 					.WriteEndArray()
 				End With
 			End Sub
 
-			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As NumberOrExpressionPair, hasExistingValue As Boolean, serializer As JsonSerializer) As NumberOrExpressionPair
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As NumberOrExpressionPair?, hasExistingValue As Boolean, serializer As JsonSerializer) As NumberOrExpressionPair?
 				Dim J = JToken.ReadFrom(reader).ToObject(Of String())
 				Dim S As New JsonSerializerSettings
 				S.Converters.Add(New INumberOrExpressionConverter)
@@ -418,6 +420,10 @@ Namespace Objects
 		End Class
 		Public Class PanelColorConverter
 			Inherits JsonConverter(Of PanelColor)
+			Private parent As LimitedList(Of SKColor)
+			Friend Sub New(list As LimitedList(Of SKColor))
+				parent = list
+			End Sub
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As PanelColor, serializer As JsonSerializer)
 				If value.EnablePanel Then
 					writer.WriteValue($"pal{value.Panel}")
@@ -435,6 +441,7 @@ Namespace Objects
 			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As PanelColor, hasExistingValue As Boolean, serializer As JsonSerializer) As PanelColor
 				Dim JString = JToken.Load(reader).Value(Of String)
 				Dim reg = Regex.Match(JString, "pal(\d+)")
+				existingValue.parent = parent
 				If reg.Success Then
 					existingValue.Panel = reg.Groups(1).Value
 				Else

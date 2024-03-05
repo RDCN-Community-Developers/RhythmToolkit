@@ -1,7 +1,7 @@
 ﻿Imports RhythmBase.Objects
 Imports RhythmBase.Util
 Imports RhythmAsset.Sprites
-Imports RhythmAsset
+Imports RhythmBase.Events
 Public Module Tools
 	Public Class RDLevelHandler
 		Private ReadOnly Level As RDLevel
@@ -131,20 +131,19 @@ Public Module Tools
 			For Each row In Level.Rows.Where(Function(i) i.RowType = RowType.Classic)
 				Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
 				Dim Decos As New List(Of (deco As Decoration, left As Double)) From {
-					(New Decoration(row.Rooms, Character,,), 0),
-					(New Decoration(row.Rooms, ClassicBeat,,), 29),
-					(New Decoration(row.Rooms, ClassicBeat,,), 53),
-					(New Decoration(row.Rooms, ClassicBeat,,), 77),
-					(New Decoration(row.Rooms, ClassicBeat,,), 101),
-					(New Decoration(row.Rooms, ClassicBeat,,), 125),
-					(New Decoration(row.Rooms, ClassicBeat,,), 149),
-					(New Decoration(row.Rooms, ClassicBeat,,), 214),
-					(New Decoration(row.Rooms, Heart,,), 282)
+					(Level.CreateDecoration(row.Rooms, Character,,), 0),
+					(Level.CreateDecoration(row.Rooms, ClassicBeat,,), 29),
+					(Level.CreateDecoration(row.Rooms, ClassicBeat,,), 53),
+					(Level.CreateDecoration(row.Rooms, ClassicBeat,,), 77),
+					(Level.CreateDecoration(row.Rooms, ClassicBeat,,), 101),
+					(Level.CreateDecoration(row.Rooms, ClassicBeat,,), 125),
+					(Level.CreateDecoration(row.Rooms, ClassicBeat,,), 149),
+					(Level.CreateDecoration(row.Rooms, ClassicBeat,,), 214),
+					(Level.CreateDecoration(row.Rooms, Heart,,), 282)
 				}
 				For Each item In Decos
 					'item.deco.Rooms = row.Rooms
 					item.deco.Visible = False
-					Level.Decorations.Add(item.deco)
 					Dim visible As SetVisible = item.deco.CreateChildren(Of SetVisible)(1)
 					visible.Visible = Not row.HideAtStart
 					Level.Add(visible)
@@ -152,10 +151,10 @@ Public Module Tools
 				For Each part In Decos
 					Dim tempEvent = New MoveRow With {.RowPosition = (35 / 352 * 100, 50), .Pivot = 0}
 					Dim CharEvent As Move = part.deco.CreateChildren(Of Move)(1)
-					CharEvent.Position = (35 / 352 * 100, 50)
+					CharEvent.Position = New NumberOrExpressionPair(35 / 352 * 100, 50)
 					CharEvent.Scale = Nothing
 					CharEvent.Angle = Nothing
-					CharEvent.Pivot = (((tempEvent.Pivot * 282) - (part.left - part.deco.Size.X / 2)) * 100 / part.deco.Size.X, 50)
+					CharEvent.Pivot = New NumberOrExpressionPair(((tempEvent.Pivot * 282) - (part.left - part.deco.Size.X / 2)) * 100 / part.deco.Size.X, 50)
 					CharEvent.Ease = RhythmBase.Ease.EaseType.Linear
 					CharEvent.Duration = 0
 					Level.Add(CharEvent)
@@ -187,7 +186,7 @@ Public Module Tools
 											CharEvent.Scale = tempEvent.Scale
 											CharEvent.Angle = tempEvent.Angle
 											If tempEvent.Pivot IsNot Nothing Then
-												CharEvent.Pivot = (((tempEvent.Pivot * 282) - (part.left - part.deco.Size.X / 2)) * 100 / part.deco.Size.X, 50)
+												CharEvent.Pivot = New NumberOrExpressionPair(((tempEvent.Pivot * 282) - (part.left - part.deco.Size.X / 2)) * 100 / part.deco.Size.X, 50)
 											End If
 											CharEvent.Ease = tempEvent.Ease
 											CharEvent.Duration = tempEvent.Duration
@@ -195,7 +194,7 @@ Public Module Tools
 											CharEvent.Position = tempEvent.RowPosition
 											CharEvent.Scale = tempEvent.Scale
 											CharEvent.Angle = tempEvent.Angle
-											CharEvent.Pivot = ((-(part.left - part.deco.Size.X / 2)) * 100 / part.deco.Size.X, 50)
+											CharEvent.Pivot = New NumberOrExpressionPair((-(part.left - part.deco.Size.X / 2)) * 100 / part.deco.Size.X, 50)
 											CharEvent.Ease = tempEvent.Ease
 											CharEvent.Duration = tempEvent.Duration
 											Level.Add(CharEvent)
@@ -289,7 +288,7 @@ Public Module Tools
 		''' <param name="visible">精灵的初始可见性</param>
 		Public Sub AddLotsOfDecos(room As Rooms, sprite As Sprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
 			For i As UInteger = 0 To count
-				Level.Decorations.Add(New Decoration(room, sprite, depth, visible))
+				Level.CreateDecoration(room, sprite, depth, visible)
 			Next
 		End Sub
 		''' <summary>
@@ -299,7 +298,7 @@ Public Module Tools
 		''' <param name="count">个数</param>
 		Public Sub AddLotsOfDecos(decoration As Decoration, count As UInteger)
 			For i As UInteger = 0 To count
-				Level.Decorations.Add(decoration.Copy)
+				Level.CopyDecoration(decoration)
 			Next
 		End Sub
 		''' <summary>

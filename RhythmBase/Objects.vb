@@ -5,6 +5,7 @@ Imports RhythmAsset.Sprites
 Imports SkiaSharp
 Imports System.IO.Compression
 Imports System.IO
+Imports RhythmBase.Events
 #Disable Warning CA1507
 
 Namespace Objects
@@ -90,7 +91,7 @@ Namespace Objects
 		Function Serialize() As String
 		Function GetValue(variables As Variables) As Single
 	End Interface
-	Public Class Number
+	Public Structure Number
 		Implements INumberOrExpression
 		Private ReadOnly value As Single
 		Public Sub New(value As String)
@@ -126,8 +127,8 @@ Namespace Objects
 		'Public Shared Operator \(a As Number, b As Number) As Number
 		'	Return a.value \ b.value
 		'End Operator
-	End Class
-	Public Class Expression
+	End Structure
+	Public Structure Expression
 		Implements INumberOrExpression
 		Private ReadOnly value As String
 		Public Sub New(value As String)
@@ -148,8 +149,24 @@ Namespace Objects
 		Public Shared Widening Operator CType(value As String) As Expression
 			Return New Expression(value)
 		End Operator
-	End Class
-	Public Class NumberOrExpressionPair
+	End Structure
+	Public Structure [Function]
+		Implements INumberOrExpression
+		Private ReadOnly [Function] As Func(Of Single)
+		Public Sub New(func As Func(Of Single))
+			Me.Function = func
+		End Sub
+		Public Function Serialize() As String Implements INumberOrExpression.Serialize
+			Return [Function]()
+		End Function
+		Public Function GetValue(variables As Variables) As Single Implements INumberOrExpression.GetValue
+			Return [Function]()
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"Value: {[Function]()}"
+		End Function
+	End Structure
+	Public Structure NumberOrExpressionPair
 		Public X As INumberOrExpression
 		Public Y As INumberOrExpression
 		Public Sub New(x As INumberOrExpression, y As INumberOrExpression)
@@ -188,11 +205,11 @@ Namespace Objects
 		Public Overrides Function ToString() As String
 			Return $"{{{X},{Y}}}"
 		End Function
-	End Class
+	End Structure
 	Public Class MultipleEnum
 
 	End Class
-	Public Class Pulse
+	Public Structure Pulse
 		Public BeatOnly As Single
 		Public Hold As Single
 		Public Parent As BaseBeat
@@ -209,11 +226,12 @@ Namespace Objects
 		Public Overrides Function ToString() As String
 			Return $"{{{BeatOnly}, {Parent}}}"
 		End Function
-	End Class
+	End Structure
 	Public Class PanelColor
 		'	Public Property Parent As LimitedList(Of SKColor)
 		Private _panel As Integer
 		Private _color As SKColor
+		Friend parent As LimitedList(Of SKColor)
 		Public Property Color As SKColor?
 			Get
 				Return _color
@@ -242,11 +260,16 @@ Namespace Objects
 				Return Panel >= 0
 			End Get
 		End Property
+		Public ReadOnly Property Value As SKColor
+			Get
+				Return If(EnablePanel, parent(_panel), _color)
+			End Get
+		End Property
 		Public Sub New(enableAlpha As Boolean)
 			Me.EnableAlpha = enableAlpha
 		End Sub
 		Public Overrides Function ToString() As String
-			Return If(Panel < 0, Color?.ToString, Panel.ToString)
+			Return If(_panel < 0, Value, $"{_panel}: {Value}")
 		End Function
 	End Class
 	Public Class Rooms
@@ -581,9 +604,9 @@ Namespace Objects
 		Public Property File As ISprite ' FileLocator
 		Public Property Depth As Integer
 		Public Property Visible As Boolean
-		Private Sub New()
+		Sub New()
 		End Sub
-		Sub New(room As Rooms, parent As ISprite, Optional depth As Integer = 0, Optional visible As Boolean = True)
+		Friend Sub New(room As Rooms, parent As ISprite, Optional depth As Integer = 0, Optional visible As Boolean = True)
 			Throw New NotImplementedException
 			'Me.Rooms._data = room._data
 			_id = Me.GetHashCode
@@ -619,7 +642,7 @@ Namespace Objects
 		Public Overrides Function ToString() As String
 			Return $"{_id}, {_Row}, {_Rooms}, {File.Name}"
 		End Function
-		Public Function Copy() As Decoration
+		Friend Function Copy() As Decoration
 			Return Me.MemberwiseClone
 		End Function
 	End Class
@@ -695,7 +718,7 @@ Namespace Objects
 				Sound.Offset = value
 			End Set
 		End Property
-		Sub New()
+		Friend Sub New()
 		End Sub
 		Private Function ClassicBeats() As IEnumerable(Of BaseBeat)
 			Return Children.Where(Function(i)
@@ -857,9 +880,19 @@ Namespace Objects
 		Implements ICollection(Of BaseEvent)
 		Dim _path As IO.FileInfo
 		Public Property Settings As New Settings
-		Public ReadOnly Property Rows As New List(Of Row)
-		Public ReadOnly Property Decorations As New List(Of Decoration)
+		Friend ReadOnly Property _Rows As New List(Of Row)
+		Friend ReadOnly Property _Decorations As New List(Of Decoration)
 		Friend ReadOnly Property Events As New List(Of BaseEvent)
+		Public ReadOnly Property Rows As IReadOnlyCollection(Of Row)
+			Get
+				Return _Rows.AsReadOnly
+			End Get
+		End Property
+		Public ReadOnly Property Decorations As IReadOnlyCollection(Of Decoration)
+			Get
+				Return _Decorations.AsReadOnly
+			End Get
+		End Property
 		Public ReadOnly Property Conditionals As New List(Of BaseConditional)
 		Public ReadOnly Property Bookmarks As New List(Of Bookmark)
 		Public ReadOnly Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
@@ -894,6 +927,28 @@ Namespace Objects
 			Else
 				Return Where(Function(i) If(i.Tag, "").Contains(name)).GroupBy(Function(i) i.Tag)
 			End If
+		End Function
+		Public Function CreateDecoration(room As Rooms, parent As ISprite, Optional depth As Integer = 0, Optional visible As Boolean = True) As Decoration
+			Assets.Add(parent)
+			Dim temp As New Decoration(room, parent, depth, visible)
+			_Decorations.Add(temp)
+			Return temp
+		End Function
+		Public Function CopyDecoration(decoration As Decoration) As Decoration
+			Dim temp = decoration.Copy
+			Me._Decorations.Add(temp)
+			Return temp
+		End Function
+		Public Function RemoveDecoration(decoration As Decoration) As Boolean
+			Return _Decorations.Remove(decoration)
+		End Function
+		Public Function CreateRow(room As Rooms, character As String, Optional visible As Boolean = True) As Row
+			Dim temp As New Row() With {.Character = character, .Rooms = room, .ParentCollection = Me.Rows, .HideAtStart = Not visible}
+			_Rows.Add(temp)
+			Return temp
+		End Function
+		Public Function RemoveRow(row As Row) As Boolean
+			Return _Rows.Remove(row)
 		End Function
 		Private Function ToRDLevelJson(settings As InputSettings.LevelInputSettings) As String
 			Dim LevelSerializerSettings = New JsonSerializerSettings() With {

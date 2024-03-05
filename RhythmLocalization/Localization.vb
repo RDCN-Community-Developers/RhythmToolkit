@@ -1,28 +1,29 @@
 Imports System.Reflection
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
-
-'<AttributeUsage(AttributeTargets.Property Or AttributeTargets.Field Or AttributeTargets.Enum)>
-'Public Class PropertyTranslationAttribute
-'	Inherits Attribute
-'	Public Property Name As String
-'	Public Sub New(name As String)
-'		Me.Name = name
-'	End Sub
-'End Class
 Public Class TranaslationManager
-	Private ReadOnly jsonpath As String
+	Private ReadOnly jsonpath As IO.FileInfo
 	Private ReadOnly values As JObject
-	Public Sub New(filepath As String)
+	Public Sub New(filepath As IO.FileInfo)
 		jsonpath = filepath
-		values = JsonConvert.DeserializeObject(IO.File.ReadAllText(jsonpath))
+		If jsonpath.Exists Then
+		Else
+			jsonpath.Directory.Create()
+			Using stream = New IO.StreamWriter(jsonpath.Create())
+				stream.Write("{}")
+			End Using
+		End If
+
+		Using Stream = New IO.StreamReader(jsonpath.OpenRead)
+			values = JsonConvert.DeserializeObject(Stream.ReadToEnd)
+		End Using
 	End Sub
 	Public Function GetValue(p As MemberInfo, value As String) As String
 		Dim current As JObject = values
 		Dim keys = GetPath(p)
 
 		For i = 0 To keys.Length - 2
-			Dim j As JToken
+			Dim j As JToken = Nothing
 			If Not current.TryGetValue(keys(i), j) Then
 				current(keys(i)) = New JObject
 				current = current(keys(i))
@@ -45,6 +46,8 @@ Public Class TranaslationManager
 		Return {p.DeclaringType.Namespace, p.DeclaringType.Name, p.Name}
 	End Function
 	Private Sub Save()
-		IO.File.WriteAllText(jsonpath, values.ToString)
+		Using Stream As New IO.StreamWriter(jsonpath.OpenWrite)
+			Stream.Write(values.ToString)
+		End Using
 	End Sub
 End Class

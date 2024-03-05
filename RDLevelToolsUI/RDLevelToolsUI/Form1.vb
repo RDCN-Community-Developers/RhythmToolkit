@@ -1,5 +1,6 @@
 ﻿Imports RhythmBase.Objects
 Imports RhythmLocalization
+Imports RhythmBase.Events
 Imports RhythmAsset
 Imports RhythmBase.Util
 Imports RhythmTools.Tools
@@ -10,6 +11,13 @@ Public Class Form1
 	Private Calculator As BeatCalculator
 	Private processingLevel As RDLevel
 	Private viewIndex As Integer = -1
+	Private Sub CreateLevelButton_Click(sender As Object, e As EventArgs) Handles CreateLevelButton.Click
+		processingLevel = New RDLevel
+		LevelHandler = New RDLevelHandler(processingLevel)
+		Calculator = New BeatCalculator(processingLevel)
+		able = True
+		viewIndex = -1
+	End Sub
 	Private Sub Button2_Click(sender As Object, e As EventArgs) Handles ImportButton.Click
 		OpenFileDialog1.Filter = "节奏医生游戏关卡文件|*.rdlevel|节奏医生游戏关卡压缩包文件|*.rdzip"
 		If OpenFileDialog1.ShowDialog <> DialogResult.OK Then
@@ -24,47 +32,7 @@ Public Class Form1
 		viewIndex = -1
 	End Sub
 
-	Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-		If Not able Then
-			Return
-		End If
-		LevelHandler.SplitRDGSG()
-		MsgBox("完成")
-	End Sub
-
-	Private Sub Button2_Click_1(sender As Object, e As EventArgs) Handles Button2.Click
-		If Not able Then
-			Return
-		End If
-		LevelHandler.SplitClassicBeat()
-		MsgBox("完成")
-	End Sub
-
-	Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-		If Not able Then
-			Return
-		End If
-		LevelHandler.SplitOneShotBeat()
-		MsgBox("完成")
-	End Sub
-
-	Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
-		If Not able Then
-			Return
-		End If
-		LevelHandler.RemoveUnactive()
-		MsgBox("完成")
-	End Sub
-
-	Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
-		If Not able Then
-			Return
-		End If
-		LevelHandler.DisposeTags()
-		MsgBox("完成")
-	End Sub
-
-	Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+	Private Sub Button7_Click(sender As Object, e As EventArgs) Handles SaveFileButton.Click
 		If Not able Then
 			Return
 		End If
@@ -75,7 +43,7 @@ Public Class Form1
 		MsgBox("完成")
 	End Sub
 
-	Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+	Private Sub Button8_Click(sender As Object, e As EventArgs) Handles PageUpButton.Click
 		viewIndex += 1
 		If Not able OrElse viewIndex > processingLevel.Count Then
 			viewIndex = processingLevel.Count - 1
@@ -84,7 +52,7 @@ Public Class Form1
 		ShowEvent(viewIndex)
 	End Sub
 
-	Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
+	Private Sub Button9_Click(sender As Object, e As EventArgs) Handles PageDownButton.Click
 		viewIndex -= 1
 		If Not able OrElse viewIndex < 0 Then
 			viewIndex = 0
@@ -92,19 +60,26 @@ Public Class Form1
 		End If
 		ShowEvent(viewIndex)
 	End Sub
-	Public Shared Manager As New TranaslationManager("D:\vb.net\RDLevel\RhythmBase\bin\Debug\net8.0\zh-cn.json")
+	Public Shared Manager As New TranaslationManager(New IO.FileInfo("D:\vb.net\RDLevel\RhythmBase\bin\Debug\net8.0\zh-cn.json"))
 	Private Sub ShowEvent(index As Integer)
 		TableLayoutPanel1.Controls.Clear()
+		If Not (0 <= viewIndex And viewIndex < processingLevel.Count) Then
+			Exit Sub
+		End If
 		Dim processingEvent = processingLevel(viewIndex)
 		Dim T As Type = processingEvent.GetType
 
 		Dim enump = GetType(EventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
 
 		Dim nameLabel As New Label With {
-			.Text = Manager.GetValue(enump)
+			.Text = Manager.GetValue(enump),
+			.AccessibleName = Manager.GetValue(enump),
+			.AccessibleDescription = "事件名称"
 		}
 		Dim propertyLabel As New Label With {
-			.Text = Calculator.BeatOnly_BarBeat(processingEvent.BeatOnly).ToString
+			.Text = Calculator.BeatOnly_BarBeat(processingEvent.BeatOnly).ToString,
+			.AccessibleName = "节拍",
+			.AccessibleDescription = "事件的节拍位置"
 		}
 		TableLayoutPanel1.Controls.Add(nameLabel)
 		TableLayoutPanel1.Controls.Add(propertyLabel)
@@ -184,6 +159,7 @@ Public Class Form1
 					pValue.Text = "搁这画个饼先"
 					editorControl = pValue
 				End If
+				editorControl.AccessibleName = $"属性{Manager.GetValue(p)}的值"
 				TableLayoutPanel1.Controls.Add(pLabel)
 				TableLayoutPanel1.Controls.Add(editorControl)
 			End If
@@ -193,6 +169,7 @@ Public Class Form1
 	Private Function GetEnumNames(enumType As Type) As List(Of String)
 		Return [Enum].GetValues(enumType).Cast(Of Integer).Select(Function(i) Manager.GetValue(enumType.GetMember([Enum].GetName(enumType, i)).FirstOrDefault))
 	End Function
+
 	'Private Class EnumNamePair
 	'	Public ReadOnly Name As String
 	'	Public ReadOnly Value As Structure

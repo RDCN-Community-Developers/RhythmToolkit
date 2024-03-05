@@ -1,6 +1,6 @@
 ﻿Imports System.Drawing
 Imports RhythmBase.Objects
-Imports RhythmBase.Objects.Events
+Imports RhythmBase.Events
 Imports Microsoft.CodeAnalysis
 Imports System.Reflection
 ''' <summary>
