@@ -1,12 +1,10 @@
 ﻿Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports RhythmAsset.Sprites
-Imports System.Text.RegularExpressions
-Imports RhythmBase.Objects
-Imports SkiaSharp
 Imports RhythmBase.Animation
-Imports System.Formats.Asn1.AsnWriter
-Imports System.Reflection.Metadata
+Imports RhythmBase.Objects
+Imports RhythmBase.Util
+Imports SkiaSharp
 '#Disable Warning CA1507
 
 Namespace Events
@@ -78,6 +76,12 @@ Namespace Events
 		NarrateRowInfo
 		UnknownObject
 	End Enum
+	Public Enum PlayerType
+		P1
+		P2
+		CPU
+		NoChange
+	End Enum
 	Public Enum TilingTypes
 		Scroll
 		Pulse
@@ -124,6 +128,14 @@ Namespace Events
 		Outline
 		Glow
 	End Enum
+	Public Enum Patterns
+		None
+		X
+		Up
+		Down
+		Banana
+		[Return]
+	End Enum
 	Public Interface IAnimation
 		Property Ease As EaseType
 		Property Duration As Single
@@ -132,15 +144,37 @@ Namespace Events
 	Public MustInherit Class BaseEvent
 		<JsonIgnore>
 		Public _Origin As JObject
-		<JsonIgnore>
-		Public PrivateData As New Dictionary(Of String, Object)
-		<JsonProperty("type")>
+		<JsonProperty(NameOf(Type))>
 		Public MustOverride ReadOnly Property Type As EventType
 		<JsonIgnore>
 		Public MustOverride ReadOnly Property Tab As Tabs
 		<JsonIgnore>
-		Public Property BeatOnly As Single
-		Public Overridable Property Y As UInteger
+		Friend Property ParentLevel As RDLevel
+		<JsonIgnore>
+		Public Property BeatOnly As Single = 1
+		<JsonIgnore>
+		Public Property BarBeat As (Bar As UInteger, Beat As Single)
+			Get
+				Dim Calculator As New BeatCalculator(ParentLevel)
+				Return Calculator.BeatOnly_BarBeat(BeatOnly)
+			End Get
+			Set(value As (Bar As UInteger, Beat As Single))
+				Dim Calculator As New BeatCalculator(ParentLevel)
+				BeatOnly = Calculator.BarBeat_BeatOnly(value.Bar, value.Beat)
+			End Set
+		End Property
+		<JsonIgnore>
+		Public Property Time As TimeSpan
+			Get
+				Dim Calculator As New BeatCalculator(ParentLevel)
+				Return Calculator.BeatOnly_Time(BeatOnly)
+			End Get
+			Set(value As TimeSpan)
+				Dim Calculator As New BeatCalculator(ParentLevel)
+				BeatOnly = Calculator.Time_BeatOnly(value)
+			End Set
+		End Property
+		Public Overridable Property Y As Integer
 		Public MustOverride ReadOnly Property Rooms As Rooms
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 		Public Property Tag As String
@@ -151,7 +185,6 @@ Namespace Events
 			Dim temp = New T With {.BeatOnly = BeatOnly, .Y = Y, .[If] = [If], .Tag = Tag, .Active = Active}
 			If Me.If IsNot Nothing Then
 				For Each item In Me.If.ConditionLists
-					item.Conditional.Children.Add(temp)
 				Next
 			End If
 			Return temp
@@ -192,7 +225,7 @@ Namespace Events
 	End Class
 	Public MustInherit Class BaseBeatsPerMinute
 		Inherits BaseEvent
-		<JsonIgnore>
+		<JsonProperty("bpm")>
 		Public MustOverride Property BeatsPerMinute As Single
 	End Class
 	Public MustInherit Class BaseDecorationAction
@@ -248,7 +281,7 @@ Namespace Events
 		End Property
 		Public ReadOnly Property Row As Integer
 			Get
-				Return If(Parent Is Nothing, -1, Parent.Row)
+				Return If(Parent?.Row, -1)
 			End Get
 		End Property
 		Public Overloads Function Copy(Of T As {BaseRowAction, New})() As T
@@ -259,27 +292,48 @@ Namespace Events
 	End Class
 	Public MustInherit Class BaseBeat
 		Inherits BaseRowAction
-		MustOverride Function PulseTime() As IEnumerable(Of Pulse)
+		MustOverride Function HitTime() As IEnumerable(Of Hit)
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
 		<JsonIgnore>
-		MustOverride ReadOnly Property Pulsable As Boolean
+		Public MustOverride ReadOnly Property Hitable As Boolean
+		<JsonIgnore>
+		Public ReadOnly Property BeatSound As Audio
+			Get
+				Return If(CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetBeatSound AndAlso i.BeatOnly < BeatOnly), SetBeatSound)?.Sound, Parent.Sound)
+			End Get
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property HitSound As Audio
+			Get
+				Dim DefaultAudio = New Audio With {.Filename = "sndClapHit", .Offset = 0, .Pan = 100, .Pitch = 100, .Volume = 100}
+				Select Case Player
+					Case PlayerType.P1
+						Return If(ParentLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
+					Case PlayerType.P2
+						Return If(ParentLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.P2Sound IsNot Nothing)?.P2Sound, DefaultAudio)
+					Case PlayerType.CPU
+						Return If(ParentLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.CpuSound IsNot Nothing)?.CpuSound, DefaultAudio)
+					Case Else
+						Return If(ParentLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
+				End Select
+			End Get
+		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Player As PlayerType
+			Get
+				Return ParentLevel.LastOrDefault(Of ChangePlayersRows)(Function(i) i.Players(Row) <> PlayerType.NoChange).Players(Row)
+			End Get
+		End Property
+		<JsonIgnore>
+		Public MustOverride ReadOnly Property Length As Single
 	End Class
 	Public MustInherit Class BaseRowAnimation
 		Inherits BaseRowAction
 	End Class
 	Public Class PlaySong
 		Inherits BaseBeatsPerMinute
-		'Private _beatsPerMinute As single
 		Public Song As Audio
-		<JsonProperty("bpm")>
 		Public Overrides Property BeatsPerMinute As Single
-		Public Property BPM As Single
-			Get
-				Return BeatsPerMinute
-			End Get
-			Set(value As Single)
-				BeatsPerMinute = value
-			End Set
-		End Property
 		'	Get
 		'		Return _beatsPerMinute
 		'	End Get
@@ -316,7 +370,6 @@ Namespace Events
 		<JsonIgnore>
 		Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
-		<JsonProperty("bpm")>
 		Public Overrides Property BeatsPerMinute As Single
 		Public Sub New(beatOnly As Single, bpm As Single, y As UInteger)
 			Me.BeatOnly = beatOnly
@@ -975,11 +1028,8 @@ Namespace Events
 		Implements IAnimation
 		<JsonProperty>
 		Public Overrides ReadOnly Property Rooms As New Rooms(True, True)
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-		Public Property CameraPosition As NumberOrExpressionPair
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
+		Public Property CameraPosition As NumberOrExpressionPair?
 		Public Property Zoom As Integer?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 		Public Property Angle As INumberOrExpression
 		Public Property Duration As Single Implements IAnimation.Duration
 		Public Property Ease As EaseType Implements IAnimation.Ease
@@ -1019,12 +1069,9 @@ Namespace Events
 		Public Property CustomPosition As Boolean
 		Public Property Target As Targets
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-		Public Property RowPosition As NumberOrExpressionPair
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-		Public Property Scale As NumberOrExpressionPair
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
+		Public Property RowPosition As NumberOrExpressionPair?
+		Public Property Scale As NumberOrExpressionPair?
 		Public Property Angle As INumberOrExpression
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 		Public Property Pivot As Single?
 		Public Property Duration As Single Implements IAnimation.Duration
 		Public Property Ease As EaseType Implements IAnimation.Ease
@@ -1355,12 +1402,6 @@ Namespace Events
 	End Class
 	Public Class ChangePlayersRows
 		Inherits BaseEvent
-		Enum PlayerTypes
-			P1
-			P2
-			CPU
-			NoChange
-		End Enum
 		Enum CpuType
 			Otto
 			Ian
@@ -1373,14 +1414,13 @@ Namespace Events
 			OnePlayer
 			TwoPlayers
 		End Enum
-		Public Property Players As New List(Of PlayerTypes)(16)
+		Public Property Players As New List(Of PlayerType)(16)
 		Public Property PlayerMode As PlayerModes
 		Public Property CpuMarkers() As New List(Of CpuType)(16)
 		Public Overrides ReadOnly Property Type As EventType = EventType.ChangePlayersRows
 		<JsonIgnore>
 		Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
-
 	End Class
 	Public Class FinishLevel
 		Inherits BaseEvent
@@ -1402,15 +1442,15 @@ Namespace Events
 			End Get
 		End Property
 		Public Property Show As Boolean
-		Public Property Text As String
+		Public Property Text As String = ""
 		Public Overrides ReadOnly Property Target As String
 			Get
 				Return MyBase.Target
 			End Get
 		End Property
-		Public ReadOnly Property Color As New PanelColor(False)
+		Public ReadOnly Property Color As New PanelColor(False) With {.Color = New SKColor(242, 230, 68)}
 		Public Overrides ReadOnly Property Type As EventType = EventType.Comment
-		Friend Function ShouldSerializeTarget() As Boolean
+		Public Function ShouldSerializeTarget() As Boolean
 			Return Tab = Tabs.Sprites
 		End Function
 
@@ -1656,10 +1696,8 @@ Namespace Events
 		Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
 		Public Overrides ReadOnly Property Type As EventType = EventType.WindowResize
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-		Public Property Scale As NumberOrExpressionPair
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-		Public Property Pivot As NumberOrExpressionPair
+		Public Property Scale As NumberOrExpressionPair?
+		Public Property Pivot As NumberOrExpressionPair?
 		Public Property Duration As Single Implements IAnimation.Duration
 		Public Property Ease As EaseType Implements IAnimation.Ease
 		Private Sub New()
@@ -1712,13 +1750,9 @@ Namespace Events
 		Implements IAnimation
 		Public Overrides ReadOnly Property Type As EventType = EventType.Move
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 		Public Property Position As NumberOrExpressionPair?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 		Public Property Scale As NumberOrExpressionPair?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 		Public Property Angle As INumberOrExpression
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 		Public Property Pivot As NumberOrExpressionPair?
 		Public Property Duration As Single Implements IAnimation.Duration
 		Public Property Ease As EaseType Implements IAnimation.Ease
@@ -1733,11 +1767,11 @@ Namespace Events
 				Duration)
 		End Function
 		<JsonIgnore>
-		Public Overrides Property Y As UInteger
+		Public Overrides Property Y As Integer
 			Get
 				Return 0
 			End Get
-			Set(value As UInteger)
+			Set(value As Integer)
 			End Set
 		End Property
 
@@ -1777,26 +1811,27 @@ Namespace Events
 		<JsonIgnore>
 		Public ReadOnly Property Pattern As String
 			Get
-				Return RowXs.GetPatternString
+				Return SetRowXs.GetPatternString(RowXs)
 			End Get
 		End Property
 		<JsonIgnore>
-		Public ReadOnly Property RowXs As SetRowXs
+		Public ReadOnly Property RowXs As LimitedList(Of Patterns)
 			Get
 				If SetXs Is Nothing Then
-					Return CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetRowXs AndAlso Parent.Children.IndexOf(i) < Parent.Children.IndexOf(Me), New SetRowXs), SetRowXs)
+					Dim X = CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetRowXs AndAlso Parent.Children.IndexOf(i) < Parent.Children.IndexOf(Me), New SetRowXs), SetRowXs)
+					Return X.Pattern
 				Else
-					Dim T = Copy(Of SetRowXs)()
+					Dim T As New LimitedList(Of Patterns)(6, Patterns.None)
 					Select Case SetXs
 						Case ClassicBeatPatterns.ThreeBeat
-							T.Pattern(1) = Patterns.X
-							T.Pattern(2) = Patterns.X
-							T.Pattern(4) = Patterns.X
-							T.Pattern(5) = Patterns.X
+							T(1) = Patterns.X
+							T(2) = Patterns.X
+							T(4) = Patterns.X
+							T(5) = Patterns.X
 						Case ClassicBeatPatterns.FourBeat
-							T.Pattern(1) = Patterns.X
-							T.Pattern(3) = Patterns.X
-							T.Pattern(5) = Patterns.X
+							T(1) = Patterns.X
+							T(3) = Patterns.X
+							T(5) = Patterns.X
 						Case Else
 							Throw New RhythmDoctorExcception("how")
 					End Select
@@ -1805,24 +1840,30 @@ Namespace Events
 			End Get
 		End Property
 		Public Overrides ReadOnly Property Type As EventType = EventType.AddClassicBeat
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
-		Public Overrides ReadOnly Property Pulsable As Boolean
+		Public Overrides ReadOnly Property Length As Single
+			Get
+				Dim SyncoSwing = CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetRowXs AndAlso Parent.Children.IndexOf(i) < Parent.Children.IndexOf(Me), New SetRowXs), SetRowXs).SyncoSwing
+				Return Tick * 6 - If(SyncoSwing = 0, 0.5, SyncoSwing) * Tick
+			End Get
+		End Property
+		Public Overrides ReadOnly Property Hitable As Boolean
 			Get
 				Return True
 			End Get
 		End Property
-		Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
-			Dim X = RowXs
+		Public Overrides Function HitTime() As IEnumerable(Of Hit)
+			Dim x = CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetRowXs AndAlso Parent.Children.IndexOf(i) < Parent.Children.IndexOf(Me), New SetRowXs), SetRowXs)
 			Dim Synco As Single
 			If X.SyncoBeat >= 0 Then
 				Synco = If(X.SyncoSwing = 0, 0.5, X.SyncoSwing)
 			Else
 				Synco = 0
 			End If
-			Return New List(Of Pulse) From {New Pulse(Me, BeatOnly + _Tick * 6 - _Tick * Synco, Hold)}.AsEnumerable
+			Return New List(Of Hit) From {New Hit(Me, BeatOnly + _Tick * 6 - _Tick * Synco, Hold)}.AsEnumerable
 		End Function
 		Public Function Split() As IEnumerable(Of BaseBeat)
-			Return Split(RowXs)
+			Dim x = CType(Parent.Children.LastOrDefault(Function(i) i.Type = EventType.SetRowXs AndAlso Parent.Children.IndexOf(i) < Parent.Children.IndexOf(Me), New SetRowXs), SetRowXs)
+			Return Split(x)
 		End Function
 		Public Function Split(Xs As SetRowXs) As IEnumerable(Of BaseBeat)
 			Dim L As New List(Of BaseBeat)
@@ -1850,23 +1891,14 @@ Namespace Events
 			Return L.AsEnumerable
 		End Function
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString() + $"{If(_Swing = 0.5, "", " Swing")}"
+			Return $"{MyBase.ToString()} {SetRowXs.GetPatternString(RowXs)} {If(_Swing = 0.5 Or _Swing = 0, "", " Swing")}"
 		End Function
 
 	End Class
-	Public Enum Patterns
-		X
-		Up
-		Down
-		Banana
-		[Return]
-		None
-	End Enum
 	Public Class SetRowXs
 		Inherits BaseBeat
 		Private _pattern As New LimitedList(Of Patterns)(6, Patterns.None)
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetRowXs
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
 		Public Property Pattern As LimitedList(Of Patterns)
 			Get
 				Return _pattern
@@ -1877,17 +1909,21 @@ Namespace Events
 		End Property
 		Public Property SyncoBeat As SByte = -1
 		Public Property SyncoSwing As Single
-		Public Overrides ReadOnly Property Pulsable As Boolean
+		Public Overrides ReadOnly Property Length As Single = 0
+		Public Overrides ReadOnly Property Hitable As Boolean
 			Get
 				Return False
 			End Get
 		End Property
-		Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
-			Return New List(Of Pulse)
+		Public Overrides Function HitTime() As IEnumerable(Of Hit)
+			Return New List(Of Hit)
 		End Function
 		Public Function GetPatternString() As String
+			Return GetPatternString(_pattern)
+		End Function
+		Public Shared Function GetPatternString(list As LimitedList(Of Patterns)) As String
 			Dim out = ""
-			For Each item In _pattern
+			For Each item In list
 				Select Case item
 					Case Patterns.X
 						out += "x"
@@ -1908,7 +1944,6 @@ Namespace Events
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {GetPatternString()}"
 		End Function
-
 	End Class
 	Public Class AddOneshotBeat
 		Inherits BaseBeat
@@ -1932,6 +1967,11 @@ Namespace Events
 		Public Property Loops As UInteger
 		Public Property Interval As Single
 		Public Property Skipshot As Boolean
+		Public Overrides ReadOnly Property Length As Single
+			Get
+				Return Tick * Loops + Interval * Loops - 1
+			End Get
+		End Property
 		Public Property FreezeBurnMode As FreezeBurn?
 			Get
 				Return _freezeBurnMode
@@ -1957,14 +1997,12 @@ Namespace Events
 			End Set
 		End Property
 		Public Overrides ReadOnly Property Type As EventType = EventType.AddOneshotBeat
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
-
-		Public Overrides ReadOnly Property Pulsable As Boolean = True
-		Public Overrides Function PulseTime() As IEnumerable(Of Objects.Pulse)
-			Dim L As New List(Of Objects.Pulse)
+		Public Overrides ReadOnly Property Hitable As Boolean = True
+		Public Overrides Function HitTime() As IEnumerable(Of Objects.Hit)
+			Dim L As New List(Of Objects.Hit)
 			For i As UInteger = 0 To _Loops
 				For j As SByte = 0 To _Subdivisions - 1
-					L.Add(New Objects.Pulse(Me, BeatOnly + i * _Interval + _Tick + _delay + j * (_Tick / _Subdivisions), 0))
+					L.Add(New Objects.Hit(Me, BeatOnly + i * _Interval + _Tick + _delay + j * (_Tick / _Subdivisions), 0))
 				Next
 			Next
 			Return L.AsEnumerable
@@ -2007,17 +2045,17 @@ Namespace Events
 		Public Property WaveType As Waves
 		Public Property Height As Integer
 		Public Property Width As Integer
-		Public Overrides ReadOnly Property Type As EventType = Events.EventType.SetOneshotWave
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
 
-		Public Overrides ReadOnly Property Pulsable As Boolean
+		Public Overrides ReadOnly Property Length As Single = 0
+		Public Overrides ReadOnly Property Type As EventType = Events.EventType.SetOneshotWave
+		Public Overrides ReadOnly Property Hitable As Boolean
 			Get
 				Return False
 			End Get
 		End Property
 
-		Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
-			Return New List(Of Pulse)
+		Public Overrides Function HitTime() As IEnumerable(Of Hit)
+			Return New List(Of Hit)
 		End Function
 
 	End Class
@@ -2026,14 +2064,14 @@ Namespace Events
 		Public Property Hold As Single
 		Public Property Pulse As Byte
 		Public Overrides ReadOnly Property Type As EventType = EventType.AddFreeTimeBeat
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
-		Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
+		Public Overrides ReadOnly Property Length As Single = 0
+		Public Overrides Function HitTime() As IEnumerable(Of Hit)
 			If Pulse = 6 Then
-				Return New List(Of Pulse) From {New Pulse(Me, BeatOnly, Hold)}.AsEnumerable
+				Return New List(Of Hit) From {New Hit(Me, BeatOnly, Hold)}.AsEnumerable
 			End If
-			Return New List(Of Pulse)
+			Return New List(Of Hit)
 		End Function
-		Public Overrides ReadOnly Property Pulsable As Boolean
+		Public Overrides ReadOnly Property Hitable As Boolean
 			Get
 				Return Pulse = 6
 			End Get
@@ -2041,7 +2079,30 @@ Namespace Events
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {_Pulse + 1}"
 		End Function
-
+		Public Function GetPulse() As IEnumerable(Of PulseFreeTimeBeat)
+			Dim Result As New List(Of PulseFreeTimeBeat)
+			Dim pulse As Byte = Me.Pulse
+			For Each item In Parent.Children.Where(Function(i) i.BeatOnly > BeatOnly AndAlso i.Type = EventType.PulseFreeTimeBeat).Cast(Of PulseFreeTimeBeat)
+				Select Case item.Action
+					Case PulseFreeTimeBeat.ActionType.Increment
+						pulse += 1
+						Result.Add(item)
+					Case PulseFreeTimeBeat.ActionType.Decrement
+						pulse = If(pulse > 1, pulse - 1, 0)
+						Result.Add(item)
+					Case PulseFreeTimeBeat.ActionType.Custom
+						pulse = item.CustomPulse
+						Result.Add(item)
+					Case PulseFreeTimeBeat.ActionType.Remove
+						Result.Add(item)
+						Exit For
+				End Select
+				If pulse = 6 Then
+					Exit For
+				End If
+			Next
+			Return Result
+		End Function
 	End Class
 	Public Class PulseFreeTimeBeat
 		Inherits BaseBeat
@@ -2054,15 +2115,15 @@ Namespace Events
 		Public Property Hold As Single
 		Public Property Action As ActionType
 		Public Property CustomPulse As UInteger
+		Public Overrides ReadOnly Property Length As Single = 0
 		Public Overrides ReadOnly Property Type As EventType = EventType.PulseFreeTimeBeat
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
-		Public Overrides Function PulseTime() As IEnumerable(Of Pulse)
-			If Pulsable Then
-				Return New List(Of Pulse) From {New Pulse(Me, BeatOnly, Hold)}
+		Public Overrides Function HitTime() As IEnumerable(Of Hit)
+			If Hitable Then
+				Return New List(Of Hit) From {New Hit(Me, BeatOnly, Hold)}
 			End If
-			Return New List(Of Pulse)
+			Return New List(Of Hit)
 		End Function
-		Public Overrides ReadOnly Property Pulsable As Boolean
+		Public Overrides ReadOnly Property Hitable As Boolean
 			Get
 				Dim PulseIndexMin = 6
 				Dim PulseIndexMax = 6
@@ -2128,7 +2189,6 @@ Namespace Events
 			End Select
 			Return MyBase.ToString() + $" {Out}"
 		End Function
-
 	End Class
 	Public Class ShowRooms
 		Inherits BaseEvent
@@ -2149,10 +2209,10 @@ Namespace Events
 	Public Class MoveRoom
 		Inherits BaseEvent
 		Implements IAnimation
-		Public Property RoomPosition As NumberOrExpressionPair
-		Public Property Scale As NumberOrExpressionPair
+		Public Property RoomPosition As NumberOrExpressionPair?
+		Public Property Scale As NumberOrExpressionPair?
 		Public Property Angle As INumberOrExpression
-		Public Property Pivot As NumberOrExpressionPair
+		Public Property Pivot As NumberOrExpressionPair?
 		Public Property Duration As Single Implements IAnimation.Duration
 		Public Property Ease As EaseType Implements IAnimation.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.MoveRoom
@@ -2248,7 +2308,7 @@ Namespace Events
 	Public Class SetRoomPerspective
 		Inherits BaseEvent
 		Implements IAnimation
-		Public Property CornerPositions As New List(Of NumberOrExpressionPair)(4)
+		Public Property CornerPositions As New List(Of NumberOrExpressionPair?)(4)
 		Public Property Duration As Single Implements IAnimation.Duration
 		Public Property Ease As EaseType Implements IAnimation.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetRoomPerspective

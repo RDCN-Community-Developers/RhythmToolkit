@@ -619,7 +619,8 @@ Namespace Sprites
 				result = Sprite.FromPath(FileInfo)
 			ElseIf Image.CanRead(FileInfo) Then
 				result = Image.FromPath(FileInfo)
-			Else result = New NullAsset
+			Else 
+				result = New NullAsset
 			End If
 			Return result
 		End Function

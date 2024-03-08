@@ -149,7 +149,7 @@ Public Module Tools
 					Level.Add(visible)
 				Next
 				For Each part In Decos
-					Dim tempEvent = New MoveRow With {.RowPosition = (35 / 352 * 100, 50), .Pivot = 0}
+					Dim tempEvent = New MoveRow With {.RowPosition = New NumberOrExpressionPair(35 / 352 * 100, 50), .Pivot = 0}
 					Dim CharEvent As Move = part.deco.CreateChildren(Of Move)(1)
 					CharEvent.Position = New NumberOrExpressionPair(35 / 352 * 100, 50)
 					CharEvent.Scale = Nothing
@@ -319,9 +319,9 @@ Public Module Tools
 		''' 检查最短按拍间隔(包括长按)
 		''' </summary>
 		''' <returns></returns>
-		Public Function GetLevelMinIntervalTime() As IEnumerable(Of (Pulse, Pulse, TimeSpan))
-			Dim Pulses As New List(Of Pulse)
-			Dim PulsesInterval As New List(Of (Pulse, Pulse, TimeSpan))
+		Public Function GetLevelMinIntervalTime() As IEnumerable(Of (Hit, Hit, TimeSpan))
+			Dim Pulses As New List(Of Hit)
+			Dim PulsesInterval As New List(Of (Hit, Hit, TimeSpan))
 			For Each row In Level.Rows
 				Pulses.AddRange(row.PulseBeats)
 			Next

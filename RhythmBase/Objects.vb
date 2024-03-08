@@ -6,6 +6,7 @@ Imports SkiaSharp
 Imports System.IO.Compression
 Imports System.IO
 Imports RhythmBase.Events
+Imports RhythmBase.Util
 #Disable Warning CA1507
 
 Namespace Objects
@@ -209,10 +210,22 @@ Namespace Objects
 	Public Class MultipleEnum
 
 	End Class
-	Public Structure Pulse
-		Public BeatOnly As Single
-		Public Hold As Single
-		Public Parent As BaseBeat
+	Public Structure Hit
+		Public ReadOnly BeatOnly As Single
+		Public ReadOnly Hold As Single
+		Public ReadOnly Parent As BaseBeat
+		Public ReadOnly Property BarBeat As (Bar As UInteger, Beat As Single)
+			Get
+				Dim Calculator As New BeatCalculator(Parent.ParentLevel)
+				Return Calculator.BeatOnly_BarBeat(BeatOnly)
+			End Get
+		End Property
+		Public ReadOnly Property Time As TimeSpan
+			Get
+				Dim Calculator As New BeatCalculator(Parent.ParentLevel)
+				Return Calculator.BeatOnly_Time(BeatOnly)
+			End Get
+		End Property
 		Public ReadOnly Property Holdable As Boolean
 			Get
 				Return Hold > 0
@@ -377,6 +390,9 @@ Namespace Objects
 		Public Property Pitch As Integer
 		Public Property Pan As Integer
 		Public Property Offset As Integer
+		Public Overrides Function ToString() As String
+			Return Filename
+		End Function
 	End Class
 	Public Class LimitedList(Of T)
 		Implements IEnumerable(Of T)
@@ -543,7 +559,7 @@ Namespace Objects
 	Public Class Condition
 		Public Property ConditionLists As New List(Of (Enabled As Boolean, Conditional As BaseConditional))
 		Public Property Duration As Single
-		Private Sub New()
+		Public Sub New()
 		End Sub
 		Public Shared Function Load(text As String) As Condition
 			Dim out As New Condition
@@ -555,8 +571,11 @@ Namespace Objects
 				Throw New RhythmDoctorExcception("Wrong condition.")
 			End If
 		End Function
-		Public Overrides Function ToString() As String
+		Public Function Serialize() As String
 			Return String.Join("&", ConditionLists.Select(Of String)(Function(i) If(i.Enabled, "", "~") + i.Conditional.Id.ToString)) + "d" + Duration.ToString
+		End Function
+		Public Overrides Function ToString() As String
+			Return Serialize()
 		End Function
 	End Class
 	Public Class RhythmDoctorExcception
@@ -725,21 +744,21 @@ Namespace Objects
 									  Return (i.Type = EventType.AddClassicBeat Or
 													i.Type = EventType.AddFreeTimeBeat Or
 													i.Type = EventType.PulseFreeTimeBeat) AndAlso
-													CType(i, BaseBeat).Pulsable
+													CType(i, BaseBeat).Hitable
 								  End Function).Cast(Of BaseBeat)
 		End Function
 		Private Function OneshotBeats() As IEnumerable(Of BaseBeat)
 			Return Children.Where(Function(i)
 									  Return i.Type = EventType.AddOneshotBeat AndAlso
-													CType(i, BaseBeat).Pulsable
+													CType(i, BaseBeat).Hitable
 								  End Function).Cast(Of BaseBeat)
 		End Function
-		Public Function PulseBeats() As IEnumerable(Of Pulse)
+		Public Function PulseBeats() As IEnumerable(Of Hit)
 			Select Case _rowType
 				Case RowType.Classic
-					Return ClassicBeats().Select(Function(i) i.PulseTime).SelectMany(Function(i) i)
+					Return ClassicBeats().Select(Function(i) i.HitTime).SelectMany(Function(i) i)
 				Case RowType.Oneshot
-					Return OneshotBeats().Select(Function(i) i.PulseTime).SelectMany(Function(i) i)
+					Return OneshotBeats().Select(Function(i) i.HitTime).SelectMany(Function(i) i)
 				Case Else
 					Throw New RhythmDoctorExcception("How?")
 			End Select
@@ -807,8 +826,6 @@ Namespace Objects
 				Return ParentCollection.IndexOf(Me) + 1
 			End Get
 		End Property
-		<JsonIgnore>
-		Public Property Children As New List(Of BaseEvent)
 		Public Overrides Function ToString() As String
 			Return Name
 		End Function
@@ -865,20 +882,20 @@ Namespace Objects
 		Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.PlayerMode
 	End Class
 	<Flags>
-		Public Enum WriteOption
-			none = &B0
-			writeSettings = &B1
-			writeRows = &B10
-			writeDecorations = &B100
-			writeEvents = &B1000
-			writeConditionals = &B10000
-			writeBookmarks = &B100000
-			writeColorPalette = &B1000000
-			all = &B1111111
-		End Enum
+	Public Enum WriteOption
+		none = &B0
+		writeSettings = &B1
+		writeRows = &B10
+		writeDecorations = &B100
+		writeEvents = &B1000
+		writeConditionals = &B10000
+		writeBookmarks = &B100000
+		writeColorPalette = &B1000000
+		all = &B1111111
+	End Enum
 	Public Class RDLevel
 		Implements ICollection(Of BaseEvent)
-		Dim _path As IO.FileInfo
+		Friend _path As IO.FileInfo
 		Public Property Settings As New Settings
 		Friend ReadOnly Property _Rows As New List(Of Row)
 		Friend ReadOnly Property _Decorations As New List(Of Decoration)
@@ -953,7 +970,7 @@ Namespace Objects
 		Private Function ToRDLevelJson(settings As InputSettings.LevelInputSettings) As String
 			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
 					.Converters = {
-						New RDLevelConverter(_path, settings)
+						New Converters.RDLevelConverter(_path, settings)
 					}
 				}
 			Me.Events.RemoveAll(Function(i) i Is Nothing)
@@ -962,7 +979,7 @@ Namespace Objects
 		Public Shared Function ReadFromString(json As String, fileLocation As IO.FileInfo, settings As InputSettings.LevelInputSettings) As RDLevel
 			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
 					.Converters = {
-						New RDLevelConverter(fileLocation, settings)
+						New Converters.RDLevelConverter(fileLocation, settings)
 					}
 				}
 			json = Regex.Replace(json, ",(?=[ \n\r\t]*?[\]\)\}])", "")
@@ -972,9 +989,13 @@ Namespace Objects
 			Catch ex As Exception
 				Throw New RhythmDoctorExcception("File cannot be read.", ex)
 			End Try
-			level._path = fileLocation
 			Return level
 		End Function
+		Public Sub Sort()
+			CPBs = CPBs.OrderBy(Function(i) i.BeatOnly).ToList
+			BPMs = BPMs.OrderBy(Function(i) i.BeatOnly).ToList
+			_Events = _Events.OrderBy(Function(i) i.BeatOnly).ToList
+		End Sub
 		Private Shared Function LoadZip(RDLevelFile As FileInfo) As FileInfo
 			Dim tempDirectoryName As String = RDLevelFile.FullName
 			Dim tempDirectory = New IO.DirectoryInfo(IO.Path.Combine(IO.Path.GetTempPath, IO.Path.GetRandomFileName))
@@ -1004,23 +1025,30 @@ Namespace Objects
 			Dim level = ReadFromString(json, RDLevelFile, settings)
 			Return level
 		End Function
-		Public Sub SaveFile(filepath As String)
-			IO.File.WriteAllText(filepath, ToRDLevelJson(New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings}))
+		Public Sub SaveFile(filepath As FileInfo)
+			IO.File.WriteAllText(filepath.FullName, ToRDLevelJson(New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings}))
 		End Sub
-		Public Sub SaveFile(filepath As String, settings As InputSettings.LevelInputSettings)
-			IO.File.WriteAllText(filepath, ToRDLevelJson(settings))
+		Public Sub SaveFile(filepath As FileInfo, settings As InputSettings.LevelInputSettings)
+			IO.File.WriteAllText(filepath.FullName, ToRDLevelJson(settings))
 		End Sub
-		Public Function GetPulseBeat() As IEnumerable(Of Pulse)
-			Dim L As New List(Of Pulse)
+		Public Function GetPulseBeat() As IEnumerable(Of Hit)
+			Dim L As New List(Of Hit)
 			For Each item In Rows
 				L.AddRange(item.PulseBeats)
 			Next
 			Return L
 		End Function
 		Public Function GetPulseEvents() As IEnumerable(Of BaseBeat)
-			Return Where(Of BaseBeat).Where(Function(i) i.Pulsable)
+			Return Where(Of BaseBeat).Where(Function(i) i.Hitable)
+		End Function
+		Public Function CreateRow(character As String) As Row
+			Return New Row With {
+					.ParentCollection = Rows,
+					.Character = character
+				}
 		End Function
 		Public Sub Add(item As BaseEvent) Implements ICollection(Of BaseEvent).Add
+			item.ParentLevel = Me
 			Select Case item.Type
 				Case EventType.PlaySong
 					BPMs.Add(item)
@@ -1032,12 +1060,6 @@ Namespace Objects
 					Events.Add(item)
 			End Select
 		End Sub
-		Public Function CreateRow(character As String) As Row
-			Return New Row With {
-					.ParentCollection = Rows,
-					.Character = character
-				}
-		End Function
 		Public Sub AddRange(items As IEnumerable(Of BaseEvent))
 			BPMs.AddRange(items.Where(Function(i) {
 											  EventType.SetBeatsPerMinute,
@@ -1060,10 +1082,14 @@ Namespace Objects
 			Return ConcatAll.Where(predicate)
 		End Function
 		Public Function Where(Of T As BaseEvent)() As IEnumerable(Of T)
-			Return ConcatAll.Where(Function(i) i.GetType = GetType(T) OrElse i.GetType.IsAssignableTo(GetType(T))).Select(Function(i) CType(i, T))
+			Return From i In ConcatAll()
+				   Where i.GetType = GetType(T) OrElse i.GetType.IsAssignableTo(GetType(T))
+				   Select CType(i, T)
 		End Function
 		Public Function Where(Of T As BaseEvent)(predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			Return ConcatAll.Where(Function(i) i.GetType = GetType(T) AndAlso predicate(i)).Select(Function(i) CType(i, T))
+			Return From i In Me.Where(Of T)
+				   Where predicate(i)
+				   Select i
 		End Function
 		Public Function First() As BaseEvent
 			Return ConcatAll.First

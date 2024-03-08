@@ -20,7 +20,7 @@
             - [Expression](#expression)
             - [NumberOrExpressionPair](#numberorexpressionpair)
             - [Function](#function)
-            - [Pulse](#pulse)
+            - [Hit](#hit)
             - [PanelColor](#panelcolor)
             - [Rooms](#rooms)
             - [Condition](#condition)
@@ -111,7 +111,13 @@
 事件栏位。  
 
 **`float`** `BeatOnly`  
-事件的节拍。在本项目中，所有事件的执行时刻以绝对节拍的方式记录。若需转换，请查阅[工具类](#beatcalculator)。  
+返回或获取事件的节拍。在本项目中，所有事件的执行时刻以绝对节拍的方式记录。若需转换，请查阅[工具类](#beatcalculator)。  
+
+**`(uint Bar, float Beat)`** `BarBeat`
+返回或设置事件的节拍。**不建议频繁使用此属性。**  
+
+**`TimeSpan`** `Time`
+返回或设置事件在关卡中的时间。**不建议频繁使用此属性。**
 
 **`uint`** `Y`  
 事件在事件栏内的高度。  
@@ -200,6 +206,15 @@ BPM值。
 
 *`readOnly`* **`bool`** `Pulsable`  
 指示此节拍事件是否含有按拍。  
+
+*`readOnly`* **`Audio`** `BeatSound`  
+返回此节拍事件的节拍音效。  
+
+*`readOnly`* **`Audio`** `HitSound`  
+返回此节拍事件的按拍音效。  
+
+*`readOnly`* **`PlayerType`** `Player`  
+返回此节拍事件的操控玩家。  
 
 ##### 方法
 
@@ -332,13 +347,19 @@ BPM值。
 
 ---
 
-#### `Pulse`  
+#### `Hit`  
 按拍点。  
 
 ##### 属性和字段
 
 **`float`** `beatOnly`  
 按拍点的节拍。在本项目中，所有事件的执行时刻以绝对节拍的方式记录。若需转换，请查阅[工具类](#beatcalculator)。  
+
+*`readOnly`* **`(uint Bar, float Beat)`** `BarBeat`
+返回事件的节拍。**不建议频繁使用此属性。**
+
+*`readOnly`* **`TimeSpan`** `Time`
+返回事件在关卡中的时间。**不建议频繁使用此属性。**
 
 **`float`** `hold`  
 按拍点的按住时长。  
@@ -406,7 +427,7 @@ BPM值。
 ---
 
 #### `Condition`  
-房间。  
+条件。  
 
 ##### 属性和字段
 
@@ -773,6 +794,9 @@ BPM值。
 **`float`** `Time_BeatOnly(TimeSpan time)`  
 将**时间**转换为**节拍**。  
 
+**`TimeSpan`** `Interval_Time(float beat1, float beat2)`  
+获取两节拍在关卡中的间隔时间。  
+
 *`static`* **`float`** `BarBeat_BeatOnly(uint bar, float beat, IEnumerable<SetCrotchetsPerBar> SplittedBeats)`  
 将**小节-节拍**转换为**节拍**。  
 
@@ -827,7 +851,7 @@ BPM值。
 ##### 方法
 
 **`Func<BaseEvent, bool>`** `FilterCodeCSharp(string code)`  
-依据代码文本构建一个委托。  
+以C#代码文本构建一个委托。  
 
 ---
 
@@ -1155,7 +1179,7 @@ BPM值。
 
 ```CS
 //定义配置: 精灵占位符
-LevelInputSettings setting = new LevelInputSettings{
+LevelInputSettings setting = new(){
     .SpriteSettings = new SpriteInputSettings{
         .PlaceHolder = true;
         }
@@ -1185,18 +1209,18 @@ public void RemoveUnactive(RDLevel level){
 }
 ```  
 ```VB
-Public Sub RemoveUnactive(level as RDLevel){
+Public Sub RemoveUnactive(level as RDLevel)
     Level.RemoveAll(Function(i) Not i.Active)
-}
+End Sub
 ```  
 
 #### 在七拍子的每一拍按键
 ```CS
 public void PressOnEveryBeat(RDLevel level){
     //存储拆分出来的自由拍
-    List<BaseBeat> SplittedBeats = new List<BaseBeat>();
+    List<BaseBeat> SplittedBeats = new();
     //存储处理好的按拍
-    List<AddFreeTimeBeat> PulsingBeats = new list<AddFreeTimeBeat>();
+    List<AddFreeTimeBeat> PulsingBeats = new();
     //拆分每一个七拍事件并存入集合
     foreach(var item in Level.Where<AddClassicBeat>)(){
         SplittedBeats.AddRange(item.Split());
@@ -1264,7 +1288,7 @@ End Sub
 ```CS
 public IEnumerable<(Pulse, Pulse, TimeSpan)> GetLevelMinIntervalTime(RDLevel, level){
     //定义一个节拍计算器
-    BeatCalculator Calculator = new BeatCalculator(level);
+    BeatCalculator Calculator = new(level);
     //定义一个容器，用于存储所有按拍点
     List<Pulse> Pulse = new List<Pulse>;
     //定义一个容器，用于存储按拍间隔
@@ -1312,6 +1336,18 @@ End Function
 在`BeatsViewer`，`RhythmTools`，`RhythmToolsUI`，`WaveProducer`内查看更多示例。  
 
 ## 更新日志
+
+### 2024/03/08
+
+- 更改[Pulse](#hit)为[Hit](#hit)。
+- [Hit](#hit)添加了一系列基本属性。
+
+### 2024/03/07
+
+- [BaseEvent](#baseevent)添加了一系列基本属性。  
+- [BaseBeat](#basebeat)添加了一系列基本属性。  
+- 修正了[示例](#示例)上的部分错误。
+- 移除了条件类型的`Children`属性。
 
 ### 2024/03/05
 

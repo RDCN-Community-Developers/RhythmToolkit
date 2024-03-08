@@ -47,7 +47,7 @@ Module Program
 			t += 1
 		Loop Until C.BeatOnly_Time(finish) - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
 
-		leve2.SaveFile("C:\Users\30698\OneDrive\文档\rdlevels\新年快乐\levelEdited.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
+		leve2.SaveFile(New IO.FileInfo("C:\Users\30698\OneDrive\文档\rdlevels\新年快乐\levelEdited.rdlevel"), New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
 
 	End Sub
 	Sub Main(args As String())
@@ -61,7 +61,7 @@ Module Program
 			item.Y = TypeList.IndexOf(item.Type)
 		Next
 
-		Level.SaveFile("C:\Users\30698\OneDrive\文档\rdlevels\xnkl\levelEdited.rdlevel", New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}}) '"output.rdlevel")
+		Level.SaveFile(New IO.FileInfo("C:\Users\30698\OneDrive\文档\rdlevels\xnkl\levelEdited.rdlevel"), New InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}}) '"output.rdlevel")
 		Console.WriteLine()
 		Console.WriteLine("已保存至本程序下的 output.rdlevel。")
 	End Sub

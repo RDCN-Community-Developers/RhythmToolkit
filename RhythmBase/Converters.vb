@@ -5,10 +5,12 @@ Imports RhythmBase.Events
 Imports RhythmAsset
 Imports RhythmAsset.Sprites
 Imports SkiaSharp
+Imports RhythmBase.Util
 Imports RhythmBase.Animation
+Imports System.Reflection.Emit
 
 Namespace Objects
-	Module Converters
+	Namespace Converters
 		Public Class RDLevelConverter
 			Inherits JsonConverter(Of RDLevel)
 			Private ReadOnly fileLocation As IO.FileInfo
@@ -61,11 +63,12 @@ Namespace Objects
 					.Add(New LimitedListConverter(Of SKColor))
 				End With
 				Dim EventsSerializer As New JsonSerializerSettings With {
-					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
+									.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
 					.NullValueHandling = NullValueHandling.Ignore
 				}
 				With EventsSerializer.Converters
-					.Add(New EventConverter(value.CPBs, value.BPMs, value.Path, settings.SpriteSettings, value.Assets, value.ColorPalette))
+					.Add(New EventConverter(value, settings))
+					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
 
 				With writer
@@ -77,7 +80,7 @@ Namespace Objects
 					.WritePropertyName("decorations")
 					.WriteRawValue(JsonConvert.SerializeObject(value.Decorations, DecorationsSerializer))
 					.WritePropertyName("events")
-					.WriteRawValue(JsonConvert.SerializeObject(value.Events, EventsSerializer))
+					.WriteRawValue(JsonConvert.SerializeObject(value.GetEnumerator, EventsSerializer))
 					.WritePropertyName("conditionals")
 					.WriteRawValue(JsonConvert.SerializeObject(value.Conditionals, ConditionalsSerializer))
 					.WritePropertyName("bookmarks")
@@ -136,7 +139,7 @@ Namespace Objects
 					For Each item In assetsCollection
 						.Assets.Add(item)
 					Next
-
+					._path = fileLocation
 				End With
 
 				Dim EventsSerializer As New JsonSerializer With {
@@ -144,15 +147,7 @@ Namespace Objects
 					.NullValueHandling = NullValueHandling.Ignore
 				}
 				With EventsSerializer.Converters
-					.Add(New INumberOrExpressionConverter)
-					.Add(New NumberOrExpressionPairConverter)
-					.Add(New PanelColorConverter(Level.ColorPalette))
-					.Add(New RoomConverter)
-					.Add(New AssetConverter(fileLocation, settings.SpriteSettings, assetsCollection))
-					.Add(New AnchorStyleConverter)
-					.Add(New TagActionConverter(SetCPBCollection))
-					.Add(New ConditionConverter)
-					.Add(New PatternConverter)
+					.Add(New EventConverter(Level, settings))
 					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
 
@@ -175,13 +170,11 @@ Namespace Objects
 					SetCPBCollection.Add(TempEvent)
 				Next
 
-
 				For Each item In J("events").Where(Function(i) i("type") = NameOf(SetBeatsPerMinute))
 					Dim TempEvent As BaseBeatsPerMinute = item.ToObject(GetType(SetBeatsPerMinute), EventsSerializer)
 					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(item("beat")), SetCPBCollection)
 					SetBPMCollection.Add(TempEvent)
 				Next
-
 
 				For Each item In J("events").Where(Function(i) i("type") = NameOf(PlaySong))
 					Dim TempEvent As BaseBeatsPerMinute = item.ToObject(GetType(PlaySong), EventsSerializer)
@@ -204,43 +197,6 @@ Namespace Objects
 
 					Dim SubClassType As Type = Type.GetType($"{BaseActionType.Namespace}.{item("type")}")
 					Dim TempEvent As BaseEvent = item.ToObject(SubClassType, EventsSerializer)
-					TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(If(item("beat"), 1)), SetCPBCollection)
-					'条件
-					If item("if") IsNot Nothing Then
-						Dim ConditionIds = Regex.Matches(item("if").ToString, "~?\d+(?=[&d])")
-						For Each match As Match In ConditionIds
-							Dim vs = Val("~2")
-							Dim Parent = Level.Conditionals.Where(Function(i) i.Id = CInt(Regex.Match(match.Value, "\d+").Value)).First
-							Parent.Children.Add(TempEvent)
-							TempEvent.If.ConditionLists.Add((match.Value(0) <> "~"c, Parent))
-						Next
-						TempEvent.If.Duration = Regex.Match(item("if").ToString, "(?<=d)[\d\.]+").Value
-					End If
-					Dim Added As Boolean = False
-					'轨道事件关联
-					If SubClassType.IsAssignableTo(GetType(BaseRowAction)) Then
-						Dim SubTempEvent As BaseRowAction = CType(TempEvent, BaseRowAction)
-						If item("row").Value(Of Integer) >= 0 Then
-							Dim Parent = Level.Rows(item("row"))
-							Parent.Children.Add(TempEvent)
-							SubTempEvent.Parent = Parent
-						End If
-						Level.Add(TempEvent)
-						Added = True
-					End If
-					'精灵事件关联
-					If SubClassType.IsAssignableTo(GetType(BaseDecorationAction)) Then
-						Dim SubTempEvent As BaseDecorationAction = CType(TempEvent, BaseDecorationAction)
-						If item("target") IsNot Nothing Then
-							Dim Parent = Level.Decorations.FirstOrDefault(Function(i) i.Id = item("target"))
-							If Parent IsNot Nothing Then
-								Parent.Children.Add(TempEvent)
-								SubTempEvent.Parent = Parent
-							End If
-						End If
-						Level.Add(TempEvent)
-						Added = True
-					End If
 					'浮动文字事件记录
 					If SubClassType Is GetType(FloatingText) Then
 						FloatingTextCollection.Add((CType(TempEvent, FloatingText), item("id")))
@@ -249,13 +205,9 @@ Namespace Objects
 						AdvanceTextCollection.Add((CType(TempEvent, AdvanceText), item("id")))
 					End If
 					'未处理事件加入
-					If Not Added Then
-						Level.Add(TempEvent)
-						'If Level.Events2(TempEvent.GetType) Is Nothing Then
-						'	Level.Events2(TempEvent.GetType) = New List(Of BaseEvent)
-						'End If
-						'Level.Events2(TempEvent.GetType).Add(TempEvent)
-					End If
+					'If Not Added Then
+					Level.Add(TempEvent)
+					'End If
 				Next
 				'浮动文字事件关联
 				For Each AdvancePair In AdvanceTextCollection
@@ -303,21 +255,14 @@ Namespace Objects
 			End Function
 		End Class
 		Public Class EventConverter
-			Inherits JsonConverter(Of List(Of BaseEvent))
-			Private ReadOnly setCPB As IEnumerable(Of SetCrotchetsPerBar)
-			Private ReadOnly setBPM As IEnumerable(Of BaseBeatsPerMinute)
-			Private ReadOnly fileLocation As IO.FileInfo
-			Private ReadOnly settings As SpriteInputSettings
-			Private ReadOnly assets As HashSet(Of ISprite)
-			Private ReadOnly colorList As LimitedList(Of SKColor)
-			Public Sub New(setCPBCollection As IEnumerable(Of SetCrotchetsPerBar), setBPMCollection As IEnumerable(Of BaseBeatsPerMinute), location As IO.FileInfo, settings As SpriteInputSettings, assets As HashSet(Of ISprite), list As LimitedList(Of SKColor))
-				fileLocation = location
-				Me.settings = settings
-				Me.assets = assets
-				setCPB = setCPBCollection
-				setBPM = setBPMCollection
+			Inherits JsonConverter(Of BaseEvent)
+			Private ReadOnly level As RDLevel
+			Private ReadOnly settings As InputSettings.LevelInputSettings
+			Public Sub New(level As RDLevel, inputSettings As InputSettings.LevelInputSettings)
+				Me.level = level
+				Me.settings = inputSettings
 			End Sub
-			Public Overrides Sub WriteJson(writer As JsonWriter, value As List(Of BaseEvent), serializer As JsonSerializer)
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As BaseEvent, serializer As JsonSerializer)
 				Dim EventsSerializer As New JsonSerializer With {
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
 					.NullValueHandling = NullValueHandling.Ignore
@@ -325,32 +270,138 @@ Namespace Objects
 				With EventsSerializer.Converters
 					.Add(New NumberOrExpressionPairConverter)
 					.Add(New INumberOrExpressionConverter)
-					.Add(New PanelColorConverter(colorList))
+					.Add(New PanelColorConverter(level.ColorPalette))
 					.Add(New ColorConverter)
-					.Add(New TagActionConverter(setCPB))
+					.Add(New TagActionConverter(level))
 					.Add(New RoomConverter)
-					.Add(New ConditionConverter)
-					.Add(New AssetConverter(fileLocation, settings, assets))
+					.Add(New ConditionConverter(level.Conditionals))
+					.Add(New AssetConverter(level.Path, settings.SpriteSettings, level.Assets))
 					.Add(New AnchorStyleConverter)
 					.Add(New PatternConverter)
-					Call .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
 				With writer
-					.WriteStartArray()
-					For Each item In value.Concat(setCPB).Concat(setBPM)
-						Dim JO = JObject.FromObject(item, EventsSerializer)
-						Dim b = BeatCalculator.BeatOnly_BarBeat(item.BeatOnly, setCPB)
-						JO("bar") = b.bar
-						JO("beat") = b.beat
-						JO.Remove("beatTick")
-						.WriteRawValue(JsonConvert.SerializeObject(JO))
-					Next
-					.WriteEndArray()
+					Dim JO = JObject.FromObject(value, EventsSerializer)
+					Dim b = BeatCalculator.BeatOnly_BarBeat(value.BeatOnly, level.CPBs)
+					JO("bar") = b.bar
+					JO("beat") = b.beat
+					JO.Remove("beatTick")
+					.WriteRawValue(JsonConvert.SerializeObject(JO))
 				End With
 			End Sub
-			Public Overrides ReadOnly Property CanRead As Boolean = False
-			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As List(Of BaseEvent), hasExistingValue As Boolean, serializer As JsonSerializer) As List(Of BaseEvent)
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As BaseEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseEvent
+
+				Dim JObj = JToken.ReadFrom(reader)
+
+				Dim BaseActionType As Type = GetType(BaseEvent)
+
+				Dim EventsSerializer As New JsonSerializer With {
+					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
+					.NullValueHandling = NullValueHandling.Ignore
+				}
+				With EventsSerializer.Converters
+					.Add(New INumberOrExpressionConverter)
+					.Add(New NumberOrExpressionPairConverter)
+					.Add(New PanelColorConverter(level.ColorPalette))
+					.Add(New RoomConverter)
+					.Add(New AssetConverter(level.Path, settings.SpriteSettings, level.Assets))
+					.Add(New AnchorStyleConverter)
+					.Add(New TagActionConverter(level))
+					.Add(New ConditionConverter(level.Conditionals))
+					.Add(New PatternConverter)
+					.Add(New BaseRowActionConverter(level, settings))
+					.Add(New BaseDecorationConverter(level, settings))
+					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				End With
+
+				Dim SubClassType As Type = Type.GetType($"{BaseActionType.Namespace}.{JObj("type")}")
+				existingValue = JObj.ToObject(SubClassType, EventsSerializer)
+				existingValue.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(JObj("bar")), CDbl(If(JObj("beat"), 1)), level.CPBs)
+				existingValue.ParentLevel = level
+
+				Return existingValue
+			End Function
+		End Class
+		Public Class BaseRowActionConverter
+			Inherits JsonConverter(Of BaseRowAction)
+			Private Property level As RDLevel
+			Private settings As InputSettings.LevelInputSettings
+			Public Sub New(level As RDLevel, settings As InputSettings.LevelInputSettings)
+				Me.level = level
+				Me.settings = settings
+			End Sub
+			Public Overrides ReadOnly Property CanWrite As Boolean = False
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As BaseRowAction, serializer As JsonSerializer)
 				Throw New NotImplementedException()
+			End Sub
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As BaseRowAction, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseRowAction
+
+				Dim EventsSerializer As New JsonSerializer With {
+					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
+					.NullValueHandling = NullValueHandling.Ignore
+				}
+				With EventsSerializer.Converters
+					.Add(New INumberOrExpressionConverter)
+					.Add(New NumberOrExpressionPairConverter)
+					.Add(New PanelColorConverter(level.ColorPalette))
+					.Add(New RoomConverter)
+					.Add(New AssetConverter(level.Path, settings.SpriteSettings, level.Assets))
+					.Add(New AnchorStyleConverter)
+					.Add(New TagActionConverter(level))
+					.Add(New ConditionConverter(level.Conditionals))
+					.Add(New PatternConverter)
+					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				End With
+
+				Dim JObj = JToken.ReadFrom(reader)
+				Dim Obj = JObj.ToObject(objectType, EventsSerializer)
+				If JObj("row").Value(Of Integer) >= 0 Then
+					Dim Parent = level._Rows(JObj("row"))
+					Parent.Children.Add(Obj)
+					Obj.Parent = Parent
+				End If
+				Return Obj
+			End Function
+		End Class
+		Public Class BaseDecorationConverter
+			Inherits JsonConverter(Of BaseDecorationAction)
+			Private Property level As RDLevel
+			Private settings As InputSettings.LevelInputSettings
+			Public Sub New(level As RDLevel, settings As InputSettings.LevelInputSettings)
+				Me.level = level
+				Me.settings = settings
+			End Sub
+			Public Overrides ReadOnly Property CanWrite As Boolean = False
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As BaseDecorationAction, serializer As JsonSerializer)
+				Throw New NotImplementedException()
+			End Sub
+
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As BaseDecorationAction, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseDecorationAction
+
+				Dim EventsSerializer As New JsonSerializer With {
+					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
+					.NullValueHandling = NullValueHandling.Ignore
+				}
+				With EventsSerializer.Converters
+					.Add(New INumberOrExpressionConverter)
+					.Add(New NumberOrExpressionPairConverter)
+					.Add(New PanelColorConverter(level.ColorPalette))
+					.Add(New RoomConverter)
+					.Add(New AssetConverter(level.Path, Settings.SpriteSettings, level.Assets))
+					.Add(New AnchorStyleConverter)
+					.Add(New TagActionConverter(level))
+					.Add(New ConditionConverter(level.Conditionals))
+					.Add(New PatternConverter)
+					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				End With
+				Dim JObj = JToken.ReadFrom(reader)
+				Dim Obj = JObj.ToObject(objectType, EventsSerializer)
+				Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = JObj("target"))
+				If Parent IsNot Nothing Then
+					Parent.Children.Add(Obj)
+					Obj.Parent = Parent
+				End If
+				Return Obj
 			End Function
 		End Class
 		Public Class LimitedListConverter(Of T)
@@ -552,15 +603,15 @@ Namespace Objects
 		End Class
 		Public Class TagActionConverter
 			Inherits JsonConverter(Of TagAction)
-			Private ReadOnly setCPB As IEnumerable(Of SetCrotchetsPerBar)
-			Public Sub New(setCPBCollection As IEnumerable(Of SetCrotchetsPerBar))
-				setCPB = setCPBCollection
+			Private ReadOnly level As RDLevel
+			Public Sub New(level As RDLevel)
+				Me.level = level
 			End Sub
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As TagAction, serializer As JsonSerializer)
 				Dim S As New JsonSerializerSettings
-				S.Converters.Add(New ConditionConverter)
+				S.Converters.Add(New ConditionConverter(level.Conditionals))
 				S.Converters.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
-				Dim BarBeat = BeatCalculator.BeatOnly_BarBeat(value.BeatOnly, setCPB)
+				Dim BarBeat = BeatCalculator.BeatOnly_BarBeat(value.BeatOnly, level.CPBs)
 				With writer
 					.WriteStartObject()
 					.WritePropertyName("bar")
@@ -596,7 +647,7 @@ Namespace Objects
 			End Sub
 			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As TagAction, hasExistingValue As Boolean, serializer As JsonSerializer) As TagAction
 				Dim S As New JsonSerializer
-				S.Converters.Add(New ConditionConverter)
+				S.Converters.Add(New ConditionConverter(level.Conditionals))
 				Dim Json = JObject.Load(reader)
 				Dim Obj = Json.ToObject(Of TagAction)(S)
 				Dim Action = Json("Action").ToString
@@ -675,15 +726,29 @@ Namespace Objects
 		End Class
 		Public Class ConditionConverter
 			Inherits JsonConverter(Of Condition)
+			Private conditionals As List(Of BaseConditional)
+			Public Sub New(Conditionals As List(Of BaseConditional))
+				Me.conditionals = Conditionals
+			End Sub
 			Public Overrides Sub WriteJson(writer As JsonWriter, value As Condition, serializer As JsonSerializer)
-				writer.WriteValue(value.ToString)
+				writer.WriteValue(value.Serialize)
 			End Sub
 			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Condition, hasExistingValue As Boolean, serializer As JsonSerializer) As Condition
-				Dim J = JToken.Load(reader)
-				Return Condition.Load(J)
+				Dim J = JToken.Load(reader).ToObject(Of String)
+
+				Dim Value As New Condition()
+
+				Dim ConditionIds = Regex.Matches(J, "~?\d+(?=[&d])")
+				For Each match As Match In ConditionIds
+					Dim vs = Val("~2")
+					Dim Parent = conditionals.Where(Function(i) i.Id = CInt(Regex.Match(match.Value, "\d+").Value)).First
+					Value.ConditionLists.Add((match.Value(0) <> "~"c, Parent))
+				Next
+				Value.Duration = Regex.Match(J, "(?<=d)[\d\.]+").Value
+				Return Value
 			End Function
 		End Class
-	End Module
+	End Namespace
 End Namespace
 Namespace InputSettings
 	Public Class LevelInputSettings

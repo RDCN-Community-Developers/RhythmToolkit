@@ -1,6 +1,7 @@
 Imports RhythmBase
 Imports RhythmBase.Objects
 Imports RhythmAsset
+Imports RhythmBase.Util
 Imports RhythmAsset.Sprites
 Imports RhythmBase.Events
 Module Program

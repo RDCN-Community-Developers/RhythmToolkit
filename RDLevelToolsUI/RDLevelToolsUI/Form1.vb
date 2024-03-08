@@ -38,7 +38,7 @@ Public Class Form1
 		End If
 		SaveFileDialog1.Filter = "节奏医生游戏关卡文件|*.rdlevel"
 		If SaveFileDialog1.ShowDialog = DialogResult.OK Then
-			processingLevel.SaveFile(SaveFileDialog1.FileName)
+			processingLevel.SaveFile(New IO.FileInfo(SaveFileDialog1.FileName))
 		End If
 		MsgBox("完成")
 	End Sub
