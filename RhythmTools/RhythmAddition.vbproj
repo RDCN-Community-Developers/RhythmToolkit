@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <RootNamespace>RhythmTools</RootNamespace>
+    <RootNamespace>RhythmBase</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>RhythmBase.Addition</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,12 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
     <ProjectReference Include="..\RhythmSprite\RhythmAsset.vbproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="RhythmAsset">
-      <HintPath>..\RhythmSprite\bin\Debug\net6.0\RhythmAsset.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

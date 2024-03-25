@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SkiaSharp" Version="3.0.0-preview.2.1" />
+    <Compile Remove="EaseProphet.vb" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RhythmSprite\RhythmAsset.vbproj" />
+    <None Remove="概述.docx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SkiaSharp" Version="3.0.0-preview.2.1" />
   </ItemGroup>
 
 </Project>

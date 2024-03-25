@@ -1,10 +1,11 @@
-﻿Imports RhythmBase.Objects
-Imports RhythmLocalization
+﻿Imports RhythmBase.LevelElements
+Imports RhythmBase
 Imports RhythmBase.Events
-Imports RhythmAsset
-Imports RhythmBase.Util
-Imports RhythmTools.Tools
+Imports RhythmBase.Settings
+Imports RhythmBase.Utils
+Imports RhythmBase.Tools
 Imports System.Reflection
+Imports RhythmBase.Components
 Public Class Form1
 	Private able As Boolean = False
 	Private LevelHandler As RDLevelHandler
@@ -23,7 +24,7 @@ Public Class Form1
 		If OpenFileDialog1.ShowDialog <> DialogResult.OK Then
 			Return
 		End If
-		processingLevel = RDLevel.LoadFile(New IO.FileInfo(OpenFileDialog1.FileName), New RhythmBase.InputSettings.LevelInputSettings With {.SpriteSettings = New SpriteInputSettings With {.PlaceHolder = True}})
+		processingLevel = RDLevel.LoadFile(New IO.FileInfo(OpenFileDialog1.FileName), New LevelInputSettings)
 		Dim file = New IO.FileInfo(OpenFileDialog1.FileName)
 		Text = file.Directory.Name + "\" + file.Name
 		LevelHandler = New RDLevelHandler(processingLevel)
@@ -141,7 +142,7 @@ Public Class Form1
 					}
 					pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
 					editorControl = pNumericUpDown
-				ElseIf editorType = GetType(INumberOrExpression) Then
+				ElseIf editorType = GetType(INumOrExp) Then
 					Dim pTextBox = New TextBox
 					pTextBox.DataBindings.Add("Text", processingEvent, p.Name)
 					editorControl = pTextBox

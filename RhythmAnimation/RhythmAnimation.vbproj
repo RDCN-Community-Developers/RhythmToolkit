@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>RhythmBase</RootNamespace>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>RhythmBase.Animation</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
+  </ItemGroup>
+
+</Project>

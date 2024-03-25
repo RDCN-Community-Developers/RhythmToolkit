@@ -2,15 +2,20 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <RootNamespace>RhythmAsset</RootNamespace>
+    <RootNamespace>RhythmBase</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
     <UseApplicationFramework>False</UseApplicationFramework>
+    <AssemblyName>RhythmBase.Asset</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SkiaSharp" Version="3.0.0-preview.1.8" />
+    <PackageReference Include="SkiaSharp" Version="3.0.0-preview.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
   </ItemGroup>
 
 </Project>

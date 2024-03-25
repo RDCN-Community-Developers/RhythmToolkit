@@ -2,7 +2,7 @@ Imports System
 Imports NAudio.Dsp
 Imports NAudio.Wave
 Imports MathNet.Numerics
-Imports RhythmBase.Objects
+Imports RhythmBase.LevelElements
 Imports MathNet.Numerics.IntegralTransforms
 
 Module Program
@@ -113,7 +113,7 @@ Module Program
 
 		Dim Level As RDLevel = RDLevel.LoadFile("C:\Users\30698\OneDrive\ÎÄµµ\rdlevels\test3\level.rdlevel")
 
-		Dim SpriteCollection As New List(Of RhythmBase.Objects.Decoration)
+		Dim SpriteCollection As New List(Of RhythmBase.LevelElements.Decoration)
 		'For i = 0 To 100
 		Dim A As New Decoration(Rooms.Default, Nothing, 0, True)
 		Level.Decorations.Add(A)
