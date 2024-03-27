@@ -38,13 +38,17 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<[Base
 | | void | AddRange(IEnumerable\<[BaseEvent][E]\> item) | 向事件集合添加一系列事件。
 | | void | Clear() | 清空Events集合。<br>实现ICollection\<[BaseEvent][E]\>.Clear()接口
 | | bool | Contains([BaseEvent][E] item) | 返回关卡是否包含此事件。<br>实现ICollection\<[BaseEvent][E]\>.Contains([BaseEvent][E] item)接口
-| | IEnumerable\<[BaseEvent][E]\> | Where(Func\<[BaseEvent][E], bool\> predicate) | 以谓词筛选指定事件。
-| | IEnumerable\<T\> | Where\<T\>() where T : [BaseEvent][E] | 以类型筛选指定事件。
-| | IEnumerable\<T\>| Where\<T\>(Func\<T, bool\> predicate) T : [BaseEvent][E] | 以类型和谓词筛选指定事件。
+| | IEnumerable\<[BaseEvent][E]\> | Where(Func\<[BaseEvent][E], bool\> predicate) | 以谓词筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<[BaseEvent][E]\> | Where(float startBeat, float endBeat) | 以节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<[BaseEvent][E]\> | Where(Func\<[BaseEvent][E], bool\> predicate, float startBeat, float endBeat) | 以谓词和节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where\<T\>() where T : [BaseEvent][E] | 以类型筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\>| Where\<T\>(Func\<T, bool\> predicate) where T : [BaseEvent][E] | 以类型和谓词筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\>| Where\<T\>(float startBeat, float endBeat) where T : [BaseEvent][E] | 以类型和节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\>| Where\<T\>(Func\<T, bool\> predicate, float startBeat, float endBeat) where T : [BaseEvent][E] | 以类型、谓词和节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
 | | [BaseEvent][E] | First() | 获取关卡内第一个事件。
 | | [BaseEvent][E] | First(Func\<[BaseEvent][E], bool\> predicate) | 获取关卡内第一个满足谓词的事件。
 | | T | First\<T\>() where T : [BaseEvent][E]  | 获取关卡内第一个满足类型的事件。
-| | T | First\<T\>(Func\<T, bool\> predicate)  T : [BaseEvent][E] | 获取关卡内第一个满足谓词和类型的事件。
+| | T | First\<T\>(Func\<T, bool\> predicate) where T : [BaseEvent][E] | 获取关卡内第一个满足谓词和类型的事件。
 | | [BaseEvent][E] | FirstOrDefault() | 获取关卡内第一个事件。<br>若未找到则返回null。
 | | [BaseEvent][E] | FirstOrDefault(BaseEvent defaultValue) | 获取关卡内第一个事件。<br>若未找到则返回defaultValue。
 | | [BaseEvent][E] | FirstOrDefault(Func\<[BaseEvent][E], bool\> predicate) | 获取关卡内第一个满足谓词的事件。<br>若未找到则返回null。
@@ -67,5 +71,6 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<[Base
 | | void | CopyTo([BaseEvent][E][] array, int arrayIndex) | 将事件拷贝到数组。<br>实现ICollection\<[BaseEvent][E]\>.CopyTo()接口
 | | bool | Remove([BaseEvent][E] item) | 移除事件。<br>实现ICollection\<[BaseEvent][E]\>.Remove()接口
 | | int | RemoveAll(Predicate\<[BaseEvent][E]\> predicate) | 移除满足谓词的事件。
+| | IEnumerble<[BaseEvent][E]> | GetEnumerator() | 获取此关卡实例的迭代器。此迭代器以事件的时间顺序迭代。
 
 [E]: ../class/BaseEvent.md
