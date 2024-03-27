@@ -72,7 +72,6 @@
     - [PlayerMode](../class/PlayerMode.md)
 - [RhythmBase][nmsp].[Assets](../namespace/Assets.md)
     - [Quote](../class/Quote.md)
-    - [NullAsset](../class/NullAsset.md)
 - [RhythmBase][nmsp].[Exceptions](../namespace/Exceptions.md)
     - [RhythmBaseException](../class/RhythmBaseException.md)
     - [ModuleException](../class/ModuleException.md)

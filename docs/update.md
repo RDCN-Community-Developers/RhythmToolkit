@@ -4,6 +4,9 @@
 ### 2024/03/27
 
 - [RDLevel](/class/RDLevel.md) 添加了三个 Where 方法，用于对节拍范围进行快速筛选。
+    添加了两个构造方法。
+    添加了 ExtractEventsAt 方法。
+- 移除了 NullAsset 类型。现在尝试获取无引用的素材会返回 null (待测试)。
 
 ### 2024/03/25
 

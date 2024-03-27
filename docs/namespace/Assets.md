@@ -11,7 +11,6 @@
 
 ## 类型
 
-- [NullAsset](../class/NullAsset.md)
 - [Quote](../class/Quote.md)
 - [Image](../class/Image.md)
 - [Sprite](../class/Sprite.md)

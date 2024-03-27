@@ -1,28 +1,30 @@
-﻿using RhythmBase.Events;
+﻿using Physicians;
+using RhythmBase.Events;
 using RhythmBase.LevelElements;
-using RhythmBase.Components;
-using Physicians;
-using static RhythmBase.Extensions.EventsExtension;
 
 //level.SaveFile(new FileInfo("E:\\Resources\\你我皆相连2\\Connected\\level2.rdlevel"));//Console.ReadLine() ?? string.Empty));
 
 
-//Console.WriteLine();
-//RDLevel l = RDLevel.LoadFile(new FileInfo("E:\\Download\\XO-XN One Forgotten Night.rdzip"));
+Console.WriteLine();
+RDLevel l = RDLevel.LoadFile(new FileInfo(@"O:\RhythmDoctor\你我皆相连2\Connected\level.rdlevel"));
 //var a = l.Count;
 //Edega.DetectingAll(l);
-
-//CallCustomMethod callCustomMethod = new();
+l.set_EventsAt(24, l.get_EventsAt(24));
+//l.RemoveAll(i => i.BeatOnly == 22);
+foreach (BaseEvent e in l.Where<BaseBeat>(12,49))
+{
+    Console.WriteLine(e.ToString());
+}
 
 //var s = RhythmBase.Expressions.ExpressionTree.GetExpressionTree("atLeastNPerfects(i1,f2*3.-.5)");
 //s = s;
 
-Variables v = new();
-while (true)
-{
-    Exp a = new($"{{{Console.ReadLine()}}}");
-    var s = a.GetExpValue(v);
-    Console.WriteLine($">>> {s}");
-}
+//Variables v = new();
+//while (true)
+//{
+//    Exp a = new($"{{{Console.ReadLine()}}}");
+//    var s = a.GetExpValue(v);
+//    Console.WriteLine($">>> {s}");
+//}
 
 //l.SaveFile(new FileInfo("I:\\RhythmDoctor\\你我皆相连2\\Connected\\level2.rdlevel"));

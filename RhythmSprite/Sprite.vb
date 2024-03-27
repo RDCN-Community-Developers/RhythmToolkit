@@ -257,7 +257,7 @@ Namespace Extensions
             ElseIf Image.CanRead(p.FileInfo) Then
                 result = Image.FromPath(p.FileInfo)
             Else
-                result = New NullAsset
+                result = Nothing
             End If
             Return result
         End Function

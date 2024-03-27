@@ -715,6 +715,9 @@ Namespace Components
 			Next
 			Return T
 		End Function
+		Public Overrides Function ToString() As String
+			Return $"Count = {Count}"
+		End Function
 	End Class
 	Public Class Union(Of A, B)
 		Private value As (A As A, B As B)
@@ -1197,6 +1200,13 @@ Namespace LevelElements
 		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of BaseEvent).IsReadOnly
 		<JsonIgnore>
 		Public ReadOnly Property Variables As New Variables
+		Public Sub New()
+		End Sub
+		Public Sub New(items As IEnumerable(Of BaseEvent))
+			For Each item In items
+				Me.Add(item)
+			Next
+		End Sub
 		Public Function GetTaggedEvents(name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, BaseEvent))
 			If name Is Nothing Then
 				Return Nothing
@@ -1330,7 +1340,9 @@ Namespace LevelElements
 			EventsBeatOrder.Clear()
 		End Sub
 		Public Function Contains(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Contains
-			Return EventsTypeOrder(item.Type)(item.BeatOnly).Contains(item)
+			Return EventsTypeOrder.ContainsKey(item.Type) AndAlso
+				EventsTypeOrder(item.Type).ContainsKey(item.BeatOnly) AndAlso
+				EventsTypeOrder(item.Type)(item.BeatOnly).Contains(item)
 		End Function
 		Public Iterator Function Where(predicate As Func(Of BaseEvent, Boolean)) As IEnumerable(Of BaseEvent)
 			For Each pair In EventsBeatOrder
@@ -1493,29 +1505,23 @@ Namespace LevelElements
 			ConcatAll.CopyTo(array, arrayIndex)
 		End Sub
 		Public Function Remove(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Remove
-			Try
-				EventsTypeOrder(item.Type)(item.BeatOnly).Remove(item)
-			Catch
-			End Try
-			If EventsBeatOrder.ContainsKey(item.BeatOnly) Then
-				If EventsBeatOrder(item.BeatOnly).Count = 1 Then
-					EventsBeatOrder(item.BeatOnly).Remove(item)
-					EventsBeatOrder.Remove(item.BeatOnly)
-					Return True
-				Else
-					Return EventsBeatOrder(item.BeatOnly).Remove(item)
-				End If
+			If Contains(item) Then
+				Return EventsTypeOrder(item.Type)?(item.BeatOnly).Remove(item) And EventsBeatOrder(item.BeatOnly).Remove(item)
 			End If
 			Return False
 		End Function
 		Public Function RemoveAll(predicate As Func(Of BaseEvent, Boolean)) As Integer
 			Dim count As UInteger = 0
-			Dim l = Where(predicate)
-			For Each item In l
-				count += Remove(item)
+			For Each item In New List(Of BaseEvent)(Where(predicate))
+				count += If(Remove(item), 1, 0)
 			Next
 			Return count
 		End Function
+		Public Sub RemoveRange(items As IEnumerable(Of BaseEvent))
+			For Each item In items
+				Remove(item)
+			Next
+		End Sub
 		Public Iterator Function GetEnumerator() As IEnumerator(Of BaseEvent) Implements IEnumerable(Of BaseEvent).GetEnumerator
 			For Each pair In EventsBeatOrder
 				For Each item In pair.Value
@@ -1523,12 +1529,22 @@ Namespace LevelElements
 				Next
 			Next
 		End Function
+		Public Iterator Function ExtractEventsAt(beat As Single) As IEnumerable(Of BaseEvent)
+			Dim temp = EventsBeatOrder(beat)
+			For Each item In temp
+				Yield item
+			Next
+			RemoveAll(Function(i) temp.Contains(i))
+		End Function
 		Private Iterator Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
 			For Each pair In EventsBeatOrder
 				For Each item In pair.Value
 					Yield item
 				Next
 			Next
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"""{Settings.Song}"" Count = {Count}"
 		End Function
 	End Class
 	Public Class Settings

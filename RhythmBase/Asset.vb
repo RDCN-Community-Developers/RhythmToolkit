@@ -51,19 +51,19 @@ Namespace Assets
             Return Name
         End Function
     End Class
-    Public Class NullAsset
-        Implements ISprite
-        Public ReadOnly Property FileInfo As FileInfo Implements ISprite.FileInfo
-            Get
-                Return Nothing
-            End Get
-        End Property
+    'Public Class NullAsset
+    '    Implements ISprite
+    '    Public ReadOnly Property FileInfo As FileInfo Implements ISprite.FileInfo
+    '        Get
+    '            Return Nothing
+    '        End Get
+    '    End Property
 
-        Public Property Size As New Vector2 Implements ISprite.Size
-        Public ReadOnly Property Name As String = "" Implements ISprite.Name
-        Public ReadOnly Property Expressions As IEnumerable(Of String) = New HashSet(Of String) Implements ISprite.Expressions
-        <JsonIgnore>
-        Public ReadOnly Property Preview As New SKBitmap Implements ISprite.Preview
-    End Class
+    '    Public Property Size As New Vector2 Implements ISprite.Size
+    '    Public ReadOnly Property Name As String = "" Implements ISprite.Name
+    '    Public ReadOnly Property Expressions As IEnumerable(Of String) = New HashSet(Of String) Implements ISprite.Expressions
+    '    <JsonIgnore>
+    '    Public ReadOnly Property Preview As New SKBitmap Implements ISprite.Preview
+    'End Class
 
 End Namespace

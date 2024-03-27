@@ -691,8 +691,8 @@ Namespace Converters
         End Sub
         Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As BaseConditional, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseConditional
             Dim J = JObject.Load(reader)
-            Dim BaseActionType As Type = GetType(BaseConditional)
-            Dim SubClassType As Type = Type.GetType($"{BaseActionType.Namespace}.{J("type")}")
+            Dim ConditionalsType As Type = GetType(BaseConditional)
+            Dim SubClassType As Type = Type.GetType($"{GetType(BaseConditional).Namespace}.{NameOf(Conditions)}.{J("type")}")
             Dim S As New JsonSerializer
             S.Converters.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
             S.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
