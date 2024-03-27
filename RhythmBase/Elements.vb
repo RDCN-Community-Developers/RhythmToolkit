@@ -1351,7 +1351,7 @@ Namespace LevelElements
                    Select item
         End Function
         Public Function First() As BaseEvent
-            Return ConcatAll.First
+            Return EventsBeatOrder.First.Value.First
         End Function
         Public Function First(predicate As Func(Of BaseEvent, Boolean)) As BaseEvent
             Return ConcatAll.First(predicate)
@@ -1363,7 +1363,7 @@ Namespace LevelElements
             Return Where(Of T).First(predicate)
         End Function
         Public Function FirstOrDefault() As BaseEvent
-            Return ConcatAll.FirstOrDefault()
+            Return EventsBeatOrder.FirstOrDefault.Value?.FirstOrDefault
         End Function
         Public Function FirstOrDefault(defaultValue As BaseEvent) As BaseEvent
             Return ConcatAll.FirstOrDefault(defaultValue)
@@ -1399,7 +1399,7 @@ Namespace LevelElements
             Return Where(Of T).Last(predicate)
         End Function
         Public Function LastOrDefault() As BaseEvent
-            Return ConcatAll.LastOrDefault()
+            Return EventsBeatOrder.LastOrDefault.Value?.LastOrDefault()
         End Function
         Public Function LastOrDefault(defaultValue As BaseEvent) As BaseEvent
             Return ConcatAll.LastOrDefault(defaultValue)

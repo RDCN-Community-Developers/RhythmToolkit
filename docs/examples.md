@@ -58,9 +58,6 @@ using System.Collections.Generic;
 //构造一个列表以存储拆分后的七拍
 List<BaseBeat> beats = [];
 
-//构造一个列表以存储击拍
-List<AddFreeTimeBeat> hittingBeats = [];
-
 //将所有七拍拆分后的自由拍副本存储到列表
 foreach(AddClassicBeat beat in rdlevel.Where<AddClassicBeat>())
 {
@@ -68,13 +65,13 @@ foreach(AddClassicBeat beat in rdlevel.Where<AddClassicBeat>())
     beat.Active = false;
 }
 
-//以拆分的每个自由拍为模板创建自由拍头
+//在关卡内以每个自由拍的基础属性创建自由拍头
 foreach(BaseBeat beat in beats)
 {
     AddFreeTimeBeat hit = beat.Copy<AddFreeTimeBeat>();
     hit.Pulse = 7;
     /*
-    等效于
+    以上两句等效于
 
     AddFreeTimeBeat hit = new() {
         BeatOnly=beat.BeatOnly, 
@@ -85,13 +82,10 @@ foreach(BaseBeat beat in beats)
         Pulse = 7
     };
     beat.ParentLevel.Add(hit);
+
     */
 
-    hittingBeats.Add(hit);
 }
-
-//将所有自由拍头存入关卡
-rdlevel.AddRange(hittingBeats);
 ```
 
 在 **RhythmBase.Addition**, **RhythmHospital**, **BeatsViewer** 等项目浏览更多示例。
