@@ -553,66 +553,6 @@ Namespace Converters
             Return existingValue
         End Function
     End Class
-    Friend Class TagActionConverter111
-        Inherits JsonConverter(Of TagAction)
-        Private ReadOnly level As RDLevel
-        Public Sub New(level As RDLevel)
-            Me.level = level
-        End Sub
-        Public Overrides Sub WriteJson(writer As JsonWriter, value As TagAction, serializer As JsonSerializer)
-            Dim S As New JsonSerializerSettings
-            S.Converters.Add(New ConditionConverter(level.Conditionals))
-            S.Converters.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
-            Dim BarBeat = BeatCalculator.BeatOnly_BarBeat(value.BeatOnly, level.Where(Of SetCrotchetsPerBar))
-            With writer
-                .WriteStartObject()
-                .WritePropertyName("bar")
-                .WriteRawValue(BarBeat.bar)
-                .WritePropertyName("beat")
-                .WriteRawValue(BarBeat.beat)
-                .WritePropertyName("type")
-                .WriteValue(value.Type.ToString)
-                .WritePropertyName("y")
-                .WriteRawValue(value.Y)
-                If value.If IsNot Nothing Then
-                    .WritePropertyName("if")
-                    .WriteRawValue(JsonConvert.SerializeObject(value.If, S))
-                End If
-                If value.Tag IsNot Nothing Then
-                    .WritePropertyName("tag")
-                    .WriteValue(value.Tag)
-                End If
-                .WritePropertyName("Tag")
-                .WriteValue(value.ActionTag)
-                .WritePropertyName("Action")
-                If value.Action.HasFlag(TagAction.Actions.All) Then
-                    .WriteValue([Enum].Parse(Of TagAction.Actions)(&B110 And value.Action).ToString + TagAction.Actions.All.ToString)
-                Else
-                    .WriteValue([Enum].Parse(Of TagAction.Actions)(&B110 And value.Action).ToString)
-                End If
-                If value.Active = False Then
-                    .WritePropertyName("active")
-                    .WriteRawValue(value.Active.ToString.ToLower)
-                End If
-                .WriteEndObject()
-            End With
-        End Sub
-        Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As TagAction, hasExistingValue As Boolean, serializer As JsonSerializer) As TagAction
-            Dim S As New JsonSerializer
-            S.Converters.Add(New ConditionConverter(level.Conditionals))
-            Dim Json = JObject.Load(reader)
-            Dim Obj = Json.ToObject(Of TagAction)(S)
-            Dim Action = Json("Action").ToString
-            If Action.Contains(TagAction.Actions.All.ToString) Then
-                Obj.Action = TagAction.Actions.All Or [Enum].Parse(Of TagAction.Actions)(Action.Replace(TagAction.Actions.All.ToString, ""))
-            Else
-                Obj.Action = [Enum].Parse(Of TagAction.Actions)(Action.Replace(TagAction.Actions.All.ToString, ""))
-            End If
-            Obj.ActionTag = Json("Tag")
-            Obj.Tag = Json("tag")
-            Return Obj
-        End Function
-    End Class
     Friend Class TagActionConverter
         Inherits BaseEventConverter(Of TagAction)
         Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
@@ -620,6 +560,11 @@ Namespace Converters
         End Sub
         Public Overrides Function SetSerializedObject(value As TagAction, serializer As JsonSerializer) As JObject
             Dim jobj = MyBase.SetSerializedObject(value, serializer)
+            If value.Tag Is Nothing Then
+                jobj.Remove("tag")
+            Else
+                jobj("tag") = value.Tag
+            End If
             jobj("Tag") = value.ActionTag
             Return jobj
         End Function
