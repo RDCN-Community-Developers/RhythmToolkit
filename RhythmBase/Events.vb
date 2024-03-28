@@ -330,6 +330,14 @@ Namespace Events
             End Get
         End Property
         Public Overrides ReadOnly Property Tab As Tabs = Tabs.Unknown
+        Public Overrides Property Y As Integer
+            Get
+                Return CInt(Data("y"))
+            End Get
+            Set(value As Integer)
+                Data("y") = value
+            End Set
+        End Property
         Public Overrides ReadOnly Property Rooms As Rooms = New Rooms(True, True)
         Public Data As Linq.JObject
     End Class
@@ -337,16 +345,6 @@ Namespace Events
         Inherits BaseBeatsPerMinute
         Public Song As Audio
         Public Overrides Property BeatsPerMinute As Single
-        '	Get
-        '		Return _beatsPerMinute
-        '	End Get
-        '	Set(value As single)
-        '		If value <= 0 Then
-        '			Throw New OverflowException("BeatsPerMinute must greater than 0")
-        '		End If
-        '		_beatsPerMinute = value
-        '	End Set
-        'End Property
         <JsonIgnore>
         Public Property Offset As UInteger
             Get
