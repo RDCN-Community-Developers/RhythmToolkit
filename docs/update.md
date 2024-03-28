@@ -1,6 +1,10 @@
 ## [返回](../RhythmToolkit.md)
 # 更新日志
 
+### 2024/03/28
+
+- [Variables](/class/Variables.md) 更新了变量的说明。
+
 ### 2024/03/27
 
 - [RDLevel](/class/RDLevel.md) 添加了三个 Where 方法，用于对节拍范围进行快速筛选。

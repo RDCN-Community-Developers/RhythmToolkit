@@ -61,7 +61,7 @@ Public Class Form1
 		End If
 		ShowEvent(viewIndex)
 	End Sub
-	Public Shared Manager As New TranaslationManager(New IO.FileInfo(Application.StartupPath + "\zh-cn.json"))
+	Public Shared Manager As New RhythmBase.Extensions.TranaslationManager(New IO.FileInfo(Application.StartupPath + "\zh-cn.json"))
 	Private Sub ShowEvent(index As Integer)
 		TableLayoutPanel1.Controls.Clear()
 		If Not (0 <= viewIndex And viewIndex < processingLevel.Count) Then
@@ -168,9 +168,6 @@ Public Class Form1
 		Next
 
 	End Sub
-	Private Function GetEnumNames(enumType As Type) As List(Of String)
-		Return [Enum].GetValues(enumType).Cast(Of Integer).Select(Function(i) Manager.GetValue(enumType.GetMember([Enum].GetName(enumType, i)).FirstOrDefault))
-	End Function
 
 	'Private Class EnumNamePair
 	'	Public ReadOnly Name As String

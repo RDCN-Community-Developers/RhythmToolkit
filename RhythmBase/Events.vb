@@ -58,7 +58,7 @@ Namespace Events
         SetPlayStyle
         TagAction
         CallCustomMethod
-        NewWindowDance
+        'NewWindowDance
         Move
         Tint
         PlayAnimation
@@ -71,7 +71,7 @@ Namespace Events
         FadeRoom
         SetRoomPerspective
         WindowResize
-        ShowSubdivisionsRows
+        'ShowSubdivisionsRows
         ReadNarration
         NarrateRowInfo
         UnknownObject
@@ -319,6 +319,19 @@ Namespace Events
     Public MustInherit Class BaseRowAnimation
         Inherits BaseRowAction
 
+    End Class
+    Public Class UnknownObject
+        Inherits BaseEvent
+        Public Overrides ReadOnly Property Type As EventType = EventType.UnknownObject
+        <JsonIgnore>
+        Public ReadOnly Property TypeFromJson As String
+            Get
+                Return Data("type").ToString
+            End Get
+        End Property
+        Public Overrides ReadOnly Property Tab As Tabs = Tabs.Unknown
+        Public Overrides ReadOnly Property Rooms As Rooms = New Rooms(True, True)
+        Public Data As Linq.JObject
     End Class
     Public Class PlaySong
         Inherits BaseBeatsPerMinute
@@ -1057,21 +1070,21 @@ Namespace Events
         Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 
     End Class
-    Public Class ShowSubdivisionsRows
-        Inherits BaseEvent
-        Public Enum SubdivisionRowMode
-            Mini
-            Normal
-        End Enum
-        Public Overrides ReadOnly Property type As EventType = EventType.ShowSubdivisionsRows
-        Public Property Subdivisions As Integer
-        Public Property Mode As SubdivisionRowMode
-        Public Property ArcAngle As Integer
-        Public Property SpinsPerSecond As Single
-        Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
-        Public Overrides ReadOnly Property Rooms As Rooms
+    'Public Class ShowSubdivisionsRows
+    '    Inherits BaseEvent
+    '    Public Enum SubdivisionRowMode
+    '        Mini
+    '        Normal
+    '    End Enum
+    '    Public Overrides ReadOnly Property type As EventType = EventType.ShowSubdivisionsRows
+    '    Public Property Subdivisions As Integer
+    '    Public Property Mode As SubdivisionRowMode
+    '    Public Property ArcAngle As Integer
+    '    Public Property SpinsPerSecond As Single
+    '    Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+    '    Public Overrides ReadOnly Property Rooms As Rooms
 
-    End Class
+    'End Class
 
     Public Class PlayExpression
         Inherits BaseRowAnimation
@@ -1556,6 +1569,7 @@ Namespace Events
         <JsonIgnore>
         Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
         Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+        <JsonIgnore>
         Public ReadOnly Property HasSpetialTag As SpecialTag()
             Get
                 Return [Enum].GetValues(GetType(SpecialTag)).Cast(Of SpecialTag).Where(Function(i) ActionTag.Contains($"[{i}]"))
@@ -1606,47 +1620,47 @@ Namespace Events
             Throw New NotImplementedException
         End Sub
     End Class
-    Public Class NewWindowDance
-        Inherits BaseEvent
-        Implements IEaseEvent
-        Enum Presets
-            Move
-            Sway
-            Wrap
-            Ellipse
-            ShakePer
-        End Enum
-        Enum SamePresetBehaviors
-            Reset
-            Keep
-        End Enum
-        Enum References
-            Center
-            Edge
-        End Enum
-        Enum EaseTypes
-            Repeat
-        End Enum
-        Public Property Preset As String
-        Public Property SamePresetBehavior As String
-        Public Property Position As NumOrExpPair
-        Public Property Reference As References
-        Public Property UseCircle As Boolean
-        Public Property Speed As Single
-        Public Property Amplitude As New Single
-        Public Property AmplitudeVector As NumOrExpPair
-        Public Property Angle As INumOrExp
-        Public Property Frequency As Single
-        Public Property Period As Single
-        Public Property EaseType As EaseTypes
-        Public Property SubEase As EaseType
-        Public Property EasingDuration As Single Implements IEaseEvent.Duration
-        Public Property Ease As EaseType Implements IEaseEvent.Ease
-        Public Overrides ReadOnly Property Type As EventType = EventType.NewWindowDance
-        <JsonIgnore>
-        Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
-        Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
-    End Class
+    'Public Class NewWindowDance
+    '    Inherits BaseEvent
+    '    Implements IEaseEvent
+    '    Enum Presets
+    '        Move
+    '        Sway
+    '        Wrap
+    '        Ellipse
+    '        ShakePer
+    '    End Enum
+    '    Enum SamePresetBehaviors
+    '        Reset
+    '        Keep
+    '    End Enum
+    '    Enum References
+    '        Center
+    '        Edge
+    '    End Enum
+    '    Enum EaseTypes
+    '        Repeat
+    '    End Enum
+    '    Public Property Preset As String
+    '    Public Property SamePresetBehavior As String
+    '    Public Property Position As NumOrExpPair
+    '    Public Property Reference As References
+    '    Public Property UseCircle As Boolean
+    '    Public Property Speed As Single
+    '    Public Property Amplitude As New Single
+    '    Public Property AmplitudeVector As NumOrExpPair
+    '    Public Property Angle As INumOrExp
+    '    Public Property Frequency As Single
+    '    Public Property Period As Single
+    '    Public Property EaseType As EaseTypes
+    '    Public Property SubEase As EaseType
+    '    Public Property EasingDuration As Single Implements IEaseEvent.Duration
+    '    Public Property Ease As EaseType Implements IEaseEvent.Ease
+    '    Public Overrides ReadOnly Property Type As EventType = EventType.NewWindowDance
+    '    <JsonIgnore>
+    '    Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
+    '    Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+    'End Class
     Class WindowResize
         Inherits BaseEvent
         Implements IEaseEvent

@@ -30,9 +30,9 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<[Base
 -|-|-|-
 | | [Decoration](../class/Decoration.md) | CreateDecoration([Rooms](../class/Rooms.md) room, ISprite parent, int depth = 0, bool visible = true) | 创建装饰。
 | | [Decoration](../class/Decoration.md) | CopyDecoration([Decoration](../class/Decoration.md) decoration) | 复制装饰。
-| | bool | RemoveDecoration([Decoration](../class/Decoration.md) decoration) | 移除装饰。
+| | bool | RemoveDecoration([Decoration](../class/Decoration.md) decoration) | 移除装饰。<br>此方法会同时移除关卡内隶属于此装饰的事件。
 | | [Row](../class/Row.md) | CreateRow([Rooms](../class/Rooms.md) room, string character, bool visible = true) | 创建轨道。
-| | bool | RemoveRow([Row](../class/Row.md) row) | 移除轨道。
+| | bool | RemoveRow([Row](../class/Row.md) row) | 移除轨道。<br>此方法会同时移除关卡内隶属于此轨道的事件。
 | | IEnumerable\<IGrouping\<String, [BaseEvent][E]\>\> | GetTaggedEvents(string name, bool direct) | 以标签名获取标签事件。
 | | RDLevel | ReadFromString(string json, IO.FileInfo fileLocation, [LevelInputSettings](../class/LevelInputSettings.md) settings) | 导入关卡。
 | | RDLevel | LoadFile(IO.FileInfo filepath) | 读取关卡文件。<br>支持rdlevel,rdzip格式。
@@ -45,7 +45,7 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<[Base
 | | void | AddRange(IEnumerable\<[BaseEvent][E]\> item) | 向事件集合添加一系列事件。
 | | bool | Remove([BaseEvent][E] item) | 移除事件。<br>实现ICollection\<[BaseEvent][E]\>.Remove()接口。
 | | void | RemoveRange(IEnumerable\<[BaseEvent][E]\> items) | 移除给定列表内的所有事件。
-| | int | RemoveAll(Predicate\<[BaseEvent][E]\> predicate) | 移除满足谓词的事件。
+| | int | RemoveAll(Predicate\<[BaseEvent][E]\> predicate) | 移除满足谓词的事件并返回移除的个数。
 | | void | Clear() | 清空Events集合。<br>实现ICollection\<[BaseEvent][E]\>.Clear()接口
 | | bool | Contains([BaseEvent][E] item) | 返回关卡是否包含此事件。<br>实现ICollection\<[BaseEvent][E]\>.Contains([BaseEvent][E] item)接口
 | | IEnumerable\<[BaseEvent][E]\> | Where(Func\<[BaseEvent][E], bool\> predicate) | 以谓词筛选指定事件。此迭代器以事件的时间顺序迭代。

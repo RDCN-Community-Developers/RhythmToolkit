@@ -90,68 +90,63 @@ Namespace Components
 	'	leveleventexplosion
 	'End Enum
 	Public NotInheritable Class Variables
-		Public i As New LimitedList(Of Integer)(10, 0)
-		Public f As New LimitedList(Of Single)(10, 0)
-		Public b As New LimitedList(Of Boolean)(10, False)
-
-		Public bpm As Single
+		Public ReadOnly i As New LimitedList(Of Integer)(10, 0)
+		Public ReadOnly f As New LimitedList(Of Single)(10, 0)
+		Public ReadOnly b As New LimitedList(Of Boolean)(10, False)
 		Public barNumber As Integer
+		Public buttonPressCount As Integer
+		Public missesToCrackHeart As Integer
 		Public numEarlyHits As Integer
 		Public numLateHits As Integer
-		Public numPerfectHits As Integer
 		Public numMisses As Integer
-
+		Public numPerfectHits As Integer
+		Public bpm As Single
+		Public deltaTime As Single
+		Public levelSpeed As Single
 		Public numMistakes As Single
 		Public numMistakesP1 As Single
 		Public numMistakesP2 As Single
-
-		Public p1Press As Single
-		Public p2Press As Single
-		Public p1Release As Single
-		Public p2Release As Single
-		Public p1IsPressed As Single
-		Public p2IsPressed As Single
-		Public anyPlayerPress As Single
-		Public upPress As Single
-		Public downPress As Single
-		Public leftPress As Single
-		Public rightPress As Single
+		Public shockwaveDistortionMultiplier As Single
+		Public shockwaveDurationMultiplier As Single
+		Public shockwaveSizeMultiplier As Single
 		Public statusSignWidth As Single
-
-		Public wobblyLines As Boolean
-
-		Public noHitStrip As Boolean
-		Public noBananaBeats As Boolean
-		Public noOneshotShadows As Boolean
-		Public hideHandsOnStart As Boolean
-		Public noHands As Boolean
-		Public noRowAnimsOnStart As Boolean
-		Public charsOnlyOnStart As Boolean
-		Public rowReflectionsJumping As Boolean
-		Public cpuIsP2On2P As Boolean
 		Public activeDialogues As Boolean
 		Public activeDialoguesImmediately As Boolean
 		Public alternativeMatrix As Boolean
+		Public anyPlayerPress As Boolean
+		Public autoplay As Boolean
+		Public booleansDefaultToTrue As Boolean
+		Public charsOnlyOnStart As Boolean
+		Public cpuIsP2On2P As Boolean
+		Public disableRowChangeWarningFlashes As Boolean
+		Public downPress As Boolean
+		Public hideHandsOnStart As Boolean
 		Public invisibleChars As Boolean
 		Public invisibleHeart As Boolean
+		Public leftPress As Boolean
+		Public noBananaBeats As Boolean
+		Public noHands As Boolean
 		Public noHitFlashBorder As Boolean
 		Public noHitStrips As Boolean
-		Public smoothShake As Boolean
+		Public noOneshotShadows As Boolean
+		Public noRowAnimsOnStart As Boolean
+		Public noSmartJudgment As Boolean
+		Public p1IsPressed As Boolean
+		Public p1Press As Boolean
+		Public p1Release As Boolean
+		Public p2IsPressed As Boolean
+		Public p2Press As Boolean
+		Public p2Release As Boolean
+		Public rightPress As Boolean
 		Public rotateShake As Boolean
-		Public disableRowChangeWarningFlashes As Boolean
+		Public rowReflectionsJumping As Boolean
 		Public skippableRankScreen As Boolean
 		Public skipRankText As Boolean
-
-		Public missesToCrackHeart As Integer
-
-		Public booleansDefaultToTrue As Boolean
-		Public adaptRowsToRoomHeight As Boolean
-
-		Public autoplay As Boolean
+		Public smoothShake As Boolean
+		Public upPress As Boolean
 		Public useFlashFontForFloatingText As Boolean
-		Public shockwaveSizeMultiplier As Single
-		Public shockwaveDistortionMultiplier As Single
-		Public shockwaveDurationMultiplier As Single
+		Public wobblyLines As Boolean
+
 
 		Public Function Rand(int As Integer) As Integer
 			Return Random.Shared.Next(1, int)
@@ -467,7 +462,6 @@ Namespace Components
 		End Function
 	End Structure
 	Public Class PanelColor
-		'	Public Property Parent As LimitedList(Of SKColor)
 		Private _panel As Integer
 		Private _color As SKColor?
 		Friend parent As LimitedList(Of SKColor)
@@ -476,7 +470,7 @@ Namespace Components
 				Return If(EnablePanel, parent(_panel), Nothing)
 			End Get
 			Set(value As SKColor?)
-				Panel = -1
+				_panel = -1
 				If EnableAlpha Then
 					_color = value
 				Else
@@ -586,6 +580,8 @@ Namespace Components
 			For Each item In rooms
 				Room(item) = True
 			Next
+			EnableTop = True
+			Multipy = True
 		End Sub
 		Public Sub SetRooms(rooms As Rooms)
 			For Each item In rooms.Rooms
@@ -1229,7 +1225,11 @@ Namespace LevelElements
 			Return temp
 		End Function
 		Public Function RemoveDecoration(decoration As Decoration) As Boolean
-			Return _Decorations.Remove(decoration)
+			If Decorations.Contains(decoration) Then
+				RemoveRange(decoration.Children)
+				Return _Decorations.Remove(decoration)
+			End If
+			Return False
 		End Function
 		Public Function CreateRow(room As Rooms, character As String, Optional visible As Boolean = True) As Row
 			Dim temp As New Row() With {.Character = character, .Rooms = room, .ParentCollection = Me.Rows, .HideAtStart = Not visible}
@@ -1237,7 +1237,11 @@ Namespace LevelElements
 			Return temp
 		End Function
 		Public Function RemoveRow(row As Row) As Boolean
-			Return _Rows.Remove(row)
+			If Rows.Contains(row) Then
+				RemoveRange(row.Children)
+				Return _Rows.Remove(row)
+			End If
+			Return False
 		End Function
 		Private Function ToRDLevelJson(settings As LevelOutputSettings) As String
 			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
@@ -1506,7 +1510,17 @@ Namespace LevelElements
 		End Sub
 		Public Function Remove(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Remove
 			If Contains(item) Then
-				Return EventsTypeOrder(item.Type)?(item.BeatOnly).Remove(item) And EventsBeatOrder(item.BeatOnly).Remove(item)
+				Dim result = EventsTypeOrder(item.Type)?(item.BeatOnly).Remove(item) And EventsBeatOrder(item.BeatOnly).Remove(item)
+				If Not EventsTypeOrder(item.Type)(item.BeatOnly).Any Then
+					EventsTypeOrder(item.Type).Remove(item.BeatOnly)
+					If Not EventsTypeOrder(item.Type).Any Then
+						EventsTypeOrder.Remove(item.Type)
+					End If
+				End If
+				If Not EventsBeatOrder(item.BeatOnly).Any Then
+					EventsBeatOrder.Remove(item.BeatOnly)
+				End If
+				Return result
 			End If
 			Return False
 		End Function
@@ -1600,6 +1614,15 @@ Namespace LevelElements
 		'''oldBassDrop
 		'''startImmediately
 		'''classicHitParticles
+		'''adaptRowsToRoomHeight
+		'''noSmartJudgment
+		'''smoothShake
+		'''rotateShake
+		'''wobblyLines
+		'''bombBeats
+		'''noDoublePulse
+		'''invisibleCharacters
+		'''gentleBassDrop
 	End Class
 End Namespace
 Namespace Exceptions

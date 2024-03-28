@@ -9,4 +9,3 @@
 | | int | RgbaToArgb(int Rgba) | 返回十六进制颜色值的 Alpha 值前置副本。<br>此方法为扩展方法。
 | | int | ArgbToRgba(int Argb) | 返回十六进制颜色值的 Alpha 值后置副本。<br>此方法为扩展方法。
 | | float | FixFraction(float number, uint splitBase) | 返回浮点数的浮点吸附矫正副本。<br>此方法为扩展方法。
-| | Type | ConvertToType([EventType](../enum/EventType.md) type) | 返回事件类型枚举常量对应的类型。<br>此方法为扩展方法。

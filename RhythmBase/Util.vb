@@ -160,7 +160,19 @@ Namespace Utils
                                         Not i.IsAbstract).Select(Function(i) ConvertToEnum(i)).ToArray
         End Function
         Public Function ConvertToType(type As String) As Type
-            Return [Enum].Parse(Of EventType)(type).ConvertToType()
+            Dim result As EventType
+            If [Enum].TryParse(type, result) Then
+                Return result.ConvertToType()
+            End If
+            Return EventType.UnknownObject.ConvertToType
+        End Function
+        <Extension>
+        Public Function ConvertToType(type As EventType) As Type
+            Dim result = System.Type.GetType($"{GetType(BaseEvent).Namespace}.{type}")
+            If result Is Nothing Then
+                Throw New Exceptions.RhythmBaseException($"Illegal Type: {type}.")
+            End If
+            Return result
         End Function
     End Module
 End Namespace
@@ -200,14 +212,6 @@ Namespace Extensions
         <Extension>
         Public Function FixFraction(number As Single, splitBase As UInteger) As Single
             Return Math.Round(number * splitBase) / splitBase
-        End Function
-        <Extension>
-        Public Function ConvertToType(type As EventType) As Type
-            Dim result = System.Type.GetType($"{GetType(BaseEvent).Namespace}.{type}")
-            If result Is Nothing Then
-                Throw New Exceptions.RhythmBaseException($"Illegal Type: {type}.")
-            End If
-            Return result
         End Function
     End Module
 End Namespace
