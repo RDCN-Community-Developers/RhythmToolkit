@@ -82,6 +82,7 @@
     - [BaseDecorationAction](../class/BaseDecorationAction.md)
     - [BaseRowAction](../class/BaseRowAction.md)
     - [BaseRowAnimation](../class/BaseRowAnimation.md)
+    - [UnknownEvent](../class/UnknownEvent.md)
     - 此处省略其他事件
 - [RhythmBase][nmsp].[Settings](../namespace/Settings.md)
     - [LevelInputSettings](../class/LevelInputSettings.md)

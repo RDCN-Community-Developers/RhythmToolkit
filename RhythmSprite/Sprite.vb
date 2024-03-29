@@ -41,6 +41,8 @@ Namespace Converters
             }
             With Setting.Converters
                 .Add(New Vector2Converter)
+                .Add(New SKSizeConverter)
+                .Add(New SKPointConverter)
                 .Add(New ClipListConverter(tempImageList))
             End With
             Dim JObj = JObject.Load(reader).ToObject(Of JObject)
@@ -48,6 +50,7 @@ Namespace Converters
             index = JObj("rowPreviewFrame")?.ToObject(Of UInteger?)
             JObj.Remove("rowPreviewFrame")
             Dim result = JObj.ToObject(Of Sprite)(Setting)
+            result._size = JObj("size").ToObject(Of SKSize)(Setting)
             result.RowPreviewFrame = If(index, result.Images.ToList(index), Nothing)
             Return result
         End Function
@@ -142,6 +145,28 @@ Namespace Converters
         Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Vector2, hasExistingValue As Boolean, serializer As JsonSerializer) As Vector2
             Dim J = JArray.Load(reader)
             Return New Vector2(J(0), J(1))
+        End Function
+    End Class
+    Class SKPointConverter
+        Inherits JsonConverter(Of SKPoint)
+        Public Overrides Sub WriteJson(writer As JsonWriter, value As SKPoint, serializer As JsonSerializer)
+            writer.WriteRawValue($"[{value.X},{value.Y}]")
+        End Sub
+
+        Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As SKPoint, hasExistingValue As Boolean, serializer As JsonSerializer) As SKPoint
+            Dim J = JArray.Load(reader)
+            Return New SKPoint(J(0), J(1))
+        End Function
+    End Class
+    Class SKSizeConverter
+        Inherits JsonConverter(Of SKSize)
+        Public Overrides Sub WriteJson(writer As JsonWriter, value As SKSize, serializer As JsonSerializer)
+            writer.WriteRawValue($"[{value.Width},{value.Height}]")
+        End Sub
+
+        Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As SKSize, hasExistingValue As Boolean, serializer As JsonSerializer) As SKSize
+            Dim J = JArray.Load(reader)
+            Return New SKSize(J(0), J(1))
         End Function
     End Class
 End Namespace
@@ -299,9 +324,15 @@ Namespace Assets
         Public Property Images_Glow As HashSet(Of SKBitmap)
         <JsonIgnore>
         Public Property Images_Outline As New HashSet(Of SKBitmap)
-        Public Property Size As Vector2 Implements ISprite.Size
+        <JsonProperty("size")>
+        Friend Property _size As SKSize
+        Public ReadOnly Property Size As SKSize Implements ISprite.Size
+            Get
+                Return _size
+            End Get
+        End Property
         Public Property RowPreviewFrame As SKBitmap
-        Public Property RowPreviewOffset As Vector2
+        Public Property RowPreviewOffset As SKPoint
         Public Property Clips As New HashSet(Of Clip)
         Private Shared ReadOnly stringArray As String() = {"neutral", "happy", "barely", "missed"}
         Public Class Clip
@@ -309,9 +340,9 @@ Namespace Assets
             Public Property [Loop] As LoopOption
             Public Property Fps As Integer
             Public Property LoopStart As Integer
-            Public Property PortraitOffset As Vector2
+            Public Property PortraitOffset As SKPoint
             Public Property PortraitScale As Integer
-            Public Property PortraitSize As Vector2
+            Public Property PortraitSize As SKSize
             Public Property Frames As New List(Of SKBitmap)
             Public Overrides Function ToString() As String
                 Return Name
@@ -356,7 +387,7 @@ Namespace Assets
             End With
             Dim ReadedSize As JToken = JsonConvert.DeserializeObject(Of JObject)(IO.File.ReadAllText(jsonFile.FullName))("size")
             Using img As SKBitmap = LoadImage(New IO.FileInfo(WithoutExtension + ".png"))
-                Dim size As New Vector2(ReadedSize(0), ReadedSize(1))
+                Dim size As New SKSize(ReadedSize(0), ReadedSize(1))
                 TempImages = SplitImage(img, size)
             End Using
             Dim Temp = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(jsonFile.FullName), Setting)
@@ -364,15 +395,15 @@ Namespace Assets
             Temp.Images = TempImages
             Return Temp
         End Function
-        Private Shared Function SplitImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
-            Dim Transparent As New SKBitmap(CInt(size.X), CInt(size.Y))
+        Private Shared Function SplitImage(img As SKBitmap, size As SKSize, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
+            Dim Transparent As New SKBitmap(CInt(size.Width), CInt(size.Height))
             Dim L As New HashSet(Of SKBitmap)
-            Dim countSize As New Vector2(img.Width \ size.X, img.Height \ size.Y)
+            Dim countSize As New SKSize(img.Width \ size.Width, img.Height \ size.Height)
             Select Case inputMode
                 Case ImageInputOption.HORIZONTAL
-                    For i = 0 To countSize.X * countSize.Y - 1
-                        Dim Area = New SKRect((i Mod countSize.X) * size.X, (i \ countSize.X) * size.Y, size.X, size.Y)
-                        Dim tmpimg As New SKBitmap(size.X, size.Y)
+                    For i = 0 To countSize.Width * countSize.Height - 1
+                        Dim Area = New SKRect((i Mod countSize.Width) * size.Width, (i \ countSize.Width) * size.Height, size.Width, size.Height)
+                        Dim tmpimg As New SKBitmap(size.Width, size.Height)
                         Using g As New SKCanvas(tmpimg)
                             g.DrawBitmap(img, Area)
                         End Using
@@ -383,9 +414,9 @@ Namespace Assets
                         End If
                     Next
                 Case ImageInputOption.VERTICAL
-                    For i = 0 To countSize.X * countSize.Y - 1
-                        Dim Area = New SKRect((i \ countSize.Y) * size.X, (i Mod countSize.Y) * size.Y, size.X, size.Y)
-                        Dim tmpimg As New SKBitmap(size.X, size.Y)
+                    For i = 0 To countSize.Width * countSize.Height - 1
+                        Dim Area = New SKRect((i \ countSize.Height) * size.Width, (i Mod countSize.Height) * size.Height, size.Width, size.Height)
+                        Dim tmpimg As New SKBitmap(size.Width, size.Height)
                         Using g As New SKCanvas(tmpimg)
                             g.DrawBitmap(img, Area)
                         End Using
@@ -408,9 +439,9 @@ Namespace Assets
             Next
             Return True
         End Function
-        Public Shared Function FromImage(img As SKBitmap, size As Vector2, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As Sprite
+        Public Shared Function FromImage(img As SKBitmap, size As SKSize, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As Sprite
             Dim Output As New Sprite With {
-            .Size = size,
+            ._size = size,
             .Images = SplitImage(img, size, inputMode)
         }
             Return Output
@@ -460,45 +491,45 @@ Namespace Assets
             End If
 
             If settings.WithImage Then
-                Dim MaxCountSize As New Vector2(Math.Min(If(settings.LimitedCount, New Vector2(16384, 0)).X, settings.LimitedSize.X \ Size.X),
-                                            Math.Min(If(settings.LimitedCount, New Vector2(0, 16384)).Y, settings.LimitedSize.Y \ Size.Y))
+                Dim MaxCountSize As New Vector2(Math.Min(If(settings.LimitedCount, New Vector2(16384, 0)).X, settings.LimitedSize.X \ Size.Width),
+                                            Math.Min(If(settings.LimitedCount, New Vector2(0, 16384)).Y, settings.LimitedSize.Y \ Size.Height))
                 Select Case settings.OutputMode
                     Case SpriteOutputSettings.OutputModes.HORIZONTAL
-                        Dim png As New SKBitmap(CInt(Math.Min(Images.Count, MaxCountSize.X) * Size.X),
-                                          CInt(Math.Ceiling(Images.Count / MaxCountSize.X) * Size.Y))
+                        Dim png As New SKBitmap(CInt(Math.Min(Images.Count, MaxCountSize.X) * Size.Width),
+                                          CInt(Math.Ceiling(Images.Count / MaxCountSize.X) * Size.Height))
                         Dim g As New SKCanvas(png)
                         For i = 0 To Images.Count - 1
                             Dim index = Images
-                            g.DrawBitmap(Images(i), (i Mod MaxCountSize.X) * Size.X, (i \ MaxCountSize.X) * Size.Y)
+                            g.DrawBitmap(Images(i), (i Mod MaxCountSize.X) * Size.Width, (i \ MaxCountSize.X) * Size.Height)
                         Next
                         png.Save(New IO.FileInfo(WithoutExtension + ".png"))
                     Case SpriteOutputSettings.OutputModes.VERTICAL
-                        Dim png As New SKBitmap(CInt(Math.Ceiling(Images.Count / MaxCountSize.Y) * Size.X),
-                                          CInt(Math.Min(Images.Count, MaxCountSize.Y) * Size.Y))
+                        Dim png As New SKBitmap(CInt(Math.Ceiling(Images.Count / MaxCountSize.Y) * Size.Width),
+                                          CInt(Math.Min(Images.Count, MaxCountSize.Y) * Size.Height))
                         Dim g As New SKCanvas(png)
                         For i = 0 To Images.Count - 1
                             Dim index = Images
-                            g.DrawBitmap(Images(i), (i \ MaxCountSize.Y) * Size.X, (i Mod MaxCountSize.Y) * Size.Y)
+                            g.DrawBitmap(Images(i), (i \ MaxCountSize.Y) * Size.Width, (i Mod MaxCountSize.Y) * Size.Height)
                         Next
                         png.Save(New IO.FileInfo(WithoutExtension + ".png"))
                     Case SpriteOutputSettings.OutputModes.PACKED
                         Dim BestCountSize As New Vector2
                         Do
-                            If BestCountSize.X * Size.X < BestCountSize.Y * Size.Y Then
+                            If BestCountSize.X * Size.Width < BestCountSize.Y * Size.Height Then
                                 BestCountSize.X += 1
-                            ElseIf BestCountSize.X * Size.X > BestCountSize.Y * Size.Y Then
+                            ElseIf BestCountSize.X * Size.Width > BestCountSize.Y * Size.Height Then
                                 BestCountSize.Y += 1
                             Else
                                 BestCountSize.X += 1
                                 BestCountSize.Y += 1
                             End If
-                        Loop Until BestCountSize.X * BestCountSize.Y >= Images.Count - 1 Or BestCountSize.X = MaxCountSize.X Or BestCountSize.Y = MaxCountSize.Y
-                        Dim png As New SKBitmap(CInt(Math.Min(Images.Count, BestCountSize.X) * Size.X),
-                                          CInt(Math.Ceiling(Images.Count / BestCountSize.X) * Size.Y))
+                        Loop Until BestCountsize.x * BestCountSize.Y >= Images.Count - 1 Or BestCountsize.x = MaxCountsize.x Or BestCountSize.Y = MaxCountSize.Y
+                        Dim png As New SKBitmap(CInt(Math.Min(Images.Count, BestCountSize.X) * Size.Width),
+                                          CInt(Math.Ceiling(Images.Count / BestCountSize.X) * Size.Height))
                         Dim g As New SKCanvas(png)
                         For i = 0 To Images.Count - 1
                             Dim index = Images
-                            g.DrawBitmap(Images(i), (i Mod BestCountSize.X) * Size.X, (i \ BestCountSize.X) * Size.Y)
+                            g.DrawBitmap(Images(i), (i Mod BestCountSize.X) * Size.Width, (i \ BestCountSize.X) * Size.Height)
                         Next
                         png.Save(New IO.FileInfo(WithoutExtension + ".png"))
                 End Select
@@ -510,16 +541,6 @@ Namespace Assets
             End With
             IO.File.WriteAllText(WithoutExtension + ".json", JsonConvert.SerializeObject(Me, JSetting))
 
-            'Dim S = file.Directory.CreateSubdirectory("Temp")
-            'Dim index = 0
-            'For Each image In Images
-            '	Dim Glowed As skbitmap = OutGlow(image)
-            '	Glowed.Save(S.FullName + "\TempDocs" + index.ToString + ".png")
-            '	index += 1
-            '	If index >= 20 Then
-            '		Exit For
-            '	End If
-            'Next
         End Sub
         Public Overrides Function ToString() As String
             Return Name
@@ -545,13 +566,10 @@ Namespace Assets
                 Return New List(Of String)
             End Get
         End Property
-        Public Property Size As Vector2 Implements ISprite.Size
+        Public ReadOnly Property Size As SKSize Implements ISprite.Size
             Get
-                Return New Vector2(Image.Width, Image.Height)
+                Return New SKSize(Image.Width, Image.Height)
             End Get
-            Set(value As Vector2)
-                Throw New NotImplementedException()
-            End Set
         End Property
         <JsonIgnore>
         Public ReadOnly Property Preview As SKBitmap Implements ISprite.Preview

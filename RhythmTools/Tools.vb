@@ -416,7 +416,7 @@ Namespace Extensions
 			'Return result
 		End Function
 	End Module
-	Public Module CustomMethods
+	Public Module EventsExtension
 		Public Enum wavetype
 			BoomAndRush
 			Spring

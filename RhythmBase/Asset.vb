@@ -6,7 +6,7 @@ Imports SkiaSharp
 Namespace Assets
     Public Interface ISprite
         ReadOnly Property FileInfo As FileInfo
-        Property Size As Vector2
+        ReadOnly Property Size As SKSize
         ReadOnly Property Name As String
         ReadOnly Property Expressions As IEnumerable(Of String)
         ReadOnly Property Preview As SKBitmap
@@ -28,13 +28,10 @@ Namespace Assets
                 Return _File
             End Get
         End Property
-        Public Property Size As Vector2 Implements ISprite.Size
+        Public ReadOnly Property Size As SKSize Implements ISprite.Size
             Get
-                Return New Vector2
+                Return New SKSize
             End Get
-            Set(value As Vector2)
-                Throw New NotImplementedException()
-            End Set
         End Property
         <JsonIgnore>
         Public ReadOnly Property Preview As New SKBitmap Implements ISprite.Preview
