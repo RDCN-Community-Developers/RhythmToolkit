@@ -17,6 +17,7 @@
 - [LimitedList\<T\>](../class/LimitedList_T_.md)
 - [Num](../class/Num.md)
 - [NumOrExpPair](../class/NumOrExpPair.md)
+- [RDPoint](../class/RDPoint.md)
 - [PanelColor](../class/PanelColor.md)
 - [Rooms](../class/Rooms.md)
 - [SoundSubType](../class/SoundSubType.md)

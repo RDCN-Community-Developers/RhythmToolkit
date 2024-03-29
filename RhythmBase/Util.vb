@@ -3,6 +3,7 @@ Imports System.Runtime.CompilerServices
 Imports RhythmBase.Events
 Imports RhythmBase.Extensions
 Imports RhythmBase.LevelElements
+Imports RhythmBase.Components
 ''' <summary>
 ''' 工具类
 ''' </summary>
@@ -212,6 +213,42 @@ Namespace Extensions
         <Extension>
         Public Function FixFraction(number As Single, splitBase As UInteger) As Single
             Return Math.Round(number * splitBase) / splitBase
+        End Function
+    End Module
+    Public Module EventsExtension
+        <Extension>
+        Public Sub MovePositionMaintainVisual(e As Move, target As RDPoint)
+            If e.Position Is Nothing OrElse e.Pivot Is Nothing OrElse e.Angle Is Nothing Then
+                Exit Sub
+            End If
+            e.Position = target
+            e.Pivot = (e.VisualPosition() - target).Rotate(-e.Angle.TryGetValue())
+        End Sub
+        <Extension>
+        Public Sub MovePositionMaintainVisual(e As MoveRoom, target As RDPoint)
+            If e.RoomPosition Is Nothing OrElse e.Pivot Is Nothing OrElse e.Angle Is Nothing Then
+                Exit Sub
+            End If
+            e.RoomPosition = target
+            e.Pivot = (e.VisualPosition() - target).Rotate(-e.Angle.TryGetValue())
+        End Sub
+        <Extension>
+        Public Function VisualPosition(e As Move) As RDPoint
+            If e.Position Is Nothing OrElse e.Pivot Is Nothing OrElse e.Angle Is Nothing OrElse e.Scale Is Nothing Then
+                Return New RDPoint
+            End If
+            Dim previousPosition As RDPoint = e.Position
+            Dim previousPivot As RDPoint = (CType(e.Pivot, RDPoint) * e.Scale * e.Parent.Size) / (100, 100)
+            Return previousPosition + previousPivot.Rotate(e.Angle.TryGetValue())
+        End Function
+        <Extension>
+        Public Function VisualPosition(e As MoveRoom) As RDPoint
+            If e.RoomPosition Is Nothing OrElse e.Pivot Is Nothing OrElse e.Angle Is Nothing Then
+                Return New RDPoint
+            End If
+            Dim previousPosition As RDPoint = e.RoomPosition
+            Dim previousPivot As RDPoint = CType(e.Pivot, RDPoint) * e.Scale
+            Return previousPosition + previousPivot.Rotate(e.Angle.TryGetValue())
         End Function
     End Module
 End Namespace

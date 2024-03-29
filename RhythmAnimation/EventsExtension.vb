@@ -21,5 +21,13 @@ Namespace Extensions
 			Dim compiledFunction = Expressions.GetExpressionTree(e.value, paramererExpression)
 			Return compiledFunction(variables)
 		End Function
+		<Extension>
+		Public Function GetValue(e As INumOrExp, variables As Variables) As Object
+			If e.GetType = GetType(Num) Then
+				Return CType(e, Num).value
+			Else
+				Return CType(e, Exp).GetExpValue(variables)
+			End If
+		End Function
 	End Module
 End Namespace

@@ -523,6 +523,66 @@ Namespace Components
 		Public Shared Narrowing Operator CType(e As NumOrExpPair) As RDPoint
 			Return New RDPoint(e.X.TryGetValue, e.Y.TryGetValue)
 		End Operator
+		Public Shared Operator +(e1 As RDPoint) As RDPoint
+			Return e1
+		End Operator
+		Public Shared Operator -(e1 As RDPoint) As RDPoint
+			Return New RDPoint(-e1.X, -e1.Y)
+		End Operator
+		Public Shared Operator +(e1 As RDPoint, e2 As RDPoint) As RDPoint
+			Return New RDPoint(e1.X + e2.X, e1.Y + e2.Y)
+		End Operator
+		Public Shared Operator -(e1 As RDPoint, e2 As RDPoint) As RDPoint
+			Return New RDPoint(e1.X - e2.X, e1.Y - e2.Y)
+		End Operator
+		Public Shared Operator *(e1 As RDPoint, e2 As Single) As RDPoint
+			Return New RDPoint(e1.X * e2, e1.Y * e2)
+		End Operator
+		Public Shared Operator \(e1 As RDPoint, e2 As Single) As RDPoint
+			Return New RDPoint(e1.X \ e2, e1.Y \ e2)
+		End Operator
+		Public Shared Operator /(e1 As RDPoint, e2 As Single) As RDPoint
+			Return New RDPoint(e1.X / e2, e1.Y / e2)
+		End Operator
+		Public Shared Operator Mod(e1 As RDPoint, e2 As Single) As RDPoint
+			Return New RDPoint(e1.X Mod e2, e1.Y Mod e2)
+		End Operator
+		Public Shared Operator *(e1 As RDPoint, e2 As RDPoint) As RDPoint
+			Return New RDPoint(e1.X * e2.X, e1.Y * e2.Y)
+		End Operator
+		Public Shared Operator \(e1 As RDPoint, e2 As RDPoint) As RDPoint
+			Return New RDPoint(e1.X \ e2.X, e1.Y \ e2.Y)
+		End Operator
+		Public Shared Operator /(e1 As RDPoint, e2 As RDPoint) As RDPoint
+			Return New RDPoint(e1.X / e2.X, e1.Y / e2.Y)
+		End Operator
+		Public Shared Operator Mod(e1 As RDPoint, e2 As RDPoint) As RDPoint
+			Return New RDPoint(e1.X Mod e2.X, e1.Y Mod e2.Y)
+		End Operator
+		Public Shared Operator =(e1 As RDPoint, e2 As RDPoint) As Boolean
+			Return e1.X = e2.X AndAlso e1.Y = e2.Y
+		End Operator
+		Public Shared Operator <>(e1 As RDPoint, e2 As RDPoint) As Boolean
+			Return e1.X <> e2.X OrElse e1.Y <> e2.Y
+		End Operator
+		Public Function MultipyByMatrix(matrix(,) As Single) As RDPoint
+			If matrix.Rank = 2 AndAlso matrix.Length = 4 Then
+				Return New RDPoint(
+					X * matrix(0, 0) + Y * matrix(1, 0),
+					X * matrix(0, 1) + Y * matrix(1, 1))
+			End If
+			Throw New Exception("Matrix not match.")
+		End Function
+		Public Function Rotate(angle As Single) As RDPoint
+			Return MultipyByMatrix(
+				{
+					{Math.Cos(angle), Math.Sin(angle)},
+					{-Math.Sin(angle), Math.Cos(angle)}
+				})
+		End Function
+		Public Function Rotate(pivot As RDPoint, angle As Single) As RDPoint
+			Return (Me - pivot).Rotate(angle) + pivot
+		End Function
 	End Structure
 	Public Structure Hit
 		Public ReadOnly BeatOnly As Single
