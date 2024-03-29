@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /RDLevel.zip
 /FastTest/Program.cs
+/FastTest/CodeFile1.cs
