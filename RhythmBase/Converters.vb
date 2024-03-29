@@ -302,7 +302,7 @@ Namespace Converters
 
             Dim SubClassType As Type = Type.GetType($"{BaseActionType.Namespace}.{jobj("type")}")
             _canread = False
-            existingValue = If(SubClassType IsNot Nothing, jobj.ToObject(SubClassType, serializer), jobj.ToObject(Of UnknownObject)(serializer))
+            existingValue = If(SubClassType IsNot Nothing, jobj.ToObject(SubClassType, serializer), jobj.ToObject(Of UnknownEvent)(serializer))
             _canread = True
             existingValue.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(jobj("bar")), CDbl(If(jobj("beat"), 1)), level.Where(Of SetCrotchetsPerBar))
 
@@ -319,19 +319,19 @@ Namespace Converters
         End Function
     End Class
     Friend Class UnknownObjectConverter
-        Inherits BaseEventConverter(Of UnknownObject)
+        Inherits BaseEventConverter(Of UnknownEvent)
         Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
             MyBase.New(level, inputSettings)
         End Sub
-        Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As UnknownObject, hasExistingValue As Boolean, serializer As JsonSerializer) As UnknownObject
+        Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As UnknownEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As UnknownEvent
             Dim result = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
             result.Data = jobj
             Return result
         End Function
-        Public Overrides Function SetSerializedObject(value As UnknownObject, serializer As JsonSerializer) As JObject
+        Public Overrides Function SetSerializedObject(value As UnknownEvent, serializer As JsonSerializer) As JObject
             Dim jobj = MyBase.SetSerializedObject(value, serializer)
-            jobj.Remove(NameOf(UnknownObject.Data).ToLower)
-            jobj.Remove(NameOf(UnknownObject.Type).ToLower)
+            jobj.Remove(NameOf(UnknownEvent.Data).ToLower)
+            jobj.Remove(NameOf(UnknownEvent.Type).ToLower)
             Dim data = value.Data.DeepClone
             For Each item In jobj
                 data(item.Key) = item.Value

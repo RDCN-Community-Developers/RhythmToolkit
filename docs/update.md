@@ -1,9 +1,14 @@
 ## [返回](../RhythmToolkit.md)
 # 更新日志
 
+### 2024/03/29
+
+- 新增 []
+
 ### 2024/03/28
 
 - [Variables](/class/Variables.md) 更新了变量的说明。
+- `ConvertToType(EventType type)` 扩展方法从 [RhythmBase](/namespaces.md).[Extensions](/namespace/Extensions.md).[Extension](/module/RhythmBase.Extension.md) 迁移至 [RhythmBase](/namespaces.md).[Utils](/namespace/Utils.md).[TypeConvert](/module/TypeConvert.md) 。
 
 ### 2024/03/27
 

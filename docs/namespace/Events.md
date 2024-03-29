@@ -18,5 +18,6 @@
 - [BaseDecorationAction](../class/BaseDecorationAction.md)
 - [BaseRowAction](../class/BaseRowAction.md)
 - [BaseRowAnimation](../class/BaseRowAnimation.md)
+- [UnknownEvent](../class/UnknownEvent.md)
 
 其他游戏内事件已省略。

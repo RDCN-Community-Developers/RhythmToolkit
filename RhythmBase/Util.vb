@@ -164,7 +164,7 @@ Namespace Utils
             If [Enum].TryParse(type, result) Then
                 Return result.ConvertToType()
             End If
-            Return EventType.UnknownObject.ConvertToType
+            Return EventType.UnknownEvent.ConvertToType
         End Function
         <Extension>
         Public Function ConvertToType(type As EventType) As Type
