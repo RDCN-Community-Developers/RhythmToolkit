@@ -9,7 +9,7 @@
 | | [LoopOption](../enum/Assets.LoopOption.md) | Loop | 动画循环类型。
 | | int | Fps | 动画的帧率。
 | | int | LoopStart | 动画的循环起始帧。
-| | SkiaSharp.SKPoint | PortraitOffset | 动画在对话框中的偏移。
+| | [RDPoint](../class/RDPoint.md) | PortraitOffset | 动画在对话框中的偏移。
 | | int | PortraitScale | 动画在对话框中的缩放倍率。
-| | SkiaSharp.SKSize | PortraitSize | 动画在对话框中的裁剪尺寸。
+| | [RDPoint](../class/RDPoint.md) | PortraitSize | 动画在对话框中的裁剪尺寸。
 | | List\<SKBitmap\> | Frames | 动画所使用的帧。  

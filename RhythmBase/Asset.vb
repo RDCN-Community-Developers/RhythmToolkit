@@ -2,11 +2,12 @@
 Imports System.Numerics
 Imports Newtonsoft.Json
 Imports SkiaSharp
+Imports RhythmBase.Components
 
 Namespace Assets
     Public Interface ISprite
         ReadOnly Property FileInfo As FileInfo
-        ReadOnly Property Size As SKSize
+        ReadOnly Property Size As RDPoint
         ReadOnly Property Name As String
         ReadOnly Property Expressions As IEnumerable(Of String)
         ReadOnly Property Preview As SKBitmap
@@ -28,9 +29,9 @@ Namespace Assets
                 Return _File
             End Get
         End Property
-        Public ReadOnly Property Size As SKSize Implements ISprite.Size
+        Public ReadOnly Property Size As RDPoint Implements ISprite.Size
             Get
-                Return New SKSize
+                Return New RDPoint
             End Get
         End Property
         <JsonIgnore>

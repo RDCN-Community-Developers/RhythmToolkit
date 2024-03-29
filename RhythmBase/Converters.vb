@@ -437,6 +437,17 @@ Namespace Converters
             Return (J(0), J(1))
         End Function
     End Class
+    Friend Class RDPointConverter
+        Inherits JsonConverter(Of RDPoint)
+        Public Overrides Sub WriteJson(writer As JsonWriter, value As RDPoint, serializer As JsonSerializer)
+            writer.WriteRawValue($"[{value.Width},{value.Height}]")
+        End Sub
+
+        Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDPoint, hasExistingValue As Boolean, serializer As JsonSerializer) As RDPoint
+            Dim J = JArray.Load(reader)
+            Return New RDPoint(J(0), J(1))
+        End Function
+    End Class
     Friend Class PanelColorConverter
         Inherits JsonConverter(Of PanelColor)
         Private parent As LimitedList(Of SKColor)

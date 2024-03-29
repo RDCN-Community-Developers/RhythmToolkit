@@ -146,8 +146,6 @@ Namespace Components
 		Public upPress As Boolean
 		Public useFlashFontForFloatingText As Boolean
 		Public wobblyLines As Boolean
-
-
 		Public Function Rand(int As Integer) As Integer
 			Return Random.Shared.Next(1, int)
 		End Function
@@ -329,7 +327,6 @@ Namespace Components
 	End Class
 	Public Interface INumOrExp
 		Function Serialize() As String
-		Function GetValue(variables As Variables) As Single
 		Function TryGetValue() As Single?
 	End Interface
 	Public Structure Num
@@ -345,9 +342,6 @@ Namespace Components
 			Return value
 		End Function
 		Friend Function Serialize() As String Implements INumOrExp.Serialize
-			Return value
-		End Function
-		Public Function GetValue(variables As Variables) As Single Implements INumOrExp.GetValue
 			Return value
 		End Function
 		Public Function TryGetValue() As Single? Implements INumOrExp.TryGetValue
@@ -371,9 +365,6 @@ Namespace Components
 		End Function
 		Friend Function Serialize() As String Implements INumOrExp.Serialize
 			Return $"""{{{value}}}"""
-		End Function
-		Public Function GetValue(variables As Variables) As Single Implements INumOrExp.GetValue
-			Throw New NotImplementedException
 		End Function
 		Public Function TryGetValue() As Single? Implements INumOrExp.TryGetValue
 			Return Nothing
@@ -425,9 +416,6 @@ Namespace Components
 				Throw New RhythmBaseException($"Illegal expression: {y}")
 			End If
 		End Sub
-		Public Function GetValue(variables As Variables) As (X As Single, Y As Single)
-			Return (X.GetValue(variables), Y.GetValue(variables))
-		End Function
 		Public Shared Widening Operator CType(value As (x As INumOrExp, y As INumOrExp)) As NumOrExpPair
 			Return New NumOrExpPair(value.x, value.y)
 		End Operator
@@ -437,6 +425,104 @@ Namespace Components
 		Public Overrides Function ToString() As String
 			Return $"{{{X},{Y}}}"
 		End Function
+		Public Function TryGetValue() As RDPoint
+			Return New RDPoint(X.TryGetValue, Y.TryGetValue)
+		End Function
+	End Structure
+	Public Structure RDPoint
+		Public X As Single
+		Public Y As Single
+		Public Property Width As Single
+			Get
+				Return X
+			End Get
+			Set(value As Single)
+				X = value
+			End Set
+		End Property
+		Public Property Height As Single
+			Get
+				Return Y
+			End Get
+			Set(value As Single)
+				Y = value
+			End Set
+		End Property
+		Public Sub New(x As Single, y As Single)
+			Me.X = x : Me.Y = y
+		End Sub
+		Public Shared Narrowing Operator CType(e As RDPoint) As SKPointI
+			Return New SKPointI(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As RDPoint) As SKPoint
+			Return New SKPoint(e.X, e.Y)
+		End Operator
+		Public Shared Narrowing Operator CType(e As RDPoint) As SKSizeI
+			Return New SKSizeI(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As RDPoint) As SKSize
+			Return New SKSize(e.X, e.Y)
+		End Operator
+		Public Shared Narrowing Operator CType(e As RDPoint) As System.Drawing.Point
+			Return New Drawing.Point(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As RDPoint) As System.Drawing.PointF
+			Return New Drawing.PointF(e.X, e.Y)
+		End Operator
+		Public Shared Narrowing Operator CType(e As RDPoint) As System.Drawing.Size
+			Return New Drawing.Size(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As RDPoint) As System.Drawing.SizeF
+			Return New Drawing.SizeF(e.X, e.Y)
+		End Operator
+		Public Shared Narrowing Operator CType(e As RDPoint) As (X As Integer, Y As Integer)
+			Return (e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As RDPoint) As (X As Single, Y As Single)
+			Return (e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As RDPoint) As (X As Double, Y As Double)
+			Return (e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As RDPoint) As NumOrExpPair
+			Return New NumOrExpPair(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As SKPointI) As RDPoint
+			Return New RDPoint(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As SKPoint) As RDPoint
+			Return New RDPoint(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As SKSizeI) As RDPoint
+			Return New RDPoint(e.Width, e.Height)
+		End Operator
+		Public Shared Widening Operator CType(e As SKSize) As RDPoint
+			Return New RDPoint(e.Width, e.Height)
+		End Operator
+		Public Shared Widening Operator CType(e As Drawing.Point) As RDPoint
+			Return New RDPoint(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As Drawing.PointF) As RDPoint
+			Return New RDPoint(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As Drawing.Size) As RDPoint
+			Return New RDPoint(e.Width, e.Height)
+		End Operator
+		Public Shared Widening Operator CType(e As Drawing.SizeF) As RDPoint
+			Return New RDPoint(e.Width, e.Height)
+		End Operator
+		Public Shared Widening Operator CType(e As (X As Integer, Y As Integer)) As RDPoint
+			Return New RDPoint(e.X, e.Y)
+		End Operator
+		Public Shared Widening Operator CType(e As (X As Single, Y As Single)) As RDPoint
+			Return New RDPoint(e.X, e.Y)
+		End Operator
+		Public Shared Narrowing Operator CType(e As (X As Double, Y As Double)) As RDPoint
+			Return New RDPoint(e.X, e.Y)
+		End Operator
+		Public Shared Narrowing Operator CType(e As NumOrExpPair) As RDPoint
+			Return New RDPoint(e.X.TryGetValue, e.Y.TryGetValue)
+		End Operator
 	End Structure
 	Public Structure Hit
 		Public ReadOnly BeatOnly As Single
@@ -862,9 +948,9 @@ Namespace LevelElements
 			End Set
 		End Property
 		<JsonIgnore>
-		Public ReadOnly Property Size As Numerics.Vector2
+		Public ReadOnly Property Size As RDPoint
 			Get
-				Return If(File?.Size, New Numerics.Vector2(32, 31))
+				Return If(File?.Size, New RDPoint(32, 31))
 			End Get
 		End Property
 		<JsonIgnore>

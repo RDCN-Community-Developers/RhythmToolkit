@@ -10,6 +10,7 @@ Imports RhythmBase.Exceptions
 Imports RhythmBase.Settings
 Imports RhythmBase.Utils
 Imports SkiaSharp
+Imports RhythmBase.Components
 #Disable Warning CA1416
 Namespace Converters
     Friend Class SpriteConverter
@@ -24,7 +25,7 @@ Namespace Converters
                 .Formatting = Formatting.Indented
             }
             With Setting.Converters
-                .Add(New Vector2Converter)
+                .Add(New RDPointConverter)
                 .Add(New ClipListConverter(tempImageList))
             End With
             Dim rowPreviewFrame As UInteger = value.Images.ToList.IndexOf(value.Preview)
@@ -40,9 +41,7 @@ Namespace Converters
                     .ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
             }
             With Setting.Converters
-                .Add(New Vector2Converter)
-                .Add(New SKSizeConverter)
-                .Add(New SKPointConverter)
+                .Add(New RDPointConverter)
                 .Add(New ClipListConverter(tempImageList))
             End With
             Dim JObj = JObject.Load(reader).ToObject(Of JObject)
@@ -50,9 +49,20 @@ Namespace Converters
             index = JObj("rowPreviewFrame")?.ToObject(Of UInteger?)
             JObj.Remove("rowPreviewFrame")
             Dim result = JObj.ToObject(Of Sprite)(Setting)
-            result._size = JObj("size").ToObject(Of SKSize)(Setting)
+            result._size = JObj("size").ToObject(Of RDPoint)(Setting)
             result.RowPreviewFrame = If(index, result.Images.ToList(index), Nothing)
             Return result
+        End Function
+    End Class
+    Friend Class RDPointConverter
+        Inherits JsonConverter(Of RDPoint)
+        Public Overrides Sub WriteJson(writer As JsonWriter, value As RDPoint, serializer As JsonSerializer)
+            writer.WriteRawValue($"[{value.Width},{value.Height}]")
+        End Sub
+
+        Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDPoint, hasExistingValue As Boolean, serializer As JsonSerializer) As RDPoint
+            Dim J = JArray.Load(reader)
+            Return New RDPoint(J(0), J(1))
         End Function
     End Class
     Class ClipListConverter
@@ -70,7 +80,7 @@ Namespace Converters
                     .ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
                 }
             With Setting.Converters
-                .Add(New Vector2Converter)
+                .Add(New RDPointConverter)
                 .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
             End With
 
@@ -114,7 +124,7 @@ Namespace Converters
                     .ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
                 }
             With Setting.Converters
-                .Add(New Vector2Converter)
+                .Add(New RDPointConverter)
                 .Add(New Newtonsoft.Json.Converters.StringEnumConverter)
             End With
             Dim Arr As JArray = JToken.ReadFrom(reader)
@@ -135,38 +145,6 @@ Namespace Converters
                 Output.Add(C)
             Next
             Return Output
-        End Function
-    End Class
-    Class Vector2Converter
-        Inherits JsonConverter(Of Vector2)
-        Public Overrides Sub WriteJson(writer As JsonWriter, value As Vector2, serializer As JsonSerializer)
-            writer.WriteRawValue($"[{value.X},{value.Y}]")
-        End Sub
-        Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Vector2, hasExistingValue As Boolean, serializer As JsonSerializer) As Vector2
-            Dim J = JArray.Load(reader)
-            Return New Vector2(J(0), J(1))
-        End Function
-    End Class
-    Class SKPointConverter
-        Inherits JsonConverter(Of SKPoint)
-        Public Overrides Sub WriteJson(writer As JsonWriter, value As SKPoint, serializer As JsonSerializer)
-            writer.WriteRawValue($"[{value.X},{value.Y}]")
-        End Sub
-
-        Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As SKPoint, hasExistingValue As Boolean, serializer As JsonSerializer) As SKPoint
-            Dim J = JArray.Load(reader)
-            Return New SKPoint(J(0), J(1))
-        End Function
-    End Class
-    Class SKSizeConverter
-        Inherits JsonConverter(Of SKSize)
-        Public Overrides Sub WriteJson(writer As JsonWriter, value As SKSize, serializer As JsonSerializer)
-            writer.WriteRawValue($"[{value.Width},{value.Height}]")
-        End Sub
-
-        Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As SKSize, hasExistingValue As Boolean, serializer As JsonSerializer) As SKSize
-            Dim J = JArray.Load(reader)
-            Return New SKSize(J(0), J(1))
         End Function
     End Class
 End Namespace
@@ -265,7 +243,7 @@ Namespace Utils
             Dim paint = New SKPaint With {.ImageFilter = shadowFilter}
             Using output As New SKBitmap(image.Width, image.Height)
                 Using canvas As New SKCanvas(output)
-                    canvas.DrawBitmap(output, New SKPoint, paint)
+                    canvas.DrawBitmap(output, New RDPoint, paint)
                 End Using
                 Return output
             End Using
@@ -325,14 +303,14 @@ Namespace Assets
         <JsonIgnore>
         Public Property Images_Outline As New HashSet(Of SKBitmap)
         <JsonProperty("size")>
-        Friend Property _size As SKSize
-        Public ReadOnly Property Size As SKSize Implements ISprite.Size
+        Friend Property _size As RDPoint
+        Public ReadOnly Property Size As RDPoint Implements ISprite.Size
             Get
                 Return _size
             End Get
         End Property
         Public Property RowPreviewFrame As SKBitmap
-        Public Property RowPreviewOffset As SKPoint
+        Public Property RowPreviewOffset As RDPoint
         Public Property Clips As New HashSet(Of Clip)
         Private Shared ReadOnly stringArray As String() = {"neutral", "happy", "barely", "missed"}
         Public Class Clip
@@ -340,9 +318,9 @@ Namespace Assets
             Public Property [Loop] As LoopOption
             Public Property Fps As Integer
             Public Property LoopStart As Integer
-            Public Property PortraitOffset As SKPoint
+            Public Property PortraitOffset As RDPoint
             Public Property PortraitScale As Integer
-            Public Property PortraitSize As SKSize
+            Public Property PortraitSize As RDPoint
             Public Property Frames As New List(Of SKBitmap)
             Public Overrides Function ToString() As String
                 Return Name
@@ -387,7 +365,7 @@ Namespace Assets
             End With
             Dim ReadedSize As JToken = JsonConvert.DeserializeObject(Of JObject)(IO.File.ReadAllText(jsonFile.FullName))("size")
             Using img As SKBitmap = LoadImage(New IO.FileInfo(WithoutExtension + ".png"))
-                Dim size As New SKSize(ReadedSize(0), ReadedSize(1))
+                Dim size As New RDPoint(ReadedSize(0), ReadedSize(1))
                 TempImages = SplitImage(img, size)
             End Using
             Dim Temp = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(jsonFile.FullName), Setting)
@@ -395,10 +373,10 @@ Namespace Assets
             Temp.Images = TempImages
             Return Temp
         End Function
-        Private Shared Function SplitImage(img As SKBitmap, size As SKSize, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
+        Private Shared Function SplitImage(img As SKBitmap, size As RDPoint, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
             Dim Transparent As New SKBitmap(CInt(size.Width), CInt(size.Height))
             Dim L As New HashSet(Of SKBitmap)
-            Dim countSize As New SKSize(img.Width \ size.Width, img.Height \ size.Height)
+            Dim countSize As New RDPoint(img.Width \ size.Width, img.Height \ size.Height)
             Select Case inputMode
                 Case ImageInputOption.HORIZONTAL
                     For i = 0 To countSize.Width * countSize.Height - 1
@@ -439,7 +417,7 @@ Namespace Assets
             Next
             Return True
         End Function
-        Public Shared Function FromImage(img As SKBitmap, size As SKSize, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As Sprite
+        Public Shared Function FromImage(img As SKBitmap, size As RDPoint, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As Sprite
             Dim Output As New Sprite With {
             ._size = size,
             .Images = SplitImage(img, size, inputMode)
@@ -491,8 +469,8 @@ Namespace Assets
             End If
 
             If settings.WithImage Then
-                Dim MaxCountSize As New Vector2(Math.Min(If(settings.LimitedCount, New Vector2(16384, 0)).X, settings.LimitedSize.X \ Size.Width),
-                                            Math.Min(If(settings.LimitedCount, New Vector2(0, 16384)).Y, settings.LimitedSize.Y \ Size.Height))
+                Dim MaxCountSize As New RDPoint(Math.Min(If(settings.LimitedCount, New RDPoint(16384, 0)).X, settings.LimitedSize.X \ Size.Width),
+                                            Math.Min(If(settings.LimitedCount, New RDPoint(0, 16384)).Y, settings.LimitedSize.Y \ Size.Height))
                 Select Case settings.OutputMode
                     Case SpriteOutputSettings.OutputModes.HORIZONTAL
                         Dim png As New SKBitmap(CInt(Math.Min(Images.Count, MaxCountSize.X) * Size.Width),
@@ -513,7 +491,7 @@ Namespace Assets
                         Next
                         png.Save(New IO.FileInfo(WithoutExtension + ".png"))
                     Case SpriteOutputSettings.OutputModes.PACKED
-                        Dim BestCountSize As New Vector2
+                        Dim BestCountSize As New RDPoint
                         Do
                             If BestCountSize.X * Size.Width < BestCountSize.Y * Size.Height Then
                                 BestCountSize.X += 1
@@ -566,9 +544,9 @@ Namespace Assets
                 Return New List(Of String)
             End Get
         End Property
-        Public ReadOnly Property Size As SKSize Implements ISprite.Size
+        Public ReadOnly Property Size As RDPoint Implements ISprite.Size
             Get
-                Return New SKSize(Image.Width, Image.Height)
+                Return New RDPoint(Image.Width, Image.Height)
             End Get
         End Property
         <JsonIgnore>

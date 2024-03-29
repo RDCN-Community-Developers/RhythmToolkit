@@ -8,7 +8,7 @@
 -|-|-|-
 readonly | List\<[BaseDecorationAction](../class/BaseDecorationAction.md)\> | Children | 返回此装饰下的子事件。  
 | | string | Id | 返回或设置装饰的 Id。  
-readonly | Numerics.Vector2 | Size | 返回此装饰的尺寸。  
+readonly | [RDPoint](../class/RDPoint.md) | Size | 返回此装饰的尺寸。  
 readonly | IEnumerable\<string\> | Expressions | 返回此装饰的表情名集合。  
 | | ulong | Row | 返回或设置装饰的Id。  
 readonly | [Rooms](../class/Rooms.md) | Rooms | 返回装饰的序号。  
