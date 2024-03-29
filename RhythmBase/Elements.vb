@@ -330,6 +330,7 @@ Namespace Components
 	Public Interface INumOrExp
 		Function Serialize() As String
 		Function GetValue(variables As Variables) As Single
+		Function TryGetValue() As Single?
 	End Interface
 	Public Structure Num
 		Implements INumOrExp
@@ -347,6 +348,9 @@ Namespace Components
 			Return value
 		End Function
 		Public Function GetValue(variables As Variables) As Single Implements INumOrExp.GetValue
+			Return value
+		End Function
+		Public Function TryGetValue() As Single? Implements INumOrExp.TryGetValue
 			Return value
 		End Function
 		Public Shared Widening Operator CType(value As Single) As Num
@@ -370,6 +374,9 @@ Namespace Components
 		End Function
 		Public Function GetValue(variables As Variables) As Single Implements INumOrExp.GetValue
 			Throw New NotImplementedException
+		End Function
+		Public Function TryGetValue() As Single? Implements INumOrExp.TryGetValue
+			Return Nothing
 		End Function
 		Public Shared Widening Operator CType(value As String) As Exp
 			Return New Exp(value)

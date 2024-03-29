@@ -5,6 +5,7 @@
 
 - 新增 [UnknownEvent](/class/UnknownEvent.md) ，用以读写可能不支持的事件。
 - [ISprite](/interface/ISprite.md) 的 Size 属性权限更改为 readonly 。
+- [INumOrExp](/interface/INumOrExp.md) 添加了 `TryGetValue()` 的不通过变量获取值的方法。
 
 ### 2024/03/28
 

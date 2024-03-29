@@ -5,3 +5,4 @@
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
 | | float | GetValue([Variables](../class/Variables.md) variables) 通过变量获得值。
+| | float? | TryGetValue() | 尝试不通过变量获得值。
