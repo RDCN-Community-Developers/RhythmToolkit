@@ -6,7 +6,7 @@ Imports RhythmBase.Tools
 Imports RhythmBase.Events
 Module Program
 	Sub Main(args As String())
-		Dim Testlevel As RDLevel = RDLevel.LoadFile(New IO.FileInfo("E:\Download\Aiobahn feat. KOTOKO - INTERNET YAMERO\main.rdlevel"), New RhythmBase.Settings.LevelInputSettings)
+		Dim Testlevel As RDLevel = RDLevel.LoadFile("E:\Download\Aiobahn feat. KOTOKO - INTERNET YAMERO\main.rdlevel", New RhythmBase.Settings.LevelInputSettings)
 		Dim tools As New RDLevelHandler(Testlevel)
 		Dim tool1 As New BeatCalculator(Testlevel)
 		Dim l = Testlevel.Where(Of CustomFlash)

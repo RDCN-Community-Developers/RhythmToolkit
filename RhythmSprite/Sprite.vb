@@ -197,14 +197,14 @@ Namespace Utils
         VERTICAL
     End Enum
     Public Module ImageUtils
-        Public Function LoadImage(path As FileInfo) As SKBitmap
-            Using stream = path.OpenRead
+        Public Function LoadImage(path As String) As SKBitmap
+            Using stream = New IO.FileInfo(path).OpenRead
                 Return SKBitmap.Decode(stream)
             End Using
         End Function
         <Extension>
-        Public Sub Save(image As SKBitmap, path As FileInfo)
-            Using stream = path.OpenWrite
+        Public Sub Save(image As SKBitmap, path As String)
+            Using stream = New IO.FileInfo(path).OpenWrite
                 image.Encode(SKEncodedImageFormat.Png, 100).SaveTo(stream)
             End Using
         End Sub
@@ -252,26 +252,26 @@ Namespace Utils
 End Namespace
 Namespace Extensions
     Public Module AssetExtension
-        <Extension>
-        Public Function Read(p As Quote) As ISprite
-            Dim result As ISprite
-            If Sprite.CanRead(p.FileInfo) Then
-                result = Sprite.FromPath(p.FileInfo)
-            ElseIf Image.CanRead(p.FileInfo) Then
-                result = Image.FromPath(p.FileInfo)
-            Else
-                result = Nothing
-            End If
-            Return result
-        End Function
+        '<Extension>
+        'Public Function Read(p As Quote) As ISprite
+        '    Dim result As ISprite
+        '    If Sprite.CanRead(p.FilePath) Then
+        '        result = Sprite.FromPath(p.FilePath)
+        '    ElseIf Image.CanRead(p.FilePath) Then
+        '        result = Image.FromPath(p.FilePath)
+        '    Else
+        '        result = Nothing
+        '    End If
+        '    Return result
+        'End Function
     End Module
 End Namespace
 Namespace Assets
     Public Class Sprite
         Implements ISprite
-        Dim _File As IO.FileInfo
+        Dim _File As String
         <JsonIgnore>
-        Public ReadOnly Property FileInfo As IO.FileInfo Implements ISprite.FileInfo
+        Public ReadOnly Property FilePath As String Implements ISprite.FilePath
             Get
                 Return _File
             End Get
@@ -285,7 +285,7 @@ Namespace Assets
         <JsonIgnore>
         Public ReadOnly Property Name As String Implements ISprite.Name
             Get
-                Return IO.Path.GetFileNameWithoutExtension(_File.Name)
+                Return IO.Path.GetFileNameWithoutExtension(_File)
             End Get
         End Property
         <JsonIgnore>
@@ -350,8 +350,8 @@ Namespace Assets
             Dim file = path
             Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
             Dim fileExtension = file.Extension
-            Dim jsonFile As New IO.FileInfo(WithoutExtension + ".json")
-            If Not jsonFile.Exists Then
+            Dim jsonFile = WithoutExtension + ".json"
+            If Not IO.File.Exists(jsonFile) Then
                 Throw New Exceptions.FileExtensionMismatchException($"Imported file should have a '.json' extension but found '{file.Extension}'.")
             End If
             Dim imageFile As New IO.FileInfo(WithoutExtension + ".png")
@@ -363,12 +363,12 @@ Namespace Assets
             With Setting.Converters
                 .Add(New Converters.SpriteConverter(TempImages))
             End With
-            Dim ReadedSize As JToken = JsonConvert.DeserializeObject(Of JObject)(IO.File.ReadAllText(jsonFile.FullName))("size")
-            Using img As SKBitmap = LoadImage(New IO.FileInfo(WithoutExtension + ".png"))
+            Dim ReadedSize As JToken = JsonConvert.DeserializeObject(Of JObject)(IO.File.ReadAllText(jsonFile))("size")
+            Using img As SKBitmap = LoadImage(WithoutExtension + ".png")
                 Dim size As New RDPoint(ReadedSize(0), ReadedSize(1))
                 TempImages = SplitImage(img, size)
             End Using
-            Dim Temp = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(jsonFile.FullName), Setting)
+            Dim Temp = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(jsonFile), Setting)
             Temp._File = jsonFile
             Temp.Images = TempImages
             Return Temp
@@ -480,7 +480,7 @@ Namespace Assets
                             Dim index = Images
                             g.DrawBitmap(Images(i), (i Mod MaxCountSize.X) * Size.Width, (i \ MaxCountSize.X) * Size.Height)
                         Next
-                        png.Save(New IO.FileInfo(WithoutExtension + ".png"))
+                        png.Save(WithoutExtension + ".png")
                     Case SpriteOutputSettings.OutputModes.VERTICAL
                         Dim png As New SKBitmap(CInt(Math.Ceiling(Images.Count / MaxCountSize.Y) * Size.Width),
                                           CInt(Math.Min(Images.Count, MaxCountSize.Y) * Size.Height))
@@ -489,7 +489,7 @@ Namespace Assets
                             Dim index = Images
                             g.DrawBitmap(Images(i), (i \ MaxCountSize.Y) * Size.Width, (i Mod MaxCountSize.Y) * Size.Height)
                         Next
-                        png.Save(New IO.FileInfo(WithoutExtension + ".png"))
+                        png.Save(WithoutExtension + ".png")
                     Case SpriteOutputSettings.OutputModes.PACKED
                         Dim BestCountSize As New RDPoint
                         Do
@@ -509,7 +509,7 @@ Namespace Assets
                             Dim index = Images
                             g.DrawBitmap(Images(i), (i Mod BestCountSize.X) * Size.Width, (i \ BestCountSize.X) * Size.Height)
                         Next
-                        png.Save(New IO.FileInfo(WithoutExtension + ".png"))
+                        png.Save(WithoutExtension + ".png")
                 End Select
             End If
 
@@ -526,16 +526,16 @@ Namespace Assets
     End Class
     Public Class Image
         Implements ISprite
-        Dim _File As IO.FileInfo
+        Private _File As String
         Public Image As SKBitmap
-        Public ReadOnly Property FileInfo As IO.FileInfo Implements ISprite.FileInfo
+        Public ReadOnly Property FilePath As String Implements ISprite.FilePath
             Get
                 Return _File
             End Get
         End Property
         Public ReadOnly Property Name As String Implements ISprite.Name
             Get
-                Return _File.Name
+                Return New IO.FileInfo(_File).Name
             End Get
         End Property
         <JsonIgnore>
@@ -565,7 +565,7 @@ Namespace Assets
             End If
             Return True
         End Function
-        Public Shared Function FromPath(path As FileInfo) As Image
+        Public Shared Function FromPath(path As String) As Image
             Return New Image With {._File = path, .Image = LoadImage(path)}
         End Function
         Public Overrides Function ToString() As String

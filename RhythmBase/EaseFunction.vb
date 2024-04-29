@@ -190,8 +190,10 @@ Namespace Components
         <Extension>
         Public Function Calculate(Type As EaseType, x As Single) As Single
             Select Case Type
+#If DEBUG Then
                 Case EaseType.Unset
                     Return EaseFunction.None(x)
+#End If
                 Case EaseType.Linear
                     Return EaseFunction.Linear(x)
                 Case EaseType.InSine
@@ -254,8 +256,10 @@ Namespace Components
                     Return EaseFunction.OutBounce(x)
                 Case EaseType.InOutBounce
                     Return EaseFunction.InOutBounce(x)
+#If DEBUG Then
                 Case EaseType.SmoothStep
                     Return EaseFunction.SmoothStep(x)
+#End If
                 Case Else
                     Return 0
             End Select

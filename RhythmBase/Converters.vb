@@ -14,14 +14,14 @@ Imports RhythmBase.Extensions
 Namespace Converters
     Friend Class RDLevelConverter
         Inherits JsonConverter(Of RDLevel)
-        Private ReadOnly fileLocation As IO.FileInfo
+        Private ReadOnly fileLocation As String
         Private ReadOnly inputSettings As LevelInputSettings
         Private ReadOnly outputSettings As LevelOutputSettings
-        Public Sub New(location As IO.FileInfo, settings As LevelInputSettings)
+        Public Sub New(location As String, settings As LevelInputSettings)
             fileLocation = location
             Me.inputSettings = settings
         End Sub
-        Public Sub New(location As IO.FileInfo, settings As LevelOutputSettings)
+        Public Sub New(location As String, settings As LevelOutputSettings)
             fileLocation = location
             Me.outputSettings = settings
         End Sub
@@ -505,9 +505,9 @@ Namespace Converters
     End Class
     Friend Class AssetConverter
         Inherits JsonConverter(Of ISprite)
-        Private ReadOnly fileLocation As IO.FileInfo
+        Private ReadOnly fileLocation As String
         Private ReadOnly assets As HashSet(Of ISprite)
-        Public Sub New(location As IO.FileInfo, assets As HashSet(Of ISprite))
+        Public Sub New(location As String, assets As HashSet(Of ISprite))
             fileLocation = location
             Me.assets = assets
         End Sub
@@ -521,8 +521,8 @@ Namespace Converters
             If assets.Any(Function(i) i.Name = assetName) Then
                 result = assets.Single(Function(i) i.Name = assetName)
             Else
-                Dim file = New IO.FileInfo(fileLocation.Directory.FullName + "\" + Json)
-                result = New Quote(file)
+                Dim file = New IO.FileInfo(fileLocation).Directory.FullName + "\" + Json
+                'result = New Quote(file)
                 assets.Add(result)
             End If
             Return result
@@ -530,9 +530,9 @@ Namespace Converters
     End Class
     Friend Class DecorationConverter
         Inherits JsonConverter(Of Decoration)
-        Private ReadOnly fileLocation As IO.FileInfo
+        Private ReadOnly fileLocation As String
         Private ReadOnly assets As HashSet(Of ISprite)
-        Public Sub New(location As IO.FileInfo, assets As HashSet(Of ISprite))
+        Public Sub New(location As String, assets As HashSet(Of ISprite))
             fileLocation = location
             Me.assets = assets
         End Sub

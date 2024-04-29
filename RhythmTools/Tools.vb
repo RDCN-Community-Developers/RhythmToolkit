@@ -110,12 +110,12 @@ Namespace Tools
 		''' </summary>
 		''' <param name="magnification"></param>
 		Public Sub ZoomSprite(magnification As Single)
-			For Each deco In Level.Decorations
-				If deco.GetType = GetType(Sprite) Then
-					For Each image In CType(deco.File, Sprite).Images
-					Next
-				End If
-			Next
+			'For Each deco In Level.Decorations
+			'	If deco.GetType = GetType(Sprite) Then
+			'		For Each image In CType(deco.File, Sprite).Images
+			'		Next
+			'	End If
+			'Next
 		End Sub
 		''' <summary>
 		''' 在七拍子的每一拍按键！

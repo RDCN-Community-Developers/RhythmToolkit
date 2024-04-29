@@ -1295,7 +1295,7 @@ Namespace LevelElements
 	End Namespace
 	Public Class RDLevel
 		Implements ICollection(Of BaseEvent)
-		Friend _path As IO.FileInfo
+		Friend _path As String
 		Public Property Settings As New Settings
 		Friend ReadOnly Property _Rows As New List(Of Row)
 		Friend ReadOnly Property _Decorations As New List(Of Decoration)
@@ -1315,7 +1315,7 @@ Namespace LevelElements
 		Public ReadOnly Property Bookmarks As New List(Of Bookmark)
 		Public ReadOnly Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
 		<JsonIgnore>
-		Public ReadOnly Property Path As IO.FileInfo
+		Public ReadOnly Property Path As String
 			Get
 				Return _path
 			End Get
@@ -1404,7 +1404,7 @@ Namespace LevelElements
 				}
 			Return JsonConvert.SerializeObject(Me, LevelSerializerSettings)
 		End Function
-		Public Shared Function ReadFromString(json As String, fileLocation As IO.FileInfo, settings As LevelInputSettings) As RDLevel
+		Public Shared Function ReadFromString(json As String, fileLocation As String, settings As LevelInputSettings) As RDLevel
 			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
 					.Converters = {
 						New Converters.RDLevelConverter(fileLocation, settings)
@@ -1422,40 +1422,40 @@ Namespace LevelElements
 		Public Function ConcatAll() As List(Of BaseEvent)
 			Return EventsBeatOrder.SelectMany(Function(i) i.Value).ToList
 		End Function
-		Private Shared Function LoadZip(RDLevelFile As FileInfo) As FileInfo
-			Dim tempDirectoryName As String = RDLevelFile.FullName
+		Private Shared Function LoadZip(RDLevelFile As String) As FileInfo
+			Dim tempDirectoryName As String = RDLevelFile
 			Dim tempDirectory = New IO.DirectoryInfo(IO.Path.Combine(IO.Path.GetTempPath, IO.Path.GetRandomFileName))
 			tempDirectory.Create()
 			Try
-				ZipFile.ExtractToDirectory(RDLevelFile.FullName, tempDirectory.FullName)
+				ZipFile.ExtractToDirectory(RDLevelFile, tempDirectory.FullName)
 				Return tempDirectory.GetFiles.Where(Function(i) i.Name = "main.rdlevel").First
 			Catch ex As Exception
 				Throw New RhythmBaseException("Cannot extract the file.", ex)
 			End Try
 		End Function
-		Public Shared Function LoadFile(RDLevelFile As FileInfo) As RDLevel
-			Return LoadFile(RDLevelFile, New LevelInputSettings)
+		Public Shared Function LoadFile(RDLevelFilePath As String) As RDLevel
+			Return LoadFile(RDLevelFilePath, New LevelInputSettings)
 		End Function
-		Public Shared Function LoadFile(RDLevelFile As FileInfo, settings As LevelInputSettings) As RDLevel
+		Public Shared Function LoadFile(RDLevelFilePath As String, settings As LevelInputSettings) As RDLevel
 			Dim json As String
-			Select Case RDLevelFile.Extension
+			Select Case New IO.FileInfo(RDLevelFilePath).Extension
 				Case ".rdzip"
-					json = File.ReadAllText(LoadZip(RDLevelFile).FullName)
+					json = File.ReadAllText(LoadZip(RDLevelFilePath).FullName)
 				Case ".zip"
-					json = File.ReadAllText(LoadZip(RDLevelFile).FullName)
+					json = File.ReadAllText(LoadZip(RDLevelFilePath).FullName)
 				Case ".rdlevel"
-					json = File.ReadAllText(RDLevelFile.FullName)
+					json = File.ReadAllText(RDLevelFilePath)
 				Case Else
 					Throw New RhythmBaseException("File not supported")
 			End Select
-			Dim level = ReadFromString(json, RDLevelFile, settings)
+			Dim level = ReadFromString(json, RDLevelFilePath, settings)
 			Return level
 		End Function
-		Public Sub SaveFile(filepath As FileInfo)
-			IO.File.WriteAllText(filepath.FullName, ToRDLevelJson(New LevelOutputSettings))
+		Public Sub SaveFile(filepath As String)
+			IO.File.WriteAllText(filepath, ToRDLevelJson(New LevelOutputSettings))
 		End Sub
-		Public Sub SaveFile(filepath As FileInfo, settings As LevelOutputSettings)
-			IO.File.WriteAllText(filepath.FullName, ToRDLevelJson(settings))
+		Public Sub SaveFile(filepath As String, settings As LevelOutputSettings)
+			IO.File.WriteAllText(filepath, ToRDLevelJson(settings))
 		End Sub
 		Public Function GetHitBeat() As IEnumerable(Of Hit)
 			Dim L As New List(Of Hit)
