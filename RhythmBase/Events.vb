@@ -943,7 +943,7 @@ Namespace Events
 		Public Property BackgroundType As BackgroundTypes
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Fps As Integer
-		Public Property Image As List(Of ISprite)
+		Public Property Image As List(Of Sprite)
 		Public Property ScrollX As Integer
 		Public Property ScrollY As Integer
 		Public Property TilingType As TilingTypes
@@ -959,7 +959,7 @@ Namespace Events
 		Public Property ContentMode As ContentModes
 		Public Property TilingType As TilingTypes
 		Public ReadOnly Property Color As New PanelColor(True)
-		Public Property Image As List(Of ISprite)
+		Public Property Image As List(Of Sprite)
 		Public Property Fps As Single
 		Public Property ScrollX As Single
 		Public Property ScrollY As Single
@@ -2198,7 +2198,7 @@ Namespace Events
 		Public Property MaskType As MaskTypes
 		Public Property AlphaMode As AlphaModes
 		Public Property SourceRoom As Byte
-		Public Property Image As List(Of ISprite)
+		Public Property Image As List(Of Sprite)
 		Public Property Fps As UInteger
 		Public ReadOnly Property KeyColor As New PanelColor(False)
 		Public Property ColorCutoff As Single

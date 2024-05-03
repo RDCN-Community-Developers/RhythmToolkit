@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
-    <ProjectReference Include="..\RhythmSprite\RhythmAsset.vbproj" />
   </ItemGroup>
 
 </Project>

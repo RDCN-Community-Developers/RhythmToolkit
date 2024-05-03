@@ -20,7 +20,7 @@ readonly | IReadonlyCollection\<[Decoration](../class/Decoration.md)\> | Decorat
 readonly | List\<[BaseConditional](../class/BaseConditional.md)\> | Conditionals | 条件集合。
 readonly | List\<[Bookmark](../class/Bookmark.md)\> | Bookmarks | 书签集合。
 readonly | [LimitedList](../class/LimitedList.md)\<SKColor\> | ColorPalette | 调色盘集合。
-readonly | IO.FileInfo | Path | 关卡的文件信息。
+readonly | string | Path | 关卡的文件信息。
 readonly | int | Count | 事件总数量。<br>实现ICollection\<[BaseEvent][E]\>.Count接口。
 readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<[BaseEvent][E]\>.Isreadonly接口。
 | | [Variables](../class/Variables.md) | Variables | 变量和自定义方法。
@@ -34,11 +34,11 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<[Base
 | | [Row](../class/Row.md) | CreateRow([Rooms](../class/Rooms.md) room, string character, bool visible = true) | 创建轨道。
 | | bool | RemoveRow([Row](../class/Row.md) row) | 移除轨道。<br>此方法会同时移除关卡内隶属于此轨道的事件。
 | | IEnumerable\<IGrouping\<String, [BaseEvent][E]\>\> | GetTaggedEvents(string name, bool direct) | 以标签名获取标签事件。
-| | RDLevel | ReadFromString(string json, IO.FileInfo fileLocation, [LevelInputSettings](../class/LevelInputSettings.md) settings) | 导入关卡。
-| | RDLevel | LoadFile(IO.FileInfo filepath) | 读取关卡文件。<br>支持rdlevel,rdzip格式。
-| | RDLevel | LoadFile(IO.FileInfo filepath, [LevelInputSettings](../class/LevelInputSettings.md) settings) | 读取关卡文件。<br>支持rdlevel,rdzip格式。
-| | void | SaveFile(IO.FileInfo filepath) | 保存关卡文件。
-| | void | SaveFile(IO.FileInfo filepath, [LevelOutputSettings](../class/LevelOutputSettings.md) settings) | 保存关卡文件。
+| | RDLevel | ReadFromString(string json, string fileLocation, [LevelInputSettings](../class/LevelInputSettings.md) settings) | 导入关卡。
+| | RDLevel | LoadFile(string filepath) | 读取关卡文件。<br>支持rdlevel,rdzip格式。
+| | RDLevel | LoadFile(string filepath, [LevelInputSettings](../class/LevelInputSettings.md) settings) | 读取关卡文件。<br>支持rdlevel,rdzip格式。
+| | void | SaveFile(string filepath) | 保存关卡文件。
+| | void | SaveFile(string filepath, [LevelOutputSettings](../class/LevelOutputSettings.md) settings) | 保存关卡文件。
 | | IEnumerable\<[Hit](../class/Hit.md)\> | GetHitBeat() | 返回关卡的按拍点集合。
 | | IEnumerable\<[BaseBeat](../class/BaseBeat.md)\> | GetHitEvents() | 返回关卡的节拍事件集合。
 | | void | Add([BaseEvent][E] item) | 向事件集合添加事件。<br>实现ICollection\<[BaseEvent][E]\>.Add(BaseEvent item)接口。

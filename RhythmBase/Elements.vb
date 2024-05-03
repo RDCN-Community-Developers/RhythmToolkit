@@ -1022,19 +1022,19 @@ Namespace LevelElements
 		Public Property Row As ULong
 		Public ReadOnly Property Rooms As New Rooms(False, False)
 		<JsonProperty("filename")>
-		Public Property File As ISprite
+		Public Property File As Sprite
 		Public Property Depth As Integer
 		Public Property Visible As Boolean
 		Sub New()
 		End Sub
-		Friend Sub New(room As Rooms, asset As ISprite, Optional depth As Integer = 0, Optional visible As Boolean = True)
+		Friend Sub New(room As Rooms, asset As Sprite, Optional depth As Integer = 0, Optional visible As Boolean = True)
 			Me.Rooms.SetRooms(room)
 			Me._id = Me.GetHashCode
 			Me._Depth = depth
 			Me._Visible = visible
 			Me.File = asset
 		End Sub
-		Sub New(room As Rooms, parent As ISprite, id As String, Optional depth As Integer = 0, Optional visible As Boolean = True)
+		Sub New(room As Rooms, parent As Sprite, id As String, Optional depth As Integer = 0, Optional visible As Boolean = True)
 			Me.New(room, parent, depth, visible)
 			_id = id
 		End Sub
@@ -1344,7 +1344,7 @@ Namespace LevelElements
 			End Get
 		End Property
 		<JsonIgnore>
-		Public ReadOnly Property Assets As New HashSet(Of ISprite)
+		Public ReadOnly Property Assets As New HashSet(Of Sprite)
 		<JsonIgnore>
 		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of BaseEvent).IsReadOnly
 		<JsonIgnore>
@@ -1366,7 +1366,7 @@ Namespace LevelElements
 				Return Where(Function(i) If(i.Tag, "").Contains(name)).GroupBy(Function(i) i.Tag)
 			End If
 		End Function
-		Public Function CreateDecoration(room As Rooms, parent As ISprite, Optional depth As Integer = 0, Optional visible As Boolean = True) As Decoration
+		Public Function CreateDecoration(room As Rooms, parent As Sprite, Optional depth As Integer = 0, Optional visible As Boolean = True) As Decoration
 			Assets.Add(parent)
 			Dim temp As New Decoration(room, parent, depth, visible)
 			_Decorations.Add(temp)
@@ -1438,7 +1438,7 @@ Namespace LevelElements
 		End Function
 		Public Shared Function LoadFile(RDLevelFilePath As String, settings As LevelInputSettings) As RDLevel
 			Dim json As String
-			Select Case New IO.FileInfo(RDLevelFilePath).Extension
+			Select Case IO.Path.GetExtension(RDLevelFilePath)
 				Case ".rdzip"
 					json = File.ReadAllText(LoadZip(RDLevelFilePath).FullName)
 				Case ".zip"
@@ -1446,7 +1446,7 @@ Namespace LevelElements
 				Case ".rdlevel"
 					json = File.ReadAllText(RDLevelFilePath)
 				Case Else
-					Throw New RhythmBaseException("File not supported")
+					Throw New RhythmBaseException("File not supported.")
 			End Select
 			Dim level = ReadFromString(json, RDLevelFilePath, settings)
 			Return level
@@ -1776,20 +1776,5 @@ Namespace LevelElements
 		'''noDoublePulse
 		'''invisibleCharacters
 		'''gentleBassDrop
-	End Class
-End Namespace
-Namespace Exceptions
-
-	Public Class RhythmBaseException
-		Inherits Exception
-		Public Sub New()
-			MyBase.New
-		End Sub
-		Public Sub New(message As String)
-			MyBase.New(message)
-		End Sub
-		Public Sub New(message As String, ex As Exception)
-			MyBase.New(message, ex)
-		End Sub
 	End Class
 End Namespace

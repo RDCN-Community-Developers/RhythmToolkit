@@ -68,7 +68,7 @@ Namespace Tools
 				For Each group In eventGroups
 					Dim startBeat = group.First().BeatOnly
 					Dim copiedGroup = group.Select(Function(i) Clone(i))
-					For Each copy In copiedGroup
+					For Each copy As BaseEvent In copiedGroup
 						copy.BeatOnly += (item.BeatOnly - startBeat)
 						copy.Tag = ""
 						Adds.Add(copy)
@@ -137,7 +137,7 @@ Namespace Tools
 		''' <summary>
 		''' [未完成] 拆分轨道为精灵图
 		''' </summary>
-		Public Sub SplitRow(Character As ISprite, ClassicBeat As ISprite, Heart As ISprite, beatSettings As SplitRowSettings)
+		Public Sub SplitRow(Character As Sprite, ClassicBeat As Sprite, Heart As Sprite, beatSettings As SplitRowSettings)
 			For Each row In Level.Rows.Where(Function(i) i.RowType = RowType.Classic)
 				Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
 				Dim Decos As New List(Of (deco As Decoration, left As Double)) From {
@@ -296,7 +296,7 @@ Namespace Tools
 		''' <param name="count">个数</param>
 		''' <param name="depth">精灵深度</param>
 		''' <param name="visible">精灵的初始可见性</param>
-		Public Sub AddLotsOfDecos(room As Rooms, sprite As ISprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
+		Public Sub AddLotsOfDecos(room As Rooms, sprite As Sprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
 			For i As UInteger = 0 To count
 				Level.CreateDecoration(room, sprite, depth, visible)
 			Next

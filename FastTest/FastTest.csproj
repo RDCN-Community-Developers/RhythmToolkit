@@ -11,7 +11,6 @@
     <ProjectReference Include="..\RhythmAnimation\RhythmAnimation.vbproj" />
     <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
     <ProjectReference Include="..\RhythmEdega\RhythmHospital.csproj" />
-    <ProjectReference Include="..\RhythmSprite\RhythmAsset.vbproj" />
     <ProjectReference Include="..\RhythmTools\RhythmAddition.vbproj" />
   </ItemGroup>
 

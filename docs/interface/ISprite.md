@@ -4,7 +4,7 @@
 
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
-readonly | IO.FileInfo | FileInfo | 文件路径。
+readonly | string | FilePath | 文件路径。
 readonly | [RDPoint](../class/RDPoint.md) | Size | 图像尺寸。
 readonly | string | Name | 文件名称。
 readonly | IEnumerable\<string\> Expressions | 表情。
