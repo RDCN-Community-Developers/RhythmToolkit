@@ -1,6 +1,10 @@
 ## [返回](../RhythmToolkit.md)
 # 更新日志
 
+### 2024/05/03
+
+- 将 [Assets](/namespace/Assets.md) 命名空间内的所有内容移入了 [RhythmBase]。
+
 ### 2024/03/29
 
 - 新增 [UnknownEvent](/class/UnknownEvent.md) 类型，用以读写可能不支持的事件。

@@ -40,9 +40,9 @@ Namespace Assets
 			End Get
 		End Property
 		<JsonIgnore> Public Property Frames As Frame
-		<JsonIgnore> Public ReadOnly Property Images_Freeze As New SKBitmap
-		<JsonIgnore>
-		Private _isSprite As Boolean
+		<JsonIgnore> Public Property Freeze As New SKBitmap
+
+		<JsonIgnore> Private _isSprite As Boolean
 		Public Property Size As SKSizeI
 		Public Property RowPreviewFrame As UInteger?
 		Public Property RowPreviewOffset As SKSizeI
@@ -57,19 +57,22 @@ Namespace Assets
 			End Set
 		End Property
 		Public Class Frame
-			Public ReadOnly Size As SKSizeI
+			Public ReadOnly Property Size As SKSizeI
+				Get
+					Return Base.Info.Size
+				End Get
+			End Property
 			Public Base As SKBitmap
 			Public Glow As SKBitmap
 			Public OutLine As SKBitmap
 			Public Sub New(size As SKSizeI)
-				Me.Size = size
+				Me.Base = New SKBitmap(size.Width, size.Height)
 			End Sub
 			Public Sub New(filePath As String)
 				filePath = $"{ IO.Path.GetDirectoryName(filePath)}\{ IO.Path.GetFileNameWithoutExtension(filePath)}"
 				Base = SKBitmap.Decode(filePath + ".png")
 				Glow = SKBitmap.Decode(filePath + "_glow.png")
 				OutLine = SKBitmap.Decode(filePath + "_outline.png")
-				Size = Base.Info.Size
 			End Sub
 		End Class
 		Public Sub New()
@@ -122,76 +125,6 @@ Namespace Assets
 		Friend Function ShouldSerializeRowPreviewOffset() As Boolean
 			Return RowPreviewFrame IsNot Nothing
 		End Function
-		Public Shared Function CanRead(path As String) As Boolean
-			Dim file = path
-			Dim WithoutExtension As String = IO.Path.Combine(IO.Path.GetDirectoryName(file), IO.Path.GetFileNameWithoutExtension(file))
-			Dim fileExtension = IO.Path.GetExtension(file)
-			If IO.File.Exists(WithoutExtension + ".json") Then
-				If {".jpeg", ".jpg", ".gif", ".png"}.Any(Function(i) IO.File.Exists(WithoutExtension + i)) Then
-					Return True
-				End If
-			End If
-			Return False
-		End Function
-		Public Sub FromPath(path As String)
-			Dim WithoutExtension As String = IO.Path.Combine(IO.Path.GetDirectoryName(path), IO.Path.GetFileNameWithoutExtension(path))
-			Dim jsonFile = WithoutExtension + ".json"
-			If Not CanRead(path) Then
-				Throw New FileExtensionMismatchException($"Missing a json file or an image file with {path}.")
-			End If
-			Dim Temp = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(jsonFile))
-		End Sub
-		Private Shared Function SplitImage(img As SKBitmap, size As RDPoint, Optional inputMode As ImageInputOption = ImageInputOption.HORIZONTAL) As HashSet(Of SKBitmap)
-			Dim Transparent As New SKBitmap(CInt(size.Width), CInt(size.Height))
-			Dim L As New HashSet(Of SKBitmap)
-			Dim countSize As New RDPoint(img.Width \ size.Width, img.Height \ size.Height)
-			Select Case inputMode
-				Case ImageInputOption.HORIZONTAL
-					For i = 0 To countSize.Width * countSize.Height - 1
-						Dim Area = New SKRect((i Mod countSize.Width) * size.Width, (i \ countSize.Width) * size.Height, size.Width, size.Height)
-						Dim tmpimg As New SKBitmap(size.Width, size.Height)
-						Using g As New SKCanvas(tmpimg)
-							g.DrawBitmap(img, Area)
-						End Using
-						If TotallyTransparentImage(tmpimg) Then
-							L.Add(Transparent)
-						Else
-							L.Add(tmpimg)
-						End If
-					Next
-				Case ImageInputOption.VERTICAL
-					For i = 0 To countSize.Width * countSize.Height - 1
-						Dim Area = New SKRect((i \ countSize.Height) * size.Width, (i Mod countSize.Height) * size.Height, size.Width, size.Height)
-						Dim tmpimg As New SKBitmap(size.Width, size.Height)
-						Using g As New SKCanvas(tmpimg)
-							g.DrawBitmap(img, Area)
-						End Using
-						If TotallyTransparentImage(tmpimg) Then
-							L.Add(Transparent)
-						Else
-							L.Add(tmpimg)
-						End If
-					Next
-			End Select
-			Return L
-		End Function
-		Private Shared Function TotallyTransparentImage(img As SKBitmap) As Boolean
-			For x = 0 To img.Width - 1
-				For y = 0 To img.Height - 1
-					If img.GetPixel(x, y).Alpha > 0 Then
-						Return False
-					End If
-				Next
-			Next
-			Return True
-		End Function
-		Public Shared Function FromImage(img As SKBitmap, size As RDPoint) As Sprite
-			Dim Output As New Sprite With {
-				._Size = size,
-				.Frames = New Frame(size) With {.Base = img}
-			}
-			Return Output
-		End Function
 		Public Function AddBlankClip(name As String) As Clip
 			Dim C = Clips.FirstOrDefault(New Clip With {.Name = name})
 			Clips.Add(C)
@@ -206,9 +139,9 @@ Namespace Assets
 				   Select AddBlankClip(n)
 		End Function
 		Public Sub WriteJson(path As FileInfo)
-			WriteJson(path, New SpriteOutputSettings)
+			WriteJson(path, New Settings.SpriteOutputSettings)
 		End Sub
-		Public Sub WriteJson(path As FileInfo, settings As SpriteOutputSettings)
+		Public Sub WriteJson(path As FileInfo, settings As Settings.SpriteOutputSettings)
 
 			Dim file = path
 			Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
@@ -222,7 +155,8 @@ Namespace Assets
 			If settings.WithImage Then
 				Frames.Base.Save(WithoutExtension + ".png")
 				Frames.Glow?.Save(WithoutExtension + "_glow.png")
-				Frames.OutLine.Save(WithoutExtension + "_outline.png")
+				Frames.OutLine?.Save(WithoutExtension + "_outline.png")
+				Freeze?.Save(WithoutExtension + "_freeze.png")
 			End If
 
 			IO.File.WriteAllText(WithoutExtension + ".json", JsonConvert.SerializeObject(Me))
@@ -232,68 +166,11 @@ Namespace Assets
 			Return $"{If(IsSprite, ".json", IO.Path.GetExtension(FilePath))}, {Name}"
 		End Function
 	End Class
-	'Public Class Quote
-	'    Implements ISprite
-	'    Private ReadOnly _File As String
-	'    Public Sub New(path As String)
-	'        _File = path
-	'    End Sub
-	'    <JsonIgnore>
-	'    Public ReadOnly Property Expressions As IEnumerable(Of String) Implements ISprite.Expressions
-	'        Get
-	'            Return New List(Of String)
-	'        End Get
-	'    End Property
-	'    Public ReadOnly Property FilePath As String Implements ISprite.FilePath
-	'        Get
-	'            Return _File
-	'        End Get
-	'    End Property
-	'    Public ReadOnly Property Size As RDPoint Implements ISprite.Size
-	'        Get
-	'            Return New RDPoint
-	'        End Get
-	'    End Property
-	'    <JsonIgnore>
-	'    Public ReadOnly Property Preview As New SKBitmap Implements ISprite.Preview
-	'    Public ReadOnly Property Name As String Implements ISprite.Name
-	'        Get
-	'            If _File.Extension = ".json" Then
-	'                Return IO.Path.GetFileNameWithoutExtension(_File)
-	'            Else
-	'                Return _File
-	'            End If
-	'        End Get
-	'    End Property
-	'    Public Overrides Function ToString() As String
-	'        Return Name
-	'    End Function
-	'End Class
-	Public Class SpriteOutputSettings
-		Public Enum OutputModes
-			HORIZONTAL
-			VERTICAL
-			PACKED
-		End Enum
-		Public Sort As Boolean = False
-		Public OverWrite As Boolean = False
-		Public OutputMode As OutputModes = OutputModes.HORIZONTAL
-		Public ExtraFile As Boolean = False
-		Public LimitedSize As New RDPoint(16384, 16384)
-		Public LimitedCount As RDPoint?
-		Public WithImage As Boolean = False
-	End Class
-	Public Class SpriteInputSettings
-	End Class
 
 	Public Enum LoopOption
 		no
 		yes
 		onBeat
-	End Enum
-	Public Enum ImageInputOption
-		HORIZONTAL
-		VERTICAL
 	End Enum
 End Namespace
 Namespace Extensions

@@ -5,7 +5,6 @@
 程序集名 | 程序集主要功能
 -|-
 [RhythmBase](assembly/RhythmBase.md)| 核心
-[RhythmBase.Asset](assembly/RhythmAsset.md) | 关卡素材模块扩展
 [RhythmBase.Animation](assembly/RhythmAnimation.md) | 动画模块扩展
 
 # 其他程序集

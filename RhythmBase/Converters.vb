@@ -699,6 +699,7 @@ Namespace Converters
 			Dim result = jobj.ToObject(Of Sprite)(Setting)
 			result.FilePath = FilePath
 			result.Frames = New Sprite.Frame(FilePath + ".png")
+			result.Freeze = SKBitmap.Decode(FilePath + "_freeze.png")
 			For Each clip In result.Clips
 				clip.Parent = result
 			Next
