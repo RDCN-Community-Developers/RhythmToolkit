@@ -1,4 +1,4 @@
-## [返回](../RhythmToolkit.md)
+## [返回](../RadiationTherapy.md)
 
 # 示例
 
@@ -8,11 +8,11 @@
 using RhythmBase.LevelElements;
 using System.IO;
 
-//导入关卡文件 (配置是可选的)
-RDLevel rdlevel = RDLevel.LoadFile(new FileInfo(@"Your\level.rdzip"));
+//读取关卡文件 (配置是可选的)
+RDLevel rdlevel = RDLevel.LoadFile(@"Your\level.rdzip");
 
-//导出关卡文件 (配置是可选的)
-rdlevel.SaveFile(new FileInfo(@"Your\level_copy.rdlevel"));
+//写入关卡文件 (配置是可选的)
+rdlevel.SaveFile(@"Your\level_copy.rdlevel");
 ```
 
 ### 移除所有位于动作栏的未激活事件
@@ -37,7 +37,7 @@ using System.Collections.Generic;
 List<Decoration> decorations = [];
 
 //构造一个对素材文件的引用
-Sprite sprite = Sprite.FromPath(new FileInfo(@"Your\Asset.json"));
+Sprite sprite = Sprite.LoadFile(@"Your\Asset.json");
 
 //以此素材构造 7 个装饰并存入列表，初始化为隐藏
 for (int i = 0; i < 7; i++)
@@ -86,6 +86,24 @@ foreach(BaseBeat beat in beats)
     */
 
 }
+```
+
+### 以第一个结束事件的时刻计算关卡时长
+```CS
+using RhythmBase.LevelElements;
+using RhythmBase.Events;
+using RhythmBase.Utils;
+
+//获得第一个 FinishLevel 事件。
+FinishLevel finishLevel = rdlevel.First<FinishLevel>();
+//以关卡构建节拍计算器类
+BeatCalculator calculator = new(rdlevel);
+
+//显式使用节拍计算器类求得时间
+float result1 = (float)calculator.BeatOnly_Time(finishLevel.BeatOnly).TotalSeconds;
+
+//内部隐式使用节拍计算器类求得时间（仅用于临时调用）
+float result2 = (float)finishLevel.Time.TotalSeconds;
 ```
 
 在 **RhythmBase.Addition**, **RhythmHospital**, **BeatsViewer** 等项目浏览更多示例。

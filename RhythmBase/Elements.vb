@@ -993,13 +993,9 @@ Namespace LevelElements
 		End Function
 	End Class
 	Public Class Decoration
-		'<JsonIgnore>
-		'Public Parent As ISprite
 		Private _id As String
-		<JsonIgnore>
-		Public ReadOnly Property Children As New List(Of BaseDecorationAction)
-		<JsonProperty("id")>
-		Public Property Id As String
+		<JsonIgnore> Public ReadOnly Property Children As New List(Of BaseDecorationAction)
+		<JsonProperty("id")> Public Property Id As String
 			Get
 				Return _id
 			End Get
@@ -1007,22 +1003,19 @@ Namespace LevelElements
 				_id = value
 			End Set
 		End Property
-		<JsonIgnore>
-		Public ReadOnly Property Size As RDPoint
+		<JsonIgnore> Public ReadOnly Property Size As RDPoint
 			Get
 				Return If(File?.Size, New RDPoint(32, 31))
 			End Get
 		End Property
-		<JsonIgnore>
-		Public ReadOnly Property Expressions As IEnumerable(Of String)
+		<JsonIgnore> Public ReadOnly Property Expressions As IEnumerable(Of String)
 			Get
 				Return If(File?.Expressions, New List(Of String))
 			End Get
 		End Property
 		Public Property Row As ULong
 		Public ReadOnly Property Rooms As New Rooms(False, False)
-		<JsonProperty("filename")>
-		Public Property File As Sprite
+		<JsonProperty("filename")> Public Property File As Sprite
 		Public Property Depth As Integer
 		Public Property Visible As Boolean
 		Sub New()
@@ -1052,13 +1045,6 @@ Namespace LevelElements
 			Me.Children.Add(Temp)
 			Return Temp
 		End Function
-		'Public Function Preview() As Drawing.Bitmap
-		'	If Parent IsNot Nothing Then
-		'		Return New Drawing.Bitmap(Filename.FullName)
-		'	Else
-		'		Return New Drawing.Bitmap(1, 1)
-		'	End If
-		'End Function
 		Public Overrides Function ToString() As String
 			Return $"{_id}, {_Row}, {_Rooms}, {File.Name}"
 		End Function
@@ -1212,8 +1198,7 @@ Namespace LevelElements
 			Yellow
 			Green
 		End Enum
-		Public Property Bar As UInteger
-		Public Property Beat As UInteger
+		Public Property BeatOnly As Single
 		Public Property Color As BookmarkColors
 	End Class
 	Public MustInherit Class BaseConditional

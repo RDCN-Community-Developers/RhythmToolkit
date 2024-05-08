@@ -61,6 +61,7 @@ Namespace Converters
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 				}
 			With BookmarksSerializer.Converters
+				.Add(New BookmarkConverter(New BeatCalculator(value)))
 			End With
 			Dim ColorPaletteSerializer As New JsonSerializerSettings With {
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
@@ -132,9 +133,6 @@ Namespace Converters
 			With ConditionalsSerializer.Converters
 				.Add(New ConditionalConverter)
 			End With
-			Dim BookmarksSerializer As New JsonSerializer
-			With BookmarksSerializer.Converters
-			End With
 			Dim ColorPaletteSerializer As New JsonSerializer
 			With ColorPaletteSerializer.Converters
 				.Add(New ColorConverter)
@@ -150,7 +148,6 @@ Namespace Converters
 				._Rows.AddRange(J("rows").ToObject(Of List(Of Row))(RowsSerializer))
 				._Decorations.AddRange(J("decorations").ToObject(Of List(Of Decoration))(DecorationsSerializer))
 				.Conditionals.AddRange(J("conditionals").ToObject(Of List(Of BaseConditional))(ConditionalsSerializer))
-				.Bookmarks.AddRange(J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer))
 				For Each item In J("colorPalette").ToObject(Of LimitedList(Of SKColor))(ColorPaletteSerializer)
 					.ColorPalette.Add(item)
 				Next
@@ -204,12 +201,12 @@ Namespace Converters
 						Level.Add(TempEvent)
 					Case NameOf(SetBeatsPerMinute)
 						Dim TempEvent As BaseBeatsPerMinute = item.ToObject(GetType(SetBeatsPerMinute), EventsSerializer)
-						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(item("beat")), SetCPBCollection)
+						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CSng(item("beat")), SetCPBCollection)
 						SetBPMCollection.Add(TempEvent)
 						Level.Add(TempEvent)
 					Case NameOf(PlaySong)
 						Dim TempEvent As BaseBeatsPerMinute = item.ToObject(GetType(PlaySong), EventsSerializer)
-						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CDbl(item("beat")), SetCPBCollection)
+						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CSng(item("beat")), SetCPBCollection)
 						SetBPMCollection.Add(TempEvent)
 						Level.Add(TempEvent)
 					Case Else
@@ -231,7 +228,40 @@ Namespace Converters
 				Parent.Children.Add(AdvancePair.event)
 				AdvancePair.event.Parent = Parent
 			Next
+			Dim BookmarksSerializer As New JsonSerializer
+			With BookmarksSerializer.Converters
+				.Add(New BookmarkConverter(New BeatCalculator(Level)))
+			End With
+			Level.Bookmarks.AddRange(J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer))
 			Return Level
+		End Function
+	End Class
+	Friend Class BookmarkConverter
+		Inherits JsonConverter(Of Bookmark)
+		Private calculator As BeatCalculator
+		Public Sub New(calculator As BeatCalculator)
+			Me.calculator = calculator
+		End Sub
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As Bookmark, serializer As JsonSerializer)
+			Dim beat = calculator.BeatOnly_BarBeat(value.BeatOnly)
+			With writer
+				.WriteStartObject()
+				.WritePropertyName("bar")
+				.WriteValue(beat.bar)
+				.WritePropertyName("beat")
+				.WriteValue(beat.beat)
+				.WritePropertyName("color")
+				.WriteValue(value.Color.ToString())
+				.WriteEndObject()
+			End With
+		End Sub
+
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Bookmark, hasExistingValue As Boolean, serializer As JsonSerializer) As Bookmark
+			Dim jobj = JToken.ReadFrom(reader)
+			Return New Bookmark With {
+				.BeatOnly = calculator.BarBeat_BeatOnly(jobj("bar"), jobj("beat")),
+				.Color = [Enum].Parse(Of Bookmark.BookmarkColors)(jobj("color"))
+			}
 		End Function
 	End Class
 	Friend Class AnchorStyleConverter

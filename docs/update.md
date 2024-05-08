@@ -1,15 +1,22 @@
-## [返回](../RhythmToolkit.md)
+## [返回](../RadiationTherapy.md)
 # 更新日志
+
+### 2024/05/04
+
+- [BaseEvent](/class/BaseEvent.md) 的 `Copy()` 方法更名为 `Clone()`。
+- 修复了 [BaseEvent](/class/BaseEvent.md).Clone() 在克隆属性时 `If` 属性丢失和 `ParentLevel` 属性不能为空的问题。
+- 更新了[示例](/examples.md)。
 
 ### 2024/05/03
 
-- 将 [Assets](/namespace/Assets.md) 命名空间内的所有内容移入了 [RhythmBase]。
+- 将 [Assets](/namespace/Assets.md) 命名空间内的所有内容移入了 [RhythmBase](/assembly/RhythmBase.md)。
+- 现在所有图像素材都是 [Sprite](/class/Sprite.md) 了。
 
 ### 2024/03/29
 
 - 新增 [UnknownEvent](/class/UnknownEvent.md) 类型，用以读写可能不支持的事件。
 - [ISprite](/interface/ISprite.md) 的 Size 属性权限更改为 readonly 。
-- [INumOrExp](/interface/INumOrExp.md) 添加了 `TryGetValue()` 的不通过变量获取值的方法。
+- [INumOrExp](/interface/INumOrExp.md) 添加了 `TryGetValue()` 的尝试不通过变量获取值的方法。
 - 新增 [RDPoint](../class/RDPoint.md) 结构体，所有不可空数对都可与此结构体进行显式或隐式转换。
 
 ### 2024/03/28
@@ -22,14 +29,14 @@
 - [RDLevel](/class/RDLevel.md) 添加了三个 Where 方法，用于对节拍范围进行快速筛选。
     添加了两个构造方法。
     添加了 ExtractEventsAt 方法。
-- 移除了 NullAsset 类型。现在尝试获取无引用的素材会返回 null (待测试)。
+- 移除了 `NullAsset` 类型。现在尝试获取无引用的素材会返回 `null` (待测试)。
 
 ### 2024/03/25
 
 - 翻新了文档。
 - 添加了[变量与动画属性解析模块](/namespace/Animation.md)。
 - 重新整理了项目结构。
-- 为 Comment 和 CallCustomMethod 事件添加了一系列扩展方法。
+- 为 `Comment` 和 `CallCustomMethod` 事件添加了一系列扩展方法。
     现在可以用这些扩展方法快速创建自定义方法了。
 - 大量代码更改，已经不知道自己改了些啥了……
 

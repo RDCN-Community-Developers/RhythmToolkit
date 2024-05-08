@@ -193,13 +193,14 @@ Namespace Events
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
 		Public Property [If] As Condition
 		Public Property Active As Boolean = True
-		Public Overridable Function Copy(Of T As {BaseEvent, New})() As T
+		Public Overridable Function Clone(Of T As {BaseEvent, New})() As T
 			Dim temp = New T With {.BeatOnly = BeatOnly, .Y = Y, .[If] = [If], .Tag = Tag, .Active = Active}
 			If Me.If IsNot Nothing Then
 				For Each item In Me.If.ConditionLists
+					temp.If.ConditionLists.Add(item)
 				Next
 			End If
-			ParentLevel.Add(temp)
+			ParentLevel?.Add(temp)
 			Return temp
 		End Function
 		Public Overridable Function Clone() As BaseEvent
@@ -214,8 +215,7 @@ Namespace Events
 	End Class
 	Public MustInherit Class BaseBeatsPerMinute
 		Inherits BaseEvent
-		<JsonProperty("bpm")>
-		Public MustOverride Property BeatsPerMinute As Single
+		<JsonProperty("bpm")> Public MustOverride Property BeatsPerMinute As Single
 	End Class
 	Public MustInherit Class BaseDecorationAction
 		Inherits BaseEvent
@@ -237,7 +237,7 @@ Namespace Events
 			End Get
 		End Property
 		Public Overloads Function Copy(Of T As {BaseDecorationAction, New})() As T
-			Dim Temp = MyBase.Copy(Of T)()
+			Dim Temp = MyBase.Clone(Of T)()
 			Temp.Parent = Parent
 			Return Temp
 		End Function
@@ -274,7 +274,7 @@ Namespace Events
 			End Get
 		End Property
 		Public Overloads Function Copy(Of T As {BaseRowAction, New})() As T
-			Dim Temp = MyBase.Copy(Of T)()
+			Dim Temp = MyBase.Clone(Of T)()
 			Temp.Parent = Parent
 			Return Temp
 		End Function
@@ -578,7 +578,7 @@ Namespace Events
 			Return New List(Of SayReadyGetSetGo) From {Me}.AsEnumerable
 		End Function
 		Private Function SplitCopy(extraBeat As Single, word As Words) As SayReadyGetSetGo
-			Dim Temp = Me.Copy(Of SayReadyGetSetGo)
+			Dim Temp = Me.Clone(Of SayReadyGetSetGo)
 			Temp.BeatOnly += extraBeat
 			Temp.PhraseToSay = word
 			Temp.Volume = Volume

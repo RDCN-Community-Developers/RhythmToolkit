@@ -450,184 +450,139 @@ Namespace Extensions
 			Public pulseRate As Single?
 			Public pulseWavelength As Single?
 		End Class
-		<Extension>
-		Public Sub SetScoreboardLights(e As CallCustomMethod, Mode As Boolean, Text As String)
+		<Extension> Public Sub SetScoreboardLights(e As CallCustomMethod, Mode As Boolean, Text As String)
 			e.MethodName = $"{NameOf(SetScoreboardLights)}({Mode},{Text})"
 		End Sub
-		<Extension>
-		Public Sub InvisibleChars(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub InvisibleChars(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(InvisibleChars).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub InvisibleHeart(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub InvisibleHeart(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(InvisibleHeart).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub NoHitFlashBorder(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub NoHitFlashBorder(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(NoHitFlashBorder).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub NoHitStrips(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub NoHitStrips(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(NoHitStrips).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub SetOneshotType(e As CallCustomMethod, rowID As Integer, wavetype As ShockWaveType)
+		<Extension> Public Sub SetOneshotType(e As CallCustomMethod, rowID As Integer, wavetype As ShockWaveType)
 			e.MethodName = $"{NameOf(SetOneshotType)}({rowID},str:{wavetype})"
 		End Sub
-		<Extension>
-		Public Sub WobblyLines(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub WobblyLines(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(WobblyLines).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub TrueCameraMove(e As Comment, RoomID As Integer, p As RDPoint, AnimationDuration As Single, Ease As EaseType)
+		<Extension> Public Sub TrueCameraMove(e As Comment, RoomID As Integer, p As RDPoint, AnimationDuration As Single, Ease As EaseType)
 			e.Text = $"()=>{NameOf(TrueCameraMove).LowerCamelCase}({RoomID},{p.X},{p.Y},{AnimationDuration},{Ease})"
 		End Sub
-		<Extension>
-		Public Sub Create(e As Comment, particleName As Particle, p As RDPoint)
+		<Extension> Public Sub Create(e As Comment, particleName As Particle, p As RDPoint)
 			e.Text = $"()=>{NameOf(Create).LowerCamelCase}(CustomParticles/{particleName},{p.X},{p.Y})"
 		End Sub
-		<Extension>
-		Public Sub ShockwaveSizeMultiplier(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub ShockwaveSizeMultiplier(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(ShockwaveSizeMultiplier).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub ShockwaveDistortionMultiplier(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub ShockwaveDistortionMultiplier(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(ShockwaveDistortionMultiplier).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub ShockwaveDurationMultiplier(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub ShockwaveDurationMultiplier(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(ShockwaveDurationMultiplier).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub Shockwave(e As Comment, type As ShockWaveType, value As Single)
+		<Extension> Public Sub Shockwave(e As Comment, type As ShockWaveType, value As Single)
 			e.Text = $"()=>{NameOf(Shockwave).LowerCamelCase}({type},{value})"
 		End Sub
-		<Extension>
-		Public Sub MistakeOrHeal(e As CallCustomMethod, damageOrHeal As Single)
+		<Extension> Public Sub MistakeOrHeal(e As CallCustomMethod, damageOrHeal As Single)
 			e.MethodName = $"{NameOf(MistakeOrHeal)}({damageOrHeal})"
 		End Sub
-		<Extension>
-		Public Sub MistakeOrHealP1(e As CallCustomMethod, damageOrHeal As Single)
+		<Extension> Public Sub MistakeOrHealP1(e As CallCustomMethod, damageOrHeal As Single)
 			e.MethodName = $"{NameOf(MistakeOrHealP1)}({damageOrHeal})"
 		End Sub
-		<Extension>
-		Public Sub MistakeOrHealP2(e As CallCustomMethod, damageOrHeal As Single)
+		<Extension> Public Sub MistakeOrHealP2(e As CallCustomMethod, damageOrHeal As Single)
 			e.MethodName = $"{NameOf(MistakeOrHealP2)}({damageOrHeal})"
 		End Sub
-		<Extension>
-		Public Sub MistakeOrHealSilent(e As CallCustomMethod, damageOrHeal As Single)
+		<Extension> Public Sub MistakeOrHealSilent(e As CallCustomMethod, damageOrHeal As Single)
 			e.MethodName = $"{NameOf(MistakeOrHealSilent)}({damageOrHeal})"
 		End Sub
-		<Extension>
-		Public Sub MistakeOrHealP1Silent(e As CallCustomMethod, damageOrHeal As Single)
+		<Extension> Public Sub MistakeOrHealP1Silent(e As CallCustomMethod, damageOrHeal As Single)
 			e.MethodName = $"{NameOf(MistakeOrHealP1Silent)}({damageOrHeal})"
 		End Sub
-		<Extension>
-		Public Sub MistakeOrHealP2Silent(e As CallCustomMethod, damageOrHeal As Single)
+		<Extension> Public Sub MistakeOrHealP2Silent(e As CallCustomMethod, damageOrHeal As Single)
 			e.MethodName = $"{NameOf(MistakeOrHealP2Silent)}({damageOrHeal})"
 		End Sub
-		<Extension>
-		Public Sub SetMistakeWeight(e As CallCustomMethod, rowID As Integer, weight As Single)
+		<Extension> Public Sub SetMistakeWeight(e As CallCustomMethod, rowID As Integer, weight As Single)
 			e.MethodName = $"{NameOf(SetMistakeWeight)}({rowID},{weight})"
 		End Sub
-		<Extension>
-		Public Sub DamageHeart(e As CallCustomMethod, rowID As Integer, damage As Single)
+		<Extension> Public Sub DamageHeart(e As CallCustomMethod, rowID As Integer, damage As Single)
 			e.MethodName = $"{NameOf(DamageHeart)}({rowID},{damage})"
 		End Sub
-		<Extension>
-		Public Sub HealHeart(e As CallCustomMethod, rowID As Integer, damage As Single)
+		<Extension> Public Sub HealHeart(e As CallCustomMethod, rowID As Integer, damage As Single)
 			e.MethodName = $"{NameOf(HealHeart)}({rowID},{damage})"
 		End Sub
-		<Extension>
-		Public Sub WavyRowsAmplitude(e As CallCustomMethod, roomID As Byte, amplitude As Single)
+		<Extension> Public Sub WavyRowsAmplitude(e As CallCustomMethod, roomID As Byte, amplitude As Single)
 			e.MethodName = $"room[{roomID}].{NameOf(WavyRowsAmplitude).LowerCamelCase} = {amplitude}"
 		End Sub
-		<Extension>
-		Public Sub WavyRowsAmplitude(e As Comment, roomID As Byte, amplitude As Single, duration As Single)
+		<Extension> Public Sub WavyRowsAmplitude(e As Comment, roomID As Byte, amplitude As Single, duration As Single)
 			e.Text = $"()=>{NameOf(WavyRowsAmplitude).LowerCamelCase}({roomID},{amplitude},{duration})"
 		End Sub
-		<Extension>
-		Public Sub WavyRowsFrequency(e As CallCustomMethod, roomID As Byte, frequency As Single)
+		<Extension> Public Sub WavyRowsFrequency(e As CallCustomMethod, roomID As Byte, frequency As Single)
 			e.MethodName = $"room[{roomID}].{NameOf(WavyRowsFrequency).LowerCamelCase} = {frequency}"
 		End Sub
-		<Extension>
-		Public Sub SetShakeIntensityOnHit(e As CallCustomMethod, roomID As Byte, number As Integer, strength As Integer)
+		<Extension> Public Sub SetShakeIntensityOnHit(e As CallCustomMethod, roomID As Byte, number As Integer, strength As Integer)
 			e.MethodName = $"room[{roomID}].{NameOf(SetShakeIntensityOnHit)}({number},{strength})"
 		End Sub
-		<Extension>
-		Public Sub ShowPlayerHand(e As CallCustomMethod, roomID As Byte, isPlayer1 As Boolean, isShortArm As Boolean, isInstant As Boolean)
+		<Extension> Public Sub ShowPlayerHand(e As CallCustomMethod, roomID As Byte, isPlayer1 As Boolean, isShortArm As Boolean, isInstant As Boolean)
 			e.MethodName = $"{NameOf(ShowPlayerHand)}({roomID},{isPlayer1},{isShortArm},{isInstant})"
 		End Sub
-		<Extension>
-		Public Sub TintHandsWithInts(e As CallCustomMethod, roomID As Byte, R As Single, G As Single, B As Single, A As Single)
+		<Extension> Public Sub TintHandsWithInts(e As CallCustomMethod, roomID As Byte, R As Single, G As Single, B As Single, A As Single)
 			e.MethodName = $"{NameOf(TintHandsWithInts)}({roomID},{R},{G},{B},{A})"
 		End Sub
-		<Extension>
-		Public Sub SetHandsBorderColor(e As CallCustomMethod, roomID As Byte, R As Single, G As Single, B As Single, A As Single, style As Integer)
+		<Extension> Public Sub SetHandsBorderColor(e As CallCustomMethod, roomID As Byte, R As Single, G As Single, B As Single, A As Single, style As Integer)
 			e.MethodName = $"{NameOf(SetHandsBorderColor)}({roomID},{R},{G},{B},{A},{style})"
 		End Sub
-		<Extension>
-		Public Sub SetAllHandsBorderColor(e As CallCustomMethod, R As Single, G As Single, B As Single, A As Single, style As Integer)
+		<Extension> Public Sub SetAllHandsBorderColor(e As CallCustomMethod, R As Single, G As Single, B As Single, A As Single, style As Integer)
 			e.MethodName = $"{NameOf(SetAllHandsBorderColor)}({R},{G},{B},{A},{style})"
 		End Sub
-		<Extension>
-		Public Sub SetHandToP1(e As CallCustomMethod, room As Integer, rightHand As Boolean)
+		<Extension> Public Sub SetHandToP1(e As CallCustomMethod, room As Integer, rightHand As Boolean)
 			e.MethodName = $"{NameOf(SetHandToP1)}({room},{rightHand})"
 		End Sub
-		<Extension>
-		Public Sub SetHandToP2(e As CallCustomMethod, room As Integer, rightHand As Boolean)
+		<Extension> Public Sub SetHandToP2(e As CallCustomMethod, room As Integer, rightHand As Boolean)
 			e.MethodName = $"{NameOf(SetHandToP2)}({room},{rightHand})"
 		End Sub
-		<Extension>
-		Public Sub SetHandToIan(e As CallCustomMethod, room As Integer, rightHand As Boolean)
+		<Extension> Public Sub SetHandToIan(e As CallCustomMethod, room As Integer, rightHand As Boolean)
 			e.MethodName = $"{NameOf(SetHandToIan)}({room},{rightHand})"
 		End Sub
-		<Extension>
-		Public Sub SetHandToPaige(e As CallCustomMethod, room As Integer, rightHand As Boolean)
+		<Extension> Public Sub SetHandToPaige(e As CallCustomMethod, room As Integer, rightHand As Boolean)
 			e.MethodName = $"{NameOf(SetHandToPaige)}({room},{rightHand})"
 		End Sub
-		<Extension>
-		Public Sub SetShadowRow(e As CallCustomMethod, mimickerRowID As Integer, mimickedRowID As Integer)
+		<Extension> Public Sub SetShadowRow(e As CallCustomMethod, mimickerRowID As Integer, mimickedRowID As Integer)
 			e.MethodName = $"{NameOf(SetShadowRow)}({mimickerRowID},{mimickedRowID})"
 		End Sub
-		<Extension>
-		Public Sub UnsetShadowRow(e As CallCustomMethod, mimickerRowID As Integer, mimickedRowID As Integer)
+		<Extension> Public Sub UnsetShadowRow(e As CallCustomMethod, mimickerRowID As Integer, mimickedRowID As Integer)
 			e.MethodName = $"{NameOf(UnsetShadowRow)}({mimickerRowID},{mimickedRowID})"
 		End Sub
-		<Extension>
-		Public Sub ShakeCam(e As CallCustomMethod, number As Integer, strength As Integer, roomID As Integer)
+		<Extension> Public Sub ShakeCam(e As CallCustomMethod, number As Integer, strength As Integer, roomID As Integer)
 			e.MethodName = $"vfx.{NameOf(ShakeCam)}({number},{strength},{roomID})"
 		End Sub
-		<Extension>
-		Public Sub StopShakeCam(e As CallCustomMethod, roomID As Integer)
+		<Extension> Public Sub StopShakeCam(e As CallCustomMethod, roomID As Integer)
 			e.MethodName = $"vfx.{NameOf(StopShakeCam)}({roomID})"
 		End Sub
-		<Extension>
-		Public Sub ShakeCamSmooth(e As CallCustomMethod, duration As Integer, strength As Integer, roomID As Integer)
+		<Extension> Public Sub ShakeCamSmooth(e As CallCustomMethod, duration As Integer, strength As Integer, roomID As Integer)
 			e.MethodName = $"vfx.{NameOf(ShakeCamSmooth)}({duration},{strength},{roomID})"
 		End Sub
-		<Extension>
-		Public Sub ShakeCamRotate(e As CallCustomMethod, duration As Integer, strength As Integer, roomID As Integer)
+		<Extension> Public Sub ShakeCamRotate(e As CallCustomMethod, duration As Integer, strength As Integer, roomID As Integer)
 			e.MethodName = $"vfx.{NameOf(ShakeCamRotate)}({duration},{strength},{roomID})"
 		End Sub
-		<Extension>
-		Public Sub SetKaleidoscopeColor(e As CallCustomMethod, roomID As Integer, R1 As Single, G1 As Single, B1 As Single, R2 As Single, G2 As Single, B2 As Single)
+		<Extension> Public Sub SetKaleidoscopeColor(e As CallCustomMethod, roomID As Integer, R1 As Single, G1 As Single, B1 As Single, R2 As Single, G2 As Single, B2 As Single)
 			e.MethodName = $"{NameOf(SetKaleidoscopeColor)}({roomID},{R1},{G1},{B1},{R2},{G2},{B2})"
 		End Sub
-		<Extension>
-		Public Sub SyncKaleidoscopes(e As CallCustomMethod, targetRoomID As Integer, otherRoomID As Integer)
+		<Extension> Public Sub SyncKaleidoscopes(e As CallCustomMethod, targetRoomID As Integer, otherRoomID As Integer)
 			e.MethodName = $"{NameOf(SyncKaleidoscopes)}({targetRoomID},{otherRoomID})"
 		End Sub
-		<Extension>
-		Public Sub SetVignetteAlpha(e As CallCustomMethod, alpha As Single, roomID As Integer)
+		<Extension> Public Sub SetVignetteAlpha(e As CallCustomMethod, alpha As Single, roomID As Integer)
 			e.MethodName = $"vfx.{NameOf(SetVignetteAlpha)}({alpha},{roomID})"
 		End Sub
-		<Extension>
-		Public Sub NoOneshotShadows(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub NoOneshotShadows(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(NoOneshotShadows).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Function TextOnly(e As ShowDialogue) As String
+		<Extension> Public Function TextOnly(e As ShowDialogue) As String
 			Dim result = e.Text
 			For Each item In {
 				"shake",
@@ -644,92 +599,70 @@ Namespace Extensions
 			Next
 			Return result
 		End Function
-		<Extension>
-		Public Sub EnableRowReflections(e As CallCustomMethod, roomID As Integer)
+		<Extension> Public Sub EnableRowReflections(e As CallCustomMethod, roomID As Integer)
 			e.MethodName = $"{NameOf(EnableRowReflections)}({roomID})"
 		End Sub
-		<Extension>
-		Public Sub DisableRowReflections(e As CallCustomMethod, roomID As Integer)
+		<Extension> Public Sub DisableRowReflections(e As CallCustomMethod, roomID As Integer)
 			e.MethodName = $"{NameOf(DisableRowReflections)}({roomID})"
 		End Sub
-		<Extension>
-		Public Sub ChangeCharacter(e As CallCustomMethod, Name As String, roomID As Integer)
+		<Extension> Public Sub ChangeCharacter(e As CallCustomMethod, Name As String, roomID As Integer)
 			e.MethodName = $"{NameOf(ChangeCharacter)}(str:{Name},{roomID})"
 		End Sub
-		<Extension>
-		Public Sub ChangeCharacter(e As CallCustomMethod, Name As Characters, roomID As Integer)
+		<Extension> Public Sub ChangeCharacter(e As CallCustomMethod, Name As Characters, roomID As Integer)
 			e.MethodName = $"{NameOf(ChangeCharacter)}(str:{Name},{roomID})"
 		End Sub
-		<Extension>
-		Public Sub ChangeCharacterSmooth(e As CallCustomMethod, Name As String, roomID As Integer)
+		<Extension> Public Sub ChangeCharacterSmooth(e As CallCustomMethod, Name As String, roomID As Integer)
 			e.MethodName = $"{NameOf(ChangeCharacterSmooth)}(str:{Name},{roomID})"
 		End Sub
-		<Extension>
-		Public Sub ChangeCharacterSmooth(e As CallCustomMethod, Name As Characters, roomID As Integer)
+		<Extension> Public Sub ChangeCharacterSmooth(e As CallCustomMethod, Name As Characters, roomID As Integer)
 			e.MethodName = $"{NameOf(ChangeCharacterSmooth)}(str:{Name},{roomID})"
 		End Sub
-		<Extension>
-		Public Sub SmoothShake(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub SmoothShake(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(SmoothShake).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub RotateShake(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub RotateShake(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(RotateShake).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub DisableRowChangeWarningFlashes(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub DisableRowChangeWarningFlashes(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(DisableRowChangeWarningFlashes).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub StatusSignWidth(e As CallCustomMethod, value As Single)
+		<Extension> Public Sub StatusSignWidth(e As CallCustomMethod, value As Single)
 			e.MethodName = $"{NameOf(StatusSignWidth).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub SkippableRankScreen(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub SkippableRankScreen(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(SkippableRankScreen).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub MissesToCrackHeart(e As CallCustomMethod, value As Integer)
+		<Extension> Public Sub MissesToCrackHeart(e As CallCustomMethod, value As Integer)
 			e.MethodName = $"{NameOf(MissesToCrackHeart).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub SkipRankText(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub SkipRankText(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(SkipRankText).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub AlternativeMatrix(e As CallCustomMethod, value As Boolean)
+		<Extension> Public Sub AlternativeMatrix(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(AlternativeMatrix).LowerCamelCase} = {value}"
 		End Sub
-		<Extension>
-		Public Sub ToggleSingleRowReflections(e As CallCustomMethod, room As Byte, row As Byte, value As Boolean)
+		<Extension> Public Sub ToggleSingleRowReflections(e As CallCustomMethod, room As Byte, row As Byte, value As Boolean)
 			e.MethodName = $"{NameOf(ToggleSingleRowReflections)}({room},{row},{value})"
 		End Sub
-		<Extension>
-		Public Sub SetScrollSpeed(e As CallCustomMethod, roomID As Byte, speed As Single, duration As Single, ease As EaseType)
+		<Extension> Public Sub SetScrollSpeed(e As CallCustomMethod, roomID As Byte, speed As Single, duration As Single, ease As EaseType)
 			e.MethodName = $"room[{roomID}].{NameOf(SetScrollSpeed)}({speed},{duration},str:{ease})"
 		End Sub
-		<Extension>
-		Public Sub SetScrollOffset(e As CallCustomMethod, roomID As Byte, cameraOffset As Single, duration As Single, ease As EaseType)
+		<Extension> Public Sub SetScrollOffset(e As CallCustomMethod, roomID As Byte, cameraOffset As Single, duration As Single, ease As EaseType)
 			e.MethodName = $"room[{roomID}].{NameOf(SetScrollOffset)}({cameraOffset},{duration},str:{ease})"
 		End Sub
-		<Extension>
-		Public Sub DarkenedRollerdisco(e As CallCustomMethod, roomID As Byte, value As Single)
+		<Extension> Public Sub DarkenedRollerdisco(e As CallCustomMethod, roomID As Byte, value As Single)
 			e.MethodName = $"room[{roomID}].{NameOf(DarkenedRollerdisco)}({value})"
 		End Sub
-		<Extension>
-		Public Sub CurrentSongVol(e As CallCustomMethod, targetVolume As Single, fadeTimeSeconds As Single)
+		<Extension> Public Sub CurrentSongVol(e As CallCustomMethod, targetVolume As Single, fadeTimeSeconds As Single)
 			e.MethodName = $"{NameOf(CurrentSongVol)}({targetVolume},{fadeTimeSeconds})"
 		End Sub
-		<Extension>
-		Public Sub PreviousSongVol(e As CallCustomMethod, targetVolume As Single, fadeTimeSeconds As Single)
+		<Extension> Public Sub PreviousSongVol(e As CallCustomMethod, targetVolume As Single, fadeTimeSeconds As Single)
 			e.MethodName = $"{NameOf(PreviousSongVol)}({targetVolume},{fadeTimeSeconds})"
 		End Sub
-		<Extension>
-		Public Sub EditTree(e As CallCustomMethod, room As Byte, [property] As String, value As Single, beats As Single, ease As EaseType)
+		<Extension> Public Sub EditTree(e As CallCustomMethod, room As Byte, [property] As String, value As Single, beats As Single, ease As EaseType)
 			e.MethodName = $"room[{room}].{NameOf(EditTree)}(""{[property]}"",{value},{beats},""{ease}"")"
 		End Sub
-		<Extension>
-		Public Function EditTree(e As CallCustomMethod, room As Byte, treeProperties As ProceduralTree, beats As Single, ease As EaseType) As IEnumerable(Of CallCustomMethod)
+		<Extension> Public Function EditTree(e As CallCustomMethod, room As Byte, treeProperties As ProceduralTree, beats As Single, ease As EaseType) As IEnumerable(Of CallCustomMethod)
 			Dim L As New List(Of CallCustomMethod)
 			For Each p In GetType(ProceduralTree).GetProperties
 				If p.GetValue(treeProperties) IsNot Nothing Then
@@ -740,13 +673,11 @@ Namespace Extensions
 			Next
 			Return L
 		End Function
-		<Extension>
-		Public Sub EditTreeColor(e As CallCustomMethod, room As Byte, location As Boolean, color As String, beats As Single, ease As EaseType)
+		<Extension> Public Sub EditTreeColor(e As CallCustomMethod, room As Byte, location As Boolean, color As String, beats As Single, ease As EaseType)
 			e.MethodName = $"room[{room}].{NameOf(EditTreeColor)}({location},{color},{beats},{ease})"
 		End Sub
 
-		<Extension>
-		Public Sub MoveToPosition(e As Move, point As RDPoint)
+		<Extension> Public Sub MoveToPosition(e As Move, point As RDPoint)
 
 		End Sub
 	End Module
