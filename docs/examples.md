@@ -45,7 +45,8 @@ for (int i = 0; i < 7; i++)
 
 //为每个装饰的最开头添加一个精灵可见性事件
 foreach (Decoration decoration in decorations)
-    decoration.CreateChildren(new SetVisible() { BeatOnly = 1, Visible = true });
+    SetVisible v = decoration.CreateChildren(new SetVisible() { BeatOnly = 1, Visible = true });
+    rdlevel.Add(v);
 ```
 
 ### 在七拍子的每一拍按键
