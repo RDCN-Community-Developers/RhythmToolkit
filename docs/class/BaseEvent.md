@@ -24,5 +24,5 @@ readonly | [Rooms](Rooms.md) | Rooms | 事件所在的房间。
 
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
-| | T | Copy\<T\>() where T : [BaseEvent](../class/BaseEvent.md) | 创建一个带有相同基础属性的指定事件类型副本实例。
+| | T | Clone\<T\>() where T : [BaseEvent](../class/BaseEvent.md) | 创建一个带有相同基础属性的指定事件类型副本实例。
 | | [BaseEvent](../class/BaseEvent.md) | Clone() | 浅拷贝事件为一个新实例。

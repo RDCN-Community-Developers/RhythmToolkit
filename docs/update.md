@@ -1,6 +1,15 @@
 ## [返回](../RadiationTherapy.md)
 # 更新日志
 
+### 2024/05/17
+
+- 修复了 [Settings](/class/Settings.md) 序列化时的枚举常量序列化为整数的问题。
+- 修复了没有链接至关卡的事件可能导致的空引用异常。
+- 添加了 [OrderedEventCollection](/class/OrderedEventCollection.md) 类型，用于统一管理事件集合。
+- [RDLevel](/class/RDLevel.md)，[Row](/class/Row.md) 和 [Decoration](/class/Decoration.md) 现在继承自 [OrderedEventCollection](/class/OrderedEventCollection.md) 了。
+- 移除了 [Row](/class/Row.md) 和 [Decoration](/class/Decoration.md) 的 `Children` 属性。
+- 更新了[示例](/examples.md)。
+
 ### 2024/05/04
 
 - [BaseEvent](/class/BaseEvent.md) 的 `Copy()` 方法更名为 `Clone()`。

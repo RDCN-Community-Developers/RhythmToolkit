@@ -1,6 +1,7 @@
 # [RhythmBase](../../RhythmToolkit.md).[LevelElements](../namespace/LevelElements.md).Row
 ### [RhythmBase.dll](../assembly/RhythmBase.md)
 轨道。
+继承自 [OrderedEventCollection](/class/OrderedEventCollection.md)。
 
 ## 枚举
 
@@ -9,7 +10,6 @@
 ## 属性和字段
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
-readonly | List\<[BaseRowAction](../class/BaseRowAction.md)\> | Children | 返回此轨道下的子事件。
 | | string | Character | 返回或设置轨道的角色。
 | | [RowType](../enum/RowType.md) | RowType | 返回或设置轨道的类型。<br>注意:修改此值会使Children清空。
 readonly | sbyte | Row | 返回轨道的序号。

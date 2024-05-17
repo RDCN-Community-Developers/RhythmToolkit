@@ -45,8 +45,7 @@ for (int i = 0; i < 7; i++)
 
 //为每个装饰的最开头添加一个精灵可见性事件
 foreach (Decoration decoration in decorations)
-    SetVisible v = decoration.CreateChildren(new SetVisible() { BeatOnly = 1, Visible = true });
-    rdlevel.Add(v);
+    decoration.CreateChildren<SetVisible>(new SetVisible() { BeatOnly = 1, Visible = true });
 ```
 
 ### 在七拍子的每一拍按键
@@ -69,7 +68,7 @@ foreach(AddClassicBeat beat in rdlevel.Where<AddClassicBeat>())
 //在关卡内以每个自由拍的基础属性创建自由拍头
 foreach(BaseBeat beat in beats)
 {
-    AddFreeTimeBeat hit = beat.Copy<AddFreeTimeBeat>();
+    AddFreeTimeBeat hit = beat.Clone<AddFreeTimeBeat>();
     hit.Pulse = 7;
     /*
     以上两句等效于

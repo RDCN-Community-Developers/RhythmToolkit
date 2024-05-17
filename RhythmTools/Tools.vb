@@ -128,7 +128,7 @@ Namespace Tools
 				item.Active = False
 			Next
 			For Each item In Add1
-				Dim n = item.Copy(Of AddFreeTimeBeat)
+				Dim n = item.Clone(Of AddFreeTimeBeat)
 				n.Pulse = 6
 				Add2.Add(n)
 			Next
@@ -175,7 +175,7 @@ Namespace Tools
 					tempExpression.Expression = beatSettings.Line
 					Level.Add(tempExpression)
 				Next
-				For Each item In row.Children
+				For Each item In row
 
 					Select Case item.Type
 						Case EventType.HideRow
@@ -308,7 +308,7 @@ Namespace Tools
 		''' <param name="count">个数</param>
 		Public Sub AddLotsOfDecos(decoration As Decoration, count As UInteger)
 			For i As UInteger = 0 To count
-				Level.CopyDecoration(decoration)
+				Level.CloneDecoration(decoration)
 			Next
 		End Sub
 		''' <summary>

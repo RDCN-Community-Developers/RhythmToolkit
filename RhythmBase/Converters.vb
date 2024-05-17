@@ -9,6 +9,7 @@ Imports RhythmBase.Exceptions
 Imports RhythmBase.LevelElements
 Imports RhythmBase.Settings
 Imports RhythmBase.Utils
+Imports RhythmBase.Utils.Global
 Imports SkiaSharp
 Imports RhythmBase.Extensions
 Imports System.Reflection
@@ -33,6 +34,7 @@ Namespace Converters
 			With SettingsSerializer.Converters
 				.Add(New LimitedListConverter(Of String))
 				.Add(New LimitedListConverter(Of Integer))
+				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 			End With
 			Dim RowsSerializer As New JsonSerializerSettings With {
 					.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
@@ -173,13 +175,16 @@ Namespace Converters
 				.Add(New TagActionConverter(Level, inputSettings))
 				.Add(New UnknownObjectConverter(Level, inputSettings))
 				.Add(New BaseRowActionConverter(Of BaseRowAction)(Level, inputSettings))
-				.Add(New BaseDecorationConverter(Of BaseDecorationAction)(Level, inputSettings))
+				.Add(New BaseDecorationActionConverter(Of BaseDecorationAction)(Level, inputSettings))
 				.Add(New BaseEventConverter(Of BaseEvent)(Level, inputSettings))
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 			End With
 
 			For Each item In Level.Rows
-				item.ParentCollection = Level._Rows
+				item.Parent = Level
+			Next
+			For Each item In Level.Decorations
+				item.Parent = Level
 			Next
 
 			For Each item In Level.Conditionals
@@ -190,27 +195,25 @@ Namespace Converters
 			Dim FloatingTextCollection As New List(Of ([event] As FloatingText, id As Integer))
 			Dim AdvanceTextCollection As New List(Of ([event] As AdvanceText, id As Integer))
 
-
-
 			For Each item In J("events")
-				Select Case item("type")
-					Case NameOf(SetCrotchetsPerBar)
-						Dim TempEvent As SetCrotchetsPerBar = item.ToObject(GetType(SetCrotchetsPerBar), EventsSerializer)
+				Dim TempEvent As BaseEvent = item.ToObject(ConvertToType(item("type")), EventsSerializer)
+				Select Case [Enum].Parse(Of EventType)(item("type"))
+					Case EventType.SetCrotchetsPerBar
 						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), 1, SetCPBCollection)
 						SetCPBCollection.Add(TempEvent)
 						Level.Add(TempEvent)
-					Case NameOf(SetBeatsPerMinute)
-						Dim TempEvent As BaseBeatsPerMinute = item.ToObject(GetType(SetBeatsPerMinute), EventsSerializer)
+					Case EventType.SetBeatsPerMinute
 						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CSng(item("beat")), SetCPBCollection)
 						SetBPMCollection.Add(TempEvent)
 						Level.Add(TempEvent)
-					Case NameOf(PlaySong)
-						Dim TempEvent As BaseBeatsPerMinute = item.ToObject(GetType(PlaySong), EventsSerializer)
+					Case EventType.PlaySong
 						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CSng(item("beat")), SetCPBCollection)
 						SetBPMCollection.Add(TempEvent)
 						Level.Add(TempEvent)
 					Case Else
-						Dim TempEvent As BaseEvent = item.ToObject(ConvertToType(item("type")), EventsSerializer)
+						If RowTypes.Contains(TempEvent.Type) OrElse DecorationTypes.Contains(TempEvent.Type) Then
+							Continue For
+						End If
 						'浮动文字事件记录
 						If TempEvent.Type = EventType.FloatingText Then
 							FloatingTextCollection.Add((CType(TempEvent, FloatingText), item("id")))
@@ -219,8 +222,8 @@ Namespace Converters
 							AdvanceTextCollection.Add((CType(TempEvent, AdvanceText), item("id")))
 						End If
 						'未处理事件加入
-						Level.Add(TempEvent)
 				End Select
+				Level.Add(TempEvent)
 			Next
 			'浮动文字事件关联
 			For Each AdvancePair In AdvanceTextCollection
@@ -377,26 +380,28 @@ Namespace Converters
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As BaseRowAction, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseRowAction
 			Dim obj = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
-			If jobj("row").Value(Of Integer) >= 0 Then
+			Try
 				Dim Parent = level._Rows(jobj("row"))
-				Parent.Children.Add(obj)
 				obj.Parent = Parent
-			End If
+			Catch e As Exception
+				Throw New RhythmBaseException($"Cannot find the row {jobj("row")} at {obj}", e)
+			End Try
 			Return obj
 		End Function
 	End Class
-	Friend Class BaseDecorationConverter(Of T As BaseDecorationAction)
+	Friend Class BaseDecorationActionConverter(Of T As BaseDecorationAction)
 		Inherits BaseEventConverter(Of T)
 		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
 			Dim obj = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
-			Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = jobj("target"))
-			If Parent IsNot Nothing Then
-				Parent.Children.Add(obj)
+			Try
+				Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = jobj("target"))
 				obj.Parent = Parent
-			End If
+			Catch e As Exception
+				Throw New RhythmBaseException($"Cannot find the decoration {jobj("target")} at {obj}", e)
+			End Try
 			Return obj
 		End Function
 	End Class
@@ -731,7 +736,7 @@ Namespace Converters
 			result.Frames = New Sprite.Frame(FilePath + ".png")
 			result.Freeze = SKBitmap.Decode(FilePath + "_freeze.png")
 			For Each clip In result.Clips
-				clip.Parent = result
+				clip.parent = result
 			Next
 			Return result
 		End Function

@@ -8,6 +8,10 @@ Imports RhythmBase.Components
 ''' 工具类
 ''' </summary>
 Namespace Utils
+    Public Module [Global]
+        Public ReadOnly RowTypes As IEnumerable(Of EventType) = ConvertToEnums(Of BaseRowAction)()
+        Public ReadOnly DecorationTypes As IEnumerable(Of EventType) = ConvertToEnums(Of BaseDecorationAction)()
+    End Module
     Public Class BeatCalculator
         Private CPBs As IEnumerable(Of SetCrotchetsPerBar)
         Private BPMs As IEnumerable(Of BaseBeatsPerMinute)
