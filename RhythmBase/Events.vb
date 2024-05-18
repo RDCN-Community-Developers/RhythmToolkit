@@ -74,7 +74,7 @@ Namespace Events
 		'ShowSubdivisionsRows
 		ReadNarration
 		NarrateRowInfo
-		UnknownEvent
+		CustomEvent
 	End Enum
 	Public Enum PlayerType
 		P1
@@ -171,8 +171,8 @@ Namespace Events
 					Return (1, 1)
 				End If
 				Dim Calculator As New BeatCalculator(ParentLevel)
-					Return Calculator.BeatOnly_BarBeat(BeatOnly)
-            End Get
+				Return Calculator.BeatOnly_BarBeat(BeatOnly)
+			End Get
 			Set(value As (Bar As UInteger, Beat As Single))
 				If ParentLevel Is Nothing Then
 					Return
@@ -341,9 +341,9 @@ Namespace Events
 		Inherits BaseRowAction
 
 	End Class
-	Public Class UnknownEvent
+	Public Class CustomEvent
 		Inherits BaseEvent
-		Public Overrides ReadOnly Property Type As EventType = EventType.UnknownEvent
+		Public Overrides ReadOnly Property Type As EventType = EventType.CustomEvent
 		<JsonIgnore>
 		Public ReadOnly Property RealType As String
 			Get
@@ -353,14 +353,17 @@ Namespace Events
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Unknown
 		Public Overrides Property Y As Integer
 			Get
-				Return CInt(Data("y"))
+				Return CInt(If(Data("y"), 0))
 			End Get
 			Set(value As Integer)
 				Data("y") = value
 			End Set
 		End Property
 		Public Overrides ReadOnly Property Rooms As Rooms = New Rooms(True, True)
-		Public Data As Linq.JObject
+		Public Data As New Linq.JObject
+		Public Sub New()
+			Data = New Newtonsoft.Json.Linq.JObject
+		End Sub
 	End Class
 	Public Class PlaySong
 		Inherits BaseBeatsPerMinute

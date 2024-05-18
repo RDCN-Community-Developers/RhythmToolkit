@@ -86,7 +86,7 @@ Namespace Converters
 				.Add(New AssetConverter(value.Path, value.Assets))
 				.Add(New AnchorStyleConverter)
 				.Add(New PatternConverter)
-				.Add(New UnknownObjectConverter(value, inputSettings))
+				.Add(New CustomEventConverter(value, inputSettings))
 				.Add(New TagActionConverter(value, inputSettings))
 				.Add(New BaseEventConverter(Of BaseEvent)(value, inputSettings))
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
@@ -173,7 +173,7 @@ Namespace Converters
 				.Add(New ConditionConverter(Level.Conditionals))
 				.Add(New PatternConverter)
 				.Add(New TagActionConverter(Level, inputSettings))
-				.Add(New UnknownObjectConverter(Level, inputSettings))
+				.Add(New CustomEventConverter(Level, inputSettings))
 				.Add(New BaseRowActionConverter(Of BaseRowAction)(Level, inputSettings))
 				.Add(New BaseDecorationActionConverter(Of BaseDecorationAction)(Level, inputSettings))
 				.Add(New BaseEventConverter(Of BaseEvent)(Level, inputSettings))
@@ -336,7 +336,7 @@ Namespace Converters
 
 			Dim SubClassType As Type = Type.GetType($"{BaseActionType.Namespace}.{jobj("type")}")
 			_canread = False
-			existingValue = If(SubClassType IsNot Nothing, jobj.ToObject(SubClassType, serializer), jobj.ToObject(Of UnknownEvent)(serializer))
+			existingValue = If(SubClassType IsNot Nothing, jobj.ToObject(SubClassType, serializer), jobj.ToObject(Of CustomEvent)(serializer))
 			_canread = True
 			existingValue.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(jobj("bar")), CDbl(If(jobj("beat"), 1)), level.Where(Of SetCrotchetsPerBar))
 
@@ -352,20 +352,20 @@ Namespace Converters
 			Return JObj
 		End Function
 	End Class
-	Friend Class UnknownObjectConverter
-		Inherits BaseEventConverter(Of UnknownEvent)
+	Friend Class CustomEventConverter
+		Inherits BaseEventConverter(Of CustomEvent)
 		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
-		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As UnknownEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As UnknownEvent
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As CustomEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As CustomEvent
 			Dim result = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
 			result.Data = jobj
 			Return result
 		End Function
-		Public Overrides Function SetSerializedObject(value As UnknownEvent, serializer As JsonSerializer) As JObject
+		Public Overrides Function SetSerializedObject(value As CustomEvent, serializer As JsonSerializer) As JObject
 			Dim jobj = MyBase.SetSerializedObject(value, serializer)
-			jobj.Remove(NameOf(UnknownEvent.Data).ToLower)
-			jobj.Remove(NameOf(UnknownEvent.Type).ToLower)
+			jobj.Remove(NameOf(CustomEvent.Data).ToLower)
+			jobj.Remove(NameOf(CustomEvent.Type).ToLower)
 			Dim data = value.Data.DeepClone
 			For Each item In jobj
 				data(item.Key) = item.Value

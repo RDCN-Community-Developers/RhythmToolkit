@@ -20,12 +20,12 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<T\>.I
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
 | | IEnumerable\<IGrouping\<String, T\>\> | GetTaggedEvents(string name, bool direct) | 以标签名获取标签事件。
-| | void | Add(T item) | 向事件集合添加事件。<br>实现ICollection\<T\>.Add(BaseEvent item)接口。
-| | void | AddRange(IEnumerable\<T\> item) | 向事件集合添加一系列事件。
+| | | Add(T item) | 向事件集合添加事件。<br>实现ICollection\<T\>.Add(BaseEvent item)接口。
+| | | AddRange(IEnumerable\<T\> item) | 向事件集合添加一系列事件。
 | | bool | Remove(T item) | 移除事件。<br>实现ICollection\<T\>.Remove()接口。
-| | void | RemoveRange(IEnumerable\<T\> items) | 移除给定列表内的所有事件。
+| | | RemoveRange(IEnumerable\<T\> items) | 移除给定列表内的所有事件。
 | | int | RemoveAll(Predicate\<T\> predicate) | 移除满足谓词的事件并返回移除的个数。
-| | void | Clear() | 清空Events集合。<br>实现ICollection\<T\>.Clear()接口
+| | | Clear() | 清空Events集合。<br>实现ICollection\<T\>.Clear()接口
 | | bool | Contains(T item) | 返回集合是否包含此事件。<br>实现ICollection\<T\>.Contains(T item)接口
 | | IEnumerable\<T\> | Where(Func\<T, bool\> predicate) | 以谓词筛选指定事件。此迭代器以事件的时间顺序迭代。
 | | IEnumerable\<T\> | Where(float startBeat, float endBeat) | 以节拍范围`[startBeat, endBeat]`筛选指定事件。此迭代器以事件的时间顺序迭代。
@@ -59,7 +59,7 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<T\>.I
 | | U | LastOrDefault\<U\>(Func\<U, bool\> predicate) where U : T | 获取集合内最后一个满足谓词和类型的事件。<br>若未找到则返回null。
 | | U | LastOrDefault\<U\>(Func\<U, bool\> predicate, T defaultValue) where U : T | 获取集合内最后一个满足谓词和类型的事件。<br>若未找到则返回defaultValue。
 | | IEnumerable\<T\> | ExtractEventsAt(float beat) | 返回集合内指定节拍的事件集合。若此处无事件则返回空集合。<br>**注意：此方法在返回结果的同时会尝试移除集合内的相同事件。**
-| | void | CopyTo(T[] array, int arrayIndex) | 将事件拷贝到数组。<br>实现ICollection\<T\>.CopyTo()接口。
+| | | CopyTo(T[] array, int arrayIndex) | 将事件拷贝到数组。<br>实现ICollection\<T\>.CopyTo()接口。
 | | IEnumerble<T> | GetEnumerator() | 获取此集合实例的迭代器。此迭代器以事件的时间顺序迭代。
 
 [E]: ../class/BaseEvent.md

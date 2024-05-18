@@ -1,4 +1,4 @@
-# [RhythmBase](../../RhythmToolkit.md).[Events](../namespace/Events.md).UnknownEvent  
+# [RhythmBase](../../RhythmToolkit.md).[Events](../namespace/Events.md).CustomEvent  
 ### [RhythmBase.dll](../assembly/RhythmBase.md)
 未知事件，继承自[BaseEvent](BaseEvent.md)。
 

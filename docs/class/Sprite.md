@@ -32,5 +32,5 @@ readonly | bool | IsSprite | 指示此实例是否为精灵图。<br>若为假�
 | | IEnumerable\<[Clip](../class/Sprite.Clip.md)\> | AddBlankClipsForCharacter() | 添加用途为角色的精灵的必需表情并返回这些表情。
 | | IEnumerable\<[Clip](../class/Sprite.Clip.md)\> | AddBlankClipsForDecoration() | 添加用途为装饰的精灵的必需表情并返回这些表情。
 static | [Sprite]() | LoadFile(string path) | 返回从此文件构建的一个新 [Sprite]() 实例。
-| | void | WriteJson(string path) | 写入文件。 
-| | void | WriteJson(string path, [SpriteOutputSettings](../class/SpriteOutputSettings.md) settings) | 写入文件。  
+| | | WriteJson(string path) | 写入文件。 
+| | | WriteJson(string path, [SpriteOutputSettings](../class/SpriteOutputSettings.md) settings) | 写入文件。  

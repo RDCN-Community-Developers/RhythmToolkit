@@ -15,6 +15,10 @@ RDLevel rdlevel = RDLevel.LoadFile(@"Your\level.rdzip");
 rdlevel.SaveFile(@"Your\level_copy.rdlevel");
 ```
 
+**以下出现的 `rdlevel` 皆为 `RDLevel` 类型，读取和写入过程已省略。**
+
+---
+
 ### 移除所有位于动作栏的未激活事件
 
 ```CS
@@ -23,6 +27,8 @@ using RhythmBase.Events;
 
 rdlevel.RemoveAll(i => i.Tab == Tabs.Actions && !i.Active);
 ```
+
+---
 
 ### 批量添加并初始化装饰
 
@@ -45,8 +51,10 @@ for (int i = 0; i < 7; i++)
 
 //为每个装饰的最开头添加一个精灵可见性事件
 foreach (Decoration decoration in decorations)
-    decoration.CreateChildren<SetVisible>(new SetVisible() { BeatOnly = 1, Visible = true });
+    decoration.CreateChildren(new SetVisible() { BeatOnly = 1, Visible = true });
 ```
+
+---
 
 ### 在七拍子的每一拍按键
 
@@ -70,6 +78,7 @@ foreach(BaseBeat beat in beats)
 {
     AddFreeTimeBeat hit = beat.Clone<AddFreeTimeBeat>();
     hit.Pulse = 7;
+
     /*
     以上两句等效于
 
@@ -82,11 +91,12 @@ foreach(BaseBeat beat in beats)
         Pulse = 7
     };
     beat.ParentLevel.Add(hit);
-
     */
 
 }
 ```
+
+---
 
 ### 以第一个结束事件的时刻计算关卡时长
 ```CS
@@ -94,7 +104,7 @@ using RhythmBase.LevelElements;
 using RhythmBase.Events;
 using RhythmBase.Utils;
 
-//获得第一个 FinishLevel 事件。
+//获得第一个 FinishLevel 事件
 FinishLevel finishLevel = rdlevel.First<FinishLevel>();
 //以关卡构建节拍计算器类
 BeatCalculator calculator = new(rdlevel);
@@ -104,6 +114,72 @@ float result1 = (float)calculator.BeatOnly_Time(finishLevel.BeatOnly).TotalSecon
 
 //内部隐式使用节拍计算器类求得时间（仅用于临时调用）
 float result2 = (float)finishLevel.Time.TotalSeconds;
+```
+
+---
+
+### 构造自定义事件
+
+在使用自定义事件时请确保游戏能够正常读取。
+
+```CS
+using Newtonsoft.Json.Linq;
+using RhythmBase.Events;
+using RhythmBase.Components;
+using static RhythmBase.Components.Ease;
+
+//创建 MyCustomEvent 类型
+//  继承 UnknownEvent 类型
+public class MyCustomEvent : UnknownEvent
+{
+    //重写属性
+    public override Rooms Rooms => Rooms.Default;
+    public override Tabs Tab => Tabs.Actions;
+
+    //实现的属性都需要和 UnknownEvent.Data 字段内的数据绑定和判空。
+
+    //实现一个 NumOrExpPair 类型属性
+    public NumOrExpPair? NumOrExpPairProperty
+    {
+        get
+        {
+            //在 Data 字段内获取所需要的内容并判空
+            var value = Data["numOrExpPairProperty"];
+            return value.ToObject<NumOrExpPair>() ??
+                new NumOrExpPair(
+                    value[0]?.ToObject<string>(),
+                    value[1]?.ToObject<string>()
+                );
+        }
+        set
+        {
+            //将内容保存在 Data 字段内
+            Data["numOrExpPairProperty"] = 
+                value.HasValue ?
+                new JArray(
+                    value.Value.X.Serialize(),
+                    value.Value.Y.Serialize()) :
+                null;
+        }
+    }
+
+    //在构造函数内初始化类型
+    public MyCustomEvent()
+    {
+        //type 字段的内容会返回到 RealType 属性上。
+        Data["type"] = nameof(MyCustomEvent);
+    }
+}
+
+MyCustomEvent myEvent = new();
+
+level.Add(myEvent);
+
+myEvent.BeatOnly = 8;
+
+Console.WriteLine(myEvent.Type);        //UnknownEvent
+Console.WriteLine(myEvent.RealType);    //MyCustomEvent
+
 ```
 
 在 **RhythmBase.Addition**, **RhythmHospital**, **BeatsViewer** 等项目浏览更多示例。

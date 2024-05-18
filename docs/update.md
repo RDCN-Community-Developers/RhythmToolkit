@@ -1,6 +1,11 @@
 ## [返回](../RadiationTherapy.md)
 # 更新日志
 
+### 2024/05/18
+
+- [UnknownEvent](/class/UnknownEvent.md) 更名为 `CustomEvent`。
+- 更新了[示例](/examples.md)。
+
 ### 2024/05/17
 
 - 修复了 [Settings](/class/Settings.md) 序列化时的枚举常量序列化为整数的问题。

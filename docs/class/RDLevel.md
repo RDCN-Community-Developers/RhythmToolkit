@@ -37,8 +37,8 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<[Base
 | | RDLevel | ReadFromString(string json, string fileLocation, [LevelInputSettings](../class/LevelInputSettings.md) settings) | 导入关卡。
 | | RDLevel | LoadFile(string filepath) | 读取关卡文件。<br>支持rdlevel,rdzip格式。
 | | RDLevel | LoadFile(string filepath, [LevelInputSettings](../class/LevelInputSettings.md) settings) | 读取关卡文件。<br>支持rdlevel,rdzip格式。
-| | void | SaveFile(string filepath) | 保存关卡文件。
-| | void | SaveFile(string filepath, [LevelOutputSettings](../class/LevelOutputSettings.md) settings) | 保存关卡文件。
+| | | SaveFile(string filepath) | 保存关卡文件。
+| | | SaveFile(string filepath, [LevelOutputSettings](../class/LevelOutputSettings.md) settings) | 保存关卡文件。
 | | IEnumerable\<[Hit](../class/Hit.md)\> | GetHitBeat() | 返回关卡的按拍点集合。
 | | IEnumerable\<[BaseBeat](../class/BaseBeat.md)\> | GetHitEvents() | 返回关卡的节拍事件集合。
 

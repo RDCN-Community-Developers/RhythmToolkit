@@ -24,6 +24,6 @@ readonly | Dictionary\<string, [INumOrExp](../interface/INumOrExp.md)\> | Values
 
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
-| | void | RefreshValue(Func\<float, [Variables](../class/Variables.md)\> realtimeVariables) | 以变量组刷新属性的值。
-| | void | RefreshValue([Variables](../class/Variables.md)) | 以变量组刷新属性的值。
+| | | RefreshValue(Func\<float, [Variables](../class/Variables.md)\> realtimeVariables) | 以变量组刷新属性的值。
+| | | RefreshValue([Variables](../class/Variables.md)) | 以变量组刷新属性的值。
 | | IDictionary\<string, float\> | GetValue(IDictionary\<string, float\> StartValues, float beat, Variables variables) | 获取指定时刻的属性值。

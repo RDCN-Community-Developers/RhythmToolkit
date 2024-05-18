@@ -430,6 +430,9 @@ Namespace Components
 		Public Function TryGetValue() As RDPoint
 			Return New RDPoint(X.TryGetValue, Y.TryGetValue)
 		End Function
+		Public Shared Widening Operator CType(v As Linq.JArray) As NumOrExpPair
+			Return New NumOrExpPair(v(0).ToString, v(1).ToString)
+		End Operator
 	End Structure
 	Public Structure RDPoint
 		Public X As Single

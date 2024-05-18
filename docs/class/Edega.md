@@ -2,4 +2,4 @@
 
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
-static | void | DetectingAll([RDLevel](../class/RDLevel.md) level) | 检查关卡节拍的合法性(待开发)。
+static | | DetectingAll([RDLevel](../class/RDLevel.md) level) | 检查关卡节拍的合法性(待开发)。

@@ -174,6 +174,7 @@ namespace Physicians
                     item.warnInfo.Add((Warn.Illegal, $"{name}: {SetRowXs.GetPatternString(beat.RowXs)}"));
             }
         }
+
         public static void DetectingAll(RDLevel level)
         {
             var now = DateTime.Now;
@@ -277,6 +278,98 @@ namespace Physicians
                 Console.WriteLine("Nothing detected.");
             }
 
+        }
+    }
+
+    public class Ian
+    {
+        private readonly RDLevel level;
+        private readonly BeatCalculator calculator;
+        public Ian(RDLevel level)
+        {
+            this.level = level;
+            calculator = new BeatCalculator(level);
+        }
+        public void SplitRDGSG()
+        {
+            List<SayReadyGetSetGo> Adds = new();
+            foreach (SayReadyGetSetGo item in level.Where<SayReadyGetSetGo>())
+            {
+                if (item.Splitable)
+                {
+                    Adds.AddRange(item.Split());
+                    item.Active = false;
+                }
+            }
+            level.AddRange(Adds);
+        }
+        public void SplitClassicBeat()
+        {
+            List<BaseEvent> events = new();
+            foreach (AddClassicBeat item in level.Where<AddClassicBeat>())
+            {
+                events.AddRange(item.Split());
+                item.Active = false;
+            }
+            level.AddRange(events);
+        }
+        public void PressOnEveryBeat()
+        {
+            List<BaseBeat> Beats = new();
+            List<AddFreeTimeBeat> FreeTimes = new();
+            foreach (AddClassicBeat item in level.Where<AddClassicBeat>())
+            {
+                Beats.AddRange(item.Split());
+                item.Active = false;
+            }
+            foreach (BaseBeat item in Beats)
+            {
+                var n = item.Clone<AddFreeTimeBeat>();
+                n.Pulse = 6;
+                FreeTimes.Add(n);
+            }
+            level.AddRange(FreeTimes);
+        }
+        public void DisposeTags()
+        {
+            List<BaseEvent> Events = new();
+            foreach (TagAction item in level.Where<TagAction>())
+            {
+                var EventGroup = level.GetTaggedEvents(item.ActionTag, item.Action != TagAction.Actions.Run);
+                foreach (var Group in EventGroup)
+                {
+                    float StartBeat = Group.First().BeatOnly;
+                    var CopiedGroup = Group.Select(i => Others.Clone(i)).ToList();
+                    foreach (BaseEvent Copy in CopiedGroup)
+                    {
+                        Copy.BeatOnly += (item.BeatOnly - StartBeat);
+                        Copy.Tag = "";
+                        Events.Add(Copy);
+                    }
+                    item.Active = false;
+                }
+            }
+            level.AddRange(Events);
+        }
+        public IEnumerable<(Hit,Hit,TimeSpan)> GetShortestHitInterval()
+        {
+            List<Hit> hits = new();
+            List<(Hit,Hit,TimeSpan)> interval = new();
+            foreach (Row row in level.Rows)
+                hits.AddRange(row.HitBeats());
+            hits = hits
+                    .GroupBy(i => i.BeatOnly)
+                    .Select(i => i.First())
+                    .OrderBy(i => i.BeatOnly)
+                    .ToList();
+            for (int i = 0; i < hits.Count - 1; i++)
+                interval.Add((
+                    hits[i],
+                    hits[i + 1],
+                    calculator.BeatOnly_Time(hits[i + 1].BeatOnly + hits[i + 1].Hold)
+                ));
+            var min = interval.Min(i => i.Item3);
+            return interval.Where(i => i.Item3 == min);
         }
     }
 }
