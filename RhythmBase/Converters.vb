@@ -41,6 +41,7 @@ Namespace Converters
 				}
 			With RowsSerializer.Converters
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				.Add(New CharacterConverter(fileLocation, value.Assets))
 				.Add(New RoomConverter)
 			End With
 			Dim DecorationsSerializer As New JsonSerializerSettings With {
@@ -124,6 +125,7 @@ Namespace Converters
 			Dim RowsSerializer As New JsonSerializer
 			With RowsSerializer.Converters
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				.Add(New CharacterConverter(fileLocation, assetsCollection))
 				.Add(New RoomConverter)
 			End With
 			Dim DecorationsSerializer As New JsonSerializer
@@ -265,6 +267,32 @@ Namespace Converters
 				.BeatOnly = calculator.BarBeat_BeatOnly(jobj("bar"), jobj("beat")),
 				.Color = [Enum].Parse(Of Bookmark.BookmarkColors)(jobj("color"))
 			}
+		End Function
+	End Class
+	Friend Class CharacterConverter
+		Inherits JsonConverter(Of Character)
+		Private ReadOnly fileLocation As String
+		Private ReadOnly assets As HashSet(Of Sprite)
+		Public Sub New(location As String, assets As HashSet(Of Sprite))
+			fileLocation = location
+			Me.assets = assets
+		End Sub
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As Character, serializer As JsonSerializer)
+			If value.IsCustom Then
+				writer.WriteValue($"custom:{value.CustomCharacter.Name}")
+			Else
+				writer.WriteValue(value.Character.ToString)
+			End If
+		End Sub
+
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Character, hasExistingValue As Boolean, serializer As JsonSerializer) As Character
+			Dim value = JToken.ReadFrom(reader).ToObject(Of String)
+			If value.StartsWith("custom:") Then
+				Dim name = value.Substring(7)
+				Return New Character(If(assets.SingleOrDefault(Function(i) i.Name = name), Sprite.LoadFile($"{IO.Path.GetDirectoryName(fileLocation)}\{name}")))
+			Else
+				Return New Character([Enum].Parse(Of Characters)(value))
+			End If
 		End Function
 	End Class
 	Friend Class AnchorStyleConverter
@@ -559,36 +587,36 @@ Namespace Converters
 			ElseIf Json = String.Empty Then
 				Return Nothing
 			Else
-				Dim file = New IO.FileInfo(fileLocation).Directory.FullName + "\" + Json
+				Dim file = IO.Path.GetDirectoryName(fileLocation) + "\" + Json
 				result = Sprite.LoadFile(file)
 				assets.Add(result)
 			End If
 			Return result
 		End Function
 	End Class
-	Friend Class DecorationConverter
-		Inherits JsonConverter(Of Decoration)
-		Private ReadOnly fileLocation As String
-		Private ReadOnly assets As HashSet(Of Sprite)
-		Public Sub New(location As String, assets As HashSet(Of Sprite))
-			fileLocation = location
-			Me.assets = assets
-		End Sub
-		Public Overrides ReadOnly Property CanWrite As Boolean = False
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As Decoration, serializer As JsonSerializer)
-			Throw New NotImplementedException()
-		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Decoration, hasExistingValue As Boolean, serializer As JsonSerializer) As Decoration
-			Dim Json = JToken.ReadFrom(reader)
-			Dim settings As New JsonSerializer
-			With settings.Converters
-				.Add(New RoomConverter)
-				.Add(New AssetConverter(fileLocation, assets))
-			End With
-			Dim result = Json.ToObject(Of Decoration)(settings)
-			Return result
-		End Function
-	End Class
+	'Friend Class DecorationConverter
+	'	Inherits JsonConverter(Of Decoration)
+	'	Private ReadOnly fileLocation As String
+	'	Private ReadOnly assets As HashSet(Of Sprite)
+	'	Public Sub New(location As String, assets As HashSet(Of Sprite))
+	'		fileLocation = location
+	'		Me.assets = assets
+	'	End Sub
+	'	Public Overrides ReadOnly Property CanWrite As Boolean = False
+	'	Public Overrides Sub WriteJson(writer As JsonWriter, value As Decoration, serializer As JsonSerializer)
+	'		Throw New NotImplementedException()
+	'	End Sub
+	'	Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Decoration, hasExistingValue As Boolean, serializer As JsonSerializer) As Decoration
+	'		Dim Json = JToken.ReadFrom(reader)
+	'		Dim settings As New JsonSerializer
+	'		With settings.Converters
+	'			.Add(New RoomConverter)
+	'			.Add(New AssetConverter(fileLocation, assets))
+	'		End With
+	'		Dim result = Json.ToObject(Of Decoration)(settings)
+	'		Return result
+	'	End Function
+	'End Class
 	Friend Class RoomConverter
 		Inherits JsonConverter(Of Rooms)
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As Rooms, serializer As JsonSerializer)

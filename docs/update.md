@@ -1,6 +1,11 @@
 ## [返回](../RadiationTherapy.md)
 # 更新日志
 
+### 2024/05/21
+
+- 添加了 [Character](/class/Character.md) 类型。
+- [Row](/class/Row.md) 类型的 `Character` 字段替换为 [Character](/class/Character.md) 类型。
+
 ### 2024/05/18
 
 - [UnknownEvent](/class/UnknownEvent.md) 更名为 `CustomEvent`。

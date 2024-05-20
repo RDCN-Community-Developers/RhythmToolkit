@@ -1382,7 +1382,7 @@ Namespace LevelElements
 		Private _rowType As RowType
 		<JsonIgnore>
 		Friend Parent As RDLevel
-		Public Property Character As String
+		Public Property Character As Character
 		Public Property CpuMaker As Characters?
 		Public Property RowType As RowType
 			Get
@@ -1668,7 +1668,7 @@ CType(i, BaseBeat).Hitable
 			End If
 			Return False
 		End Function
-		Public Function CreateRow(room As Rooms, character As String, Optional visible As Boolean = True) As Row
+		Public Function CreateRow(room As Rooms, character As Character, Optional visible As Boolean = True) As Row
 			Dim temp As New Row() With {.Character = character, .Rooms = room, .Parent = Me, .HideAtStart = Not visible}
 			_Rows.Add(temp)
 			Return temp
@@ -1747,7 +1747,7 @@ New Converters.RDLevelConverter(fileLocation, settings)
 		Public Function GetHitEvents() As IEnumerable(Of BaseBeat)
 			Return Where(Of BaseBeat).Where(Function(i) i.Hitable)
 		End Function
-		Public Function CreateRow(character As String) As Row
+		Public Function CreateRow(character As Character) As Row
 			Return New Row With {
 				.Parent = Me,
 				.Character = character

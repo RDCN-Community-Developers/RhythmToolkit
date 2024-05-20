@@ -10,7 +10,7 @@
 ## 属性和字段
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
-| | string | Character | 返回或设置轨道的角色。
+| | [Character](/class/Character.md) | Character | 返回或设置轨道的角色。
 | | [RowType](../enum/RowType.md) | RowType | 返回或设置轨道的类型。<br>注意:修改此值会使Children清空。
 readonly | sbyte | Row | 返回轨道的序号。
 readonly | [Rooms](../class/Rooms.md) | Rooms | 返回轨道的房间。

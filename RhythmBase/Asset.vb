@@ -166,7 +166,35 @@ Namespace Assets
 			Return $"{If(IsSprite, ".json", IO.Path.GetExtension(FilePath))}, {Name}"
 		End Function
 	End Class
-
+	Public Class Character
+		Public ReadOnly IsCustom As Boolean
+		Public ReadOnly Character? As Characters
+		Public ReadOnly CustomCharacter As Sprite
+		Public Sub New(character As Characters)
+			IsCustom = False
+			Me.Character = character
+		End Sub
+		Public Sub New(character As Sprite)
+			IsCustom = True
+			Me.CustomCharacter = character
+		End Sub
+		Public Overrides Function ToString() As String
+			Return If(IsCustom, CustomCharacter.Name, Character)
+		End Function
+	End Class
+	Public Class RAudio
+		Private _file As String
+		Public ReadOnly Property FilePath As String
+			Get
+				Return _file
+			End Get
+		End Property
+		Public ReadOnly Property IsFile As Boolean
+		Public Sub New(name As String)
+			_file = name
+			IsFile = {".mp3", ".wav", ".ogg", ".aif", ".aiff"}.Contains(IO.Path.GetExtension(name))
+		End Sub
+	End Class
 	Public Enum LoopOption
 		no
 		yes
