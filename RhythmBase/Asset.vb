@@ -79,11 +79,21 @@ Namespace Assets
 		End Sub
 		Public Shared Function LoadFile(filename As String) As Sprite
 			If IO.Path.GetExtension(filename) = String.Empty Then
-				Dim setting As New JsonSerializerSettings
-				setting.Converters.Add(New Converters.SpriteConverter With {.FilePath = filename})
-				Dim result = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(filename + ".json"), setting)
-				result.IsSprite = True
-				Return result
+				Try
+					Dim setting As New JsonSerializerSettings
+					setting.Converters.Add(New Converters.SpriteConverter With {.FilePath = filename})
+					Dim result As Sprite
+					If IO.File.Exists($"{filename}.json") Then
+						result = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText($"{filename}.json"), setting)
+					Else
+						Dim str = $"{filename}\{IO.Path.GetFileName(filename)}.json"
+						result = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText($"{filename}\{IO.Path.GetFileName(filename)}.json"), setting)
+					End If
+					result.IsSprite = True
+					Return result
+				Catch e As Exception
+					Throw New RhythmBaseException($"Cannot find the file: {filename + ".json"}", e)
+				End Try
 			Else
 				Dim imgFile = SKBitmap.Decode(filename)
 				Return New Sprite With {.FilePath = filename, .Frames = New Frame(filename), .Size = imgFile.Info.Size, .RowPreviewFrame = 0, ._isSprite = False}

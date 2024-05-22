@@ -619,6 +619,42 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			Return $"{{{BeatOnly}, {Parent}}}"
 		End Function
 	End Structure
+	Public Structure RowStatus
+		Public Enum StatusType
+			Unset = -1
+			None
+			Synco
+
+			Beat_Open
+			Beat_Flash
+			Beat_Double_Flash
+			Beat_Triple_Flash
+			Beat_Close
+
+			X_Open
+			X_Flash
+			X_Close
+
+			X_Synco_Open
+			X_Synco_Flash
+			X_Synco_Close
+
+			Up_Open
+			Up_Close
+
+			Down_Open
+			Down_Close
+
+			Swing_Left
+			Swing_Right
+			Swing_Bounce
+
+			Held_Start
+			Held_End
+		End Enum
+		Public Status As StatusType
+		Public BeatCount As UShort
+	End Structure
 	Public Class PanelColor
 		Private _panel As Integer
 		Private _color As SKColor?
@@ -1503,6 +1539,34 @@ CType(i, BaseBeat).Hitable
 			Dim Temp As T = item.Clone(Of T)(Me)
 			Return Temp
 		End Function
+		Public Function GetRowBeatStatus() As SortedDictionary(Of Single, Integer())
+			Dim L As New SortedDictionary(Of Single, Integer())
+			Select Case RowType
+				Case RowType.Classic
+					L.Add(0, New Integer(6) {})
+					For Each beat In Me
+						Select Case beat.Type
+							Case EventType.AddClassicBeat
+								Dim trueBeat = CType(beat, AddClassicBeat)
+								For i = 0 To 6
+									Dim statusArray As Integer() = If(L(beat.BeatOnly), New Integer(6) {})
+									statusArray(i) += 1
+									L(beat.BeatOnly) = statusArray
+								Next
+							Case EventType.AddFreeTimeBeat
+
+							Case EventType.PulseFreeTimeBeat
+
+							Case EventType.SetRowXs
+
+						End Select
+					Next
+				Case RowType.Oneshot
+
+				Case Else
+					Throw New RhythmBaseException("How")
+			End Select
+		End Function
 		Public Overrides Sub Add(item As BaseRowAction)
 			If Not Parent.EventsBeatOrder.ContainsKey(item.BeatOnly) Then
 				Parent.EventsBeatOrder.Add(item.BeatOnly, New List(Of BaseEvent))
@@ -1755,7 +1819,11 @@ New Converters.RDLevelConverter(fileLocation, settings)
 		End Function
 		Public Overrides Sub Add(item As BaseEvent)
 			item.ParentLevel = Me
-			If ConvertToEnums(Of BaseRowAction).Contains(item.Type) Then
+			If item.Type = EventType.Comment AndAlso CType(item, Comment).Parent Is Nothing Then
+				MyBase.Add(item)
+			ElseIf item.Type = EventType.TintRows AndAlso CType(item, TintRows).Parent Is Nothing Then
+				MyBase.Add(item)
+			ElseIf ConvertToEnums(Of BaseRowAction).Contains(item.Type) Then
 				Throw New RhythmBaseException("Use `Row.Add()` instead.")
 			ElseIf ConvertToEnums(Of BaseDecorationAction).Contains(item.Type) Then
 				Throw New RhythmBaseException("Use `Decoration.Add()` instead.")
@@ -1764,12 +1832,9 @@ New Converters.RDLevelConverter(fileLocation, settings)
 			End If
 		End Sub
 		Public Overrides Function Contains(item As BaseEvent) As Boolean
-			If RowTypes.Contains(item.Type) Then
-				Return Rows.Any(Function(i) i.Contains(item))
-			ElseIf DecorationTypes.Contains(item.Type) Then
-				Return Decorations.Any(Function(i) i.Contains(item))
-			End If
-			Return MyBase.Contains(item)
+			Return (RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.Contains(item))) OrElse
+				(DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.Contains(item))) OrElse
+				MyBase.Contains(item)
 		End Function
 		Public Overrides Function Remove(item As BaseEvent) As Boolean
 			If RowTypes.Contains(item.Type) Then

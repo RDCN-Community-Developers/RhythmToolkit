@@ -409,8 +409,13 @@ Namespace Converters
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As BaseRowAction, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseRowAction
 			Dim obj = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
 			Try
-				Dim Parent = level._Rows(jobj("row"))
-				obj.Parent = Parent
+				Dim rowId = jobj("row").ToObject(Of Short)
+				If rowId = -1 Then
+					level.Add(obj)
+				Else
+					Dim Parent = level._Rows(rowId)
+					obj.Parent = Parent
+				End If
 			Catch e As Exception
 				Throw New RhythmBaseException($"Cannot find the row {jobj("row")} at {obj}", e)
 			End Try
@@ -425,10 +430,14 @@ Namespace Converters
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
 			Dim obj = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
 			Try
-				Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = jobj("target"))
+				Dim decoId As String = jobj("target")?.ToObject(Of String)
+				Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = decoId)
 				obj.Parent = Parent
+				If obj.Parent Is Nothing AndAlso decoId = String.Empty AndAlso obj.Type = EventType.Comment Then
+					level.Add(obj)
+				End If
 			Catch e As Exception
-				Throw New RhythmBaseException($"Cannot find the decoration {jobj("target")} at {obj}", e)
+				Throw New RhythmBaseException($"Cannot find the decoration ""{jobj("target")}"" at {obj}", e)
 			End Try
 			Return obj
 		End Function

@@ -1,6 +1,13 @@
 ## [返回](../RadiationTherapy.md)
 # 更新日志
 
+### 2024/05/22
+
+- 修复了 [Commnets]() 事件的读取问题。现在若此事件不位于装饰栏内则 `Parent` 属性为空。
+- 修复了 [TintRows]() 事件的读取问题。现在若此事件为所有轨道染色则 `Parent` 属性为空。
+- 修复了 [RDLevel](/class/RDLevel.md).Contains() 方法不判断 [Comments]() 的问题。
+- 读取时会忽略 `target` 字段为空的继承 [BaseDecorationAction](/class/BaseDecorationAction.md) 事件。
+
 ### 2024/05/21
 
 - 添加了 [Character](/class/Character.md) 类型。

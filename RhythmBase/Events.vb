@@ -236,9 +236,9 @@ Namespace Events
 			End Get
 			Set(value As Decoration)
 				_parent?.Remove(Me)
-				value.Add(Me)
+				value？.Add(Me)
 				_parent = value
-				ParentLevel = value.Parent
+				ParentLevel = value?.Parent
 			End Set
 		End Property
 		Public Overridable ReadOnly Property Target As String
@@ -309,7 +309,7 @@ Namespace Events
 		<JsonIgnore>
 		Public ReadOnly Property BeatSound As Audio
 			Get
-				Return If(CType(Parent.LastOrDefault(Function(i) i.Type = EventType.SetBeatSound AndAlso i.BeatOnly < BeatOnly AndAlso i.Active), SetBeatSound)?.Sound, Parent.Sound)
+				Return If(Parent.LastOrDefault(Of SetBeatSound)(Function(i) i.BeatOnly < BeatOnly AndAlso i.Active)?.Sound, Parent.Sound)
 			End Get
 		End Property
 		<JsonIgnore>
@@ -1139,6 +1139,12 @@ Namespace Events
 		Public Property Effect As RowEffect
 		Public Overrides ReadOnly Property Type As EventType = EventType.TintRows
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+		<JsonIgnore>
+		Public ReadOnly Property TintAll As Boolean
+			Get
+				Return Parent IsNot Nothing
+			End Get
+		End Property
 		Friend Function ShouldSerializeDuration() As Boolean
 			Return Duration <> 0
 		End Function
@@ -1778,7 +1784,7 @@ Namespace Events
 		Public ReadOnly Property RowXs As LimitedList(Of Patterns)
 			Get
 				If SetXs Is Nothing Then
-					Dim X = CType(Parent.LastOrDefault(Function(i) i.Active AndAlso i.Type = EventType.SetRowXs AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs), SetRowXs)
+					Dim X = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs)
 					Return X.Pattern
 				Else
 					Dim T As New LimitedList(Of Patterns)(6, Patterns.None)
@@ -1802,18 +1808,20 @@ Namespace Events
 		Public Overrides ReadOnly Property Type As EventType = EventType.AddClassicBeat
 		Public Overrides ReadOnly Property Length As Single
 			Get
-				Dim SyncoSwing = CType(Parent.LastOrDefault(Function(i) i.Active AndAlso i.Type = EventType.SetRowXs AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs), SetRowXs).SyncoSwing
+				Dim SyncoSwing = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs).SyncoSwing
 				Return Tick * 6 - If(SyncoSwing = 0, 0.5, SyncoSwing) * Tick
 			End Get
 		End Property
+		Public Function GetBeat(index As Byte) As Single
+
+		End Function
 		Public Overrides ReadOnly Property Hitable As Boolean
 			Get
 				Return True
 			End Get
 		End Property
-
 		Public Overrides Function HitTimes() As IEnumerable(Of Hit)
-			Dim x = CType(Parent.LastOrDefault(Function(i) i.Active AndAlso i.Type = EventType.SetRowXs AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs), SetRowXs)
+			Dim x = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs)
 			Dim Synco As Single
 			If x.SyncoBeat >= 0 Then
 				Synco = If(x.SyncoSwing = 0, 0.5, x.SyncoSwing)
@@ -1823,7 +1831,7 @@ Namespace Events
 			Return New List(Of Hit) From {New Hit(Me, BeatOnly + _Tick * 6 - _Tick * Synco, Hold)}.AsEnumerable
 		End Function
 		Public Function Split() As IEnumerable(Of BaseBeat)
-			Dim x = CType(Parent.LastOrDefault(Function(i) i.Active AndAlso i.Type = EventType.SetRowXs AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs), SetRowXs)
+			Dim x = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs)
 			Return Split(x)
 		End Function
 		Public Function Split(Xs As SetRowXs) As IEnumerable(Of BaseBeat)
@@ -2042,7 +2050,7 @@ Namespace Events
 		Public Function GetPulse() As IEnumerable(Of PulseFreeTimeBeat)
 			Dim Result As New List(Of PulseFreeTimeBeat)
 			Dim pulse As Byte = Me.Pulse
-			For Each item In Parent.Where(Function(i) i.Active AndAlso i.BeatOnly > BeatOnly AndAlso i.Type = EventType.PulseFreeTimeBeat).Cast(Of PulseFreeTimeBeat)
+			For Each item In Parent.Where(Of PulseFreeTimeBeat)(Function(i) i.Active AndAlso i.BeatOnly > BeatOnly)
 				Select Case item.Action
 					Case PulseFreeTimeBeat.ActionType.Increment
 						pulse += 1
@@ -2087,9 +2095,8 @@ Namespace Events
 			Get
 				Dim PulseIndexMin = 6
 				Dim PulseIndexMax = 6
-				For Each item In Parent.Where(
-				Function(i) Parent.IndexOf(i) <= Parent.IndexOf(Me) AndAlso
-				(i.Type = EventType.AddFreeTimeBeat Or i.Type = EventType.PulseFreeTimeBeat)).Reverse
+				For Each item In Parent.Where(Of BaseBeat)(
+				Function(i) Parent.IndexOf(i) <= Parent.IndexOf(Me)).Reverse
 					Select Case item.Type
 						Case EventType.AddFreeTimeBeat
 							Dim Temp = CType(item, AddFreeTimeBeat)

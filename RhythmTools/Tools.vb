@@ -137,8 +137,10 @@ Namespace Tools
 		''' <summary>
 		''' [未完成] 拆分轨道为精灵图
 		''' </summary>
-		Public Sub SplitRow(Character As Sprite, ClassicBeat As Sprite, Heart As Sprite, beatSettings As SplitRowSettings)
-			For Each row In Level.Rows.Where(Function(i) i.RowType = RowType.Classic)
+		Public Sub SplitRow(Character As Sprite, ClassicBeat As Sprite, Heart As Sprite, beatSettings As SplitRowSettings, rows As IEnumerable(Of Row), startBeat As Integer, endBeat As Integer)
+
+			'对于每个七拍轨道
+			For Each row In rows.Where(Function(i) i.RowType = RowType.Classic)
 				Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
 				Dim Decos As New List(Of (deco As Decoration, left As Double)) From {
 					(Level.CreateDecoration(row.Rooms, Character,,), 0),
@@ -151,13 +153,16 @@ Namespace Tools
 					(Level.CreateDecoration(row.Rooms, ClassicBeat,,), 214),
 					(Level.CreateDecoration(row.Rooms, Heart,,), 282)
 				}
+
+				'精灵初始化
 				For Each item In Decos
-					'item.deco.Rooms = row.Rooms
 					item.deco.Visible = False
 					Dim visible As SetVisible = item.deco.CreateChildren(Of SetVisible)(1)
 					visible.Visible = Not row.HideAtStart
 					Level.Add(visible)
 				Next
+
+				'精灵轨道初始位置
 				For Each part In Decos
 					Dim tempEvent = New MoveRow With {.RowPosition = New NumOrExpPair(35 / 352 * 100, 50), .Pivot = 0}
 					Dim CharEvent As Move = part.deco.CreateChildren(Of Move)(1)
@@ -169,13 +174,17 @@ Namespace Tools
 					CharEvent.Duration = 0
 					Level.Add(CharEvent)
 				Next
+
+				'精灵初始表情
 				Dim tempRowXs As New SetRowXs
 				For i = 0 To 5
 					Dim tempExpression = Decos(i + 1).deco.CreateChildren(Of PlayAnimation)(1)
 					tempExpression.Expression = beatSettings.Line
 					Level.Add(tempExpression)
 				Next
-				For Each item In row
+
+				'对于在范围内的每个节拍
+				For Each item In row.Where(Function(i) i.Active, startBeat, endBeat)
 
 					Select Case item.Type
 						Case EventType.HideRow
@@ -238,6 +247,12 @@ Namespace Tools
 									Level.Add(tempAnimation)
 								End If
 							Next
+						Case EventType.AddClassicBeat
+
+						Case EventType.AddFreeTimeBeat
+
+						Case EventType.PulseFreeTimeBeat
+
 					End Select
 				Next
 			Next
@@ -359,6 +374,8 @@ Namespace Tools
 			Public Synco As String
 
 			Public Beat_Open As String
+			Public Beat_Double_Flash As String
+			Public Beat_Triple_Flash As String
 			Public Beat_Flash As String
 			Public Beat_Close As String
 
