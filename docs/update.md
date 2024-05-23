@@ -1,6 +1,12 @@
 ## [返回](../RadiationTherapy.md)
 # 更新日志
 
+### 2024/05/23
+
+- 修复了 [TintRows]() 和 [Comments]() 事件的移除问题。
+- 修复了 [Bookmark](/class/Bookmark.md) 的序列化异常问题。
+- 修复了 [Characters](/enum/Characters.md) 对当前游戏版本的适配问题。
+
 ### 2024/05/22
 
 - 修复了 [Commnets]() 事件的读取问题。现在若此事件不位于装饰栏内则 `Parent` 属性为空。

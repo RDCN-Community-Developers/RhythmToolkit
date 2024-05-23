@@ -1,7 +1,7 @@
 # [RhythmBase](../../RhythmToolkit.md).[LevelElements](../namespace/LevelElements.md).Decoration
 ### [RhythmBase.dll](../assembly/RhythmBase.md)
 装饰。  
-继承自 [OrderedEventCollection](/class/OrderedEventCollection.md)。
+继承自 [OrderedEventCollection](../class/OrderedEventCollection.md)。
 
 ##### 属性和字段
 

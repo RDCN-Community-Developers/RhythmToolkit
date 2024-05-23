@@ -203,15 +203,12 @@ Namespace Converters
 					Case EventType.SetCrotchetsPerBar
 						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), 1, SetCPBCollection)
 						SetCPBCollection.Add(TempEvent)
-						Level.Add(TempEvent)
 					Case EventType.SetBeatsPerMinute
 						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CSng(item("beat")), SetCPBCollection)
 						SetBPMCollection.Add(TempEvent)
-						Level.Add(TempEvent)
 					Case EventType.PlaySong
 						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CSng(item("beat")), SetCPBCollection)
 						SetBPMCollection.Add(TempEvent)
-						Level.Add(TempEvent)
 					Case Else
 						If RowTypes.Contains(TempEvent.Type) OrElse DecorationTypes.Contains(TempEvent.Type) Then
 							Continue For
@@ -256,7 +253,7 @@ Namespace Converters
 				.WritePropertyName("beat")
 				.WriteValue(beat.beat)
 				.WritePropertyName("color")
-				.WriteValue(value.Color.ToString())
+				.WriteValue(value.Color)
 				.WriteEndObject()
 			End With
 		End Sub
@@ -284,7 +281,6 @@ Namespace Converters
 				writer.WriteValue(value.Character.ToString)
 			End If
 		End Sub
-
 		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Character, hasExistingValue As Boolean, serializer As JsonSerializer) As Character
 			Dim value = JToken.ReadFrom(reader).ToObject(Of String)
 			If value.StartsWith("custom:") Then

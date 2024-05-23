@@ -19,18 +19,30 @@ Imports SkiaSharp
 Namespace Components
 	Public Enum Characters
 		Adog
+		Athlete
+		AthletePhysio
 		Barista
 		Beat
+#If DEBUG Then
+		BlankCPU
+#End If
 		Bodybuilder
 		Boy
 		BoyRaya
 		BoyTangzhuang
 		Buro
+#If DEBUG Then
+		Canary
+#End If
 		Clef
 		Cockatiel
 		ColeGuitar
 		ColeSynth
 		Controller
+#If DEBUG Then
+		Custom
+#End If
+		DancingCouple
 		Edega
 		Farmer
 		FarmerAlternate
@@ -41,8 +53,15 @@ Namespace Components
 		HoodieBoyBlue
 		Ian
 		IanBubble
+		Janitor
 		Kanye
 		Lucia
+		LuckyBag
+		LuckyBaseball
+		LuckyIce
+#If DEBUG Then
+		LuckyJersey
+#End If
 		Marija
 		Miner
 		MrsStevendog
@@ -53,26 +72,35 @@ Namespace Components
 		NicoleCoffee
 		NicoleMints
 		None
-		Otto
 		Oriole
+#If DEBUG Then
+		Otto
+#End If
 		Owl
 		Paige
 		Parrot
+		Player
 		Politician
 		Purritician
 		Quaver
 		Rin
 		Rodney
 		Samurai
+		SamuraiBaseball
 		SamuraiBlue
 		SamuraiBoss
 		SamuraiBossAlt
 		SamuraiGirl
 		SamuraiGreen
+		SamuraiPirate
 		SamuraiYellow
 		SmokinBarista
 		Tentacle
 		Treble
+		Weeknd
+#If DEBUG Then
+		Wren
+#End If
 	End Enum
 	'Public Enum wavetype
 	'	BoomAndRush
@@ -1394,11 +1422,16 @@ Namespace LevelElements
 			MyBase.Add(item)
 		End Sub
 		Public Overrides Function Remove(item As BaseDecorationAction) As Boolean
-			Parent.EventsBeatOrder(item.BeatOnly).Remove(item)
+			If Parent.EventsBeatOrder.ContainsKey(item.BeatOnly) Then
+				Parent.EventsBeatOrder(item.BeatOnly).Remove(item)
+			Else
+				Return False
+			End If
 			If Not Parent.EventsBeatOrder(item.BeatOnly).Any Then
 				Parent.EventsBeatOrder.Remove(item.BeatOnly)
 			End If
-			Return MyBase.Remove(item)
+			MyBase.Remove(item)
+			Return True
 		End Function
 		Public Overrides Function ToString() As String
 			Return $"{_id}, {_Row}, {_Rooms}, {File.Name}"
@@ -1575,11 +1608,16 @@ CType(i, BaseBeat).Hitable
 			MyBase.Add(item)
 		End Sub
 		Public Overrides Function Remove(item As BaseRowAction) As Boolean
-			Parent.EventsBeatOrder(item.BeatOnly).Remove(item)
+			If Parent.EventsBeatOrder.ContainsKey(item.BeatOnly) Then
+				Parent.EventsBeatOrder(item.BeatOnly).Remove(item)
+			Else
+				Return False
+			End If
 			If Not Parent.EventsBeatOrder(item.BeatOnly).Any Then
 				Parent.EventsBeatOrder.Remove(item.BeatOnly)
 			End If
-			Return MyBase.Remove(item)
+			MyBase.Remove(item)
+			Return True
 		End Function
 	End Class
 	Public Class Bookmark
@@ -1669,14 +1707,14 @@ CType(i, BaseBeat).Hitable
 		Public Property Settings As New Settings
 		Friend ReadOnly Property _Rows As New List(Of Row)
 		Friend ReadOnly Property _Decorations As New List(Of Decoration)
-		Public ReadOnly Property Rows As IReadOnlyCollection(Of Row)
+		Public ReadOnly Property Rows As ICollection(Of Row)
 			Get
-				Return _Rows.AsReadOnly
+				Return _Rows
 			End Get
 		End Property
-		Public ReadOnly Property Decorations As IReadOnlyCollection(Of Decoration)
+		Public ReadOnly Property Decorations As ICollection(Of Decoration)
 			Get
-				Return _Decorations.AsReadOnly
+				Return _Decorations
 			End Get
 		End Property
 		Public ReadOnly Property Conditionals As New List(Of BaseConditional)
@@ -1753,10 +1791,10 @@ New Converters.RDLevelConverter(_path, settings)
 		End Function
 		Public Shared Function ReadFromString(json As String, fileLocation As String, settings As LevelInputSettings) As RDLevel
 			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
-.Converters = {
-New Converters.RDLevelConverter(fileLocation, settings)
-}
-}
+				.Converters = {
+					New Converters.RDLevelConverter(fileLocation, settings)
+				}
+			}
 			json = Regex.Replace(json, ",(?=[ \n\r\t]*?[\]\)\}])", "")
 			Dim level As RDLevel
 			Try
@@ -1837,10 +1875,9 @@ New Converters.RDLevelConverter(fileLocation, settings)
 				MyBase.Contains(item)
 		End Function
 		Public Overrides Function Remove(item As BaseEvent) As Boolean
-			If RowTypes.Contains(item.Type) Then
-				Return Rows.Any(Function(i) i.Remove(item))
-			ElseIf DecorationTypes.Contains(item.Type) Then
-				Return Decorations.Any(Function(i) i.Remove(item))
+			If (RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.Remove(item))) OrElse
+				(DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.Remove(item))) Then
+				Return True
 			End If
 			If Contains(item) Then
 				Dim result = EventsTypeOrder(item.Type)?(item.BeatOnly).Remove(item) And EventsBeatOrder(item.BeatOnly).Remove(item)

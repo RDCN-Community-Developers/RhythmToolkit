@@ -1,7 +1,7 @@
 # [RhythmBase](../../RhythmToolkit.md).[LevelElements](../namespace/LevelElements.md).RDLevel
 ### [RhythmBase.dll](../assembly/RhythmBase.md)
 节奏医生关卡。  
-继承自 [OrderedEventCollection](/class/OrderedEventCollection.md)。
+继承自 [OrderedEventCollection](../class/OrderedEventCollection.md)。
 
 ## 构造
 

@@ -1,7 +1,7 @@
 # [RhythmBase](../../RhythmToolkit.md).[LevelElements](../namespace/LevelElements.md).Row
 ### [RhythmBase.dll](../assembly/RhythmBase.md)
 轨道。
-继承自 [OrderedEventCollection](/class/OrderedEventCollection.md)。
+继承自 [OrderedEventCollection](../class/OrderedEventCollection.md)。
 
 ## 枚举
 
