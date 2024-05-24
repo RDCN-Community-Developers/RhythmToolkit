@@ -87,7 +87,7 @@ Namespace Assets
 						result = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText($"{filename}.json"), setting)
 					Else
 						Dim str = $"{filename}\{IO.Path.GetFileName(filename)}.json"
-						result = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText($"{filename}\{IO.Path.GetFileName(filename)}.json"), setting)
+						result = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(str), setting)
 					End If
 					result.IsSprite = True
 					Return result

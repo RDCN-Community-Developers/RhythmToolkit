@@ -17,7 +17,7 @@ readonly | string | Name | 文件名。
 readonly | IEnumerable\<string\> | Expressions | 表情列表。
 readonly | SKBitmap | Preview | 预览图像。
 readonly | bool | IsSprite | 指示此实例是否为精灵图。<br>若为假，则
-| | [Frame](/class/Sprite.Frame.md) | Frames | 精灵图像。 
+| | [Frame](class/Sprite.Frame.md) | Frames | 精灵图像。 
 | | SKBitmap | Freeze | 精灵冻结图像资源。 
 | | uint? | RowPreviewFrame | 精灵预览帧。
 | | SKSizeI | RowPreviewOffset | 精灵预览偏移。

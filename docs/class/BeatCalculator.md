@@ -24,6 +24,9 @@ new([RDLevel](../class/RDLevel.md) level) | 以给定关卡构造时间换算工
 | | TimeSpan | IntervalTime([BaseEvent](../class/BaseEvent.md) event1, [BaseEvent](../class/BaseEvent.md) event2) | 获取两个事件的时间差。
 static | float | Barbeat_BeatOnly(uint bar, float beat, IEnumerable\<[SetCrotchetsPerBar]()\> Collection) | 以给定 [SetCrotchetsPerBar][CPB] 事件集合将小节-节拍转换为总节拍数。
 static | (uint bar, float beat) | BeatOnly_BarBeat(float beat, IEnumerable\<[SetCrotchetsPerBar]()\> Collection) | 以给定 [SetCrotchetsPerBar][CPB] 事件集合将总节拍数转换为小节-节拍。
+| | [RDBeat](../class/RDBeat.md) | BeatOf(float beatOnly) | 从纯节拍创建节拍对象。
+| | [RDBeat](../class/RDBeat.md) | BeatOf(uint bar, float beat) | 从纯节拍创建节拍对象。
+| | [RDBeat](../class/RDBeat.md) | BeatOf(TimeSpan timeSpan) | 从纯节拍创建节拍对象。
 
 [BPM]: ../class/BaseBeatsPerMinute.md
 [CPB]: #

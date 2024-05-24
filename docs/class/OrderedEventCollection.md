@@ -13,8 +13,9 @@ new(IEnumerable\<T\> items) | 以给定一系列事件构造一个集合。
 ## 属性和字段
 修饰 | 类型 | 名称 | 说明
 -|-|-|-
-readonly | int | Count | 事件总数量。<br>实现ICollection\<T\>.Count接口。
+readonly | int | Count | 返回事件的总数量。<br>实现ICollection\<T\>.Count接口。
 readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<T\>.Isreadonly接口。
+readonly | [RDBeat](../class/RDBeat.md) | Length | 返回所有事件所占的总节拍。
 
 ## 方法
 修饰 | 类型 | 名称 | 说明
@@ -28,12 +29,24 @@ readonly | bool | Isreadonly | 指示是否只读。<br>实现ICollection\<T\>.I
 | | | Clear() | 清空Events集合。<br>实现ICollection\<T\>.Clear()接口
 | | bool | Contains(T item) | 返回集合是否包含此事件。<br>实现ICollection\<T\>.Contains(T item)接口
 | | IEnumerable\<T\> | Where(Func\<T, bool\> predicate) | 以谓词筛选指定事件。此迭代器以事件的时间顺序迭代。
-| | IEnumerable\<T\> | Where(float startBeat, float endBeat) | 以节拍范围`[startBeat, endBeat]`筛选指定事件。此迭代器以事件的时间顺序迭代。
-| | IEnumerable\<T\> | Where(Func\<T, bool\> predicate, float startBeat, float endBeat) | 以谓词和节拍范围`[startBeat, endBeat]`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where(float startBeat, float endBeat) | 以节拍范围`[startBeat, endBeat)`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where([RDBeat](../class/RDBeat.md) startBeat, [RDBeat](../class/RDBeat.md) endBeat) | 以节拍范围`[startBeat, endBeat)`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where([RDRange](../class/RDRange.md) range) | 以节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where(Range range) | 以小节范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where(Func\<T, bool\> predicate, float startBeat, float endBeat) | 以谓词和节拍范围`[startBeat, endBeat)`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where(Func\<T, bool\> predicate, [RDBeat](../class/RDBeat.md) startBeat, [RDBeat](../class/RDBeat.md) endBeat) | 以谓词和节拍范围`[startBeat, endBeat)`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where(Func\<T, bool\> predicate, [RDRange](../class/RDRange.md) range) | 以谓词和节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<T\> | Where(Func\<T, bool\> predicate, Range range) | 以谓词和小节范围筛选指定事件。此迭代器以事件的时间顺序迭代。
 | | IEnumerable\<U\> | Where\<U\>() where U : T | 以类型筛选指定事件。此迭代器以事件的时间顺序迭代。
 | | IEnumerable\<U\> | Where\<U\>(Func\<U, bool\> predicate) where U : T | 以类型和谓词筛选指定事件。此迭代器以事件的时间顺序迭代。
-| | IEnumerable\<U\> | Where\<U\>(float startBeat, float endBeat) where U : T | 以类型和节拍范围`[startBeat, endBeat]`筛选指定事件。此迭代器以事件的时间顺序迭代。
-| | IEnumerable\<U\> | Where\<U\>(Func\<U, bool\> predicate, float startBeat, float endBeat) where U : T | 以类型、谓词和节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<U\> | Where\<U\>(float startBeat, float endBeat) where U : T | 以类型和节拍范围`[startBeat, endBeat)`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<U\> | Where\<U\>([RDBeat](../class/RDBeat.md) startBeat, [RDBeat](../class/RDBeat.md) endBeat) where U : T | 以类型和节拍范围`[startBeat, endBeat)`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<U\> | Where\<U\>([RDRange](../class/RDRange.md) range) where U : T | 以类型和小节范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<U\> | Where\<U\>(Range range) where U : T | 以类型和节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<U\> | Where\<U\>(Func\<U, bool\> predicate, float startBeat, float endBeat) where U : T | 以类型、谓词和节拍范围`[startBeat, endBeat)`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<U\> | Where\<U\>(Func\<U, bool\> predicate, [RDBeat](../class/RDBeat.md) startBeat, [RDBeat](../class/RDBeat.md) endBeat) where U : T | 以类型、谓词和节拍范围`[startBeat, endBeat)`筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<U\> | Where\<U\>(Func\<U, bool\> predicate, [RDRange](../class/RDRange.md) range) where U : T | 以类型、谓词和小节范围筛选指定事件。此迭代器以事件的时间顺序迭代。
+| | IEnumerable\<U\> | Where\<U\>(Func\<U, bool\> predicate, Range range) where U : T | 以类型、谓词和节拍范围筛选指定事件。此迭代器以事件的时间顺序迭代。
 | | T | First() | 获取集合内第一个事件。
 | | T | First(Func\<T, bool\> predicate) | 获取集合内第一个满足谓词的事件。
 | | T | First\<U\>() where U : T  | 获取集合内第一个满足类型的事件。

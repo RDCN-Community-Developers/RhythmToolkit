@@ -2,11 +2,11 @@
 
 # 示例
 
-### 读取和写入关卡
+### 读取和写入关卡  
+（参考 [RDLevel](class/RDLevel.md), [LevelInputSettings](class/LevelInputSettings.md), [LevelOutputSettings](class/LevelOutputSettings.md)）
 
 ```CS
 using RhythmBase.LevelElements;
-using System.IO;
 
 //读取关卡文件 (配置是可选的)
 RDLevel rdlevel = RDLevel.LoadFile(@"Your\level.rdzip");
@@ -19,18 +19,42 @@ rdlevel.SaveFile(@"Your\level_copy.rdlevel");
 
 ---
 
+### 筛选事件  
+（参考 [RDLevel](class/RDLevel.md), [BaseEvent](class/BaseEvent.md)）
+
+```CS
+using RhythmBase.LevelElements;
+using RhythmBase.Components;
+using RhythmBase.Events;
+
+//筛选同时满足以下所有条件的事件：
+//继承自 BaseBeat，即为节拍事件；
+//Active 为 true，即已激活事件；
+//小节范围在第 2 小节（包含）到倒数第 10 小节（包含）的所有事件。
+foreach (var item in level.Where<BaseBeat>(i => i.Active, 2..^10)) 
+{
+    //在控制台输出通过筛选的事件的节拍与类型。
+    Console.WriteLine($"{item.Beat.BeatOnly}\t{item.Type}\t{item.Beat}");
+}
+```
+
+---
+
 ### 移除所有位于动作栏的未激活事件
+（参考 [RDLevel](class/RDLevel.md)）
 
 ```CS
 using RhythmBase.LevelElements;
 using RhythmBase.Events;
 
+//筛选并移除满足位于动作栏(i.Tab == Tabs.Actions)且未激活(!i.Active)的事件：
 rdlevel.RemoveAll(i => i.Tab == Tabs.Actions && !i.Active);
 ```
 
 ---
 
 ### 批量添加并初始化装饰
+（参考 [Decoration](class/Decoration.md), [Sprite](class/Sprite.md), [Rooms](class/Rooms.md)）
 
 ```CS
 using RhythmBase.LevelElements;
@@ -57,6 +81,7 @@ foreach (Decoration decoration in decorations)
 ---
 
 ### 在七拍子的每一拍按键
+（参考 [RDLevel](class/RDLevel.md), [BaseEvent](class/BaseEvent.md)）
 
 ```CS
 using RhythmBase.LevelElements;
@@ -83,14 +108,14 @@ foreach(BaseBeat beat in beats)
     以上两句等效于
 
     AddFreeTimeBeat hit = new() {
-        BeatOnly=beat.BeatOnly, 
+        Beat = beat.Beat, 
         Y = beat.Y, 
         If = beat.If, 
         Tag = beat.Tag, 
         Active = beat.Active, 
         Pulse = 7
     };
-    beat.ParentLevel.Add(hit);
+    beat.Parent.Add(hit);
     */
 
 }
@@ -99,6 +124,8 @@ foreach(BaseBeat beat in beats)
 ---
 
 ### 以第一个结束事件的时刻计算关卡时长
+（参考 [RDLevel](class/RDLevel.md), [RDBeat](class/RDBeat.md), [BeatCalculator](class/BeatCalculator.md)）
+
 ```CS
 using RhythmBase.LevelElements;
 using RhythmBase.Events;
@@ -106,21 +133,20 @@ using RhythmBase.Utils;
 
 //获得第一个 FinishLevel 事件
 FinishLevel finishLevel = rdlevel.First<FinishLevel>();
-//以关卡构建节拍计算器类
-BeatCalculator calculator = new(rdlevel);
 
 //显式使用节拍计算器类求得时间
-float result1 = (float)calculator.BeatOnly_Time(finishLevel.BeatOnly).TotalSeconds;
+float result1 = (float)rdlevel.Calculator.BeatOnly_Time(finishLevel.BeatOnly).TotalSeconds;
 
 //内部隐式使用节拍计算器类求得时间（仅用于临时调用）
-float result2 = (float)finishLevel.Time.TotalSeconds;
+float result2 = (float)finishLevel.Beat.TimeSpan.TotalSeconds;
 ```
 
 ---
 
-### 构造自定义事件
+### 构造自定义事件  
+（参考 [RDLevel](class/RDLevel.md), [CustomEvent](class/CustomEvent.md), [INumOrExp](interface/INumOrExp.md), [NumOrExpPair](class/NumOrExpPair.md)）  
 
-在使用自定义事件时请确保游戏能够正常读取。
+在使用自定义事件时请确保游戏能够正常读取。  
 
 ```CS
 using Newtonsoft.Json.Linq;
@@ -128,15 +154,15 @@ using RhythmBase.Events;
 using RhythmBase.Components;
 using static RhythmBase.Components.Ease;
 
-//创建 MyCustomEvent 类型
-//  继承 UnknownEvent 类型
-public class MyCustomEvent : UnknownEvent
+//创建 MyEvent 类型
+//  继承自 CustomEvent 类型
+public class MyEvent : CustomEvent
 {
     //重写属性
     public override Rooms Rooms => Rooms.Default;
     public override Tabs Tab => Tabs.Actions;
 
-    //实现的属性都需要和 UnknownEvent.Data 字段内的数据绑定和判空。
+    //实现的属性都需要和 CustomEvent.Data 字段内的数据绑定和判空。
 
     //实现一个 NumOrExpPair 类型属性
     public NumOrExpPair? NumOrExpPairProperty
@@ -144,7 +170,7 @@ public class MyCustomEvent : UnknownEvent
         get
         {
             //在 Data 字段内获取所需要的内容并判空
-            var value = Data["numOrExpPairProperty"];
+            var value = Data["myProperty"];
             return value.ToObject<NumOrExpPair>() ??
                 new NumOrExpPair(
                     value[0]?.ToObject<string>(),
@@ -154,7 +180,7 @@ public class MyCustomEvent : UnknownEvent
         set
         {
             //将内容保存在 Data 字段内
-            Data["numOrExpPairProperty"] = 
+            Data["myProperty"] = 
                 value.HasValue ?
                 new JArray(
                     value.Value.X.Serialize(),
@@ -164,21 +190,21 @@ public class MyCustomEvent : UnknownEvent
     }
 
     //在构造函数内初始化类型
-    public MyCustomEvent()
+    public MyEvent()
     {
         //type 字段的内容会返回到 RealType 属性上。
-        Data["type"] = nameof(MyCustomEvent);
+        Data["type"] = nameof(MyEvent);
     }
 }
 
-MyCustomEvent myEvent = new();
+MyEvent myEvent = new();
 
 level.Add(myEvent);
 
-myEvent.BeatOnly = 8;
+myEvent.Beat = rdlevel.Calculator.BeatOf(8);
 
-Console.WriteLine(myEvent.Type);        //UnknownEvent
-Console.WriteLine(myEvent.RealType);    //MyCustomEvent
+Console.WriteLine(myEvent.Type);        //CustomEvent
+Console.WriteLine(myEvent.RealType);    //MyEvent
 
 ```
 

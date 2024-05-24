@@ -74,8 +74,7 @@ Namespace Converters
 				.Add(New LimitedListConverter(Of SKColor))
 			End With
 			Dim EventsSerializer As New JsonSerializerSettings With {
-									.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
-					.NullValueHandling = NullValueHandling.Ignore
+									.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 				}
 			With EventsSerializer.Converters
 				.Add(New NumOrExpPairConverter)
@@ -113,8 +112,8 @@ Namespace Converters
 			End With
 		End Sub
 		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDLevel, hasExistingValue As Boolean, serializer As JsonSerializer) As RDLevel
-			Dim SetCPBCollection As New List(Of SetCrotchetsPerBar)
-			Dim SetBPMCollection As New List(Of BaseBeatsPerMinute)
+			'Dim SetCPBCollection As New List(Of SetCrotchetsPerBar)
+			'Dim SetBPMCollection As New List(Of BaseBeatsPerMinute)
 			Dim assetsCollection As New HashSet(Of Sprite)
 			Dim J = JObject.Load(reader)
 			Dim SettingsSerializer As New JsonSerializer
@@ -193,35 +192,29 @@ Namespace Converters
 				item.ParentCollection = Level.Conditionals
 			Next
 
-
 			Dim FloatingTextCollection As New List(Of ([event] As FloatingText, id As Integer))
 			Dim AdvanceTextCollection As New List(Of ([event] As AdvanceText, id As Integer))
 
+			Dim calculator As New BeatCalculator(Level)
+
 			For Each item In J("events")
 				Dim TempEvent As BaseEvent = item.ToObject(ConvertToType(item("type")), EventsSerializer)
-				Select Case [Enum].Parse(Of EventType)(item("type"))
-					Case EventType.SetCrotchetsPerBar
-						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), 1, SetCPBCollection)
-						SetCPBCollection.Add(TempEvent)
-					Case EventType.SetBeatsPerMinute
-						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CSng(item("beat")), SetCPBCollection)
-						SetBPMCollection.Add(TempEvent)
-					Case EventType.PlaySong
-						TempEvent.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(item("bar")), CSng(item("beat")), SetCPBCollection)
-						SetBPMCollection.Add(TempEvent)
-					Case Else
-						If RowTypes.Contains(TempEvent.Type) OrElse DecorationTypes.Contains(TempEvent.Type) Then
-							Continue For
-						End If
-						'浮动文字事件记录
-						If TempEvent.Type = EventType.FloatingText Then
-							FloatingTextCollection.Add((CType(TempEvent, FloatingText), item("id")))
-						End If
-						If TempEvent.Type = EventType.AdvanceText Then
-							AdvanceTextCollection.Add((CType(TempEvent, AdvanceText), item("id")))
-						End If
-						'未处理事件加入
-				End Select
+				If Not TempEvent.Type = EventType.CustomEvent Then
+					Select Case [Enum].Parse(Of EventType)(item("type"))
+						Case Else
+							If RowTypes.Contains(TempEvent.Type) OrElse DecorationTypes.Contains(TempEvent.Type) Then
+								Continue For
+							End If
+							'浮动文字事件记录
+							If TempEvent.Type = EventType.FloatingText Then
+								FloatingTextCollection.Add((CType(TempEvent, FloatingText), item("id")))
+							End If
+							If TempEvent.Type = EventType.AdvanceText Then
+								AdvanceTextCollection.Add((CType(TempEvent, AdvanceText), item("id")))
+							End If
+							'未处理事件加入
+					End Select
+				End If
 				Level.Add(TempEvent)
 			Next
 			'浮动文字事件关联
@@ -245,7 +238,7 @@ Namespace Converters
 			Me.calculator = calculator
 		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As Bookmark, serializer As JsonSerializer)
-			Dim beat = calculator.BeatOnly_BarBeat(value.BeatOnly)
+			Dim beat = value.Beat.BarBeat
 			With writer
 				.WriteStartObject()
 				.WritePropertyName("bar")
@@ -257,11 +250,10 @@ Namespace Converters
 				.WriteEndObject()
 			End With
 		End Sub
-
 		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Bookmark, hasExistingValue As Boolean, serializer As JsonSerializer) As Bookmark
 			Dim jobj = JToken.ReadFrom(reader)
 			Return New Bookmark With {
-				.BeatOnly = calculator.BarBeat_BeatOnly(jobj("bar"), jobj("beat")),
+				.Beat = calculator.BeatOf(jobj("bar").ToObject(Of UInteger), jobj("beat").ToObject(Of Single)),
 				.Color = [Enum].Parse(Of Bookmark.BookmarkColors)(jobj("color"))
 			}
 		End Function
@@ -362,15 +354,14 @@ Namespace Converters
 			_canread = False
 			existingValue = If(SubClassType IsNot Nothing, jobj.ToObject(SubClassType, serializer), jobj.ToObject(Of CustomEvent)(serializer))
 			_canread = True
-			existingValue.BeatOnly = BeatCalculator.BarBeat_BeatOnly(CUInt(jobj("bar")), CDbl(If(jobj("beat"), 1)), level.Where(Of SetCrotchetsPerBar))
-
+			existingValue.Beat = level.Calculator.BeatOf(CUInt(jobj("bar")), CDbl(If(jobj("beat"), 1)))
 			Return existingValue
 		End Function
 		Public Overridable Function SetSerializedObject(value As T, serializer As JsonSerializer) As JObject
 			_canwrite = False
 			Dim JObj = JObject.FromObject(value, serializer)
 			_canwrite = True
-			Dim b = BeatCalculator.BeatOnly_BarBeat(value.BeatOnly, level.Where(Of SetCrotchetsPerBar))
+			Dim b = value.Beat.BarBeat
 			JObj("bar") = b.bar
 			JObj("beat") = b.beat
 			Return JObj

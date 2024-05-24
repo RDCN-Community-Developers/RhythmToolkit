@@ -13,38 +13,36 @@ Namespace Utils
         Public ReadOnly DecorationTypes As IEnumerable(Of EventType) = ConvertToEnums(Of BaseDecorationAction)()
     End Module
     Public Class BeatCalculator
-        Private CPBs As IEnumerable(Of SetCrotchetsPerBar)
-        Private BPMs As IEnumerable(Of BaseBeatsPerMinute)
+        Private ReadOnly Collection As OrderedEventCollection(Of BaseEvent)
         Public Sub New(CPBCollection As IEnumerable(Of SetCrotchetsPerBar), BPMCollection As IEnumerable(Of BaseBeatsPerMinute))
-            Initialize(CPBCollection, BPMCollection)
+            Collection = New OrderedEventCollection(Of BaseEvent)
+            Collection.AddRange(CPBCollection)
+            Collection.AddRange(BPMCollection)
+            Initialize(Collection.Where(Of SetCrotchetsPerBar))
         End Sub
         Public Sub New(level As RDLevel)
-            Initialize(level.Where(Of SetCrotchetsPerBar), level.Where(Of BaseBeatsPerMinute))
-        End Sub
-        Private Sub Initialize(CPBs As IEnumerable(Of SetCrotchetsPerBar), BPMs As IEnumerable(Of BaseBeatsPerMinute))
-            Me.CPBs = CPBs '.OrderBy(Function(i) i.BeatOnly)
-            Me.BPMs = BPMs '.OrderBy(Function(i) i.BeatOnly)
-            Initialize(CPBs)
+            Collection = level
+            Initialize(Collection.Where(Of SetCrotchetsPerBar))
         End Sub
         Public Shared Sub Initialize(CPBs As IEnumerable(Of SetCrotchetsPerBar))
             For Each item In CPBs
-                item.Bar = BeatOnly_BarBeat(item.BeatOnly, CPBs).bar
+                item.Bar = BeatOnly_BarBeat(item.Beat.BeatOnly, CPBs).bar
             Next
         End Sub
         Public Function BarBeat_BeatOnly(bar As UInteger, beat As Single) As Single
-            Return BarBeat_BeatOnly(bar, beat, CPBs)
+            Return BarBeat_BeatOnly(bar, beat, Collection.Where(Of SetCrotchetsPerBar))
         End Function
         Public Function BarBeat_Time(bar As UInteger, beat As Single) As TimeSpan
             Return BeatOnly_Time(BarBeat_BeatOnly(bar, beat))
         End Function
         Public Function BeatOnly_BarBeat(beat As Single) As (bar As UInteger, beat As Single)
-            Return BeatOnly_BarBeat(beat, CPBs)
+            Return BeatOnly_BarBeat(beat, Collection.Where(Of SetCrotchetsPerBar))
         End Function
         Public Function BeatOnly_Time(beatOnly As Single) As TimeSpan
-            Return BeatOnly_Time(beatOnly, BPMs)
+            Return BeatOnly_Time(beatOnly, Collection.Where(Of BaseBeatsPerMinute))
         End Function
         Public Function Time_BeatOnly(timeSpan As TimeSpan) As Single
-            Return Time_BeatOnly(timeSpan, BPMs)
+            Return Time_BeatOnly(timeSpan, Collection.Where(Of BaseBeatsPerMinute))
         End Function
         Public Function Time_BarBeat(timeSpan As TimeSpan) As (bar As UInteger, beat As Single)
             Return BeatOnly_BarBeat(Time_BeatOnly(timeSpan))
@@ -53,64 +51,78 @@ Namespace Utils
             Return BeatOnly_Time(beat1) - BeatOnly_Time(beat2)
         End Function
         Public Function IntervalTime(event1 As BaseEvent, event2 As BaseEvent) As TimeSpan
-            Return IntervalTime(event1.BeatOnly, event2.BeatOnly)
+            Return IntervalTime(event1.Beat.BeatOnly, event2.Beat.BeatOnly)
         End Function
         Public Shared Function BarBeat_BeatOnly(bar As UInteger, beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As Single
-            Dim foreCPB As New SetCrotchetsPerBar(1, 0, 8, 1)
-            Dim result As Single = 0
-            Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Bar < bar, foreCPB)
-            result = LastCPB.BeatOnly + (bar - LastCPB.Bar) * LastCPB.CrotchetsPerBar + beat - 1
+            Dim foreCPB As (BeatOnly As Single, Bar As UInteger, CPB As UInteger) = (1, 1, 8)
+            Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Bar < bar)
+            If LastCPB IsNot Nothing Then
+                foreCPB = (LastCPB.Beat.BeatOnly, LastCPB.Bar, LastCPB.CrotchetsPerBar)
+            End If
+            Dim result = foreCPB.BeatOnly + (bar - foreCPB.Bar) * foreCPB.CPB + beat - 1
             Return result
         End Function
         Public Shared Function BeatOnly_BarBeat(beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As (bar As UInteger, beat As Single)
-            Dim foreCPB As New SetCrotchetsPerBar(1, 0, 8, 1)
-            Dim result As (bar As UInteger, beat As Single) = (1, 1)
-
-            Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.BeatOnly < beat, foreCPB)
-
-            result.bar = LastCPB.Bar + Math.Floor((beat - LastCPB.BeatOnly) / LastCPB.CrotchetsPerBar)
-            result.beat = (beat - LastCPB.BeatOnly) Mod LastCPB.CrotchetsPerBar + 1
+            Dim foreCPB As (BeatOnly As Single, Bar As UInteger, CPB As UInteger) = (1, 1, 8)
+            Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Beat < beat)
+            If LastCPB IsNot Nothing Then
+                foreCPB = (LastCPB.Beat.BeatOnly, LastCPB.Bar, LastCPB.CrotchetsPerBar)
+            End If
+            Dim result = (foreCPB.Bar + Math.Floor((beat - foreCPB.BeatOnly) / foreCPB.CPB),
+                (beat - foreCPB.BeatOnly) Mod foreCPB.CPB + 1)
 
             Return result
         End Function
         Private Shared Function BeatOnly_Time(beatOnly As Single, BPMCollection As IEnumerable(Of BaseBeatsPerMinute)) As TimeSpan
-            Dim foreBPM As BaseBeatsPerMinute = New SetBeatsPerMinute(
-                1,
-                BPMCollection.FirstOrDefault(Function(i)
-                                                 Return i.Active AndAlso i.Type = EventType.PlaySong
-                                             End Function, New SetBeatsPerMinute(1, 100, 0)).BeatsPerMinute,
-                0)
+            Dim fore As (BeatOnly As Single, BPM As Single) = (1, 100)
+            Dim foreBPM = BPMCollection.FirstOrDefault()
+            If foreBPM IsNot Nothing Then
+                fore = (foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute)
+            End If
             Dim resultMinute As Single = 0
             For Each item As BaseBeatsPerMinute In BPMCollection
-                If beatOnly > item.BeatOnly Then
-                    resultMinute += (item.BeatOnly - foreBPM.BeatOnly) / foreBPM.BeatsPerMinute
-                    foreBPM = item
+                If beatOnly > item.Beat.BeatOnly Then
+                    resultMinute += (item.Beat.BeatOnly - fore.BeatOnly) / fore.BPM
+                    fore = (item.Beat.BeatOnly, item.BeatsPerMinute)
                 Else
                     Exit For
                 End If
             Next
-            resultMinute += (beatOnly - foreBPM.BeatOnly) / foreBPM.BeatsPerMinute
+            resultMinute += (beatOnly - foreBPM.Beat.BeatOnly) / foreBPM.BeatsPerMinute
             Return TimeSpan.FromMinutes(resultMinute)
         End Function
         Private Shared Function Time_BeatOnly(timeSpan As TimeSpan, BPMCollection As IEnumerable(Of BaseBeatsPerMinute)) As Single
-            Dim foreBPM As BaseBeatsPerMinute = New SetBeatsPerMinute(1, BPMCollection.FirstOrDefault(Function(i) i.Active AndAlso i.Type = EventType.PlaySong, New SetBeatsPerMinute(1, 100, 0)).BeatsPerMinute, 0)
+            Dim fore As (BeatOnly As Single, BPM As Single) = (1, 100)
+            Dim foreBPM = BPMCollection.FirstOrDefault()
+            If foreBPM IsNot Nothing Then
+                fore = (foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute)
+            End If
             Dim beatOnly As Single = 1
             For Each item As BaseBeatsPerMinute In BPMCollection
-                If timeSpan > BeatOnly_Time(item.BeatOnly, BPMCollection) Then
+                If timeSpan > BeatOnly_Time(item.Beat.BeatOnly, BPMCollection) Then
                     beatOnly +=
                         (
-                            BeatOnly_Time(item.BeatOnly, BPMCollection) -
-                            BeatOnly_Time(foreBPM.BeatOnly, BPMCollection)
-                        ).TotalMinutes * foreBPM.BeatsPerMinute
+                            BeatOnly_Time(item.Beat.BeatOnly, BPMCollection) -
+                            BeatOnly_Time(fore.BeatOnly, BPMCollection)
+                        ).TotalMinutes * fore.BPM
                     foreBPM = item
                 Else
                     Exit For
                 End If
             Next
             beatOnly += (
-                            timeSpan - BeatOnly_Time(foreBPM.BeatOnly, BPMCollection)
+                            timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
                         ).TotalMinutes * foreBPM.BeatsPerMinute
             Return beatOnly
+        End Function
+        Public Function BeatOf(beatOnly As Single) As RDBeat
+            Return New RDBeat(Me, beatOnly)
+        End Function
+        Public Function BeatOf(bar As UInteger, beat As Single) As RDBeat
+            Return New RDBeat(Me, bar, beat)
+        End Function
+        Public Function BeatOf(timeSpan As TimeSpan) As RDBeat
+            Return New RDBeat(Me, timeSpan)
         End Function
     End Class
     Public Module Others

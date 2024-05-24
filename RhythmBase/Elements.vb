@@ -618,36 +618,160 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		End Function
 	End Structure
 	Public Structure Hit
-		Public ReadOnly BeatOnly As Single
+		'Public ReadOnly BeatOnly As Single
+		Public ReadOnly Beat As RDBeat
 		Public ReadOnly Hold As Single
 		Public ReadOnly Parent As BaseBeat
-		Public ReadOnly Property BarBeat As (Bar As UInteger, Beat As Single)
-			Get
-				Dim Calculator As New BeatCalculator(Parent.ParentLevel)
-				Return Calculator.BeatOnly_BarBeat(BeatOnly)
-			End Get
-		End Property
-		Public ReadOnly Property Time As TimeSpan
-			Get
-				Dim Calculator As New BeatCalculator(Parent.ParentLevel)
-				Return Calculator.BeatOnly_Time(BeatOnly)
-			End Get
-		End Property
+		'Public ReadOnly Property BarBeat As (Bar As UInteger, Beat As Single)
+		'	Get
+		'		Dim Calculator As New BeatCalculator(Parent.ParentLevel)
+		'		Return Calculator.BeatOnly_BarBeat(BeatOnly)
+		'	End Get
+		'End Property
+		'Public ReadOnly Property Time As TimeSpan
+		'	Get
+		'		Dim Calculator As New BeatCalculator(Parent.ParentLevel)
+		'		Return Calculator.BeatOnly_Time(BeatOnly)
+		'	End Get
+		'End Property
 		Public ReadOnly Property Holdable As Boolean
 			Get
 				Return Hold > 0
 			End Get
 		End Property
-		Public Sub New(parent As BaseBeat, beatOnly As Single, Optional hold As Single = 0)
+		Public Sub New(parent As BaseBeat, beat As RDBeat, Optional hold As Single = 0)
 			Me.Parent = parent
-			Me.BeatOnly = beatOnly
+			Me.Beat = beat
 			Me.Hold = hold
 		End Sub
 		Public Overrides Function ToString() As String
-			Return $"{{{BeatOnly}, {Parent}}}"
+			Return $"{{{Beat}, {Parent}}}"
 		End Function
 	End Structure
-	Public Structure RowStatus
+	Public Structure RDBeat
+		Friend ReadOnly _calculator As BeatCalculator
+		Private ReadOnly _beat As Single
+		Public ReadOnly Property BeatOnly As Single
+			Get
+				Return _beat
+			End Get
+		End Property
+		Public ReadOnly Property BarBeat As (bar As UInteger, beat As Single)
+			Get
+				Return _calculator.BeatOnly_BarBeat(_beat)
+			End Get
+		End Property
+		Public ReadOnly Property TimeSpan As TimeSpan
+			Get
+				Return _calculator.BeatOnly_Time(_beat)
+			End Get
+		End Property
+		Public Sub New(calculator As BeatCalculator, beatOnly As Single)
+			_calculator = calculator
+			_beat = beatOnly
+		End Sub
+		Public Sub New(calculator As BeatCalculator, bar As UInteger, beat As Single)
+			_calculator = calculator
+			_beat = _calculator.BarBeat_BeatOnly(bar, beat)
+		End Sub
+		Public Sub New(calculator As BeatCalculator, timeSpan As TimeSpan)
+			_calculator = calculator
+			_beat = _calculator.Time_BeatOnly(timeSpan)
+		End Sub
+		Public Shared Operator +(a As RDBeat, b As RDBeat) As RDBeat
+			If a._calculator.Equals(b._calculator) Then
+				Return New RDBeat(a._calculator, a._beat + b._beat)
+			End If
+			Throw New RhythmBaseException("Beats must come from the same RDLevel.")
+		End Operator
+		Public Shared Operator -(a As RDBeat, b As RDBeat) As RDBeat
+			If a._calculator.Equals(b._calculator) Then
+				Return New RDBeat(a._calculator, a._beat - b._beat)
+			End If
+			Throw New RhythmBaseException("Beats must come from the same RDLevel.")
+		End Operator
+		Public Shared Operator +(a As RDBeat, b As Single) As RDBeat
+			Return New RDBeat(a._calculator, a._beat + b)
+		End Operator
+		Public Shared Operator -(a As RDBeat, b As Single) As RDBeat
+			Return New RDBeat(a._calculator, a._beat - b)
+		End Operator
+		Public Shared Operator >(a As RDBeat, b As RDBeat) As Boolean
+			Return a._beat > b._beat
+		End Operator
+		Public Shared Operator >(a As RDBeat, b As Single) As Boolean
+			Return a._beat > b
+		End Operator
+		Public Shared Operator >(a As Single, b As RDBeat) As Boolean
+			Return a > b._beat
+		End Operator
+		Public Shared Operator <(a As RDBeat, b As RDBeat) As Boolean
+			Return a._beat < b._beat
+		End Operator
+		Public Shared Operator <(a As RDBeat, b As Single) As Boolean
+			Return a._beat < b
+		End Operator
+		Public Shared Operator <(a As Single, b As RDBeat) As Boolean
+			Return a < b._beat
+		End Operator
+		Public Shared Operator >=(a As RDBeat, b As RDBeat) As Boolean
+			Return a._beat >= b._beat
+		End Operator
+		Public Shared Operator >=(a As RDBeat, b As Single) As Boolean
+			Return a._beat >= b
+		End Operator
+		Public Shared Operator >=(a As Single, b As RDBeat) As Boolean
+			Return a >= b._beat
+		End Operator
+		Public Shared Operator <=(a As RDBeat, b As RDBeat) As Boolean
+			Return a._beat <= b._beat
+		End Operator
+		Public Shared Operator <=(a As RDBeat, b As Single) As Boolean
+			Return a._beat <= b
+		End Operator
+		Public Shared Operator <=(a As Single, b As RDBeat) As Boolean
+			Return a <= b._beat
+		End Operator
+		Public Overrides Function ToString() As String
+			Return $"[{BarBeat}, {TimeSpan}]"
+		End Function
+	End Structure
+	Public Structure RDRange
+		Public ReadOnly Start? As RDBeat
+		Public ReadOnly [End]? As RDBeat
+		Public ReadOnly Property BeatInterval As Single
+			Get
+				If Start.HasValue AndAlso [End].HasValue Then
+					Return [End].Value.BeatOnly - Start.Value.BeatOnly
+				End If
+				Return Single.PositiveInfinity
+			End Get
+		End Property
+		Public ReadOnly Property TimeInterval As TimeSpan
+			Get
+				If Start.HasValue AndAlso [End].HasValue Then
+					If Start.Value.BeatOnly = [End].Value.BeatOnly Then
+						Return TimeSpan.Zero
+					End If
+					Return [End].Value.TimeSpan - Start.Value.TimeSpan
+				End If
+				Return TimeSpan.MaxValue
+			End Get
+		End Property
+		Public Sub New(start As RDBeat?, [end] As RDBeat?)
+			If start.HasValue AndAlso [end].HasValue AndAlso (Not start.Value._calculator.Equals([end].Value._calculator)) Then
+				Throw New RhythmBaseException("RDIndexes must come from the same RDLevel.")
+			End If
+			If start.HasValue AndAlso [end].HasValue AndAlso start.Value.BeatOnly > [end].Value.BeatOnly Then
+				Me.Start = [end]
+				Me.End = start
+			Else
+				Me.Start = start
+				Me.End = [end]
+			End If
+		End Sub
+	End Structure
+	Public Structure ClassicBeatStatus
 		Public Enum StatusType
 			Unset = -1
 			None
@@ -795,15 +919,21 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			Me.Multipy = multipy
 		End Sub
 		Public Sub New(ParamArray rooms() As Byte)
-			If rooms.Length = 0 Then
-				_data = RoomIndex.RoomNotAvaliable
-				Exit Sub
-			End If
-			For Each item In rooms
-				Room(item) = True
-			Next
-			EnableTop = True
-			Multipy = True
+			Select Case rooms.Length
+				Case 0
+					_data = RoomIndex.RoomNotAvaliable
+					Exit Sub
+				Case 1
+					Room(rooms.Single) = True
+					EnableTop = rooms.Contains(5)
+					Multipy = False
+				Case Else
+					For Each item In rooms
+						Room(item) = True
+					Next
+					EnableTop = rooms.Contains(5)
+					Multipy = True
+			End Select
 		End Sub
 		Public Sub SetRooms(rooms As Rooms)
 			For Each item In rooms.Rooms
@@ -940,8 +1070,7 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Implements ICollection(Of T)
 		Protected Friend Property EventsBeatOrder As New SortedDictionary(Of Single, List(Of T))
 		Protected Friend Property EventsTypeOrder As New Dictionary(Of EventType, SortedDictionary(Of Single, List(Of T)))
-		<JsonIgnore>
-		Public Overridable ReadOnly Property Count As Integer Implements ICollection(Of T).Count
+		<JsonIgnore> Public Overridable ReadOnly Property Count As Integer Implements ICollection(Of T).Count
 			Get
 				Dim count1 = EventsTypeOrder.Sum(Function(i) i.Value.Sum(Function(j) j.Value.Count))
 				Dim count2 = EventsBeatOrder.Sum(Function(i) i.Value.Count)
@@ -959,8 +1088,12 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 				Throw New RhythmBaseException($"Internal exception: {count1}, {count2}")
 			End Get
 		End Property
-		<JsonIgnore>
-		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of T).IsReadOnly
+		<JsonIgnore> Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of T).IsReadOnly
+		<JsonIgnore> Public ReadOnly Property Length As RDBeat
+			Get
+				Return EventsBeatOrder.LastOrDefault().Value.First.Beat
+			End Get
+		End Property
 		Public Sub New()
 		End Sub
 		Public Sub New(items As IEnumerable(Of T))
@@ -985,14 +1118,14 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			If Not EventsTypeOrder.ContainsKey(item.Type) Then
 				EventsTypeOrder.Add(item.Type, New SortedDictionary(Of Single, List(Of T)))
 			End If
-			If Not EventsTypeOrder(item.Type).ContainsKey(item.BeatOnly) Then
-				EventsTypeOrder(item.Type).Add(item.BeatOnly, New List(Of T))
+			If Not EventsTypeOrder(item.Type).ContainsKey(item.Beat.BeatOnly) Then
+				EventsTypeOrder(item.Type).Add(item.Beat.BeatOnly, New List(Of T))
 			End If
-			EventsTypeOrder(item.Type)(item.BeatOnly).Add(item)
-			If Not EventsBeatOrder.ContainsKey(item.BeatOnly) Then
-				EventsBeatOrder.Add(item.BeatOnly, New List(Of T))
+			EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Add(item)
+			If Not EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
+				EventsBeatOrder.Add(item.Beat.BeatOnly, New List(Of T))
 			End If
-			EventsBeatOrder(item.BeatOnly).Add(item)
+			EventsBeatOrder(item.Beat.BeatOnly).Add(item)
 		End Sub
 		Public Sub AddRange(items As IEnumerable(Of T))
 			For Each item In items
@@ -1005,8 +1138,8 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		End Sub
 		Public Overridable Function Contains(item As T) As Boolean Implements ICollection(Of T).Contains
 			Return EventsTypeOrder.ContainsKey(item.Type) AndAlso
-				EventsTypeOrder(item.Type).ContainsKey(item.BeatOnly) AndAlso
-				EventsTypeOrder(item.Type)(item.BeatOnly).Contains(item)
+				EventsTypeOrder(item.Type).ContainsKey(item.Beat.BeatOnly) AndAlso
+				EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Contains(item)
 		End Function
 		Public Iterator Function Where(predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
 			For Each pair In EventsBeatOrder
@@ -1019,7 +1152,7 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		End Function
 		Public Iterator Function Where(startBeat As Single, endBeat As Single) As IEnumerable(Of T)
 			For Each pair In EventsBeatOrder
-				If endBeat < pair.Key Then
+				If endBeat <= pair.Key Then
 					Exit Function
 				End If
 				If startBeat <= pair.Key Then
@@ -1029,17 +1162,62 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 				End If
 			Next
 		End Function
-		Public Iterator Function Where(predicate As Func(Of T, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
+		Public Iterator Function Where(startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+			For Each item In Where(startBeat.BeatOnly, endBeat.BeatOnly)
+				Yield item
+			Next
+		End Function
+		Public Iterator Function Where(range As RDRange) As IEnumerable(Of T)
 			For Each pair In EventsBeatOrder
-				If endBeat < pair.Key Then
+				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
 					Exit Function
 				End If
-				If startBeat <= pair.Key Then
+				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
 					For Each item In pair.Value
-						If predicate(item) Then
-							Yield item
-						End If
+						Yield item
 					Next
+				End If
+			Next
+		End Function
+		Public Iterator Function Where(range As Range) As IEnumerable(Of T)
+			Dim firstEvent = Me.First
+			Dim lastEvent = Me.Last
+			Dim rg As (start As Single, [end] As Single) =
+				(If(range.Start.IsFromEnd,
+				  lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value + 1, 1),
+				  firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(firstEvent.Beat.BarBeat.bar + range.Start.Value - 1, 1)),
+				If(range.End.IsFromEnd,
+				  lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
+				  firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(firstEvent.Beat.BarBeat.bar + range.End.Value - 1, 1)))
+			For Each item In Where(rg.start, rg.end)
+				Yield item
+			Next
+		End Function
+		Public Iterator Function Where(predicate As Func(Of T, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
+			For Each item In Where(startBeat, endBeat)
+				If predicate(item) Then
+					Yield item
+				End If
+			Next
+		End Function
+		Public Iterator Function Where(predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+			For Each item In Where(startBeat, endBeat)
+				If predicate(item) Then
+					Yield item
+				End If
+			Next
+		End Function
+		Public Iterator Function Where(predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
+			For Each item In Where(range)
+				If predicate(item) Then
+					Yield item
+				End If
+			Next
+		End Function
+		Public Iterator Function Where(predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
+			For Each item In Where(range)
+				If predicate(item) Then
+					Yield item
 				End If
 			Next
 		End Function
@@ -1052,9 +1230,8 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			Next
 		End Function
 		Public Iterator Function Where(Of U As T)(startBeat As Single, endBeat As Single) As IEnumerable(Of U)
-			Dim types = ConvertToEnums(Of U)()
 			For Each pair In EventsBeatOrder
-				If endBeat < pair.Key Then
+				If endBeat <= pair.Key Then
 					Exit Function
 				End If
 				If startBeat <= pair.Key Then
@@ -1064,20 +1241,47 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 				End If
 			Next
 		End Function
-		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean)) As IEnumerable(Of U)
-			Dim types = ConvertToEnums(Of U)()
+		Public Iterator Function Where(Of U As T)(startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of U)
+			For Each item In Where(Of U)(startBeat.BeatOnly, endBeat.BeatOnly)
+				Yield item
+			Next
+		End Function
+		Public Iterator Function Where(Of U As T)(range As RDRange) As IEnumerable(Of U)
 			For Each pair In EventsBeatOrder
-				For Each item In pair.Value.OfType(Of U)
-					If predicate(item) Then
+				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
+					Exit Function
+				End If
+				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
+					For Each item In pair.Value.OfType(Of U)
 						Yield item
-					End If
-				Next
+					Next
+				End If
+			Next
+		End Function
+		Public Iterator Function Where(Of U As T)(range As Range) As IEnumerable(Of U)
+			Dim firstEvent = Me.First
+			Dim lastEvent = Me.Last
+			Dim rg As (start As Single, [end] As Single) =
+				(If(range.Start.IsFromEnd,
+				  lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value + 1, 1),
+				  firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(firstEvent.Beat.BarBeat.bar + range.Start.Value - 1, 1)),
+				If(range.End.IsFromEnd,
+				  lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
+				  firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(firstEvent.Beat.BarBeat.bar + range.End.Value - 1, 1)))
+			For Each item In Where(Of U)(rg.start, rg.end)
+				Yield item
+			Next
+		End Function
+		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean)) As IEnumerable(Of U)
+			For Each item In Where(Of U)()
+				If predicate(item) Then
+					Yield item
+				End If
 			Next
 		End Function
 		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of U)
-			Dim types = ConvertToEnums(Of U)()
 			For Each pair In EventsBeatOrder
-				If endBeat < pair.Key Then
+				If endBeat <= pair.Key Then
 					Exit Function
 				End If
 				If startBeat <= pair.Key Then
@@ -1086,6 +1290,32 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 							Yield item
 						End If
 					Next
+				End If
+			Next
+		End Function
+		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of U)
+			For Each item In Where(Of U)(predicate, startBeat.BeatOnly, endBeat.BeatOnly)
+				Yield item
+			Next
+		End Function
+		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean), range As RDRange) As IEnumerable(Of U)
+			For Each pair In EventsBeatOrder
+				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
+					Exit Function
+				End If
+				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
+					For Each item In pair.Value.OfType(Of U)
+						If predicate(item) Then
+							Yield item
+						End If
+					Next
+				End If
+			Next
+		End Function
+		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean), range As Range) As IEnumerable(Of U)
+			For Each item In Where(Of U)(range)
+				If predicate(item) Then
+					Yield item
 				End If
 			Next
 		End Function
@@ -1164,9 +1394,9 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Function IndexOf(item As T) As Integer
 			Dim count As Integer
 			For Each pair In EventsBeatOrder
-				If pair.Key < item.BeatOnly Then
+				If pair.Key < item.Beat Then
 					count += pair.Value.Count
-				ElseIf pair.Key > item.BeatOnly Then
+				ElseIf pair.Key > item.Beat Then
 					Return -1
 				Else
 					Dim shortIndex = pair.Value.IndexOf(item)
@@ -1178,7 +1408,7 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			Next
 			Return -1
 		End Function
-		Public Function [Select](Of U)(predicate As Func(Of T, U)) As IEnumerable(Of T)
+		Public Function [Select](Of U)(predicate As Func(Of T, U)) As IEnumerable(Of U)
 			Return From item In ConcatAll()
 				   Select predicate(item)
 		End Function
@@ -1187,15 +1417,15 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		End Sub
 		Public Overridable Function Remove(item As T) As Boolean Implements ICollection(Of T).Remove
 			If Contains(item) Then
-				Dim result = EventsTypeOrder(item.Type)?(item.BeatOnly).Remove(item) And EventsBeatOrder(item.BeatOnly).Remove(item)
-				If Not EventsTypeOrder(item.Type)(item.BeatOnly).Any Then
-					EventsTypeOrder(item.Type).Remove(item.BeatOnly)
+				Dim result = EventsTypeOrder(item.Type)?(item.Beat.BeatOnly).Remove(item) And EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
+				If Not EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Any Then
+					EventsTypeOrder(item.Type).Remove(item.Beat.BeatOnly)
 					If Not EventsTypeOrder(item.Type).Any Then
 						EventsTypeOrder.Remove(item.Type)
 					End If
 				End If
-				If Not EventsBeatOrder(item.BeatOnly).Any Then
-					EventsBeatOrder.Remove(item.BeatOnly)
+				If Not EventsBeatOrder(item.Beat.BeatOnly).Any Then
+					EventsBeatOrder.Remove(item.Beat.BeatOnly)
 				End If
 				Return result
 			End If
@@ -1364,7 +1594,6 @@ Namespace LevelElements
 	Public Class Decoration
 		Inherits OrderedEventCollection(Of BaseDecorationAction)
 		Private _id As String
-		'<JsonIgnore> Public ReadOnly Property Children As New List(Of BaseDecorationAction)
 		<JsonIgnore>
 		Friend Parent As RDLevel
 		<JsonProperty("id")> Public Property Id As String
@@ -1385,7 +1614,11 @@ Namespace LevelElements
 				Return If(File?.Expressions, New List(Of String))
 			End Get
 		End Property
-		Public Property Row As ULong
+		Public ReadOnly Property Row As ULong
+			Get
+				Return Parent.Decorations.ToList.IndexOf(Me)
+			End Get
+		End Property
 		Public ReadOnly Property Rooms As New Rooms(False, False)
 		<JsonProperty("filename")> Public Property File As Sprite
 		Public Property Depth As Integer
@@ -1405,7 +1638,14 @@ Namespace LevelElements
 		End Sub
 		Public Function CreateChildren(Of T As {BaseDecorationAction, New})(beatOnly As Single) As T
 			Dim Temp As New T With {
-				.BeatOnly = beatOnly,
+				.Beat = New RDBeat(Parent.Calculator, beatOnly),
+				.Parent = Me
+				}
+			Return Temp
+		End Function
+		Public Function CreateChildren(Of T As {BaseDecorationAction, New})(beatOnly As RDBeat) As T
+			Dim Temp As New T With {
+				.Beat = beatOnly,
 				.Parent = Me
 				}
 			Return Temp
@@ -1415,26 +1655,26 @@ Namespace LevelElements
 			Return Temp
 		End Function
 		Public Overrides Sub Add(item As BaseDecorationAction)
-			If Not Parent.EventsBeatOrder.ContainsKey(item.BeatOnly) Then
-				Parent.EventsBeatOrder.Add(item.BeatOnly, New List(Of BaseEvent))
+			If Not Parent.EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
+				Parent.EventsBeatOrder.Add(item.Beat.BeatOnly, New List(Of BaseEvent))
 			End If
-			Parent.EventsBeatOrder(item.BeatOnly).Add(item)
+			Parent.EventsBeatOrder(item.Beat.BeatOnly).Add(item)
 			MyBase.Add(item)
 		End Sub
 		Public Overrides Function Remove(item As BaseDecorationAction) As Boolean
-			If Parent.EventsBeatOrder.ContainsKey(item.BeatOnly) Then
-				Parent.EventsBeatOrder(item.BeatOnly).Remove(item)
+			If Parent.EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
+				Parent.EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
 			Else
 				Return False
 			End If
-			If Not Parent.EventsBeatOrder(item.BeatOnly).Any Then
-				Parent.EventsBeatOrder.Remove(item.BeatOnly)
+			If Not Parent.EventsBeatOrder(item.Beat.BeatOnly).Any Then
+				Parent.EventsBeatOrder.Remove(item.Beat.BeatOnly)
 			End If
 			MyBase.Remove(item)
 			Return True
 		End Function
 		Public Overrides Function ToString() As String
-			Return $"{_id}, {_Row}, {_Rooms}, {File.Name}"
+			Return $"{_id}, {Row}, {_Rooms}, {File.Name}"
 		End Function
 		Friend Function Clone() As Decoration
 			Return Me.MemberwiseClone
@@ -1563,7 +1803,7 @@ CType(i, BaseBeat).Hitable
 		End Function
 		Public Function CreateChildren(Of T As {BaseRowAction, New})(beatOnly As Single) As T
 			Dim temp = New T With {
-				.BeatOnly = beatOnly,
+				.Beat = New RDBeat(Parent.Calculator, beatOnly),
 				.Parent = Me
 			}
 			Return temp
@@ -1582,9 +1822,9 @@ CType(i, BaseBeat).Hitable
 							Case EventType.AddClassicBeat
 								Dim trueBeat = CType(beat, AddClassicBeat)
 								For i = 0 To 6
-									Dim statusArray As Integer() = If(L(beat.BeatOnly), New Integer(6) {})
+									Dim statusArray As Integer() = If(L(beat.Beat.BeatOnly), New Integer(6) {})
 									statusArray(i) += 1
-									L(beat.BeatOnly) = statusArray
+									L(beat.Beat.BeatOnly) = statusArray
 								Next
 							Case EventType.AddFreeTimeBeat
 
@@ -1599,22 +1839,23 @@ CType(i, BaseBeat).Hitable
 				Case Else
 					Throw New RhythmBaseException("How")
 			End Select
+			Return L
 		End Function
 		Public Overrides Sub Add(item As BaseRowAction)
-			If Not Parent.EventsBeatOrder.ContainsKey(item.BeatOnly) Then
-				Parent.EventsBeatOrder.Add(item.BeatOnly, New List(Of BaseEvent))
+			If Not Parent.EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
+				Parent.EventsBeatOrder.Add(item.Beat.BeatOnly, New List(Of BaseEvent))
 			End If
-			Parent.EventsBeatOrder(item.BeatOnly).Add(item)
+			Parent.EventsBeatOrder(item.Beat.BeatOnly).Add(item)
 			MyBase.Add(item)
 		End Sub
 		Public Overrides Function Remove(item As BaseRowAction) As Boolean
-			If Parent.EventsBeatOrder.ContainsKey(item.BeatOnly) Then
-				Parent.EventsBeatOrder(item.BeatOnly).Remove(item)
+			If Parent.EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
+				Parent.EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
 			Else
 				Return False
 			End If
-			If Not Parent.EventsBeatOrder(item.BeatOnly).Any Then
-				Parent.EventsBeatOrder.Remove(item.BeatOnly)
+			If Not Parent.EventsBeatOrder(item.Beat.BeatOnly).Any Then
+				Parent.EventsBeatOrder.Remove(item.Beat.BeatOnly)
 			End If
 			MyBase.Remove(item)
 			Return True
@@ -1627,7 +1868,7 @@ CType(i, BaseBeat).Hitable
 			Yellow
 			Green
 		End Enum
-		Public Property BeatOnly As Single
+		Public Property Beat As RDBeat
 		Public Property Color As BookmarkColors
 	End Class
 	Public MustInherit Class BaseConditional
@@ -1726,6 +1967,12 @@ CType(i, BaseBeat).Hitable
 				Return _path
 			End Get
 		End Property
+		<JsonIgnore>
+		Public ReadOnly Property Directory As String
+			Get
+				Return IO.Path.GetDirectoryName(_path)
+			End Get
+		End Property
 		'<JsonIgnore>
 		'Friend Property CPBs As New List(Of SetCrotchetsPerBar)
 		'<JsonIgnore>
@@ -1742,9 +1989,11 @@ CType(i, BaseBeat).Hitable
 			End Get
 		End Property
 		<JsonIgnore>
-		Public ReadOnly Property Assets As New HashSet(Of Sprite)
+		Public ReadOnly Assets As New HashSet(Of Sprite)
 		<JsonIgnore>
-		Public ReadOnly Property Variables As New Variables
+		Public ReadOnly Variables As New Variables
+		<JsonIgnore>
+		Public ReadOnly Calculator As New BeatCalculator(Me)
 		Public Sub New()
 		End Sub
 		Public Sub New(items As IEnumerable(Of BaseEvent))
@@ -1752,9 +2001,11 @@ CType(i, BaseBeat).Hitable
 				Me.Add(item)
 			Next
 		End Sub
-		Public Function CreateDecoration(room As Rooms, parent As Sprite, Optional depth As Integer = 0, Optional visible As Boolean = True) As Decoration
-			Assets.Add(parent)
-			Dim temp As New Decoration(room, parent, depth, visible)
+		Public Function CreateDecoration(room As Rooms, sprite As Sprite, Optional depth As Integer = 0, Optional visible As Boolean = True) As Decoration
+			Assets.Add(sprite)
+			Dim temp As New Decoration(room, sprite, depth, visible) With {
+				.Parent = Me
+			}
 			_Decorations.Add(temp)
 			Return temp
 		End Function
@@ -1772,6 +2023,7 @@ CType(i, BaseBeat).Hitable
 		End Function
 		Public Function CreateRow(room As Rooms, character As Character, Optional visible As Boolean = True) As Row
 			Dim temp As New Row() With {.Character = character, .Rooms = room, .Parent = Me, .HideAtStart = Not visible}
+			temp.Parent = Me
 			_Rows.Add(temp)
 			Return temp
 		End Function
@@ -1862,9 +2114,11 @@ New Converters.RDLevelConverter(_path, settings)
 			ElseIf item.Type = EventType.TintRows AndAlso CType(item, TintRows).Parent Is Nothing Then
 				MyBase.Add(item)
 			ElseIf ConvertToEnums(Of BaseRowAction).Contains(item.Type) Then
-				Throw New RhythmBaseException("Use `Row.Add()` instead.")
+				CType(item, BaseRowAction).Parent.Add(item)
+				Return
 			ElseIf ConvertToEnums(Of BaseDecorationAction).Contains(item.Type) Then
-				Throw New RhythmBaseException("Use `Decoration.Add()` instead.")
+				CType(item, BaseDecorationAction).Parent.Add(item)
+				Return
 			Else
 				MyBase.Add(item)
 			End If
@@ -1880,15 +2134,15 @@ New Converters.RDLevelConverter(_path, settings)
 				Return True
 			End If
 			If Contains(item) Then
-				Dim result = EventsTypeOrder(item.Type)?(item.BeatOnly).Remove(item) And EventsBeatOrder(item.BeatOnly).Remove(item)
-				If Not EventsTypeOrder(item.Type)(item.BeatOnly).Any Then
-					EventsTypeOrder(item.Type).Remove(item.BeatOnly)
+				Dim result = EventsTypeOrder(item.Type)?(item.Beat.BeatOnly).Remove(item) And EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
+				If Not EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Any Then
+					EventsTypeOrder(item.Type).Remove(item.Beat.BeatOnly)
 					If Not EventsTypeOrder(item.Type).Any Then
 						EventsTypeOrder.Remove(item.Type)
 					End If
 				End If
-				If Not EventsBeatOrder(item.BeatOnly).Any Then
-					EventsBeatOrder.Remove(item.BeatOnly)
+				If Not EventsBeatOrder(item.Beat.BeatOnly).Any Then
+					EventsBeatOrder.Remove(item.Beat.BeatOnly)
 				End If
 				Return result
 			End If

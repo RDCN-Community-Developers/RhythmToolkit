@@ -8,6 +8,10 @@
     <FileVersion>0.3.0.2</FileVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackAsTool>True</PackAsTool>
+    <Title>RadiationTherapy</Title>
+    <Authors>obugs</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RadiationTherapy</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +20,13 @@
 
   <ItemGroup>
     <None Remove="概述.docx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

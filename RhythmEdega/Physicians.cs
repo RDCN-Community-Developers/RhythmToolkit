@@ -44,8 +44,8 @@ namespace Physicians
             {
                 foreach (LegalBeat item2 in LegalList.TakeLast(LegalList.Count - LegalList.IndexOf(item1) - 1))
                 {
-                    if (item1.beat?.BeatOnly < item2.beat?.BeatOnly &&
-                        item2.beat.BeatOnly < item1.beat.BeatOnly + item1.beat.Length)
+                    if (item1.beat?.Beat < item2.beat?.Beat &&
+                        item2.beat.Beat < item1.beat.Beat + item1.beat.Length)
                     {
                         if (SimilarSoundEffect(item1.beat.BeatSound.Filename, item2.beat.BeatSound.Filename))
                         {
@@ -80,35 +80,35 @@ namespace Physicians
             return (name1 == name2) || (SimilarSoundEffectName.FirstOrDefault(i => i.Contains(name1))?.Contains(name2) ?? false);
         }
 
-        static void DetectingPseudos(string name)
-        {
-            List<(LegalBeat beat, Hit hit)> pulseList = LegalList
-                .SelectMany(i => i.beat.HitTimes()
-                    .Select(j => (i, j)))
-                .OrderBy(i => i.j.BeatOnly)
-                .ToList();
-            for (int i = 0; i < pulseList.Count - 1; i++)
-            {
-                double interval = Math.Abs(Calculator.IntervalTime(pulseList[i].hit.BeatOnly, pulseList[i + 1].hit.BeatOnly).TotalMilliseconds);
-                if (10 < interval && interval < 100)
-                {
-                    pulseList[i].beat.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
-                    pulseList[i + 1].beat.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
-                }
-            }
-            //foreach (var item1 in pulseList)
-            //{
-            //    foreach (var item2 in pulseList.TakeLast(LegalList.Count - LegalList.IndexOf(item1.i) - 1))
-            //    {
-            //        double interval = Math.Abs(Calculator.Interval_Time(item1.j.BeatOnly, item2.j.BeatOnly).TotalMilliseconds);
-            //        if (10 < interval && interval < 100)
-            //        {
-            //            item1.i.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
-            //            item2.i.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
-            //        }
-            //    }
-            //}
-        }
+        //static void DetectingPseudos(string name)
+        //{
+        //    List<(LegalBeat beat, Hit hit)> pulseList = LegalList
+        //        .SelectMany(i => i.beat.HitTimes()
+        //            .Select(j => (i, j)))
+        //        .OrderBy(i => i.j.BeatOnly)
+        //        .ToList();
+        //    for (int i = 0; i < pulseList.Count - 1; i++)
+        //    {
+        //        double interval = Math.Abs(Calculator.IntervalTime(pulseList[i].hit.BeatOnly, pulseList[i + 1].hit.BeatOnly).TotalMilliseconds);
+        //        if (10 < interval && interval < 100)
+        //        {
+        //            pulseList[i].beat.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
+        //            pulseList[i + 1].beat.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
+        //        }
+        //    }
+        //    //foreach (var item1 in pulseList)
+        //    //{
+        //    //    foreach (var item2 in pulseList.TakeLast(LegalList.Count - LegalList.IndexOf(item1.i) - 1))
+        //    //    {
+        //    //        double interval = Math.Abs(Calculator.Interval_Time(item1.j.BeatOnly, item2.j.BeatOnly).TotalMilliseconds);
+        //    //        if (10 < interval && interval < 100)
+        //    //        {
+        //    //            item1.i.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
+        //    //            item2.i.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
+        //    //        }
+        //    //    }
+        //    //}
+        //}
 
         static void DetectingHeckSwing(string name)
         {
@@ -121,46 +121,46 @@ namespace Physicians
             }
         }
 
-        static void DetectingShortHold(string name)
-        {
-            foreach (var item in LegalList.Where(i => i.beat.Type == EventType.AddClassicBeat ||
-                                                      i.beat.Type == EventType.AddFreeTimeBeat ||
-                                                      i.beat.Type == EventType.PulseFreeTimeBeat))
-            {
-                double interval, max = 100;
-                switch (item.beat.Type)
-                {
-                    case EventType.AddClassicBeat:
-                        AddClassicBeat temp1 = (AddClassicBeat)item.beat;
-                        interval = Math.Abs(Calculator.IntervalTime(temp1.BeatOnly + temp1.Length, temp1.BeatOnly + temp1.Length + temp1.Hold).TotalMilliseconds);
-                        if (temp1.Hitable && temp1.Hold > 0 && interval < max)
-                        {
-                            item.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
-                        }
-                        break;
-                    case EventType.AddFreeTimeBeat:
-                        AddFreeTimeBeat temp2 = (AddFreeTimeBeat)item.beat;
-                        interval = Math.Abs(Calculator.IntervalTime(temp2.BeatOnly + temp2.Length, temp2.BeatOnly + temp2.Length + temp2.Hold).TotalMilliseconds);
+        //static void DetectingShortHold(string name)
+        //{
+        //    foreach (var item in LegalList.Where(i => i.beat.Type == EventType.AddClassicBeat ||
+        //                                              i.beat.Type == EventType.AddFreeTimeBeat ||
+        //                                              i.beat.Type == EventType.PulseFreeTimeBeat))
+        //    {
+        //        double interval, max = 100;
+        //        switch (item.beat.Type)
+        //        {
+        //            case EventType.AddClassicBeat:
+        //                AddClassicBeat temp1 = (AddClassicBeat)item.beat;
+        //                interval = Math.Abs(Calculator.IntervalTime(temp1.BeatOnly + temp1.Length, temp1.BeatOnly + temp1.Length + temp1.Hold).TotalMilliseconds);
+        //                if (temp1.Hitable && temp1.Hold > 0 && interval < max)
+        //                {
+        //                    item.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
+        //                }
+        //                break;
+        //            case EventType.AddFreeTimeBeat:
+        //                AddFreeTimeBeat temp2 = (AddFreeTimeBeat)item.beat;
+        //                interval = Math.Abs(Calculator.IntervalTime(temp2.BeatOnly + temp2.Length, temp2.BeatOnly + temp2.Length + temp2.Hold).TotalMilliseconds);
 
-                        if (temp2.Hitable && temp2.Hold > 0 && interval < max)
-                        {
-                            item.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
-                        }
-                        break;
-                    case EventType.PulseFreeTimeBeat:
-                        var temp3 = (PulseFreeTimeBeat)item.beat;
-                        interval = Math.Abs(Calculator.IntervalTime(temp3.BeatOnly + temp3.Length, temp3.BeatOnly + temp3.Length + temp3.Hold).TotalMilliseconds);
+        //                if (temp2.Hitable && temp2.Hold > 0 && interval < max)
+        //                {
+        //                    item.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
+        //                }
+        //                break;
+        //            case EventType.PulseFreeTimeBeat:
+        //                var temp3 = (PulseFreeTimeBeat)item.beat;
+        //                interval = Math.Abs(Calculator.IntervalTime(temp3.BeatOnly + temp3.Length, temp3.BeatOnly + temp3.Length + temp3.Hold).TotalMilliseconds);
 
-                        if (temp3.Hitable && temp3.Hold > 0 && interval < max)
-                        {
-                            item.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+        //                if (temp3.Hitable && temp3.Hold > 0 && interval < max)
+        //                {
+        //                    item.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
+        //                }
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //    }
+        //}
 
         static void DetectingBadRowXs(string name)
         {
@@ -219,12 +219,12 @@ namespace Physicians
             Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
             now = DateTime.Now;
 
-            //伪双押检测
-            name = "Pseudos";
-            Console.WriteLine($"Detecting {name}...");
-            DetectingPseudos(name);
-            Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
-            now = DateTime.Now;
+            ////伪双押检测
+            //name = "Pseudos";
+            //Console.WriteLine($"Detecting {name}...");
+            //DetectingPseudos(name);
+            //Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
+            //now = DateTime.Now;
 
             //幽灵摇摆检测
             name = "Heck Swing";
@@ -233,12 +233,12 @@ namespace Physicians
             Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
             now = DateTime.Now;
 
-            //长按过短检测
-            name = "Short hold";
-            Console.WriteLine($"Detecting {name}...");
-            DetectingShortHold(name);
-            Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
-            now = DateTime.Now;
+            ////长按过短检测
+            //name = "Short hold";
+            //Console.WriteLine($"Detecting {name}...");
+            //DetectingShortHold(name);
+            //Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
+            //now = DateTime.Now;
 
             //设置X型错误
             name = "Bad row Xs";
@@ -255,7 +255,7 @@ namespace Physicians
                 foreach (LegalBeat item1 in LegalList.Where(i => i.warnInfo.Any()))
                 {
                     ConsoleColor color;
-                    Console.WriteLine($"{item1.beat?.BarBeat}");
+                    Console.WriteLine($"{item1.beat?.Beat.BarBeat}");
                     Console.WriteLine($"{item1.beat}");
                     foreach (var info in item1.warnInfo)
                     {
@@ -338,11 +338,11 @@ namespace Physicians
                 var EventGroup = level.GetTaggedEvents(item.ActionTag, item.Action != TagAction.Actions.Run);
                 foreach (var Group in EventGroup)
                 {
-                    float StartBeat = Group.First().BeatOnly;
+                    float StartBeat = Group.First().Beat.BeatOnly;
                     var CopiedGroup = Group.Select(i => Others.Clone(i)).ToList();
                     foreach (BaseEvent Copy in CopiedGroup)
                     {
-                        Copy.BeatOnly += (item.BeatOnly - StartBeat);
+                        Copy.Beat += (item.Beat - StartBeat);
                         Copy.Tag = "";
                         Events.Add(Copy);
                     }
@@ -351,25 +351,25 @@ namespace Physicians
             }
             level.AddRange(Events);
         }
-        public IEnumerable<(Hit,Hit,TimeSpan)> GetShortestHitInterval()
-        {
-            List<Hit> hits = new();
-            List<(Hit,Hit,TimeSpan)> interval = new();
-            foreach (Row row in level.Rows)
-                hits.AddRange(row.HitBeats());
-            hits = hits
-                    .GroupBy(i => i.BeatOnly)
-                    .Select(i => i.First())
-                    .OrderBy(i => i.BeatOnly)
-                    .ToList();
-            for (int i = 0; i < hits.Count - 1; i++)
-                interval.Add((
-                    hits[i],
-                    hits[i + 1],
-                    calculator.BeatOnly_Time(hits[i + 1].BeatOnly + hits[i + 1].Hold)
-                ));
-            var min = interval.Min(i => i.Item3);
-            return interval.Where(i => i.Item3 == min);
-        }
+        //public IEnumerable<(Hit,Hit,TimeSpan)> GetShortestHitInterval()
+        //{
+        //    List<Hit> hits = new();
+        //    List<(Hit,Hit,TimeSpan)> interval = new();
+        //    foreach (Row row in level.Rows)
+        //        hits.AddRange(row.HitBeats());
+        //    hits = hits
+        //            .GroupBy(i => i.BeatOnly)
+        //            .Select(i => i.First())
+        //            .OrderBy(i => i.BeatOnly)
+        //            .ToList();
+        //    for (int i = 0; i < hits.Count - 1; i++)
+        //        interval.Add((
+        //            hits[i],
+        //            hits[i + 1],
+        //            calculator.BeatOnly_Time(hits[i + 1].BeatOnly + hits[i + 1].Hold)
+        //        ));
+        //    var min = interval.Min(i => i.Item3);
+        //    return interval.Where(i => i.Item3 == min);
+        //}
     }
 }
