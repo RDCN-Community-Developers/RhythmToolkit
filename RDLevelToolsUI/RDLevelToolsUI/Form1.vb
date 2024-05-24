@@ -78,7 +78,7 @@ Public Class Form1
 			.AccessibleDescription = "事件名称"
 		}
 		Dim propertyLabel As New Label With {
-			.Text = Calculator.BeatOnly_BarBeat(processingEvent.BeatOnly).ToString,
+			.Text = Calculator.BeatOnly_BarBeat(processingEvent.Beat.BeatOnly).ToString,
 			.AccessibleName = "节拍",
 			.AccessibleDescription = "事件的节拍位置"
 		}
@@ -126,7 +126,7 @@ Public Class Form1
 					}
 					pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
 					editorControl = pNumericUpDown
-				ElseIf p.Name = NameOf(BaseBeat.BeatOnly) Then
+				ElseIf p.Name = NameOf(BaseBeat.Beat) Then
 					Dim pNumericUpDown = New NumericUpDown With {
 						.DecimalPlaces = 2,
 						.Minimum = 1,

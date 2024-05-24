@@ -364,3 +364,8 @@ FodyWeavers.xsd
 /RDLevel.zip
 /FastTest/Program.cs
 /FastTest/CodeFile1.cs
+/TestProject1/TestProject1.csproj
+/FastTest/FastTest.csproj
+/TestProject1/UnitTest1.cs
+/TestProject1/CSTestProject.csproj
+/TestProject1/UnitTest1.cs

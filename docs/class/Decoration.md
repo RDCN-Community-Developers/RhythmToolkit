@@ -10,7 +10,7 @@
 | | string | Id | 返回或设置装饰的 Id。  
 readonly | [RDPoint](../class/RDPoint.md) | Size | 返回此装饰的尺寸。  
 readonly | IEnumerable\<string\> | Expressions | 返回此装饰的表情名集合。  
-| | ulong | Row | 返回或设置装饰的Id。  
+| | ulong | Row | 返回或设置装饰。  
 readonly | [Rooms](../class/Rooms.md) | Rooms | 返回装饰的序号。  
 readonly | [ISprite](../interface/ISprite.md) | File | 返回装饰文件素材对象。  
 | | int | Depth | 返回或设置装饰的深度。  

@@ -1,11 +1,27 @@
 ## [返回](../RadiationTherapy.md)
 # 更新日志
 
+### 2024/05/24
+
+- 添加了 [RDBeat](/class/RDBeat.md) 类型和 [RDRange](/class/RDRange.md) 类型，以代替现有节拍计算方案。
+- 替换了 [BaseEvent](/class/BaseEvent.md) 类型的 `BeatOnly` 字段，`BarBeat` 字段和 `TimeSpan` 字段为 [RDBeat](/class/RDBeat.md) 类型的 `Beat` 字段。
+- 替换了 [Bookmark](/class/Bookmark.md) 类型的 `BeatOnly` 字段为 [RDBeat](/class/RDBeat.md) 类型的 `Beat` 字段。 
+- [BeatCalculator](/class/BeatCalculator.md) 类型添加了 3 个 `BeatOf` 方法以创建 [RDBeat](/class/RDBeat.md) 类型。
+- [OrderedEventCollection](/class/OrderedEventCollection.md) 类型添加了 12 个 `Where` 方法使得能够以节拍范围更精细地筛选事件。
+- [OrderedEventCollection](/class/OrderedEventCollection.md) 类型调整了 `Where` 方法以节拍范围筛选事件的范围定义。现在可以使用 Range 的语法快速编写针对小节的事件筛选了。
+- 更新了[示例](/examples.md)。
+
 ### 2024/05/23
 
 - 修复了 [TintRows]() 和 [Comments]() 事件的移除问题。
 - 修复了 [Bookmark](/class/Bookmark.md) 的序列化异常问题。
 - 修复了 [Characters](/enum/Characters.md) 对当前游戏版本的适配问题。
+- 修复了 [RDLevel](/class/RDLevel.md) 的 `Add()`方法不能添加轨道和装饰事件的问题。
+- 修复了 [RDLevel](/class/RDLevel.md) 的 `CreateRow()` 方法和 `CreateDecoration()` 方法导致 `Parent` 缺失的问题。
+- 修复了 [PanelColor](/class/PanelColor.md) 不能被替换的问题。
+- 修复了 [PlayExpression]() 空表情名导致的游戏卡死问题。
+- 修复了 [PlayAnimtion]() 空表情名导致的游戏无法读取问题。
+- 修复了 [CustomEvent](/class/UnknownEvent.md) 无法读取的问题。
 
 ### 2024/05/22
 
@@ -18,6 +34,7 @@
 
 - 添加了 [Character](/class/Character.md) 类型。
 - [Row](/class/Row.md) 类型的 `Character` 字段替换为 [Character](/class/Character.md) 类型。
+- 修复了 [Sprite](/class/Sprite.md) 不读取文件夹下精灵文件的问题。
 
 ### 2024/05/18
 

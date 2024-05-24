@@ -11,9 +11,7 @@
 | | Dictionary\<String, Object\> | PrivateData | 用于存储用户自定义数据。  
 readonly | [EventType](../enum/EventType.md) | Type | 事件类型。  
 readonly | [Tabs](../enum/Tabs.md) | Tab | 事件栏位。  
-| | float | BeatOnly |返回或获取事件的节拍。<br>在本项目中，所有事件的执行时刻在内部以绝对节拍的方式记录。 
-| | (uint Bar, float Beat) | BarBeat | 返回或设置事件的节拍。不建议频繁使用此属性。  
-| | TimeSpan | Time | 返回或设置事件在关卡中的时间。不建议频繁使用此属性。
+| | [RDBeat](../class/RDBeat.md) | Beat |返回或获取事件的节拍。
 | | uint | Y | 事件在事件栏内的高度。  
 readonly | [Rooms](Rooms.md) | Rooms | 事件所在的房间。  
 | | string | Tag | 事件的标签。  

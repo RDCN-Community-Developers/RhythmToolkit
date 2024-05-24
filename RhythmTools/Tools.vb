@@ -66,10 +66,10 @@ Namespace Tools
 			For Each item In Level.Where(Of TagAction)
 				Dim eventGroups = Level.GetTaggedEvents(item.ActionTag, Not item.Action = TagAction.Actions.Run)
 				For Each group In eventGroups
-					Dim startBeat = group.First().BeatOnly
+					Dim startBeat = group.First().Beat
 					Dim copiedGroup = group.Select(Function(i) Clone(i))
 					For Each copy As BaseEvent In copiedGroup
-						copy.BeatOnly += (item.BeatOnly - startBeat)
+						copy.Beat += (item.Beat - startBeat)
 						copy.Tag = ""
 						Adds.Add(copy)
 					Next
@@ -137,7 +137,7 @@ Namespace Tools
 		''' <summary>
 		''' [未完成] 拆分轨道为精灵图
 		''' </summary>
-		Public Sub SplitRow(Character As Sprite, ClassicBeat As Sprite, Heart As Sprite, beatSettings As SplitRowSettings, rows As IEnumerable(Of Row), startBeat As Integer, endBeat As Integer)
+		Public Sub SplitRow(Character As Sprite, ClassicBeat As Sprite, Heart As Sprite, beatSettings As SplitRowSettings, rows As IEnumerable(Of Row), startBeat As Integer, endBeat As Integer, ShowRow As Boolean)
 
 			'对于每个七拍轨道
 			For Each row In rows.Where(Function(i) i.RowType = RowType.Classic)
@@ -159,7 +159,6 @@ Namespace Tools
 					item.deco.Visible = False
 					Dim visible As SetVisible = item.deco.CreateChildren(Of SetVisible)(1)
 					visible.Visible = Not row.HideAtStart
-					Level.Add(visible)
 				Next
 
 				'精灵轨道初始位置
@@ -172,7 +171,6 @@ Namespace Tools
 					CharEvent.Pivot = New NumOrExpPair(((tempEvent.Pivot * 282) - (part.left - part.deco.Size.X / 2)) * 100 / part.deco.Size.X, 50)
 					CharEvent.Ease = EaseType.Linear
 					CharEvent.Duration = 0
-					Level.Add(CharEvent)
 				Next
 
 				'精灵初始表情
@@ -180,7 +178,6 @@ Namespace Tools
 				For i = 0 To 5
 					Dim tempExpression = Decos(i + 1).deco.CreateChildren(Of PlayAnimation)(1)
 					tempExpression.Expression = beatSettings.Line
-					Level.Add(tempExpression)
 				Next
 
 				'对于在范围内的每个节拍
@@ -190,14 +187,14 @@ Namespace Tools
 						Case EventType.HideRow
 							For Each part In Decos
 								Dim tempEvent = CType(item, HideRow)
-								Dim CharEvent As SetVisible = part.deco.CreateChildren(Of SetVisible)(item.BeatOnly)
+								Dim CharEvent As SetVisible = part.deco.CreateChildren(Of SetVisible)(item.Beat)
 								CharEvent.Visible = (tempEvent.Show = HideRow.Shows.Visible) Or (tempEvent.Show = HideRow.Shows.OnlyCharacter)
-								Level.Add(CharEvent)
 							Next
+							item.Active = ShowRow
 						Case EventType.MoveRow
 							For Each part In Decos
 								Dim tempEvent = CType(item, MoveRow)
-								Dim CharEvent As Move = part.deco.CreateChildren(Of Move)(item.BeatOnly)
+								Dim CharEvent As Move = part.deco.CreateChildren(Of Move)(item.Beat)
 								If tempEvent.CustomPosition Then
 									Select Case tempEvent.Target
 										Case MoveRow.Targets.WholeRow
@@ -220,31 +217,31 @@ Namespace Tools
 									End Select
 								End If
 							Next
+							item.Active = ShowRow
 						Case EventType.TintRows
 							For Each part In Decos
 								Dim tempEvent = CType(item, TintRows)
-								Dim CharEvent As Tint = part.deco.CreateChildren(Of Tint)(item.BeatOnly)
+								Dim CharEvent As Tint = part.deco.CreateChildren(Of Tint)(item.Beat)
 								CharEvent.Border = tempEvent.Border
-								CharEvent.BorderColor.Color = tempEvent.BorderColor.Color
+								CharEvent.BorderColor = tempEvent.BorderColor
 								CharEvent.Tint = tempEvent.Tint
 								CharEvent.Opacity = tempEvent.Opacity
 								CharEvent.Ease = tempEvent.Ease
 								CharEvent.Duration = tempEvent.Duration
-								Level.Add(CharEvent)
 							Next
+							item.Active = ShowRow
 						Case EventType.PlayAnimation
 							Dim part = Decos(0)
 							Dim tempEvent = CType(item, PlayExpression)
-							Dim charEvent As PlayAnimation = part.deco.CreateChildren(Of PlayAnimation)(item.BeatOnly)
+							Dim charEvent As PlayAnimation = part.deco.CreateChildren(Of PlayAnimation)(item.Beat)
 							charEvent.Expression = tempEvent.Expression
-							Level.Add(charEvent)
+							item.Active = ShowRow
 						Case EventType.SetRowXs
 							Dim tempEvent = CType(item, SetRowXs)
 							For i = 0 To 5
 								If tempEvent.Pattern(i) <> tempRowXs.Pattern(i) Then
-									Dim tempAnimation = Decos(i + 1).deco.CreateChildren(Of PlayAnimation)(tempEvent.BeatOnly)
+									Dim tempAnimation = Decos(i + 1).deco.CreateChildren(Of PlayAnimation)(tempEvent.Beat)
 									'	tempAnimation.Expression =
-									Level.Add(tempAnimation)
 								End If
 							Next
 						Case EventType.AddClassicBeat
@@ -254,7 +251,9 @@ Namespace Tools
 						Case EventType.PulseFreeTimeBeat
 
 					End Select
+
 				Next
+				row.HideAtStart = Not ShowRow
 			Next
 		End Sub
 		Private Function GetExpression(names As SplitRowSettings, before As SetRowXs, after As SetRowXs, index As Byte) As String
@@ -268,19 +267,19 @@ Namespace Tools
 		''' <param name="interval">细分间隔，每秒事件数</param>
 		''' <param name="increase">递增(true)或递减(false)</param>
 		Public Sub AddTimer(copy As FloatingText, interval As UInteger, increase As Boolean)
-			Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel, Level.Last).BeatOnly
+			Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel, Level.Last).Beat
 			Dim t As Integer = 0
 			Dim C As New BeatCalculator(Level)
 
 			Dim txt = Clone(copy)
-			txt.BeatOnly = 1
-			txt.Text = If(increase, TimeSpan.Zero, C.BeatOnly_Time(finish) - TimeSpan.Zero).ToString
+			txt.Beat = New RDBeat(Level.Calculator, 1)
+			txt.Text = If(increase, TimeSpan.Zero, finish.TimeSpan - TimeSpan.Zero).ToString
 			Level.Add(txt)
 			Do
 				Level.Add(txt.CreateAdvanceText(C.Time_BeatOnly(TimeSpan.FromSeconds(t / interval))))
-				txt.Text += vbCrLf + $"{If(increase, TimeSpan.FromSeconds(t / interval), C.BeatOnly_Time(finish) - TimeSpan.FromSeconds(t / interval))}"
+				txt.Text += vbCrLf + $"{If(increase, TimeSpan.FromSeconds(t / interval), finish.TimeSpan - TimeSpan.FromSeconds(t / interval))}"
 				t += 1
-			Loop Until C.BeatOnly_Time(finish) - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
+			Loop Until finish.TimeSpan - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
 		End Sub
 		''' <summary>
 		''' 添加浮动文字式计拍器
@@ -289,19 +288,19 @@ Namespace Tools
 		''' <param name="interval">细分间隔，每秒事件数</param>
 		''' <param name="increase">递增(true)或递减(false)</param>
 		Public Sub AddBeater(copy As FloatingText, interval As UInteger, increase As Boolean)
-			Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel).BeatOnly
+			Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel).Beat
 			Dim t As Integer = 0
 			Dim C As New BeatCalculator(Level)
 
 			Dim txt = Clone(copy)
-			txt.BeatOnly = 1
-			txt.Text = If(increase, (1, 1), C.BeatOnly_BarBeat(finish - 1)).ToString
+			txt.Beat = New RDBeat(Level.Calculator, 1)
+			txt.Text = If(increase, (1, 1), (finish - 1).BarBeat).ToString
 			Level.Add(txt)
 			Do
 				Level.Add(txt.CreateAdvanceText(C.Time_BeatOnly(TimeSpan.FromSeconds(t / interval))))
-				txt.Text += vbCrLf + $"{If(increase, C.Time_BarBeat(TimeSpan.FromSeconds(t / interval)), C.Time_BarBeat(C.BeatOnly_Time(finish) - TimeSpan.FromSeconds(t / interval)))}"
+				txt.Text += vbCrLf + $"{If(increase, C.Time_BarBeat(TimeSpan.FromSeconds(t / interval)), C.Time_BarBeat(finish.TimeSpan - TimeSpan.FromSeconds(t / interval)))}"
 				t += 1
-			Loop Until C.BeatOnly_Time(finish) - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
+			Loop Until finish.TimeSpan - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
 		End Sub
 		''' <summary>
 		''' 批量添加精灵
@@ -334,10 +333,10 @@ Namespace Tools
 				item.CrotchetsPerBar = cpb
 			Next
 			For Each item In Level
-				item.BeatOnly += offset
+				item.Beat += offset
 			Next
 			If offset > 0 Then
-				Level.Add(New SetCrotchetsPerBar(1, 0, cpb, 1))
+				Level.Add(New SetCrotchetsPerBar(0, cpb, 1))
 			End If
 		End Sub
 		''' <summary>
@@ -350,9 +349,9 @@ Namespace Tools
 			For Each row In Level.Rows
 				Pulses.AddRange(row.HitBeats)
 			Next
-			Pulses = Pulses.GroupBy(Function(i) i.BeatOnly).Select(Function(i) i.First).OrderBy(Function(i) i.BeatOnly).ToList
+			Pulses = Pulses.GroupBy(Function(i) i.Beat).Select(Function(i) i.First).OrderBy(Function(i) i.Beat).ToList
 			For i = 0 To Pulses.Count - 2
-				PulsesInterval.Add((Pulses(i), Pulses(i + 1), Calculator.BeatOnly_Time(Pulses(i + 1).BeatOnly + Pulses(i + 1).Hold) - Calculator.BeatOnly_Time(Pulses(i).BeatOnly)))
+				PulsesInterval.Add((Pulses(i), Pulses(i + 1), (Pulses(i + 1).Beat + Pulses(i + 1).Hold).TimeSpan - Pulses(i).Beat.TimeSpan))
 			Next
 			Dim min = PulsesInterval.Min(Function(i) i.Item3)
 			Return PulsesInterval.Where(Function(i) i.Item3 = min)
@@ -405,33 +404,6 @@ Namespace Tools
 End Namespace
 Namespace Extensions
 	Public Module Extensions
-		Private Function GetPulseCollection(e As Row) As IEnumerable(Of (Parent As BaseBeat, Byte))
-			'Dim result = New List(Of (BaseBeat, Byte))
-			'If e.RowType = RowType.Classic Then
-			'	Dim Beats As IEnumerable(Of BaseBeat) = From item In e.Children
-			'											Where item.Type = EventType.AddFreeTimeBeat Or item.Type = EventType.PulseFreeTimeBeat
-			'											Select item
-			'	For Each item In Beats
-			'		If item.Type = EventType.AddFreeTimeBeat Then
-			'			Dim temp = CType(item, AddFreeTimeBeat)
-			'			result.Add((temp, temp.Pulse))
-			'		Else
-			'			Dim temp = CType(item, PulseFreeTimeBeat)
-			'			Select Case temp.Action
-			'				Case PulseFreeTimeBeat.ActionType.Increment
-
-			'				Case PulseFreeTimeBeat.ActionType.Decrement
-
-			'				Case PulseFreeTimeBeat.ActionType.Custom
-
-			'				Case PulseFreeTimeBeat.ActionType.Remove
-
-			'			End Select
-			'		End If
-			'	Next
-			'End If
-			'Return result
-		End Function
 	End Module
 	Public Module EventsExtension
 		Public Enum wavetype
