@@ -3,7 +3,7 @@
 # 示例
 
 ### 读取和写入关卡  
-（参考 [RDLevel](/class/RDLevel.md), [LevelInputSettings](/class/LevelInputSettings.md), [LevelOutputSettings](/class/LevelOutputSettings.md)）
+（参考 [RDLevel](class/RDLevel.md), [LevelInputSettings](class/LevelInputSettings.md), [LevelOutputSettings](class/LevelOutputSettings.md)）
 
 ```CS
 using RhythmBase.LevelElements;
@@ -20,7 +20,7 @@ rdlevel.SaveFile(@"Your\level_copy.rdlevel");
 ---
 
 ### 筛选事件  
-（参考 [RDLevel](/class/RDLevel.md), [BaseEvent](/class/BaseEvent.md)）
+（参考 [RDLevel](class/RDLevel.md), [BaseEvent](class/BaseEvent.md)）
 
 ```CS
 using RhythmBase.LevelElements;
@@ -41,7 +41,7 @@ foreach (var item in level.Where<BaseBeat>(i => i.Active, 2..^10))
 ---
 
 ### 移除所有位于动作栏的未激活事件
-（参考 [RDLevel](/class/RDLevel.md)）
+（参考 [RDLevel](class/RDLevel.md)）
 
 ```CS
 using RhythmBase.LevelElements;
@@ -54,7 +54,7 @@ rdlevel.RemoveAll(i => i.Tab == Tabs.Actions && !i.Active);
 ---
 
 ### 批量添加并初始化装饰
-（参考 [Decoration](/class/Decoration.md), [Sprite](/class/Sprite.md), [Rooms](/class/Rooms.md)）
+（参考 [Decoration](class/Decoration.md), [Sprite](class/Sprite.md), [Rooms](class/Rooms.md)）
 
 ```CS
 using RhythmBase.LevelElements;
@@ -81,7 +81,7 @@ foreach (Decoration decoration in decorations)
 ---
 
 ### 在七拍子的每一拍按键
-（参考 [RDLevel](/class/RDLevel.md), [BaseEvent](/class/BaseEvent.md)）
+（参考 [RDLevel](class/RDLevel.md), [BaseEvent](class/BaseEvent.md)）
 
 ```CS
 using RhythmBase.LevelElements;
@@ -124,7 +124,7 @@ foreach(BaseBeat beat in beats)
 ---
 
 ### 以第一个结束事件的时刻计算关卡时长
-（参考 [RDLevel](/class/RDLevel.md), [RDBeat](/class/RDBeat.md), [BeatCalculator](/class/BeatCalculator.md)）
+（参考 [RDLevel](class/RDLevel.md), [RDBeat](class/RDBeat.md), [BeatCalculator](class/BeatCalculator.md)）
 
 ```CS
 using RhythmBase.LevelElements;
@@ -144,7 +144,7 @@ float result2 = (float)finishLevel.Beat.TimeSpan.TotalSeconds;
 ---
 
 ### 构造自定义事件  
-（参考 [RDLevel](/class/RDLevel.md), [CustomEvent](/class/CustomEvent.md), [INumOrExp](/interface/INumOrExp.md), [NumOrExpPair](/class/NumOrExpPair.md)）  
+（参考 [RDLevel](class/RDLevel.md), [CustomEvent](class/CustomEvent.md), [INumOrExp](interface/INumOrExp.md), [NumOrExpPair](class/NumOrExpPair.md)）  
 
 在使用自定义事件时请确保游戏能够正常读取。  
 
