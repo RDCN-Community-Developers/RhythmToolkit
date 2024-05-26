@@ -70,8 +70,6 @@ Namespace Events
 		MaskRoom
 		FadeRoom
 		SetRoomPerspective
-		'WindowResize
-		'ShowSubdivisionsRows
 		ReadNarration
 		NarrateRowInfo
 		CustomEvent

@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="RhythmBase.Components.Variables" Collapsed="true">
+    <Position X="16.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIICAEAAAqF4AgAAICIAgKCRHIICRFIYIQShidaABDA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.Components.PanelColor" Collapsed="true">
+    <Position X="14.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAABEAACAAAAAAAAQAAABCAAggAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.Components.Rooms" Collapsed="true">
+    <Position X="16.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAQgABAAAAAAEhBEAAQAKAAAAAIAAAAAAAAAQAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.Components.Audio" Collapsed="true">
+    <Position X="14.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQgAEAAAAAAAAAAAAAAAAAAJAAAAAgAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.Components.LimitedList(Of T)" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAgAAAAAAABAUBAAABAQEAABAAAAEAAAAAABQIAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RhythmBase.Components.OrderedEventCollection(Of T)">
+    <Position X="5.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEIAAAAIGAAAARBUAAAABARAAAECAAAEMAACAIBUIAI=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RhythmBase.Components.Union(Of A, B)" Collapsed="true">
+    <Position X="14.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.Components.SoundSubType" Collapsed="true">
+    <Position X="19.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAQgAAAAEAAgCAAAAAAEAQAAJgAAAAgEE=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Condition" Collapsed="true">
+    <Position X="18" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAACAAAEAAAAAAAAACAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Decoration" Collapsed="true">
+    <Position X="3" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAICAAAAAAAAgAAEAEBARAACAAAEAgAoAAAAAgAAABA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Row" Collapsed="true">
+    <Position X="5.25" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYKCAAgQAAgAAAAIEAgRAAqQAAAAgIgBAAIAQAQKAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Bookmark" Collapsed="true">
+    <Position X="16.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.BaseConditional">
+    <Position X="7.5" Y="0.75" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="RhythmBase.LevelElements.BaseConditional.ConditionalType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Elements.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAgAAAEAEAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.RDLevel" Collapsed="true">
+    <Position X="7.5" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AqIAABAAAABiAEIMAAACBAQBABCQAQAAhAQgAAAWBAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Settings" Collapsed="true">
+    <Position X="18" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABAKIAAhAAgIQAIgYAAAAgABIAgAEAAABIAAAQAEAI=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Conditions.LastHit">
+    <Position X="3" Y="4.25" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="RhythmBase.LevelElements.Conditions.LastHit.HitResult" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Elements.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAgAAAQAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Conditions.Custom">
+    <Position X="5.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAQAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Conditions.TimesExecuted">
+    <Position X="7.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAQAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Conditions.Language">
+    <Position X="9.75" Y="4.25" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="RhythmBase.LevelElements.Conditions.Language.Languages" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Elements.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.LevelElements.Conditions.PlayerMode">
+    <Position X="12" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="RhythmBase.Components.Num" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Struct Name="RhythmBase.Components.Exp" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Struct Name="RhythmBase.Components.NumOrExpPair" Collapsed="true">
+    <Position X="14.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="RhythmBase.Components.RDPoint" Collapsed="true">
+    <Position X="18" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="RhythmBase.Components.Hit" Collapsed="true">
+    <Position X="18" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAEAAAAQAAgAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="RhythmBase.Components.RDBeat" Collapsed="true">
+    <Position X="16.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAGAAgAAAAAAAAUEAAAAIAAAAAQABAAAAAQIAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="RhythmBase.Components.RDRange" Collapsed="true">
+    <Position X="19.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAgACAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="RhythmBase.Components.ClassicBeatStatus" Collapsed="true">
+    <Position X="14.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="RhythmBase.Components.INumOrExp" Collapsed="true">
+    <Position X="14.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="RhythmBase.Components.Characters" Collapsed="true">
+    <Position X="14.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>HhIgMJC1MUBFARAAAQCogBAg9SOBHACAEHQIRQkCCAI=</HashCode>
+      <FileName>Elements.vb</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>
