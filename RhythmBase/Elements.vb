@@ -1946,7 +1946,7 @@ CType(i, BaseBeat).Hitable
 		Inherits OrderedEventCollection(Of BaseEvent)
 		Friend _path As String
 		Public Property Settings As New Settings
-		Friend ReadOnly Property _Rows As New List(Of Row)
+		Friend ReadOnly Property _Rows As New List(Of Row)(16)
 		Friend ReadOnly Property _Decorations As New List(Of Decoration)
 		Public ReadOnly Property Rows As ICollection(Of Row)
 			Get
