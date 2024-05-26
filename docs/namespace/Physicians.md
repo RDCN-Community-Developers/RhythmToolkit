@@ -1,5 +1,7 @@
-# [RhythmHospital](../namespaces.md).Physicians
+# [RhythmHospital](../namespaces.md).Physicians  
+  
 
-## 类型
 
-- [Edega](../class/Edega.md)
+## 类型  
+  
+- [Edega](../class/Edega.md)  

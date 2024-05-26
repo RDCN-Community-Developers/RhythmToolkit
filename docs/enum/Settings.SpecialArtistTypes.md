@@ -1,5 +1,5 @@
-# [RhythmBase](../../RhythmToolkit.md).[LevelElements](../namespace/LevelElements.md).[Settings](../class/Settings.md).SpecialArtistTypes
-
-- None
-- AuthorIsArtist
-- PublicLicense
+# [RhythmBase](../../RadiationTherapy.md).[LevelElements](../namespace/LevelElements.md).[Settings](../class/Settings.md).SpecialArtistTypes  
+  
+- None  
+- AuthorIsArtist  
+- PublicLicense  

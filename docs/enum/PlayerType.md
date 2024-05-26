@@ -1,7 +1,11 @@
-# [RhythmBase](../../RhythmToolkit.md).[Events](../namespace/Events.md).PlayerType
-### [RhythmBase.dll](../assembly/RhythmBase.md)
+# [RhythmBase](../../RadiationTherapy.md).[Events](../namespace/Events.md).PlayerType  
 
-- P1
-- P2
-- CPU
-- NoChange
+
+
+
+### [RhythmBase.dll](../assembly/RhythmBase.md)  
+  
+- P1  
+- P2  
+- CPU  
+- NoChange  

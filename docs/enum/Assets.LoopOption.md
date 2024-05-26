@@ -1,6 +1,10 @@
-# [RhythmBase](../namespaces.md).[Utils](../namespace/Utils.md).LoopOption
-### [RhythmBase.dll](../assembly/RhythmBase.md)
+# [RhythmBase](../namespaces.md).[Utils](../namespace/Utils.md).LoopOption  
 
-- no
-- yes
-- onBeat
+
+
+
+### [RhythmBase.dll](../assembly/RhythmBase.md)  
+  
+- no  
+- yes  
+- onBeat  
