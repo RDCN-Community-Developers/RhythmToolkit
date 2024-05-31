@@ -60,6 +60,7 @@ Namespace Events
 		CallCustomMethod
 		NewWindowDance
 		Move
+		Tile
 		Tint
 		PlayAnimation
 		SetVisible
@@ -1733,6 +1734,33 @@ Namespace Events
 			Return Duration <> 0
 		End Function
 	End Class
+	Public Class Tile
+		Inherits BaseDecorationAction
+		Implements IEaseEvent
+		Public Enum TilingTypes
+			Scroll
+			Pulse
+		End Enum
+		Public Overrides ReadOnly Property Type As EventType = EventType.Tile
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As RDPoint?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Tiling As RDPoint?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Speed As RDPoint?
+		Public Property TilingType As TilingTypes
+		Public Property Interval As Single
+		<JsonIgnore> Public Overrides Property Y As Integer
+			Get
+				Return 0
+			End Get
+			Set(value As Integer)
+			End Set
+		End Property
+		Public Property Ease As EaseType Implements IEaseEvent.Ease
+		Public Property Duration As Single Implements IEaseEvent.Duration
+		Friend Function ShouldSerializeTilingType() As Boolean
+			Return Speed IsNot Nothing
+		End Function
+	End Class
 	Public Class Move
 		Inherits BaseDecorationAction
 		Implements IEaseEvent
@@ -1744,9 +1772,7 @@ Namespace Events
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Pivot As NumOrExpPair?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-
-		<JsonIgnore>
-		Public Overrides Property Y As Integer
+		<JsonIgnore> Public Overrides Property Y As Integer
 			Get
 				Return 0
 			End Get
