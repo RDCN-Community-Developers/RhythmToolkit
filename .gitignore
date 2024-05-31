@@ -369,3 +369,6 @@ FodyWeavers.xsd
 /TestProject1/UnitTest1.cs
 /TestProject1/CSTestProject.csproj
 /TestProject1/UnitTest1.cs
+/RhythmBaseAnalyzer/RhythmBaseAnalyzer.Test/RhythmBaseAnalyzer.Test.csproj
+/RhythmBaseAnalyzer/RhythmBaseAnalyzer.Package/RhythmBaseAnalyzer.Package.csproj
+/RhythmBaseAnalyzer/RhythmBaseAnalyzer.Vsix/RhythmBaseAnalyzer.Vsix.csproj

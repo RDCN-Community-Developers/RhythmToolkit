@@ -3,7 +3,7 @@ Imports RhythmBase.Assets
 Imports RhythmBase.Components
 Imports RhythmBase.Exceptions
 Imports RhythmBase.LevelElements
-Imports RhythmBase.Utils
+Imports RhythmBase.Extensions
 Imports SkiaSharp
 '#Disable Warning CA1507
 
@@ -134,6 +134,9 @@ Namespace Events
 		Banana
 		[Return]
 	End Enum
+	''' <summary>
+	''' 具有缓动功能的事件
+	''' </summary>
 	Public Interface IEaseEvent
 		Property Ease As EaseType
 		Property Duration As Single
@@ -148,7 +151,7 @@ Namespace Events
 		Friend Property ParentLevel As RDLevel
 		Private _beat As RDBeat
 		<JsonIgnore>
-		Public Property Beat As RDBeat
+		Public Overridable Property Beat As RDBeat
 			Get
 				Return _beat
 			End Get
@@ -184,7 +187,34 @@ Namespace Events
 	End Class
 	Public MustInherit Class BaseBeatsPerMinute
 		Inherits BaseEvent
-		<JsonProperty("bpm")> Public MustOverride Property BeatsPerMinute As Single
+		Private _bpm As Single
+		Public Overrides Property Beat As RDBeat
+			Get
+				Return MyBase.Beat
+			End Get
+			Set(value As RDBeat)
+				MyBase.Beat = value
+				If ParentLevel IsNot Nothing Then
+					ResetTimeLine()
+				End If
+			End Set
+		End Property
+		<JsonProperty("bpm")> Public Property BeatsPerMinute As Single
+			Get
+				Return _bpm
+			End Get
+			Set(value As Single)
+				_bpm = value
+				If ParentLevel IsNot Nothing Then
+					ResetTimeLine()
+				End If
+			End Set
+		End Property
+		Private Sub ResetTimeLine()
+			For Each item In ParentLevel?.Where(Function(i) i.Beat > Me.Beat)
+				item.Beat.ResetBPM()
+			Next
+		End Sub
 	End Class
 	Public MustInherit Class BaseDecorationAction
 		Inherits BaseEvent
@@ -322,13 +352,12 @@ Namespace Events
 		Public Overrides ReadOnly Property Rooms As Rooms = New Rooms(True, True)
 		Public Data As New Linq.JObject
 		Public Sub New()
-			Data = New Newtonsoft.Json.Linq.JObject
+			Data = New Linq.JObject
 		End Sub
 	End Class
 	Public Class PlaySong
 		Inherits BaseBeatsPerMinute
 		Public Song As Audio
-		Public Overrides Property BeatsPerMinute As Single
 		<JsonIgnore>
 		Public Property Offset As UInteger
 			Get
@@ -347,7 +376,7 @@ Namespace Events
 
 
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString() + $" BPM:{_BeatsPerMinute}, Song:{Song.Filename}"
+			Return MyBase.ToString() + $" BPM:{BeatsPerMinute}, Song:{Song.Filename}"
 		End Function
 	End Class
 	Public Class SetBeatsPerMinute
@@ -356,7 +385,6 @@ Namespace Events
 		<JsonIgnore>
 		Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
-		Public Overrides Property BeatsPerMinute As Single
 		Public Sub New(beatOnly As Single, bpm As Single, y As UInteger)
 			Me.Beat = New RDBeat(ParentLevel.Calculator, beatOnly)
 			Me.Y = y
@@ -371,7 +399,18 @@ Namespace Events
 		Inherits BaseEvent
 		Private _visualBeatMultiplier As Single
 		Private _crotchetsPerBar As UInteger
-		Public Property Bar As UInteger = 1
+		Public Overrides Property Beat As RDBeat
+			Get
+				Return MyBase.Beat
+			End Get
+			Set(value As RDBeat)
+				MyBase.Beat = value
+				If ParentLevel IsNot Nothing Then
+					ResetTimeLine()
+				End If
+			End Set
+		End Property
+		Friend Property Bar As UInteger = 1
 		Public Overrides ReadOnly Property Type As EventType = Events.EventType.SetCrotchetsPerBar
 		<JsonIgnore>
 		Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
@@ -393,8 +432,17 @@ Namespace Events
 			End Get
 			Set(value As UInteger)
 				_crotchetsPerBar = value - 1
+				'If ParentLevel IsNot Nothing Then
+				'	ResetTimeLine()
+				'End If
 			End Set
 		End Property
+		Private Sub ResetTimeLine()
+			For Each item In ParentLevel?.Where(Function(i) i.Beat > Me.Beat)
+				item.Beat.ResetCPB()
+			Next
+			Beat._calculator.Initialize()
+		End Sub
 		Public Sub New(y As UInteger, crotchetsPerBar As UInteger, visualBeatMultiplier As Single)
 			Me.Y = y
 			Me.CrotchetsPerBar = crotchetsPerBar
@@ -403,7 +451,6 @@ Namespace Events
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" CPB:{_crotchetsPerBar + 1}"
 		End Function
-
 	End Class
 	Public Class PlaySound
 		Inherits BaseEvent
@@ -421,8 +468,6 @@ Namespace Events
 		<JsonIgnore>
 		Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
-
-
 	End Class
 	Public Class SetClapSounds
 		Inherits BaseEvent
@@ -820,6 +865,8 @@ Namespace Events
 			RadialBlur
 			Dots
 			DisableAll
+			Diamonds
+			Tutorial
 
 			'旧版特效
 			BlackAndWhite
@@ -1337,8 +1384,8 @@ Namespace Events
 			GeneratedId = _PrivateId
 			_PrivateId += 1
 		End Sub
-		Public Function CreateAdvanceText(beatOnly As Single) As AdvanceText
-			Dim A As New AdvanceText With {.Parent = Me}
+		Public Function CreateAdvanceText(beat As RDBeat) As AdvanceText
+			Dim A As New AdvanceText With {.Parent = Me, .Beat = beat}
 			_children.Add(A)
 			Return A
 		End Function
@@ -1750,7 +1797,7 @@ Namespace Events
 		Public ReadOnly Property RowXs As LimitedList(Of Patterns)
 			Get
 				If SetXs Is Nothing Then
-					Dim X = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs)
+					Dim X = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso IsBehind(i), New SetRowXs)
 					Return X.Pattern
 				Else
 					Dim T As New LimitedList(Of Patterns)(6, Patterns.None)
@@ -1774,12 +1821,12 @@ Namespace Events
 		Public Overrides ReadOnly Property Type As EventType = EventType.AddClassicBeat
 		Public Overrides ReadOnly Property Length As Single
 			Get
-				Dim SyncoSwing = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs).SyncoSwing
+				Dim SyncoSwing = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso IsBehind(i), New SetRowXs).SyncoSwing
 				Return Tick * 6 - If(SyncoSwing = 0, 0.5, SyncoSwing) * Tick
 			End Get
 		End Property
 		Public Function GetBeat(index As Byte) As RDBeat
-			Dim x = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs)
+			Dim x = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso IsBehind(i), New SetRowXs)
 			Dim Synco As Single
 			If x.SyncoBeat >= 0 Then
 				Synco = If(x.SyncoSwing = 0, 0.5, x.SyncoSwing)
@@ -1796,7 +1843,7 @@ Namespace Events
 			Return New List(Of Hit) From {New Hit(Me, GetBeat(6), Hold)}.AsEnumerable
 		End Function
 		Public Function Split() As IEnumerable(Of BaseBeat)
-			Dim x = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso Parent.IndexOf(i) < Parent.IndexOf(Me), New SetRowXs)
+			Dim x = Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso IsBehind(i), New SetRowXs)
 			Return Split(x)
 		End Function
 		Public Function Split(Xs As SetRowXs) As IEnumerable(Of BaseBeat)
@@ -1843,6 +1890,8 @@ Namespace Events
 		End Property
 		Public Property SyncoBeat As SByte = -1
 		Public Property SyncoSwing As Single
+		Public Property SyncoPlayModifierSound As Boolean
+		Public Property SyncoVolume As Integer = 100
 		Public Overrides ReadOnly Property Length As Single = 0
 		Public Overrides ReadOnly Property Hitable As Boolean
 			Get
@@ -2061,7 +2110,7 @@ Namespace Events
 				Dim PulseIndexMin = 6
 				Dim PulseIndexMax = 6
 				For Each item In Parent.Where(Of BaseBeat)(
-				Function(i) Parent.IndexOf(i) <= Parent.IndexOf(Me)).Reverse
+				Function(i) IsBehind(i)).Reverse
 					Select Case item.Type
 						Case EventType.AddFreeTimeBeat
 							Dim Temp = CType(item, AddFreeTimeBeat)

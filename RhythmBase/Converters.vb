@@ -354,7 +354,7 @@ Namespace Converters
 			_canread = False
 			existingValue = If(SubClassType IsNot Nothing, jobj.ToObject(SubClassType, serializer), jobj.ToObject(Of CustomEvent)(serializer))
 			_canread = True
-			existingValue.Beat = level.Calculator.BeatOf(CUInt(jobj("bar")), CDbl(If(jobj("beat"), 1)))
+			existingValue.Beat = level.Calculator.BeatOf(UInteger.Parse(jobj("bar")), Single.Parse(If(jobj("beat"), 1)))
 			Return existingValue
 		End Function
 		Public Overridable Function SetSerializedObject(value As T, serializer As JsonSerializer) As JObject

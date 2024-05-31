@@ -1,11 +1,22 @@
 ## [返回](../RadiationTherapy.md)  
 # 更新日志  
   
+### 2024/05/30
+
+- 添加了 [OrderedEventCollection]() 类型，并使 [`OrderedEventCollection<T>`](class/OrderedEventCollection.md) 继承于此类型。
+- [RDBeat] 添加了 `BPM` 和 `CPB` 属性。
+- 将大部分方法迁移到了 [Extensions](module/RhythmBase.Extension.md)，并：
+    - 添加了 `Where` 方法 12 个
+    - 添加了 `RemoveAll` 方法 31 个
+    - 添加了 `TakeWhile` 方法 14 个
+    - 添加了 `SkipWhile` 方法 14 个
+    - 添加了 `IsInFrontOf` 方法
+    - 添加了 `IsBehind` 方法
+    - 移除了 `IndexOf` 方法。
 
 ### 2024/05/26  
   
 - 修复了 [RDLevel](class/RDLevel.md) 的 `Row` 属性没有数量限制的问题。  
-  
 
 ### 2024/05/24  
   

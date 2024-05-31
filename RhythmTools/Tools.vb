@@ -276,7 +276,7 @@ Namespace Tools
 			txt.Text = If(increase, TimeSpan.Zero, finish.TimeSpan - TimeSpan.Zero).ToString
 			Level.Add(txt)
 			Do
-				Level.Add(txt.CreateAdvanceText(C.Time_BeatOnly(TimeSpan.FromSeconds(t / interval))))
+				Level.Add(txt.CreateAdvanceText(C.BeatOf(TimeSpan.FromSeconds(t / interval))))
 				txt.Text += vbCrLf + $"{If(increase, TimeSpan.FromSeconds(t / interval), finish.TimeSpan - TimeSpan.FromSeconds(t / interval))}"
 				t += 1
 			Loop Until finish.TimeSpan - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
@@ -297,7 +297,7 @@ Namespace Tools
 			txt.Text = If(increase, (1, 1), (finish - 1).BarBeat).ToString
 			Level.Add(txt)
 			Do
-				Level.Add(txt.CreateAdvanceText(C.Time_BeatOnly(TimeSpan.FromSeconds(t / interval))))
+				Level.Add(txt.CreateAdvanceText(C.BeatOf(TimeSpan.FromSeconds(t / interval))))
 				txt.Text += vbCrLf + $"{If(increase, C.Time_BarBeat(TimeSpan.FromSeconds(t / interval)), C.Time_BarBeat(finish.TimeSpan - TimeSpan.FromSeconds(t / interval)))}"
 				t += 1
 			Loop Until finish.TimeSpan - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
@@ -423,7 +423,7 @@ Namespace Extensions
 			HitExplosion
 			leveleventexplosion
 		End Enum
-		Public Class ProceduralTree
+		Public Structure ProceduralTree
 			Public brachedPerlteration As Single?
 			Public branchesPerDivision As Single?
 			Public iterationsPerSecond As Single?
@@ -438,7 +438,7 @@ Namespace Extensions
 			Public pulseIntensity As Single?
 			Public pulseRate As Single?
 			Public pulseWavelength As Single?
-		End Class
+		End Structure
 		<Extension> Public Sub SetScoreboardLights(e As CallCustomMethod, Mode As Boolean, Text As String)
 			e.MethodName = $"{NameOf(SetScoreboardLights)}({Mode},{Text})"
 		End Sub
@@ -653,7 +653,7 @@ Namespace Extensions
 		End Sub
 		<Extension> Public Function EditTree(e As CallCustomMethod, room As Byte, treeProperties As ProceduralTree, beats As Single, ease As EaseType) As IEnumerable(Of CallCustomMethod)
 			Dim L As New List(Of CallCustomMethod)
-			For Each p In GetType(ProceduralTree).GetProperties
+			For Each p In GetType(ProceduralTree).GetFields
 				If p.GetValue(treeProperties) IsNot Nothing Then
 					Dim T As New CallCustomMethod
 					T.EditTree(room, p.Name, p.GetValue(treeProperties), beats, ease)
@@ -665,7 +665,6 @@ Namespace Extensions
 		<Extension> Public Sub EditTreeColor(e As CallCustomMethod, room As Byte, location As Boolean, color As String, beats As Single, ease As EaseType)
 			e.MethodName = $"room[{room}].{NameOf(EditTreeColor)}({location},{color},{beats},{ease})"
 		End Sub
-
 		<Extension> Public Sub MoveToPosition(e As Move, point As RDPoint)
 
 		End Sub

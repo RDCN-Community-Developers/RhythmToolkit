@@ -10,7 +10,7 @@
 
 
 ### JObject _Origin  
-(已弃用)用于存储关卡事件的原始反序列化对象。    
+(已弃用)用于存储关卡事件的原始反序列化对象。  
 
 
 ### Dictionary\<String, Object\> PrivateData  

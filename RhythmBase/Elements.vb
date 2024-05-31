@@ -7,7 +7,7 @@ Imports RhythmBase.Assets
 Imports RhythmBase.Components
 Imports RhythmBase.Events
 Imports RhythmBase.Exceptions
-Imports RhythmBase.LevelElements
+Imports RhythmBase.Extensions
 Imports RhythmBase.Settings
 Imports RhythmBase.Utils
 Imports SkiaSharp
@@ -651,6 +651,14 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 	Public Structure RDBeat
 		Friend ReadOnly _calculator As BeatCalculator
 		Private ReadOnly _beat As Single
+		Private _isBarBeatLoaded As Boolean
+		Private _isTimeSpanLoaded As Boolean
+		Private _isBPMLoaded As Boolean
+		Private _isCPBLoaded As Boolean
+		Private _BarBeat As (Bar As UInteger, Beat As Single)
+		Private _TimeSpan As TimeSpan
+		Private _BPM As Single
+		Private _CPB As UInteger
 		Public ReadOnly Property BeatOnly As Single
 			Get
 				Return _beat
@@ -658,12 +666,38 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		End Property
 		Public ReadOnly Property BarBeat As (bar As UInteger, beat As Single)
 			Get
-				Return _calculator.BeatOnly_BarBeat(_beat)
+				If Not _isBarBeatLoaded Then
+					_BarBeat = _calculator.BeatOnly_BarBeat(_beat)
+					_isBarBeatLoaded = True
+				End If
+				Return _BarBeat
 			End Get
 		End Property
 		Public ReadOnly Property TimeSpan As TimeSpan
 			Get
-				Return _calculator.BeatOnly_Time(_beat)
+				If Not _isTimeSpanLoaded Then
+					_TimeSpan = _calculator.BeatOnly_Time(_beat)
+					_isTimeSpanLoaded = True
+				End If
+				Return _TimeSpan
+			End Get
+		End Property
+		Public ReadOnly Property BPM As Single
+			Get
+				If Not _isBPMLoaded Then
+					_BPM = _calculator.BeatsPerMinuteOf(Me)
+					_isBPMLoaded = True
+				End If
+				Return _BPM
+			End Get
+		End Property
+		Public ReadOnly Property CPB As Single
+			Get
+				If Not _isCPBLoaded Then
+					_CPB = _calculator.CrotchetsPerBarOf(Me)
+					_isCPBLoaded = True
+				End If
+				Return _CPB
 			End Get
 		End Property
 		Public Sub New(calculator As BeatCalculator, beatOnly As Single)
@@ -677,6 +711,18 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Sub New(calculator As BeatCalculator, timeSpan As TimeSpan)
 			_calculator = calculator
 			_beat = _calculator.Time_BeatOnly(timeSpan)
+		End Sub
+		Public Sub ResetCache()
+			_isBarBeatLoaded = False
+			_isTimeSpanLoaded = False
+		End Sub
+		Public Sub ResetBPM()
+			_isTimeSpanLoaded = False
+			_isBPMLoaded = False
+		End Sub
+		Public Sub ResetCPB()
+			_isBarBeatLoaded = False
+			_isCPBLoaded = False
 		End Sub
 		Public Shared Operator +(a As RDBeat, b As RDBeat) As RDBeat
 			If a._calculator.Equals(b._calculator) Then
@@ -1066,34 +1112,102 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			Return $"Count = {Count}"
 		End Function
 	End Class
-	Public Class OrderedEventCollection(Of T As BaseEvent)
-		Implements ICollection(Of T)
-		Protected Friend Property EventsBeatOrder As New SortedDictionary(Of Single, List(Of T))
-		Protected Friend Property EventsTypeOrder As New Dictionary(Of EventType, SortedDictionary(Of Single, List(Of T)))
-		<JsonIgnore> Public Overridable ReadOnly Property Count As Integer Implements ICollection(Of T).Count
+	Public MustInherit Class OrderedEventCollection
+		Implements ICollection(Of BaseEvent)
+		Protected Friend Property EventsBeatOrder As New SortedDictionary(Of Single, List(Of BaseEvent))
+		Protected Friend Property EventsTypeOrder As New Dictionary(Of EventType, SortedDictionary(Of Single, List(Of BaseEvent)))
+		<JsonIgnore> Public Overridable ReadOnly Property Count As Integer Implements ICollection(Of BaseEvent).Count
 			Get
 				Dim count1 = EventsTypeOrder.Sum(Function(i) i.Value.Sum(Function(j) j.Value.Count))
-				Dim count2 = EventsBeatOrder.Sum(Function(i) i.Value.Count)
+				Dim count2 = Me.EventsBeatOrder.Sum(Function(i) i.Value.Count)
 				If count1 = count2 Then
 					Return ConcatAll.Count
 				End If
-				Dim errorList1 = From list1 In EventsBeatOrder
-								 From item1 In list1.Value
-								 Select item1
-				Dim errorList2 = From typePair In EventsTypeOrder
-								 From list2 In typePair.Value
-								 From item2 In list2.Value
-								 Select item2
-				Dim errorL = errorList2.Except(errorList1)
 				Throw New RhythmBaseException($"Internal exception: {count1}, {count2}")
 			End Get
 		End Property
-		<JsonIgnore> Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of T).IsReadOnly
+		<JsonIgnore> Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of BaseEvent).IsReadOnly
 		<JsonIgnore> Public ReadOnly Property Length As RDBeat
 			Get
-				Return EventsBeatOrder.LastOrDefault().Value.First.Beat
+				Return Me.EventsBeatOrder.LastOrDefault().Value.First.Beat
 			End Get
 		End Property
+		Public Sub New()
+		End Sub
+		Public Sub New(items As IEnumerable(Of BaseEvent))
+			For Each item In items
+				Me.Add(item)
+			Next
+		End Sub
+		Public Function ConcatAll() As List(Of BaseEvent)
+			Return Me.EventsBeatOrder.SelectMany(Function(i) i.Value).ToList
+		End Function
+		Public Sub Add(item As BaseEvent) Implements ICollection(Of BaseEvent).Add
+			If Not EventsTypeOrder.ContainsKey(item.Type) Then
+				EventsTypeOrder.Add(item.Type, New SortedDictionary(Of Single, List(Of BaseEvent)))
+			End If
+			If Not EventsTypeOrder(item.Type).ContainsKey(item.Beat.BeatOnly) Then
+				EventsTypeOrder(item.Type).Add(item.Beat.BeatOnly, New List(Of BaseEvent))
+			End If
+			EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Add(item)
+			If Not EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
+				EventsBeatOrder.Add(item.Beat.BeatOnly, New List(Of BaseEvent))
+			End If
+			EventsBeatOrder(item.Beat.BeatOnly).Add(item)
+		End Sub
+		Public Sub AddRange(items As IEnumerable(Of BaseEvent))
+			For Each item In items
+				Add(item)
+			Next
+		End Sub
+		Public Sub Clear() Implements ICollection(Of BaseEvent).Clear
+			EventsTypeOrder.Clear()
+			EventsBeatOrder.Clear()
+		End Sub
+		Public Overridable Function Contains(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Contains
+			Return EventsTypeOrder.ContainsKey(item.Type) AndAlso
+				EventsTypeOrder(item.Type).ContainsKey(item.Beat.BeatOnly) AndAlso
+				EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Contains(item)
+		End Function
+		Public Sub CopyTo(array() As BaseEvent, arrayIndex As Integer) Implements ICollection(Of BaseEvent).CopyTo
+			ConcatAll.CopyTo(array, arrayIndex)
+		End Sub
+		Friend Function Remove(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Remove
+			If Contains(item) Then
+				Dim result = EventsTypeOrder(item.Type)?(item.Beat.BeatOnly).Remove(item) And Me.EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
+				If EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Count = 0 Then
+					EventsTypeOrder(item.Type).Remove(item.Beat.BeatOnly)
+					If EventsTypeOrder(item.Type).Count = 0 Then
+						EventsTypeOrder.Remove(item.Type)
+					End If
+				End If
+				If Me.EventsBeatOrder(item.Beat.BeatOnly).Count = 0 Then
+					EventsBeatOrder.Remove(item.Beat.BeatOnly)
+				End If
+				Return result
+			End If
+			Return False
+		End Function
+		Public Iterator Function GetEnumerator() As IEnumerator(Of BaseEvent) Implements IEnumerable(Of BaseEvent).GetEnumerator
+			For Each pair In Me.EventsBeatOrder
+				For Each item In pair.Value
+					Yield item
+				Next
+			Next
+		End Function
+		Private Iterator Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
+			For Each pair In Me.EventsBeatOrder
+				For Each item In pair.Value
+					Yield item
+				Next
+			Next
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"Count = {Count}"
+		End Function
+	End Class
+	Public Class OrderedEventCollection(Of T As BaseEvent)
+		Inherits OrderedEventCollection
 		Public Sub New()
 		End Sub
 		Public Sub New(items As IEnumerable(Of T))
@@ -1101,368 +1215,11 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 				Me.Add(item)
 			Next
 		End Sub
-		Public Function GetTaggedEvents(name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, T))
-			If name Is Nothing Then
-				Return Nothing
-			End If
-			If direct Then
-				Return Where(Function(i) i.Tag = name).GroupBy(Function(i) i.Tag)
-			Else
-				Return Where(Function(i) If(i.Tag, "").Contains(name)).GroupBy(Function(i) i.Tag)
-			End If
-		End Function
-		Public Function ConcatAll() As List(Of T)
-			Return EventsBeatOrder.SelectMany(Function(i) i.Value).ToList
-		End Function
-		Public Overridable Sub Add(item As T) Implements ICollection(Of T).Add
-			If Not EventsTypeOrder.ContainsKey(item.Type) Then
-				EventsTypeOrder.Add(item.Type, New SortedDictionary(Of Single, List(Of T)))
-			End If
-			If Not EventsTypeOrder(item.Type).ContainsKey(item.Beat.BeatOnly) Then
-				EventsTypeOrder(item.Type).Add(item.Beat.BeatOnly, New List(Of T))
-			End If
-			EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Add(item)
-			If Not EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
-				EventsBeatOrder.Add(item.Beat.BeatOnly, New List(Of T))
-			End If
-			EventsBeatOrder(item.Beat.BeatOnly).Add(item)
+		Public Overridable Overloads Sub Add(item As T)
+			MyBase.Add(item)
 		End Sub
-		Public Sub AddRange(items As IEnumerable(Of T))
-			For Each item In items
-				Add(item)
-			Next
-		End Sub
-		Public Sub Clear() Implements ICollection(Of T).Clear
-			EventsTypeOrder.Clear()
-			EventsBeatOrder.Clear()
-		End Sub
-		Public Overridable Function Contains(item As T) As Boolean Implements ICollection(Of T).Contains
-			Return EventsTypeOrder.ContainsKey(item.Type) AndAlso
-				EventsTypeOrder(item.Type).ContainsKey(item.Beat.BeatOnly) AndAlso
-				EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Contains(item)
-		End Function
-		Public Iterator Function Where(predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			For Each pair In EventsBeatOrder
-				For Each item In pair.Value
-					If predicate(item) Then
-						Yield item
-					End If
-				Next
-			Next
-		End Function
-		Public Iterator Function Where(startBeat As Single, endBeat As Single) As IEnumerable(Of T)
-			For Each pair In EventsBeatOrder
-				If endBeat <= pair.Key Then
-					Exit Function
-				End If
-				If startBeat <= pair.Key Then
-					For Each item In pair.Value
-						Yield item
-					Next
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
-			For Each item In Where(startBeat.BeatOnly, endBeat.BeatOnly)
-				Yield item
-			Next
-		End Function
-		Public Iterator Function Where(range As RDRange) As IEnumerable(Of T)
-			For Each pair In EventsBeatOrder
-				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
-					Exit Function
-				End If
-				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
-					For Each item In pair.Value
-						Yield item
-					Next
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(range As Range) As IEnumerable(Of T)
-			Dim firstEvent = Me.First
-			Dim lastEvent = Me.Last
-			Dim rg As (start As Single, [end] As Single) =
-				(If(range.Start.IsFromEnd,
-				  lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value + 1, 1),
-				  firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(firstEvent.Beat.BarBeat.bar + range.Start.Value - 1, 1)),
-				If(range.End.IsFromEnd,
-				  lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
-				  firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(firstEvent.Beat.BarBeat.bar + range.End.Value - 1, 1)))
-			For Each item In Where(rg.start, rg.end)
-				Yield item
-			Next
-		End Function
-		Public Iterator Function Where(predicate As Func(Of T, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
-			For Each item In Where(startBeat, endBeat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
-			For Each item In Where(startBeat, endBeat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
-			For Each item In Where(range)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
-			For Each item In Where(range)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)() As IEnumerable(Of U)
-			Dim types = ConvertToEnums(Of U)()
-			For Each pair In EventsBeatOrder
-				For Each item In pair.Value.OfType(Of U)
-					Yield item
-				Next
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(startBeat As Single, endBeat As Single) As IEnumerable(Of U)
-			For Each pair In EventsBeatOrder
-				If endBeat <= pair.Key Then
-					Exit Function
-				End If
-				If startBeat <= pair.Key Then
-					For Each item In pair.Value.OfType(Of U)
-						Yield item
-					Next
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of U)
-			For Each item In Where(Of U)(startBeat.BeatOnly, endBeat.BeatOnly)
-				Yield item
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(range As RDRange) As IEnumerable(Of U)
-			For Each pair In EventsBeatOrder
-				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
-					Exit Function
-				End If
-				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
-					For Each item In pair.Value.OfType(Of U)
-						Yield item
-					Next
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(range As Range) As IEnumerable(Of U)
-			Dim firstEvent = Me.First
-			Dim lastEvent = Me.Last
-			Dim rg As (start As Single, [end] As Single) =
-				(If(range.Start.IsFromEnd,
-				  lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value + 1, 1),
-				  firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(firstEvent.Beat.BarBeat.bar + range.Start.Value - 1, 1)),
-				If(range.End.IsFromEnd,
-				  lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
-				  firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(firstEvent.Beat.BarBeat.bar + range.End.Value - 1, 1)))
-			For Each item In Where(Of U)(rg.start, rg.end)
-				Yield item
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean)) As IEnumerable(Of U)
-			For Each item In Where(Of U)()
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of U)
-			For Each pair In EventsBeatOrder
-				If endBeat <= pair.Key Then
-					Exit Function
-				End If
-				If startBeat <= pair.Key Then
-					For Each item In pair.Value.OfType(Of U)
-						If predicate(item) Then
-							Yield item
-						End If
-					Next
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of U)
-			For Each item In Where(Of U)(predicate, startBeat.BeatOnly, endBeat.BeatOnly)
-				Yield item
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean), range As RDRange) As IEnumerable(Of U)
-			For Each pair In EventsBeatOrder
-				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
-					Exit Function
-				End If
-				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
-					For Each item In pair.Value.OfType(Of U)
-						If predicate(item) Then
-							Yield item
-						End If
-					Next
-				End If
-			Next
-		End Function
-		Public Iterator Function Where(Of U As T)(predicate As Func(Of U, Boolean), range As Range) As IEnumerable(Of U)
-			For Each item In Where(Of U)(range)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
-		End Function
-		Public Function First() As T
-			Return EventsBeatOrder.First.Value.First
-		End Function
-		Public Function First(predicate As Func(Of T, Boolean)) As T
-			Return ConcatAll.First(predicate)
-		End Function
-		Public Function First(Of U As T)() As U
-			Return Where(Of U).First
-		End Function
-		Public Function First(Of U As T)(predicate As Func(Of U, Boolean)) As U
-			Return Where(Of U).First(predicate)
-		End Function
-		Public Function FirstOrDefault() As T
-			Return EventsBeatOrder.FirstOrDefault.Value?.FirstOrDefault
-		End Function
-		Public Function FirstOrDefault(defaultValue As T) As T
-			Return ConcatAll.FirstOrDefault(defaultValue)
-		End Function
-		Public Function FirstOrDefault(predicate As Func(Of T, Boolean)) As T
-			Return ConcatAll.FirstOrDefault(predicate)
-		End Function
-		Public Function FirstOrDefault(predicate As Func(Of T, Boolean), defaultValue As T) As T
-			Return ConcatAll.FirstOrDefault(predicate, defaultValue)
-		End Function
-		Public Function FirstOrDefault(Of U As T)() As U
-			Return Where(Of U).FirstOrDefault()
-		End Function
-		Public Function FirstOrDefault(Of U As T)(defaultValue As U) As U
-			Return Where(Of U).FirstOrDefault(defaultValue)
-		End Function
-		Public Function FirstOrDefault(Of U As T)(predicate As Func(Of U, Boolean)) As U
-			Return Where(Of U).FirstOrDefault(predicate)
-		End Function
-		Public Function FirstOrDefault(Of U As T)(predicate As Func(Of U, Boolean), defaultValue As U) As U
-			Return Where(Of U).FirstOrDefault(predicate, defaultValue)
-		End Function
-		Public Function Last() As T
-			Return EventsBeatOrder.Last.Value.Last
-		End Function
-		Public Function Last(predicate As Func(Of T, Boolean)) As T
-			Return ConcatAll.Last(predicate)
-		End Function
-		Public Function Last(Of U As T)() As U
-			Return Where(Of U).Last
-		End Function
-		Public Function Last(Of U As T)(predicate As Func(Of T, Boolean)) As U
-			Return Where(Of U).Last(predicate)
-		End Function
-		Public Function LastOrDefault() As T
-			Return EventsBeatOrder.LastOrDefault.Value?.LastOrDefault()
-		End Function
-		Public Function LastOrDefault(defaultValue As T) As T
-			Return ConcatAll.LastOrDefault(defaultValue)
-		End Function
-		Public Function LastOrDefault(predicate As Func(Of T, Boolean)) As T
-			Return ConcatAll.LastOrDefault(predicate)
-		End Function
-		Public Function LastOrDefault(predicate As Func(Of T, Boolean), defaultValue As T) As T
-			Return ConcatAll.LastOrDefault(predicate, defaultValue)
-		End Function
-		Public Function LastOrDefault(Of U As T)() As U
-			Return Where(Of U).LastOrDefault()
-		End Function
-		Public Function LastOrDefault(Of U As T)(defaultValue As U) As U
-			Return Where(Of U).LastOrDefault(defaultValue)
-		End Function
-		Public Function LastOrDefault(Of U As T)(predicate As Func(Of U, Boolean)) As U
-			Return Where(Of U).LastOrDefault(predicate)
-		End Function
-		Public Function LastOrDefault(Of U As T)(predicate As Func(Of U, Boolean), defaultValue As U) As U
-			Return Where(Of U).LastOrDefault(predicate, defaultValue)
-		End Function
-		Public Function IndexOf(item As T) As Integer
-			Dim count As Integer
-			For Each pair In EventsBeatOrder
-				If pair.Key < item.Beat Then
-					count += pair.Value.Count
-				ElseIf pair.Key > item.Beat Then
-					Return -1
-				Else
-					Dim shortIndex = pair.Value.IndexOf(item)
-					If shortIndex < 0 Then
-						Return -1
-					End If
-					Return count + shortIndex
-				End If
-			Next
-			Return -1
-		End Function
-		Public Function [Select](Of U)(predicate As Func(Of T, U)) As IEnumerable(Of U)
-			Return From item In ConcatAll()
-				   Select predicate(item)
-		End Function
-		Public Sub CopyTo(array() As T, arrayIndex As Integer) Implements ICollection(Of T).CopyTo
-			ConcatAll.CopyTo(array, arrayIndex)
-		End Sub
-		Public Overridable Function Remove(item As T) As Boolean Implements ICollection(Of T).Remove
-			If Contains(item) Then
-				Dim result = EventsTypeOrder(item.Type)?(item.Beat.BeatOnly).Remove(item) And EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
-				If Not EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Any Then
-					EventsTypeOrder(item.Type).Remove(item.Beat.BeatOnly)
-					If Not EventsTypeOrder(item.Type).Any Then
-						EventsTypeOrder.Remove(item.Type)
-					End If
-				End If
-				If Not EventsBeatOrder(item.Beat.BeatOnly).Any Then
-					EventsBeatOrder.Remove(item.Beat.BeatOnly)
-				End If
-				Return result
-			End If
-			Return False
-		End Function
-		Public Function RemoveAll(predicate As Func(Of T, Boolean)) As Integer
-			Dim count As UInteger = 0
-			For Each item In New List(Of T)(Where(predicate))
-				count += If(Remove(item), 1, 0)
-			Next
-			Return count
-		End Function
-		Public Sub RemoveRange(items As IEnumerable(Of T))
-			For Each item In items
-				Remove(item)
-			Next
-		End Sub
-		Public Iterator Function GetEnumerator() As IEnumerator(Of T) Implements IEnumerable(Of T).GetEnumerator
-			For Each pair In EventsBeatOrder
-				For Each item In pair.Value
-					Yield item
-				Next
-			Next
-		End Function
-		Public Iterator Function ExtractEventsAt(beat As Single) As IEnumerable(Of BaseEvent)
-			Dim temp = EventsBeatOrder(beat)
-			For Each item In temp
-				Yield item
-			Next
-			RemoveAll(Function(i) temp.Contains(i))
-		End Function
-		Private Iterator Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
-			For Each pair In EventsBeatOrder
-				For Each item In pair.Value
-					Yield item
-				Next
-			Next
+		Public Overridable Overloads Function Remove(item As T) As Boolean
+			Return MyBase.Remove(item)
 		End Function
 		Public Overrides Function ToString() As String
 			Return $"Count = {Count}"
@@ -1655,19 +1412,25 @@ Namespace LevelElements
 			Return Temp
 		End Function
 		Public Overrides Sub Add(item As BaseDecorationAction)
-			If Not Parent.EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
-				Parent.EventsBeatOrder.Add(item.Beat.BeatOnly, New List(Of BaseEvent))
+			Dim value As List(Of BaseEvent) = Nothing
+
+			If Not Parent.EventsBeatOrder.TryGetValue(item.Beat.BeatOnly, value) Then
+				value = New List(Of BaseEvent)
+				Parent.EventsBeatOrder.Add(item.Beat.BeatOnly, value)
 			End If
-			Parent.EventsBeatOrder(item.Beat.BeatOnly).Add(item)
+
+			value.Add(item)
 			MyBase.Add(item)
 		End Sub
 		Public Overrides Function Remove(item As BaseDecorationAction) As Boolean
-			If Parent.EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
-				Parent.EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
+			Dim value As List(Of BaseEvent) = Nothing
+
+			If Parent.EventsBeatOrder.TryGetValue(item.Beat.BeatOnly, value) Then
+				value.Remove(item)
 			Else
 				Return False
 			End If
-			If Not Parent.EventsBeatOrder(item.Beat.BeatOnly).Any Then
+			If Parent.EventsBeatOrder(item.Beat.BeatOnly).Count = 0 Then
 				Parent.EventsBeatOrder.Remove(item.Beat.BeatOnly)
 			End If
 			MyBase.Remove(item)
@@ -1756,6 +1519,8 @@ Namespace LevelElements
 				Sound.Offset = value
 			End Set
 		End Property
+
+		Private Shared ReadOnly value As Integer() = New Integer(6) {}
 		Friend Sub New()
 		End Sub
 		Private Function ClassicBeats() As IEnumerable(Of BaseBeat)
@@ -1816,7 +1581,7 @@ CType(i, BaseBeat).Hitable
 			Dim L As New SortedDictionary(Of Single, Integer())
 			Select Case RowType
 				Case RowType.Classic
-					L.Add(0, New Integer(6) {})
+					L.Add(0, value)
 					For Each beat In Me
 						Select Case beat.Type
 							Case EventType.AddClassicBeat
@@ -1842,19 +1607,25 @@ CType(i, BaseBeat).Hitable
 			Return L
 		End Function
 		Public Overrides Sub Add(item As BaseRowAction)
-			If Not Parent.EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
-				Parent.EventsBeatOrder.Add(item.Beat.BeatOnly, New List(Of BaseEvent))
+			Dim value As List(Of BaseEvent) = Nothing
+
+			If Not Parent.EventsBeatOrder.TryGetValue(item.Beat.BeatOnly, value) Then
+				value = New List(Of BaseEvent)
+				Parent.EventsBeatOrder.Add(item.Beat.BeatOnly, value)
 			End If
-			Parent.EventsBeatOrder(item.Beat.BeatOnly).Add(item)
+
+			value.Add(item)
 			MyBase.Add(item)
 		End Sub
 		Public Overrides Function Remove(item As BaseRowAction) As Boolean
-			If Parent.EventsBeatOrder.ContainsKey(item.Beat.BeatOnly) Then
-				Parent.EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
+			Dim value As List(Of BaseEvent) = Nothing
+
+			If Parent.EventsBeatOrder.TryGetValue(item.Beat.BeatOnly, value) Then
+				value.Remove(item)
 			Else
 				Return False
 			End If
-			If Not Parent.EventsBeatOrder(item.Beat.BeatOnly).Any Then
+			If Parent.EventsBeatOrder(item.Beat.BeatOnly).Count = 0 Then
 				Parent.EventsBeatOrder.Remove(item.Beat.BeatOnly)
 			End If
 			MyBase.Remove(item)
@@ -1961,39 +1732,29 @@ CType(i, BaseBeat).Hitable
 		Public ReadOnly Property Conditionals As New List(Of BaseConditional)
 		Public ReadOnly Property Bookmarks As New List(Of Bookmark)
 		Public ReadOnly Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
-		<JsonIgnore>
-		Public ReadOnly Property Path As String
+		<JsonIgnore> Public ReadOnly Property Path As String
 			Get
 				Return _path
 			End Get
 		End Property
-		<JsonIgnore>
-		Public ReadOnly Property Directory As String
+		<JsonIgnore> Public ReadOnly Property Directory As String
 			Get
 				Return IO.Path.GetDirectoryName(_path)
 			End Get
 		End Property
-		'<JsonIgnore>
-		'Friend Property CPBs As New List(Of SetCrotchetsPerBar)
-		'<JsonIgnore>
-		'Friend Property BPMs As New List(Of BaseBeatsPerMinute)
-		<JsonIgnore>
-		Public Overrides ReadOnly Property Count As Integer
+		<JsonIgnore> Public Overrides ReadOnly Property Count As Integer
 			Get
 				Dim count1 = EventsTypeOrder.Sum(Function(i) i.Value.Sum(Function(j) j.Value.Count)) + Rows.Sum(Function(i) i.Count) + Decorations.Sum(Function(i) i.Count)
-				Dim count2 = EventsBeatOrder.Sum(Function(i) i.Value.Count)
+				Dim count2 = Me.EventsBeatOrder.Sum(Function(i) i.Value.Count)
 				If count1 = count2 Then
 					Return ConcatAll.Count
 				End If
 				Throw New RhythmBaseException($"Internal exception: {count1}, {count2}")
 			End Get
 		End Property
-		<JsonIgnore>
-		Public ReadOnly Assets As New HashSet(Of Sprite)
-		<JsonIgnore>
-		Public ReadOnly Variables As New Variables
-		<JsonIgnore>
-		Public ReadOnly Calculator As New BeatCalculator(Me)
+		<JsonIgnore> Public ReadOnly Assets As New HashSet(Of Sprite)
+		<JsonIgnore> Public ReadOnly Variables As New Variables
+		<JsonIgnore> Public ReadOnly Calculator As New BeatCalculator(Me)
 		Public Sub New()
 		End Sub
 		Public Sub New(items As IEnumerable(Of BaseEvent))
@@ -2016,7 +1777,7 @@ CType(i, BaseBeat).Hitable
 		End Function
 		Public Function RemoveDecoration(decoration As Decoration) As Boolean
 			If Decorations.Contains(decoration) Then
-				RemoveRange(decoration)
+				MyBase.RemoveRange(decoration)
 				Return _Decorations.Remove(decoration)
 			End If
 			Return False
@@ -2091,16 +1852,6 @@ New Converters.RDLevelConverter(_path, settings)
 		Public Sub SaveFile(filepath As String, settings As LevelOutputSettings)
 			IO.File.WriteAllText(filepath, ToRDLevelJson(settings))
 		End Sub
-		Public Function GetHitBeat() As IEnumerable(Of Hit)
-			Dim L As New List(Of Hit)
-			For Each item In Rows
-				L.AddRange(item.HitBeats)
-			Next
-			Return L
-		End Function
-		Public Function GetHitEvents() As IEnumerable(Of BaseBeat)
-			Return Where(Of BaseBeat).Where(Function(i) i.Hitable)
-		End Function
 		Public Function CreateRow(character As Character) As Row
 			Return New Row With {
 				.Parent = Me,
@@ -2120,6 +1871,15 @@ New Converters.RDLevelConverter(_path, settings)
 				CType(item, BaseDecorationAction).Parent.Add(item)
 				Return
 			Else
+				If item.Type = EventType.SetCrotchetsPerBar Then
+					For Each jtem In Me.Where(Function(i) i.Beat >= item.Beat)
+						jtem.Beat.ResetCPB()
+					Next
+				ElseIf ConvertToEnums(Of BaseBeatsPerMinute).Contains(item.Type) Then
+					For Each jtem In Me.Where(Function(i) i.Beat >= item.Beat)
+						jtem.Beat.ResetBPM()
+					Next
+				End If
 				MyBase.Add(item)
 			End If
 		End Sub
@@ -2134,15 +1894,24 @@ New Converters.RDLevelConverter(_path, settings)
 				Return True
 			End If
 			If Contains(item) Then
-				Dim result = EventsTypeOrder(item.Type)?(item.Beat.BeatOnly).Remove(item) And EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
-				If Not EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Any Then
+				Dim result = EventsTypeOrder(item.Type)?(item.Beat.BeatOnly).Remove(item) And Me.EventsBeatOrder(item.Beat.BeatOnly).Remove(item)
+				If EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Count = 0 Then
 					EventsTypeOrder(item.Type).Remove(item.Beat.BeatOnly)
-					If Not EventsTypeOrder(item.Type).Any Then
+					If EventsTypeOrder(item.Type).Count = 0 Then
 						EventsTypeOrder.Remove(item.Type)
 					End If
 				End If
-				If Not EventsBeatOrder(item.Beat.BeatOnly).Any Then
+				If Me.EventsBeatOrder(item.Beat.BeatOnly).Count = 0 Then
 					EventsBeatOrder.Remove(item.Beat.BeatOnly)
+				End If
+				If item.Type = EventType.SetCrotchetsPerBar Then
+					For Each jtem In Me.Where(Function(i) i.Beat >= item.Beat)
+						jtem.Beat.ResetCPB()
+					Next
+				ElseIf ConvertToEnums(Of BaseBeatsPerMinute).Contains(item.Type) Then
+					For Each jtem In Me.Where(Function(i) i.Beat >= item.Beat)
+						jtem.Beat.ResetBPM()
+					Next
 				End If
 				Return result
 			End If
@@ -2202,17 +1971,17 @@ New Converters.RDLevelConverter(_path, settings)
 		Public Property RankMaxMistakes As New LimitedList(Of Integer)(4, 20)
 		Public Property RankDescription As New LimitedList(Of String)(6, "")
 		Public Property Mods As List(Of String)
-		'''oldBassDrop
-		'''startImmediately
-		'''classicHitParticles
-		'''adaptRowsToRoomHeight
-		'''noSmartJudgment
-		'''smoothShake
-		'''rotateShake
-		'''wobblyLines
-		'''bombBeats
-		'''noDoublePulse
-		'''invisibleCharacters
-		'''gentleBassDrop
+		'oldBassDrop
+		'startImmediately
+		'classicHitParticles
+		'adaptRowsToRoomHeight
+		'noSmartJudgment
+		'smoothShake
+		'rotateShake
+		'wobblyLines
+		'bombBeats
+		'noDoublePulse
+		'invisibleCharacters
+		'gentleBassDrop
 	End Class
 End Namespace

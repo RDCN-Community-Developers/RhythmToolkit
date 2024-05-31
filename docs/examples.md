@@ -24,10 +24,20 @@ rdlevel.SaveFile(@"Your\level_copy.rdlevel");
   
 
 ### 筛选事件  
-- [`OrderedEventCollection<BaseEvent>.Where()`](class/OrderedEventCollection.md#ienumerableu-whereufuncu-bool-predicate-range-range-where-u--t)  
+- [`OrderedEventCollection<BaseEvent>.Where(Func<T, bool>)`](class/OrderedEventCollection.md#ienumerablet-wherefunct-bool-predicate)  
+- [`OrderedEventCollection<BaseEvent>.Where(Func<T, bool>, float, float)`](class/OrderedEventCollection.md#ienumerablet-wherefunct-bool-predicate-float-startbeat-float-endbeat)  
+- [`OrderedEventCollection<BaseEvent>.Where(Func<T, bool>, RDBeat, RDBeat)`](class/OrderedEventCollection.md#ienumerablet-wherefunct-bool-predicate-rdbeat-startbeat-rdbeat-endbeat)  
+- [`OrderedEventCollection<BaseEvent>.Where(Func<T, bool>, RDRange)`](class/OrderedEventCollection.md#ienumerablet-wherefunct-bool-predicate-rdrange-range)  
+- [`OrderedEventCollection<BaseEvent>.Where(Func<T, bool>, Range)`](class/OrderedEventCollection.md#ienumerablet-wherefunct-bool-predicate-range-range)  
+- [`OrderedEventCollection<BaseEvent>.Where<U>(Func<U, bool>)`](class/OrderedEventCollection.md#ienumerablet-whereufunct-bool-predicate)  
+- [`OrderedEventCollection<BaseEvent>.Where<U>(Func<U, bool>, float, float)`](class/OrderedEventCollection.md#ienumerablet-whereufunct-bool-predicate-float-startbeat-float-endbeat)  
+- [`OrderedEventCollection<BaseEvent>.Where<U>(Func<U, bool>, RDBeat, RDBeat)`](class/OrderedEventCollection.md#ienumerablet-whereufunct-bool-predicate-rdbeat-startbeat-rdbeat-endbeat)  
+- [`OrderedEventCollection<BaseEvent>.Where<U>(Func<U, bool>, RDRange)`](class/OrderedEventCollection.md#ienumerablet-whereufunct-bool-predicate-rdrange-range)  
+- [`OrderedEventCollection<BaseEvent>.Where<U>(Func<U, bool>, Range)`](class/OrderedEventCollection.md#ienumerablet-whereufunct-bool-predicate-range-range)  
 - [`BaseEvent.Beat`](class/BaseEvent.md#rdbeat-beat)  
 - [`BaseEvent.Type`](class/BaseEvent.md#eventtype-type)  
-- [`RDBeat.BeatOnly`](class/RDBeat.md#float-beatonly)
+- [`RDBeat`](class/RDBeat.md)  
+- [`RDRange`](class/RDRange.md)
 
   
 ```CS  
@@ -35,15 +45,100 @@ using RhythmBase.LevelElements;
 using RhythmBase.Components;  
 using RhythmBase.Events;  
   
-//筛选同时满足以下所有条件的事件：  
-//继承自 BaseBeat，即为节拍事件；  
-//Active 为 true，即已激活事件；  
-//小节范围在第 2 小节（包含）到倒数第 10 小节（包含）的所有事件。  
-foreach (var item in level.Where<BaseBeat>(i => i.Active, 2..^10))   
-{  
-    //在控制台输出通过筛选的事件的节拍与类型。  
-    Console.WriteLine($"{item.Beat.BeatOnly}\t{item.Type}\t{item.Beat}");  
-}  
+List<BaseBeat> beats;
+
+//筛选同时满足以下所有条件的事件:
+//继承自 BaseBeat，即为节拍事件;
+//Active 为 true，即已激活事件;
+//小节范围在第 2 小节（包含）到倒数第 4 小节（包含）的所有事件。  
+
+//以下筛选方法皆等效。
+
+beats = rdlevel.Where(i =>
+		i.Active &&
+		2 <= i.Beat.BarBeat.bar &&
+		i.Beat.BarBeat.bar < rdlevel.Last().Beat.BarBeat.bar - 3)
+		.OfType<BaseBeat>()
+		.ToList();
+
+
+beats = rdlevel.Where(i =>
+		i.Type == EventType.MoveRow &&
+		i.Active &&
+        rdlevel.Calculator.BeatOf(2, 1) <= i.Beat &&
+        i.Beat < rdlevel.Calculator.BeatOf(rdlevel.Last().Beat.BarBeat.bar - 3, 1))
+		.OfType<BaseBeat>()
+		.ToList();
+
+
+beats = rdlevel.Where(i =>
+		i.Active,
+		rdlevel.Calculator.BeatOf(2, 1).BeatOnly,
+		rdlevel.Calculator.BeatOf(rdlevel.Last().Beat.BarBeat.bar - 3, 1).BeatOnly)
+		.OfType<BaseBeat>()
+		.ToList();
+
+
+beats = rdlevel.Where(i =>
+		i.Active,
+		rdlevel.Calculator.BeatOf(2, 1),
+		rdlevel.Calculator.BeatOf(rdlevel.Last().Beat.BarBeat.bar - 3, 1))
+        .OfType<BaseBeat>()
+        .ToList();
+
+
+beats = rdlevel.Where(i =>
+		i.Active,
+		new RDRange(rdlevel.Calculator.BeatOf(2, 1), rdlevel.Calculator.BeatOf(rdlevel.Last().Beat.BarBeat.bar - 3, 1)))
+        .OfType<BaseBeat>()
+        .ToList();
+
+
+beats = rdlevel.Where(i =>
+		i.Active,
+		2..^4)
+        .OfType<BaseBeat>()
+        .ToList();
+
+
+beats = rdlevel.Where<BaseBeat>(i =>
+		i.Active &&
+		2 <= i.Beat.BarBeat.bar &&
+		i.Beat.BarBeat.bar < rdlevel.Last().Beat.BarBeat.bar - 3)
+		.ToList();
+
+
+beats = rdlevel.Where<BaseBeat>(i =>
+		i.Active &&
+		rdlevel.Calculator.BeatOf(2, 1) <= i.Beat &&
+		i.Beat < rdlevel.Calculator.BeatOf(rdlevel.Last().Beat.BarBeat.bar - 3, 1))
+		.ToList();
+
+
+beats = rdlevel.Where<BaseBeat>(i =>
+		i.Active,
+		rdlevel.Calculator.BeatOf(2, 1).BeatOnly,
+		rdlevel.Calculator.BeatOf(rdlevel.Last().Beat.BarBeat.bar - 3, 1).BeatOnly)
+		.ToList();
+
+
+beats = rdlevel.Where<BaseBeat>(i =>
+		i.Active,
+		rdlevel.Calculator.BeatOf(2, 1),
+		rdlevel.Calculator.BeatOf(rdlevel.Last().Beat.BarBeat.bar - 3, 1))
+		.ToList();
+
+
+beats = rdlevel.Where<BaseBeat>(i =>
+		i.Active,
+		new RDRange(rdlevel.Calculator.BeatOf(2, 1), rdlevel.Calculator.BeatOf(rdlevel.Last().Beat.BarBeat.bar - 3, 1)))
+		.ToList();
+
+
+beats = rdlevel.Where<BaseBeat>(i =>
+		i.Active,
+		2..^4)
+		.ToList();
 ```  
   
 ---  

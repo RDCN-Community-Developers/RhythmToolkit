@@ -47,9 +47,5 @@
   
 
 
-### bool Contains([Rooms](../class/Rooms.md) rooms)  
-返回给定房间是否包含在此房间之内。    
-
-
-### default bool Item(byte index)  
-返回或设置指定房间的可见性。
+### ResetCache()  
+刷新缓存。  
