@@ -808,12 +808,12 @@ Namespace Events
 			AthleteWardNight
 			ProceduralTree
 		End Enum
-		Public Property Preset As Theme = Theme.OrientalTechno
-		Public Overrides ReadOnly Property Type As EventType = Events.EventType.SetTheme
+		Public Property Preset As Theme = Theme.None
+		Public Property [Variant] As Byte
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetTheme
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		<JsonProperty>
 		Public Overrides ReadOnly Property Rooms As New Rooms(False, True)
-
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Preset}"
 		End Function
@@ -1743,9 +1743,9 @@ Namespace Events
 		End Enum
 		Public Overrides ReadOnly Property Type As EventType = EventType.Tile
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As RDPoint?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Tiling As RDPoint?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Speed As RDPoint?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Position As RDPoint?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Tiling As RDPoint?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Speed As RDPoint?
 		Public Property TilingType As TilingTypes
 		Public Property Interval As Single
 		<JsonIgnore> Public Overrides Property Y As Integer

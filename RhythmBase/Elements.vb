@@ -1653,7 +1653,7 @@ CType(i, BaseBeat).Hitable
 		<JsonIgnore>
 		Friend ParentCollection As List(Of BaseConditional)
 		Public MustOverride ReadOnly Property Type As ConditionalType
-		Public Property Tag As String 'throw new NotImplementedException()
+		Public Property Tag As String
 		Public Property Name As String
 		Public ReadOnly Property Id As Integer
 			Get
@@ -1794,29 +1794,6 @@ CType(i, BaseBeat).Hitable
 			End If
 			Return False
 		End Function
-		Private Function ToRDLevelJson(settings As LevelOutputSettings) As String
-			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
-.Converters = {
-New Converters.RDLevelConverter(_path, settings)
-}
-}
-			Return JsonConvert.SerializeObject(Me, LevelSerializerSettings)
-		End Function
-		Public Shared Function ReadFromString(json As String, fileLocation As String, settings As LevelInputSettings) As RDLevel
-			Dim LevelSerializerSettings = New JsonSerializerSettings() With {
-				.Converters = {
-					New Converters.RDLevelConverter(fileLocation, settings)
-				}
-			}
-			json = Regex.Replace(json, ",(?=[ \n\r\t]*?[\]\)\}])", "")
-			Dim level As RDLevel
-			Try
-				level = JsonConvert.DeserializeObject(Of RDLevel)(json, LevelSerializerSettings)
-			Catch ex As Exception
-				Throw New RhythmBaseException("File cannot be read.", ex)
-			End Try
-			Return level
-		End Function
 		Private Shared Function LoadZip(RDLevelFile As String) As FileInfo
 			Dim tempDirectoryName As String = RDLevelFile
 			Dim tempDirectory = New IO.DirectoryInfo(IO.Path.Combine(IO.Path.GetTempPath, IO.Path.GetRandomFileName))
@@ -1832,25 +1809,30 @@ New Converters.RDLevelConverter(_path, settings)
 			Return LoadFile(RDLevelFilePath, New LevelInputSettings)
 		End Function
 		Public Shared Function LoadFile(RDLevelFilePath As String, settings As LevelInputSettings) As RDLevel
-			Dim json As String
+			Dim LevelSerializerSettings = New JsonSerializer()
+			LevelSerializerSettings.Converters.Add(New Converters.RDLevelConverter(RDLevelFilePath, settings))
+			'Dim json As String
 			Select Case IO.Path.GetExtension(RDLevelFilePath)
 				Case ".rdzip"
-					json = File.ReadAllText(LoadZip(RDLevelFilePath).FullName)
+					Return LevelSerializerSettings.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(LoadZip(RDLevelFilePath).FullName)))
 				Case ".zip"
-					json = File.ReadAllText(LoadZip(RDLevelFilePath).FullName)
+					Return LevelSerializerSettings.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(LoadZip(RDLevelFilePath).FullName)))
 				Case ".rdlevel"
-					json = File.ReadAllText(RDLevelFilePath)
+					Return LevelSerializerSettings.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(RDLevelFilePath)))
 				Case Else
 					Throw New RhythmBaseException("File not supported.")
 			End Select
-			Dim level = ReadFromString(json, RDLevelFilePath, settings)
-			Return level
 		End Function
 		Public Sub SaveFile(filepath As String)
-			IO.File.WriteAllText(filepath, ToRDLevelJson(New LevelOutputSettings))
+			SaveFile(filepath, New LevelOutputSettings)
 		End Sub
 		Public Sub SaveFile(filepath As String, settings As LevelOutputSettings)
-			IO.File.WriteAllText(filepath, ToRDLevelJson(settings))
+			Dim LevelSerializerSettings = New JsonSerializer()
+			LevelSerializerSettings.Converters.Add(New Converters.RDLevelConverter(_path, settings))
+			Using file = IO.File.CreateText(filepath), writer = New JsonTextWriter(file)
+				LevelSerializerSettings.Serialize(writer, Me)
+			End Using
+			'IO.File.WriteAllText(filepath, ToRDLevelJson(settings))
 		End Sub
 		Public Function CreateRow(character As Character) As Row
 			Return New Row With {

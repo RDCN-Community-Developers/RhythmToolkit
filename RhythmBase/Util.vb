@@ -291,6 +291,9 @@ lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - i
 lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
 (firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value, 1),
 firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
+			For Each item In e.Where(rg.start, rg.end)
+				Yield item
+			Next
 		End Function
 		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As RDRange) As IEnumerable(Of T)
 			For Each pair In e.EventsBeatOrder
@@ -373,37 +376,74 @@ firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
 			Next
 		End Function
 		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, beat As Single) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(beat)
-				Yield item
-			Next
+			Dim value As List(Of BaseEvent) = Nothing
+			If e.EventsBeatOrder.TryGetValue(beat, value) Then
+				For Each item In value.OfType(Of T)
+					Yield item
+				Next
+			End If
 		End Function
 		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As Single, endBeat As Single) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(startBeat, endBeat)
-				Yield item
+			For Each pair In e.EventsBeatOrder
+				If endBeat <= pair.Key Then
+					Exit Function
+				End If
+				If startBeat <= pair.Key Then
+					For Each item In pair.Value.OfType(Of T)
+						Yield item
+					Next
+				End If
 			Next
 		End Function
 		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(beat)
-				Yield item
-			Next
+			Dim value As List(Of BaseEvent) = Nothing
+			If e.EventsBeatOrder.TryGetValue(beat.BeatOnly, value) Then
+				For Each item In value.OfType(Of T)
+					Yield item
+				Next
+			End If
 		End Function
 		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
 			For Each item In e.Where(Of T)(startBeat.BeatOnly, endBeat.BeatOnly)
 				Yield item
 			Next
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As RDRange) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(range)
+		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
+			Dim firstEvent = e.First
+			Dim lastEvent = e.Last
+			Dim rg As (start As Single, [end] As Single) =
+If(index.IsFromEnd, (
+lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value, 1),
+lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
+(firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value, 1),
+firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
+			For Each item In e.Where(Of T)(rg.start, rg.end)
 				Yield item
 			Next
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(index)
-				Yield item
+		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As RDRange) As IEnumerable(Of T)
+			For Each pair In e.EventsBeatOrder
+				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
+					Exit Function
+				End If
+				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
+					For Each item In pair.Value.OfType(Of T)
+						Yield item
+					Next
+				End If
 			Next
 		End Function
 		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As Range) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(range)
+			Dim firstEvent = e.First
+			Dim lastEvent = e.Last
+			Dim rg As (start As Single, [end] As Single) =
+(If(range.Start.IsFromEnd,
+lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
+firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.Start.Value, 1)),
+If(range.End.IsFromEnd,
+lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
+firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
+			For Each item In e.Where(Of T)(rg.start, rg.end)
 				Yield item
 			Next
 		End Function

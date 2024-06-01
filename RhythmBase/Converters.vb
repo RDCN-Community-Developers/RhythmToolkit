@@ -79,6 +79,8 @@ Namespace Converters
 			With EventsSerializer.Converters
 				.Add(New NumOrExpPairConverter)
 				.Add(New INumOrExpConverter)
+				.Add(New RDPointConverter)
+				.Add(New NullableOfRDPointConverter)
 				.Add(New PanelColorConverter(value.ColorPalette))
 				.Add(New ColorConverter)
 				.Add(New RoomConverter)
@@ -167,6 +169,8 @@ Namespace Converters
 			With EventsSerializer.Converters
 				.Add(New INumOrExpConverter)
 				.Add(New NumOrExpPairConverter)
+				.Add(New RDPointConverter)
+				.Add(New NullableOfRDPointConverter)
 				.Add(New PanelColorConverter(Level.ColorPalette))
 				.Add(New RoomConverter)
 				.Add(New AssetConverter(Level.Path, Level.Assets))
@@ -504,6 +508,17 @@ Namespace Converters
 		End Sub
 
 		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDPoint, hasExistingValue As Boolean, serializer As JsonSerializer) As RDPoint
+			Dim J = JArray.Load(reader)
+			Return New RDPoint(J(0), J(1))
+		End Function
+	End Class
+	Friend Class NullableOfRDPointConverter
+		Inherits JsonConverter(Of RDPoint?)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDPoint?, serializer As JsonSerializer)
+			writer.WriteRawValue($"[{value.Value.Width},{value.Value.Height}]")
+		End Sub
+
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDPoint?, hasExistingValue As Boolean, serializer As JsonSerializer) As RDPoint?
 			Dim J = JArray.Load(reader)
 			Return New RDPoint(J(0), J(1))
 		End Function
