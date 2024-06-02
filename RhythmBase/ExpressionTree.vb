@@ -145,7 +145,7 @@ Namespace Expressions
 			[Or]
 			[Not]
 		End Enum
-		Private Class Token
+		Private Structure Token
 			Public value As String
 			Public type As TokenType
 			Public Sub New(value As String, token As TokenType)
@@ -155,7 +155,7 @@ Namespace Expressions
 			Public Overrides Function ToString() As String
 				Return $"{value}, {type}"
 			End Function
-		End Class
+		End Structure
 		ReadOnly Ops As New Dictionary(Of TokenType, Regex) From {
 			{TokenType.Increment, New Regex("^(?<value>\+\+)")},
 			{TokenType.Decrement, New Regex("^(?<value>\-\-)")},
@@ -191,12 +191,16 @@ Namespace Expressions
 			{TokenType.Or, New Regex("^(?<value>\|\|)")},
 			{TokenType.Not, New Regex("^(?<value>!)")}
 		}
-		Friend Function GetExpressionTree(exp As String, paramererExpression As ParameterExpression) As Func(Of Variables, Object)
-			Dim L = ReadExpressionString(exp)
-			Dim result = ReadTree(L, 0, paramererExpression)
-			Dim lambda As Expression(Of Func(Of Variables, Object)) = Expression.Lambda(Of Func(Of Variables, Object))(Expression.Convert(result, GetType(Object)), paramererExpression)
-			Dim compiledFunction As Func(Of Variables, Object) = lambda.Compile
+		Friend Function GetFunctionalExpression(Of TResult)(exp As String) As Func(Of Variables, TResult)
+			Dim param = Expression.Parameter(GetType(Variables), "v")
+			Dim resultExp = GetExpression(exp, param)
+			Dim lambda As Expression(Of Func(Of Variables, TResult)) = Expression.Lambda(Of Func(Of Variables, TResult))(Expression.Convert(resultExp, GetType(TResult)), param)
+			Dim compiledFunction As Func(Of Variables, TResult) = lambda.Compile
 			Return compiledFunction
+		End Function
+		Public Function GetExpression(exp As String, param As ParameterExpression) As Expression
+			Dim Tokens = ReadExpressionString(exp)
+			Return ReadTree(Tokens, param)
 		End Function
 		Private Function ReadExpressionString(exp As String) As IEnumerable(Of Token)
 			Dim L As New List(Of Token)
@@ -217,7 +221,7 @@ Namespace Expressions
 			End While
 			Return L.AsEnumerable
 		End Function
-		Private Function ReadTree(l As IEnumerable(Of Token), ByVal index As Integer, variableParameter As ParameterExpression) As Expression
+		Private Function ReadTree(l As IEnumerable(Of Token), variableParameter As ParameterExpression) As Expression
 			Dim OperatorStack As New Stack(Of Token)
 			Dim ValueStack As New Stack(Of Expression)
 			Dim subVariableParameter As Expression = variableParameter
@@ -363,7 +367,6 @@ Namespace Expressions
 								OperatorStack.Pop()
 							Case Else
 								GroupNode(ValueStack, OperatorStack, variableParameter, subVariableParameter)
-								'Throw New Exceptions.ExpressionException("Not implemented.")
 						End Select
 					End While
 				Case TokenType.LeftBracket

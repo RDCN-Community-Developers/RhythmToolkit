@@ -460,10 +460,10 @@ Namespace Extensions
 		<Extension> Public Sub WobblyLines(e As CallCustomMethod, value As Boolean)
 			e.MethodName = $"{NameOf(WobblyLines).LowerCamelCase} = {value}"
 		End Sub
-		<Extension> Public Sub TrueCameraMove(e As Comment, RoomID As Integer, p As RDPoint, AnimationDuration As Single, Ease As EaseType)
+		<Extension> Public Sub TrueCameraMove(e As Comment, RoomID As Integer, p As RDPointTemp, AnimationDuration As Single, Ease As EaseType)
 			e.Text = $"()=>{NameOf(TrueCameraMove).LowerCamelCase}({RoomID},{p.X},{p.Y},{AnimationDuration},{Ease})"
 		End Sub
-		<Extension> Public Sub Create(e As Comment, particleName As Particle, p As RDPoint)
+		<Extension> Public Sub Create(e As Comment, particleName As Particle, p As RDPointTemp)
 			e.Text = $"()=>{NameOf(Create).LowerCamelCase}(CustomParticles/{particleName},{p.X},{p.Y})"
 		End Sub
 		<Extension> Public Sub ShockwaveSizeMultiplier(e As CallCustomMethod, value As Boolean)
@@ -665,7 +665,7 @@ Namespace Extensions
 		<Extension> Public Sub EditTreeColor(e As CallCustomMethod, room As Byte, location As Boolean, color As String, beats As Single, ease As EaseType)
 			e.MethodName = $"room[{room}].{NameOf(EditTreeColor)}({location},{color},{beats},{ease})"
 		End Sub
-		<Extension> Public Sub MoveToPosition(e As Move, point As RDPoint)
+		<Extension> Public Sub MoveToPosition(e As Move, point As RDPointTemp)
 
 		End Sub
 	End Module

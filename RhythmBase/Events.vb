@@ -1743,9 +1743,9 @@ Namespace Events
 		End Enum
 		Public Overrides ReadOnly Property Type As EventType = EventType.Tile
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Position As RDPoint?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Tiling As RDPoint?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Speed As RDPoint?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Position As RDPointTemp?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Tiling As RDPointTemp?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Speed As RDPointTemp?
 		Public Property TilingType As TilingTypes
 		Public Property Interval As Single
 		<JsonIgnore> Public Overrides Property Y As Integer
@@ -2041,7 +2041,6 @@ Namespace Events
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {_freezeBurnMode} {_PulseType}"
 		End Function
-
 	End Class
 	Public Class SetOneshotWave
 		Inherits BaseBeat

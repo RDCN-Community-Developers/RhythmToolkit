@@ -274,7 +274,7 @@ Namespace Extensions
 			Dim paint = New SKPaint With {.ImageFilter = shadowFilter}
 			Using output As New SKBitmap(image.Width, image.Height)
 				Using canvas As New SKCanvas(output)
-					canvas.DrawBitmap(output, New RDPoint, paint)
+					canvas.DrawBitmap(output, New RDPointTemp, paint)
 				End Using
 				Return output
 			End Using

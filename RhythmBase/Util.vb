@@ -4,6 +4,7 @@ Imports RhythmBase.Events
 Imports RhythmBase.Extensions
 Imports RhythmBase.LevelElements
 Imports RhythmBase.Components
+Imports RhythmBase.Expressions
 Imports System.Runtime.InteropServices.JavaScript.JSType
 '' <summary>
 '' 工具类
@@ -221,6 +222,25 @@ Namespace Exceptions
 End Namespace
 Namespace Extensions
 	Public Module Extension
+		Private Function GetRange(e As OrderedEventCollection, index As Index) As (start As Single, [end] As Single)
+			Dim firstEvent = e.First
+			Dim lastEvent = e.Last
+			Return If(index.IsFromEnd, (
+				lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value, 1),
+				lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
+				(firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value, 1),
+				firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
+		End Function
+		Private Function GetRange(e As OrderedEventCollection, range As Range) As (start As Single, [end] As Single)
+			Dim firstEvent = e.First
+			Dim lastEvent = e.Last
+			Return (If(range.Start.IsFromEnd,
+				lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
+				firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.Start.Value, 1)),
+				If(range.End.IsFromEnd,
+				lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
+				firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
+		End Function
 		<Extension> Public Function UpperCamelCase(e As String) As String
 			Dim S = e.ToArray
 			S(0) = S(0).ToString.ToUpper
@@ -240,268 +260,114 @@ Namespace Extensions
 		<Extension> Public Function FixFraction(number As Single, splitBase As UInteger) As Single
 			Return Math.Round(number * splitBase) / splitBase
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder
-				For Each item In pair.Value
-					If predicate(item) Then
-						Yield item
-					End If
-				Next
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.SelectMany(Function(i) i.Value).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As Single) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As Single) As IEnumerable(Of T)
 			Dim value As List(Of BaseEvent) = Nothing
 			If e.EventsBeatOrder.TryGetValue(beat, value) Then
-				For Each item In value
-					Yield item
-				Next
+				Return value
 			End If
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder
-				If endBeat <= pair.Key Then
-					Exit Function
-				End If
-				If startBeat <= pair.Key Then
-					For Each item In pair.Value
-						Yield item
-					Next
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.TakeWhile(Function(i) i.Key < endBeat).SkipWhile(Function(i) i.Key < startBeat).SelectMany(Function(i) i.Value)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
 			Dim value As List(Of BaseEvent) = Nothing
 			If e.EventsBeatOrder.TryGetValue(beat.BeatOnly, value) Then
-				For Each item In value
-					Yield item
-				Next
+				Return value
 			End If
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.Where(startBeat.BeatOnly, endBeat.BeatOnly)
-				Yield item
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+			Return e.Where(startBeat.BeatOnly, endBeat.BeatOnly)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
-			Dim firstEvent = e.First
-			Dim lastEvent = e.Last
-			Dim rg As (start As Single, [end] As Single) =
-If(index.IsFromEnd, (
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value, 1),
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
-(firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value, 1),
-firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
-			For Each item In e.Where(rg.start, rg.end)
-				Yield item
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
+			Dim rg = GetRange(e, index)
+			Return e.Where(rg.start, rg.end)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As RDRange) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder
-				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
-					Exit Function
-				End If
-				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
-					For Each item In pair.Value
-						Yield item
-					Next
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As RDRange) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.TakeWhile(Function(i) If(i.Key < range.End?.BeatOnly, True)).SkipWhile(Function(i) If(i.Key < range.Start?.BeatOnly, False)).SelectMany(Function(i) i.Value)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As Range) As IEnumerable(Of T)
-			Dim firstEvent = e.First
-			Dim lastEvent = e.Last
-			Dim rg As (start As Single, [end] As Single) =
-(If(range.Start.IsFromEnd,
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
-firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.Start.Value, 1)),
-If(range.End.IsFromEnd,
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
-firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
-			For Each item In e.Where(rg.start, rg.end)
-				Yield item
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As Range) As IEnumerable(Of T)
+			Dim rg = GetRange(e, range)
+			Return e.Where(rg.start, rg.end)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
-			For Each item In e.Where(beat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
+			Return e.Where(beat).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
-			For Each item In e.Where(startBeat, endBeat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
+			Return e.Where(startBeat, endBeat).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.Where(beat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
+			Return e.Where(beat).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.Where(startBeat, endBeat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+			Return e.Where(startBeat, endBeat).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
-			For Each item In e.Where(range)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
+			Return e.Where(range).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
-			For Each item In e.Where(index)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
+			Return e.Where(index).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
-			For Each item In e.Where(range)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
+			Return e.Where(range).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection) As IEnumerable(Of T)
-			For Each item In e.OfType(Of T)
-				Yield item
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection) As IEnumerable(Of T)
+			Return e.OfType(Of T)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, beat As Single) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, beat As Single) As IEnumerable(Of T)
 			Dim value As List(Of BaseEvent) = Nothing
 			If e.EventsBeatOrder.TryGetValue(beat, value) Then
-				For Each item In value.OfType(Of T)
-					Yield item
-				Next
+				Return value.OfType(Of T)
 			End If
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As Single, endBeat As Single) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder
-				If endBeat <= pair.Key Then
-					Exit Function
-				End If
-				If startBeat <= pair.Key Then
-					For Each item In pair.Value.OfType(Of T)
-						Yield item
-					Next
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As Single, endBeat As Single) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.TakeWhile(Function(i) i.Key < endBeat).SkipWhile(Function(i) i.Key < startBeat).SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
 			Dim value As List(Of BaseEvent) = Nothing
 			If e.EventsBeatOrder.TryGetValue(beat.BeatOnly, value) Then
-				For Each item In value.OfType(Of T)
-					Yield item
-				Next
+				Return value.OfType(Of T)
 			End If
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(startBeat.BeatOnly, endBeat.BeatOnly)
-				Yield item
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+			Return e.Where(Of T)(startBeat.BeatOnly, endBeat.BeatOnly)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
-			Dim firstEvent = e.First
-			Dim lastEvent = e.Last
-			Dim rg As (start As Single, [end] As Single) =
-If(index.IsFromEnd, (
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value, 1),
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
-(firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value, 1),
-firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
-			For Each item In e.Where(Of T)(rg.start, rg.end)
-				Yield item
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
+			Dim rg = GetRange(e, index)
+			Return e.Where(Of T)(rg.start, rg.end)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As RDRange) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder
-				If range.End IsNot Nothing AndAlso range.End <= pair.Key Then
-					Exit Function
-				End If
-				If range.Start Is Nothing OrElse range.Start <= pair.Key Then
-					For Each item In pair.Value.OfType(Of T)
-						Yield item
-					Next
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As RDRange) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.TakeWhile(Function(i) If(i.Key < range.End?.BeatOnly, True)).SkipWhile(Function(i) If(i.Key < range.Start?.BeatOnly, False)).SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As Range) As IEnumerable(Of T)
-			Dim firstEvent = e.First
-			Dim lastEvent = e.Last
-			Dim rg As (start As Single, [end] As Single) =
-(If(range.Start.IsFromEnd,
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
-firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.Start.Value, 1)),
-If(range.End.IsFromEnd,
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
-firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
-			For Each item In e.Where(Of T)(rg.start, rg.end)
-				Yield item
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As Range) As IEnumerable(Of T)
+			Dim rg = GetRange(e, range)
+			Return e.Where(Of T)(rg.start, rg.end)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)()
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+			Return e.Where(Of T)().Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(beat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
+			Return e.Where(Of T)(beat).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(startBeat, endBeat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As Single, endBeat As Single) As IEnumerable(Of T)
+			Return e.Where(Of T)(startBeat, endBeat).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(beat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
+			Return e.Where(Of T)(beat).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(startBeat, endBeat)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+			Return e.Where(Of T)(startBeat, endBeat).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(range)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
+			Return e.Where(Of T)(range).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(index)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
+			Return e.Where(Of T)(index).Where(predicate)
 		End Function
-		<Extension> Public Iterator Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)(range)
-				If predicate(item) Then
-					Yield item
-				End If
-			Next
+		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
+			Return e.Where(Of T)(range).Where(predicate)
 		End Function
 		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate)))
@@ -668,253 +534,57 @@ firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
 		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), defaultValue As T) As T
 			Return e.Where(Of T).LastOrDefault(predicate, defaultValue)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As Single) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder.TakeWhile(Function(i) i.Key < beat)
-				For Each item In pair.Value
-					Yield item
-				Next
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As Single) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.TakeWhile(Function(i) i.Key < beat).SelectMany(Function(i) i.Value)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.TakeWhile(beat.BeatOnly)
-				Yield item
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
+			Return e.TakeWhile(beat.BeatOnly)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
 			Dim firstEvent = e.First
 			Dim lastEvent = e.Last
-			For Each item In e.TakeWhile(
+			Return e.TakeWhile(
 If(index.IsFromEnd,
 lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1),
 firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
-				Yield item
-			Next
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder
-				For Each item In pair.Value
-					If Not predicate(item) Then
-						Return
-					End If
-					Yield item
-				Next
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.SelectMany(Function(i) i.Value).TakeWhile(predicate)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
-			For Each item In e.TakeWhile(beat)
-				If Not predicate(item) Then
-					Return
-				End If
-				Yield item
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
+			Return e.TakeWhile(beat).TakeWhile(predicate)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.TakeWhile(beat)
-				If Not predicate(item) Then
-					Return
-				End If
-				Yield item
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
+			Return e.TakeWhile(beat).TakeWhile(predicate)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
-			For Each item In e.TakeWhile(index)
-				If Not predicate(item) Then
-					Return
-				End If
-				Yield item
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
+			Return e.TakeWhile(index).TakeWhile(predicate)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, beat As Single) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder.TakeWhile(Function(i) i.Key < beat)
-				For Each item In pair.Value.OfType(Of T)
-					Yield item
-				Next
-			Next
+		<Extension> Public  Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, beat As Single) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.TakeWhile(Function(i) i.Key < beat).SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.TakeWhile(Of T)(beat.BeatOnly)
-				Yield item
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
+			Return e.TakeWhile(Of T)(beat.BeatOnly)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
 			Dim firstEvent = e.First
 			Dim lastEvent = e.Last
-			For Each item In e.TakeWhile(Of T)(
+			Return e.TakeWhile(Of T)(
 If(index.IsFromEnd,
 lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1),
 firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
-				Yield item
-			Next
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder
-				For Each item In pair.Value
-					If Not predicate(item) Then
-						Return
-					End If
-					Yield item
-				Next
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+			Return e.EventsBeatOrder.SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
-			For Each item In e.TakeWhile(Of T)(beat)
-				If Not predicate(item) Then
-					Return
-				End If
-				Yield item
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
+			Return e.TakeWhile(Of T)(beat).TakeWhile(predicate)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.TakeWhile(Of T)(beat)
-				If Not predicate(item) Then
-					Return
-				End If
-				Yield item
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
+			Return e.TakeWhile(Of T)(beat).TakeWhile(predicate)
 		End Function
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
-			For Each item In e.TakeWhile(Of T)(index)
-				If Not predicate(item) Then
-					Return
-				End If
-				Yield item
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As Single) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder.SkipWhile(Function(i) i.Key < beat)
-				For Each item In pair.Value
-					Yield item
-				Next
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.SkipWhile(beat.BeatOnly)
-				Yield item
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
-			Dim firstEvent = e.First
-			Dim lastEvent = e.Last
-			For Each item In e.SkipWhile(
-If(index.IsFromEnd,
-lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1),
-firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
-				Yield item
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			Dim valid As Boolean = False
-			For Each pair In e.EventsBeatOrder
-				For Each item In pair.Value
-					If valid Then
-						Yield item
-					End If
-					If Not (valid OrElse predicate(item)) Then
-						valid = True
-					End If
-				Next
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
-			Dim valid As Boolean
-			For Each item In e.SkipWhile(beat)
-				If valid Then
-					Yield item
-				End If
-				If Not (valid OrElse predicate(item)) Then
-					valid = True
-				End If
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
-			Dim valid As Boolean
-			For Each item In e.SkipWhile(beat)
-				If valid Then
-					Yield item
-				End If
-				If Not (valid OrElse predicate(item)) Then
-					valid = True
-				End If
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
-			Dim valid As Boolean
-			For Each item In e.SkipWhile(index)
-				If valid Then
-					Yield item
-				End If
-				If Not (valid OrElse predicate(item)) Then
-					valid = True
-				End If
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection, beat As Single) As IEnumerable(Of T)
-			For Each pair In e.EventsBeatOrder.SkipWhile(Function(i) i.Key < beat)
-				For Each item In pair.Value.OfType(Of T)
-					Yield item
-				Next
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
-			For Each item In e.SkipWhile(Of T)(beat.BeatOnly)
-				Yield item
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
-			Dim firstEvent = e.First
-			Dim lastEvent = e.Last
-			For Each item In e.SkipWhile(Of T)(
-				If(index.IsFromEnd,
-				lastEvent.ParentLevel.Calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1),
-				firstEvent.ParentLevel.Calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
-				Yield item
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			Dim valid As Boolean
-			For Each pair In e.EventsBeatOrder
-				For Each item In pair.Value
-					If valid Then
-						Yield item
-					End If
-					If Not (valid OrElse predicate(item)) Then
-						valid = True
-					End If
-				Next
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
-			Dim valid As Boolean
-			For Each item In e.SkipWhile(Of T)(beat)
-				If valid Then
-					Yield item
-				End If
-				If Not (valid OrElse predicate(item)) Then
-					valid = True
-				End If
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
-			Dim valid As Boolean
-			For Each item In e.SkipWhile(Of T)(beat)
-				If valid Then
-					Yield item
-				End If
-				If Not (valid OrElse predicate(item)) Then
-					valid = True
-				End If
-			Next
-		End Function
-		<Extension> Public Iterator Function SkipWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
-			Dim valid As Boolean
-			For Each item In e.SkipWhile(Of T)(index)
-				If valid Then
-					Yield item
-				End If
-				If Not (valid OrElse predicate(item)) Then
-					valid = True
-				End If
-			Next
+		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
+			Return e.TakeWhile(Of T)(index).TakeWhile(predicate)
 		End Function
 		<Extension> Public Function RemoveRange(Of T As BaseEvent)(e As OrderedEventCollection, items As IEnumerable(Of T)) As Integer
 			Dim count As Integer = 0
@@ -959,7 +629,7 @@ e.EventsBeatOrder(item1.Beat.BeatOnly).IndexOf(item1) > e.EventsBeatOrder(item2.
 			If direct Then
 				Return e.Where(Function(i) i.Tag = name).GroupBy(Function(i) i.Tag)
 			Else
-				Return e.Where(Function(i) If(i.Tag, "").Contains(name)).GroupBy(Function(i) i.Tag)
+				Return e.Where(Function(i) If(i.Tag?.Contains(name), False)).GroupBy(Function(i) i.Tag)
 			End If
 		End Function
 	End Module
@@ -971,7 +641,7 @@ e.EventsBeatOrder(item1.Beat.BeatOnly).IndexOf(item1) > e.EventsBeatOrder(item2.
 			Return e.ParentLevel Is item.ParentLevel AndAlso e.ParentLevel.IsBehind(e, item)
 		End Function
 		<Extension>
-		Public Sub MovePositionMaintainVisual(e As Move, target As RDPoint)
+		Public Sub MovePositionMaintainVisual(e As Move, target As RDPointTemp)
 			If e.Position Is Nothing OrElse e.Pivot Is Nothing OrElse e.Angle Is Nothing Then
 				Exit Sub
 			End If
@@ -979,7 +649,7 @@ e.EventsBeatOrder(item1.Beat.BeatOnly).IndexOf(item1) > e.EventsBeatOrder(item2.
 			e.Pivot = (e.VisualPosition() - target).Rotate(-e.Angle.TryGetValue())
 		End Sub
 		<Extension>
-		Public Sub MovePositionMaintainVisual(e As MoveRoom, target As RDPoint)
+		Public Sub MovePositionMaintainVisual(e As MoveRoom, target As RDPointTemp)
 			If e.RoomPosition Is Nothing OrElse e.Pivot Is Nothing OrElse e.Angle Is Nothing Then
 				Exit Sub
 			End If
@@ -987,22 +657,35 @@ e.EventsBeatOrder(item1.Beat.BeatOnly).IndexOf(item1) > e.EventsBeatOrder(item2.
 			e.Pivot = (e.VisualPosition() - target).Rotate(-e.Angle.TryGetValue())
 		End Sub
 		<Extension>
-		Public Function VisualPosition(e As Move) As RDPoint
+		Public Function VisualPosition(e As Move) As RDPointTemp
 			If e.Position Is Nothing OrElse e.Pivot Is Nothing OrElse e.Angle Is Nothing OrElse e.Scale Is Nothing Then
-				Return New RDPoint
+				Return New RDPointTemp
 			End If
-			Dim previousPosition As RDPoint = e.Position
-			Dim previousPivot As RDPoint = (CType(e.Pivot, RDPoint) * e.Scale * e.Parent.Size) / (100, 100)
+			Dim previousPosition As RDPointTemp = e.Position
+			Dim previousPivot As RDPointTemp = (CType(e.Pivot, RDPointTemp) * e.Scale * e.Parent.Size) / (100, 100)
 			Return previousPosition + previousPivot.Rotate(e.Angle.TryGetValue())
 		End Function
 		<Extension>
-		Public Function VisualPosition(e As MoveRoom) As RDPoint
+		Public Function VisualPosition(e As MoveRoom) As RDPointTemp
 			If e.RoomPosition Is Nothing OrElse e.Pivot Is Nothing OrElse e.Angle Is Nothing Then
-				Return New RDPoint
+				Return New RDPointTemp
 			End If
-			Dim previousPosition As RDPoint = e.RoomPosition
-			Dim previousPivot As RDPoint = CType(e.Pivot, RDPoint) * e.Scale
+			Dim previousPosition As RDPointTemp = e.RoomPosition
+			Dim previousPivot As RDPointTemp = CType(e.Pivot, RDPointTemp) * e.Scale
 			Return previousPosition + previousPivot.Rotate(e.Angle.TryGetValue())
+		End Function
+		<Extension>
+		Public Function GetExpValue(e As ExpTemp, variables As Variables) As Object
+			Dim compiledFunction = GetFunctionalExpression(Of Single)(e.value)
+			Return compiledFunction(variables)
+		End Function
+		<Extension>
+		Public Function GetValue(e As INumOrExp, variables As Variables) As Object
+			If e.GetType = GetType(Num) Then
+				Return CType(e, Num).value
+			Else
+				Return CType(e, ExpTemp).GetExpValue(variables)
+			End If
 		End Function
 	End Module
 End Namespace

@@ -12,7 +12,7 @@
     <Authors>obugs</Authors>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RadiationTherapy</PackageProjectUrl>
-    <PackageIcon>RadiationTherapy.png</PackageIcon>
+    <PackageIcon></PackageIcon>
     <PackageTags>Rhythm-Doctor</PackageTags>
     <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels</Description>
     <Version>1.0.2</Version>
@@ -29,10 +29,6 @@
 
   <ItemGroup>
     <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="O:\Images\sprite\RadiationTherapy.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

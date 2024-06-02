@@ -13,8 +13,8 @@ Namespace Settings
         Public Sort As Boolean = False
         Public OverWrite As Boolean = False
         Public ExtraFile As Boolean = False
-        Public LimitedSize As New RDPoint(16384, 16384)
-        Public LimitedCount As RDPoint?
+        Public LimitedSize As New RDPointTemp(16384, 16384)
+        Public LimitedCount As RDPointTemp?
         Public WithImage As Boolean = False
     End Class
     Public Class SpriteInputSettings
