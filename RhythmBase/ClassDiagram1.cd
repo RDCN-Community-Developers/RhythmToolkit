@@ -176,7 +176,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Struct>
-  <Struct Name="RhythmBase.Components.NumOrExpPair" Collapsed="true">
+  <Struct Name="RhythmBase.Components.RDPointE" Collapsed="true">
     <Position X="14.5" Y="5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Elements.vb</FileName>
@@ -216,7 +216,7 @@
       <FileName>Elements.vb</FileName>
     </TypeIdentifier>
   </Struct>
-  <Interface Name="RhythmBase.Components.INumOrExp" Collapsed="true">
+  <Interface Name="RhythmBase.Components.RDExpression" Collapsed="true">
     <Position X="14.5" Y="6.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>

@@ -2,7 +2,6 @@
 Imports System.Linq.Expressions
 Imports System.Runtime.CompilerServices
 Imports System.Text.RegularExpressions
-Imports RhythmBase.Animation
 Imports RhythmBase.LevelElements
 Imports RhythmBase.Components
 Namespace Expressions
@@ -167,9 +166,9 @@ Namespace Expressions
 			{TokenType.ArrayIndex, New Regex("^(?<value>[A-Za-z][A-Za-z0-9]+)\[")},
 			{TokenType.Boolean, New Regex("^(?<value>[Tt]rue|[Ff]alse)")},
 			{TokenType.String, New Regex("^str:(?<value>[^,])")},
-			{TokenType.IntegerValue, New Regex("^i(?<value>\d)")},
-			{TokenType.FloatValue, New Regex("^f(?<value>\d)")},
-			{TokenType.BooleanValue, New Regex("^b(?<value>\d)")},
+			{TokenType.IntegerValue, New Regex("^(?<!\d)(?<value>-?i\d)")},
+			{TokenType.FloatValue, New Regex("^(?<!\d)(?<value>-?f\d)")},
+			{TokenType.BooleanValue, New Regex("^(?<!\d)(?<value>-?b\d)")},
 			{TokenType.Constant, New Regex("^(?<value>-?((\d+(\.(\d+)?)?)|(\.\d+)))")},
 			{TokenType.Variable, New Regex("^(?<value>[A-Za-z][A-Za-z0-9]+)")},
 			{TokenType.Equal, New Regex("^(?<value>==)")},
@@ -251,25 +250,34 @@ Namespace Expressions
 		Private Function ReadValueNode(token As Token, valueStack As Stack(Of Expression), operatorStack As Stack(Of Token), VariableParameter As ParameterExpression, ByRef subVariableParameter As Expression) As Expression
 			Select Case token.type
 				Case TokenType.Boolean
-					Dim value = Expression.Constant(CBool(token.value), GetType(Boolean))
+					Dim value As Expression = Expression.Constant(CBool(token.value), GetType(Boolean))
 					Return value
 				Case TokenType.String
-					Dim Value = Expression.Constant(token.value, GetType(String))
+					Dim Value As Expression = Expression.Constant(token.value, GetType(String))
 					Return Value
 				Case TokenType.IntegerValue
-					Dim arrayIndex = CInt(token.value)
-					Dim Value = Expression.Property(Expression.PropertyOrField(VariableParameter, "i"), "Item", Expression.Constant(arrayIndex, GetType(Integer)))
+					Dim arrayIndex = CInt(token.value.Last.ToString)
+					Dim Value As Expression = Expression.Property(Expression.PropertyOrField(VariableParameter, "i"), "Item", Expression.Constant(arrayIndex, GetType(Integer)))
+					If token.value.StartsWith("-"c) Then
+						Value = Expression.Negate(Value)
+					End If
 					Return Value
 				Case TokenType.FloatValue
-					Dim arrayIndex = CInt(token.value)
-					Dim Value = Expression.Property(Expression.PropertyOrField(VariableParameter, "f"), "Item", Expression.Constant(arrayIndex, GetType(Integer)))
+					Dim arrayIndex = CInt(token.value.Last.ToString)
+					Dim Value As Expression = Expression.Property(Expression.PropertyOrField(VariableParameter, "f"), "Item", Expression.Constant(arrayIndex, GetType(Integer)))
+					If token.value.StartsWith("-"c) Then
+						Value = Expression.Negate(Value)
+					End If
 					Return Value
 				Case TokenType.BooleanValue
-					Dim arrayIndex = CInt(token.value)
-					Dim Value = Expression.Property(Expression.PropertyOrField(VariableParameter, "b"), "Item", Expression.Constant(arrayIndex, GetType(Integer)))
+					Dim arrayIndex = CInt(token.value.Last.ToString)
+					Dim Value As Expression = Expression.Property(Expression.PropertyOrField(VariableParameter, "b"), "Item", Expression.Constant(arrayIndex, GetType(Integer)))
+					If token.value.StartsWith("-"c) Then
+						Value = Expression.Negate(Value)
+					End If
 					Return Value
 				Case TokenType.Constant
-					Dim Value = Expression.Constant(CSng(token.value), GetType(Single))
+					Dim Value As Expression = Expression.Constant(CSng(token.value), GetType(Single))
 					Return Value
 				Case TokenType.Variable
 					Dim name = token.value
@@ -277,7 +285,7 @@ Namespace Expressions
 						operatorStack.Pop()
 						valueStack.Pop()
 					End If
-					Dim Value = Expression.PropertyOrField(subVariableParameter, name)
+					Dim Value As Expression = Expression.PropertyOrField(subVariableParameter, name)
 					Return Value
 				Case Else
 					Throw New Exceptions.RhythmBaseException($"Illegal parameter: {token.value}")

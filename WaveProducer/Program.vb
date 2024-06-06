@@ -121,8 +121,8 @@ Module Program
 		Dim A As New Decoration(Rooms.Default, Nothing, 0, True)
 		Level.Decorations.Add(A)
 		Dim mv2 = A.CreateChildren(Of Move)(1)
-		mv2.Position = New NumOrExpPair(0, 0)
-		mv2.Scale = New NumOrExpPair(0.1, 0.1)
+		mv2.Position = New RDPointE(0, 0)
+		mv2.Scale = New RDPointE(0.1, 0.1)
 		Level.add(mv2)
 		SpriteCollection.Add(A)
 		'Next
@@ -133,7 +133,7 @@ Module Program
 				Dim t = Calculator.Time_BeatOnly(TimeSpan.FromSeconds(time))
 				Dim mv = Level.Decorations(index).CreateChildren(Of Move)(t)
 				Dim frame = Frames((Frames.Length - 1) * time / 182)
-				mv.Position = New NumOrExpPair(CType(Nothing, Double?), frame((frame.Length - 1) * index / 100) / max)
+				mv.Position = New RDPointE(CType(Nothing, Double?), frame((frame.Length - 1) * index / 100) / max)
 				mv.Duration = 1.5
 				mv.Ease = EaseType.InOutSine
 				Level.add(mv)

@@ -141,25 +141,24 @@ Namespace Events
 	Public Interface IEaseEvent
 		Property Ease As EaseType
 		Property Duration As Single
-		'Function Animation() As Animation.IAnimation
 	End Interface
 	Public MustInherit Class BaseEvent
 		<JsonProperty(NameOf(Type))>
 		Public MustOverride ReadOnly Property Type As EventType
 		<JsonIgnore>
 		Public MustOverride ReadOnly Property Tab As Tabs
-		<JsonIgnore>
-		Friend Property ParentLevel As RDLevel
-		Private _beat As RDBeat
+		'<JsonIgnore>
+		'Friend Property ParentLevel As RDLevel
+		Friend _beat As RDBeat
 		<JsonIgnore>
 		Public Overridable Property Beat As RDBeat
 			Get
 				Return _beat
 			End Get
 			Set(value As RDBeat)
-				ParentLevel?.Remove(Me)
+				_beat.baseLevel?.Remove(Me)
 				_beat = value
-				ParentLevel?.Add(Me)
+				_beat.baseLevel?.Add(Me)
 			End Set
 		End Property
 		Public Overridable Property Y As Integer
@@ -176,7 +175,17 @@ Namespace Events
 					temp.If.ConditionLists.Add(item)
 				Next
 			End If
-			ParentLevel?.Add(temp)
+			Beat.baseLevel.Add(temp)
+			Return temp
+		End Function
+		Public Overridable Function Clone(Of T As {BaseEvent, New})(level As RDLevel) As T
+			Dim temp = New T With {.Beat = Beat, .Y = Y, .[If] = [If], .Tag = Tag, .Active = Active}
+			If Me.If IsNot Nothing Then
+				For Each item In Me.If.ConditionLists
+					temp.If.ConditionLists.Add(item)
+				Next
+			End If
+			level?.Add(temp)
 			Return temp
 		End Function
 		Public Overrides Function ToString() As String
@@ -195,9 +204,7 @@ Namespace Events
 			End Get
 			Set(value As RDBeat)
 				MyBase.Beat = value
-				If ParentLevel IsNot Nothing Then
-					ResetTimeLine()
-				End If
+				ResetTimeLine()
 			End Set
 		End Property
 		<JsonProperty("bpm")> Public Property BeatsPerMinute As Single
@@ -206,31 +213,32 @@ Namespace Events
 			End Get
 			Set(value As Single)
 				_bpm = value
-				If ParentLevel IsNot Nothing Then
-					ResetTimeLine()
-				End If
+				ResetTimeLine()
 			End Set
 		End Property
 		Private Sub ResetTimeLine()
-			For Each item In ParentLevel?.Where(Function(i) i.Beat > Me.Beat)
-				item.Beat.ResetBPM()
-			Next
+			If Beat.baseLevel IsNot Nothing Then
+				For Each item In Beat.baseLevel.Where(Function(i) i.Beat > Me.Beat)
+					item.Beat.ResetBPM()
+				Next
+			End If
 		End Sub
 	End Class
 	Public MustInherit Class BaseDecorationAction
 		Inherits BaseEvent
-		Private _parent As Decoration
+		Friend _parent As Decoration
 		<JsonIgnore>
-		Public Property Parent As Decoration
+		Public ReadOnly Property Parent As Decoration
 			Get
 				Return _parent
 			End Get
-			Set(value As Decoration)
-				_parent?.Remove(Me)
-				value？.Add(Me)
-				_parent = value
-				ParentLevel = value?.Parent
-			End Set
+			'Set(value As Decoration)
+			'	If _parent IsNot Nothing Then
+			'		_parent.Remove(Me)
+			'		value?.Add(Me)
+			'	End If
+			'	_parent = value
+			'End Set
 		End Property
 		Public Overridable ReadOnly Property Target As String
 			Get
@@ -239,12 +247,12 @@ Namespace Events
 		End Property
 		Public Overloads Function Clone(Of T As {BaseDecorationAction, New})() As T
 			Dim Temp = MyBase.Clone(Of T)()
-			Temp.Parent = Parent
+			Temp._parent = Parent
 			Return Temp
 		End Function
 		Public Overloads Function Clone(Of T As {BaseDecorationAction, New})(decoration As Decoration) As T
-			Dim Temp = MyBase.Clone(Of T)()
-			Temp.Parent = decoration
+			Dim Temp = MyBase.Clone(Of T)(decoration.Parent)
+			Temp._parent = decoration
 			Return Temp
 		End Function
 		<JsonIgnore>
@@ -256,17 +264,18 @@ Namespace Events
 	End Class
 	Public MustInherit Class BaseRowAction
 		Inherits BaseEvent
-		Private _parent As Row
+		Friend _parent As Row
 		<JsonIgnore>
 		Public Property Parent As Row
 			Get
 				Return _parent
 			End Get
 			Friend Set(value As Row)
-				_parent?.Remove(Me)
-				value.Add(Me)
+				If _parent IsNot Nothing Then
+					_parent.Remove(Me)
+					value?.Add(Me)
+				End If
 				_parent = value
-				ParentLevel = value.Parent
 			End Set
 		End Property
 		<JsonIgnore>
@@ -309,20 +318,20 @@ Namespace Events
 				Dim DefaultAudio = New Audio With {.Filename = "sndClapHit", .Offset = 0, .Pan = 100, .Pitch = 100, .Volume = 100}
 				Select Case Player
 					Case PlayerType.P1
-						Return If(ParentLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.Active AndAlso i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
+						Return If(Beat.baseLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.Active AndAlso i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
 					Case PlayerType.P2
-						Return If(ParentLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.Active AndAlso i.P2Sound IsNot Nothing)?.P2Sound, DefaultAudio)
+						Return If(Beat.baseLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.Active AndAlso i.P2Sound IsNot Nothing)?.P2Sound, DefaultAudio)
 					Case PlayerType.CPU
-						Return If(ParentLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.Active AndAlso i.CpuSound IsNot Nothing)?.CpuSound, DefaultAudio)
+						Return If(Beat.baseLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.Active AndAlso i.CpuSound IsNot Nothing)?.CpuSound, DefaultAudio)
 					Case Else
-						Return If(ParentLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.Active AndAlso i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
+						Return If(Beat.baseLevel.LastOrDefault(Of SetClapSounds)(Function(i) i.Active AndAlso i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
 				End Select
 			End Get
 		End Property
 		<JsonIgnore>
 		Public ReadOnly Property Player As PlayerType
 			Get
-				Return If(ParentLevel.LastOrDefault(Of ChangePlayersRows)(Function(i) i.Active AndAlso i.Players(Row) <> PlayerType.NoChange)?.Players(Row), Parent.Player)
+				Return If(Beat.baseLevel.LastOrDefault(Of ChangePlayersRows)(Function(i) i.Active AndAlso i.Players(Row) <> PlayerType.NoChange)?.Players(Row), Parent.Player)
 			End Get
 		End Property
 		<JsonIgnore>
@@ -387,7 +396,7 @@ Namespace Events
 		Public Overrides ReadOnly Property Rooms As Rooms = Rooms.Default
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		Public Sub New(beatOnly As Single, bpm As Single, y As UInteger)
-			Me.Beat = New RDBeat(ParentLevel.Calculator, beatOnly)
+			Me.Beat = New RDBeat(Beat._calculator, beatOnly)
 			Me.Y = y
 			Me.BeatsPerMinute = bpm
 		End Sub
@@ -406,9 +415,7 @@ Namespace Events
 			End Get
 			Set(value As RDBeat)
 				MyBase.Beat = value
-				If ParentLevel IsNot Nothing Then
-					ResetTimeLine()
-				End If
+				ResetTimeLine()
 			End Set
 		End Property
 		Friend Property Bar As UInteger = 1
@@ -439,7 +446,7 @@ Namespace Events
 			End Set
 		End Property
 		Private Sub ResetTimeLine()
-			For Each item In ParentLevel?.Where(Function(i) i.Beat > Me.Beat)
+			For Each item In Beat.baseLevel.Where(Function(i) i.Beat > Me.Beat)
 				item.Beat.ResetCPB()
 			Next
 			Beat._calculator.Initialize()
@@ -741,15 +748,18 @@ Namespace Events
 			IanCountEnglish
 			IanCountEnglishCalm
 			IanCountEnglishSlow
+			Custom
 		End Enum
 		Public Property VoiceSource As VoiceSources
 		Public Property Enabled As Boolean
 		Public Property SubdivOffset As Single
-		Public Property Volume As Integer
+		Public Property Volume As Integer = 100
+		Public Property Sounds As New LimitedList(Of Audio)(7, New Audio)
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetCountingSound
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
-
-
+		Public Function ShouldSerializeSounds() As Boolean
+			Return VoiceSource = VoiceSources.Custom
+		End Function
 	End Class
 
 	Public Class SetTheme
@@ -974,7 +984,7 @@ Namespace Events
 		Public Property BackgroundType As BackgroundTypes
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Fps As Integer
-		Public Property Image As List(Of Sprite)
+		Public Property Image As List(Of RDSprite)
 		Public Property ScrollX As Integer
 		Public Property ScrollY As Integer
 		Public Property TilingType As TilingTypes
@@ -990,7 +1000,7 @@ Namespace Events
 		Public Property ContentMode As ContentModes
 		Public Property TilingType As TilingTypes
 		Public Property Color As New PanelColor(True)
-		Public Property Image As List(Of Sprite)
+		Public Property Image As List(Of RDSprite)
 		Public Property Fps As Single
 		Public Property ScrollX As Single
 		Public Property ScrollY As Single
@@ -1049,9 +1059,9 @@ Namespace Events
 		Implements IEaseEvent
 		<JsonProperty>
 		Public Overrides ReadOnly Property Rooms As New Rooms(True, True)
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property CameraPosition As NumOrExpPair?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property CameraPosition As RDPointE?
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Zoom As Integer?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Angle As INumOrExp
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Angle As RDExpression?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.MoveCamera
@@ -1088,9 +1098,9 @@ Namespace Events
 		End Enum
 		Public Property CustomPosition As Boolean
 		Public Property Target As Targets
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property RowPosition As NumOrExpPair?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Scale As NumOrExpPair?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Angle As INumOrExp
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property RowPosition As RDPointE?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Scale As RDPointE?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Angle As RDExpression?
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Pivot As Single?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
@@ -1359,7 +1369,7 @@ Namespace Events
 		Public Overrides ReadOnly Property Rooms As New Rooms(True, True)
 		Public Property FadeOutRate As Single
 		Public Property Color As New PanelColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
-		Public Property Angle As INumOrExp
+		Public Property Angle As Single
 		Public Property Size As UInteger
 		Public Property OutlineColor As New PanelColor(True) With {.Color = New SKColor(0, 0, 0, &HFF)}
 		Public Property Id As Integer
@@ -1369,7 +1379,7 @@ Namespace Events
 			Set(value As Integer)
 			End Set
 		End Property
-		Public Property TextPosition As NumOrExpPair = (50, 50)
+		Public Property TextPosition As RDPoint = New RDPoint(50, 50)
 		Public Property Anchor As AnchorStyle
 		Public Property Mode As OutMode
 			Get
@@ -1618,10 +1628,10 @@ Namespace Events
 			End Get
 		End Property
 		Public Function ControllingEvents() As IEnumerable(Of IGrouping(Of String, BaseEvent))
-			Return ParentLevel.GetTaggedEvents(ActionTag, Action.HasFlag(Actions.All))
+			Return Beat.baseLevel.GetTaggedEvents(ActionTag, Action.HasFlag(Actions.All))
 		End Function
 		Public Function ControllingEventsPadLeft() As IEnumerable(Of IGrouping(Of String, BaseEvent))
-			Dim L = ControllingEvents(ParentLevel)
+			Dim L = ControllingEvents(Beat.baseLevel)
 			For Each pair In L
 				Dim start = pair(0).Beat
 				For Each item In pair
@@ -1685,13 +1695,13 @@ Namespace Events
 		End Enum
 		Public Property Preset As String
 		Public Property SamePresetBehavior As String
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As NumOrExpPair
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As RDPointE
 		Public Property Reference As References
 		Public Property UseCircle As Boolean
 		Public Property Speed As Single
 		Public Property Amplitude As New Single
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property AmplitudeVector As NumOrExpPair
-		Public Property Angle As INumOrExp
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property AmplitudeVector As RDPointE
+		Public Property Angle As RDExpression?
 		Public Property Frequency As Single
 		Public Property Period As Single
 		Public Property EaseType As EaseTypes
@@ -1743,9 +1753,9 @@ Namespace Events
 		End Enum
 		Public Overrides ReadOnly Property Type As EventType = EventType.Tile
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Position As RDPointTemp?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Tiling As RDPointTemp?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Speed As RDPointTemp?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Position As RDPoint?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Tiling As RDPoint?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Speed As RDPoint?
 		Public Property TilingType As TilingTypes
 		Public Property Interval As Single
 		<JsonIgnore> Public Overrides Property Y As Integer
@@ -1766,10 +1776,10 @@ Namespace Events
 		Implements IEaseEvent
 		Public Overrides ReadOnly Property Type As EventType = EventType.Move
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As NumOrExpPair?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Scale As NumOrExpPair?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Angle As INumOrExp
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Pivot As NumOrExpPair?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As RDPointE?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Scale As RDPointE?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Angle As RDExpression?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Pivot As RDPointE?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		<JsonIgnore> Public Overrides Property Y As Integer
@@ -1906,6 +1916,7 @@ Namespace Events
 		Inherits BaseBeat
 		Private _pattern As New LimitedList(Of Patterns)(6, Patterns.None)
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetRowXs
+		<JsonConverter(GetType(Converters.PatternConverter))>
 		Public Property Pattern As LimitedList(Of Patterns)
 			Get
 				Return _pattern
@@ -2013,7 +2024,7 @@ Namespace Events
 			Dim L As New List(Of Hit)
 			For i As UInteger = 0 To _Loops
 				For j As SByte = 0 To _Subdivisions - 1
-					L.Add(New Hit(Me, New RDBeat(ParentLevel.Calculator, Beat.BeatOnly + i * _Interval + _Tick + _delay + j * (_Tick / _Subdivisions)), 0))
+					L.Add(New Hit(Me, New RDBeat(Beat._calculator, Beat.BeatOnly + i * _Interval + _Tick + _delay + j * (_Tick / _Subdivisions)), 0))
 				Next
 			Next
 			Return L.AsEnumerable
@@ -2030,7 +2041,7 @@ Namespace Events
 				T.Tick = Tick
 				T.Loops = 0
 				T.Interval = 0
-				T.Beat = New RDBeat(ParentLevel.Calculator, Me.Beat.BeatOnly + i * _Interval)
+				T.Beat = New RDBeat(Beat._calculator, Me.Beat.BeatOnly + i * _Interval)
 				L.Add(T)
 			Next
 			Return L.AsEnumerable
@@ -2210,10 +2221,10 @@ Namespace Events
 	Public Class MoveRoom
 		Inherits BaseEvent
 		Implements IEaseEvent
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property RoomPosition As NumOrExpPair?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Scale As NumOrExpPair?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Angle As INumOrExp
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Pivot As NumOrExpPair?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property RoomPosition As RDPointE?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Scale As RDPointE?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Angle As RDExpression?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Pivot As RDPointE?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.MoveRoom
@@ -2268,7 +2279,7 @@ Namespace Events
 		Public Property MaskType As MaskTypes
 		Public Property AlphaMode As AlphaModes
 		Public Property SourceRoom As Byte
-		Public Property Image As List(Of Sprite)
+		Public Property Image As List(Of RDSprite)
 		Public Property Fps As UInteger
 		Public Property KeyColor As New PanelColor(False)
 		Public Property ColorCutoff As Single
@@ -2302,7 +2313,7 @@ Namespace Events
 	Public Class SetRoomPerspective
 		Inherits BaseEvent
 		Implements IEaseEvent
-		Public Property CornerPositions As New List(Of NumOrExpPair?)(4)
+		Public Property CornerPositions As New List(Of RDPointE?)(4)
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetRoomPerspective

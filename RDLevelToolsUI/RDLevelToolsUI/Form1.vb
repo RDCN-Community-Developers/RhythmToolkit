@@ -61,7 +61,7 @@ Public Class Form1
 		End If
 		ShowEvent(viewIndex)
 	End Sub
-	Public Shared Manager As New RhythmBase.Extensions.TranaslationManager(New IO.FileInfo(Application.StartupPath + "\zh-cn.json"))
+	Public Shared Manager As New RhythmBase.Utils.TranaslationManager(New IO.FileInfo(Application.StartupPath + "\zh-cn.json"))
 	Private Sub ShowEvent(index As Integer)
 		TableLayoutPanel1.Controls.Clear()
 		If Not (0 <= viewIndex And viewIndex < processingLevel.Count) Then
@@ -142,7 +142,7 @@ Public Class Form1
 					}
 					pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
 					editorControl = pNumericUpDown
-				ElseIf editorType = GetType(INumOrExp) Then
+				ElseIf editorType = GetType(RDExpression) Then
 					Dim pTextBox = New TextBox
 					pTextBox.DataBindings.Add("Text", processingEvent, p.Name)
 					editorControl = pTextBox

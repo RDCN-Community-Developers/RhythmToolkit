@@ -10,7 +10,7 @@ Imports System.Runtime.CompilerServices
 Imports RhythmBase.Exceptions
 Imports RhythmBase.Extensions
 Namespace Assets
-	Public Class Sprite
+	Public Class RDSprite
 		Private _File As String
 		<JsonIgnore> Public Property FilePath As String
 			Get
@@ -34,18 +34,19 @@ Namespace Assets
 				End If
 			End Get
 		End Property
-		<JsonIgnore> Public ReadOnly Property Preview As SKRectI?
+		<JsonIgnore> Public ReadOnly Property Preview As SKRect?
 			Get
-				Return If(RowPreviewFrame Is Nothing, New SKRectI, GetFrame(RowPreviewFrame))
+				Return If(RowPreviewFrame Is Nothing, New SKRect, GetFrame(RowPreviewFrame))
 			End Get
 		End Property
 		<JsonIgnore> Public Property Frames As Frame
 		<JsonIgnore> Public Property Freeze As New SKBitmap
 
 		<JsonIgnore> Private _isSprite As Boolean
-		Public Property Size As SKSizeI
+		Public Property Size As RDSizeNI
 		Public Property RowPreviewFrame As UInteger?
-		Public Property RowPreviewOffset As SKSizeI
+		Public Property RowPreviewOffset As RDSizeN
+		Public Property PortraitOffset As RDSizeN
 		Public Property Clips As New HashSet(Of Clip)
 
 		Public Property IsSprite As Boolean
@@ -57,15 +58,15 @@ Namespace Assets
 			End Set
 		End Property
 		Public Class Frame
-			Public ReadOnly Property Size As SKSizeI
+			Public ReadOnly Property Size As RDSizeNI
 				Get
-					Return Base.Info.Size
+					Return Base.Info.Size.ToRDSizeI
 				End Get
 			End Property
 			Public Base As SKBitmap
 			Public Glow As SKBitmap
 			Public OutLine As SKBitmap
-			Public Sub New(size As SKSizeI)
+			Public Sub New(size As RDSizeNI)
 				Me.Base = New SKBitmap(size.Width, size.Height)
 			End Sub
 			Public Sub New(filePath As String)
@@ -77,30 +78,30 @@ Namespace Assets
 		End Class
 		Public Sub New()
 		End Sub
-		Public Shared Function LoadFile(filename As String) As Sprite
+		Public Shared Function LoadFile(filename As String) As RDSprite
 			If IO.Path.GetExtension(filename) = String.Empty Then
 				Try
 					Dim setting As New JsonSerializerSettings
 					setting.Converters.Add(New Converters.SpriteConverter With {.FilePath = filename})
-					Dim result As Sprite
+					Dim result As RDSprite
 					If IO.File.Exists($"{filename}.json") Then
-						result = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText($"{filename}.json"), setting)
+						result = JsonConvert.DeserializeObject(Of RDSprite)(IO.File.ReadAllText($"{filename}.json"), setting)
 					Else
 						Dim str = $"{filename}\{IO.Path.GetFileName(filename)}.json"
-						result = JsonConvert.DeserializeObject(Of Sprite)(IO.File.ReadAllText(str), setting)
+						result = JsonConvert.DeserializeObject(Of RDSprite)(IO.File.ReadAllText(str), setting)
 					End If
 					result.IsSprite = True
 					Return result
 				Catch e As Exception
-					Throw New RhythmBaseException($"Cannot find the file: {filename + ".json"}", e)
+					Throw New FileNotFoundException($"Cannot find the file: {filename + ".json"}", e)
 				End Try
 			Else
 				Dim imgFile = SKBitmap.Decode(filename)
-				Return New Sprite With {.FilePath = filename, .Frames = New Frame(filename), .Size = imgFile.Info.Size, .RowPreviewFrame = 0, ._isSprite = False}
+				Return New RDSprite With {.FilePath = filename, .Frames = New Frame(filename), .Size = imgFile.Info.Size.ToRDSizeI, .RowPreviewFrame = 0, ._isSprite = False}
 			End If
 		End Function
 		Private Function GetFrame(index As UInteger) As SKRectI
-			Return GetFrameRect(index, Frames.Size, Size)
+			Return GetFrameRect(index, Frames.Size.ToSKSizeI, Size.ToSKSizeI)
 		End Function
 		Private Function GetFrameRect(index As UInteger, source As SKSizeI, size As SKSizeI) As SKRectI
 			Dim column As UInteger = (source.Width \ size.Width)
@@ -113,14 +114,15 @@ Namespace Assets
 							   leftTop.Y + size.Height)
 		End Function
 		Public Class Clip
-			Friend parent As Sprite
+			Friend parent As RDSprite
 			Public Property Name As String
 			Public Property [Loop] As LoopOption
 			Public Property Fps As Integer
 			Public Property LoopStart As Integer
-			Public Property PortraitOffset As SKSizeI
+			Public Property PivotOffset As RDPointN
+			Public Property PortraitOffset As RDSizeN
 			Public Property PortraitScale As Integer
-			Public Property PortraitSize As SKSizeI
+			Public Property PortraitSize As RDSizeN
 			Public Property Frames As List(Of UInteger)
 			Public Function GetFrameRect() As SKRectI()
 				Return Frames.Select(Function(i) parent.GetFrame(i)).ToArray
@@ -155,8 +157,7 @@ Namespace Assets
 
 			Dim file = path
 			Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
-			If (
-				IO.File.Exists(WithoutExtension + ".json") OrElse
+			If (IO.File.Exists(WithoutExtension + ".json") OrElse
 				(settings.WithImage AndAlso IO.File.Exists(WithoutExtension + ".png"))
 				) And Not settings.OverWrite Then
 				Throw New OverwriteNotAllowedException($"Cannot save file '{path}' because overwriting is disabled by user configuration and a file with the same name already exists.")
@@ -179,12 +180,12 @@ Namespace Assets
 	Public Class Character
 		Public ReadOnly IsCustom As Boolean
 		Public ReadOnly Character? As Characters
-		Public ReadOnly CustomCharacter As Sprite
+		Public ReadOnly CustomCharacter As RDSprite
 		Public Sub New(character As Characters)
 			IsCustom = False
 			Me.Character = character
 		End Sub
-		Public Sub New(character As Sprite)
+		Public Sub New(character As RDSprite)
 			IsCustom = True
 			Me.CustomCharacter = character
 		End Sub
@@ -192,7 +193,7 @@ Namespace Assets
 			Return If(IsCustom, CustomCharacter.Name, Character)
 		End Function
 	End Class
-	Public Class RAudio
+	Public Class RDAudio
 		Private _file As String
 		Public ReadOnly Property FilePath As String
 			Get
@@ -274,12 +275,12 @@ Namespace Extensions
 			Dim paint = New SKPaint With {.ImageFilter = shadowFilter}
 			Using output As New SKBitmap(image.Width, image.Height)
 				Using canvas As New SKCanvas(output)
-					canvas.DrawBitmap(output, New RDPointTemp, paint)
+					canvas.DrawBitmap(output, New SKPoint, paint)
 				End Using
 				Return output
 			End Using
 		End Function
-		<Extension> Public Sub DrawFrame(e As SKCanvas, frame As Assets.Sprite.Frame, p As SKPoint, [event] As Events.Tint)
+		<Extension> Public Sub DrawFrame(e As SKCanvas, frame As Assets.RDSprite.Frame, p As SKPoint, [event] As Events.Tint)
 			Select Case [event].Border
 				Case Events.Borders.Glow
 					e.DrawBitmap(frame.Glow, p, New SKPaint With {.Color = [event].BorderColor.Value})
