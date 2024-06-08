@@ -12,11 +12,12 @@
     <Authors>obugs</Authors>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RadiationTherapy</PackageProjectUrl>
-    <PackageIcon></PackageIcon>
+    <PackageIcon>RadiationTherapy.png</PackageIcon>
     <PackageTags>Rhythm-Doctor</PackageTags>
     <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels</Description>
-    <Version>1.0.2</Version>
+    <Version>1.0.4-beta</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <ImportedNamespaces>RhythmBase.Assets=False,RhythmBase.Components=False,RhythmBase.Converters=False,RhythmBase.Events=False,RhythmBase.Exceptions=False,RhythmBase.Expressions=False,RhythmBase.Extensions=False,RhythmBase.LevelElements=False,RhythmBase.LevelElements.Conditions=False,RhythmBase.My=False,RhythmBase.Settings=False,RhythmBase.Utils=False,Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,RhythmBase=True</ImportedNamespaces>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,11 +33,30 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Include="O:\Images\sprite\RadiationTherapy.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SkiaSharp" Version="2.88.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Import Include="RhythmBase.Assets" />
+    <Import Include="RhythmBase.Components" />
+    <Import Include="RhythmBase.Converters" />
+    <Import Include="RhythmBase.Events" />
+    <Import Include="RhythmBase.Exceptions" />
+    <Import Include="RhythmBase.Expressions" />
+    <Import Include="RhythmBase.Extensions" />
+    <Import Include="RhythmBase.LevelElements" />
+    <Import Include="RhythmBase.LevelElements.Conditions" />
+    <Import Include="RhythmBase.My" />
+    <Import Include="RhythmBase.Settings" />
+    <Import Include="RhythmBase.Utils" />
   </ItemGroup>
 
 </Project>

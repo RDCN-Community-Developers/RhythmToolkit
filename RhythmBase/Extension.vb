@@ -1,8 +1,4 @@
 ﻿Imports System.Runtime.CompilerServices
-Imports RhythmBase.Events
-Imports RhythmBase.Extensions
-Imports RhythmBase.LevelElements
-Imports RhythmBase.Components
 Namespace Extensions
     Public Module Extension
         Private Function GetRange(e As OrderedEventCollection, index As Index) As (start As Single, [end] As Single)
@@ -23,6 +19,9 @@ Namespace Extensions
                 If(range.End.IsFromEnd,
                 lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
                 firstEvent.Beat._calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
+        End Function
+        <Extension> Public Function NullableEquals(e As Single?, obj As Single?) As Boolean
+            Return (e.HasValue And obj.HasValue AndAlso e.Value = obj.Value) OrElse (Not e.HasValue AndAlso Not obj.HasValue)
         End Function
         <Extension> Public Function IsNullOrEmpty(e As String) As Boolean
             Return e Is Nothing OrElse e.Length = 0

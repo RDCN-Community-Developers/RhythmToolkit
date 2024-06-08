@@ -1,6 +1,4 @@
-﻿Imports RhythmBase.Components
-
-Namespace Settings
+﻿Namespace Settings
     Public Class LevelInputSettings
         ''' <summary>
         ''' 优先使用关卡内 Id
@@ -9,6 +7,7 @@ Namespace Settings
     End Class
     Public Class LevelOutputSettings
         Public OverWrite As Boolean = False
+        Public Indented As Boolean = True
     End Class
     Public Class SpriteOutputSettings
         Public Sort As Boolean = False

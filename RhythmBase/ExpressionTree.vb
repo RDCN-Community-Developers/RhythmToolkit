@@ -2,8 +2,6 @@
 Imports System.Linq.Expressions
 Imports System.Runtime.CompilerServices
 Imports System.Text.RegularExpressions
-Imports RhythmBase.LevelElements
-Imports RhythmBase.Components
 Namespace Expressions
 	Public Module ExpressionTree
 		<Extension>

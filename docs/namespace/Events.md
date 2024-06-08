@@ -89,6 +89,7 @@
 - Stutter
 - TagAction
 - TextExplosion
+- Tile
 - Tint
 - TintRows
   

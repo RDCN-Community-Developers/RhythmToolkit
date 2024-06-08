@@ -1,6 +1,36 @@
 ## [返回](../RadiationTherapy.md)  
-# 更新日志  
-  
+# 更新日志 
+
+### 2024/06/08
+
+- 类型 [LevelOutputSettings](class/LevelOutputSettings.md) 添加了 Indented 字段，用于控制缩进。
+- 修复了 [PlayExpression](namespace/Events.md) 事件表情总是为空的问题。
+
+### 2024/06/06
+
+**Nuget 版本 `1.0.3`**
+- 将表达式部分移动到了 RhythmBase (测试阶段).
+- 将几乎所有点与表达式的内容都替换为了
+    - [RDExpression](class/RDExpression.md)
+    - [RDPointN](class/RDPointN.md)*
+    - [RDPointNI]()
+    - [RDPoint]()
+    - [RDPointI]()
+    - [RDPointE]()
+    - [RDSizeN]()
+    - [RDSizeNI]()
+    - [RDSize]()
+    - [RDSizeI]()
+    - [RDSizeE]() 等。
+- 适配了版本 60。
+- [RDBeat]() 做了很多修改。
+- 类型 [Audio](class/Audio.md) 现在有初始值了。
+- 优化了类型 [LimitedList]()。
+- 类型 [OrderedEventCollection]() 添加了 105 个扩展方法及其重载。
+- 类型 [Decoration]() 和 [Row]() 的 [CreateChildren\<T\>(item)]() 方法已弃用。
+- 类型 [RDLevel]() 添加了 [ToJObject()]() 方法。
+- 类型 [BaseEvent]() 移除了属性 [ParentLevel]()。
+
 ### 2024/05/30
 
 - 添加了 [OrderedEventCollection]() 类型，并使 [`OrderedEventCollection<T>`](class/OrderedEventCollection.md) 继承于此类型。
