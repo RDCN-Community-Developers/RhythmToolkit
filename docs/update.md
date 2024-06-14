@@ -3,12 +3,15 @@
 
 ### 2024/06/08
 
+**`1.0.4-beta`**
+
 - 类型 [LevelOutputSettings](class/LevelOutputSettings.md) 添加了 Indented 字段，用于控制缩进。
 - 修复了 [PlayExpression](namespace/Events.md) 事件表情总是为空的问题。
 
 ### 2024/06/06
 
-**Nuget 版本 `1.0.3`**
+**`1.0.3`**
+
 - 将表达式部分移动到了 RhythmBase (测试阶段).
 - 将几乎所有点与表达式的内容都替换为了
     - [RDExpression](class/RDExpression.md)
@@ -22,7 +25,7 @@
     - [RDSize]()
     - [RDSizeI]()
     - [RDSizeE]() 等。
-- 适配了版本 60。
+- 适配了关卡版本 60。
 - [RDBeat]() 做了很多修改。
 - 类型 [Audio](class/Audio.md) 现在有初始值了。
 - 优化了类型 [LimitedList]()。

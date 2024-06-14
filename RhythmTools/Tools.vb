@@ -74,9 +74,11 @@ Namespace Tools
             Next
             Level.AddRange(Adds)
         End Sub
+#If DEBUG Then
         Public Sub CreateTags(ParamArray names() As String)
 
         End Sub
+#End If
         ''' <summary>
         ''' 批量添加标签
         ''' </summary>
@@ -94,6 +96,7 @@ Namespace Tools
                 Next
             End If
         End Sub
+#If DEBUG Then
         ''' <summary>
         ''' [未完成] 缩放时间轴
         ''' </summary>
@@ -101,6 +104,8 @@ Namespace Tools
         Public Sub ZoomTime(magnification As Single)
 
         End Sub
+#End If
+#If DEBUG Then
         ''' <summary>
         ''' [未完成] 缩放精灵图
         ''' </summary>
@@ -113,6 +118,7 @@ Namespace Tools
             '	End If
             'Next
         End Sub
+#End If
         ''' <summary>
         ''' 在七拍子的每一拍按键！
         ''' </summary>
@@ -133,46 +139,51 @@ Namespace Tools
         ''' <summary>
         ''' [未完成] 拆分轨道为精灵图
         ''' </summary>
-        Public Sub SplitRow(Character As RDSprite, ClassicBeat As RDSprite, Heart As RDSprite, beatSettings As SplitRowSettings, rows As IEnumerable(Of Row), startBeat As Integer, endBeat As Integer, ShowRow As Boolean)
+        Public Sub SplitRow(Character As RDSprite, ClassicBeat As RDSprite, Heart As RDSprite, beatSettings As SplitRowSettings, rows As IEnumerable(Of Row), startBeat As RDBeat, endBeat As RDBeat, ShowRow As Boolean)
 
             '对于每个七拍轨道
             For Each row In rows.Where(Function(i) i.RowType = RowType.Classic)
                 Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
                 Dim Decos As New List(Of (deco As Decoration, left As Double)) From {
-                    (Level.CreateDecoration(row.Rooms, Character,,), 0),
-                    (Level.CreateDecoration(row.Rooms, ClassicBeat,,), 29),
-                    (Level.CreateDecoration(row.Rooms, ClassicBeat,,), 53),
-                    (Level.CreateDecoration(row.Rooms, ClassicBeat,,), 77),
-                    (Level.CreateDecoration(row.Rooms, ClassicBeat,,), 101),
-                    (Level.CreateDecoration(row.Rooms, ClassicBeat,,), 125),
-                    (Level.CreateDecoration(row.Rooms, ClassicBeat,,), 149),
-                    (Level.CreateDecoration(row.Rooms, ClassicBeat,,), 214),
-                    (Level.CreateDecoration(row.Rooms, Heart,,), 282)
+                    (Level.CreateDecoration(row.Rooms, Character), 0),
+                    (Level.CreateDecoration(row.Rooms, ClassicBeat), 29),
+                    (Level.CreateDecoration(row.Rooms, ClassicBeat), 53),
+                    (Level.CreateDecoration(row.Rooms, ClassicBeat), 77),
+                    (Level.CreateDecoration(row.Rooms, ClassicBeat), 101),
+                    (Level.CreateDecoration(row.Rooms, ClassicBeat), 125),
+                    (Level.CreateDecoration(row.Rooms, ClassicBeat), 149),
+                    (Level.CreateDecoration(row.Rooms, ClassicBeat), 214),
+                    (Level.CreateDecoration(row.Rooms, Heart), 282)
                 }
 
                 '精灵初始化
                 For Each item In Decos
                     item.deco.Visible = False
-                    Dim visible As SetVisible = item.deco.CreateChildren(Of SetVisible)(1)
+                    Dim visible As New SetVisible With {.Beat = Level.DefaultBeat}
+                    item.deco.Add(visible)
                     visible.Visible = Not row.HideAtStart
                 Next
 
                 '精灵轨道初始位置
                 For Each part In Decos
                     Dim tempEvent = New MoveRow With {.RowPosition = New RDPoint(35 / 352 * 100, 50), .Pivot = 0}
-                    Dim CharEvent As Move = part.deco.CreateChildren(Of Move)(1)
-                    CharEvent.Position = New RDPoint(35 / 352 * 100, 50)
-                    CharEvent.Scale = Nothing
-                    CharEvent.Angle = Nothing
-                    CharEvent.Pivot = New RDPoint(((tempEvent.Pivot * 282) - (part.left - part.deco.Size.Width / 2)) * 100 / part.deco.Size.Width, 50)
-                    CharEvent.Ease = EaseType.Linear
-                    CharEvent.Duration = 0
+                    Dim CharEvent As New Move With {
+                        .Beat = Level.DefaultBeat,
+                        .Position = New RDPoint(35 / 352 * 100, 50),
+                        .Scale = Nothing,
+                        .Angle = Nothing,
+                        .Pivot = New RDPoint(((tempEvent.Pivot * 282) - (part.left - part.deco.Size.Width / 2)) * 100 / part.deco.Size.Width, 50),
+                        .Ease = EaseType.Linear,
+                        .Duration = 0
+                    }
+                    part.deco.Add(CharEvent)
                 Next
 
                 '精灵初始表情
                 Dim tempRowXs As New SetRowXs
                 For i = 0 To 5
-                    Dim tempExpression = Decos(i + 1).deco.CreateChildren(Of PlayAnimation)(1)
+                    Dim tempExpression As New PlayAnimation With {.Beat = Level.DefaultBeat}
+                    Decos(i + 1).deco.Add(tempExpression)
                     tempExpression.Expression = beatSettings.Line
                 Next
 
@@ -183,14 +194,16 @@ Namespace Tools
                         Case EventType.HideRow
                             For Each part In Decos
                                 Dim tempEvent = CType(item, HideRow)
-                                Dim CharEvent As SetVisible = part.deco.CreateChildren(Of SetVisible)(item.Beat)
+                                Dim CharEvent As New SetVisible With {.Beat = item.Beat}
+                                part.deco.Add(CharEvent)
                                 CharEvent.Visible = (tempEvent.Show = HideRow.Shows.Visible) Or (tempEvent.Show = HideRow.Shows.OnlyCharacter)
                             Next
                             item.Active = ShowRow
                         Case EventType.MoveRow
                             For Each part In Decos
                                 Dim tempEvent = CType(item, MoveRow)
-                                Dim CharEvent As Move = part.deco.CreateChildren(Of Move)(item.Beat)
+                                Dim CharEvent As New Move With {.Beat = item.Beat}
+                                part.deco.Add(CharEvent)
                                 If tempEvent.CustomPosition Then
                                     Select Case tempEvent.Target
                                         Case MoveRow.Targets.WholeRow
@@ -217,26 +230,31 @@ Namespace Tools
                         Case EventType.TintRows
                             For Each part In Decos
                                 Dim tempEvent = CType(item, TintRows)
-                                Dim CharEvent As Tint = part.deco.CreateChildren(Of Tint)(item.Beat)
-                                CharEvent.Border = tempEvent.Border
-                                CharEvent.BorderColor = tempEvent.BorderColor
-                                CharEvent.Tint = tempEvent.Tint
-                                CharEvent.Opacity = tempEvent.Opacity
-                                CharEvent.Ease = tempEvent.Ease
-                                CharEvent.Duration = tempEvent.Duration
+                                Dim CharEvent As New Tint With {
+                                    .Beat = item.Beat,
+                                    .Border = tempEvent.Border,
+                                    .BorderColor = tempEvent.BorderColor,
+                                    .Tint = tempEvent.Tint,
+                                    .Opacity = tempEvent.Opacity,
+                                    .Ease = tempEvent.Ease,
+                                    .Duration = tempEvent.Duration
+                                }
+                                part.deco.Add(CharEvent)
                             Next
                             item.Active = ShowRow
                         Case EventType.PlayAnimation
                             Dim part = Decos(0)
                             Dim tempEvent = CType(item, PlayExpression)
-                            Dim charEvent As PlayAnimation = part.deco.CreateChildren(Of PlayAnimation)(item.Beat)
+                            Dim charEvent As New PlayAnimation With {.Beat = item.Beat}
+                            part.deco.Add(charEvent)
                             charEvent.Expression = tempEvent.Expression
                             item.Active = ShowRow
                         Case EventType.SetRowXs
                             Dim tempEvent = CType(item, SetRowXs)
                             For i = 0 To 5
                                 If tempEvent.Pattern(i) <> tempRowXs.Pattern(i) Then
-                                    Dim tempAnimation = Decos(i + 1).deco.CreateChildren(Of PlayAnimation)(tempEvent.Beat)
+                                    Dim tempAnimation As New PlayAnimation With {.Beat = tempEvent.Beat}
+                                    Decos(i + 1).deco.Add(tempAnimation)
                                     '	tempAnimation.Expression =
                                 End If
                             Next
@@ -306,9 +324,14 @@ Namespace Tools
         ''' <param name="count">个数</param>
         ''' <param name="depth">精灵深度</param>
         ''' <param name="visible">精灵的初始可见性</param>
-        Public Sub AddLotsOfDecos(room As Rooms, sprite As RDSprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
+        Public Sub AddLotsOfDecos(room As RDSingleRoom, sprite As RDSprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
             For i As UInteger = 0 To count
-                Level.CreateDecoration(room, sprite, depth, visible)
+                Dim s = Level.CreateDecoration(room)
+                With s
+                    .File = sprite
+                    .Depth = depth
+                    .Visible = visible
+                End With
             Next
         End Sub
         ''' <summary>
@@ -332,7 +355,7 @@ Namespace Tools
                 item.Beat += offset
             Next
             If offset > 0 Then
-                Level.Add(New SetCrotchetsPerBar(0, cpb, 1))
+                Level.Add(New SetCrotchetsPerBar() With{.CrotchetsPerBar=cpb})
             End If
         End Sub
         ''' <summary>

@@ -196,41 +196,43 @@ foreach (Decoration decoration in decorations)
 - `AddFreetime.Pulse`
   
 ```CS  
-using RhythmBase.LevelElements;  
-using RhythmBase.Events;  
-using System.Collections.Generic;  
-  
 //构造一个列表以存储拆分后的七拍  
-List<BaseBeat> beats = [];  
-  
+List<BaseBeat> beats = [];
+
 //将所有七拍拆分后的自由拍副本存储到列表  
-foreach(AddClassicBeat beat in rdlevel.Where<AddClassicBeat>())  
-{  
-    beats.AddRange(beat.Split());  
-    beat.Active = false;  
-}  
-  
+foreach (AddClassicBeat beat in rdlevel.Where<AddClassicBeat>())
+{
+	//存储拆分后的自由拍
+	beats.AddRange(beat.Split());
+
+	//使原来的七拍不被激活
+	beat.Active = false;
+}
+
 //在关卡内以每个自由拍的基础属性创建自由拍头  
-foreach(BaseBeat beat in beats)  
-{  
-    AddFreeTimeBeat hit = beat.Clone<AddFreeTimeBeat>();  
-    hit.Pulse = 7;  
+foreach (BaseBeat beat in beats)
+{
+	//克隆拆分的七拍子为新的自由拍头
+	AddFreeTimeBeat hit = beat.Clone<AddFreeTimeBeat>();
+    
+	//让自由拍头成为第七拍（按拍）
+	hit.Pulse = 7;
+
+	/*  
+	以上两句等效于  
   
-    /*  
-    以上两句等效于  
-  
-    AddFreeTimeBeat hit = new() {  
-        Beat = beat.Beat,   
-        Y = beat.Y,   
-        If = beat.If,   
-        Tag = beat.Tag,   
-        Active = beat.Active,   
-        Pulse = 7  
-    };  
-    beat.Parent.Add(hit);  
-    */  
-  
-}  
+	AddFreeTimeBeat hit = new() {  
+		Beat = beat.Beat,   
+		Y = beat.Y,   
+		If = beat.If,   
+		Tag = beat.Tag,   
+		Active = beat.Active,   
+		Pulse = 7  
+	};  
+	beat.Parent.Add(hit);  
+	*/
+
+}
 ```  
   
 ---  

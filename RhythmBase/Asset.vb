@@ -173,7 +173,7 @@ To correct this, change the path or filename or change the OverWrite property of
             Return $"{If(IsSprite, ".json", IO.Path.GetExtension(FilePath))}, {Name}"
         End Function
     End Class
-    Public Class Character
+    Public Structure RDCharacter
         Public ReadOnly IsCustom As Boolean
         Public ReadOnly Character? As Characters
         Public ReadOnly CustomCharacter As RDSprite
@@ -183,14 +183,14 @@ To correct this, change the path or filename or change the OverWrite property of
         End Sub
         Public Sub New(character As RDSprite)
             IsCustom = True
-            Me.CustomCharacter = character
+            CustomCharacter = character
         End Sub
         Public Overrides Function ToString() As String
             Return If(IsCustom, CustomCharacter.Name, Character)
         End Function
-    End Class
+    End Structure
     Public Class RDAudio
-        Private _file As String
+        Private ReadOnly _file As String
         Public ReadOnly Property FilePath As String
             Get
                 Return _file

@@ -7,50 +7,67 @@ Imports Newtonsoft.Json.Linq
 '' </summary>
 Namespace Utils
     Public Module [Global]
-        Public ReadOnly RowTypes As IEnumerable(Of EventType) = ConvertToEnums(Of BaseRowAction)()
-        Public ReadOnly DecorationTypes As IEnumerable(Of EventType) = ConvertToEnums(Of BaseDecorationAction)()
+        Private ReadOnly ETypes As List(Of Type) =
+            GetType(BaseEvent).Assembly.GetTypes() _
+                .Where(Function(i) i.IsAssignableTo(GetType(BaseEvent))).ToList
+        Public ReadOnly TypesToEnum As Dictionary(Of Type, EventType()) =
+            ETypes.ToDictionary(Function(i) i,
+                          Function(i) ETypes _
+                              .Where(Function(j) (j = i OrElse j.IsAssignableTo(i)) AndAlso Not j.IsAbstract) _
+                              .Select(Function(j) ConvertToEnum(j)) _
+                              .ToArray)
+        Public ReadOnly EnumToType As Dictionary(Of EventType, Type) =
+            [Enum].GetValues(Of EventType).ToDictionary(Function(i) i, Function(i) i.ConvertToType)
+        Public ReadOnly RowTypes As List(Of EventType) =
+            ConvertToEnums(Of BaseRowAction)().ToList
+        Public ReadOnly DecorationTypes As List(Of EventType) =
+            ConvertToEnums(Of BaseDecorationAction)().ToList
     End Module
     Public Class BeatCalculator
         Friend ReadOnly Collection As RDLevel
+        Private _BPMList As List(Of BaseBeatsPerMinute)
+        Private _CPBList As List(Of SetCrotchetsPerBar)
         Public Sub New(CPBCollection As IEnumerable(Of SetCrotchetsPerBar), BPMCollection As IEnumerable(Of BaseBeatsPerMinute))
-            Collection = New RDLevel
-            Collection.AddRange(CPBCollection)
-            Collection.AddRange(BPMCollection)
-            Initialize()
+            _BPMList = BPMCollection.OrderBy(Function(i) i.Beat).ToList
+            _CPBList = CPBCollection.OrderBy(Function(i) i.Beat).ToList
+            'Initialize()
         End Sub
         Public Sub New(level As RDLevel)
             Collection = level
-            Initialize()
+            _BPMList = level.Where(Of BaseBeatsPerMinute).ToList
+            _CPBList = level.Where(Of SetCrotchetsPerBar).ToList
+            'Initialize()
         End Sub
         Public Shared Sub Initialize(CPBs As IEnumerable(Of SetCrotchetsPerBar))
-            For Each item In CPBs
-                item.Bar = item.Beat.BarBeat.bar
-            Next
+            'For Each item In CPBs
+            '    item.Bar = item.Beat.BarBeat.bar
+            'Next
         End Sub
-        Public Sub Initialize()
-            Dim l = Collection.Where(Of SetCrotchetsPerBar)
-            If l.Any Then
-                l(0).Bar = l(0).Beat.BarBeat.bar
-                Dim CPB = l(0).CrotchetsPerBar
-                For i = 1 To l.Count - 1
-                    l(i).Bar = l(i).Beat.BarBeat.bar
-                Next
-            End If
+        Public Sub Refresh()
+            _BPMList = Collection.Where(Of BaseBeatsPerMinute).ToList
+            _CPBList = Collection.Where(Of SetCrotchetsPerBar).ToList
+            'If _CPBList.Count <> 0 Then
+            '    _CPBList(0).Bar = _CPBList(0).Beat.BarBeat.bar
+            '    Dim CPB = _CPBList(0).CrotchetsPerBar
+            '    For Each item In _CPBList.Skip(1)
+            '        item.Bar = item.Beat.BarBeat.bar
+            '    Next
+            'End If
         End Sub
         Public Function BarBeat_BeatOnly(bar As UInteger, beat As Single) As Single
-            Return BarBeat_BeatOnly(bar, beat, Collection.Where(Of SetCrotchetsPerBar))
+            Return BarBeat_BeatOnly(bar, beat, _CPBList)
         End Function
         Public Function BarBeat_Time(bar As UInteger, beat As Single) As TimeSpan
             Return BeatOnly_Time(BarBeat_BeatOnly(bar, beat))
         End Function
         Public Function BeatOnly_BarBeat(beat As Single) As (bar As UInteger, beat As Single)
-            Return BeatOnly_BarBeat(beat, Collection.Where(Of SetCrotchetsPerBar))
+            Return BeatOnly_BarBeat(beat, _CPBList)
         End Function
         Public Function BeatOnly_Time(beatOnly As Single) As TimeSpan
-            Return BeatOnly_Time(beatOnly, Collection.Where(Of BaseBeatsPerMinute))
+            Return BeatOnly_Time(beatOnly, _BPMList)
         End Function
         Public Function Time_BeatOnly(timeSpan As TimeSpan) As Single
-            Return Time_BeatOnly(timeSpan, Collection.Where(Of BaseBeatsPerMinute))
+            Return Time_BeatOnly(timeSpan, _BPMList)
         End Function
         Public Function Time_BarBeat(timeSpan As TimeSpan) As (bar As UInteger, beat As Single)
             Return BeatOnly_BarBeat(Time_BeatOnly(timeSpan))
@@ -63,7 +80,7 @@ Namespace Utils
         End Function
         Public Shared Function BarBeat_BeatOnly(bar As UInteger, beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As Single
             Dim foreCPB As (BeatOnly As Single, Bar As UInteger, CPB As UInteger) = (1, 1, 8)
-            Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Bar < bar)
+            Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Beat.BarBeat.bar < bar)
             If LastCPB IsNot Nothing Then
                 foreCPB = (LastCPB.Beat.BeatOnly, LastCPB.Beat.BarBeat.bar, LastCPB.CrotchetsPerBar)
             End If
@@ -72,12 +89,12 @@ Namespace Utils
         End Function
         Public Shared Function BeatOnly_BarBeat(beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As (bar As UInteger, beat As Single)
             Dim foreCPB As (BeatOnly As Single, Bar As UInteger, CPB As UInteger) = (1, 1, 8)
-            Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Beat < beat)
+            Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Beat.BeatOnly < beat)
             If LastCPB IsNot Nothing Then
                 foreCPB = (LastCPB.Beat.BeatOnly, LastCPB.Beat.BarBeat.bar, LastCPB.CrotchetsPerBar)
             End If
-            Dim result = (foreCPB.Bar + Math.Floor((beat - foreCPB.BeatOnly) / foreCPB.CPB),
-(beat - foreCPB.BeatOnly) Mod foreCPB.CPB + 1)
+            Dim result = (CUInt(foreCPB.Bar + Math.Floor((beat - foreCPB.BeatOnly) / foreCPB.CPB)),
+                (beat - foreCPB.BeatOnly) Mod foreCPB.CPB + 1)
             Return result
         End Function
         Private Shared Function BeatOnly_Time(beatOnly As Single, BPMCollection As IEnumerable(Of BaseBeatsPerMinute)) As TimeSpan
@@ -119,7 +136,7 @@ BeatOnly_Time(fore.BeatOnly, BPMCollection)
             Next
             beatOnly += (
 timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
-).TotalMinutes * foreBPM.BeatsPerMinute
+).TotalMinutes * fore.BPM
             Return beatOnly
         End Function
         Public Function BeatOf(beatOnly As Single) As RDBeat
@@ -132,10 +149,10 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
             Return New RDBeat(Me, timeSpan)
         End Function
         Public Function BeatsPerMinuteOf(beat As RDBeat) As Single
-            Return If(Collection.LastOrDefault(Of BaseBeatsPerMinute)(Function(i) i.Beat < beat)?.BeatsPerMinute, 100)
+            Return If(_BPMList.LastOrDefault(Function(i) i.Beat < beat)?.BeatsPerMinute, 100)
         End Function
         Public Function CrotchetsPerBarOf(beat As RDBeat) As Single
-            Return If(Collection.LastOrDefault(Of SetCrotchetsPerBar)(Function(i) i.Beat < beat)?.CrotchetsPerBar, 8)
+            Return If(_CPBList.LastOrDefault(Function(i) i.Beat < beat)?.CrotchetsPerBar, 8)
         End Function
     End Class
     Public Module Others
@@ -169,24 +186,29 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
     End Module
     Public Module TypeConvert
         Public Function ConvertToEnum(type As Type) As EventType
-            Dim result As EventType
-            If [Enum].TryParse(type.Name, result) Then
-                Return result
+            If TypesToEnum Is Nothing Then
+                Dim result As EventType
+                If [Enum].TryParse(type.Name, result) Then
+                    Return result
+                End If
+                Throw New RhythmBaseException($"Illegal Type: {type.Name}.")
+            Else
+                Try
+                    Return TypesToEnum(type).Single
+                Catch ex As Exception
+                    Throw New RhythmBaseException($"Illegal Type: {type.Name}.")
+                End Try
             End If
-            Throw New Exceptions.RhythmBaseException($"Illegal Type: {type.Name}.")
         End Function
         Public Function ConvertToEnum(Of T As {BaseEvent, New})() As EventType
-            Dim result As EventType
-            If [Enum].TryParse(GetType(T).Name, result) Then
-                Return result
-            End If
-            Throw New Exceptions.RhythmBaseException($"Illegal Type: {GetType(T).Name}.")
+            Return ConvertToEnum(GetType(T))
         End Function
         Public Function ConvertToEnums(Of T As BaseEvent)() As EventType()
-            Dim types = Assembly.GetAssembly(GetType(T)).GetTypes()
-            Return types.Where(Function(i) i.Namespace = GetType(T).Namespace AndAlso
-(i = GetType(T) OrElse i.IsSubclassOf(GetType(T))) AndAlso
-Not i.IsAbstract).Select(Function(i) ConvertToEnum(i)).ToArray
+            Try
+                Return TypesToEnum(GetType(T))
+            Catch ex As Exception
+                Throw New RhythmBaseException($"Illegal Type: {GetType(T)}.")
+            End Try
         End Function
         Public Function ConvertToType(type As String) As Type
             Dim result As EventType
@@ -197,11 +219,19 @@ Not i.IsAbstract).Select(Function(i) ConvertToEnum(i)).ToArray
         End Function
         <Extension>
         Public Function ConvertToType(type As EventType) As Type
-            Dim result = System.Type.GetType($"{GetType(BaseEvent).Namespace}.{type}")
-            If result Is Nothing Then
-                Throw New Exceptions.RhythmBaseException($"Illegal Type: {type}.")
+            If EnumToType Is Nothing Then
+                Dim result = System.Type.GetType($"{GetType(BaseEvent).Namespace}.{type}")
+                If result Is Nothing Then
+                    Throw New RhythmBaseException($"Illegal Type: {type}.")
+                End If
+                Return result
+            Else
+                Try
+                    Return EnumToType(type)
+                Catch ex As Exception
+                    Throw New RhythmBaseException($"Illegal Type: {type}.")
+                End Try
             End If
-            Return result
         End Function
     End Module
     Public Class TranaslationManager
