@@ -1,7 +1,6 @@
 ﻿Imports System.Data
 Imports System.IO
 Imports System.Runtime.CompilerServices
-Imports System.Xml
 Imports Newtonsoft.Json
 Imports SkiaSharp
 Namespace Assets
@@ -73,11 +72,33 @@ Namespace Assets
         End Class
         Public Sub New()
         End Sub
+        'Public Sub New(filename As String)
+        '    If IO.Path.GetExtension(filename) = String.Empty Then
+        '        Try
+        '            Dim setting As New JsonSerializerSettings
+        '            setting.Converters.Add(New Converters.SpriteConverter With {.FilePath = filename})
+        '            Dim result As RDSprite
+        '            If IO.File.Exists($"{filename}.json") Then
+        '                result = JsonConvert.DeserializeObject(Of RDSprite)(IO.File.ReadAllText($"{filename}.json"), setting)
+        '            Else
+        '                Dim str = $"{filename}\{IO.Path.GetFileName(filename)}.json"
+        '                result = JsonConvert.DeserializeObject(Of RDSprite)(IO.File.ReadAllText(str), setting)
+        '            End If
+        '            result.IsSprite = True
+        '            Return result
+        '        Catch e As Exception
+        '            Throw New FileNotFoundException($"Cannot find the file: {filename + ".json"}", e)
+        '        End Try
+        '    Else
+        '        Dim imgFile = SKBitmap.Decode(filename)
+        '        Return New RDSprite With {.FilePath = filename, .Frames = New Frame(filename), .Size = imgFile.Info.Size.ToRDSizeI, .RowPreviewFrame = 0, ._isSprite = False}
+        '    End If
+        'End Sub
         Public Shared Function LoadFile(filename As String) As RDSprite
             If IO.Path.GetExtension(filename) = String.Empty Then
                 Try
                     Dim setting As New JsonSerializerSettings
-                    setting.Converters.Add(New Converters.SpriteConverter With {.FilePath = filename})
+                    setting.Converters.Add(New SpriteConverter With {.FilePath = filename})
                     Dim result As RDSprite
                     If IO.File.Exists($"{filename}.json") Then
                         result = JsonConvert.DeserializeObject(Of RDSprite)(IO.File.ReadAllText($"{filename}.json"), setting)

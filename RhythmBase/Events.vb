@@ -404,7 +404,7 @@ Namespace Events
 	End Class
 	Public Class SetCrotchetsPerBar
 		Inherits BaseEvent
-		Private _visualBeatMultiplier As Single = 1
+		Private _visualBeatMultiplier As Single = 0
 		Private _crotchetsPerBar As UInteger = 7
 		Public Overrides Property Beat As RDBeat
 			Get
@@ -1394,6 +1394,7 @@ Namespace Events
 	Public Class ChangePlayersRows
 		Inherits BaseEvent
 		Enum CpuType
+			None
 			Otto
 			Ian
 			Paige

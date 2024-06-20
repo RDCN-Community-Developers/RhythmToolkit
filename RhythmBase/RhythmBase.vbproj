@@ -4,6 +4,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>RhythmBase</RootNamespace>
     <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>16.9</LangVersion>
     <AssemblyVersion>0.3.0.2</AssemblyVersion>
     <FileVersion>0.3.0.2</FileVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -15,7 +16,7 @@
     <PackageIcon>RadiationTherapy.png</PackageIcon>
     <PackageTags>Rhythm-Doctor</PackageTags>
     <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels</Description>
-    <Version>1.0.4-beta</Version>
+    <Version>1.0.5-beta</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <ImportedNamespaces>RhythmBase.Assets=False,RhythmBase.Components=False,RhythmBase.Converters=False,RhythmBase.Events=False,RhythmBase.Exceptions=False,RhythmBase.Expressions=False,RhythmBase.Extensions=False,RhythmBase.LevelElements=False,RhythmBase.LevelElements.Conditions=False,RhythmBase.My=False,RhythmBase.Settings=False,RhythmBase.Utils=False,Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,RhythmBase=True</ImportedNamespaces>
   </PropertyGroup>

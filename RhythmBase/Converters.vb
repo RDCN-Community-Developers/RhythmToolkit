@@ -157,6 +157,11 @@ Namespace Converters
 				.Add(New ColorConverter)
 			End With
 
+			Dim Mods = J("settings")("mods")
+			If Mods.Type = JTokenType.String Then
+				J("settings")("mods") = New JArray(Mods)
+			End If
+
 			Dim Level As New RDLevel With {.Settings = J("settings").ToObject(Of LevelElements.Settings)(SettingsSerializer)}
 			If Level.Settings.Version < 55 Then
 				Throw New RhythmBaseException($"Might not support. The version {Level.Settings.Version} is too low. Save this level with the latest version of the game to update the level version.")

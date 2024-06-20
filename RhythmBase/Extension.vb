@@ -15,7 +15,7 @@ Namespace Extensions
 			Dim lastEvent = e.Last
 			Return (If(range.Start.IsFromEnd,
 				lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
-				firstEvent.Beat._calculator.BarBeat_BeatOnly(range.Start.Value, 1)),
+				firstEvent.Beat._calculator.BarBeat_BeatOnly(Math.Max(range.Start.Value, 1), 1)),
 				If(range.End.IsFromEnd,
 				lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
 				firstEvent.Beat._calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))

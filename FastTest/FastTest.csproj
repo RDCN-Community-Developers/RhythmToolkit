@@ -8,10 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RhythmAnimation\RhythmAnimation.vbproj" />
+    <Compile Remove="autoplay.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
-    <ProjectReference Include="..\RhythmEdega\RhythmHospital.csproj" />
-    <ProjectReference Include="..\RhythmTools\RhythmAddition.vbproj" />
   </ItemGroup>
 
 </Project>

@@ -373,3 +373,4 @@ FodyWeavers.xsd
 /RhythmBaseAnalyzer/RhythmBaseAnalyzer.Package/RhythmBaseAnalyzer.Package.csproj
 /RhythmBaseAnalyzer/RhythmBaseAnalyzer.Vsix/RhythmBaseAnalyzer.Vsix.csproj
 /FastTest/Tests.cs
+/FastTest/autoplay.cs

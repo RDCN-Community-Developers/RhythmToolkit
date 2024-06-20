@@ -126,14 +126,14 @@ Public Class Form1
 					}
 					pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
 					editorControl = pNumericUpDown
-				ElseIf p.Name = NameOf(BaseBeat.Beat) Then
-					Dim pNumericUpDown = New NumericUpDown With {
-						.DecimalPlaces = 2,
-						.Minimum = 1,
-						.Maximum = 32767
-					}
-					pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
-					editorControl = pNumericUpDown
+					'ElseIf p.Name = NameOf(BaseBeat.Beat) Then
+					'	Dim pNumericUpDown = New NumericUpDown With {
+					'		.DecimalPlaces = 2,
+					'		.Minimum = 1,
+					'		.Maximum = 32767
+					'	}
+					'	pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
+					'	editorControl = pNumericUpDown
 				ElseIf editorType = GetType(Single) Then
 					Dim pNumericUpDown = New NumericUpDown With {
 						.DecimalPlaces = 2,
