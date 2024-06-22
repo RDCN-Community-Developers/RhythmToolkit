@@ -2,7 +2,10 @@
 Imports Newtonsoft.Json
 #Disable Warning CA1812
 Namespace Components
-    <JsonConverter(GetType(Converters.RDPointNIConverter))>
+    ''' <summary>
+    ''' A point whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="integer"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDPointNI
         Implements IEquatable(Of RDPointNI)
         Public Sub New(sz As RDSizeI)
@@ -72,7 +75,10 @@ Namespace Components
             Return New RDSizeNI(p.X, p.Y)
         End Operator
     End Structure
-    <JsonConverter(GetType(Converters.RDPointNConverter))>
+    ''' <summary>
+    ''' A point whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="float"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDPointN
         Implements IEquatable(Of RDPointN)
         Public Sub New(sz As RDSizeN)
@@ -139,7 +145,10 @@ Namespace Components
             Return Not left.Equals(right)
         End Operator
     End Structure
-    <JsonConverter(GetType(Converters.RDSizeNIConverter))>
+    ''' <summary>
+    ''' A size whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="integer"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDSizeNI
         Implements IEquatable(Of RDSizeNI)
         Public Sub New(pt As RDPointNI)
@@ -220,8 +229,10 @@ Namespace Components
             Return New RDSizeN(p.Width, p.Height)
         End Operator
     End Structure
-
-    <JsonConverter(GetType(Converters.RDSizeNConverter))>
+    ''' <summary>
+    ''' A size whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="float"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDSizeN
         Implements IEquatable(Of RDSizeN)
         Public Sub New(pt As RDPointN)
@@ -286,7 +297,10 @@ Namespace Components
             Return New RDPointN(size.Width, size.Height)
         End Operator
     End Structure
-    <JsonConverter(GetType(Converters.RDPointIConverter))>
+    ''' <summary>
+    ''' A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="integer"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDPointI
         Implements IEquatable(Of RDPointI)
         Public Sub New(sz As RDSizeI)
@@ -365,7 +379,10 @@ Namespace Components
             Return New RDSizeI(p.X, p.Y)
         End Operator
     End Structure
-    <JsonConverter(GetType(Converters.RDPointConverter))>
+    ''' <summary>
+    ''' A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDPoint
         Implements IEquatable(Of RDPoint)
         Public Sub New(sz As RDSize)
@@ -437,7 +454,10 @@ Namespace Components
             Return Not left.Equals(right)
         End Operator
     End Structure
-    <JsonConverter(GetType(Converters.RDSizeIConverter))>
+    ''' <summary>
+    ''' A size whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="integer"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDSizeI
         Implements IEquatable(Of RDSizeI)
         Public Sub New(pt As RDPointI)
@@ -523,8 +543,11 @@ Namespace Components
             Return New RDSize(p.Width, p.Height)
         End Operator
     End Structure
+    ''' <summary>
+    ''' A size whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float"/>
+    ''' </summary>
 
-    <JsonConverter(GetType(Converters.RDSizeConverter))>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDSize
         Implements IEquatable(Of RDSize)
         Public Sub New(pt As RDPoint)
@@ -594,7 +617,10 @@ Namespace Components
             Return New RDPoint(size.Width, size.Height)
         End Operator
     End Structure
-    <JsonConverter(GetType(Converters.RDExpressionConverter))>
+    ''' <summary>
+    ''' An Expression
+    ''' </summary>
+    <JsonConverter(GetType(RDExpressionConverter))>
     Public Structure RDExpression
         Implements IEquatable(Of RDExpression)
         Private ReadOnly _exp As String
@@ -751,7 +777,10 @@ Namespace Components
             Return New RDExpression(v)
         End Operator
     End Structure
-    <JsonConverter(GetType(Converters.RDPointEConverter))>
+    ''' <summary>
+    ''' A point whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="RDExpression"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDPointE
         Implements IEquatable(Of RDPointE)
         Public Sub New(sz As RDSize)
@@ -903,7 +932,10 @@ X * matrix(0, 1) + Y * matrix(1, 1))
             Return New RDPointE(v)
         End Operator
     End Structure
-    <JsonConverter(GetType(Converters.RDSizeEConverter))>
+    ''' <summary>
+    ''' A size whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="RDExpression"/>
+    ''' </summary>
+    <JsonConverter(GetType(RDPointsConverter))>
     Public Structure RDSizeE
         Implements IEquatable(Of RDSizeE)
         Public Sub New(width As Single, height As Single)

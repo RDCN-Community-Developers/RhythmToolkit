@@ -18,7 +18,7 @@
     <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels</Description>
     <Version>1.0.5-beta</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <ImportedNamespaces>RhythmBase.Assets=False,RhythmBase.Components=False,RhythmBase.Converters=False,RhythmBase.Events=False,RhythmBase.Exceptions=False,RhythmBase.Expressions=False,RhythmBase.Extensions=False,RhythmBase.LevelElements=False,RhythmBase.LevelElements.Conditions=False,RhythmBase.My=False,RhythmBase.Settings=False,RhythmBase.Utils=False,Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,RhythmBase=True</ImportedNamespaces>
+    <ImportedNamespaces>RhythmBase.Assets=False,RhythmBase.Components=False,RhythmBase.False,RhythmBase.Events=False,RhythmBase.Exceptions=False,RhythmBase.Expressions=False,RhythmBase.Extensions=False,RhythmBase.LevelElements=False,RhythmBase.LevelElements.Conditions=False,RhythmBase.My=False,RhythmBase.Settings=False,RhythmBase.Utils=False,Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,RhythmBase=True</ImportedNamespaces>
   </PropertyGroup>
 
   <ItemGroup>

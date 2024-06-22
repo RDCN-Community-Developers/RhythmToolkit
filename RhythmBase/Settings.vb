@@ -1,22 +1,18 @@
 ﻿Namespace Settings
     Public Class LevelInputSettings
-        ''' <summary>
-        ''' 优先使用关卡内 Id
-        ''' </summary>
-        Public UsingIdFromFile As Boolean = True
+        Public Property PreloadAssets As Boolean = False
+        Public Property UsingIdFromFile As Boolean = True
     End Class
     Public Class LevelOutputSettings
-        Public OverWrite As Boolean = False
-        Public Indented As Boolean = True
-    End Class
-    Public Class SpriteOutputSettings
-        Public Sort As Boolean = False
-        Public OverWrite As Boolean = False
-        Public ExtraFile As Boolean = False
-        Public LimitedSize As New RDSizeNI(16384, 16384)
-        Public LimitedCount As RDPoint?
-        Public WithImage As Boolean = False
+        Public Property OverWrite As Boolean = False
+        Public Property Indented As Boolean = True
     End Class
     Public Class SpriteInputSettings
+    End Class
+    Public Class SpriteOutputSettings
+        Public Property OverWrite As Boolean = False
+        Public Property Indented As Boolean = True
+        Public Property IgnoreNullValue As Boolean = False
+        Public Property WithImage As Boolean = False
     End Class
 End Namespace

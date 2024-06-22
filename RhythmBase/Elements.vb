@@ -257,9 +257,9 @@ Namespace Components
 	Public Structure RDBeat
 		Implements IComparable(Of RDBeat)
 		Implements IEquatable(Of RDBeat)
-		Friend ReadOnly _calculator As BeatCalculator
-		Public _isBeatLoaded As Boolean
-		Public _isBarBeatLoaded As Boolean
+		Friend _calculator As BeatCalculator
+		Private _isBeatLoaded As Boolean
+		Private _isBarBeatLoaded As Boolean
 		Private _isTimeSpanLoaded As Boolean
 		Private _isBPMLoaded As Boolean
 		Private _isCPBLoaded As Boolean
@@ -373,6 +373,9 @@ Namespace Components
 				End If
 				Return False
 			End If
+		End Function
+		Public Function FromSameLevel(b As RDBeat, Optional [throw] As Boolean = False) As Boolean
+			Return FromSameLevel(Me, b, [throw])
 		End Function
 		Private Sub IfNullThrowException()
 			If IsEmpty Then
@@ -1115,7 +1118,7 @@ Namespace LevelElements
 				out.Duration = CDbl(Regex.Match(text, "[\d\.]").Value)
 				Return out
 			Else
-				Throw New RhythmBaseException("Wrong condition.")
+				Throw New RhythmBaseException($"Illegal condition: {text}.")
 			End If
 		End Function
 		Public Function Serialize() As String
@@ -1174,15 +1177,6 @@ Namespace LevelElements
 			Me.Rooms = room
 			Me._id = Me.GetHashCode
 		End Sub
-		<Obsolete("This function is obsolete and may be removed in the next release. Call Add() instead.")> Public Function CreateChildren(Of T As {BaseDecorationAction, New})(beatOnly As Single) As T
-			Throw New RhythmBaseException("This function is obsolete and may be removed in the next release. Call CreateChildren<T>(RDBeat beatOnly) instead.")
-		End Function
-		<Obsolete("This function is obsolete and may be removed in the next release. Call Add() instead.")> Public Function CreateChildren(Of T As {BaseDecorationAction, New})(beatOnly As RDBeat) As T
-			Throw New RhythmBaseException("This function is obsolete and may be removed in the next release. Call CreateChildren<T>(RDBeat beatOnly) instead.")
-		End Function
-		<Obsolete("This function is obsolete and may be removed in the next release. Call Add() instead.")> Public Function CreateChildren(Of T As {BaseDecorationAction, New})(item As T) As T
-			Throw New RhythmBaseException("This function is obsolete and may be removed in the next release. Call Add() instead.")
-		End Function
 		Public Overrides Sub Add(item As BaseDecorationAction)
 			item._parent = Me
 			Parent.Add(item)
@@ -1197,7 +1191,7 @@ Namespace LevelElements
 			Return MyBase.Remove(item)
 		End Function
 		Public Overrides Function ToString() As String
-			Return $"{_id}, {Row}, {_Rooms}, {File.Name}"
+			Return $"{_id}, {Row}, {_Rooms}, {File.FileName}"
 		End Function
 		Friend Function Clone() As Decoration
 			Return Me.MemberwiseClone
@@ -1290,12 +1284,6 @@ Namespace LevelElements
 		End Function
 		Friend Function ShouldSerializeRowToMimic() As Boolean
 			Return RowToMimic >= -1
-		End Function
-		<Obsolete("This function is obsolete and may be removed in the next release. Call Add() instead.")> Public Function CreateChildren(Of T As {BaseRowAction, New})(beatOnly As Single) As T
-			Throw New RhythmBaseException("This function is obsolete and may be removed in the next release. Call Add() instead.")
-		End Function
-		<Obsolete("This function is obsolete and may be removed in the next release. Call Add() instead.")> Public Function CreateChildren(Of T As {BaseRowAction, New})(item As T) As T
-			Throw New RhythmBaseException("This function is obsolete and may be removed in the next release. Call Add() instead.")
 		End Function
 		Public Overrides Sub Add(item As BaseRowAction)
 			item._parent = Me
@@ -1480,16 +1468,14 @@ Namespace LevelElements
 			Return LoadFile(RDLevelFilePath, New LevelInputSettings)
 		End Function
 		Public Shared Function LoadFile(RDLevelFilePath As String, settings As LevelInputSettings) As RDLevel
-			Dim LevelSerializerSettings = New JsonSerializer()
-			LevelSerializerSettings.Converters.Add(New RDLevelConverter(RDLevelFilePath, settings))
+			Dim LevelSerializer = New JsonSerializer()
+			LevelSerializer.Converters.Add(New RDLevelConverter(RDLevelFilePath, settings))
 			'Dim json As String
 			Select Case IO.Path.GetExtension(RDLevelFilePath)
-				Case ".rdzip"
-					Return LevelSerializerSettings.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(LoadZip(RDLevelFilePath).FullName)))
-				Case ".zip"
-					Return LevelSerializerSettings.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(LoadZip(RDLevelFilePath).FullName)))
+				Case ".rdzip", ".zip"
+					Return LevelSerializer.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(LoadZip(RDLevelFilePath).FullName)))
 				Case ".rdlevel"
-					Return LevelSerializerSettings.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(RDLevelFilePath)))
+					Return LevelSerializer.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(RDLevelFilePath)))
 				Case Else
 					Throw New RhythmBaseException("File not supported.")
 			End Select
@@ -1509,8 +1495,7 @@ Namespace LevelElements
 		End Sub
 		Public Sub SaveFile(filepath As String, settings As LevelOutputSettings)
 			If IO.Path.GetFullPath(_path) = IO.Path.GetFullPath(filepath) Then
-				Throw New RhythmBaseException($"Cannot save file '{_path}' because overwriting is disabled by the settings and a file with the same name already exists.
-To correct this, change the path or filename or change the OverWrite property of LevelOutputSettings to false.")
+				Throw New OverwriteNotAllowedException(_path, GetType(LevelOutputSettings))
 			End If
 			Using file = IO.File.CreateText(filepath)
 				WriteStream(file, settings)
@@ -1534,6 +1519,10 @@ To correct this, change the path or filename or change the OverWrite property of
 			If item._beat.IsEmpty Then
 				item._beat = Calculator.BeatOf(1)
 			End If
+
+			'更改节拍的关联关卡
+			item._beat._calculator = Calculator
+			item._beat.ResetCache()
 
 			If item.Type = EventType.Comment AndAlso CType(item, Comment).Parent Is Nothing Then
 				'注释事件可能在精灵板块，也可能不在

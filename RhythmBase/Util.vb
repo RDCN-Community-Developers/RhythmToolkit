@@ -191,12 +191,12 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
                 If [Enum].TryParse(type.Name, result) Then
                     Return result
                 End If
-                Throw New RhythmBaseException($"Illegal Type: {type.Name}.")
+                Throw New IllegalEventTypeException(type, "Unable to find a matching EventType.")
             Else
                 Try
                     Return TypesToEnum(type).Single
                 Catch ex As Exception
-                    Throw New RhythmBaseException($"Illegal Type: {type.Name}.")
+                    Throw New IllegalEventTypeException(type, "Multiple matching EventTypes were found. Please check if the type is an abstract class type.", New ArgumentException("Multiple matching EventTypes were found. Please check if the type is an abstract class type.", NameOf(type)))
                 End Try
             End If
         End Function
@@ -207,7 +207,7 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
             Try
                 Return TypesToEnum(GetType(T))
             Catch ex As Exception
-                Throw New RhythmBaseException($"Illegal Type: {GetType(T)}.")
+                Throw New IllegalEventTypeException(GetType(T), "This exception is not expected. Please contact the developer to handle this exception.")
             End Try
         End Function
         Public Function ConvertToType(type As String) As Type
@@ -229,7 +229,7 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
                 Try
                     Return EnumToType(type)
                 Catch ex As Exception
-                    Throw New RhythmBaseException($"Illegal Type: {type}.")
+                    Throw New IllegalEventTypeException(type, "This value does not exist in the EventType enumeration.")
                 End Try
             End If
         End Function

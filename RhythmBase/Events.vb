@@ -153,9 +153,11 @@ Namespace Events
 				Return _beat
 			End Get
 			Set(value As RDBeat)
-				_beat.baseLevel?.Remove(Me)
+				If _beat.baseLevel IsNot Nothing Then
+					_beat.baseLevel.Remove(Me)
+					value.baseLevel.Add(Me)
+				End If
 				_beat = value
-				_beat.baseLevel?.Add(Me)
 			End Set
 		End Property
 		Public Overridable Property Y As Integer
@@ -1702,9 +1704,9 @@ Namespace Events
 		End Enum
 		Public Overrides ReadOnly Property Type As EventType = EventType.Tile
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Position As RDPoint?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Tiling As RDPoint?
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore, ItemConverterType:=GetType(Converters.RDPointConverter))> Public Property Speed As RDPoint?
+		Public Property Position As RDPoint?
+		Public Property Tiling As RDPoint?
+		Public Property Speed As RDPoint?
 		Public Property TilingType As TilingTypes
 		Public Property Interval As Single
 		<JsonIgnore> Public Overrides Property Y As Integer
