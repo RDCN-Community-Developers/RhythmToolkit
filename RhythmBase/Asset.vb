@@ -424,8 +424,11 @@ Namespace Assets
 				clip.ToLowerCamelCase
 				For Each pair In clip
 					Dim stringedValue = If(pair.Value.Type = Linq.JTokenType.Null, String.Empty, JsonConvert.SerializeObject(pair.Value, Formatting.None, jsonS))
-					If propertyValues.ContainsKey(pair.Key) Then
-						propertyValues(pair.Key).Add(stringedValue)
+
+					Dim value As List(Of String) = Nothing
+
+					If propertyValues.TryGetValue(pair.Key, value) Then
+						value.Add(stringedValue)
 					Else
 						propertyValues(pair.Key) = New List(Of String) From {stringedValue}
 					End If
@@ -648,15 +651,5 @@ Namespace Extensions
 				Return output
 			End Using
 		End Function
-		'<Extension> Public Sub DrawFrame(e As SKCanvas, frame As Assets.RDSprite.Frame, p As SKPoint, [event] As Events.Tint)
-		'    Select Case [event].Border
-		'        Case Events.Borders.Glow
-		'            e.DrawBitmap(frame.Glow, p, New SKPaint With {.Color = [event].BorderColor.Value})
-		'        Case Events.Borders.Outline
-		'            e.DrawBitmap(frame.OutLine, p, New SKPaint With {.Color = [event].BorderColor.Value})
-		'        Case Events.Borders.None
-		'    End Select
-		'    e.DrawBitmap(frame.Base, p)
-		'End Sub
 	End Module
 End Namespace

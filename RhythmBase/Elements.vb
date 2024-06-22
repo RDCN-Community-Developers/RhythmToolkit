@@ -1545,27 +1545,18 @@ Namespace LevelElements
 				Return
 			Else
 				If item.Type = EventType.SetCrotchetsPerBar Then
-					'更新拍号
-					RefreshCPBs(item.Beat)
-
+					AddSetCrotchetsPerBar(item)
 				ElseIf ConvertToEnums(Of BaseBeatsPerMinute).Contains(item.Type) Then
-					'更新 BPM
-					RefreshBPMs(item.Beat)
-				End If
-				'添加事件
-				MyBase.Add(item)
-
-				If item.Type = EventType.SetCrotchetsPerBar Then
-					'更新拍号
-					Calculator.Refresh()
-
+					AddBaseBeatsPerMinute(item)
+				Else
+					MyBase.Add(item)
 				End If
 			End If
 		End Sub
 		Public Overrides Function Contains(item As BaseEvent) As Boolean
 			Return (RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.Contains(item))) OrElse
-(DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.Contains(item))) OrElse
-MyBase.Contains(item)
+					(DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.Contains(item))) OrElse
+					MyBase.Contains(item)
 		End Function
 		Public Overrides Function Remove(item As BaseEvent) As Boolean
 			If RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.RemoveSafely(CType(item, BaseRowAction))) Then
@@ -1577,15 +1568,82 @@ MyBase.Contains(item)
 				Return True
 			End If
 			If Contains(item) Then
-				Dim result = MyBase.Remove(item)
 				If item.Type = EventType.SetCrotchetsPerBar Then
-					RefreshCPBs(item.Beat)
+					Return RemoveSetCrotchetsPerBar(item)
 				ElseIf ConvertToEnums(Of BaseBeatsPerMinute).Contains(item.Type) Then
-					RefreshBPMs(item.Beat)
+					Return RemoveBaseBeatsPerMinute(item)
+				Else
+					Return MyBase.Remove(item)
 				End If
-				Return result
 			End If
 			Return False
+		End Function
+		Private Sub AddSetCrotchetsPerBar(item As SetCrotchetsPerBar)
+
+			Dim frt = item.FrontOrDefault
+			Dim nxt = item.NextOrDefault
+
+			'忽略无意义 CPB
+			If frt?.CrotchetsPerBar = If(item?.CrotchetsPerBar, 8) Then
+				Return
+			End If
+
+			'更新拍号
+			RefreshCPBs(item.Beat)
+			'添加事件
+			MyBase.Add(item)
+
+
+			If nxt IsNot Nothing Then
+				Dim interval = nxt.Beat.BeatOnly - item.Beat.BeatOnly
+				Dim c = interval Mod item.CrotchetsPerBar
+				If c > 0 Then
+					c = If(c < 2, c + item.CrotchetsPerBar, c)
+					MyBase.Add(New SetCrotchetsPerBar() With {.Beat = item.Beat + interval - c, .CrotchetsPerBar = c})
+				ElseIf nxt.CrotchetsPerBar = item.CrotchetsPerBar Then
+					MyBase.Remove(nxt)
+				End If
+			End If
+
+			'更新计算器
+			Calculator.Refresh()
+		End Sub
+		Private Function RemoveSetCrotchetsPerBar(item As SetCrotchetsPerBar) As Boolean
+
+			Dim frt = item.FrontOrDefault
+			Dim nxt = item.NextOrDefault
+
+			If nxt IsNot Nothing Then
+				Dim cpb = item.CrotchetsPerBar
+				Dim interval = nxt.Beat.BeatOnly - item.Beat.BeatOnly
+				Dim c = interval Mod If(frt?.CrotchetsPerBar, 8)
+				If c > 0 Then
+					If c = nxt.CrotchetsPerBar Then
+						MyBase.Remove(nxt)
+					End If
+					MyBase.Add(New SetCrotchetsPerBar With {.Beat = item.Beat + interval - c, .CrotchetsPerBar = c})
+				Else
+					If nxt.CrotchetsPerBar = If(frt?.CrotchetsPerBar, 8) Then
+						MyBase.Remove(nxt)
+					End If
+				End If
+				Calculator.Refresh()
+			End If
+			Dim result = MyBase.Remove(item)
+			RefreshCPBs(item.Beat)
+			Calculator.Refresh()
+			Return result
+		End Function
+		Private Sub AddBaseBeatsPerMinute(item As BaseBeatsPerMinute)
+			'更新 BPM
+			RefreshBPMs(item.Beat)
+			'添加事件
+			MyBase.Add(item)
+		End Sub
+		Private Function RemoveBaseBeatsPerMinute(item As BaseBeatsPerMinute) As Boolean
+			Dim result = MyBase.Remove(item)
+			RefreshBPMs(item.Beat)
+			Return result
 		End Function
 		Private Sub RefreshBPMs(start As RDBeat)
 			For Each item In EventsBeatOrder.Keys

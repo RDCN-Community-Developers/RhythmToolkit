@@ -352,16 +352,16 @@ Namespace Events
 		<JsonIgnore>
 		Public ReadOnly Property RealType As String
 			Get
-				Return Data("type").ToString
+				Return Data(NameOf(Type).ToLowerCamelCase).ToString
 			End Get
 		End Property
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Unknown
 		Public Overrides Property Y As Integer
 			Get
-				Return CInt(If(Data("y"), 0))
+				Return CInt(If(Data(NameOf(Y).ToLowerCamelCase), 0))
 			End Get
 			Set(value As Integer)
-				Data("y") = value
+				Data(NameOf(Y).ToLowerCamelCase) = value
 			End Set
 		End Property
 		Public Data As New Linq.JObject

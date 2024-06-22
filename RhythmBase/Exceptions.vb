@@ -96,14 +96,16 @@ Namespace Exceptions
     Class OverwriteNotAllowedException
         Inherits RhythmBaseException
         Public Property FilePath As String
+        Private ReadOnly _referType As Type
         Public Overrides ReadOnly Property Message As String
             Get
                 Return $"Cannot save file '{FilePath}' because overwriting is disabled by the settings and a file with the same name already exists.
-To correct this, change the path or filename or set the OverWrite property of Settings to false."
+To correct this, change the path or filename or set the OverWrite property of {_referType.Name} to false."
             End Get
         End Property
         Public Sub New(filepath As String, referType As Type)
             MyBase.New(filepath)
+            _referType = referType
         End Sub
     End Class
 End Namespace

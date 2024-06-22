@@ -38,11 +38,6 @@ Namespace Utils
             _CPBList = level.Where(Of SetCrotchetsPerBar).ToList
             'Initialize()
         End Sub
-        Public Shared Sub Initialize(CPBs As IEnumerable(Of SetCrotchetsPerBar))
-            'For Each item In CPBs
-            '    item.Bar = item.Beat.BarBeat.bar
-            'Next
-        End Sub
         Public Sub Refresh()
             _BPMList = Collection.Where(Of BaseBeatsPerMinute).ToList
             _CPBList = Collection.Where(Of SetCrotchetsPerBar).ToList

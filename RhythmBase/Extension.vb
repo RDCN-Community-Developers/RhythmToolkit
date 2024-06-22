@@ -776,13 +776,13 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 			e.MethodName = FunctionCalling(NameOf(PreviousSongVol), targetVolume, fadeTimeSeconds)
 		End Sub
 		<Extension> Public Sub EditTree(e As CallCustomMethod, room As Byte, [property] As String, value As Single, beats As Single, ease As EaseType)
-			e.MethodName = FunctionCalling(NameOf(EditTree), [property], value, beats, ease)
+			e.MethodName = RoomFunctionCalling(room, NameOf(EditTree), [property], value, beats, ease)
 		End Sub
 		<Extension> Public Function EditTree(e As CallCustomMethod, room As Byte, treeProperties As ProceduralTree, beats As Single, ease As EaseType) As IEnumerable(Of CallCustomMethod)
 			Dim L As New List(Of CallCustomMethod)
 			For Each p In GetType(ProceduralTree).GetFields
 				If p.GetValue(treeProperties) IsNot Nothing Then
-					Dim T As New CallCustomMethod
+					Dim T As CallCustomMethod = e.Clone(Of CallCustomMethod)
 					T.EditTree(room, p.Name, p.GetValue(treeProperties), beats, ease)
 					L.Add(T)
 				End If
@@ -790,7 +790,7 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 			Return L
 		End Function
 		<Extension> Public Sub EditTreeColor(e As CallCustomMethod, room As Byte, location As Boolean, color As String, beats As Single, ease As EaseType)
-			e.MethodName = RoomFunctionCalling(NameOf(EditTreeColor), location, color, beats, ease)
+			e.MethodName = RoomFunctionCalling(room, NameOf(EditTreeColor), location, color, beats, ease)
 		End Sub
 
 
@@ -833,7 +833,7 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 				Return New RDPointE
 			End If
 			Dim previousPosition As RDPointE = e.Position
-			Dim previousPivot As RDPointE = New RDPointE(
+			Dim previousPivot As New RDPointE(
 				e.Pivot?.X * e.Scale?.X * e.Parent.Size.Width / 100,
 				e.Pivot?.Y * e.Scale?.Y * e.Parent.Size.Height / 100)
 			Return previousPosition + New RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue))
@@ -843,7 +843,7 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 				Return New RDPointE
 			End If
 			Dim previousPosition As RDPointE = e.RoomPosition
-			Dim previousPivot As RDPointE = New RDPointE(e.Pivot?.X * e.Scale?.X, e.Pivot?.Y * e.Scale?.Y)
+			Dim previousPivot As New RDPointE(e.Pivot?.X * e.Scale?.X, e.Pivot?.Y * e.Scale?.Y)
 			Return previousPosition + New RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue))
 		End Function
 	End Module
