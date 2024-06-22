@@ -2,11 +2,30 @@
 Imports System.IO
 Imports System.Runtime.CompilerServices
 Imports Newtonsoft.Json
-Imports SkiaSharp
+Imports Newtonsoft.Json.Linq
+Imports NAudio
 Imports RhythmBase.Extensions.Extension
+Imports SkiaSharp
 Namespace Assets
 	Public Class RDSprite
 		Private _file As String
+		Private _isLoaded As Boolean
+		Private _isModified As Boolean
+		Private _imageSize As RDSizeNI
+		Private _image_Base As SKBitmap
+		Private _image_Glow As SKBitmap
+		Private _image_Outline As SKBitmap
+		Private _image_Freeze As SKBitmap
+		Private _name As String
+		Private _voice As String
+		Private _size As RDSizeNI
+		Private _clips As New HashSet(Of Clip)
+		Private _rowPreviewOffset As RDSizeN?
+		Private _rowPreviewFrame As UInteger?
+		Private _pivotOffset As RDPointN?
+		Private _portraitOffset As RDSizeN?
+		Private _PortraitSize As RDSizeN?
+		Private _portraitScale As Single?
 		<JsonIgnore> Public Property FilePath As String
 			Get
 				Return _file
@@ -17,6 +36,10 @@ Namespace Assets
 		End Property
 		<JsonIgnore> Public ReadOnly Property Expressions As IEnumerable(Of String)
 			Get
+				If Not _isLoaded Then
+					Reload()
+					_isLoaded = True
+				End If
 				Return Clips.Select(Function(i) i.Name)
 			End Get
 		End Property
@@ -34,23 +57,168 @@ Namespace Assets
 				Return If(RowPreviewFrame Is Nothing, New SKRect, GetFrame(RowPreviewFrame))
 			End Get
 		End Property
-		<JsonIgnore> Public Property ImageSize As RDSizeNI
+		<JsonIgnore> Public ReadOnly Property ImageSize As RDSizeNI
+			Get
+				Load()
+				Return _imageSize
+			End Get
+		End Property
 		<JsonIgnore> Public Property Image_Base As SKBitmap
+			Get
+				Load()
+				Return _image_Base
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_image_Base = Value
+			End Set
+		End Property
 		<JsonIgnore> Public Property Image_Glow As SKBitmap
+			Get
+				Load()
+				Return _image_Glow
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_image_Glow = Value
+			End Set
+		End Property
 		<JsonIgnore> Public Property Image_Outline As SKBitmap
+			Get
+				Load()
+				Return _image_Outline
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_image_Outline = Value
+			End Set
+		End Property
 		<JsonIgnore> Public Property Image_Freeze As SKBitmap
+			Get
+				Load()
+				Return _image_Freeze
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_image_Freeze = Value
+			End Set
+		End Property
 		Public Property Name As String
+			Get
+				Load()
+				Return _name
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_name = Value
+			End Set
+		End Property
 #If DEBUG Then
 		Public Property Voice As String
+			Get
+				Load()
+				Return _voice
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_voice = Value
+			End Set
+		End Property
 #End If
 		Public Property Size As RDSizeNI
-		Public Property Clips As New HashSet(Of Clip)
+			Get
+				Load()
+				Return _size
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_size = Value
+			End Set
+		End Property
+		Public Property Clips As HashSet(Of Clip)
+			Get
+				Load()
+				Return _clips
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_clips = Value
+			End Set
+		End Property
 		Public Property RowPreviewOffset As RDSizeN?
+			Get
+				Load()
+				Return _rowPreviewOffset
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_rowPreviewOffset = Value
+			End Set
+		End Property
 		Public Property RowPreviewFrame As UInteger?
+			Get
+				Load()
+				Return _rowPreviewFrame
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_rowPreviewFrame = Value
+			End Set
+		End Property
 		Public Property PivotOffset As RDPointN?
+			Get
+				Load()
+				Return _pivotOffset
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_pivotOffset = Value
+			End Set
+		End Property
 		Public Property PortraitOffset As RDSizeN?
+			Get
+				Load()
+				Return _portraitOffset
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_portraitOffset = Value
+			End Set
+		End Property
 		Public Property PortraitSize As RDSizeN?
+			Get
+				Load()
+				Return _PortraitSize
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_PortraitSize = Value
+			End Set
+		End Property
 		Public Property PortraitScale As Single?
+			Get
+				Load()
+				Return _portraitScale
+			End Get
+			Set
+				Load()
+				_isModified = True
+				_portraitScale = Value
+			End Set
+		End Property
 		<JsonIgnore> Public ReadOnly Property IsSprite As Boolean
 			Get
 				Return Path.GetExtension(_file) = String.Empty
@@ -58,16 +226,96 @@ Namespace Assets
 		End Property
 		Public Class Clip
 			Friend parent As RDSprite
+			Private _name As String
+			Private _frames As List(Of UInteger)
+			Private _loopStart As Integer?
+			Private _loop As LoopOption
+			Private _fps As Single
+			Private _pivotOffset As RDPointN?
+			Private _portraitOffset As RDSizeN?
+			Private _portraitScale As Single?
+			Private _portraitSize As RDSizeN?
 			Public Property Name As String
+				Get
+					Return _name
+				End Get
+				Set
+					parent._isModified = True
+					_name = Value
+				End Set
+			End Property
 			Public Property Frames As List(Of UInteger) 'nullable
+				Get
+					Return _frames
+				End Get
+				Set
+					parent._isModified = True
+					_frames = Value
+				End Set
+			End Property
 			Public Property LoopStart As Integer? 'nullable
-			<JsonConverter(GetType(Newtonsoft.Json.Converters.StringEnumConverter))>
-			Public Property [Loop] As LoopOption
+				Get
+					Return _loopStart
+				End Get
+				Set
+					parent._isModified = True
+					_loopStart = Value
+				End Set
+			End Property
+			<JsonConverter(GetType(Newtonsoft.Json.Converters.StringEnumConverter))> Public Property [Loop] As LoopOption
+				Get
+					Return _loop
+				End Get
+				Set
+					parent._isModified = True
+					_loop = Value
+				End Set
+			End Property
 			Public Property Fps As Single
+				Get
+					Return _fps
+				End Get
+				Set
+					parent._isModified = True
+					_fps = Value
+				End Set
+			End Property
 			Public Property PivotOffset As RDPointN? 'nullable
+				Get
+					Return _pivotOffset
+				End Get
+				Set
+					parent._isModified = True
+					_pivotOffset = Value
+				End Set
+			End Property
 			Public Property PortraitOffset As RDSizeN? 'nullable
+				Get
+					Return _portraitOffset
+				End Get
+				Set
+					parent._isModified = True
+					_portraitOffset = Value
+				End Set
+			End Property
 			Public Property PortraitScale As Single? 'nullable
+				Get
+					Return _portraitScale
+				End Get
+				Set
+					parent._isModified = True
+					_portraitScale = Value
+				End Set
+			End Property
 			Public Property PortraitSize As RDSizeN? 'nullable
+				Get
+					Return _portraitSize
+				End Get
+				Set
+					parent._isModified = True
+					_portraitSize = Value
+				End Set
+			End Property
 			Public Function GetFrameRects() As SKRectI()
 				Return Frames.Select(Function(i) parent.GetFrame(i)).ToArray
 			End Function
@@ -83,7 +331,12 @@ Namespace Assets
 			End If
 			_file = filename
 		End Sub
-		Public Sub Load()
+		Private Sub Load()
+			If Not _isLoaded Then
+				Reload()
+			End If
+		End Sub
+		Public Sub Reload()
 			If IsSprite Then
 
 				Dim setting As New JsonSerializer
@@ -99,7 +352,7 @@ Namespace Assets
 					Throw New FileNotFoundException($"Cannot find the json file", _file + "")
 				End If
 
-				obj = setting.Deserialize(New JsonTextReader(File.OpenText($"{json}.json")))
+				obj = setting.Deserialize(Of JObject)(New JsonTextReader(File.OpenText($"{json}.json")))
 
 				Dim imageBaseFile = $"{json}.png"
 				Dim imageGlowFile = $"{json}_glow.png"
@@ -107,45 +360,47 @@ Namespace Assets
 				Dim imageFreezeFile = $"{json}_freeze.png"
 
 				If File.Exists(imageBaseFile) Then
-					Image_Base = SKBitmap.Decode(imageBaseFile)
+					_image_Base = SKBitmap.Decode(imageBaseFile)
 				Else
 					Throw New FileNotFoundException($"Cannot find the image file", _file + ".png")
 				End If
 				If File.Exists(imageGlowFile) Then
-					Image_Glow = SKBitmap.Decode(imageGlowFile)
+					_image_Glow = SKBitmap.Decode(imageGlowFile)
 				End If
 				If File.Exists(imageOutlineFile) Then
-					Image_Outline = SKBitmap.Decode(imageOutlineFile)
+					_image_Outline = SKBitmap.Decode(imageOutlineFile)
 				End If
 				If File.Exists(imageFreezeFile) Then
-					Image_Freeze = SKBitmap.Decode(imageFreezeFile)
+					_image_Freeze = SKBitmap.Decode(imageFreezeFile)
 				End If
-				Name = obj(NameOf(Name).ToLowerCamelCase)?.ToObject(Of String)
+				_name = obj(NameOf(Name).ToLowerCamelCase)?.ToObject(Of String)
 #If DEBUG Then
-				Voice = obj(NameOf(Voice).ToLowerCamelCase)?.ToObject(Of String)
+				_voice = obj(NameOf(Voice).ToLowerCamelCase)?.ToObject(Of String)
 #End If
-				Size = obj(NameOf(Size).ToLowerCamelCase).ToObject(Of RDSizeNI)
-				RowPreviewOffset = obj(NameOf(RowPreviewOffset).ToLowerCamelCase)?.ToObject(Of RDSizeN)
-				RowPreviewFrame = obj(NameOf(RowPreviewFrame).ToLowerCamelCase)?.ToObject(Of UInteger)
-				PivotOffset = obj(NameOf(PivotOffset).ToLowerCamelCase)?.ToObject(Of RDPointN)
-				PortraitOffset = obj(NameOf(PortraitOffset).ToLowerCamelCase)?.ToObject(Of RDSizeN)
-				PortraitSize = obj(NameOf(PortraitSize).ToLowerCamelCase)?.ToObject(Of RDSizeN)
-				PortraitScale = obj(NameOf(PortraitScale).ToLowerCamelCase)?.ToObject(Of Single)
+				_size = obj(NameOf(Size).ToLowerCamelCase).ToObject(Of RDSizeNI)
+				_rowPreviewOffset = obj(NameOf(RowPreviewOffset).ToLowerCamelCase)?.ToObject(Of RDSizeN)
+				_rowPreviewFrame = obj(NameOf(RowPreviewFrame).ToLowerCamelCase)?.ToObject(Of UInteger)
+				_pivotOffset = obj(NameOf(PivotOffset).ToLowerCamelCase)?.ToObject(Of RDPointN)
+				_portraitOffset = obj(NameOf(PortraitOffset).ToLowerCamelCase)?.ToObject(Of RDSizeN)
+				_PortraitSize = obj(NameOf(PortraitSize).ToLowerCamelCase)?.ToObject(Of RDSizeN)
+				_portraitScale = obj(NameOf(PortraitScale).ToLowerCamelCase)?.ToObject(Of Single)
 				For Each clip In obj(NameOf(Clips).ToLowerCamelCase)
-					Clips.Add(clip.ToObject(Of Clip))
+					_clips.Add(clip.ToObject(Of Clip))
 				Next
 			Else
 				If File.Exists(_file) Then
 					Dim imgFile As SKBitmap
 					Try
 						imgFile = SKBitmap.Decode(_file)
-						Image_Base = imgFile
+						_image_Base = imgFile
 					Catch ex As Exception
 					End Try
 				Else
 					Throw New FileNotFoundException($"Cannot find the image file", _file)
 				End If
 			End If
+			_isLoaded = True
+			_isModified = False
 		End Sub
 		Public Sub WriteJson(textWriter As TextWriter)
 			WriteJson(textWriter, New SpriteOutputSettings)
@@ -249,12 +504,6 @@ Namespace Assets
 							   leftTop.Y,
 							   leftTop.X + size.Width,
 							   leftTop.Y + size.Height)
-		End Function
-		Friend Function ShouldSerializeRowPreviewFrame() As Boolean
-			Return RowPreviewFrame IsNot Nothing
-		End Function
-		Friend Function ShouldSerializeRowPreviewOffset() As Boolean
-			Return RowPreviewFrame IsNot Nothing
 		End Function
 		Public Function AddBlankClip(name As String) As Clip
 			Dim C = Clips.FirstOrDefault(New Clip With {.Name = name})

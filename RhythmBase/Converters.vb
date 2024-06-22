@@ -332,8 +332,6 @@ Namespace Converters
 
 			JObj.Remove("type")
 
-			'value.Beat.ResetCPB()
-
 			Dim b = value.Beat.BarBeat
 			Dim s = JObj.First
 			s.AddBeforeSelf(New JProperty("bar", b.bar))
