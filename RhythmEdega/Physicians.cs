@@ -340,7 +340,7 @@ namespace Physicians
                 foreach (var Group in EventGroup)
                 {
                     float StartBeat = Group.First().Beat.BeatOnly;
-                    var CopiedGroup = Group.Select(i => Others.Clone(i)).ToList();
+                    var CopiedGroup = Group.Select(i => Utils.Clone(i)).ToList();
                     foreach (BaseEvent Copy in CopiedGroup)
                     {
                         Copy.Beat += (item.Beat - StartBeat);
