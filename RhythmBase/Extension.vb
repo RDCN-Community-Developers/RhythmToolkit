@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports NAudio.CoreAudioApi
 Namespace Extensions
 	Public Module Extension
 		Private Function GetRange(e As OrderedEventCollection, index As Index) As (start As Single, [end] As Single)
@@ -6,10 +7,10 @@ Namespace Extensions
 				Dim firstEvent = e.First
 				Dim lastEvent = e.Last
 				Return If(index.IsFromEnd, (
-						lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value, 1),
-						lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
-						(firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value, 1),
-						firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
+lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value, 1),
+lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
+(firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value, 1),
+firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 			Catch ex As Exception
 				Throw New ArgumentOutOfRangeException(NameOf(index))
 			End Try
@@ -19,11 +20,11 @@ Namespace Extensions
 				Dim firstEvent = e.First
 				Dim lastEvent = e.Last
 				Return (If(range.Start.IsFromEnd,
-					lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
-					firstEvent.Beat._calculator.BarBeat_BeatOnly(Math.Max(range.Start.Value, 1), 1)),
-					If(range.End.IsFromEnd,
-					lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
-					firstEvent.Beat._calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
+lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
+firstEvent.Beat._calculator.BarBeat_BeatOnly(Math.Max(range.Start.Value, 1), 1)),
+If(range.End.IsFromEnd,
+lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
+firstEvent.Beat._calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
 			Catch ex As Exception
 				Throw New ArgumentOutOfRangeException(NameOf(range))
 			End Try
@@ -109,29 +110,29 @@ Namespace Extensions
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
 			Return e.EventsBeatOrder _
-				.TakeWhile(Function(i) i.Key < endBeat) _
-				.SkipWhile(Function(i) i.Key < startBeat) _
-				.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.TakeWhile(Function(i) i.Key < endBeat) _
+.SkipWhile(Function(i) i.Key < startBeat) _
+.SelectMany(Function(i) i.Value.list.OfType(Of T))
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
 			Dim rg = GetRange(e, index)
 			Return e.EventsBeatOrder _
-				.TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
-				.SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-				.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
+.SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
+.SelectMany(Function(i) i.Value.list.OfType(Of T))
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As RDRange) As IEnumerable(Of T)
 			Return e.EventsBeatOrder _
-				.TakeWhile(Function(i) If(i.Key < range.End, True)) _
-				.SkipWhile(Function(i) If(i.Key < range.Start, False)) _
-				.SelectMany(Function(i) i.Value.list)
+.TakeWhile(Function(i) If(i.Key < range.End, True)) _
+.SkipWhile(Function(i) If(i.Key < range.Start, False)) _
+.SelectMany(Function(i) i.Value.list)
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As Range) As IEnumerable(Of T)
 			Dim rg = GetRange(e, range)
 			Return e.EventsBeatOrder _
-				.TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
-				.SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-				.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
+.SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
+.SelectMany(Function(i) i.Value.list.OfType(Of T))
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
 			Return e.Where(beat).Where(predicate)
@@ -154,9 +155,9 @@ Namespace Extensions
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection) As IEnumerable(Of T)
 			Dim enums = ConvertToEnums(Of T)()
 			Return e.EventsBeatOrder _
-				.Where(Function(i) i.Value._types _
-					.Any(Function(j) enums.Contains(j))) _
-				.SelectMany(Function(i) i.Value.list).OfType(Of T)
+.Where(Function(i) i.Value._types _
+.Any(Function(j) enums.Contains(j))) _
+.SelectMany(Function(i) i.Value.list).OfType(Of T)
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
 			Dim value As TypedList(Of BaseEvent) = Nothing
@@ -167,29 +168,29 @@ Namespace Extensions
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
 			Return e.EventsBeatOrder _
-				.TakeWhile(Function(i) i.Key < endBeat) _
-				.SkipWhile(Function(i) i.Key < startBeat) _
-				.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.TakeWhile(Function(i) i.Key < endBeat) _
+.SkipWhile(Function(i) i.Key < startBeat) _
+.SelectMany(Function(i) i.Value.list.OfType(Of T))
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
 			Dim rg = GetRange(e, index)
 			Return e.EventsBeatOrder _
-				.TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
-				.SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-				.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
+.SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
+.SelectMany(Function(i) i.Value.list.OfType(Of T))
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As RDRange) As IEnumerable(Of T)
 			Return e.EventsBeatOrder _
-				.TakeWhile(Function(i) If(i.Key < range.End, True)) _
-				.SkipWhile(Function(i) If(i.Key < range.Start, False)) _
-				.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.TakeWhile(Function(i) If(i.Key < range.End, True)) _
+.SkipWhile(Function(i) If(i.Key < range.Start, False)) _
+.SelectMany(Function(i) i.Value.list.OfType(Of T))
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As Range) As IEnumerable(Of T)
 			Dim rg = GetRange(e, range)
 			Return e.EventsBeatOrder _
-				.TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
-				.SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-				.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
+.SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
+.SelectMany(Function(i) i.Value.list.OfType(Of T))
 		End Function
 		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
 			Return e.Where(Of T)().Where(predicate)
@@ -415,14 +416,14 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 		End Function
 		<Extension> Public Function IsInFrontOf(Of T As BaseEvent)(e As OrderedEventCollection(Of T), item1 As T, item2 As T) As Boolean
 			Return item1.Beat < item2.Beat OrElse
-				(item1.Beat.BeatOnly = item2.Beat.BeatOnly AndAlso
-				e.EventsBeatOrder(item1.Beat).list.IndexOf(item1) < e.EventsBeatOrder(item2.Beat).list.IndexOf(item2))
+(item1.Beat.BeatOnly = item2.Beat.BeatOnly AndAlso
+e.EventsBeatOrder(item1.Beat).list.IndexOf(item1) < e.EventsBeatOrder(item2.Beat).list.IndexOf(item2))
 		End Function
 		<Extension> Public Function IsBehind(Of T As BaseEvent)(e As OrderedEventCollection(Of T), item1 As T, item2 As T) As Boolean
 			Dim s = item1.Beat.Equals(CObj(item2.Beat))
 			Return item1.Beat > item2.Beat OrElse
-				(item1.Beat.BeatOnly = item2.Beat.BeatOnly AndAlso
-				e.EventsBeatOrder(item1.Beat).list.IndexOf(item1) > e.EventsBeatOrder(item2.Beat).list.IndexOf(item2))
+(item1.Beat.BeatOnly = item2.Beat.BeatOnly AndAlso
+e.EventsBeatOrder(item1.Beat).list.IndexOf(item1) > e.EventsBeatOrder(item2.Beat).list.IndexOf(item2))
 		End Function
 		<Extension> Public Function GetHitBeat(e As RDLevel) As IEnumerable(Of Hit)
 			Dim L As New List(Of Hit)
@@ -432,7 +433,7 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 			Return L
 		End Function
 		<Extension> Public Function GetHitEvents(e As RDLevel) As IEnumerable(Of BaseBeat)
-			Return e.Where(Of BaseBeat)(Function(i) i.Hitable)
+			Return e.Where(Of BaseBeat)(Function(i) i.IsHitable)
 		End Function
 		<Extension> Public Function GetTaggedEvents(Of T As BaseEvent)(e As OrderedEventCollection(Of T), name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, T))
 			If name Is Nothing Then
@@ -444,15 +445,26 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 				Return e.Where(Function(i) If(i.Tag?.Contains(name), False)).GroupBy(Function(i) i.Tag)
 			End If
 		End Function
+		<Extension> Public Function ControllingEvents(e As RDLevel, ParamArray tag As TagAction.SpecialTag()) As IEnumerable(Of IGrouping(Of String, BaseEvent))
+			Return e.GetTaggedEvents("[" + tag.ToString + "]", False)
+		End Function
+		<Extension> Public Function ControllingEventsLeftAligned(e As RDLevel, ParamArray tag As TagAction.SpecialTag()) As IEnumerable(Of IGrouping(Of String, BaseEvent))
+			Dim L = e.ControllingEvents(tag)
+			For Each pair In L
+				Dim start = pair(0).Beat
+				For Each item In pair
+					item.Beat -= start.BeatOnly
+				Next
+			Next
+			Return L
+		End Function
 		<Extension> Private Function ClassicBeats(e As Row) As IEnumerable(Of BaseBeat)
-			Return e.Where(Of BaseBeat)(Function(i) (i.Type = EventType.AddClassicBeat Or
-								i.Type = EventType.AddFreeTimeBeat Or
-								i.Type = EventType.PulseFreeTimeBeat) AndAlso
-								i.Hitable)
+			Return e.Where(Of BaseBeat)(Function(i) i.Type = EventType.AddClassicBeat Or
+				i.Type = EventType.AddFreeTimeBeat Or
+				i.Type = EventType.PulseFreeTimeBeat)
 		End Function
 		<Extension> Private Function OneshotBeats(e As Row) As IEnumerable(Of BaseBeat)
-			Return e.Where(Of BaseBeat)(Function(i) i.Type = EventType.AddOneshotBeat AndAlso
-								i.Hitable)
+			Return e.Where(Of BaseBeat)(Function(i) i.Type = EventType.AddOneshotBeat)
 		End Function
 		<Extension> Public Function HitBeats(e As Row) As IEnumerable(Of Hit)
 			Select Case e.RowType
@@ -461,7 +473,7 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 				Case RowType.Oneshot
 					Return e.OneshotBeats().SelectMany(Function(i) i.HitTimes)
 				Case Else
-					Throw New Exceptions.RhythmBaseException("How?")
+					Throw New RhythmBaseException("How?")
 			End Select
 		End Function
 #If DEBUG Then
@@ -606,9 +618,6 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 		<Extension> Public Function NextOrDefault(Of T As BaseEvent)(e As BaseEvent) As T
 			Return e.After(Of T).FirstOrDefault
 		End Function
-
-
-
 		<Extension> Public Sub SetScoreboardLights(e As CallCustomMethod, Mode As Boolean, Text As String)
 			e.MethodName = FunctionCalling(NameOf(SetScoreboardLights), Mode, Text)
 		End Sub
@@ -724,7 +733,7 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 			e.MethodName = VfxFunctionCalling(NameOf(StopShakeCam), roomID)
 		End Sub
 		<Extension> Public Sub ShakeCamSmooth(e As CallCustomMethod, duration As Integer, strength As Integer, roomID As Integer)
-			e.MethodName = VfxFunctionCalling(NameOf(ShakeCamSmooth),duration,strength,roomID)
+			e.MethodName = VfxFunctionCalling(NameOf(ShakeCamSmooth), duration, strength, roomID)
 		End Sub
 		<Extension> Public Sub ShakeCamRotate(e As CallCustomMethod, duration As Integer, strength As Integer, roomID As Integer)
 			e.MethodName = VfxFunctionCalling(NameOf(ShakeCamRotate), duration, strength, roomID)
@@ -820,22 +829,281 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 		End Sub
 
 
-		'<Extension> Public Sub MoveToPosition(e As Move, point As RDPoint)
 
-		'End Sub
+
+		<Extension> Public Function SpetialTags(e As TagAction) As TagAction.SpecialTag()
+			Return [Enum].GetValues(GetType(TagAction.SpecialTag)).Cast(Of TagAction.SpecialTag).Where(Function(i) e.ActionTag.Contains($"[{i}]"))
+		End Function
+		<Extension> Public Function Length(e As AddOneshotBeat) As Single
+			Return e.Tick * e.Loops + e.Interval * e.Loops - 1
+		End Function
+		<Extension> Public Function Length(e As AddClassicBeat) As Single
+			Dim SyncoSwing = e.Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso e.IsBehind(i), New SetRowXs).SyncoSwing
+			Return e.Tick * 6 - If(SyncoSwing = 0, 0.5, SyncoSwing) * e.Tick
+		End Function
+		<Extension> Public Function IsHitable(e As PulseFreeTimeBeat) As Boolean
+			Dim PulseIndexMin = 6
+			Dim PulseIndexMax = 6
+			For Each item In e.Parent.Where(Of BaseBeat)(Function(i) e.IsBehind(i)).Reverse
+				Select Case item.Type
+					Case EventType.AddFreeTimeBeat
+						Dim Temp = CType(item, AddFreeTimeBeat)
+						If PulseIndexMin <= Temp.Pulse And Temp.Pulse <= PulseIndexMax Then
+							Return True
+						End If
+					Case EventType.PulseFreeTimeBeat
+						Dim Temp = CType(item, PulseFreeTimeBeat)
+						Select Case Temp.Action
+							Case PulseFreeTimeBeat.ActionType.Increment
+								If PulseIndexMin > 0 Then
+									PulseIndexMin -= 1
+								End If
+								If PulseIndexMax > 0 Then
+									PulseIndexMax -= 1
+								Else
+									Return False
+								End If
+							Case PulseFreeTimeBeat.ActionType.Decrement
+								If PulseIndexMin > 0 Then
+									PulseIndexMin += 1
+								End If
+								If PulseIndexMax < 6 Then
+									PulseIndexMax += 1
+								Else
+									Return False
+								End If
+							Case PulseFreeTimeBeat.ActionType.Custom
+								If PulseIndexMin <= Temp.CustomPulse And Temp.CustomPulse <= PulseIndexMax Then
+									PulseIndexMin = 0
+									PulseIndexMax = 5
+								Else
+									Return False
+								End If
+							Case PulseFreeTimeBeat.ActionType.Remove
+								Return False
+						End Select
+						If PulseIndexMin > PulseIndexMax Then
+							Return False
+						End If
+				End Select
+			Next
+			Return False
+		End Function
+		<Extension> Public Function IsHitable(e As AddFreeTimeBeat) As Boolean
+			Return e.Pulse = 6
+		End Function
+		<Extension> Public Function IsHitable(e As BaseBeat) As Boolean
+			Select Case e.Type
+				Case EventType.AddClassicBeat, EventType.AddOneshotBeat
+					Return True
+				Case EventType.AddFreeTimeBeat
+					Return CType(e, AddFreeTimeBeat).IsHitable
+				Case EventType.PulseFreeTimeBeat
+					Return CType(e, PulseFreeTimeBeat).IsHitable
+				Case Else
+					Return False
+			End Select
+		End Function
+		<Extension> Public Function HitTimes(e As AddClassicBeat) As IEnumerable(Of Hit)
+			Return New List(Of Hit) From {New Hit(e, e.GetBeat(6), e.Hold)}.AsEnumerable
+		End Function
+		<Extension> Public Function HitTimes(e As AddOneshotBeat) As IEnumerable(Of Hit)
+			Dim L As New List(Of Hit)
+			For i As UInteger = 0 To e.Loops
+				For j As SByte = 0 To e.Subdivisions - 1
+					L.Add(New Hit(e, New RDBeat(e._beat._calculator, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + j * (e.Tick / e.Subdivisions)), 0))
+				Next
+			Next
+			Return L.AsEnumerable
+		End Function
+		<Extension> Public Function HitTimes(e As AddFreeTimeBeat) As IEnumerable(Of Hit)
+			If e.Pulse = 6 Then
+				Return New List(Of Hit) From {New Hit(e, e.Beat, e.Hold)}.AsEnumerable
+			End If
+			Return New List(Of Hit)
+		End Function
+		<Extension> Public Function HitTimes(e As PulseFreeTimeBeat) As IEnumerable(Of Hit)
+			If e.IsHitable Then
+				Return New List(Of Hit) From {New Hit(e, e.Beat, e.Hold)}
+			End If
+			Return New List(Of Hit)
+		End Function
+		<Extension> Public Function HitTimes(e As BaseBeat) As IEnumerable(Of Hit)
+			Select Case e.Type
+				Case EventType.AddClassicBeat
+					Return CType(e, AddClassicBeat).HitTimes
+				Case EventType.AddFreeTimeBeat
+					Return CType(e, AddFreeTimeBeat).HitTimes
+				Case EventType.AddOneshotBeat
+					Return CType(e, AddOneshotBeat).HitTimes
+				Case EventType.PulseFreeTimeBeat
+					Return CType(e, PulseFreeTimeBeat).HitTimes
+				Case Else
+					Return Array.Empty(Of Hit).AsEnumerable
+			End Select
+		End Function
+		<Extension> Public Function GetBeat(e As AddClassicBeat, index As Byte) As RDBeat
+			Dim x = e.Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso e.IsBehind(i), New SetRowXs)
+			Dim Synco As Single
+			If x.SyncoBeat >= 0 Then
+				Synco = If(x.SyncoSwing = 0, 0.5, x.SyncoSwing)
+			Else
+				Synco = 0
+			End If
+			If index >= 7 Then
+				Throw New RhythmBaseException("THIS IS 7TH BEAT GAMES!")
+			End If
+			Return e.Beat + e.Tick * 6 - e.Tick * Synco
+		End Function
+		<Extension> Public Function GetPatternString(e As SetRowXs) As String
+			Return Utils.GetPatternString(e.Pattern)
+		End Function
+		<Extension> Public Function CreateAdvanceText(e As FloatingText, beat As RDBeat) As AdvanceText
+			Dim A As New AdvanceText With {.Parent = e, .Beat = beat}
+			e.Children.Add(A)
+			Return A
+		End Function
+		<Extension> Public Function GetPulses(e As AddFreeTimeBeat) As IEnumerable(Of PulseFreeTimeBeat)
+			Dim Result As New List(Of PulseFreeTimeBeat)
+			Dim pulse As Byte = e.Pulse
+			For Each item In e.Parent.Where(Of PulseFreeTimeBeat)(Function(i) i.Active AndAlso i.Beat > e.Beat)
+				Select Case item.Action
+					Case PulseFreeTimeBeat.ActionType.Increment
+						pulse += 1
+						Result.Add(item)
+					Case PulseFreeTimeBeat.ActionType.Decrement
+						pulse = If(pulse > 1, pulse - 1, 0)
+						Result.Add(item)
+					Case PulseFreeTimeBeat.ActionType.Custom
+						pulse = item.CustomPulse
+						Result.Add(item)
+					Case PulseFreeTimeBeat.ActionType.Remove
+						Result.Add(item)
+						Exit For
+				End Select
+				If pulse = 6 Then
+					Exit For
+				End If
+			Next
+			Return Result
+		End Function
+		<Extension> Private Function SplitCopy(e As SayReadyGetSetGo, extraBeat As Single, word As SayReadyGetSetGo.Words) As SayReadyGetSetGo
+			Dim Temp = e.Clone(Of SayReadyGetSetGo)
+			Temp.Beat += extraBeat
+			Temp.PhraseToSay = word
+			Temp.Volume = e.Volume
+			Return Temp
+		End Function
+		<Extension> Public Function Split(e As SayReadyGetSetGo) As IEnumerable(Of SayReadyGetSetGo)
+			If e.Splitable Then
+				Select Case e.PhraseToSay
+					Case SayReadyGetSetGo.Words.SayReaDyGetSetGoNew
+						Return New List(Of SayReadyGetSetGo) From {
+						e.SplitCopy(0, SayReadyGetSetGo.Words.JustSayRea),
+						e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSayDy),
+						e.SplitCopy(e.Tick * 2, SayReadyGetSetGo.Words.JustSayGet),
+						e.SplitCopy(e.Tick * 3, SayReadyGetSetGo.Words.JustSaySet),
+						e.SplitCopy(e.Tick * 4, SayReadyGetSetGo.Words.JustSayGo)}
+					Case SayReadyGetSetGo.Words.SayGetSetGo
+						Return New List(Of SayReadyGetSetGo) From {
+						e.SplitCopy(0, SayReadyGetSetGo.Words.JustSayGet),
+						e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSaySet),
+						e.SplitCopy(e.Tick * 2, SayReadyGetSetGo.Words.JustSayGo)}
+					Case SayReadyGetSetGo.Words.SayReaDyGetSetOne
+						Return New List(Of SayReadyGetSetGo) From {
+						e.SplitCopy(0, SayReadyGetSetGo.Words.JustSayRea),
+						e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSayDy),
+						e.SplitCopy(e.Tick * 2, SayReadyGetSetGo.Words.JustSayGet),
+						e.SplitCopy(e.Tick * 3, SayReadyGetSetGo.Words.JustSaySet),
+						e.SplitCopy(e.Tick * 4, SayReadyGetSetGo.Words.Count1)}
+					Case SayReadyGetSetGo.Words.SayGetSetOne
+						Return New List(Of SayReadyGetSetGo) From {
+						e.SplitCopy(0, SayReadyGetSetGo.Words.JustSayGet),
+						e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSaySet),
+						e.SplitCopy(e.Tick * 2, SayReadyGetSetGo.Words.Count1)}
+					Case SayReadyGetSetGo.Words.SayReadyGetSetGo
+						Return New List(Of SayReadyGetSetGo) From {
+						e.SplitCopy(0, SayReadyGetSetGo.Words.JustSayReady),
+						e.SplitCopy(e.Tick * 2, SayReadyGetSetGo.Words.JustSayGet),
+						e.SplitCopy(e.Tick * 3, SayReadyGetSetGo.Words.JustSaySet),
+						e.SplitCopy(e.Tick * 4, SayReadyGetSetGo.Words.JustSayGo)}
+					Case Else
+				End Select
+			End If
+			Return New List(Of SayReadyGetSetGo) From {e}.AsEnumerable
+		End Function
+		<Extension> Public Function Split(e As AddOneshotBeat) As IEnumerable(Of AddOneshotBeat)
+			Dim L As New List(Of AddOneshotBeat)
+			For i As UInteger = 0 To e.Loops
+				Dim T = e.Clone(Of AddOneshotBeat)
+				T.FreezeBurnMode = e.FreezeBurnMode
+				T.Delay = e.Delay
+				T.PulseType = e.PulseType
+				T.Subdivisions = e.Subdivisions
+				T.SubdivSound = e.SubdivSound
+				T.Tick = e.Tick
+				T.Loops = 0
+				T.Interval = 0
+				T.Beat = New RDBeat(e._beat._calculator, e.Beat.BeatOnly + i * e.Interval)
+				L.Add(T)
+			Next
+			Return L.AsEnumerable
+		End Function
+		<Extension> Public Function Split(e As AddClassicBeat) As IEnumerable(Of BaseBeat)
+			Dim x = e.Parent.LastOrDefault(Of SetRowXs)(Function(i) i.Active AndAlso e.IsBehind(i), New SetRowXs)
+			Return e.Split(x)
+		End Function
+		<Extension> Public Function Split(e As AddClassicBeat, Xs As SetRowXs) As IEnumerable(Of BaseBeat)
+			Dim L As New List(Of BaseBeat)
+			Dim Head As AddFreeTimeBeat = e.Clone(Of AddFreeTimeBeat)()
+			Head.Pulse = 0
+			Head.Hold = e.Hold
+			L.Add(Head)
+			Dim tempBeat = e.Beat
+			For i = 1 To 6
+				If i < 6 AndAlso Xs.Pattern(i) = Patterns.X Then
+					Continue For
+				End If
+				Dim Pulse As PulseFreeTimeBeat = e.Clone(Of PulseFreeTimeBeat)()
+				Pulse.Beat += e.Tick * i
+				If i >= Xs.SyncoBeat Then
+					Pulse.Beat -= Xs.SyncoSwing
+				End If
+				If i Mod 2 = 1 Then
+					Pulse.Beat += e.Tick - If(e.Swing = 0, e.Tick, e.Swing)
+				End If
+				Pulse.Hold = e.Hold
+				Pulse.Action = PulseFreeTimeBeat.ActionType.Increment
+				L.Add(Pulse)
+			Next
+			Return L.AsEnumerable
+		End Function
+		<Extension> Public Function ControllingEvents(e As TagAction) As IEnumerable(Of IGrouping(Of String, BaseEvent))
+			Return e.Beat.baseLevel.GetTaggedEvents(e.ActionTag, e.Action.HasFlag(TagAction.Actions.All))
+		End Function
+		<Extension> Public Function ControllingEventsLeftAligned(e As TagAction) As IEnumerable(Of IGrouping(Of String, BaseEvent))
+			Dim L = e.Beat.baseLevel.ControllingEvents
+			For Each pair In L
+				Dim start = pair(0).Beat
+				For Each item In pair
+					item.Beat -= start.BeatOnly
+				Next
+			Next
+			Return L
+		End Function
 		<Extension> Public Function TextOnly(e As ShowDialogue) As String
 			Dim result = e.Text
 			For Each item In {
-				"shake",
-				"shakeRadius=\d+",
-				"wave",
-				"waveHeight=\d+",
-				"waveSpeed=\d+",
-				"swirl",
-				"swirlRadius=\d+",
-				"swirlSpeed=\d+",
-				"static"
-			}
+"shake",
+"shakeRadius=\d+",
+"wave",
+"waveHeight=\d+",
+"waveSpeed=\d+",
+"swirl",
+"swirlRadius=\d+",
+"swirlSpeed=\d+",
+"static"
+}
 				result = Text.RegularExpressions.Regex.Replace(result, $"\[{item}\]", "")
 			Next
 			Return result
@@ -860,8 +1128,8 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 			End If
 			Dim previousPosition As RDPointE = e.Position
 			Dim previousPivot As New RDPointE(
-				e.Pivot?.X * e.Scale?.X * e.Parent.Size.Width / 100,
-				e.Pivot?.Y * e.Scale?.Y * e.Parent.Size.Height / 100)
+e.Pivot?.X * e.Scale?.X * e.Parent.Size.Width / 100,
+e.Pivot?.Y * e.Scale?.Y * e.Parent.Size.Height / 100)
 			Return previousPosition + New RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue))
 		End Function
 		<Extension> Public Function VisualPosition(e As MoveRoom) As RDPointE

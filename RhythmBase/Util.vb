@@ -150,7 +150,7 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
             Return If(_CPBList.LastOrDefault(Function(i) i.Beat < beat)?.CrotchetsPerBar, 8)
         End Function
     End Class
-    Public Module Others
+    Public Module Utils
         Public Function PercentToPixel(point As (X As Single?, Y As Single?)) As (X As Single?, Y As Single?)
             Return PercentToPixel(point, (352, 198))
         End Function
@@ -177,6 +177,26 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
             Next
             Return copy
             Return Clone(e)
+        End Function
+        Public Function GetPatternString(list As LimitedList(Of Patterns)) As String
+            Dim out = ""
+            For Each item In list
+                Select Case item
+                    Case Patterns.X
+                        out += "x"
+                    Case Patterns.Up
+                        out += "u"
+                    Case Patterns.Down
+                        out += "d"
+                    Case Patterns.Banana
+                        out += "b"
+                    Case Patterns.Return
+                        out += "r"
+                    Case Patterns.None
+                        out += "-"
+                End Select
+            Next
+            Return out
         End Function
     End Module
     Public Module TypeConvert
