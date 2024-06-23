@@ -120,18 +120,19 @@ Module Program
 		'For i = 0 To 100
 		Dim A As New Decoration()
 		Level.Decorations.Add(A)
-		Dim mv2 = A.CreateChildren(Of Move)(1)
+		Dim mv2 = New Move() With {.Beat = Level.DefaultBeat}
 		mv2.Position = New RDPointE(0, 0)
 		mv2.Scale = New RDPointE(0.1F, 0.1F)
-		Level.add(mv2)
+		A.Add(mv2)
 		SpriteCollection.Add(A)
 		'Next
 		Dim Calculator As New BeatCalculator(Level)
 
 		For time = 0 To 182 Step 0.1
 			For index = 0 To Level.Decorations.Count - 1
-				Dim t = Calculator.Time_BeatOnly(TimeSpan.FromSeconds(time))
-				Dim mv = Level.Decorations(index).CreateChildren(Of Move)(t)
+				Dim t = Calculator.BeatOf(TimeSpan.FromSeconds(time))
+				Dim mv = New Move() With {.Beat = t}
+				Level.Decorations(index).Add(mv)
 				Dim frame = Frames((Frames.Length - 1) * time / 182)
 				mv.Position = New RDPointE(CType(Nothing, Single?), CSng(frame((frame.Length - 1) * index / 100) / max))
 				mv.Duration = 1.5

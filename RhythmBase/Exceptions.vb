@@ -108,4 +108,20 @@ To correct this, change the path or filename or set the OverWrite property of {_
             _referType = referType
         End Sub
     End Class
+    Class InvalidRDBeatException
+        Inherits RhythmBaseException
+        Public Overrides ReadOnly Property Message As String = "The beat is invalid, possibly because the beat is not associated with the RDLevel."
+    End Class
+    Class IllegalBeatException
+        Inherits RhythmBaseException
+        Public Item As IBarBeginningEvent
+        Public Overrides ReadOnly Property Message As String
+            Get
+                Return $"This beat is invalid, the event {CType(Item, BaseEvent).Type} only allows the beat to be at the beginning of the bar."
+            End Get
+        End Property
+        Public Sub New(item As IBarBeginningEvent)
+            Me.Item = item
+        End Sub
+    End Class
 End Namespace

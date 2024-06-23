@@ -2,23 +2,31 @@
 Namespace Extensions
 	Public Module Extension
 		Private Function GetRange(e As OrderedEventCollection, index As Index) As (start As Single, [end] As Single)
-			Dim firstEvent = e.First
-			Dim lastEvent = e.Last
-			Return If(index.IsFromEnd, (
-				lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value, 1),
-				lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
-				(firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value, 1),
-				firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
+			Try
+				Dim firstEvent = e.First
+				Dim lastEvent = e.Last
+				Return If(index.IsFromEnd, (
+						lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value, 1),
+						lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1)),
+						(firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value, 1),
+						firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
+			Catch ex As Exception
+				Throw New ArgumentOutOfRangeException(NameOf(index))
+			End Try
 		End Function
 		Private Function GetRange(e As OrderedEventCollection, range As Range) As (start As Single, [end] As Single)
-			Dim firstEvent = e.First
-			Dim lastEvent = e.Last
-			Return (If(range.Start.IsFromEnd,
-				lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
-				firstEvent.Beat._calculator.BarBeat_BeatOnly(Math.Max(range.Start.Value, 1), 1)),
-				If(range.End.IsFromEnd,
-				lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
-				firstEvent.Beat._calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
+			Try
+				Dim firstEvent = e.First
+				Dim lastEvent = e.Last
+				Return (If(range.Start.IsFromEnd,
+					lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.Start.Value, 1),
+					firstEvent.Beat._calculator.BarBeat_BeatOnly(Math.Max(range.Start.Value, 1), 1)),
+					If(range.End.IsFromEnd,
+					lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - range.End.Value + 1, 1),
+					firstEvent.Beat._calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
+			Catch ex As Exception
+				Throw New ArgumentOutOfRangeException(NameOf(range))
+			End Try
 		End Function
 		<Extension> Public Function NullableEquals(e As Single?, obj As Single?) As Boolean
 			Return (e.HasValue And obj.HasValue AndAlso e.Value = obj.Value) OrElse (Not e.HasValue AndAlso Not obj.HasValue)
@@ -565,20 +573,38 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 		<Extension> Public Function Before(Of T As BaseEvent)(e As T) As IEnumerable(Of T)
 			Return e.Beat.baseLevel.Where(Of T)(e.Beat.baseLevel.DefaultBeat, e.Beat)
 		End Function
+		<Extension> Public Function Before(Of T As BaseEvent)(e As BaseEvent) As IEnumerable(Of T)
+			Return e.Beat.baseLevel.Where(Of T)(e.Beat.baseLevel.DefaultBeat, e.Beat)
+		End Function
 		<Extension> Public Function After(Of T As BaseEvent)(e As T) As IEnumerable(Of T)
+			Return e.Beat.baseLevel.Where(Of T)(Function(i) i.Beat > e.Beat)
+		End Function
+		<Extension> Public Function After(Of T As BaseEvent)(e As BaseEvent) As IEnumerable(Of T)
 			Return e.Beat.baseLevel.Where(Of T)(Function(i) i.Beat > e.Beat)
 		End Function
 		<Extension> Public Function Front(Of T As BaseEvent)(e As T) As T
 			Return e.Before.Last
 		End Function
+		<Extension> Public Function Front(Of T As BaseEvent)(e As BaseEvent) As T
+			Return e.Before(Of T).Last
+		End Function
 		<Extension> Public Function FrontOrDefault(Of T As BaseEvent)(e As T) As T
 			Return e.Before.LastOrDefault
+		End Function
+		<Extension> Public Function FrontOrDefault(Of T As BaseEvent)(e As BaseEvent) As T
+			Return e.Before(Of T).LastOrDefault
 		End Function
 		<Extension> Public Function [Next](Of T As BaseEvent)(e As T) As T
 			Return e.After().First
 		End Function
+		<Extension> Public Function [Next](Of T As BaseEvent)(e As BaseEvent) As T
+			Return e.After(Of T).First
+		End Function
 		<Extension> Public Function NextOrDefault(Of T As BaseEvent)(e As T) As T
 			Return e.After().FirstOrDefault
+		End Function
+		<Extension> Public Function NextOrDefault(Of T As BaseEvent)(e As BaseEvent) As T
+			Return e.After(Of T).FirstOrDefault
 		End Function
 
 

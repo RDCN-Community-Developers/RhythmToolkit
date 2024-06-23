@@ -141,6 +141,8 @@ Namespace Events
 	Public Interface ISingleRoomEvent
 		Property Room As RDSingleRoom
 	End Interface
+	Public Interface IBarBeginningEvent
+	End Interface
 	Public MustInherit Class BaseEvent
 		<JsonProperty(NameOf(Type))>
 		Public MustOverride ReadOnly Property Type As EventType
@@ -153,7 +155,9 @@ Namespace Events
 				Return _beat
 			End Get
 			Set(value As RDBeat)
-				If _beat.baseLevel IsNot Nothing Then
+				If _beat.baseLevel IsNot Nothing AndAlso
+					value.baseLevel IsNot Nothing AndAlso
+					_beat.FromSameLevel(value, True) Then
 					_beat.baseLevel.Remove(Me)
 					value.baseLevel.Add(Me)
 				End If
@@ -371,6 +375,8 @@ Namespace Events
 	End Class
 	Public Class PlaySong
 		Inherits BaseBeatsPerMinute
+		Implements IBarBeginningEvent
+
 		Public Song As Audio
 		<JsonIgnore>
 		Public Property Offset As UInteger
@@ -406,18 +412,9 @@ Namespace Events
 	End Class
 	Public Class SetCrotchetsPerBar
 		Inherits BaseEvent
+		Implements IBarBeginningEvent
 		Private _visualBeatMultiplier As Single = 0
-		Private _crotchetsPerBar As UInteger = 7
-		Public Overrides Property Beat As RDBeat
-			Get
-				Return MyBase.Beat
-			End Get
-			Set(value As RDBeat)
-				MyBase.Beat = value
-				ResetTimeLine()
-			End Set
-		End Property
-		'Friend Property Bar As UInteger = 1
+		Protected Friend _crotchetsPerBar As UInteger = 7
 		Public Overrides ReadOnly Property Type As EventType = Events.EventType.SetCrotchetsPerBar
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		Public Property VisualBeatMultiplier As Single
@@ -437,17 +434,11 @@ Namespace Events
 			End Get
 			Set(value As UInteger)
 				_crotchetsPerBar = value - 1
-				'If ParentLevel IsNot Nothing Then
-				'	ResetTimeLine()
-				'End If
+				If _beat._calculator IsNot Nothing Then
+					Beat += 0
+				End If
 			End Set
 		End Property
-		Private Sub ResetTimeLine()
-			For Each item In Beat.baseLevel.Where(Function(i) i.Beat > Me.Beat)
-				item.Beat.ResetCPB()
-			Next
-			Beat._calculator.Refresh()
-		End Sub
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" CPB:{_crotchetsPerBar + 1}"
 		End Function
@@ -479,6 +470,7 @@ Namespace Events
 	End Class
 	Public Class SetHeartExplodeVolume
 		Inherits BaseEvent
+		Implements IBarBeginningEvent
 		Public Property Volume As UInteger
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetHeartExplodeVolume
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song

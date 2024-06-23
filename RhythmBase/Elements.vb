@@ -258,7 +258,7 @@ Namespace Components
 		Implements IComparable(Of RDBeat)
 		Implements IEquatable(Of RDBeat)
 		Friend _calculator As BeatCalculator
-		Private _isBeatLoaded As Boolean
+		Private Shared _isBeatLoaded As Boolean
 		Private _isBarBeatLoaded As Boolean
 		Private _isTimeSpanLoaded As Boolean
 		Private _isBPMLoaded As Boolean
@@ -283,13 +283,13 @@ Namespace Components
 				IfNullThrowException()
 				If Not _isBeatLoaded Then
 					If _isBarBeatLoaded Then
-						_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat)
+						_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
 					ElseIf _isTimeSpanLoaded Then
-						_beat = _calculator.Time_BeatOnly(_TimeSpan)
+						_beat = _calculator.Time_BeatOnly(_TimeSpan) - 1
 					End If
 					_isBeatLoaded = True
 				End If
-				Return _beat
+				Return _beat + 1
 			End Get
 		End Property
 		Public ReadOnly Property BarBeat As (bar As UInteger, beat As Single)
@@ -297,11 +297,11 @@ Namespace Components
 				IfNullThrowException()
 				If Not _isBarBeatLoaded Then
 					If _isBeatLoaded Then
-						_BarBeat = _calculator.BeatOnly_BarBeat(_beat)
+						_BarBeat = _calculator.BeatOnly_BarBeat(_beat + 1)
 					ElseIf _isTimeSpanLoaded Then
-						_beat = _calculator.Time_BeatOnly(_TimeSpan)
+						_beat = _calculator.Time_BeatOnly(_TimeSpan) - 1
 						_isBeatLoaded = True
-						_BarBeat = _calculator.BeatOnly_BarBeat(_beat)
+						_BarBeat = _calculator.BeatOnly_BarBeat(_beat + 1)
 					End If
 					_isBarBeatLoaded = True
 				End If
@@ -313,11 +313,11 @@ Namespace Components
 				IfNullThrowException()
 				If Not _isTimeSpanLoaded Then
 					If _isBeatLoaded Then
-						_TimeSpan = _calculator.BeatOnly_Time(_beat)
+						_TimeSpan = _calculator.BeatOnly_Time(_beat + 1)
 					ElseIf _isBarBeatLoaded Then
-						_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat)
+						_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
 						_isBeatLoaded = True
-						_TimeSpan = _calculator.BeatOnly_Time(_beat)
+						_TimeSpan = _calculator.BeatOnly_Time(_beat + 1)
 					End If
 					_isTimeSpanLoaded = True
 				End If
@@ -342,24 +342,39 @@ Namespace Components
 				Return _CPB
 			End Get
 		End Property
-		Public Sub New(calculator As BeatCalculator, beatOnly As Single)
-			_calculator = calculator
-			_beat = beatOnly
+		Shared Sub New()
 			_isBeatLoaded = True
+		End Sub
+		Public Sub New(beatOnly As Single)
+			_beat = beatOnly - 1
+		End Sub
+		Public Sub New(calculator As BeatCalculator, beatOnly As Single)
+			If beatOnly < 1 Then
+				Throw New OverflowException($"The beat must not be less than 1, but {beatOnly} is given")
+			End If
+			_calculator = calculator
+			_beat = beatOnly - 1
 		End Sub
 		Public Sub New(calculator As BeatCalculator, bar As UInteger, beat As Single)
+			If bar < 1 Then
+				Throw New OverflowException($"The bar must not be less than 1, but {bar} is given")
+			End If
+			If beat < 1 Then
+				Throw New OverflowException($"The beat must not be less than 1, but {beat} is given")
+			End If
 			_calculator = calculator
 			_BarBeat = (bar, beat)
-			_beat = _calculator.BarBeat_BeatOnly(bar, beat)
+			_beat = _calculator.BarBeat_BeatOnly(bar, beat) - 1
 			_isBarBeatLoaded = True
-			_isBeatLoaded = True
 		End Sub
 		Public Sub New(calculator As BeatCalculator, timeSpan As TimeSpan)
+			If timeSpan < TimeSpan.Zero Then
+				Throw New OverflowException($"The time must not be less than zero, but {timeSpan} is given")
+			End If
 			_calculator = calculator
 			_TimeSpan = timeSpan
-			_beat = _calculator.Time_BeatOnly(timeSpan)
+			_beat = _calculator.Time_BeatOnly(timeSpan) - 1
 			_isTimeSpanLoaded = True
-			_isBeatLoaded = True
 		End Sub
 		Public Shared Function [Default](calculator As BeatCalculator) As RDBeat
 			Return New RDBeat(calculator, 1)
@@ -374,12 +389,23 @@ Namespace Components
 				Return False
 			End If
 		End Function
+		Public Shared Function FromSameLevelOrNull(a As RDBeat, b As RDBeat, Optional [throw] As Boolean = False) As Boolean
+			Return a.baseLevel Is Nothing OrElse b.baseLevel Is Nothing OrElse FromSameLevel(a, b, [throw])
+		End Function
 		Public Function FromSameLevel(b As RDBeat, Optional [throw] As Boolean = False) As Boolean
 			Return FromSameLevel(Me, b, [throw])
 		End Function
+		Public Function FromSameLevelOrNull(b As RDBeat, Optional [throw] As Boolean = False) As Boolean
+			Return baseLevel Is Nothing OrElse b.baseLevel Is Nothing OrElse FromSameLevel(b, [throw])
+		End Function
+		Public Function WithoutConnection() As RDBeat
+			Dim result = Me
+			result._calculator = Nothing
+			Return result
+		End Function
 		Private Sub IfNullThrowException()
 			If IsEmpty Then
-				Throw New RhythmBaseException("The beat cannot do anything because it cannot be calculated.")
+				Throw New InvalidRDBeatException
 			End If
 		End Sub
 		Public Sub ResetCache()
@@ -389,7 +415,7 @@ Namespace Components
 		End Sub
 		Public Sub ResetBPM()
 			If Not _isBeatLoaded Then
-				_beat = _calculator.Time_BeatOnly(_TimeSpan)
+				_beat = _calculator.Time_BeatOnly(_TimeSpan) - 1
 			End If
 			_isBeatLoaded = True
 			_isTimeSpanLoaded = False
@@ -397,27 +423,17 @@ Namespace Components
 		End Sub
 		Public Sub ResetCPB()
 			If Not _isBeatLoaded Then
-				_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat)
+				_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
 			End If
 			_isBeatLoaded = True
 			_isBarBeatLoaded = False
 			_isCPBLoaded = False
 		End Sub
-		Public Shared Operator +(a As RDBeat, b As RDBeat) As RDBeat
-			If FromSameLevel(a, b, True) Then
-				Return New RDBeat(a._calculator, a.BeatOnly + b.BeatOnly)
-			End If
-		End Operator
 		Public Shared Operator +(a As RDBeat, b As Single) As RDBeat
 			Return New RDBeat(a._calculator, a.BeatOnly + b)
 		End Operator
 		Public Shared Operator -(a As RDBeat, b As Single) As RDBeat
 			Return New RDBeat(a._calculator, a.BeatOnly - b)
-		End Operator
-		Public Shared Operator -(a As RDBeat, b As RDBeat) As RDBeat
-			If FromSameLevel(a, b, True) Then
-				Return New RDBeat(a._calculator, a.BeatOnly - b.BeatOnly)
-			End If
 		End Operator
 		Public Shared Operator >(a As RDBeat, b As RDBeat) As Boolean
 			Return FromSameLevel(a, b, True) AndAlso a.BeatOnly > b.BeatOnly
@@ -433,7 +449,7 @@ Namespace Components
 		End Operator
 		Public Shared Operator =(a As RDBeat, b As RDBeat) As Boolean
 			Return FromSameLevel(a, b, True) AndAlso
-				(a._isBeatLoaded AndAlso b._isBeatLoaded AndAlso a._beat = b._beat) OrElse
+				(a._beat = b._beat) OrElse
 				(a._isBarBeatLoaded AndAlso b._isBarBeatLoaded AndAlso a._BarBeat.Bar = b._BarBeat.Bar AndAlso a._BarBeat.Beat = b._BarBeat.Beat) OrElse
 				(a._isTimeSpanLoaded AndAlso b._isTimeSpanLoaded AndAlso a._TimeSpan = b._TimeSpan) OrElse
 				(a.BeatOnly = b.BeatOnly)
@@ -1424,6 +1440,17 @@ Namespace LevelElements
 				Me.Add(item)
 			Next
 		End Sub
+		Public Shared ReadOnly Property [Default] As RDLevel
+			Get
+				Dim rdl As New RDLevel From {
+					New PlaySong With {.Song = New Audio With {.Filename = "sndOrientalTechno"}},
+					New SetTheme With {.Preset = SetTheme.Theme.OrientalTechno}
+				}
+				Dim samurai = rdl.CreateRow(New RDSingleRoom(0), New RDCharacter(Characters.Samurai))
+				samurai.Add(New AddClassicBeat)
+				Return rdl
+			End Get
+		End Property
 		Public Function CreateDecoration(room As RDSingleRoom, Optional sprite As RDSprite = Nothing) As Decoration
 			Dim temp As New Decoration(room) With {.Parent = Me, .File = sprite}
 			_Decorations.Add(temp)
@@ -1517,7 +1544,12 @@ Namespace LevelElements
 
 			'添加默认节拍
 			If item._beat.IsEmpty Then
-				item._beat = Calculator.BeatOf(1)
+				item._beat._calculator = Calculator
+			End If
+
+			'部分事件只能在小节的开头
+			If TryCast(item, IBarBeginningEvent) IsNot Nothing AndAlso item._beat.BarBeat.beat <> 1 Then
+				Throw New IllegalBeatException(item)
 			End If
 
 			'更改节拍的关联关卡
@@ -1561,10 +1593,12 @@ Namespace LevelElements
 		Public Overrides Function Remove(item As BaseEvent) As Boolean
 			If RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.RemoveSafely(CType(item, BaseRowAction))) Then
 				MyBase.Remove(item)
+				item._beat._calculator = Nothing
 				Return True
 			End If
 			If DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.RemoveSafely(CType(item, BaseDecorationAction))) Then
 				MyBase.Remove(item)
+				item._beat._calculator = Nothing
 				Return True
 			End If
 			If Contains(item) Then
@@ -1573,76 +1607,100 @@ Namespace LevelElements
 				ElseIf ConvertToEnums(Of BaseBeatsPerMinute).Contains(item.Type) Then
 					Return RemoveBaseBeatsPerMinute(item)
 				Else
-					Return MyBase.Remove(item)
+					Dim result = MyBase.Remove(item)
+					item._beat._calculator = Nothing
+					Return result
 				End If
 			End If
 			Return False
 		End Function
-		Private Sub AddSetCrotchetsPerBar(item As SetCrotchetsPerBar)
+		Protected Friend Sub AddSetCrotchetsPerBar(item As SetCrotchetsPerBar)
 
 			Dim frt = item.FrontOrDefault
 			Dim nxt = item.NextOrDefault
 
-			'忽略无意义 CPB
-			If frt?.CrotchetsPerBar = If(item?.CrotchetsPerBar, 8) Then
-				Return
-			End If
+			''忽略无意义 CPB
+			'If frt?.CrotchetsPerBar = If(item?.CrotchetsPerBar, 8) Then
+			'	Return
+			'End If
 
 			'更新拍号
-			RefreshCPBs(item.Beat)
+			RefreshCPBs(item._beat)
 			'添加事件
 			MyBase.Add(item)
 
+			'更新计算器
+			Calculator.Refresh()
 
 			If nxt IsNot Nothing Then
-				Dim interval = nxt.Beat.BeatOnly - item.Beat.BeatOnly
+				Dim nxtE = item.After(Of BaseEvent).FirstOrDefault(Function(i) TryCast(i, IBarBeginningEvent) IsNot Nothing AndAlso
+																	   i.Type <> EventType.SetCrotchetsPerBar AndAlso
+																	   i._beat < nxt._beat)
+				Dim interval = If(nxtE?._beat.BeatOnly, nxt._beat.BeatOnly) - item._beat.BeatOnly
 				Dim c = interval Mod item.CrotchetsPerBar
 				If c > 0 Then
 					c = If(c < 2, c + item.CrotchetsPerBar, c)
-					MyBase.Add(New SetCrotchetsPerBar() With {.Beat = item.Beat + interval - c, .CrotchetsPerBar = c})
+					MyBase.Add(New SetCrotchetsPerBar() With {._beat = item._beat + interval - c, ._crotchetsPerBar = c - 1})
 				ElseIf nxt.CrotchetsPerBar = item.CrotchetsPerBar Then
 					MyBase.Remove(nxt)
+				End If
+
+				If nxtE IsNot Nothing Then
+					MyBase.Add(New SetCrotchetsPerBar() With {._beat = nxtE._beat, ._crotchetsPerBar = If(frt?.CrotchetsPerBar, 8) - 1})
 				End If
 			End If
 
 			'更新计算器
 			Calculator.Refresh()
 		End Sub
-		Private Function RemoveSetCrotchetsPerBar(item As SetCrotchetsPerBar) As Boolean
+		Protected Friend Function RemoveSetCrotchetsPerBar(item As SetCrotchetsPerBar) As Boolean
 
 			Dim frt = item.FrontOrDefault
 			Dim nxt = item.NextOrDefault
 
 			If nxt IsNot Nothing Then
+				Dim nxtE = item.After(Of BaseEvent).FirstOrDefault(Function(i) TryCast(i, IBarBeginningEvent) IsNot Nothing AndAlso
+																	   i.Type <> EventType.SetCrotchetsPerBar AndAlso
+																	   i._beat < nxt._beat)
 				Dim cpb = item.CrotchetsPerBar
-				Dim interval = nxt.Beat.BeatOnly - item.Beat.BeatOnly
+				Dim interval = If(nxtE?._beat.BeatOnly, nxt._beat.BeatOnly) - item._beat.BeatOnly
 				Dim c = interval Mod If(frt?.CrotchetsPerBar, 8)
 				If c > 0 Then
+					c = If(c < 2, c + item.CrotchetsPerBar, c)
 					If c = nxt.CrotchetsPerBar Then
 						MyBase.Remove(nxt)
 					End If
-					MyBase.Add(New SetCrotchetsPerBar With {.Beat = item.Beat + interval - c, .CrotchetsPerBar = c})
+					MyBase.Add(New SetCrotchetsPerBar With {._beat = item._beat + interval - c, ._crotchetsPerBar = c - 1})
 				Else
-					If nxt.CrotchetsPerBar = If(frt?.CrotchetsPerBar, 8) Then
+					If nxtE Is Nothing AndAlso nxt.CrotchetsPerBar = If(frt?.CrotchetsPerBar, 8) Then
 						MyBase.Remove(nxt)
 					End If
 				End If
+				If nxtE IsNot Nothing Then
+					MyBase.Add(New SetCrotchetsPerBar() With {._beat = nxtE._beat, ._crotchetsPerBar = If(frt?.CrotchetsPerBar, 8) - 1})
+				End If
 				Calculator.Refresh()
 			End If
+
+			'更新计算器
+			Calculator.Refresh()
+
 			Dim result = MyBase.Remove(item)
 			RefreshCPBs(item.Beat)
+			item._beat._calculator = Nothing
 			Calculator.Refresh()
 			Return result
 		End Function
-		Private Sub AddBaseBeatsPerMinute(item As BaseBeatsPerMinute)
+		Protected Friend Sub AddBaseBeatsPerMinute(item As BaseBeatsPerMinute)
 			'更新 BPM
 			RefreshBPMs(item.Beat)
 			'添加事件
 			MyBase.Add(item)
 		End Sub
-		Private Function RemoveBaseBeatsPerMinute(item As BaseBeatsPerMinute) As Boolean
+		Protected Friend Function RemoveBaseBeatsPerMinute(item As BaseBeatsPerMinute) As Boolean
 			Dim result = MyBase.Remove(item)
 			RefreshBPMs(item.Beat)
+			item._beat._calculator = Nothing
 			Return result
 		End Function
 		Private Sub RefreshBPMs(start As RDBeat)
