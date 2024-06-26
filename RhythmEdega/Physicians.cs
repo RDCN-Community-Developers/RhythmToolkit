@@ -13,14 +13,14 @@ namespace Physicians
         static BeatCalculator Calculator;
         class LegalBeat
         {
-            public BaseBeat? beat;
+            public RDBaseBeat? beat;
             public HashSet<(Warn, string)> warnInfo = new();
             public TimeSpan time;
         }
 
         class BeatAudio
         {
-            public Audio? Audio;
+            public RDAudio? Audio;
             public LegalBeat? Parent;
             public float Beat;
             public BeatRangeType Type;
@@ -113,9 +113,9 @@ namespace Physicians
 
         static void DetectingHeckSwing(string name)
         {
-            foreach (var item in LegalList.Where(i => i.beat.Type == EventType.AddClassicBeat))
+            foreach (var item in LegalList.Where(i => i.beat.Type == RDEventType.AddClassicBeat))
             {
-                if ((item.beat as AddClassicBeat).Swing == 1)
+                if ((item.beat as RDAddClassicBeat).Swing == 1)
                 {
                     item.warnInfo.Add((Warn.Illegal, $"{name}"));
                 }
@@ -165,14 +165,14 @@ namespace Physicians
 
         static void DetectingBadRowXs(string name)
         {
-            foreach (var item in LegalList.Where(i => i.beat!.Type == EventType.AddClassicBeat))  // 对于每一个七拍
+            foreach (var item in LegalList.Where(i => i.beat!.Type == RDEventType.AddClassicBeat))  // 对于每一个七拍
             {
-                var beat = item.beat as AddClassicBeat;
+                var beat = item.beat as RDAddClassicBeat;
                 if (beat!.RowXs[0] == Patterns.X) // 如果首拍带 x
-                    item.warnInfo.Add((Warn.Illegal, $"{name}: {SetRowXs.GetPatternString(beat.RowXs)}"));
+                    item.warnInfo.Add((Warn.Illegal, $"{name}: {RDSetRowXs.GetPatternString(beat.RowXs)}"));
                 else if (beat.RowXs.Count(i => i == Patterns.X) >= 4 && // 如果 x 个数 >=4
-                    SetRowXs.GetPatternString(beat.RowXs) != "-xx-xx") // 且不是标准三拍子
-                    item.warnInfo.Add((Warn.Illegal, $"{name}: {SetRowXs.GetPatternString(beat.RowXs)}"));
+                    RDSetRowXs.GetPatternString(beat.RowXs) != "-xx-xx") // 且不是标准三拍子
+                    item.warnInfo.Add((Warn.Illegal, $"{name}: {RDSetRowXs.GetPatternString(beat.RowXs)}"));
             }
         }
 
@@ -188,14 +188,14 @@ namespace Physicians
 
 
             //获取所有节拍事件，初始化标记为空
-            foreach (BaseBeat item in level.Where<BaseBeat>())
+            foreach (RDBaseBeat item in level.Where<RDBaseBeat>())
             {
                 if (item.Active &&
-                    (item.Type == EventType.AddOneshotBeat ||
-                    item.Type == EventType.AddClassicBeat ||
-                    item.Type == EventType.AddFreeTimeBeat ||
-                    item.Type == EventType.PulseFreeTimeBeat) &&
-                    item.Player != PlayerType.CPU)
+                    (item.Type == RDEventType.AddOneshotBeat ||
+                    item.Type == RDEventType.AddClassicBeat ||
+                    item.Type == RDEventType.AddFreeTimeBeat ||
+                    item.Type == RDEventType.PulseFreeTimeBeat) &&
+                    item.Player != RDPlayerType.CPU)
                 {
                     LegalList.Add(new LegalBeat { beat = item });
                 }
@@ -306,8 +306,8 @@ namespace Physicians
         }
         public void SplitClassicBeat()
         {
-            List<BaseEvent> events = new();
-            foreach (AddClassicBeat item in level.Where<AddClassicBeat>())
+            List<RDBaseEvent> events = new();
+            foreach (RDAddClassicBeat item in level.Where<RDAddClassicBeat>())
             {
                 events.AddRange(item.Split());
                 item.Active = false;
@@ -316,16 +316,16 @@ namespace Physicians
         }
         public void PressOnEveryBeat()
         {
-            List<BaseBeat> Beats = new();
-            List<AddFreeTimeBeat> FreeTimes = new();
-            foreach (AddClassicBeat item in level.Where<AddClassicBeat>())
+            List<RDBaseBeat> Beats = new();
+            List<RDAddFreeTimeBeat> FreeTimes = new();
+            foreach (RDAddClassicBeat item in level.Where<RDAddClassicBeat>())
             {
                 Beats.AddRange(item.Split());
                 item.Active = false;
             }
-            foreach (BaseBeat item in Beats)
+            foreach (RDBaseBeat item in Beats)
             {
-                var n = item.Clone<AddFreeTimeBeat>();
+                var n = item.Clone<RDAddFreeTimeBeat>();
                 n.Pulse = 6;
                 FreeTimes.Add(n);
             }
@@ -333,15 +333,15 @@ namespace Physicians
         }
         public void DisposeTags()
         {
-            List<BaseEvent> Events = new();
-            foreach (TagAction item in level.Where<TagAction>())
+            List<RDBaseEvent> Events = new();
+            foreach (RDTagAction item in level.Where<RDTagAction>())
             {
-                var EventGroup = level.GetTaggedEvents(item.ActionTag, item.Action != TagAction.Actions.Run);
+                var EventGroup = level.GetTaggedEvents(item.ActionTag, item.Action != RDTagAction.Actions.Run);
                 foreach (var Group in EventGroup)
                 {
                     float StartBeat = Group.First().Beat.BeatOnly;
                     var CopiedGroup = Group.Select(i => Utils.Clone(i)).ToList();
-                    foreach (BaseEvent Copy in CopiedGroup)
+                    foreach (RDBaseEvent Copy in CopiedGroup)
                     {
                         Copy.Beat += (item.Beat - StartBeat);
                         Copy.Tag = "";

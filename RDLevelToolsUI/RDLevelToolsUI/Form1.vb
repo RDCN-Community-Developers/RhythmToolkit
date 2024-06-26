@@ -70,7 +70,7 @@ Public Class Form1
 		Dim processingEvent = processingLevel(viewIndex)
 		Dim T As Type = processingEvent.GetType
 
-		Dim enump = GetType(EventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
+		Dim enump = GetType(RDEventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
 
 		Dim nameLabel As New Label With {
 			.Text = Manager.GetValue(enump),

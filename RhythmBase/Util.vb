@@ -7,40 +7,54 @@ Imports Newtonsoft.Json.Linq
 '' </summary>
 Namespace Utils
     Public Module [Global]
-        Private ReadOnly ETypes As List(Of Type) =
-            GetType(BaseEvent).Assembly.GetTypes() _
-                .Where(Function(i) i.IsAssignableTo(GetType(BaseEvent))).ToList
-        Public ReadOnly TypesToEnum As Dictionary(Of Type, EventType()) =
-            ETypes.ToDictionary(Function(i) i,
-                          Function(i) ETypes _
+
+        Private ReadOnly RDETypes As List(Of Type) =
+            GetType(RDBaseEvent).Assembly.GetTypes() _
+                .Where(Function(i) i.IsAssignableTo(GetType(RDBaseEvent))).ToList
+        Public ReadOnly RDETypesToEnum As Dictionary(Of Type, RDEventType()) =
+            RDETypes.ToDictionary(Function(i) i,
+                          Function(i) RDETypes _
                               .Where(Function(j) (j = i OrElse j.IsAssignableTo(i)) AndAlso Not j.IsAbstract) _
-                              .Select(Function(j) ConvertToEnum(j)) _
+                              .Select(Function(j) RDConvertToEnum(j)) _
                               .ToArray)
-        Public ReadOnly EnumToType As Dictionary(Of EventType, Type) =
-            [Enum].GetValues(Of EventType).ToDictionary(Function(i) i, Function(i) i.ConvertToType)
-        Public ReadOnly RowTypes As List(Of EventType) =
-            ConvertToEnums(Of BaseRowAction)().ToList
-        Public ReadOnly DecorationTypes As List(Of EventType) =
-            ConvertToEnums(Of BaseDecorationAction)().ToList
+        Public ReadOnly RDEnumToEType As Dictionary(Of RDEventType, Type) =
+            [Enum].GetValues(Of RDEventType).ToDictionary(Function(i) i, Function(i) i.ConvertToType)
+
+        Private ReadOnly ADETypes As List(Of Type) =
+            GetType(ADBaseAction).Assembly.GetTypes() _
+                .Where(Function(i) i.IsAssignableTo(GetType(ADBaseAction))).ToList
+        Public ReadOnly ADETypesToEnum As Dictionary(Of Type, ADEventType()) =
+            ADETypes.ToDictionary(Function(i) i,
+                          Function(i) ADETypes _
+                              .Where(Function(j) (j = i OrElse j.IsAssignableTo(i)) AndAlso Not j.IsAbstract) _
+                              .Select(Function(j) ADConvertToEnum(j)) _
+                              .ToArray)
+        Public ReadOnly ADEnumToEType As Dictionary(Of ADEventType, Type) =
+            [Enum].GetValues(Of ADEventType).ToDictionary(Function(i) i, Function(i) i.ConvertToType)
+
+        Public ReadOnly RowTypes As List(Of RDEventType) =
+            ConvertToRDEnums(Of RDBaseRowAction)().ToList
+        Public ReadOnly DecorationTypes As List(Of RDEventType) =
+            ConvertToRDEnums(Of RDBaseDecorationAction)().ToList
     End Module
     Public Class BeatCalculator
         Friend ReadOnly Collection As RDLevel
-        Private _BPMList As List(Of BaseBeatsPerMinute)
-        Private _CPBList As List(Of SetCrotchetsPerBar)
-        Public Sub New(CPBCollection As IEnumerable(Of SetCrotchetsPerBar), BPMCollection As IEnumerable(Of BaseBeatsPerMinute))
+        Private _BPMList As List(Of RDBaseBeatsPerMinute)
+        Private _CPBList As List(Of RDSetCrotchetsPerBar)
+        Public Sub New(CPBCollection As IEnumerable(Of RDSetCrotchetsPerBar), BPMCollection As IEnumerable(Of RDBaseBeatsPerMinute))
             _BPMList = BPMCollection.OrderBy(Function(i) i.Beat).ToList
             _CPBList = CPBCollection.OrderBy(Function(i) i.Beat).ToList
             'Initialize()
         End Sub
         Public Sub New(level As RDLevel)
             Collection = level
-            _BPMList = level.Where(Of BaseBeatsPerMinute).ToList
-            _CPBList = level.Where(Of SetCrotchetsPerBar).ToList
+            _BPMList = level.Where(Of RDBaseBeatsPerMinute).ToList
+            _CPBList = level.Where(Of RDSetCrotchetsPerBar).ToList
             'Initialize()
         End Sub
         Public Sub Refresh()
-            _BPMList = Collection.Where(Of BaseBeatsPerMinute).ToList
-            _CPBList = Collection.Where(Of SetCrotchetsPerBar).ToList
+            _BPMList = Collection.Where(Of RDBaseBeatsPerMinute).ToList
+            _CPBList = Collection.Where(Of RDSetCrotchetsPerBar).ToList
             'If _CPBList.Count <> 0 Then
             '    _CPBList(0).Bar = _CPBList(0).Beat.BarBeat.bar
             '    Dim CPB = _CPBList(0).CrotchetsPerBar
@@ -70,10 +84,10 @@ Namespace Utils
         Public Function IntervalTime(beat1 As Single, beat2 As Single) As TimeSpan
             Return BeatOnly_Time(beat1) - BeatOnly_Time(beat2)
         End Function
-        Public Function IntervalTime(event1 As BaseEvent, event2 As BaseEvent) As TimeSpan
+        Public Function IntervalTime(event1 As RDBaseEvent, event2 As RDBaseEvent) As TimeSpan
             Return IntervalTime(event1.Beat.BeatOnly, event2.Beat.BeatOnly)
         End Function
-        Public Shared Function BarBeat_BeatOnly(bar As UInteger, beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As Single
+        Public Shared Function BarBeat_BeatOnly(bar As UInteger, beat As Single, Collection As IEnumerable(Of RDSetCrotchetsPerBar)) As Single
             Dim foreCPB As (BeatOnly As Single, Bar As UInteger, CPB As UInteger) = (1, 1, 8)
             Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Beat.BarBeat.bar < bar)
             If LastCPB IsNot Nothing Then
@@ -82,7 +96,7 @@ Namespace Utils
             Dim result = foreCPB.BeatOnly + (bar - foreCPB.Bar) * foreCPB.CPB + beat - 1
             Return result
         End Function
-        Public Shared Function BeatOnly_BarBeat(beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As (bar As UInteger, beat As Single)
+        Public Shared Function BeatOnly_BarBeat(beat As Single, Collection As IEnumerable(Of RDSetCrotchetsPerBar)) As (bar As UInteger, beat As Single)
             Dim foreCPB As (BeatOnly As Single, Bar As UInteger, CPB As UInteger) = (1, 1, 8)
             Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Beat.BeatOnly < beat)
             If LastCPB IsNot Nothing Then
@@ -92,14 +106,14 @@ Namespace Utils
                 (beat - foreCPB.BeatOnly) Mod foreCPB.CPB + 1)
             Return result
         End Function
-        Private Shared Function BeatOnly_Time(beatOnly As Single, BPMCollection As IEnumerable(Of BaseBeatsPerMinute)) As TimeSpan
+        Private Shared Function BeatOnly_Time(beatOnly As Single, BPMCollection As IEnumerable(Of RDBaseBeatsPerMinute)) As TimeSpan
             Dim fore As (BeatOnly As Single, BPM As Single) = (1, 100)
             Dim foreBPM = BPMCollection.FirstOrDefault()
             If foreBPM IsNot Nothing Then
                 fore = (foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute)
             End If
             Dim resultMinute As Single = 0
-            For Each item As BaseBeatsPerMinute In BPMCollection
+            For Each item As RDBaseBeatsPerMinute In BPMCollection
                 If beatOnly > item.Beat.BeatOnly Then
                     resultMinute += (item.Beat.BeatOnly - fore.BeatOnly) / fore.BPM
                     fore = (item.Beat.BeatOnly, item.BeatsPerMinute)
@@ -110,14 +124,14 @@ Namespace Utils
             resultMinute += (beatOnly - fore.BeatOnly) / fore.BPM
             Return TimeSpan.FromMinutes(resultMinute)
         End Function
-        Private Shared Function Time_BeatOnly(timeSpan As TimeSpan, BPMCollection As IEnumerable(Of BaseBeatsPerMinute)) As Single
+        Private Shared Function Time_BeatOnly(timeSpan As TimeSpan, BPMCollection As IEnumerable(Of RDBaseBeatsPerMinute)) As Single
             Dim fore As (BeatOnly As Single, BPM As Single) = (1, 100)
             Dim foreBPM = BPMCollection.FirstOrDefault()
             If foreBPM IsNot Nothing Then
                 fore = (foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute)
             End If
             Dim beatOnly As Single = 1
-            For Each item As BaseBeatsPerMinute In BPMCollection
+            For Each item As RDBaseBeatsPerMinute In BPMCollection
                 If timeSpan > BeatOnly_Time(item.Beat.BeatOnly, BPMCollection) Then
                     beatOnly +=
 (
@@ -200,49 +214,101 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
         End Function
     End Module
     Public Module TypeConvert
-        Public Function ConvertToEnum(type As Type) As EventType
-            If TypesToEnum Is Nothing Then
-                Dim result As EventType
-                If [Enum].TryParse(type.Name, result) Then
-                    Return result
+        Public Function RDConvertToEnum(type As Type) As RDEventType
+            If RDETypesToEnum Is Nothing Then
+                Dim result As RDEventType
+                If type.Name.StartsWith("RD") Then
+                    Dim name = type.Name.Substring(2)
+                    If [Enum].TryParse(name, result) Then
+                        Return result
+                    End If
                 End If
                 Throw New IllegalEventTypeException(type, "Unable to find a matching EventType.")
             Else
                 Try
-                    Return TypesToEnum(type).Single
+                    Return RDETypesToEnum(type).Single
                 Catch ex As Exception
                     Throw New IllegalEventTypeException(type, "Multiple matching EventTypes were found. Please check if the type is an abstract class type.", New ArgumentException("Multiple matching EventTypes were found. Please check if the type is an abstract class type.", NameOf(type)))
                 End Try
             End If
         End Function
-        Public Function ConvertToEnum(Of T As {BaseEvent, New})() As EventType
-            Return ConvertToEnum(GetType(T))
+        Public Function ADConvertToEnum(type As Type) As ADEventType
+            If ADETypesToEnum Is Nothing Then
+                Dim result As ADEventType
+                If type.Name.StartsWith("AD") Then
+                    Dim name = type.Name.Substring(2)
+                    If [Enum].TryParse(name, result) Then
+                        Return result
+                    End If
+                End If
+                Throw New IllegalEventTypeException(type, "Unable to find a matching EventType.")
+            Else
+                Try
+                    Return ADETypesToEnum(type).Single
+                Catch ex As Exception
+                    Throw New IllegalEventTypeException(type, "Multiple matching EventTypes were found. Please check if the type is an abstract class type.", New ArgumentException("Multiple matching EventTypes were found. Please check if the type is an abstract class type.", NameOf(type)))
+                End Try
+            End If
         End Function
-        Public Function ConvertToEnums(Of T As BaseEvent)() As EventType()
+        Public Function ConvertToRDEnum(Of T As {RDBaseEvent, New})() As RDEventType
+            Return RDConvertToEnum(GetType(T))
+        End Function
+        Public Function ConvertToADEnum(Of T As {ADBaseAction, New})() As ADEventType
+            Return ADConvertToEnum(GetType(T))
+        End Function
+        Public Function ConvertToRDEnums(Of T As RDBaseEvent)() As RDEventType()
             Try
-                Return TypesToEnum(GetType(T))
+                Return RDETypesToEnum(GetType(T))
+            Catch ex As Exception
+                Throw New IllegalEventTypeException(GetType(T), "This exception is not expected. Please contact the developer to handle this exception.", ex)
+            End Try
+        End Function
+        Public Function ConvertToADEnums(Of T As RDBaseEvent)() As ADEventType()
+            Try
+                Return ADETypesToEnum(GetType(T))
             Catch ex As Exception
                 Throw New IllegalEventTypeException(GetType(T), "This exception is not expected. Please contact the developer to handle this exception.")
             End Try
         End Function
-        Public Function ConvertToType(type As String) As Type
-            Dim result As EventType
+        Public Function RDConvertToType(type As String) As Type
+            Dim result As RDEventType
             If [Enum].TryParse(type, result) Then
                 Return result.ConvertToType()
             End If
-            Return EventType.CustomEvent.ConvertToType
+            Return RDEventType.CustomEvent.ConvertToType
         End Function
-        <Extension>
-        Public Function ConvertToType(type As EventType) As Type
-            If EnumToType Is Nothing Then
-                Dim result = System.Type.GetType($"{GetType(BaseEvent).Namespace}.{type}")
+        Public Function ADConvertToType(type As String) As Type
+            Dim result As ADEventType
+            If [Enum].TryParse(type, result) Then
+                Return result.ConvertToType()
+            End If
+            Return ADEventType.CustomEvent.ConvertToType
+        End Function
+        <Extension> Public Function ConvertToType(type As RDEventType) As Type
+            If RDEnumToEType Is Nothing Then
+                Dim result = System.Type.GetType($"{GetType(RDBaseEvent).Namespace}.RD{type}")
                 If result Is Nothing Then
                     Throw New RhythmBaseException($"Illegal Type: {type}.")
                 End If
                 Return result
             Else
                 Try
-                    Return EnumToType(type)
+                    Return RDEnumToEType(type)
+                Catch ex As Exception
+                    Throw New IllegalEventTypeException(type, "This value does not exist in the EventType enumeration.")
+                End Try
+            End If
+        End Function
+        <Extension> Public Function ConvertToType(type As ADEventType) As Type
+            If ADEnumToEType Is Nothing Then
+                Dim result = System.Type.GetType($"{GetType(ADBaseAction).Namespace}.AD{type}")
+                If result Is Nothing Then
+                    Throw New RhythmBaseException($"Illegal Type: {type}.")
+                End If
+                Return result
+            Else
+                Try
+                    Return ADEnumToEType(type)
                 Catch ex As Exception
                     Throw New IllegalEventTypeException(type, "This value does not exist in the EventType enumeration.")
                 End Try

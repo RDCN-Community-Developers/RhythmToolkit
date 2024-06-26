@@ -9,12 +9,12 @@ Imports RhythmBase.Animation
 Namespace Extensions
 	Public Module EventsExtension
 		<Extension>
-		Public Function GetAnimation(e As Move) As EaseValueGroup(Of Move)
-			Return New EaseValueGroup(Of Move)(e, e.Ease, e.Duration, NameOf(e.Position), NameOf(e.Scale), NameOf(e.Pivot), NameOf(e.Angle))
+		Public Function GetAnimation(e As RDMove) As EaseValueGroup(Of RDMove)
+			Return New EaseValueGroup(Of RDMove)(e, e.Ease, e.Duration, NameOf(e.Position), NameOf(e.Scale), NameOf(e.Pivot), NameOf(e.Angle))
 		End Function
 		<Extension>
-		Public Function GetAnimation(e As MoveRow) As EaseValueGroup(Of MoveRow)
-			Return New EaseValueGroup(Of MoveRow)(e, e.Ease, e.Duration, NameOf(e.RowPosition), NameOf(e.Scale), NameOf(e.Pivot), NameOf(e.Angle))
+		Public Function GetAnimation(e As RDMoveRow) As EaseValueGroup(Of RDMoveRow)
+			Return New EaseValueGroup(Of RDMoveRow)(e, e.Ease, e.Duration, NameOf(e.RowPosition), NameOf(e.Scale), NameOf(e.Pivot), NameOf(e.Angle))
 		End Function
 
 	End Module
