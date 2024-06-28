@@ -32,7 +32,7 @@ Namespace Converters
 				.Add(New ColorConverter)
 				.Add(New PanelColorConverter(value.ColorPalette))
 				.Add(New ConditionConverter(value.Conditionals))
-				.Add(New CustomEventConverter(value, inputSettings))
+				.Add(New RDCustomEventConverter(value, inputSettings))
 				.Add(New TagActionConverter(value, inputSettings))
 				.Add(New BaseRDEventConverter(Of RDBaseEvent)(value, inputSettings))
 			End With
@@ -162,7 +162,7 @@ Namespace Converters
 			reader.Close()
 
 			Try
-
+#Disable Warning BC42104
 				Dim EventsSerializer As New JsonSerializer With {
 						.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 					}
@@ -171,7 +171,7 @@ Namespace Converters
 					.Add(New AssetConverter(outLevel.Path, outLevel.Assets))
 					.Add(New ConditionConverter(outLevel.Conditionals))
 					.Add(New TagActionConverter(outLevel, inputSettings))
-					.Add(New CustomEventConverter(outLevel, inputSettings))
+					.Add(New RDCustomEventConverter(outLevel, inputSettings))
 					.Add(New BaseRowActionConverter(Of RDBaseRowAction)(outLevel, inputSettings))
 					.Add(New BaseDecorationActionConverter(Of RDBaseDecorationAction)(outLevel, inputSettings))
 					.Add(New BaseRDEventConverter(Of RDBaseEvent)(outLevel, inputSettings))
@@ -222,6 +222,7 @@ Namespace Converters
 				Else
 					Throw New ConvertingException(ex)
 				End If
+#Enable Warning BC42104
 			End Try
 		End Function
 	End Class
@@ -369,7 +370,7 @@ Namespace Converters
 			Return JObj
 		End Function
 	End Class
-	Friend Class CustomEventConverter
+	Friend Class RDCustomEventConverter
 		Inherits BaseRDEventConverter(Of RDCustomEvent)
 		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)
@@ -652,7 +653,10 @@ Namespace Converters
 			With AllInOneSerializer.Converters
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				.Add(New ColorConverter)
-				.Add(New ADBaseTileEventConverter(outLevel, inputSettings))
+				.Add(New ADTileConverter(outLevel))
+				.Add(New ADCustomTileEventConverter(outLevel, inputSettings))
+				.Add(New ADCustomEventConverter(outLevel, inputSettings))
+				.Add(New ADBaseTileEventConverter(Of ADBaseTileEvent)(outLevel, inputSettings))
 				.Add(New ADBaseEventConverter(Of ADBaseEvent)(outLevel, inputSettings))
 			End With
 
@@ -666,7 +670,7 @@ Namespace Converters
 						outLevel.Settings = jobj.ToObject(Of ADSettings)(AllInOneSerializer)
 					Case "angleData"
 						Dim jobj = JArray.Load(reader)
-						outLevel.AddRange(jobj.ToObject(Of List(Of ADTile)))
+						outLevel.AddRange(jobj.ToObject(Of List(Of ADTile))(AllInOneSerializer))
 					Case "actions"
 						JActions = JArray.Load(reader)
 					Case "decorations"
@@ -677,27 +681,32 @@ Namespace Converters
 			End While
 			reader.Close()
 
+#Disable Warning BC42104
 			JActions.ToObject(Of List(Of ADBaseTileEvent))(AllInOneSerializer)
 			outLevel.Decorations.AddRange(JDecorations.ToObject(Of List(Of ADBaseEvent))(AllInOneSerializer))
-
+#Enable Warning BC42104
 			Return outLevel
 		End Function
 	End Class
-	Friend Class TileConverter
+	Friend Class ADTileConverter
 		Inherits JsonConverter(Of ADTile)
+		Private ReadOnly level As ADLevel
+		Public Sub New(level As ADLevel)
+			Me.level = level
+		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As ADTile, serializer As JsonSerializer)
 			Throw New NotImplementedException
 		End Sub
 		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As ADTile, hasExistingValue As Boolean, serializer As JsonSerializer) As ADTile
-			Return New ADTile() With {.Angle = JValue.Load(reader).ToObject(Of Single)}
+			Return New ADTile() With {.Angle = JValue.Load(reader).ToObject(Of Single), .Parent = level}
 		End Function
 	End Class
 	Friend Class ADBaseEventConverter(Of T As ADBaseEvent)
 		Inherits JsonConverter(Of T)
 		Protected ReadOnly level As ADLevel
 		Protected ReadOnly settings As LevelInputSettings
-		Private _canread As Boolean = True
-		Private _canwrite As Boolean = True
+		Protected _canread As Boolean = True
+		Protected _canwrite As Boolean = True
 		Public Overrides ReadOnly Property CanRead As Boolean
 			Get
 				Return _canread
@@ -743,16 +752,22 @@ Namespace Converters
 			Return JObj
 		End Function
 	End Class
-	Friend Class ADBaseTileEventConverter
-		Inherits ADBaseEventConverter(Of ADBaseTileEvent)
+	Friend Class ADBaseTileEventConverter(Of T As ADBaseTileEvent)
+		Inherits ADBaseEventConverter(Of T)
 		Public Sub New(level As ADLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
-		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As ADBaseTileEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As ADBaseTileEvent
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
 			Dim parentIndex = jobj("floor")?.ToObject(Of Integer)
-			jobj.Remove("floor")
 
-			existingValue = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
+			_canread = False
+			If ADConvertToType(jobj("eventType").ToObject(Of String)) = GetType(ADCustomEvent) Then
+				existingValue = CType((New ADCustomTileEventConverter(level, settings)).GetDeserializedObject(jobj, objectType, Nothing, hasExistingValue, serializer), ADBaseTileEvent)
+			Else
+				jobj.Remove("floor")
+				existingValue = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
+			End If
+			_canread = True
 
 			If parentIndex.HasValue Then
 				existingValue.Parent = level(parentIndex.Value)
@@ -760,13 +775,38 @@ Namespace Converters
 			End If
 			Return existingValue
 		End Function
-		Public Overrides Function SetSerializedObject(value As ADBaseTileEvent, serializer As JsonSerializer) As JObject
+		Public Overrides Function SetSerializedObject(value As T, serializer As JsonSerializer) As JObject
 			Dim jobj = MyBase.SetSerializedObject(value, serializer)
 
 			Dim s = jobj.First
 			s.AddBeforeSelf(New JProperty("floor", level.eventsOrder.IndexOf(value.Parent)))
 
 			Return jobj
+		End Function
+	End Class
+	Friend Class ADCustomEventConverter
+		Inherits ADBaseEventConverter(Of ADCustomEvent)
+		Public Sub New(level As ADLevel, settings As LevelInputSettings)
+			MyBase.New(level, settings)
+		End Sub
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As ADCustomEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As ADCustomEvent
+			Dim result As New ADCustomEvent With {
+				.Data = jobj
+			}
+			Return result
+		End Function
+	End Class
+	Friend Class ADCustomTileEventConverter
+		Inherits ADBaseTileEventConverter(Of ADCustomTileEvent)
+		Public Sub New(level As ADLevel, settings As LevelInputSettings)
+			MyBase.New(level, settings)
+		End Sub
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As ADCustomTileEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As ADCustomTileEvent
+			Dim result As New ADCustomTileEvent With {
+				.Parent = level(jobj("floor").ToObject(Of Integer)),
+				.Data = jobj
+			}
+			Return result
 		End Function
 	End Class
 #End Region
