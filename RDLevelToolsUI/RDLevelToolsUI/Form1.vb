@@ -9,13 +9,13 @@ Imports RhythmBase.Components
 Public Class Form1
 	Private able As Boolean = False
 	Private LevelHandler As RDLevelHandler
-	Private Calculator As BeatCalculator
+	Private Calculator As RDBeatCalculator
 	Private processingLevel As RDLevel
 	Private viewIndex As Integer = -1
 	Private Sub CreateLevelButton_Click(sender As Object, e As EventArgs) Handles CreateLevelButton.Click
 		processingLevel = New RDLevel
 		LevelHandler = New RDLevelHandler(processingLevel)
-		Calculator = New BeatCalculator(processingLevel)
+		Calculator = New RDBeatCalculator(processingLevel)
 		able = True
 		viewIndex = -1
 	End Sub
@@ -28,7 +28,7 @@ Public Class Form1
 		Dim file = New IO.FileInfo(OpenFileDialog1.FileName)
 		Text = file.Directory.Name + "\" + file.Name
 		LevelHandler = New RDLevelHandler(processingLevel)
-		Calculator = New BeatCalculator(processingLevel)
+		Calculator = New RDBeatCalculator(processingLevel)
 		able = True
 		viewIndex = -1
 	End Sub
@@ -70,7 +70,7 @@ Public Class Form1
 		Dim processingEvent = processingLevel(viewIndex)
 		Dim T As Type = processingEvent.GetType
 
-		Dim enump = GetType(EventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
+		Dim enump = GetType(RDEventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
 
 		Dim nameLabel As New Label With {
 			.Text = Manager.GetValue(enump),

@@ -8,17 +8,17 @@ Imports RhythmBase.Utils
 Namespace Tools
     Public Class RDLevelHandler
         Private ReadOnly Level As RDLevel
-        Private ReadOnly Calculator As BeatCalculator
+        Private ReadOnly Calculator As RDBeatCalculator
         Public Sub New(level As RDLevel)
             Me.Level = level
-            Calculator = New BeatCalculator(level)
+            Calculator = New RDBeatCalculator(level)
         End Sub
         ''' <summary>
         ''' 拆分护士语音提示
         ''' </summary>
         Public Sub SplitRDGSG()
-            Dim Adds As New List(Of SayReadyGetSetGo)
-            For Each item In Level.Where(Of SayReadyGetSetGo)()
+            Dim Adds As New List(Of RDSayReadyGetSetGo)
+            For Each item In Level.Where(Of RDSayReadyGetSetGo)()
                 If item.Splitable Then
                     Adds.AddRange(item.Split)
                     item.Active = False
@@ -30,8 +30,8 @@ Namespace Tools
         ''' 拆分七拍子
         ''' </summary>
         Public Sub SplitClassicBeat()
-            Dim Adds As New List(Of BaseBeat)
-            For Each item In Level.Where(Of AddClassicBeat)()
+            Dim Adds As New List(Of RDBaseBeat)
+            For Each item In Level.Where(Of RDAddClassicBeat)()
                 Adds.AddRange(item.Split)
                 item.Active = False
             Next
@@ -41,8 +41,8 @@ Namespace Tools
         ''' 拆分二拍子
         ''' </summary>
         Public Sub SplitOneShotBeat()
-            Dim Adds As New List(Of BaseBeat)
-            For Each item In Level.Where(Of AddOneshotBeat)()
+            Dim Adds As New List(Of RDBaseBeat)
+            For Each item In Level.Where(Of RDAddOneshotBeat)()
                 Adds.AddRange(item.Split)
                 item.Active = False
             Next
@@ -58,13 +58,13 @@ Namespace Tools
         ''' 释放标签事件
         ''' </summary>
         Public Sub DisposeTags()
-            Dim Adds As New List(Of BaseEvent)
-            For Each item In Level.Where(Of TagAction)
-                Dim eventGroups = Level.GetTaggedEvents(item.ActionTag, Not item.Action = TagAction.Actions.Run)
+            Dim Adds As New List(Of RDBaseEvent)
+            For Each item In Level.Where(Of RDTagAction)
+                Dim eventGroups = Level.GetTaggedEvents(item.ActionTag, Not item.Action = RDTagAction.Actions.Run)
                 For Each group In eventGroups
                     Dim startBeat = group.First().Beat
                     Dim copiedGroup = group.Select(Function(i) Clone(i))
-                    For Each copy As BaseEvent In copiedGroup
+                    For Each copy As RDBaseEvent In copiedGroup
                         copy.Beat += (item.Beat - startBeat)
                         copy.Tag = ""
                         Adds.Add(copy)
@@ -85,7 +85,7 @@ Namespace Tools
         ''' <param name="name">标签名</param>
         ''' <param name="predicate">添加的事件须满足的条件</param>
         ''' <param name="replace">指示标签名是否替换原有标签名</param>
-        Public Sub CombineToTag(name As String, predicate As Func(Of BaseEvent, Boolean), replace As Boolean)
+        Public Sub CombineToTag(name As String, predicate As Func(Of RDBaseEvent, Boolean), replace As Boolean)
             If replace Then
                 For Each item In Level.Where(Function(i) predicate(i))
                     item.Tag = name
@@ -123,14 +123,14 @@ Namespace Tools
         ''' 在七拍子的每一拍按键！
         ''' </summary>
         Public Sub PressOnEveryBeat()
-            Dim Add1 As New List(Of BaseBeat)
-            Dim Add2 As New List(Of AddFreeTimeBeat)
-            For Each item In Level.Where(Of AddClassicBeat)()
+            Dim Add1 As New List(Of RDBaseBeat)
+            Dim Add2 As New List(Of RDAddFreeTimeBeat)
+            For Each item In Level.Where(Of RDAddClassicBeat)()
                 Add1.AddRange(item.Split())
                 item.Active = False
             Next
             For Each item In Add1
-                Dim n = item.Clone(Of AddFreeTimeBeat)
+                Dim n = item.Clone(Of RDAddFreeTimeBeat)
                 n.Pulse = 6
                 Add2.Add(n)
             Next
@@ -139,10 +139,10 @@ Namespace Tools
         ''' <summary>
         ''' [未完成] 拆分轨道为精灵图
         ''' </summary>
-        Public Sub SplitRow(Character As RDSprite, ClassicBeat As RDSprite, Heart As RDSprite, beatSettings As SplitRowSettings, rows As IEnumerable(Of Row), startBeat As RDBeat, endBeat As RDBeat, ShowRow As Boolean)
+        Public Sub SplitRow(Character As RDSprite, ClassicBeat As RDSprite, Heart As RDSprite, beatSettings As SplitRowSettings, rows As IEnumerable(Of RDRow), startBeat As RDBeat, endBeat As RDBeat, ShowRow As Boolean)
 
             '对于每个七拍轨道
-            For Each row In rows.Where(Function(i) i.RowType = RowType.Classic)
+            For Each row In rows.Where(Function(i) i.RowType = RDRowType.Classic)
                 Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
                 Dim Decos As New List(Of (deco As Decoration, left As Double)) From {
                     (Level.CreateDecoration(row.Rooms, Character), 0),
@@ -159,15 +159,15 @@ Namespace Tools
                 '精灵初始化
                 For Each item In Decos
                     item.deco.Visible = False
-                    Dim visible As New SetVisible With {.Beat = Level.DefaultBeat}
+                    Dim visible As New RDSetVisible With {.Beat = Level.DefaultBeat}
                     item.deco.Add(visible)
                     visible.Visible = Not row.HideAtStart
                 Next
 
                 '精灵轨道初始位置
                 For Each part In Decos
-                    Dim tempEvent = New MoveRow With {.RowPosition = New RDPoint(35 / 352 * 100, 50), .Pivot = 0}
-                    Dim CharEvent As New Move With {
+                    Dim tempEvent = New RDMoveRow With {.RowPosition = New RDPoint(35 / 352 * 100, 50), .Pivot = 0}
+                    Dim CharEvent As New RDMove With {
                         .Beat = Level.DefaultBeat,
                         .Position = New RDPoint(35 / 352 * 100, 50),
                         .Scale = Nothing,
@@ -180,9 +180,9 @@ Namespace Tools
                 Next
 
                 '精灵初始表情
-                Dim tempRowXs As New SetRowXs
+                Dim tempRowXs As New RDSetRowXs
                 For i = 0 To 5
-                    Dim tempExpression As New PlayAnimation With {.Beat = Level.DefaultBeat}
+                    Dim tempExpression As New RDPlayAnimation With {.Beat = Level.DefaultBeat}
                     Decos(i + 1).deco.Add(tempExpression)
                     tempExpression.Expression = beatSettings.Line
                 Next
@@ -191,22 +191,22 @@ Namespace Tools
                 For Each item In row.Where(Function(i) i.Active, startBeat, endBeat)
 
                     Select Case item.Type
-                        Case EventType.HideRow
+                        Case RDEventType.HideRow
                             For Each part In Decos
-                                Dim tempEvent = CType(item, HideRow)
-                                Dim CharEvent As New SetVisible With {.Beat = item.Beat}
+                                Dim tempEvent = CType(item, RDHideRow)
+                                Dim CharEvent As New RDSetVisible With {.Beat = item.Beat}
                                 part.deco.Add(CharEvent)
-                                CharEvent.Visible = (tempEvent.Show = HideRow.Shows.Visible) Or (tempEvent.Show = HideRow.Shows.OnlyCharacter)
+                                CharEvent.Visible = (tempEvent.Show = RDHideRow.Shows.Visible) Or (tempEvent.Show = RDHideRow.Shows.OnlyCharacter)
                             Next
                             item.Active = ShowRow
-                        Case EventType.MoveRow
+                        Case RDEventType.MoveRow
                             For Each part In Decos
-                                Dim tempEvent = CType(item, MoveRow)
-                                Dim CharEvent As New Move With {.Beat = item.Beat}
+                                Dim tempEvent = CType(item, RDMoveRow)
+                                Dim CharEvent As New RDMove With {.Beat = item.Beat}
                                 part.deco.Add(CharEvent)
                                 If tempEvent.CustomPosition Then
                                     Select Case tempEvent.Target
-                                        Case MoveRow.Targets.WholeRow
+                                        Case RDMoveRow.Targets.WholeRow
                                             CharEvent.Position = tempEvent.RowPosition
                                             CharEvent.Scale = tempEvent.Scale
                                             CharEvent.Angle = tempEvent.Angle
@@ -215,7 +215,7 @@ Namespace Tools
                                             End If
                                             CharEvent.Ease = tempEvent.Ease
                                             CharEvent.Duration = tempEvent.Duration
-                                        Case MoveRow.Targets.Character
+                                        Case RDMoveRow.Targets.Character
                                             CharEvent.Position = tempEvent.RowPosition
                                             CharEvent.Scale = tempEvent.Scale
                                             CharEvent.Angle = tempEvent.Angle
@@ -227,10 +227,10 @@ Namespace Tools
                                 End If
                             Next
                             item.Active = ShowRow
-                        Case EventType.TintRows
+                        Case RDEventType.TintRows
                             For Each part In Decos
-                                Dim tempEvent = CType(item, TintRows)
-                                Dim CharEvent As New Tint With {
+                                Dim tempEvent = CType(item, RDTintRows)
+                                Dim CharEvent As New RDTint With {
                                     .Beat = item.Beat,
                                     .Border = tempEvent.Border,
                                     .BorderColor = tempEvent.BorderColor,
@@ -242,27 +242,27 @@ Namespace Tools
                                 part.deco.Add(CharEvent)
                             Next
                             item.Active = ShowRow
-                        Case EventType.PlayAnimation
+                        Case RDEventType.PlayAnimation
                             Dim part = Decos(0)
-                            Dim tempEvent = CType(item, PlayExpression)
-                            Dim charEvent As New PlayAnimation With {.Beat = item.Beat}
+                            Dim tempEvent = CType(item, RDPlayExpression)
+                            Dim charEvent As New RDPlayAnimation With {.Beat = item.Beat}
                             part.deco.Add(charEvent)
                             charEvent.Expression = tempEvent.Expression
                             item.Active = ShowRow
-                        Case EventType.SetRowXs
-                            Dim tempEvent = CType(item, SetRowXs)
+                        Case RDEventType.SetRowXs
+                            Dim tempEvent = CType(item, RDSetRowXs)
                             For i = 0 To 5
                                 If tempEvent.Pattern(i) <> tempRowXs.Pattern(i) Then
-                                    Dim tempAnimation As New PlayAnimation With {.Beat = tempEvent.Beat}
+                                    Dim tempAnimation As New RDPlayAnimation With {.Beat = tempEvent.Beat}
                                     Decos(i + 1).deco.Add(tempAnimation)
                                     '	tempAnimation.Expression =
                                 End If
                             Next
-                        Case EventType.AddClassicBeat
+                        Case RDEventType.AddClassicBeat
 
-                        Case EventType.AddFreeTimeBeat
+                        Case RDEventType.AddFreeTimeBeat
 
-                        Case EventType.PulseFreeTimeBeat
+                        Case RDEventType.PulseFreeTimeBeat
 
                     End Select
 
@@ -270,7 +270,7 @@ Namespace Tools
                 row.HideAtStart = Not ShowRow
             Next
         End Sub
-        Private Function GetExpression(names As SplitRowSettings, before As SetRowXs, after As SetRowXs, index As Byte) As String
+        Private Function GetExpression(names As SplitRowSettings, before As RDSetRowXs, after As RDSetRowXs, index As Byte) As String
             'If before Then
             Throw New NotImplementedException
         End Function
@@ -280,10 +280,10 @@ Namespace Tools
         ''' <param name="copy">浮动文字的模板，用于提供浮动文字的所有参数</param>
         ''' <param name="interval">细分间隔，每秒事件数</param>
         ''' <param name="increase">递增(true)或递减(false)</param>
-        Public Sub AddTimer(copy As FloatingText, interval As UInteger, increase As Boolean)
-            Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel, Level.Last).Beat
+        Public Sub AddTimer(copy As RDFloatingText, interval As UInteger, increase As Boolean)
+            Dim finish = Level.FirstOrDefault(Function(i) i.Type = RDEventType.FinishLevel, Level.Last).Beat
             Dim t As Integer = 0
-            Dim C As New BeatCalculator(Level)
+            Dim C As New RDBeatCalculator(Level)
 
             Dim txt = Clone(copy)
             txt.Beat = New RDBeat(Level.Calculator, 1)
@@ -301,10 +301,10 @@ Namespace Tools
         ''' <param name="copy">浮动文字的模板，用于提供浮动文字的所有参数</param>
         ''' <param name="interval">细分间隔，每秒事件数</param>
         ''' <param name="increase">递增(true)或递减(false)</param>
-        Public Sub AddBeater(copy As FloatingText, interval As UInteger, increase As Boolean)
-            Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel).Beat
+        Public Sub AddBeater(copy As RDFloatingText, interval As UInteger, increase As Boolean)
+            Dim finish = Level.FirstOrDefault(Function(i) i.Type = RDEventType.FinishLevel).Beat
             Dim t As Integer = 0
-            Dim C As New BeatCalculator(Level)
+            Dim C As New RDBeatCalculator(Level)
 
             Dim txt = Clone(copy)
             txt.Beat = New RDBeat(Level.Calculator, 1)
@@ -348,14 +348,14 @@ Namespace Tools
         ''' 全局更改拍号和移动事件
         ''' </summary>
         Public Sub MoveBeats(cpb As UInteger, offset As Integer)
-            For Each item In Level.Where(Of SetCrotchetsPerBar)
+            For Each item In Level.Where(Of RDSetCrotchetsPerBar)
                 item.CrotchetsPerBar = cpb
             Next
             For Each item In Level
                 item.Beat += offset
             Next
             If offset > 0 Then
-                Level.Add(New SetCrotchetsPerBar() With{.CrotchetsPerBar=cpb})
+                Level.Add(New RDSetCrotchetsPerBar() With{.CrotchetsPerBar=cpb})
             End If
         End Sub
         ''' <summary>
@@ -381,7 +381,7 @@ Namespace Tools
         ''' <param name="eventsTobeSort">需要排序的事件满足的条件</param>
         ''' <param name="sortKey">排序事件所用的键</param>
         ''' <returns></returns>
-        Public Sub SortRange(eventsTobeSort As Func(Of BaseEvent, Boolean), sortKey As Func(Of BaseEvent, Single))
+        Public Sub SortRange(eventsTobeSort As Func(Of RDBaseEvent, Boolean), sortKey As Func(Of RDBaseEvent, Single))
             Dim sortList = Level.Where(eventsTobeSort)
             Level.RemoveAll(sortList)
             Level.AddRange(sortList.OrderBy(sortKey))

@@ -4,6 +4,7 @@ Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports SkiaSharp
 Namespace Converters
+#Region "RD"
 	Friend Class RDLevelConverter
 		Inherits JsonConverter(Of RDLevel)
 		Private ReadOnly fileLocation As String
@@ -27,62 +28,71 @@ Namespace Converters
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				.Add(New CharacterConverter(fileLocation, value.Assets))
 				.Add(New AssetConverter(fileLocation, value.Assets))
-				.Add(New BookmarkConverter(New BeatCalculator(value)))
+				.Add(New BookmarkConverter(New RDBeatCalculator(value)))
 				.Add(New ColorConverter)
 				.Add(New PanelColorConverter(value.ColorPalette))
 				.Add(New ConditionConverter(value.Conditionals))
 				.Add(New CustomEventConverter(value, inputSettings))
 				.Add(New TagActionConverter(value, inputSettings))
-				.Add(New BaseEventConverter(Of BaseEvent)(value, inputSettings))
+				.Add(New BaseRDEventConverter(Of RDBaseEvent)(value, inputSettings))
 			End With
 
 			With writer
 				.Formatting = If(outputSettings.Indented, Formatting.Indented, Formatting.None)
 				.WriteStartObject()
+
 				.WritePropertyName("settings")
 				.WriteRawValue(JsonConvert.SerializeObject(value.Settings, Formatting.Indented, AllInOneSerializer))
+
 				.WritePropertyName("rows")
 				.WriteStartArray()
 				For Each item In value.Rows
 					.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer))
 				Next
 				.WriteEndArray()
+
 				.WritePropertyName("decorations")
 				.WriteStartArray()
 				For Each item In value.Decorations
 					.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer))
 				Next
 				.WriteEndArray()
+
 				.WritePropertyName("events")
 				.WriteStartArray()
 				For Each item In value
 					.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer))
 				Next
 				.WriteEndArray()
+
 				.WritePropertyName("conditionals")
 				.WriteStartArray()
 				For Each item In value.Conditionals
 					.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer))
 				Next
 				.WriteEndArray()
+
 				.WritePropertyName("bookmarks")
 				.WriteStartArray()
 				For Each item In value.Bookmarks
 					.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer))
 				Next
 				.WriteEndArray()
+
 				.WritePropertyName("colorPalette")
 				.WriteStartArray()
 				For Each item In value.ColorPalette
 					.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer))
 				Next
 				.WriteEndArray()
+
 				.WriteEndObject()
 			End With
+			writer.Close()
+
 		End Sub
 		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDLevel, hasExistingValue As Boolean, serializer As JsonSerializer) As RDLevel
 			Dim assetsCollection As New HashSet(Of RDSprite)
-			Dim J = JObject.Load(reader)
 			Dim SettingsSerializer As New JsonSerializer
 			With SettingsSerializer.Converters
 			End With
@@ -104,76 +114,94 @@ Namespace Converters
 				.Add(New ColorConverter)
 			End With
 
-			Dim Mods = J("settings")("mods")
-			If Mods?.Type = JTokenType.String Then
-				J("settings")("mods") = New JArray(Mods)
-			End If
+			Dim outLevel As New RDLevel With {._path = fileLocation}
+			Dim JEvents As JArray
+			Dim JBookmarks As JArray
 
-			Dim Level As New RDLevel With {.Settings = J("settings").ToObject(Of LevelElements.Settings)(SettingsSerializer)}
+			While reader.Read
+				Dim name = reader.Value
+				reader.Read()
+				Select Case name
+					Case "settings"
+						Dim Jobj = JObject.Load(reader)
+						Dim Mods = Jobj("mods")
+						If Mods?.Type = JTokenType.String Then
+							Jobj("mods") = New JArray(Mods)
+						End If
+						outLevel.Settings = Jobj.ToObject(Of RDSettings)(SettingsSerializer)
+					Case "rows"
+						Dim Jarr = JArray.Load(reader)
+						outLevel._Rows.AddRange(Jarr.ToObject(Of List(Of RDRow))(RowsSerializer))
+						For Each item In outLevel.Rows
+							item.Parent = outLevel
+						Next
+					Case "decorations"
+						Dim Jarr = JArray.Load(reader)
+						outLevel._Decorations.AddRange(Jarr.ToObject(Of List(Of Decoration))(DecorationsSerializer))
+						For Each item In outLevel.Decorations
+							item.Parent = outLevel
+						Next
+					Case "conditionals"
+						Dim Jarr = JArray.Load(reader)
+						outLevel.Conditionals.AddRange(Jarr.ToObject(Of List(Of BaseConditional))(ConditionalsSerializer))
+						For Each item In outLevel.Conditionals
+							item.ParentCollection = outLevel.Conditionals
+						Next
+					Case "colorPalette"
+						Dim Jarr = JArray.Load(reader)
+						For Each item In Jarr.ToObject(Of SKColor())(ColorPaletteSerializer)
+							outLevel.ColorPalette.Add(item)
+						Next
+					Case "events"
+						JEvents = JArray.Load(reader)
+					Case "bookmarks"
+						JBookmarks = JArray.Load(reader)
+					Case Else
+				End Select
+			End While
+			reader.Close()
+
 			Try
-
-				With Level
-					._Rows.AddRange(J("rows").ToObject(Of List(Of Row))(RowsSerializer))
-					._Decorations.AddRange(J("decorations").ToObject(Of List(Of Decoration))(DecorationsSerializer))
-					.Conditionals.AddRange(J("conditionals").ToObject(Of List(Of BaseConditional))(ConditionalsSerializer))
-					For Each item In J("colorPalette").ToObject(Of SKColor())(ColorPaletteSerializer)
-						.ColorPalette.Add(item)
-					Next
-					For Each item In assetsCollection
-						.Assets.Add(item)
-					Next
-					._path = fileLocation
-				End With
 
 				Dim EventsSerializer As New JsonSerializer With {
 						.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 					}
 				With EventsSerializer.Converters
-					.Add(New PanelColorConverter(Level.ColorPalette))
-					.Add(New AssetConverter(Level.Path, Level.Assets))
-					.Add(New ConditionConverter(Level.Conditionals))
-					.Add(New TagActionConverter(Level, inputSettings))
-					.Add(New CustomEventConverter(Level, inputSettings))
-					.Add(New BaseRowActionConverter(Of BaseRowAction)(Level, inputSettings))
-					.Add(New BaseDecorationActionConverter(Of BaseDecorationAction)(Level, inputSettings))
-					.Add(New BaseEventConverter(Of BaseEvent)(Level, inputSettings))
+					.Add(New PanelColorConverter(outLevel.ColorPalette))
+					.Add(New AssetConverter(outLevel.Path, outLevel.Assets))
+					.Add(New ConditionConverter(outLevel.Conditionals))
+					.Add(New TagActionConverter(outLevel, inputSettings))
+					.Add(New CustomEventConverter(outLevel, inputSettings))
+					.Add(New BaseRowActionConverter(Of RDBaseRowAction)(outLevel, inputSettings))
+					.Add(New BaseDecorationActionConverter(Of RDBaseDecorationAction)(outLevel, inputSettings))
+					.Add(New BaseRDEventConverter(Of RDBaseEvent)(outLevel, inputSettings))
 					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
 
-				For Each item In Level.Rows
-					item.Parent = Level
-				Next
-				For Each item In Level.Decorations
-					item.Parent = Level
-				Next
 
-				For Each item In Level.Conditionals
-					item.ParentCollection = Level.Conditionals
-				Next
+				Dim FloatingTextCollection As New List(Of ([event] As RDFloatingText, id As Integer))
+				Dim AdvanceTextCollection As New List(Of ([event] As RDAdvanceText, id As Integer))
 
-				Dim FloatingTextCollection As New List(Of ([event] As FloatingText, id As Integer))
-				Dim AdvanceTextCollection As New List(Of ([event] As AdvanceText, id As Integer))
-
-				Dim calculator As New BeatCalculator(Level)
+				Dim calculator As New RDBeatCalculator(outLevel)
 
 				Dim bar = 0
 
-				For Each item In J("events")
-					Dim TempEvent As BaseEvent = item.ToObject(ConvertToType(item("type")), EventsSerializer)
-					If Not TempEvent.Type = EventType.CustomEvent Then
-						Select Case [Enum].Parse(Of EventType)(item("type"))
+				For Each item In JEvents
+					Dim TempEvent As RDBaseEvent = item.ToObject(RDConvertToType(item("type")), EventsSerializer)
+					If Not TempEvent.Type = RDEventType.CustomEvent Then
+						Select Case [Enum].Parse(Of RDEventType)(item("type"))
 							Case Else
 								'浮动文字事件记录
-								If TempEvent.Type = EventType.FloatingText Then
-									FloatingTextCollection.Add((CType(TempEvent, FloatingText), item("id")))
+								If TempEvent.Type = RDEventType.FloatingText Then
+									FloatingTextCollection.Add((CType(TempEvent, RDFloatingText), item("id")))
 								End If
-								If TempEvent.Type = EventType.AdvanceText Then
-									AdvanceTextCollection.Add((CType(TempEvent, AdvanceText), item("id")))
+								If TempEvent.Type = RDEventType.AdvanceText Then
+									AdvanceTextCollection.Add((CType(TempEvent, RDAdvanceText), item("id")))
 								End If
 								'未处理事件加入
 						End Select
 					End If
-					Level.Add(TempEvent)
+					outLevel.Add(TempEvent)
 					'Level.Calculator.Refresh()
 				Next
 				'浮动文字事件关联
@@ -184,13 +212,13 @@ Namespace Converters
 				Next
 				Dim BookmarksSerializer As New JsonSerializer
 				With BookmarksSerializer.Converters
-					.Add(New BookmarkConverter(New BeatCalculator(Level)))
+					.Add(New BookmarkConverter(New RDBeatCalculator(outLevel)))
 				End With
-				Level.Bookmarks.AddRange(J("bookmarks").ToObject(Of List(Of Bookmark))(BookmarksSerializer))
-				Return Level
+				outLevel.Bookmarks.AddRange(JBookmarks.ToObject(Of List(Of Bookmark))(BookmarksSerializer))
+				Return outLevel
 			Catch ex As Exception
-				If Level.Settings.Version < 55 Then
-					Throw New VersionTooLowException(Level.Settings.Version, ex)
+				If outLevel.Settings.Version < 55 Then
+					Throw New VersionTooLowException(outLevel.Settings.Version, ex)
 				Else
 					Throw New ConvertingException(ex)
 				End If
@@ -199,8 +227,8 @@ Namespace Converters
 	End Class
 	Friend Class BookmarkConverter
 		Inherits JsonConverter(Of Bookmark)
-		Private ReadOnly calculator As BeatCalculator
-		Public Sub New(calculator As BeatCalculator)
+		Private ReadOnly calculator As RDBeatCalculator
+		Public Sub New(calculator As RDBeatCalculator)
 			Me.calculator = calculator
 		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As Bookmark, serializer As JsonSerializer)
@@ -250,42 +278,42 @@ Namespace Converters
 		End Function
 	End Class
 	Friend Class AnchorStyleConverter
-		Inherits JsonConverter(Of FloatingText.AnchorStyle)
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As FloatingText.AnchorStyle, serializer As JsonSerializer)
-			Dim v1 = If(value And &B11, "Middle", [Enum].Parse(Of FloatingText.AnchorStyle)(value And &B11).ToString)
-			writer.WriteValue(If(value And &B11, [Enum].Parse(Of FloatingText.AnchorStyle)(value And &B11).ToString, "Middle") +
-								  [Enum].Parse(Of FloatingText.AnchorStyle)(value And &B1100).ToString)
+		Inherits JsonConverter(Of RDFloatingText.AnchorStyle)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDFloatingText.AnchorStyle, serializer As JsonSerializer)
+			Dim v1 = If(value And &B11, "Middle", [Enum].Parse(Of RDFloatingText.AnchorStyle)(value And &B11).ToString)
+			writer.WriteValue(If(value And &B11, [Enum].Parse(Of RDFloatingText.AnchorStyle)(value And &B11).ToString, "Middle") +
+								  [Enum].Parse(Of RDFloatingText.AnchorStyle)(value And &B1100).ToString)
 		End Sub
 
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As FloatingText.AnchorStyle, hasExistingValue As Boolean, serializer As JsonSerializer) As FloatingText.AnchorStyle
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDFloatingText.AnchorStyle, hasExistingValue As Boolean, serializer As JsonSerializer) As RDFloatingText.AnchorStyle
 			Dim JString As String = JToken.ReadFrom(reader).ToObject(Of String)
 			Dim match = Regex.Match(JString, "([A-Z][a-z]+)([A-Z][a-z]+)")
 			Dim middle As Boolean = False
 			Dim center As Boolean = False
-			Dim result As New FloatingText.AnchorStyle
+			Dim result As New RDFloatingText.AnchorStyle
 			Select Case match.Groups(1).Value
 				Case "Upper"
-					result = result Or FloatingText.AnchorStyle.Upper
+					result = result Or RDFloatingText.AnchorStyle.Upper
 				Case "Lower"
-					result = result Or FloatingText.AnchorStyle.Lower
+					result = result Or RDFloatingText.AnchorStyle.Lower
 				Case Else
 					middle = True
 			End Select
 			Select Case match.Groups(2).Value
 				Case "Left"
-					result = result Or FloatingText.AnchorStyle.Left
+					result = result Or RDFloatingText.AnchorStyle.Left
 				Case "Right"
-					result = result Or FloatingText.AnchorStyle.Right
+					result = result Or RDFloatingText.AnchorStyle.Right
 				Case Else
 					center = True
 			End Select
 			If center And middle Then
-				result = FloatingText.AnchorStyle.Center
+				result = RDFloatingText.AnchorStyle.Center
 			End If
 			Return result
 		End Function
 	End Class
-	Friend Class BaseEventConverter(Of T As BaseEvent)
+	Friend Class BaseRDEventConverter(Of T As RDBaseEvent)
 		Inherits JsonConverter(Of T)
 		Protected ReadOnly level As RDLevel
 		Protected ReadOnly settings As LevelInputSettings
@@ -316,11 +344,12 @@ Namespace Converters
 			Return GetDeserializedObject(JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer)
 		End Function
 		Public Overridable Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
-			Dim BaseActionType As Type = GetType(BaseEvent)
 
-			Dim SubClassType As Type = ConvertToType(jobj("type").ToObject(Of String))
+			Dim SubClassType As Type = RDConvertToType(jobj("type").ToObject(Of String))
 			_canread = False
-			existingValue = If(SubClassType IsNot Nothing, jobj.ToObject(SubClassType, serializer), jobj.ToObject(Of CustomEvent)(serializer))
+			existingValue = If(SubClassType IsNot Nothing,
+				jobj.ToObject(SubClassType, serializer),
+				jobj.ToObject(Of RDCustomEvent)(serializer))
 			_canread = True
 			existingValue._beat = level.Calculator.BeatOf(UInteger.Parse(jobj("bar")), Single.Parse(If(jobj("beat"), 1)))
 			Return existingValue
@@ -341,19 +370,19 @@ Namespace Converters
 		End Function
 	End Class
 	Friend Class CustomEventConverter
-		Inherits BaseEventConverter(Of CustomEvent)
+		Inherits BaseRDEventConverter(Of RDCustomEvent)
 		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
-		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As CustomEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As CustomEvent
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As RDCustomEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As RDCustomEvent
 			Dim result = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
 			result.Data = jobj
 			Return result
 		End Function
-		Public Overrides Function SetSerializedObject(value As CustomEvent, serializer As JsonSerializer) As JObject
+		Public Overrides Function SetSerializedObject(value As RDCustomEvent, serializer As JsonSerializer) As JObject
 			Dim jobj = MyBase.SetSerializedObject(value, serializer)
-			jobj.Remove(NameOf(CustomEvent.Data).ToLower)
-			jobj.Remove(NameOf(CustomEvent.Type).ToLower)
+			jobj.Remove(NameOf(RDCustomEvent.Data).ToLower)
+			jobj.Remove(NameOf(RDCustomEvent.Type).ToLower)
 			Dim data = value.Data.DeepClone
 			For Each item In jobj
 				data(item.Key) = item.Value
@@ -361,12 +390,12 @@ Namespace Converters
 			Return data
 		End Function
 	End Class
-	Friend Class BaseRowActionConverter(Of T As BaseRowAction)
-		Inherits BaseEventConverter(Of BaseRowAction)
+	Friend Class BaseRowActionConverter(Of T As RDBaseRowAction)
+		Inherits BaseRDEventConverter(Of RDBaseRowAction)
 		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
-		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As BaseRowAction, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseRowAction
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As RDBaseRowAction, hasExistingValue As Boolean, serializer As JsonSerializer) As RDBaseRowAction
 			Dim obj = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
 			Try
 				Dim rowId = jobj("row").ToObject(Of Short)
@@ -381,8 +410,8 @@ Namespace Converters
 			Return obj
 		End Function
 	End Class
-	Friend Class BaseDecorationActionConverter(Of T As BaseDecorationAction)
-		Inherits BaseEventConverter(Of T)
+	Friend Class BaseDecorationActionConverter(Of T As RDBaseDecorationAction)
+		Inherits BaseRDEventConverter(Of T)
 		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
@@ -392,7 +421,7 @@ Namespace Converters
 				Dim decoId As String = jobj("target")?.ToObject(Of String)
 				Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = decoId)
 				obj._parent = Parent
-				If obj.Parent Is Nothing AndAlso decoId = String.Empty AndAlso obj.Type = EventType.Comment Then
+				If obj.Parent Is Nothing AndAlso decoId = String.Empty AndAlso obj.Type = RDEventType.Comment Then
 				End If
 			Catch e As Exception
 				Throw New ConvertingException($"Cannot find the decoration ""{jobj("target")}"" at {obj}", e)
@@ -400,6 +429,350 @@ Namespace Converters
 			Return obj
 		End Function
 	End Class
+	Friend Class AssetConverter
+		Inherits JsonConverter(Of RDSprite)
+		Private ReadOnly fileLocation As String
+		Private ReadOnly assets As HashSet(Of RDSprite)
+		Public Sub New(location As String, assets As HashSet(Of RDSprite))
+			fileLocation = location
+			Me.assets = assets
+		End Sub
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDSprite, serializer As JsonSerializer)
+			writer.WriteValue(value.FileName)
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDSprite, hasExistingValue As Boolean, serializer As JsonSerializer) As RDSprite
+			Dim Json = JToken.ReadFrom(reader).ToObject(Of String)
+			Dim assetName = Json
+			Dim result As RDSprite
+			If assets.Any(Function(i) i.FileName = assetName) Then
+				result = assets.Single(Function(i) i.FileName = assetName)
+			ElseIf Json = String.Empty Then
+				Return Nothing
+			Else
+				Dim file = IO.Path.GetDirectoryName(fileLocation) + "\" + Json
+				result = New RDSprite(file)
+				assets.Add(result)
+			End If
+			Return result
+		End Function
+	End Class
+	Friend Class RoomConverter
+		Inherits JsonConverter
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As Object, serializer As JsonSerializer)
+			Select Case value.GetType
+				Case GetType(RDRoom)
+					writer.WriteRawValue($"[{String.Join(",", CType(value, RDRoom).Rooms)}]")
+				Case GetType(RDSingleRoom)
+					writer.WriteRawValue($"[{ CType(value, RDSingleRoom).Value}]")
+				Case Else
+					Throw New NotImplementedException
+			End Select
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Object, serializer As JsonSerializer) As Object
+			Dim J = JArray.Load(reader).ToObject(Of Byte())
+			Select Case objectType
+				Case GetType(RDRoom)
+					For Each item In J
+						existingValue(item) = True
+					Next
+					Return existingValue
+				Case GetType(RDSingleRoom)
+					Return New RDSingleRoom(J.Single)
+				Case Else
+					Throw New NotImplementedException
+			End Select
+		End Function
+		Public Overrides Function CanConvert(objectType As Type) As Boolean
+			Return objectType = GetType(RDRoom) OrElse objectType = GetType(RDSingleRoom)
+		End Function
+	End Class
+	Friend Class TagActionConverter
+		Inherits BaseRDEventConverter(Of RDTagAction)
+		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
+			MyBase.New(level, inputSettings)
+		End Sub
+		Public Overrides Function SetSerializedObject(value As RDTagAction, serializer As JsonSerializer) As JObject
+			Dim jobj = MyBase.SetSerializedObject(value, serializer)
+			If value.Tag Is Nothing Then
+				jobj.Remove("tag")
+			Else
+				jobj("tag") = value.Tag
+			End If
+			jobj("Tag") = value.ActionTag
+			Return jobj
+		End Function
+	End Class
+	Friend Class PatternConverter
+		Inherits JsonConverter(Of LimitedList(Of Patterns))
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As LimitedList(Of Patterns), serializer As JsonSerializer)
+			Dim out = ""
+			For Each item In value
+				Select Case item
+					Case Patterns.X
+						out += "x"
+					Case Patterns.Up
+						out += "u"
+					Case Patterns.Down
+						out += "d"
+					Case Patterns.Banana
+						out += "b"
+					Case Patterns.Return
+						out += "r"
+					Case Patterns.None
+						out += "-"
+				End Select
+			Next
+			writer.WriteValue(out)
+		End Sub
+
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As LimitedList(Of Patterns), hasExistingValue As Boolean, serializer As JsonSerializer) As LimitedList(Of Patterns)
+			For Each c In JToken.ReadFrom(reader).ToObject(Of String)
+				Select Case c
+					Case "x"c
+						existingValue.Add(Patterns.X)
+					Case "u"c
+						existingValue.Add(Patterns.Up)
+					Case "d"c
+						existingValue.Add(Patterns.Down)
+					Case "b"c
+						existingValue.Add(Patterns.Banana)
+					Case "r"c
+						existingValue.Add(Patterns.Return)
+					Case "-"c
+						existingValue.Add(Patterns.None)
+				End Select
+			Next
+			Return existingValue
+		End Function
+	End Class
+	Friend Class ConditionalConverter
+		Inherits JsonConverter(Of BaseConditional)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As BaseConditional, serializer As JsonSerializer)
+			Dim S As New JsonSerializerSettings
+			S.Converters.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+			S.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
+			writer.WriteRawValue(JsonConvert.SerializeObject(value, S))
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As BaseConditional, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseConditional
+			Dim J = JObject.Load(reader)
+			Dim ConditionalsType As Type = GetType(BaseConditional)
+			Dim SubClassType As Type = Type.GetType($"{GetType(BaseConditional).Namespace}.{NameOf(Conditions)}.{J("type")}")
+			Dim Conditional As BaseConditional = J.ToObject(SubClassType)
+			Return Conditional
+		End Function
+	End Class
+	Friend Class ConditionConverter
+		Inherits JsonConverter(Of RDCondition)
+		Private ReadOnly conditionals As List(Of BaseConditional)
+		Public Sub New(Conditionals As List(Of BaseConditional))
+			Me.conditionals = Conditionals
+		End Sub
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDCondition, serializer As JsonSerializer)
+			writer.WriteValue(value.Serialize)
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDCondition, hasExistingValue As Boolean, serializer As JsonSerializer) As RDCondition
+			Dim J = JToken.Load(reader).ToObject(Of String)
+
+			Dim Value As New RDCondition()
+
+			Dim ConditionIds = Regex.Matches(J, "~?\d+(?=[&d])")
+			For Each match As Match In ConditionIds
+				Dim vs = Val("~2")
+				Dim Parent = conditionals.Where(Function(i) i.Id = CInt(Regex.Match(match.Value, "\d+").Value)).First
+				Value.ConditionLists.Add((match.Value(0) <> "~"c, Parent))
+			Next
+			Value.Duration = Regex.Match(J, "(?<=d)[\d\.]+").Value
+			Return Value
+		End Function
+	End Class
+#End Region
+
+#Region "AD"
+	Friend Class ADLevelConverter
+		Inherits JsonConverter(Of ADLevel)
+		Private ReadOnly fileLocation As String
+		Private ReadOnly inputSettings As LevelInputSettings
+		Private ReadOnly outputSettings As LevelOutputSettings
+		Public Sub New(location As String, settings As LevelInputSettings)
+			fileLocation = location
+			Me.inputSettings = settings
+		End Sub
+		Public Sub New(location As String, settings As LevelOutputSettings)
+			fileLocation = location
+			Me.outputSettings = settings
+		End Sub
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As ADLevel, serializer As JsonSerializer)
+
+			Dim AllInOneSerializer As New JsonSerializerSettings With {
+				.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
+				.Formatting = Formatting.None
+				}
+			With AllInOneSerializer.Converters
+				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				.Add(New ColorConverter)
+			End With
+			With writer
+				.Formatting = If(outputSettings.Indented, Formatting.Indented, Formatting.None)
+				.WriteStartObject()
+
+				.WritePropertyName("angleData")
+				.WriteStartArray()
+				For Each item In value
+					.WriteRawValue(JsonConvert.SerializeObject(item.Angle, Formatting.None))
+				Next
+				.WriteEndArray()
+
+				.WritePropertyName("settings")
+				.WriteRawValue(JsonConvert.SerializeObject(value.Settings, Formatting.Indented, AllInOneSerializer))
+
+				.WritePropertyName("actions")
+				.WriteStartArray()
+				For Each item In value
+					.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer))
+				Next
+				.WriteEndArray()
+
+				.WritePropertyName("decorations")
+				.WriteStartArray()
+				For Each item In value.Decorations
+					.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer))
+				Next
+				.WriteEndArray()
+
+				.WriteEndObject()
+			End With
+			writer.Close()
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As ADLevel, hasExistingValue As Boolean, serializer As JsonSerializer) As ADLevel
+			Dim outLevel As New ADLevel With {._path = fileLocation}
+			Dim JActions As JArray
+			Dim JDecorations As JArray
+
+			Dim AllInOneSerializer As New JsonSerializer
+			With AllInOneSerializer.Converters
+				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				.Add(New ColorConverter)
+				.Add(New ADBaseTileEventConverter(outLevel, inputSettings))
+				.Add(New ADBaseEventConverter(Of ADBaseEvent)(outLevel, inputSettings))
+			End With
+
+
+			While reader.Read
+				Dim name = reader.Value
+				reader.Read()
+				Select Case name
+					Case "settings"
+						Dim jobj = JObject.Load(reader)
+						outLevel.Settings = jobj.ToObject(Of ADSettings)(AllInOneSerializer)
+					Case "angleData"
+						Dim jobj = JArray.Load(reader)
+						outLevel.AddRange(jobj.ToObject(Of List(Of ADTile)))
+					Case "actions"
+						JActions = JArray.Load(reader)
+					Case "decorations"
+						JDecorations = JArray.Load(reader)
+					Case Else
+
+				End Select
+			End While
+			reader.Close()
+
+			JActions.ToObject(Of List(Of ADBaseTileEvent))(AllInOneSerializer)
+			outLevel.Decorations.AddRange(JDecorations.ToObject(Of List(Of ADBaseEvent))(AllInOneSerializer))
+
+			Return outLevel
+		End Function
+	End Class
+	Friend Class TileConverter
+		Inherits JsonConverter(Of ADTile)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As ADTile, serializer As JsonSerializer)
+			Throw New NotImplementedException
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As ADTile, hasExistingValue As Boolean, serializer As JsonSerializer) As ADTile
+			Return New ADTile() With {.Angle = JValue.Load(reader).ToObject(Of Single)}
+		End Function
+	End Class
+	Friend Class ADBaseEventConverter(Of T As ADBaseEvent)
+		Inherits JsonConverter(Of T)
+		Protected ReadOnly level As ADLevel
+		Protected ReadOnly settings As LevelInputSettings
+		Private _canread As Boolean = True
+		Private _canwrite As Boolean = True
+		Public Overrides ReadOnly Property CanRead As Boolean
+			Get
+				Return _canread
+			End Get
+		End Property
+		Public Overrides ReadOnly Property CanWrite As Boolean
+			Get
+				Return _canwrite
+			End Get
+		End Property
+		Public Sub New(level As ADLevel, inputSettings As LevelInputSettings)
+			Me.level = level
+			Me.settings = inputSettings
+		End Sub
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As T, serializer As JsonSerializer)
+			Throw New NotImplementedException()
+		End Sub
+
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+			Return GetDeserializedObject(JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer)
+		End Function
+		Public Overridable Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+
+			Dim SubClassType As Type = ADConvertToType(jobj("eventType").ToObject(Of String))
+
+			_canread = False
+			existingValue = If(SubClassType IsNot Nothing,
+				jobj.ToObject(SubClassType, serializer),
+				jobj.ToObject(Of ADCustomEvent)(serializer))
+			_canread = True
+
+			Return existingValue
+		End Function
+		Public Overridable Function SetSerializedObject(value As T, serializer As JsonSerializer) As JObject
+			_canwrite = False
+			Dim JObj = JObject.FromObject(value, serializer)
+			_canwrite = True
+
+			JObj.Remove("type")
+
+			Dim s = JObj.First
+			s.AddBeforeSelf(New JProperty("eventType", value.Type.ToString))
+			Return JObj
+		End Function
+	End Class
+	Friend Class ADBaseTileEventConverter
+		Inherits ADBaseEventConverter(Of ADBaseTileEvent)
+		Public Sub New(level As ADLevel, inputSettings As LevelInputSettings)
+			MyBase.New(level, inputSettings)
+		End Sub
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As ADBaseTileEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As ADBaseTileEvent
+			Dim parentIndex = jobj("floor")?.ToObject(Of Integer)
+			jobj.Remove("floor")
+
+			existingValue = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
+
+			If parentIndex.HasValue Then
+				existingValue.Parent = level(parentIndex.Value)
+				existingValue.Parent.Add(existingValue)
+			End If
+			Return existingValue
+		End Function
+		Public Overrides Function SetSerializedObject(value As ADBaseTileEvent, serializer As JsonSerializer) As JObject
+			Dim jobj = MyBase.SetSerializedObject(value, serializer)
+
+			Dim s = jobj.First
+			s.AddBeforeSelf(New JProperty("floor", level.eventsOrder.IndexOf(value.Parent)))
+
+			Return jobj
+		End Function
+	End Class
+#End Region
+
+#Region "Others"
+
 	Friend Class LimitedListConverter
 		Inherits JsonConverter(Of LimitedList)
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As LimitedList, serializer As JsonSerializer)
@@ -504,7 +877,6 @@ Namespace Converters
 			End With
 			Throw New NotImplementedException()
 		End Function
-
 		Public Overrides Function CanConvert(objectType As Type) As Boolean
 			Throw New NotImplementedException()
 		End Function
@@ -573,169 +945,15 @@ Namespace Converters
 		Inherits JsonConverter(Of SKColor)
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As SKColor, serializer As JsonSerializer)
 			Dim JString = value.ToString
-			Dim Reg = Regex.Match(JString, "([0-9A-Fa-f]{2})([0-9A-Fa-f]{6})")
+			Dim Reg = Regex.Match(JString, "([0-9A-Fa-f]{2})?([0-9A-Fa-f]{6})")
 			writer.WriteValue(Reg.Groups(1).Value + Reg.Groups(2).Value)
 		End Sub
 		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As SKColor, hasExistingValue As Boolean, serializer As JsonSerializer) As SKColor
 			Dim JString = JToken.Load(reader).Value(Of String)
-			Dim Reg = Regex.Match(JString, "([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})")
+			Dim Reg = Regex.Match(JString, "([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?")
 			Return SKColor.Parse(Reg.Groups(1).Value + Reg.Groups(2).Value)
 		End Function
 	End Class
-	Friend Class AssetConverter
-		Inherits JsonConverter(Of RDSprite)
-		Private ReadOnly fileLocation As String
-		Private ReadOnly assets As HashSet(Of RDSprite)
-		Public Sub New(location As String, assets As HashSet(Of RDSprite))
-			fileLocation = location
-			Me.assets = assets
-		End Sub
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDSprite, serializer As JsonSerializer)
-			writer.WriteValue(value.FileName)
-		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDSprite, hasExistingValue As Boolean, serializer As JsonSerializer) As RDSprite
-			Dim Json = JToken.ReadFrom(reader).ToObject(Of String)
-			Dim assetName = Json
-			Dim result As RDSprite
-			If assets.Any(Function(i) i.FileName = assetName) Then
-				result = assets.Single(Function(i) i.FileName = assetName)
-			ElseIf Json = String.Empty Then
-				Return Nothing
-			Else
-				Dim file = IO.Path.GetDirectoryName(fileLocation) + "\" + Json
-				result = New RDSprite(file)
-				assets.Add(result)
-			End If
-			Return result
-		End Function
-	End Class
-	Friend Class RoomConverter
-		Inherits JsonConverter
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As Object, serializer As JsonSerializer)
-			Select Case value.GetType
-				Case GetType(RDRoom)
-					writer.WriteRawValue($"[{String.Join(",", CType(value, RDRoom).Rooms)}]")
-				Case GetType(RDSingleRoom)
-					writer.WriteRawValue($"[{ CType(value, RDSingleRoom).Value}]")
-				Case Else
-					Throw New NotImplementedException
-			End Select
-		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Object, serializer As JsonSerializer) As Object
-			Dim J = JArray.Load(reader).ToObject(Of Byte())
-			Select Case objectType
-				Case GetType(RDRoom)
-					For Each item In J
-						existingValue(item) = True
-					Next
-					Return existingValue
-				Case GetType(RDSingleRoom)
-					Return New RDSingleRoom(J.Single)
-				Case Else
-					Throw New NotImplementedException
-			End Select
-		End Function
-		Public Overrides Function CanConvert(objectType As Type) As Boolean
-			Return objectType = GetType(RDRoom) OrElse objectType = GetType(RDSingleRoom)
-		End Function
-	End Class
-	Friend Class TagActionConverter
-		Inherits BaseEventConverter(Of TagAction)
-		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
-			MyBase.New(level, inputSettings)
-		End Sub
-		Public Overrides Function SetSerializedObject(value As TagAction, serializer As JsonSerializer) As JObject
-			Dim jobj = MyBase.SetSerializedObject(value, serializer)
-			If value.Tag Is Nothing Then
-				jobj.Remove("tag")
-			Else
-				jobj("tag") = value.Tag
-			End If
-			jobj("Tag") = value.ActionTag
-			Return jobj
-		End Function
-	End Class
-	Friend Class PatternConverter
-		Inherits JsonConverter(Of LimitedList(Of Patterns))
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As LimitedList(Of Patterns), serializer As JsonSerializer)
-			Dim out = ""
-			For Each item In value
-				Select Case item
-					Case Patterns.X
-						out += "x"
-					Case Patterns.Up
-						out += "u"
-					Case Patterns.Down
-						out += "d"
-					Case Patterns.Banana
-						out += "b"
-					Case Patterns.Return
-						out += "r"
-					Case Patterns.None
-						out += "-"
-				End Select
-			Next
-			writer.WriteValue(out)
-		End Sub
+#End Region
 
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As LimitedList(Of Patterns), hasExistingValue As Boolean, serializer As JsonSerializer) As LimitedList(Of Patterns)
-			For Each c In JToken.ReadFrom(reader).ToObject(Of String)
-				Select Case c
-					Case "x"c
-						existingValue.Add(Patterns.X)
-					Case "u"c
-						existingValue.Add(Patterns.Up)
-					Case "d"c
-						existingValue.Add(Patterns.Down)
-					Case "b"c
-						existingValue.Add(Patterns.Banana)
-					Case "r"c
-						existingValue.Add(Patterns.Return)
-					Case "-"c
-						existingValue.Add(Patterns.None)
-				End Select
-			Next
-			Return existingValue
-		End Function
-	End Class
-	Friend Class ConditionalConverter
-		Inherits JsonConverter(Of BaseConditional)
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As BaseConditional, serializer As JsonSerializer)
-			Dim S As New JsonSerializerSettings
-			S.Converters.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
-			S.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
-			writer.WriteRawValue(JsonConvert.SerializeObject(value, S))
-		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As BaseConditional, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseConditional
-			Dim J = JObject.Load(reader)
-			Dim ConditionalsType As Type = GetType(BaseConditional)
-			Dim SubClassType As Type = Type.GetType($"{GetType(BaseConditional).Namespace}.{NameOf(Conditions)}.{J("type")}")
-			Dim Conditional As BaseConditional = J.ToObject(SubClassType)
-			Return Conditional
-		End Function
-	End Class
-	Friend Class ConditionConverter
-		Inherits JsonConverter(Of Condition)
-		Private ReadOnly conditionals As List(Of BaseConditional)
-		Public Sub New(Conditionals As List(Of BaseConditional))
-			Me.conditionals = Conditionals
-		End Sub
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As Condition, serializer As JsonSerializer)
-			writer.WriteValue(value.Serialize)
-		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Condition, hasExistingValue As Boolean, serializer As JsonSerializer) As Condition
-			Dim J = JToken.Load(reader).ToObject(Of String)
-
-			Dim Value As New Condition()
-
-			Dim ConditionIds = Regex.Matches(J, "~?\d+(?=[&d])")
-			For Each match As Match In ConditionIds
-				Dim vs = Val("~2")
-				Dim Parent = conditionals.Where(Function(i) i.Id = CInt(Regex.Match(match.Value, "\d+").Value)).First
-				Value.ConditionLists.Add((match.Value(0) <> "~"c, Parent))
-			Next
-			Value.Duration = Regex.Match(J, "(?<=d)[\d\.]+").Value
-			Return Value
-		End Function
-	End Class
 End Namespace

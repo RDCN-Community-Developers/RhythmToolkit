@@ -227,7 +227,7 @@ Namespace Components
 	Public Structure Hit
 		Public ReadOnly Beat As RDBeat
 		Public ReadOnly Hold As Single
-		Public ReadOnly Parent As BaseBeat
+		Public ReadOnly Parent As RDBaseBeat
 		'Public ReadOnly Property BarBeat As (Bar As UInteger, Beat As Single)
 		'	Get
 		'		Dim Calculator As New BeatCalculator(Parent.ParentLevel)
@@ -245,7 +245,7 @@ Namespace Components
 				Return Hold > 0
 			End Get
 		End Property
-		Public Sub New(parent As BaseBeat, beat As RDBeat, Optional hold As Single = 0)
+		Public Sub New(parent As RDBaseBeat, beat As RDBeat, Optional hold As Single = 0)
 			Me.Parent = parent
 			Me.Beat = beat
 			Me.Hold = hold
@@ -257,7 +257,7 @@ Namespace Components
 	Public Structure RDBeat
 		Implements IComparable(Of RDBeat)
 		Implements IEquatable(Of RDBeat)
-		Friend _calculator As BeatCalculator
+		Friend _calculator As RDBeatCalculator
 		Private Shared _isBeatLoaded As Boolean
 		Private _isBarBeatLoaded As Boolean
 		Private _isTimeSpanLoaded As Boolean
@@ -348,14 +348,14 @@ Namespace Components
 		Public Sub New(beatOnly As Single)
 			_beat = beatOnly - 1
 		End Sub
-		Public Sub New(calculator As BeatCalculator, beatOnly As Single)
+		Public Sub New(calculator As RDBeatCalculator, beatOnly As Single)
 			If beatOnly < 1 Then
 				Throw New OverflowException($"The beat must not be less than 1, but {beatOnly} is given")
 			End If
 			_calculator = calculator
 			_beat = beatOnly - 1
 		End Sub
-		Public Sub New(calculator As BeatCalculator, bar As UInteger, beat As Single)
+		Public Sub New(calculator As RDBeatCalculator, bar As UInteger, beat As Single)
 			If bar < 1 Then
 				Throw New OverflowException($"The bar must not be less than 1, but {bar} is given")
 			End If
@@ -367,7 +367,7 @@ Namespace Components
 			_beat = _calculator.BarBeat_BeatOnly(bar, beat) - 1
 			_isBarBeatLoaded = True
 		End Sub
-		Public Sub New(calculator As BeatCalculator, timeSpan As TimeSpan)
+		Public Sub New(calculator As RDBeatCalculator, timeSpan As TimeSpan)
 			If timeSpan < TimeSpan.Zero Then
 				Throw New OverflowException($"The time must not be less than zero, but {timeSpan} is given")
 			End If
@@ -376,7 +376,7 @@ Namespace Components
 			_beat = _calculator.Time_BeatOnly(timeSpan) - 1
 			_isTimeSpanLoaded = True
 		End Sub
-		Public Shared Function [Default](calculator As BeatCalculator) As RDBeat
+		Public Shared Function [Default](calculator As RDBeatCalculator) As RDBeat
 			Return New RDBeat(calculator, 1)
 		End Function
 		Public Shared Function FromSameLevel(a As RDBeat, b As RDBeat, Optional [throw] As Boolean = False) As Boolean
@@ -746,18 +746,12 @@ Namespace Components
 			Return HashCode.Combine(_data)
 		End Function
 	End Structure
-	Public NotInheritable Class Audio
+	Public NotInheritable Class RDAudio
 		Public Property Filename As String
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)>
-		<DefaultValue(100)>
-		Public Property Volume As Integer = 100
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)>
-		<DefaultValue(100)>
-		Public Property Pitch As Integer = 100
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)>
-		Public Property Pan As Integer = 0
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)>
-		Public Property Offset As Integer = 0
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <DefaultValue(100)> Public Property Volume As Integer = 100
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <DefaultValue(100)> Public Property Pitch As Integer = 100
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> Public Property Pan As Integer = 0
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> Public Property Offset As Integer = 0
 		Public Overrides Function ToString() As String
 			Return Filename
 		End Function
@@ -906,9 +900,39 @@ Namespace Components
 			Return $"Count = {Count}"
 		End Function
 	End Class
-	Friend Class TypedList(Of T As BaseEvent)
-		Friend ReadOnly list As New List(Of T)
-		Protected Friend _types As New HashSet(Of EventType)
+	Friend Class RDTypedList(Of T As RDBaseEvent)
+		Implements IEnumerable(Of T)
+
+		Private ReadOnly list As New List(Of T)
+		Protected Friend _types As New HashSet(Of RDEventType)
+		Public Overloads Sub Add(item As T)
+			list.Add(item)
+			_types.Add(item.Type)
+		End Sub
+		Public Overloads Function Remove(item As T)
+			_types.Remove(item.Type)
+			Return list.Remove(item)
+		End Function
+		Public Function BeforeThan(item1 As RDBaseEvent, item2 As RDBaseEvent)
+			Return list.IndexOf(item1) < list.IndexOf(item2)
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"{If(_types.Contains(RDEventType.SetBeatsPerMinute) OrElse _types.Contains(RDEventType.PlaySong),
+				"BPM, ", If(_types.Contains(RDEventType.SetCrotchetsPerBar),
+				"CPB, ", ""))}Count={list.Count}"
+		End Function
+		Public Function GetEnumerator() As IEnumerator(Of T) Implements IEnumerable(Of T).GetEnumerator
+			Return list.GetEnumerator
+		End Function
+		Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
+			Return list.GetEnumerator
+		End Function
+	End Class
+	Public Class ADTypedList(Of T As ADBaseEvent)
+		Implements IEnumerable(Of T)
+
+		Private ReadOnly list As New List(Of T)
+		Protected Friend _types As New HashSet(Of ADEventType)
 		Public Overloads Sub Add(item As T)
 			list.Add(item)
 			_types.Add(item.Type)
@@ -918,83 +942,85 @@ Namespace Components
 			Return list.Remove(item)
 		End Function
 		Public Overrides Function ToString() As String
-			Return $"{If(_types.Contains(EventType.SetBeatsPerMinute) OrElse _types.Contains(EventType.PlaySong),
-				"BPM, ", If(_types.Contains(EventType.SetCrotchetsPerBar),
-				"CPB, ", ""))}Count={list.Count}"
+			'Return $"{If(_types.Contains(ADEventType.SetBeatsPerMinute) OrElse _types.Contains(RDEventType.PlaySong),
+			'	"BPM, ", If(_types.Contains(ADEventType.SetCrotchetsPerBar),
+			'	"CPB, ", ""))}Count = {list.Count}"
+			Return $"Count = {list.Count}"
+		End Function
+		Public Function GetEnumerator() As IEnumerator(Of T) Implements IEnumerable(Of T).GetEnumerator
+			Return list.GetEnumerator
+		End Function
+		Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
+			Return list.GetEnumerator
 		End Function
 	End Class
-	Public MustInherit Class OrderedEventCollection
-		Implements ICollection(Of BaseEvent)
-		Friend Property EventsBeatOrder As New SortedDictionary(Of RDBeat, TypedList(Of BaseEvent))
-		<JsonIgnore> Public Overridable ReadOnly Property Count As Integer Implements ICollection(Of BaseEvent).Count
+	Public MustInherit Class RDOrderedEventCollection
+		Implements ICollection(Of RDBaseEvent)
+		Friend eventsBeatOrder As New SortedDictionary(Of RDBeat, RDTypedList(Of RDBaseEvent))
+		<JsonIgnore> Public Overridable ReadOnly Property Count As Integer Implements ICollection(Of RDBaseEvent).Count
 			Get
-				Return Me.EventsBeatOrder.Sum(Function(i) i.Value.list.Count)
+				Return Me.eventsBeatOrder.Sum(Function(i) i.Value.Count)
 			End Get
 		End Property
-		<JsonIgnore> Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of BaseEvent).IsReadOnly
+		<JsonIgnore> Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of RDBaseEvent).IsReadOnly
 		<JsonIgnore> Public ReadOnly Property Length As RDBeat
 			Get
-				Return Me.EventsBeatOrder.LastOrDefault().Value.list.First.Beat
+				Return Me.eventsBeatOrder.LastOrDefault().Value.First.Beat
 			End Get
 		End Property
 		Public Sub New()
 		End Sub
-		Public Sub New(items As IEnumerable(Of BaseEvent))
+		Public Sub New(items As IEnumerable(Of RDBaseEvent))
 			For Each item In items
 				Me.Add(item)
 			Next
 		End Sub
-		Public Function ConcatAll() As List(Of BaseEvent)
-			Return Me.EventsBeatOrder.SelectMany(Function(i) i.Value.list).ToList
+		Public Function ConcatAll() As List(Of RDBaseEvent)
+			Return Me.eventsBeatOrder.SelectMany(Function(i) i.Value).ToList
 		End Function
-		Public Sub Add(item As BaseEvent) Implements ICollection(Of BaseEvent).Add
-			Dim value As TypedList(Of BaseEvent) = Nothing
+		Public Sub Add(item As RDBaseEvent) Implements ICollection(Of RDBaseEvent).Add
+			Dim value As RDTypedList(Of RDBaseEvent) = Nothing
 
-			If Not EventsBeatOrder.TryGetValue(item.Beat, value) Then
-				value = New TypedList(Of BaseEvent)
-				EventsBeatOrder.Add(item.Beat, value)
+			If Not eventsBeatOrder.TryGetValue(item.Beat, value) Then
+				value = New RDTypedList(Of RDBaseEvent)
+				eventsBeatOrder.Add(item.Beat, value)
 			End If
 
 			value.Add(item)
 		End Sub
-		Public Sub AddRange(items As IEnumerable(Of BaseEvent))
-			For Each item In items
-				Add(item)
-			Next
-		End Sub
-		Public Sub Clear() Implements ICollection(Of BaseEvent).Clear
+		Public Sub Clear() Implements ICollection(Of RDBaseEvent).Clear
 			'EventsTypeOrder.Clear()
-			EventsBeatOrder.Clear()
+			eventsBeatOrder.Clear()
 		End Sub
-		Public Overridable Function Contains(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Contains
+		Public Overridable Function Contains(item As RDBaseEvent) As Boolean Implements ICollection(Of RDBaseEvent).Contains
 			'            Return EventsTypeOrder.ContainsKey(item.Type) AndAlso
 			'EventsTypeOrder(item.Type).ContainsKey(item.Beat.BeatOnly) AndAlso
 			'EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Contains(item)
-			Return EventsBeatOrder.ContainsKey(item.Beat) AndAlso EventsBeatOrder(item.Beat).list.Contains(item)
+			Return eventsBeatOrder.ContainsKey(item.Beat) AndAlso eventsBeatOrder(item.Beat).Contains(item)
 		End Function
-		Public Sub CopyTo(array() As BaseEvent, arrayIndex As Integer) Implements ICollection(Of BaseEvent).CopyTo
+		Public Sub CopyTo(array() As RDBaseEvent, arrayIndex As Integer) Implements ICollection(Of RDBaseEvent).CopyTo
 			ConcatAll.CopyTo(array, arrayIndex)
 		End Sub
-		Friend Function Remove(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Remove
+		Friend Function Remove(item As RDBaseEvent) As Boolean Implements ICollection(Of RDBaseEvent).Remove
 			If Contains(item) Then
-				Dim result = Me.EventsBeatOrder(item.Beat).Remove(item)
-				If Me.EventsBeatOrder(item.Beat).list.Count = 0 Then
-					EventsBeatOrder.Remove(item.Beat)
+				Dim result = Me.eventsBeatOrder(item.Beat).Remove(item)
+				If Me.eventsBeatOrder(item.Beat).Count = 0 Then
+					eventsBeatOrder.Remove(item.Beat)
 				End If
 				Return result
 			End If
 			Return False
 		End Function
-		Public Iterator Function GetEnumerator() As IEnumerator(Of BaseEvent) Implements IEnumerable(Of BaseEvent).GetEnumerator
-			For Each pair In Me.EventsBeatOrder
-				For Each item In pair.Value.list
+		Public Iterator Function GetEnumerator() As IEnumerator(Of RDBaseEvent) Implements IEnumerable(Of RDBaseEvent).GetEnumerator
+			For Each pair In Me.eventsBeatOrder
+				For Each item In pair.Value
 					Yield item
 				Next
 			Next
 		End Function
 		Private Iterator Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
-			For Each pair In Me.EventsBeatOrder
-				For Each item In pair.Value.list
+			For Each pair In Me.eventsBeatOrder
+				For Each item In pair.Value
 					Yield item
 				Next
 			Next
@@ -1003,8 +1029,8 @@ Namespace Components
 			Return $"Count = {Count}"
 		End Function
 	End Class
-	Public Class OrderedEventCollection(Of T As BaseEvent)
-		Inherits OrderedEventCollection
+	Public Class RDOrderedEventCollection(Of T As RDBaseEvent)
+		Inherits RDOrderedEventCollection
 		Public Sub New()
 		End Sub
 		Public Sub New(items As IEnumerable(Of T))
@@ -1020,6 +1046,40 @@ Namespace Components
 		End Function
 		Public Overrides Function ToString() As String
 			Return $"Count = {Count}"
+		End Function
+	End Class
+	Public MustInherit Class ADTileCollection
+		Implements ICollection(Of ADTile)
+		Friend eventsOrder As New List(Of ADTile)
+		Public ReadOnly Property Count As Integer = eventsOrder.Count Implements ICollection(Of ADTile).Count
+		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of ADTile).IsReadOnly
+		Public Sub Add(item As ADTile) Implements ICollection(Of ADTile).Add
+			eventsOrder.Add(item)
+		End Sub
+		Public Sub Clear() Implements ICollection(Of ADTile).Clear
+			eventsOrder.Clear()
+		End Sub
+		Public Sub CopyTo(array() As ADTile, arrayIndex As Integer) Implements ICollection(Of ADTile).CopyTo
+			eventsOrder.CopyTo(array, arrayIndex)
+		End Sub
+		Public Function Contains(item As ADTile) As Boolean Implements ICollection(Of ADTile).Contains
+			Return eventsOrder.Contains(item)
+		End Function
+		Public Function Remove(item As ADTile) As Boolean Implements ICollection(Of ADTile).Remove
+			Return eventsOrder.Remove(item)
+		End Function
+		Public Function GetEnumerator() As IEnumerator(Of ADTile) Implements IEnumerable(Of ADTile).GetEnumerator
+			Return eventsOrder.GetEnumerator
+		End Function
+		Public Overridable Iterator Function Events() As IEnumerable(Of ADBaseEvent)
+			For Each item In eventsOrder
+				For Each action In item
+					Yield action
+				Next
+			Next
+		End Function
+		Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
+			Return GetEnumerator()
 		End Function
 	End Class
 	Public Class Union(Of A, B)
@@ -1058,7 +1118,7 @@ Namespace Components
 			BurnshotSoundRiser
 			BurnshotSoundCymbal
 		End Enum
-		Private Property Audio As New Audio
+		Private Property Audio As New RDAudio
 		Public Property GroupSubtype As GroupSubtypes
 		Public Property Used As Boolean
 		Public Property Filename As String
@@ -1122,13 +1182,13 @@ Namespace Components
 	End Class
 End Namespace
 Namespace LevelElements
-	Public Class Condition
+	Public Class RDCondition
 		Public Property ConditionLists As New List(Of (Enabled As Boolean, Conditional As BaseConditional))
 		Public Property Duration As Single
 		Public Sub New()
 		End Sub
-		Friend Shared Function Load(text As String) As Condition
-			Dim out As New Condition
+		Friend Shared Function Load(text As String) As RDCondition
+			Dim out As New RDCondition
 			Dim Matches = Regex.Matches(text, "(~?\d+)(?=[&d])")
 			If Matches.Count > 0 Then
 				out.Duration = CDbl(Regex.Match(text, "[\d\.]").Value)
@@ -1146,7 +1206,7 @@ Namespace LevelElements
 	End Class
 	<JsonObject>
 	Public Class Decoration
-		Inherits OrderedEventCollection(Of BaseDecorationAction)
+		Inherits RDOrderedEventCollection(Of RDBaseDecorationAction)
 		Private _id As String
 		<JsonIgnore>
 		Friend Parent As RDLevel
@@ -1193,17 +1253,17 @@ Namespace LevelElements
 			Me.Rooms = room
 			Me._id = Me.GetHashCode
 		End Sub
-		Public Overrides Sub Add(item As BaseDecorationAction)
+		Public Overrides Sub Add(item As RDBaseDecorationAction)
 			item._parent = Me
 			Parent.Add(item)
 		End Sub
-		Friend Sub AddSafely(item As BaseDecorationAction)
+		Friend Sub AddSafely(item As RDBaseDecorationAction)
 			MyBase.Add(item)
 		End Sub
-		Public Overrides Function Remove(item As BaseDecorationAction) As Boolean
+		Public Overrides Function Remove(item As RDBaseDecorationAction) As Boolean
 			Return Parent.Remove(item)
 		End Function
-		Friend Function RemoveSafely(item As BaseDecorationAction) As Boolean
+		Friend Function RemoveSafely(item As RDBaseDecorationAction) As Boolean
 			Return MyBase.Remove(item)
 		End Function
 		Public Overrides Function ToString() As String
@@ -1214,23 +1274,23 @@ Namespace LevelElements
 		End Function
 	End Class
 	<JsonObject>
-	Public Class Row
-		Inherits OrderedEventCollection(Of BaseRowAction)
+	Public Class RDRow
+		Inherits RDOrderedEventCollection(Of RDBaseRowAction)
 		Public Enum PlayerMode
 			P1
 			P2
 			CPU
 		End Enum
-		Private _rowType As RowType
+		Private _rowType As RDRowType
 		<JsonIgnore>
 		Friend Parent As RDLevel
 		Public Property Character As RDCharacter
 		'Public Property CpuMaker As Characters?
-		Public Property RowType As RowType
+		Public Property RowType As RDRowType
 			Get
 				Return _rowType
 			End Get
-			Set(value As RowType)
+			Set(value As RDRowType)
 				If value <> _rowType Then
 					Clear()
 					_rowType = value
@@ -1247,7 +1307,7 @@ Namespace LevelElements
 		Public Property HideAtStart As Boolean
 		Public Property Player As PlayerMode
 		<JsonIgnore>
-		Public Property Sound As New Audio
+		Public Property Sound As New Components.RDAudio
 		Public Property MuteBeats As Boolean
 		Public Property RowToMimic As SByte = -1
 		Public Property PulseSound As String
@@ -1301,17 +1361,17 @@ Namespace LevelElements
 		Friend Function ShouldSerializeRowToMimic() As Boolean
 			Return RowToMimic >= -1
 		End Function
-		Public Overrides Sub Add(item As BaseRowAction)
+		Public Overrides Sub Add(item As RDBaseRowAction)
 			item._parent = Me
 			Parent.Add(item)
 		End Sub
-		Friend Sub AddSafely(item As BaseRowAction)
+		Friend Sub AddSafely(item As RDBaseRowAction)
 			MyBase.Add(item)
 		End Sub
-		Public Overrides Function Remove(item As BaseRowAction) As Boolean
+		Public Overrides Function Remove(item As RDBaseRowAction) As Boolean
 			Return Parent.Remove(item)
 		End Function
-		Friend Function RemoveSafely(item As BaseRowAction) As Boolean
+		Friend Function RemoveSafely(item As RDBaseRowAction) As Boolean
 			Return MyBase.Remove(item)
 		End Function
 	End Class
@@ -1397,19 +1457,22 @@ Namespace LevelElements
 		End Class
 	End Namespace
 	Public Class RDLevel
-		Inherits OrderedEventCollection(Of BaseEvent)
+		Inherits RDOrderedEventCollection(Of RDBaseEvent)
 		Friend _path As String
-		Public Property Settings As New Settings
-		Friend ReadOnly Property _Rows As New List(Of Row)(16)
+		<JsonIgnore> Public ReadOnly Assets As New HashSet(Of RDSprite)
+		<JsonIgnore> Public ReadOnly Variables As New Variables
+		<JsonIgnore> Public ReadOnly Calculator As New RDBeatCalculator(Me)
+		Public Property Settings As New RDSettings
+		Friend ReadOnly Property _Rows As New List(Of RDRow)(16)
 		Friend ReadOnly Property _Decorations As New List(Of Decoration)
-		Public ReadOnly Property Rows As ICollection(Of Row)
+		Public ReadOnly Property Rows As IReadOnlyCollection(Of RDRow)
 			Get
-				Return _Rows
+				Return _Rows.AsReadOnly
 			End Get
 		End Property
-		Public ReadOnly Property Decorations As ICollection(Of Decoration)
+		Public ReadOnly Property Decorations As IReadOnlyCollection(Of Decoration)
 			Get
-				Return _Decorations
+				Return _Decorations.AsReadOnly
 			End Get
 		End Property
 		Public ReadOnly Property Conditionals As New List(Of BaseConditional)
@@ -1425,9 +1488,6 @@ Namespace LevelElements
 				Return IO.Path.GetDirectoryName(_path)
 			End Get
 		End Property
-		<JsonIgnore> Public ReadOnly Assets As New HashSet(Of RDSprite)
-		<JsonIgnore> Public ReadOnly Variables As New Variables
-		<JsonIgnore> Public ReadOnly Calculator As New BeatCalculator(Me)
 		<JsonIgnore> Public ReadOnly Property DefaultBeat As RDBeat
 			Get
 				Return Calculator.BeatOf(1)
@@ -1435,7 +1495,7 @@ Namespace LevelElements
 		End Property
 		Public Sub New()
 		End Sub
-		Public Sub New(items As IEnumerable(Of BaseEvent))
+		Public Sub New(items As IEnumerable(Of RDBaseEvent))
 			For Each item In items
 				Me.Add(item)
 			Next
@@ -1443,11 +1503,11 @@ Namespace LevelElements
 		Public Shared ReadOnly Property [Default] As RDLevel
 			Get
 				Dim rdl As New RDLevel From {
-					New PlaySong With {.Song = New Audio With {.Filename = "sndOrientalTechno"}},
-					New SetTheme With {.Preset = SetTheme.Theme.OrientalTechno}
+					New RDPlaySong With {.Song = New Components.RDAudio With {.Filename = "sndOrientalTechno"}},
+					New RDSetTheme With {.Preset = RDSetTheme.Theme.OrientalTechno}
 				}
 				Dim samurai = rdl.CreateRow(New RDSingleRoom(0), New RDCharacter(Characters.Samurai))
-				samurai.Add(New AddClassicBeat)
+				samurai.Add(New RDAddClassicBeat)
 				Return rdl
 			End Get
 		End Property
@@ -1468,13 +1528,13 @@ Namespace LevelElements
 			End If
 			Return False
 		End Function
-		Public Function CreateRow(room As RDSingleRoom, character As RDCharacter) As Row
-			Dim temp As New Row() With {.Character = character, .Rooms = room, .Parent = Me}
+		Public Function CreateRow(room As RDSingleRoom, character As RDCharacter) As RDRow
+			Dim temp As New RDRow() With {.Character = character, .Rooms = room, .Parent = Me}
 			temp.Parent = Me
 			_Rows.Add(temp)
 			Return temp
 		End Function
-		Public Function RemoveRow(row As Row) As Boolean
+		Public Function RemoveRow(row As RDRow) As Boolean
 			If Rows.Contains(row) Then
 				Return _Rows.Remove(row)
 			End If
@@ -1486,23 +1546,25 @@ Namespace LevelElements
 			tempDirectory.Create()
 			Try
 				ZipFile.ExtractToDirectory(RDLevelFile, tempDirectory.FullName)
-				Return tempDirectory.GetFiles.Where(Function(i) i.Name = "main.rdlevel").First
+				Return tempDirectory.GetFiles.Single(Function(i) i.Extension = ".rdlevel")
+			Catch ex As InvalidOperationException
+				Throw New RhythmBaseException("Found more than one rdlevel file.", ex)
 			Catch ex As Exception
 				Throw New RhythmBaseException("Cannot extract the file.", ex)
 			End Try
 		End Function
-		Public Shared Function LoadFile(RDLevelFilePath As String) As RDLevel
-			Return LoadFile(RDLevelFilePath, New LevelInputSettings)
+		Public Shared Function LoadFile(filepath As String) As RDLevel
+			Return LoadFile(filepath, New LevelInputSettings)
 		End Function
-		Public Shared Function LoadFile(RDLevelFilePath As String, settings As LevelInputSettings) As RDLevel
+		Public Shared Function LoadFile(filepath As String, settings As LevelInputSettings) As RDLevel
 			Dim LevelSerializer = New JsonSerializer()
-			LevelSerializer.Converters.Add(New RDLevelConverter(RDLevelFilePath, settings))
+			LevelSerializer.Converters.Add(New RDLevelConverter(filepath, settings))
 			'Dim json As String
-			Select Case IO.Path.GetExtension(RDLevelFilePath)
+			Select Case IO.Path.GetExtension(filepath)
 				Case ".rdzip", ".zip"
-					Return LevelSerializer.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(LoadZip(RDLevelFilePath).FullName)))
+					Return LevelSerializer.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(LoadZip(filepath).FullName)))
 				Case ".rdlevel"
-					Return LevelSerializer.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(RDLevelFilePath)))
+					Return LevelSerializer.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(filepath)))
 				Case Else
 					Throw New RhythmBaseException("File not supported.")
 			End Select
@@ -1540,7 +1602,7 @@ Namespace LevelElements
 			file.Close()
 			Return file.ToString
 		End Function
-		Public Overrides Sub Add(item As BaseEvent)
+		Public Overrides Sub Add(item As RDBaseEvent)
 
 			'添加默认节拍
 			If item._beat.IsEmpty Then
@@ -1548,7 +1610,7 @@ Namespace LevelElements
 			End If
 
 			'部分事件只能在小节的开头
-			If TryCast(item, IBarBeginningEvent) IsNot Nothing AndAlso item._beat.BarBeat.beat <> 1 Then
+			If TryCast(item, IRDBarBeginningEvent) IsNot Nothing AndAlso item._beat.BarBeat.beat <> 1 Then
 				Throw New IllegalBeatException(item)
 			End If
 
@@ -1556,55 +1618,55 @@ Namespace LevelElements
 			item._beat._calculator = Calculator
 			item._beat.ResetCache()
 
-			If item.Type = EventType.Comment AndAlso CType(item, Comment).Parent Is Nothing Then
+			If item.Type = RDEventType.Comment AndAlso CType(item, RDComment).Parent Is Nothing Then
 				'注释事件可能在精灵板块，也可能不在
 				MyBase.Add(item)
 
-			ElseIf item.Type = EventType.TintRows AndAlso CType(item, TintRows).Parent Is Nothing Then
+			ElseIf item.Type = RDEventType.TintRows AndAlso CType(item, RDTintRows).Parent Is Nothing Then
 				'轨道染色事件可能是为所有轨道染色
 				MyBase.Add(item)
 
 			ElseIf RowTypes.Contains(item.Type) Then
 				'添加至对应轨道
-				CType(item, BaseRowAction).Parent?.AddSafely(item)
+				CType(item, RDBaseRowAction).Parent?.AddSafely(item)
 				MyBase.Add(item)
 				Return
 
 			ElseIf DecorationTypes.Contains(item.Type) Then
 				'添加至对应精灵
-				CType(item, BaseDecorationAction).Parent?.AddSafely(item)
+				CType(item, RDBaseDecorationAction).Parent?.AddSafely(item)
 				MyBase.Add(item)
 				Return
 			Else
-				If item.Type = EventType.SetCrotchetsPerBar Then
+				If item.Type = RDEventType.SetCrotchetsPerBar Then
 					AddSetCrotchetsPerBar(item)
-				ElseIf ConvertToEnums(Of BaseBeatsPerMinute).Contains(item.Type) Then
+				ElseIf ConvertToRDEnums(Of RDBaseBeatsPerMinute).Contains(item.Type) Then
 					AddBaseBeatsPerMinute(item)
 				Else
 					MyBase.Add(item)
 				End If
 			End If
 		End Sub
-		Public Overrides Function Contains(item As BaseEvent) As Boolean
+		Public Overrides Function Contains(item As RDBaseEvent) As Boolean
 			Return (RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.Contains(item))) OrElse
 					(DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.Contains(item))) OrElse
 					MyBase.Contains(item)
 		End Function
-		Public Overrides Function Remove(item As BaseEvent) As Boolean
-			If RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.RemoveSafely(CType(item, BaseRowAction))) Then
+		Public Overrides Function Remove(item As RDBaseEvent) As Boolean
+			If RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.RemoveSafely(CType(item, RDBaseRowAction))) Then
 				MyBase.Remove(item)
 				item._beat._calculator = Nothing
 				Return True
 			End If
-			If DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.RemoveSafely(CType(item, BaseDecorationAction))) Then
+			If DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.RemoveSafely(CType(item, RDBaseDecorationAction))) Then
 				MyBase.Remove(item)
 				item._beat._calculator = Nothing
 				Return True
 			End If
 			If Contains(item) Then
-				If item.Type = EventType.SetCrotchetsPerBar Then
+				If item.Type = RDEventType.SetCrotchetsPerBar Then
 					Return RemoveSetCrotchetsPerBar(item)
-				ElseIf ConvertToEnums(Of BaseBeatsPerMinute).Contains(item.Type) Then
+				ElseIf ConvertToADEnums(Of RDBaseBeatsPerMinute).Contains(item.Type) Then
 					Return RemoveBaseBeatsPerMinute(item)
 				Else
 					Dim result = MyBase.Remove(item)
@@ -1614,7 +1676,7 @@ Namespace LevelElements
 			End If
 			Return False
 		End Function
-		Protected Friend Sub AddSetCrotchetsPerBar(item As SetCrotchetsPerBar)
+		Protected Friend Sub AddSetCrotchetsPerBar(item As RDSetCrotchetsPerBar)
 
 			Dim frt = item.FrontOrDefault
 			Dim nxt = item.NextOrDefault
@@ -1633,34 +1695,34 @@ Namespace LevelElements
 			Calculator.Refresh()
 
 			If nxt IsNot Nothing Then
-				Dim nxtE = item.After(Of BaseEvent).FirstOrDefault(Function(i) TryCast(i, IBarBeginningEvent) IsNot Nothing AndAlso
-																	   i.Type <> EventType.SetCrotchetsPerBar AndAlso
+				Dim nxtE = item.After(Of RDBaseEvent).FirstOrDefault(Function(i) TryCast(i, IRDBarBeginningEvent) IsNot Nothing AndAlso
+																	   i.Type <> RDEventType.SetCrotchetsPerBar AndAlso
 																	   i._beat < nxt._beat)
 				Dim interval = If(nxtE?._beat.BeatOnly, nxt._beat.BeatOnly) - item._beat.BeatOnly
 				Dim c = interval Mod item.CrotchetsPerBar
 				If c > 0 Then
 					c = If(c < 2, c + item.CrotchetsPerBar, c)
-					MyBase.Add(New SetCrotchetsPerBar() With {._beat = item._beat + interval - c, ._crotchetsPerBar = c - 1})
+					MyBase.Add(New RDSetCrotchetsPerBar() With {._beat = item._beat + interval - c, ._crotchetsPerBar = c - 1})
 				ElseIf nxt.CrotchetsPerBar = item.CrotchetsPerBar Then
 					MyBase.Remove(nxt)
 				End If
 
 				If nxtE IsNot Nothing Then
-					MyBase.Add(New SetCrotchetsPerBar() With {._beat = nxtE._beat, ._crotchetsPerBar = If(frt?.CrotchetsPerBar, 8) - 1})
+					MyBase.Add(New RDSetCrotchetsPerBar() With {._beat = nxtE._beat, ._crotchetsPerBar = If(frt?.CrotchetsPerBar, 8) - 1})
 				End If
 			End If
 
 			'更新计算器
 			Calculator.Refresh()
 		End Sub
-		Protected Friend Function RemoveSetCrotchetsPerBar(item As SetCrotchetsPerBar) As Boolean
+		Protected Friend Function RemoveSetCrotchetsPerBar(item As RDSetCrotchetsPerBar) As Boolean
 
 			Dim frt = item.FrontOrDefault
 			Dim nxt = item.NextOrDefault
 
 			If nxt IsNot Nothing Then
-				Dim nxtE = item.After(Of BaseEvent).FirstOrDefault(Function(i) TryCast(i, IBarBeginningEvent) IsNot Nothing AndAlso
-																	   i.Type <> EventType.SetCrotchetsPerBar AndAlso
+				Dim nxtE = item.After(Of RDBaseEvent).FirstOrDefault(Function(i) TryCast(i, IRDBarBeginningEvent) IsNot Nothing AndAlso
+																	   i.Type <> RDEventType.SetCrotchetsPerBar AndAlso
 																	   i._beat < nxt._beat)
 				Dim cpb = item.CrotchetsPerBar
 				Dim interval = If(nxtE?._beat.BeatOnly, nxt._beat.BeatOnly) - item._beat.BeatOnly
@@ -1670,14 +1732,14 @@ Namespace LevelElements
 					If c = nxt.CrotchetsPerBar Then
 						MyBase.Remove(nxt)
 					End If
-					MyBase.Add(New SetCrotchetsPerBar With {._beat = item._beat + interval - c, ._crotchetsPerBar = c - 1})
+					MyBase.Add(New RDSetCrotchetsPerBar With {._beat = item._beat + interval - c, ._crotchetsPerBar = c - 1})
 				Else
 					If nxtE Is Nothing AndAlso nxt.CrotchetsPerBar = If(frt?.CrotchetsPerBar, 8) Then
 						MyBase.Remove(nxt)
 					End If
 				End If
 				If nxtE IsNot Nothing Then
-					MyBase.Add(New SetCrotchetsPerBar() With {._beat = nxtE._beat, ._crotchetsPerBar = If(frt?.CrotchetsPerBar, 8) - 1})
+					MyBase.Add(New RDSetCrotchetsPerBar() With {._beat = nxtE._beat, ._crotchetsPerBar = If(frt?.CrotchetsPerBar, 8) - 1})
 				End If
 				Calculator.Refresh()
 			End If
@@ -1691,20 +1753,20 @@ Namespace LevelElements
 			Calculator.Refresh()
 			Return result
 		End Function
-		Protected Friend Sub AddBaseBeatsPerMinute(item As BaseBeatsPerMinute)
+		Protected Friend Sub AddBaseBeatsPerMinute(item As RDBaseBeatsPerMinute)
 			'更新 BPM
 			RefreshBPMs(item.Beat)
 			'添加事件
 			MyBase.Add(item)
 		End Sub
-		Protected Friend Function RemoveBaseBeatsPerMinute(item As BaseBeatsPerMinute) As Boolean
+		Protected Friend Function RemoveBaseBeatsPerMinute(item As RDBaseBeatsPerMinute) As Boolean
 			Dim result = MyBase.Remove(item)
 			RefreshBPMs(item.Beat)
 			item._beat._calculator = Nothing
 			Return result
 		End Function
 		Private Sub RefreshBPMs(start As RDBeat)
-			For Each item In EventsBeatOrder.Keys
+			For Each item In eventsBeatOrder.Keys
 				item.ResetBPM()
 			Next
 			For Each jtem In Me.Where(Function(i) i.Beat > start)
@@ -1715,7 +1777,7 @@ Namespace LevelElements
 			Next
 		End Sub
 		Private Sub RefreshCPBs(start As RDBeat)
-			For Each item In EventsBeatOrder.Keys
+			For Each item In eventsBeatOrder.Keys
 				item.ResetCPB()
 			Next
 			For Each jtem In Me.Where(Function(i) i.Beat > start)
@@ -1729,38 +1791,38 @@ Namespace LevelElements
 			Return $"""{Settings.Song}"" Count = {Count}"
 		End Function
 	End Class
-	Public Class Settings
-		Public Enum SpecialArtistTypes
-			None
-			AuthorIsArtist
-			PublicLicense
-		End Enum
-		Public Enum DifficultyLevel
+	Public Enum RTSpecialArtistTypes
+		None
+		AuthorIsArtist
+		PublicLicense
+	End Enum
+	Public Class RDSettings
+		Public Enum RDDifficultyLevel
 			Easy
 			Medium
 			Tough
 			VeryTough
 		End Enum
-		Public Enum LevelPlayedMode
+		Public Enum RDLevelPlayedMode
 			OnePlayerOnly
 			TwoPlayerOnly
 			BothModes
 		End Enum
-		Public Enum FirstBeatBehaviors
+		Public Enum RDFirstBeatBehaviors
 			RunNormally
 			RunEventsOnPrebar
 		End Enum
-		Public Enum MultiplayerAppearances
+		Public Enum RDMultiplayerAppearances
 			HorizontalStrips
 		End Enum
 		Public Property Version As Integer = 60
 		Public Property Artist As String = "" 'Done
 		Public Property Song As String = "" 'Done
-		Public Property SpecialArtistType As SpecialArtistTypes = SpecialArtistTypes.None 'Enum
+		Public Property SpecialArtistType As RTSpecialArtistTypes = RTSpecialArtistTypes.None 'Enum
 		Public Property ArtistPermission As String = "" 'Done
 		Public Property ArtistLinks As String = "" 'Link
 		Public Property Author As String = "" 'done
-		Public Property Difficulty As DifficultyLevel = DifficultyLevel.Easy 'Enum
+		Public Property Difficulty As RDDifficultyLevel = RDDifficultyLevel.Easy 'Enum
 		Public Property SeizureWarning As Boolean = False
 		Public Property PreviewImage As String = "" 'FilePath
 		Public Property SyringeIcon As String = "" 'FilePath
@@ -1772,14 +1834,13 @@ Namespace LevelElements
 		Public Property Description As String = "" 'Done
 		Public Property Tags As String = "" 'Done
 		Public Property Separate2PLevelFilename As String = "" 'FilePath
-		Public Property CanBePlayedOn As LevelPlayedMode = LevelPlayedMode.OnePlayerOnly 'Enum
-		Public Property FirstBeatBehavior As FirstBeatBehaviors = FirstBeatBehaviors.RunNormally 'Enum
-		Public Property MultiplayerAppearance As MultiplayerAppearances = MultiplayerAppearances.HorizontalStrips 'Enum
+		Public Property CanBePlayedOn As RDLevelPlayedMode = RDLevelPlayedMode.OnePlayerOnly 'Enum
+		Public Property FirstBeatBehavior As RDFirstBeatBehaviors = RDFirstBeatBehaviors.RunNormally 'Enum
+		Public Property MultiplayerAppearance As RDMultiplayerAppearances = RDMultiplayerAppearances.HorizontalStrips 'Enum
 		Public Property LevelVolume As Single = 1
 		Public Property RankMaxMistakes As New LimitedList(Of Integer)(4, 20)
 		Public Property RankDescription As New LimitedList(Of String)(6, "")
-		<JsonProperty(NullValueHandling:=NullValueHandling.Ignore)>
-		Public Property Mods As List(Of String)
+		<JsonProperty(NullValueHandling:=NullValueHandling.Ignore)> Public Property Mods As List(Of String)
 		'oldBassDrop
 		'startImmediately
 		'classicHitParticles
@@ -1792,5 +1853,160 @@ Namespace LevelElements
 		'noDoublePulse
 		'invisibleCharacters
 		'gentleBassDrop
+	End Class
+	Public Enum ADTrackAnimationTypes
+		None
+		Assemble
+		Assemble_Far
+		Extend
+		Grow
+		Grow_Spin
+		Fade
+		Drop
+		Rise
+	End Enum
+	Public Enum ADTrackDisappearAnimationTypes
+		None
+		Scatter
+		Scatter_Far
+		Retract
+		Shrink
+		Shrink_Spin
+		Fade
+	End Enum
+	Public Enum BgDisplayModes
+		FitToScreen
+		Unscaled
+		Tiled
+	End Enum
+	Public Class ADLevel
+		Inherits ADTileCollection
+		Friend _path As String
+		Public Property Settings As New ADSettings
+		Public Property Decorations As New List(Of ADBaseEvent)
+		<JsonIgnore> Public ReadOnly Property Path As String
+			Get
+				Return _path
+			End Get
+		End Property
+		<JsonIgnore> Public ReadOnly Property Directory As String
+			Get
+				Return IO.Path.GetDirectoryName(_path)
+			End Get
+		End Property
+		Public Sub New()
+		End Sub
+		Public Sub New(items As IEnumerable(Of ADTile))
+			For Each item In items
+				Me.Add(item)
+			Next
+		End Sub
+		Public Shared ReadOnly Property [Default] As ADLevel
+			Get
+				Return New ADLevel
+			End Get
+		End Property
+		Private Shared Function LoadZip(ADLevelFile As String) As FileInfo
+			Dim tempDirectoryName As String = ADLevelFile
+			Dim tempDirectory = New DirectoryInfo(IO.Path.Combine(IO.Path.GetTempPath, IO.Path.GetRandomFileName))
+			tempDirectory.Create()
+			Try
+				ZipFile.ExtractToDirectory(ADLevelFile, tempDirectory.FullName)
+				Return tempDirectory.GetFiles.Single(Function(i) i.Extension = ".adofai")
+			Catch ex As InvalidOperationException
+				Throw New RhythmBaseException("Found more than one adofai file.", ex)
+			Catch ex As Exception
+				Throw New RhythmBaseException("Cannot extract the file.", ex)
+			End Try
+		End Function
+		Public Shared Function LoadFile(filepath As String) As ADLevel
+			Return LoadFile(filepath, New LevelInputSettings)
+		End Function
+		Public Shared Function LoadFile(filepath As String, settings As LevelInputSettings) As ADLevel
+			Dim LevelSerializer = New JsonSerializer()
+			LevelSerializer.Converters.Add(New ADLevelConverter(filepath, settings))
+			Select Case IO.Path.GetExtension(filepath)
+				Case ".adofai"
+					Return LevelSerializer.Deserialize(Of ADLevel)(New JsonTextReader(File.OpenText(filepath)))
+				Case Else
+					Throw New RhythmBaseException("File not supported.")
+			End Select
+		End Function
+		Public Overrides Iterator Function Events() As IEnumerable(Of ADBaseEvent)
+			For Each item In MyBase.Events()
+				Yield item
+			Next
+			For Each item In Decorations
+				Yield item
+			Next
+		End Function
+	End Class
+	Public Class ADSettings
+		Public Property Version As Integer '13
+		Public Property Artist As String
+		Public Property SpecialArtistType As RTSpecialArtistTypes
+		Public Property ArtistPermission As String
+		Public Property Song As String
+		Public Property Author As String
+		Public Property SeparateCountdownTime As Boolean
+		Public Property PreviewImage As String
+		Public Property PreviewIcon As String
+		Public Property PreviewIconColor As SKColor
+		Public Property PreviewSongStart As Single
+		Public Property PreviewSongDuration As Single
+		Public Property SeizureWarning As Boolean
+		Public Property LevelDesc As String
+		Public Property LevelTags As String
+		Public Property ArtistLinks As String
+		Public Property Difficulty As Integer
+		Public Property RequiredMods As New List(Of String)
+		Public Property SongFilename As String
+		Public Property Bpm As Single
+		Public Property Volume As Single
+		Public Property Offset As Single
+		Public Property Pitch As Single
+		Public Property Hitsound As String
+		Public Property HitsoundVolume As Single
+		Public Property CountdownTicks As Single
+		Public Property TrackColorType As ADTrackColorTypes
+		Public Property TrackColor As SKColor
+		Public Property SecondaryTrackColor As SKColor
+		Public Property TrackColorAnimDuration As Single
+		Public Property TrackColorPulse As ADTrackColorPulses
+		Public Property TrackPulseLength As Single
+		Public Property TrackStyle As ADTrackStyles
+		Public Property TrackAnimation As ADTrackAnimationTypes
+		Public Property BeatsAhead As Integer
+		Public Property TrackDisappearAnimation As ADTrackDisappearAnimationTypes
+		Public Property BeatsBehind As Integer
+		Public Property BackgroundColor As SKColor
+		Public Property ShowDefaultBGIfNoImage As Boolean
+		Public Property BgImage As String
+		Public Property BgImageColor As SKColor
+		Public Property Parallax As RDPointI
+		Public Property BgDisplayMode As BgDisplayModes
+		Public Property LockRot As Boolean
+		Public Property LoopBG As Boolean
+		Public Property ScalingRatio As Single
+		Public Property RelativeTo As ADCameraRelativeTo
+		Public Property Position As RDPointI
+		Public Property Rotation As Single
+		Public Property Zoom As Single
+		Public Property BgVideo As String
+		Public Property LoopVideo As Boolean
+		Public Property VidOffset As Integer
+		Public Property FloorIconOutlines As Boolean
+		Public Property StickToFloors As Boolean
+		Public Property PlanetEase As EaseType
+		Public Property PlanetEaseParts As Integer
+		Public Property PlanetEasePartBehavior As ADEasePartBehaviors
+		Public Property DefaultTextColor As SKColor
+		Public Property DefaultTextShadowColor As SKColor
+		Public Property CongratsText As String
+		Public Property PerfectText As String
+		'Public Property customClass As String
+		Public Property LegacyFlash As Boolean
+		Public Property LegacyCamRelativeTo As Boolean
+		Public Property LegacySpriteTiles As Boolean
 	End Class
 End Namespace
