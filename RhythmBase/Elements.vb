@@ -1004,7 +1004,7 @@ Namespace Components
 		Friend Function Remove(item As RDBaseEvent) As Boolean Implements ICollection(Of RDBaseEvent).Remove
 			If Contains(item) Then
 				Dim result = Me.eventsBeatOrder(item.Beat).Remove(item)
-				If Me.eventsBeatOrder(item.Beat).Count = 0 Then
+				If Not eventsBeatOrder(item.Beat).Any() Then
 					eventsBeatOrder.Remove(item.Beat)
 				End If
 				Return result
@@ -1077,6 +1077,9 @@ Namespace Components
 					Yield action
 				Next
 			Next
+		End Function
+		Public Function IndexOf(item As ADTile) As Integer
+			Return eventsOrder.IndexOf(item)
 		End Function
 		Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
 			Return GetEnumerator()
@@ -1906,19 +1909,6 @@ Namespace LevelElements
 				Return New ADLevel
 			End Get
 		End Property
-		Private Shared Function LoadZip(ADLevelFile As String) As FileInfo
-			Dim tempDirectoryName As String = ADLevelFile
-			Dim tempDirectory = New DirectoryInfo(IO.Path.Combine(IO.Path.GetTempPath, IO.Path.GetRandomFileName))
-			tempDirectory.Create()
-			Try
-				ZipFile.ExtractToDirectory(ADLevelFile, tempDirectory.FullName)
-				Return tempDirectory.GetFiles.Single(Function(i) i.Extension = ".adofai")
-			Catch ex As InvalidOperationException
-				Throw New RhythmBaseException("Found more than one adofai file.", ex)
-			Catch ex As Exception
-				Throw New RhythmBaseException("Cannot extract the file.", ex)
-			End Try
-		End Function
 		Public Shared Function LoadFile(filepath As String) As ADLevel
 			Return LoadFile(filepath, New LevelInputSettings)
 		End Function
