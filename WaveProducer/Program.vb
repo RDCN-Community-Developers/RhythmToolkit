@@ -126,7 +126,7 @@ Module Program
 		A.Add(mv2)
 		SpriteCollection.Add(A)
 		'Next
-		Dim Calculator As New BeatCalculator(Level)
+		Dim Calculator As New RDBeatCalculator(Level)
 
 		For time = 0 To 182 Step 0.1
 			For index = 0 To Level.Decorations.Count - 1

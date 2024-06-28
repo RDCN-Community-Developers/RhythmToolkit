@@ -2,7 +2,7 @@
 Imports NAudio.CoreAudioApi
 Namespace Extensions
 	Public Module Extension
-		Private Function GetRange(e As OrderedEventCollection, index As Index) As (start As Single, [end] As Single)
+		Private Function GetRange(e As RDOrderedEventCollection, index As Index) As (start As Single, [end] As Single)
 			Try
 				Dim firstEvent = e.First
 				Dim lastEvent = e.Last
@@ -15,7 +15,7 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 				Throw New ArgumentOutOfRangeException(NameOf(index))
 			End Try
 		End Function
-		Private Function GetRange(e As OrderedEventCollection, range As Range) As (start As Single, [end] As Single)
+		Private Function GetRange(e As RDOrderedEventCollection, range As Range) As (start As Single, [end] As Single)
 			Try
 				Dim firstEvent = e.First
 				Dim lastEvent = e.Last
@@ -98,266 +98,266 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
 		<Extension> Public Function FixFraction(number As Single, splitBase As UInteger) As Single
 			Return Math.Round(number * splitBase) / splitBase
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			Return e.EventsBeatOrder.SelectMany(Function(i) i.Value.list).Where(predicate)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+			Return e.eventsBeatOrder.SelectMany(Function(i) i.Value).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
-			Dim value As TypedList(Of RDBaseEvent) = Nothing
-			If e.EventsBeatOrder.TryGetValue(beat, value) Then
-				Return value.list
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
+			Dim value As RDTypedList(Of RDBaseEvent) = Nothing
+			If e.eventsBeatOrder.TryGetValue(beat, value) Then
+				Return value
 			End If
 			Return value
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
-			Return e.EventsBeatOrder _
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key < endBeat) _
 .SkipWhile(Function(i) i.Key < startBeat) _
-.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
 			Dim rg = GetRange(e, index)
-			Return e.EventsBeatOrder _
+			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
 .SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), range As RDRange) As IEnumerable(Of T)
-			Return e.EventsBeatOrder _
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), range As RDRange) As IEnumerable(Of T)
+			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) If(i.Key < range.End, True)) _
 .SkipWhile(Function(i) If(i.Key < range.Start, False)) _
-.SelectMany(Function(i) i.Value.list)
+.SelectMany(Function(i) i.Value)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), range As Range) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), range As Range) As IEnumerable(Of T)
 			Dim rg = GetRange(e, range)
-			Return e.EventsBeatOrder _
+			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
 .SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
 			Return e.Where(beat).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
 			Return e.Where(beat).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
 			Return e.Where(startBeat, endBeat).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
 			Return e.Where(range).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
 			Return e.Where(index).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
 			Return e.Where(range).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection) As IEnumerable(Of T)
 			Dim enums = ConvertToRDEnums(Of T)()
-			Return e.EventsBeatOrder _
+			Return e.eventsBeatOrder _
 .Where(Function(i) i.Value._types _
 .Any(Function(j) enums.Contains(j))) _
-.SelectMany(Function(i) i.Value.list).OfType(Of T)
+.SelectMany(Function(i) i.Value).OfType(Of T)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
-			Dim value As TypedList(Of RDBaseEvent) = Nothing
-			If e.EventsBeatOrder.TryGetValue(beat, value) Then
-				Return value.list.OfType(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
+			Dim value As RDTypedList(Of RDBaseEvent) = Nothing
+			If e.eventsBeatOrder.TryGetValue(beat, value) Then
+				Return value.OfType(Of T)
 			End If
 			Return value
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
-			Return e.EventsBeatOrder _
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key < endBeat) _
 .SkipWhile(Function(i) i.Key < startBeat) _
-.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, index As Index) As IEnumerable(Of T)
 			Dim rg = GetRange(e, index)
-			Return e.EventsBeatOrder _
+			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
 .SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, range As RDRange) As IEnumerable(Of T)
-			Return e.EventsBeatOrder _
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, range As RDRange) As IEnumerable(Of T)
+			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) If(i.Key < range.End, True)) _
 .SkipWhile(Function(i) If(i.Key < range.Start, False)) _
-.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, range As Range) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, range As Range) As IEnumerable(Of T)
 			Dim rg = GetRange(e, range)
-			Return e.EventsBeatOrder _
+			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
 .SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-.SelectMany(Function(i) i.Value.list.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of T))
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
 			Return e.Where(Of T)().Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
 			Return e.Where(Of T)(beat).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As IEnumerable(Of T)
 			Return e.Where(Of T)(startBeat, endBeat).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
 			Return e.Where(Of T)(range).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
 			Return e.Where(Of T)(index).Where(predicate)
 		End Function
-		<Extension> Public Function Where(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), range As Range) As IEnumerable(Of T)
 			Return e.Where(Of T)(range).Where(predicate)
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), beat As Single) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), beat As Single) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(beat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), beat As RDBeat) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), beat As RDBeat) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(beat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), startBeat As RDBeat, endBeat As RDBeat) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), startBeat As RDBeat, endBeat As RDBeat) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(startBeat, endBeat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), index As Index) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), index As Index) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(index)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), range As RDRange) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), range As RDRange) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(range)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), range As Range) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), range As Range) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(range)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, beat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, startBeat, endBeat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As RDRange) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As RDRange) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, range)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, index)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As Range) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As Range) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, range)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)()))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, beat As RDBeat) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, beat As RDBeat) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(beat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, startBeat As RDBeat, endBeat As RDBeat) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, startBeat As RDBeat, endBeat As RDBeat) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(startBeat, endBeat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, range As RDRange) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, range As RDRange) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(range)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, index As Index) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, index As Index) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(index)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, range As Range) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, range As Range) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(range)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean)) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, beat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As RDBeat, endBeat As RDBeat) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, startBeat, endBeat)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As RDRange) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), range As RDRange) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, range)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, index)))
 		End Function
-		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As Range) As Integer
+		<Extension> Public Function RemoveAll(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), range As Range) As Integer
 			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, range)))
 		End Function
-		<Extension> Public Function First(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T)) As T
-			Return e.EventsBeatOrder.First.Value.list.First
+		<Extension> Public Function First(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T)) As T
+			Return e.eventsBeatOrder.First.Value.First
 		End Function
-		<Extension> Public Function First(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function First(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
 			Return e.ConcatAll.First(predicate)
 		End Function
-		<Extension> Public Function First(Of T As RDBaseEvent)(e As OrderedEventCollection) As T
+		<Extension> Public Function First(Of T As RDBaseEvent)(e As RDOrderedEventCollection) As T
 			Return e.Where(Of T).First
 		End Function
-		<Extension> Public Function First(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function First(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean)) As T
 			Return e.Where(Of T).First(predicate)
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T)) As T
-			Return e.EventsBeatOrder.FirstOrDefault.Value?.list.FirstOrDefault
+		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T)) As T
+			Return e.eventsBeatOrder.FirstOrDefault.Value?.FirstOrDefault
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), defaultValue As T) As T
+		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), defaultValue As T) As T
 			Return e.ConcatAll.FirstOrDefault(defaultValue)
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
 			Return e.ConcatAll.FirstOrDefault(predicate)
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), defaultValue As T) As T
+		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), defaultValue As T) As T
 			Return e.ConcatAll.FirstOrDefault(predicate, defaultValue)
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection) As T
+		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection) As T
 			Return e.Where(Of T).FirstOrDefault()
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection, defaultValue As T) As T
+		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection, defaultValue As T) As T
 			Return e.Where(Of T).FirstOrDefault(defaultValue)
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean)) As T
 			Return e.Where(Of T).FirstOrDefault(predicate)
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), defaultValue As T) As T
+		<Extension> Public Function FirstOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), defaultValue As T) As T
 			Return e.Where(Of T).FirstOrDefault(predicate, defaultValue)
 		End Function
-		<Extension> Public Function Last(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T)) As T
-			Return e.EventsBeatOrder.Last.Value.list.Last
+		<Extension> Public Function Last(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T)) As T
+			Return e.eventsBeatOrder.Last.Value.Last
 		End Function
-		<Extension> Public Function Last(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function Last(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
 			Return e.ConcatAll.Last(predicate)
 		End Function
-		<Extension> Public Function Last(Of T As RDBaseEvent)(e As OrderedEventCollection) As T
+		<Extension> Public Function Last(Of T As RDBaseEvent)(e As RDOrderedEventCollection) As T
 			Return e.Where(Of T).Last
 		End Function
-		<Extension> Public Function Last(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function Last(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean)) As T
 			Return e.Where(Of T).Last(predicate)
 		End Function
-		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T)) As T
-			Return e.EventsBeatOrder.LastOrDefault.Value?.list.LastOrDefault()
+		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T)) As T
+			Return e.eventsBeatOrder.LastOrDefault.Value?.LastOrDefault()
 		End Function
-		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), defaultValue As T) As T
+		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), defaultValue As T) As T
 			Return e.ConcatAll.LastOrDefault(defaultValue)
 		End Function
-		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
 			Return e.ConcatAll.LastOrDefault(predicate)
 		End Function
-		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), defaultValue As T) As T
+		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), defaultValue As T) As T
 			Return e.ConcatAll.LastOrDefault(predicate, defaultValue)
 		End Function
-		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection) As T
+		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection) As T
 			Return e.Where(Of T).LastOrDefault()
 		End Function
-		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection, defaultValue As T) As T
+		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection, defaultValue As T) As T
 			Return e.Where(Of T).LastOrDefault(defaultValue)
 		End Function
-		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean)) As T
 			Return e.Where(Of T).LastOrDefault(predicate)
 		End Function
-		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), defaultValue As T) As T
+		<Extension> Public Function LastOrDefault(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), defaultValue As T) As T
 			Return e.Where(Of T).LastOrDefault(predicate, defaultValue)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), beat As RDBeat) As IEnumerable(Of T)
 			Return e.TakeWhile(beat.BeatOnly)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), index As Index) As IEnumerable(Of T)
 			Dim firstEvent = e.First
 			Dim lastEvent = e.Last
 			Return e.TakeWhile(
@@ -365,22 +365,22 @@ If(index.IsFromEnd,
 lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1),
 firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			Return e.EventsBeatOrder.SelectMany(Function(i) i.Value.list).TakeWhile(predicate)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+			Return e.eventsBeatOrder.SelectMany(Function(i) i.Value).TakeWhile(predicate)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
 			Return e.TakeWhile(beat).TakeWhile(predicate)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
 			Return e.TakeWhile(beat).TakeWhile(predicate)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
 			Return e.TakeWhile(index).TakeWhile(predicate)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection, beat As RDBeat) As IEnumerable(Of T)
 			Return e.TakeWhile(Of T)(beat.BeatOnly)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection, index As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection, index As Index) As IEnumerable(Of T)
 			Dim firstEvent = e.First
 			Dim lastEvent = e.Last
 			Return e.TakeWhile(Of T)(
@@ -388,42 +388,42 @@ If(index.IsFromEnd,
 lastEvent.Beat._calculator.BarBeat_BeatOnly(lastEvent.Beat.BarBeat.bar - index.Value + 1, 1),
 firstEvent.Beat._calculator.BarBeat_BeatOnly(index.Value + 1, 1)))
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			Return e.EventsBeatOrder.SelectMany(Function(i) i.Value.list.OfType(Of T)).Where(predicate)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+			Return e.eventsBeatOrder.SelectMany(Function(i) i.Value.OfType(Of T)).Where(predicate)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), beat As Single) As IEnumerable(Of T)
 			Return e.TakeWhile(Of T)(beat).TakeWhile(predicate)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), beat As RDBeat) As IEnumerable(Of T)
 			Return e.TakeWhile(Of T)(beat).TakeWhile(predicate)
 		End Function
-		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of T As RDBaseEvent)(e As RDOrderedEventCollection, predicate As Func(Of T, Boolean), index As Index) As IEnumerable(Of T)
 			Return e.TakeWhile(Of T)(index).TakeWhile(predicate)
 		End Function
-		<Extension> Public Function RemoveRange(Of T As RDBaseEvent)(e As OrderedEventCollection, items As IEnumerable(Of T)) As Integer
+		<Extension> Public Function RemoveRange(Of T As RDBaseEvent)(e As RDOrderedEventCollection, items As IEnumerable(Of T)) As Integer
 			Dim count As Integer = 0
 			For Each item In items
 				count += e.Remove(item)
 			Next
 			Return count
 		End Function
-		<Extension> Public Function RemoveRange(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), items As IEnumerable(Of T)) As Integer
+		<Extension> Public Function RemoveRange(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), items As IEnumerable(Of T)) As Integer
 			Dim count As Integer = 0
 			For Each item In items
 				count += e.Remove(item)
 			Next
 			Return count
 		End Function
-		<Extension> Public Function IsInFrontOf(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), item1 As T, item2 As T) As Boolean
+		<Extension> Public Function IsInFrontOf(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), item1 As T, item2 As T) As Boolean
 			Return item1.Beat < item2.Beat OrElse
 (item1.Beat.BeatOnly = item2.Beat.BeatOnly AndAlso
-e.EventsBeatOrder(item1.Beat).list.IndexOf(item1) < e.EventsBeatOrder(item2.Beat).list.IndexOf(item2))
+e.eventsBeatOrder(item1.Beat).BeforeThan(item1, item2))
 		End Function
-		<Extension> Public Function IsBehind(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), item1 As T, item2 As T) As Boolean
+		<Extension> Public Function IsBehind(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), item1 As T, item2 As T) As Boolean
 			Dim s = item1.Beat.Equals(CObj(item2.Beat))
 			Return item1.Beat > item2.Beat OrElse
 (item1.Beat.BeatOnly = item2.Beat.BeatOnly AndAlso
-e.EventsBeatOrder(item1.Beat).list.IndexOf(item1) > e.EventsBeatOrder(item2.Beat).list.IndexOf(item2))
+e.eventsBeatOrder(item1.Beat).BeforeThan(item2, item1))
 		End Function
 		<Extension> Public Function GetHitBeat(e As RDLevel) As IEnumerable(Of Hit)
 			Dim L As New List(Of Hit)
@@ -435,7 +435,7 @@ e.EventsBeatOrder(item1.Beat).list.IndexOf(item1) > e.EventsBeatOrder(item2.Beat
 		<Extension> Public Function GetHitEvents(e As RDLevel) As IEnumerable(Of RDBaseBeat)
 			Return e.Where(Of RDBaseBeat)(Function(i) i.IsHitable)
 		End Function
-		<Extension> Public Function GetTaggedEvents(Of T As RDBaseEvent)(e As OrderedEventCollection(Of T), name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, T))
+		<Extension> Public Function GetTaggedEvents(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), name As String, direct As Boolean) As IEnumerable(Of IGrouping(Of String, T))
 			If name Is Nothing Then
 				Return Nothing
 			End If

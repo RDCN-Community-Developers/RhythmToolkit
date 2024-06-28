@@ -10,7 +10,7 @@ namespace Physicians
     {
         static readonly List<LegalBeat> LegalList = new();
         static string name = "";
-        static BeatCalculator Calculator;
+        static RDBeatCalculator Calculator;
         class LegalBeat
         {
             public RDBaseBeat? beat;
@@ -285,11 +285,11 @@ namespace Physicians
     public class Ian
     {
         private readonly RDLevel level;
-        private readonly BeatCalculator calculator;
+        private readonly RDBeatCalculator calculator;
         public Ian(RDLevel level)
         {
             this.level = level;
-            calculator = new BeatCalculator(level);
+            calculator = new RDBeatCalculator(level);
         }
         public void SplitRDGSG()
         {

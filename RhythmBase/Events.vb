@@ -1972,7 +1972,7 @@ Namespace Events
 		Rainbow
 		Volume
 	End Enum
-	Public Enum TrackColorPulses
+	Public Enum ADTrackColorPulses
 		None
 		Forward
 		Backward
@@ -2007,15 +2007,22 @@ Namespace Events
 		CameraAspect
 		LastPosition
 	End Enum
+	Public Enum ADEasePartBehaviors
+		Repeat
+		Mirror
+	End Enum
 	Public Class ADTile
-		Inherits List(Of ADBaseTileAction)
-		Public Property Angle
+		Inherits ADTypedList(Of ADBaseTileAction)
+		Public Property Angle As Single
 		Public Sub New(actions As IEnumerable(Of ADBaseTileAction))
-
+			For Each i In actions
+				i.Floor = Me
+				Add(i)
+			Next
 		End Sub
 	End Class
 	Public MustInherit Class ADBaseAction
-		Public MustOverride ReadOnly Property EventType As ADEventType
+		Public MustOverride ReadOnly Property Type As ADEventType
 	End Class
 	Public MustInherit Class ADBaseTileAction
 		Inherits ADBaseAction
@@ -2028,7 +2035,7 @@ Namespace Events
 	End Class
 	Public Class ADCustomEvent
 		Inherits ADBaseAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.CustomEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.CustomEvent
 		Public Property Data As Linq.JObject
 	End Class
 	Public Class ADSetSpeed
@@ -2037,7 +2044,7 @@ Namespace Events
 			Bpm
 			Multiplier
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.SetSpeed
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetSpeed
 		Public Property SpeedType As SpeedTypes
 		Public Property BeatsPerMinute As Single
 		Public Property BpmMultiplier As Single
@@ -2046,7 +2053,7 @@ Namespace Events
 	End Class
 	Public Class ADCheckpoint
 		Inherits ADBaseTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.Checkpoint
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Checkpoint
 		Public Property TileOffset As Integer
 	End Class
 	Public Class ADSetHitsound
@@ -2055,31 +2062,27 @@ Namespace Events
 			Hitsound
 			Midspin
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.SetHitsound
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetHitsound
 		Public Property GameSound As String
 		Public Property Hitsound As String
 		Public Property HitsoundVolume As Integer
 	End Class
 	Public Class ADPlaySound
 		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.PlaySound
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.PlaySound
 		Public Property Hitsound As String
 		Public Property HitsoundVolume As Integer
 	End Class
 	Public Class ADSetPlanetRotation
 		Inherits ADBaseTileAction
-		Public Enum EasePartBehaviors
-			Repeat
-			Mirror
-		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.SetPlanetRotation
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetPlanetRotation
 		Public Property Ease As String
 		Public Property EaseParts As Integer '??????????????????????????
-		Public Property EasePartBehavior As String
+		Public Property EasePartBehavior As ADEasePartBehaviors
 	End Class
 	Public Class ADPause
 		Inherits ADBaseTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.Pause
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Pause
 		Public Property Duration As Single
 		Public Property CountdownTicks As Integer
 		Public Property AngleCorrectionDir As Integer
@@ -2087,27 +2090,34 @@ Namespace Events
 
 	Public Class ADAutoPlayTiles
 		Inherits ADBaseTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.AutoPlayTiles
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AutoPlayTiles
 		Public Property Enabled As Boolean
 		Public Property ShowStatusText As Boolean
 		Public Property SafetyTiles As Boolean
 	End Class
 	Public Class ADScalePlanets
 		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.ScalePlanets
-		Public Property duration As Integer
-		Public Property targetPlanet As String
-		Public Property scale As Integer
-		Public Property ease As String
+		Implements IEaseEvent
+		Public Enum TargetPlanets
+			FirePlanet
+			IcePlanet
+			GreenPlanet
+			All
+		End Enum
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScalePlanets
+		Public Property Duration As Single Implements IEaseEvent.Duration
+		Public Property TargetPlanet As TargetPlanets
+		Public Property Scale As Integer
+		Public Property Ease As EaseType Implements IEaseEvent.Ease
 	End Class
 	Public Class ADColorTrack
 		Inherits ADBaseTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.ColorTrack
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ColorTrack
 		Public Property TrackColorType As ADTrackColorTypes
 		Public Property TrackColor As SKColor
 		Public Property SecondaryTrackColor As SKColor
 		Public Property TrackColorAnimDuration As Single
-		Public Property TrackColorPulse As TrackColorPulses
+		Public Property TrackColorPulse As ADTrackColorPulses
 		Public Property TrackPulseLength As Single
 		Public Property TrackStyle As ADTrackStyles
 		Public Property TrackTexture As String 'ADAsset
@@ -2137,7 +2147,7 @@ Namespace Events
 			Shrink_Spin
 			Fade
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.AnimateTrack
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AnimateTrack
 		Public Property TrackAnimation As TrackAnimations?
 		Public Property TrackDisappearAnimation As TrackDisappearAnimations?
 		Public Property BeatsAhead As Integer
@@ -2146,7 +2156,7 @@ Namespace Events
 	Public Class ADRecolorTrack
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.RecolorTrack
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.RecolorTrack
 		Public Property StartTile() As Object ''''ADTileRefer
 		Public Property EndTile() As Object ''''ADTileRefer
 		Public Property GapLength As Integer
@@ -2155,7 +2165,7 @@ Namespace Events
 		Public Property TrackColor As SKColor
 		Public Property SecondaryTrackColor As SKColor
 		Public Property TrackColorAnimDuration As Single
-		Public Property TrackColorPulse As TrackColorPulses
+		Public Property TrackColorPulse As ADTrackColorPulses
 		Public Property TrackPulseLength As Single
 		Public Property TrackStyle As ADTrackStyles
 		Public Property TrackGlowIntensity As Single
@@ -2164,7 +2174,7 @@ Namespace Events
 	Public Class ADMoveTrack
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.MoveTrack
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.MoveTrack
 		Public Property StartTile() As Object ''''ADTileRefer
 		Public Property EndTile() As Object ''''ADTileRefer
 		Public Property GapLength As Integer
@@ -2175,7 +2185,7 @@ Namespace Events
 	End Class
 	Public Class ADPositionTrack
 		Inherits ADBaseTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.PositionTrack
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.PositionTrack
 		Public Property PositionOffset As RDPoint
 		Public Property RelativeTo() As Object ''''ADTileRefer
 		Public Property Rotation As Single
@@ -2194,7 +2204,7 @@ Namespace Events
 			VisibleInsideMask
 			VisibleOutsideMask
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.MoveDecorations
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.MoveDecorations
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Tag As String
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
@@ -2218,14 +2228,14 @@ Namespace Events
 	End Class
 	Public Class ADSetText
 		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.SetText
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetText
 		Public Property DecText As String
 		Public Property Tag As String
 	End Class
 	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class ADSetObject
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.SetObject
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetObject
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Tag As String
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
@@ -2249,7 +2259,7 @@ Namespace Events
 	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class ADSetDefaultText
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.SetDefaultText
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetDefaultText
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		'Belows are nullable
@@ -2267,7 +2277,7 @@ Namespace Events
 			Unscaled
 			Tiled
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.CustomBackground
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.CustomBackground
 		Public Property Color As SKColor
 		Public Property BgImage As String
 		Public Property ImageColor As SKColor
@@ -2281,7 +2291,7 @@ Namespace Events
 	Public Class ADFlash
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.Flash
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Flash
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Plane As String
 		Public Property StartColor As SKColor
@@ -2293,7 +2303,7 @@ Namespace Events
 	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class ADMoveCamera
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.MoveCamera
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.MoveCamera
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property DontDisable As Boolean
@@ -2311,7 +2321,7 @@ Namespace Events
 			Neon
 			Grayscale
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.SetFilter
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetFilter
 		Public Property Filter As Filters
 		Public Property Enabled As String
 		Public Property Intensity As Integer
@@ -2321,13 +2331,13 @@ Namespace Events
 	End Class
 	Public Class ADHallOfMirrors
 		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.HallOfMirrors
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.HallOfMirrors
 		Public Property enabled As Boolean
 	End Class
 	Public Class ADShakeScreen
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.ShakeScreen
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ShakeScreen
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Strength As Single
 		Public Property Intensity As Single
@@ -2337,7 +2347,7 @@ Namespace Events
 	Public Class ADBloom
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.Bloom
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Bloom
 		Public Property Enabled As Boolean
 		Public Property Threshold As Integer
 		Public Property Intensity As Integer
@@ -2348,14 +2358,14 @@ Namespace Events
 	Public Class ADScreenTile
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.ScreenTile
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScreenTile
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Tile As RDPoint
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 	End Class
 	Public Class ADScreenScroll
 		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.ScreenScroll
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScreenScroll
 		Public Property Scroll As RDSizeN
 	End Class
 	Public Class ADRepeatEvents
@@ -2364,7 +2374,7 @@ Namespace Events
 			Beat
 			Floor
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.RepeatEvents
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.RepeatEvents
 		Public Property RepeatType As RepeatTypes
 		Public Property Repetitions As Integer
 		Public Property FloorCount As Integer '?????????
@@ -2374,7 +2384,7 @@ Namespace Events
 	End Class
 	Public Class ADSetConditionalEvents
 		Inherits ADBaseTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.SetConditionalEvents
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetConditionalEvents
 		Public Property PerfectTag As String
 		Public Property HitTag As String
 		Public Property EarlyPerfectTag As String
@@ -2390,7 +2400,7 @@ Namespace Events
 	End Class
 	Public Class ADEditorComment
 		Inherits ADBaseTileAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.EditorComment
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.EditorComment
 		Public Property comment As String
 	End Class
 	Public Class ADBookmark
@@ -2440,7 +2450,7 @@ Namespace Events
 			Circle
 			Capsule
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.AddDecoration
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AddDecoration
 		Public Property DecorationImage As String
 		Public Property Position As RDPointN
 		Public Property RelativeTo As ADDecorationRelativeTo
@@ -2472,7 +2482,7 @@ Namespace Events
 	End Class
 	Public Class ADAddText
 		Inherits ADBaseAction
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.AddText
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AddText
 		Public Property DecText As String
 		Public Property Font As String
 		Public Property Position As RDPointN
@@ -2506,7 +2516,7 @@ Namespace Events
 			Normal
 			Midspin
 		End Enum
-		Public Overrides ReadOnly Property EventType As ADEventType = ADEventType.AddObject
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AddObject
 		Public Property ObjectType As ObjectTypes
 		Public Property PlanetColorType As PlanetColorTypes
 		Public Property PlanetColor As SKColor

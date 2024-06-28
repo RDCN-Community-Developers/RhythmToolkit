@@ -8,10 +8,10 @@ Imports RhythmBase.Utils
 Namespace Tools
     Public Class RDLevelHandler
         Private ReadOnly Level As RDLevel
-        Private ReadOnly Calculator As BeatCalculator
+        Private ReadOnly Calculator As RDBeatCalculator
         Public Sub New(level As RDLevel)
             Me.Level = level
-            Calculator = New BeatCalculator(level)
+            Calculator = New RDBeatCalculator(level)
         End Sub
         ''' <summary>
         ''' 拆分护士语音提示
@@ -283,7 +283,7 @@ Namespace Tools
         Public Sub AddTimer(copy As RDFloatingText, interval As UInteger, increase As Boolean)
             Dim finish = Level.FirstOrDefault(Function(i) i.Type = RDEventType.FinishLevel, Level.Last).Beat
             Dim t As Integer = 0
-            Dim C As New BeatCalculator(Level)
+            Dim C As New RDBeatCalculator(Level)
 
             Dim txt = Clone(copy)
             txt.Beat = New RDBeat(Level.Calculator, 1)
@@ -304,7 +304,7 @@ Namespace Tools
         Public Sub AddBeater(copy As RDFloatingText, interval As UInteger, increase As Boolean)
             Dim finish = Level.FirstOrDefault(Function(i) i.Type = RDEventType.FinishLevel).Beat
             Dim t As Integer = 0
-            Dim C As New BeatCalculator(Level)
+            Dim C As New RDBeatCalculator(Level)
 
             Dim txt = Clone(copy)
             txt.Beat = New RDBeat(Level.Calculator, 1)

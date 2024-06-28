@@ -37,7 +37,7 @@ Namespace Utils
         Public ReadOnly DecorationTypes As List(Of RDEventType) =
             ConvertToRDEnums(Of RDBaseDecorationAction)().ToList
     End Module
-    Public Class BeatCalculator
+    Public Class RDBeatCalculator
         Friend ReadOnly Collection As RDLevel
         Private _BPMList As List(Of RDBaseBeatsPerMinute)
         Private _CPBList As List(Of RDSetCrotchetsPerBar)
