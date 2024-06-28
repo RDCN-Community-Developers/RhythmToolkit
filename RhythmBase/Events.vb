@@ -12,7 +12,9 @@ Namespace Events
 		CallCustomMethod
 		ChangePlayersRows
 		Comment
+		CustomDecorationEvent
 		CustomEvent
+		CustomRowEvent
 		CustomFlash
 		FadeRoom
 		FinishLevel
@@ -190,7 +192,7 @@ Namespace Events
 			Return temp
 		End Function
 		Public Overrides Function ToString() As String
-			Return $"[{Beat}]>>[{Type}]"
+			Return $"{Beat} {Type}"
 		End Function
 		Friend Function ShouldSerializeActive() As Boolean
 			Return Not Active
@@ -346,9 +348,9 @@ Namespace Events
 	End Class
 	Public Class RDCustomEvent
 		Inherits RDBaseEvent
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomEvent
-		<JsonIgnore>
-		Public ReadOnly Property RealType As String
+		<JsonIgnore> Public Data As New Linq.JObject
+		<JsonIgnore> Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomEvent
+		<JsonIgnore> Public ReadOnly Property ActureType As String
 			Get
 				Return Data(NameOf(Type).ToLowerCamelCase).ToString
 			End Get
@@ -362,10 +364,73 @@ Namespace Events
 				Data(NameOf(Y).ToLowerCamelCase) = value
 			End Set
 		End Property
-		Public Data As New Linq.JObject
 		Public Sub New()
 			Data = New Linq.JObject
 		End Sub
+		Public Sub New(data As Linq.JObject)
+			Me.Data = data
+		End Sub
+		Public Overrides Function ToString() As String
+			Return $"{Beat} *{ActureType}"
+		End Function
+	End Class
+	Public Class RDCustomDecorationEvent
+		Inherits RDBaseDecorationAction
+		Public Data As New Linq.JObject
+		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomDecorationEvent
+		<JsonIgnore> Public ReadOnly Property ActureType As String
+			Get
+				Return Data(NameOf(Type).ToLowerCamelCase).ToString
+			End Get
+		End Property
+		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Sprites
+		Public Sub New()
+			Data = New Linq.JObject
+		End Sub
+		Public Sub New(data As Linq.JObject)
+			Me.Data = data
+		End Sub
+		Public Overrides Function ToString() As String
+			Return $"{Beat} *{ActureType}"
+		End Function
+		Public Shared Widening Operator CType(e As RDCustomDecorationEvent) As RDCustomEvent
+			Return New RDCustomEvent(e.Data)
+		End Operator
+		Public Shared Widening Operator CType(e As RDCustomEvent) As RDCustomDecorationEvent
+			If e.Data("row") IsNot Nothing Then
+				Return New RDCustomDecorationEvent(e.Data)
+			End If
+			Throw New RhythmBaseException("The row field is missing from the field contained in this object.")
+		End Operator
+	End Class
+	Public Class RDCustomRowEvent
+		Inherits RDBaseRowAction
+		Public Data As New Linq.JObject
+		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomRowEvent
+		<JsonIgnore> Public ReadOnly Property ActureType As String
+			Get
+				Return Data(NameOf(Type).ToLowerCamelCase).ToString
+			End Get
+		End Property
+		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rows
+		Public Sub New()
+			Data = New Linq.JObject
+		End Sub
+		Public Sub New(data As Linq.JObject)
+			Me.Data = data
+		End Sub
+		Public Overrides Function ToString() As String
+			Return $"{Beat} *{ActureType}"
+		End Function
+		Public Shared Widening Operator CType(e As RDCustomRowEvent) As RDCustomEvent
+			Return New RDCustomEvent(e.Data)
+		End Operator
+		Public Shared Narrowing Operator CType(e As RDCustomEvent) As RDCustomRowEvent
+			If e.Data("row") IsNot Nothing Then
+				Return New RDCustomRowEvent(e.Data)
+			End If
+			Throw New RhythmBaseException("The row field is missing from the field contained in this object.")
+		End Operator
 	End Class
 	Public Class RDPlaySong
 		Inherits RDBaseBeatsPerMinute

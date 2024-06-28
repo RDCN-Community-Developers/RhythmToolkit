@@ -41,11 +41,6 @@ Namespace Utils
         Friend ReadOnly Collection As RDLevel
         Private _BPMList As List(Of RDBaseBeatsPerMinute)
         Private _CPBList As List(Of RDSetCrotchetsPerBar)
-        'Public Sub New(CPBCollection As IEnumerable(Of RDSetCrotchetsPerBar), BPMCollection As IEnumerable(Of RDBaseBeatsPerMinute))
-        '    _BPMList = BPMCollection.OrderBy(Function(i) i.Beat).ToList
-        '    _CPBList = CPBCollection.OrderBy(Function(i) i.Beat).ToList
-        '    'Initialize()
-        'End Sub
         Public Sub New(level As RDLevel)
             Collection = level
             Refresh()
@@ -269,14 +264,14 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
             If [Enum].TryParse(type, result) Then
                 Return result.ConvertToType()
             End If
-            Return RDEventType.CustomEvent.ConvertToType
+            Return Nothing
         End Function
         Public Function ADConvertToType(type As String) As Type
             Dim result As ADEventType
             If [Enum].TryParse(type, result) Then
                 Return result.ConvertToType()
             End If
-            Return ADEventType.CustomEvent.ConvertToType
+            Return Nothing
         End Function
         <Extension> Public Function ConvertToType(type As RDEventType) As Type
             If RDEnumToEType Is Nothing Then

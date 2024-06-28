@@ -171,6 +171,8 @@ Namespace Converters
 					.Add(New AssetConverter(outLevel.Path, outLevel.Assets))
 					.Add(New ConditionConverter(outLevel.Conditionals))
 					.Add(New TagActionConverter(outLevel, inputSettings))
+					.Add(New CustomDecorationEventConverter(outLevel, inputSettings))
+					.Add(New CustomRowEventConverter(outLevel, inputSettings))
 					.Add(New CustomEventConverter(outLevel, inputSettings))
 					.Add(New BaseRowActionConverter(Of RDBaseRowAction)(outLevel, inputSettings))
 					.Add(New BaseDecorationActionConverter(Of RDBaseDecorationAction)(outLevel, inputSettings))
@@ -178,31 +180,39 @@ Namespace Converters
 					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 				End With
 
-
 				Dim FloatingTextCollection As New List(Of ([event] As RDFloatingText, id As Integer))
 				Dim AdvanceTextCollection As New List(Of ([event] As RDAdvanceText, id As Integer))
 
 				Dim calculator As New RDBeatCalculator(outLevel)
 
-				Dim bar = 0
-
 				For Each item In JEvents
-					Dim TempEvent As RDBaseEvent = item.ToObject(RDConvertToType(item("type")), EventsSerializer)
-					If Not TempEvent.Type = RDEventType.CustomEvent Then
-						Select Case [Enum].Parse(Of RDEventType)(item("type"))
-							Case Else
-								'浮动文字事件记录
-								If TempEvent.Type = RDEventType.FloatingText Then
-									FloatingTextCollection.Add((CType(TempEvent, RDFloatingText), item("id")))
-								End If
-								If TempEvent.Type = RDEventType.AdvanceText Then
-									AdvanceTextCollection.Add((CType(TempEvent, RDAdvanceText), item("id")))
-								End If
-								'未处理事件加入
-						End Select
+					Dim eventType = RDConvertToType(item("type"))
+					If eventType Is Nothing Then
+						Dim TempEvent As RDBaseEvent
+						If item("target") IsNot Nothing Then
+							TempEvent = item.ToObject(Of RDCustomDecorationEvent)(EventsSerializer)
+						ElseIf item("row") IsNot Nothing Then
+							TempEvent = item.ToObject(Of RDCustomRowEvent)(EventsSerializer)
+						Else
+							TempEvent = item.ToObject(Of RDCustomEvent)(EventsSerializer)
+						End If
+						outLevel.Add(TempEvent)
+					Else
+						Dim TempEvent As RDBaseEvent = item.ToObject(eventType, EventsSerializer)
+						If Not TempEvent.Type = RDEventType.CustomEvent Then
+							Select Case [Enum].Parse(Of RDEventType)(item("type"))
+								Case Else
+									'浮动文字事件记录
+									If TempEvent.Type = RDEventType.FloatingText Then
+										FloatingTextCollection.Add((CType(TempEvent, RDFloatingText), item("id")))
+									End If
+									If TempEvent.Type = RDEventType.AdvanceText Then
+										AdvanceTextCollection.Add((CType(TempEvent, RDAdvanceText), item("id")))
+									End If
+							End Select
+						End If
+						outLevel.Add(TempEvent)
 					End If
-					outLevel.Add(TempEvent)
-					'Level.Calculator.Refresh()
 				Next
 				'浮动文字事件关联
 				For Each AdvancePair In AdvanceTextCollection
@@ -346,10 +356,18 @@ Namespace Converters
 		Public Overridable Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
 
 			Dim SubClassType As Type = RDConvertToType(jobj("type").ToObject(Of String))
+
+			If SubClassType Is Nothing Then
+				If jobj("target") IsNot Nothing Then
+					SubClassType = GetType(RDCustomDecorationEvent)
+				ElseIf jobj("row") IsNot Nothing Then
+					SubClassType = GetType(RDCustomRowEvent)
+				Else
+					SubClassType = GetType(RDCustomEvent)
+				End If
+			End If
 			_canread = False
-			existingValue = If(SubClassType IsNot Nothing,
-				jobj.ToObject(SubClassType, serializer),
-				jobj.ToObject(Of RDCustomEvent)(serializer))
+			existingValue = jobj.ToObject(SubClassType, serializer)
 			_canread = True
 			existingValue._beat = level.Calculator.BeatOf(UInteger.Parse(jobj("bar")), Single.Parse(If(jobj("beat"), 1)))
 			Return existingValue
@@ -381,8 +399,44 @@ Namespace Converters
 		End Function
 		Public Overrides Function SetSerializedObject(value As RDCustomEvent, serializer As JsonSerializer) As JObject
 			Dim jobj = MyBase.SetSerializedObject(value, serializer)
-			jobj.Remove(NameOf(RDCustomEvent.Data).ToLower)
-			jobj.Remove(NameOf(RDCustomEvent.Type).ToLower)
+			Dim data = value.Data.DeepClone
+			For Each item In jobj
+				data(item.Key) = item.Value
+			Next
+			Return data
+		End Function
+	End Class
+	Friend Class CustomRowEventConverter
+		Inherits BaseRowActionConverter(Of RDCustomRowEvent)
+		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
+			MyBase.New(level, inputSettings)
+		End Sub
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As RDCustomRowEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As RDCustomRowEvent
+			Dim result = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
+			result.Data = jobj
+			Return result
+		End Function
+		Public Overrides Function SetSerializedObject(value As RDCustomRowEvent, serializer As JsonSerializer) As JObject
+			Dim jobj = MyBase.SetSerializedObject(value, serializer)
+			Dim data = value.Data.DeepClone
+			For Each item In jobj
+				data(item.Key) = item.Value
+			Next
+			Return data
+		End Function
+	End Class
+	Friend Class CustomDecorationEventConverter
+		Inherits BaseDecorationActionConverter(Of RDCustomDecorationEvent)
+		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
+			MyBase.New(level, inputSettings)
+		End Sub
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As RDCustomDecorationEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As RDCustomDecorationEvent
+			Dim result = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
+			result.Data = jobj
+			Return result
+		End Function
+		Public Overrides Function SetSerializedObject(value As RDCustomDecorationEvent, serializer As JsonSerializer) As JObject
+			Dim jobj = MyBase.SetSerializedObject(value, serializer)
 			Dim data = value.Data.DeepClone
 			For Each item In jobj
 				data(item.Key) = item.Value
@@ -391,11 +445,11 @@ Namespace Converters
 		End Function
 	End Class
 	Friend Class BaseRowActionConverter(Of T As RDBaseRowAction)
-		Inherits BaseRDEventConverter(Of RDBaseRowAction)
+		Inherits BaseRDEventConverter(Of T)
 		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
-		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As RDBaseRowAction, hasExistingValue As Boolean, serializer As JsonSerializer) As RDBaseRowAction
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
 			Dim obj = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
 			Try
 				Dim rowId = jobj("row").ToObject(Of Short)
