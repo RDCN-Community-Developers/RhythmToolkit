@@ -21,8 +21,8 @@ Namespace Utils
             [Enum].GetValues(Of RDEventType).ToDictionary(Function(i) i, Function(i) i.ConvertToType)
 
         Private ReadOnly ADETypes As List(Of Type) =
-            GetType(ADBaseAction).Assembly.GetTypes() _
-                .Where(Function(i) i.IsAssignableTo(GetType(ADBaseAction))).ToList
+            GetType(ADBaseEvent).Assembly.GetTypes() _
+                .Where(Function(i) i.IsAssignableTo(GetType(ADBaseEvent))).ToList
         Public ReadOnly ADETypesToEnum As Dictionary(Of Type, ADEventType()) =
             ADETypes.ToDictionary(Function(i) i,
                           Function(i) ADETypes _
@@ -41,27 +41,18 @@ Namespace Utils
         Friend ReadOnly Collection As RDLevel
         Private _BPMList As List(Of RDBaseBeatsPerMinute)
         Private _CPBList As List(Of RDSetCrotchetsPerBar)
-        Public Sub New(CPBCollection As IEnumerable(Of RDSetCrotchetsPerBar), BPMCollection As IEnumerable(Of RDBaseBeatsPerMinute))
-            _BPMList = BPMCollection.OrderBy(Function(i) i.Beat).ToList
-            _CPBList = CPBCollection.OrderBy(Function(i) i.Beat).ToList
-            'Initialize()
-        End Sub
+        'Public Sub New(CPBCollection As IEnumerable(Of RDSetCrotchetsPerBar), BPMCollection As IEnumerable(Of RDBaseBeatsPerMinute))
+        '    _BPMList = BPMCollection.OrderBy(Function(i) i.Beat).ToList
+        '    _CPBList = CPBCollection.OrderBy(Function(i) i.Beat).ToList
+        '    'Initialize()
+        'End Sub
         Public Sub New(level As RDLevel)
             Collection = level
-            _BPMList = level.Where(Of RDBaseBeatsPerMinute).ToList
-            _CPBList = level.Where(Of RDSetCrotchetsPerBar).ToList
-            'Initialize()
+            Refresh()
         End Sub
         Public Sub Refresh()
             _BPMList = Collection.Where(Of RDBaseBeatsPerMinute).ToList
             _CPBList = Collection.Where(Of RDSetCrotchetsPerBar).ToList
-            'If _CPBList.Count <> 0 Then
-            '    _CPBList(0).Bar = _CPBList(0).Beat.BarBeat.bar
-            '    Dim CPB = _CPBList(0).CrotchetsPerBar
-            '    For Each item In _CPBList.Skip(1)
-            '        item.Bar = item.Beat.BarBeat.bar
-            '    Next
-            'End If
         End Sub
         Public Function BarBeat_BeatOnly(bar As UInteger, beat As Single) As Single
             Return BarBeat_BeatOnly(bar, beat, _CPBList)
@@ -164,6 +155,9 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
             Return If(_CPBList.LastOrDefault(Function(i) i.Beat < beat)?.CrotchetsPerBar, 8)
         End Function
     End Class
+    Public Class ADBeatCalculator
+
+    End Class
     Public Module Utils
         Public Function PercentToPixel(point As (X As Single?, Y As Single?)) As (X As Single?, Y As Single?)
             Return PercentToPixel(point, (352, 198))
@@ -253,7 +247,7 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
         Public Function ConvertToRDEnum(Of T As {RDBaseEvent, New})() As RDEventType
             Return RDConvertToEnum(GetType(T))
         End Function
-        Public Function ConvertToADEnum(Of T As {ADBaseAction, New})() As ADEventType
+        Public Function ConvertToADEnum(Of T As {ADBaseEvent, New})() As ADEventType
             Return ADConvertToEnum(GetType(T))
         End Function
         Public Function ConvertToRDEnums(Of T As RDBaseEvent)() As RDEventType()
@@ -301,7 +295,7 @@ timeSpan - BeatOnly_Time(fore.BeatOnly, BPMCollection)
         End Function
         <Extension> Public Function ConvertToType(type As ADEventType) As Type
             If ADEnumToEType Is Nothing Then
-                Dim result = System.Type.GetType($"{GetType(ADBaseAction).Namespace}.AD{type}")
+                Dim result = System.Type.GetType($"{GetType(ADBaseEvent).Namespace}.AD{type}")
                 If result Is Nothing Then
                     Throw New RhythmBaseException($"Illegal Type: {type}.")
                 End If

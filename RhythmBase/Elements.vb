@@ -928,7 +928,7 @@ Namespace Components
 			Return list.GetEnumerator
 		End Function
 	End Class
-	Public Class ADTypedList(Of T As ADBaseAction)
+	Public Class ADTypedList(Of T As ADBaseEvent)
 		Implements IEnumerable(Of T)
 
 		Private ReadOnly list As New List(Of T)
@@ -987,11 +987,6 @@ Namespace Components
 			End If
 
 			value.Add(item)
-		End Sub
-		Public Sub AddRange(items As IEnumerable(Of RDBaseEvent))
-			For Each item In items
-				Add(item)
-			Next
 		End Sub
 		Public Sub Clear() Implements ICollection(Of RDBaseEvent).Clear
 			'EventsTypeOrder.Clear()
@@ -1076,7 +1071,7 @@ Namespace Components
 		Public Function GetEnumerator() As IEnumerator(Of ADTile) Implements IEnumerable(Of ADTile).GetEnumerator
 			Return eventsOrder.GetEnumerator
 		End Function
-		Public Iterator Function Actions() As IEnumerable(Of ADBaseAction)
+		Public Overridable Iterator Function Events() As IEnumerable(Of ADBaseEvent)
 			For Each item In eventsOrder
 				For Each action In item
 					Yield action
@@ -1888,7 +1883,7 @@ Namespace LevelElements
 		Inherits ADTileCollection
 		Friend _path As String
 		Public Property Settings As New ADSettings
-		Public Property Decorations As New List(Of ADBaseAction)
+		Public Property Decorations As New List(Of ADBaseEvent)
 		<JsonIgnore> Public ReadOnly Property Path As String
 			Get
 				Return _path
@@ -1936,6 +1931,14 @@ Namespace LevelElements
 				Case Else
 					Throw New RhythmBaseException("File not supported.")
 			End Select
+		End Function
+		Public Overrides Iterator Function Events() As IEnumerable(Of ADBaseEvent)
+			For Each item In MyBase.Events()
+				Yield item
+			Next
+			For Each item In Decorations
+				Yield item
+			Next
 		End Function
 	End Class
 	Public Class ADSettings

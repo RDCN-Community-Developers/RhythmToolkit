@@ -98,6 +98,12 @@ firstEvent.Beat._calculator.BarBeat_BeatOnly(range.End.Value + 1, 1)))
 		<Extension> Public Function FixFraction(number As Single, splitBase As UInteger) As Single
 			Return Math.Round(number * splitBase) / splitBase
 		End Function
+#Region "RD"
+		<Extension> Public Sub AddRange(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), items As IEnumerable(Of T))
+			For Each item In items
+				e.Add(item)
+			Next
+		End Sub
 		<Extension> Public Function Where(Of T As RDBaseEvent)(e As RDOrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
 			Return e.eventsBeatOrder.SelectMany(Function(i) i.Value).Where(predicate)
 		End Function
@@ -523,6 +529,19 @@ e.eventsBeatOrder(item1.Beat).BeforeThan(item2, item1))
 					Throw New RhythmBaseException("How?")
 			End Select
 		End Function
+#End Region
+#Region "AD"
+		<Extension> Public Sub AddRange(e As ADLevel, items As IEnumerable(Of ADTile))
+			For Each item In items
+				e.Add(item)
+			Next
+		End Sub
+		<Extension> Public Sub AddRange(Of T As ADBaseTileEvent)(e As ADTile, items As IEnumerable(Of T))
+			For Each item In items
+				e.Add(item)
+			Next
+		End Sub
+#End Region
 	End Module
 	Public Module EventsExtension
 		Public Enum Wavetype
