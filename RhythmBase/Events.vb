@@ -1971,7 +1971,24 @@ Presets.Dots
 	End Enum
 	Public Class ADTile
 		Inherits ADTypedList(Of ADBaseTileEvent)
+		Private _angle As Single
 		Public Property Angle As Single
+			Get
+				Return _angle
+			End Get
+			Set(value As Single)
+				If -360 < value AndAlso value < 360 Then
+					_angle = (value + 540) Mod 360 - 180
+				Else
+					_angle = -999
+				End If
+			End Set
+		End Property
+		Public ReadOnly Property IsMidSpin As Boolean
+			Get
+				Return _angle < -180
+			End Get
+		End Property
 		<JsonIgnore>
 		Public Property Parent As ADLevel
 		Public Sub New()
@@ -1988,7 +2005,7 @@ Presets.Dots
 			End Get
 		End Property
 		Public Overrides Function ToString() As String
-			Return $"{Index}({Angle}), Count = {Count}"
+			Return $"<{If(IsMidSpin, "MS".PadRight(4), _angle.ToString.PadLeft(4))}>, Count = {Count}"
 		End Function
 	End Class
 	Public MustInherit Class ADBaseEvent
@@ -2002,7 +2019,7 @@ Presets.Dots
 		<JsonIgnore>
 		Public Property Parent As ADTile
 		Public Overrides Function ToString() As String
-			Return $"{Parent.Index}({Parent.Angle}): {Type}"
+			Return $"{Type}"
 		End Function
 	End Class
 	Public MustInherit Class ADBaseTaggedTileAction
@@ -2403,6 +2420,8 @@ Presets.Dots
 		Public Property Comment As String
 	End Class
 	Public Class ADBookmark
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Bookmark
 	End Class
 	Public Class ADAddDecoration
 		Inherits ADBaseTileEvent
