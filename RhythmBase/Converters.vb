@@ -1008,6 +1008,60 @@ Namespace Converters
 			Return SKColor.Parse(Reg.Groups(1).Value + Reg.Groups(2).Value)
 		End Function
 	End Class
+	Friend Class TimeConverter
+		Inherits JsonConverter(Of TimeSpan)
+		Public Enum TimeType
+			Hour
+			Minute
+			Second
+			MiliSecond
+			Microsecond
+		End Enum
+		Private _timeType
+		Public Sub New()
+			_timeType = TimeType.MiliSecond
+		End Sub
+		Public Sub New(type As TimeType)
+			_timeType = type
+		End Sub
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As TimeSpan, serializer As JsonSerializer)
+			With writer
+				Select Case _timeType
+					Case TimeType.Hour
+						.WriteValue(value.TotalHours)
+					Case TimeType.Minute
+						.WriteValue(value.TotalMinutes)
+					Case TimeType.Second
+						.WriteValue(value.TotalSeconds)
+					Case TimeType.MiliSecond
+						.WriteValue(value.TotalMilliseconds)
+					Case TimeType.Microsecond
+						.WriteValue(value.TotalMicroseconds)
+				End Select
+			End With
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As TimeSpan, hasExistingValue As Boolean, serializer As JsonSerializer) As TimeSpan
+			Dim value = JToken.ReadFrom(reader).ToObject(Of Single)
+			Select Case _timeType
+				Case TimeType.Hour
+					Return TimeSpan.FromHours(value)
+				Case TimeType.Minute
+					Return TimeSpan.FromMinutes(value)
+				Case TimeType.Second
+					Return TimeSpan.FromSeconds(value)
+				Case TimeType.MiliSecond
+					Return TimeSpan.FromMilliseconds(value)
+				Case TimeType.Microsecond
+					Return TimeSpan.FromMicroseconds(value)
+			End Select
+		End Function
+	End Class
+	Friend Class SecondConverter
+		Inherits TimeConverter
+		Public Sub New()
+			MyBase.New(TimeType.Second)
+		End Sub
+	End Class
 #End Region
 
 End Namespace

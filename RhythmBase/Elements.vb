@@ -751,7 +751,7 @@ Namespace Components
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <DefaultValue(100)> Public Property Volume As Integer = 100
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <DefaultValue(100)> Public Property Pitch As Integer = 100
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> Public Property Pan As Integer = 0
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> Public Property Offset As Integer = 0
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <JsonConverter(GetType(TimeConverter))> Public Property Offset As TimeSpan = TimeSpan.Zero
 		Public Overrides Function ToString() As String
 			Return Filename
 		End Function
@@ -1153,11 +1153,11 @@ Namespace Components
 				Audio.Pan = value
 			End Set
 		End Property
-		Public Property Offset As Integer
+		<JsonConverter(GetType(TimeConverter))> Public Property Offset As TimeSpan
 			Get
 				Return Audio.Offset
 			End Get
-			Set(value As Integer)
+			Set(value As TimeSpan)
 				Audio.Offset = value
 			End Set
 		End Property
@@ -1306,8 +1306,7 @@ Namespace LevelElements
 		Public Property Rooms As New RDSingleRoom(0)
 		Public Property HideAtStart As Boolean
 		Public Property Player As PlayerMode
-		<JsonIgnore>
-		Public Property Sound As New Components.RDAudio
+		<JsonIgnore> Public Property Sound As New Components.RDAudio
 		Public Property MuteBeats As Boolean
 		Public Property RowToMimic As SByte = -1
 		Public Property PulseSound As String
@@ -1342,11 +1341,11 @@ Namespace LevelElements
 				Sound.Pan = value
 			End Set
 		End Property
-		Public Property PulseSoundOffset As Integer
+		<JsonConverter(GetType(TimeConverter))> Public Property PulseSoundOffset As TimeSpan
 			Get
 				Return Sound.Offset
 			End Get
-			Set(value As Integer)
+			Set(value As TimeSpan)
 				Sound.Offset = value
 			End Set
 		End Property
@@ -1827,8 +1826,8 @@ Namespace LevelElements
 		Public Property PreviewImage As String = "" 'FilePath
 		Public Property SyringeIcon As String = "" 'FilePath
 		Public Property PreviewSong As String = "" 'Done
-		Public Property PreviewSongStartTime As Single
-		Public Property PreviewSongDuration As Single
+		<JsonConverter(GetType(SecondConverter))> Public Property PreviewSongStartTime As TimeSpan
+		<JsonConverter(GetType(SecondConverter))> Public Property PreviewSongDuration As TimeSpan
 		Public Property SongNameHue As Single
 		Public Property SongLabelGrayscale As Boolean
 		Public Property Description As String = "" 'Done

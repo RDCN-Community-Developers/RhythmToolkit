@@ -230,8 +230,7 @@ Namespace Events
 	Public MustInherit Class RDBaseDecorationAction
 		Inherits RDBaseEvent
 		Friend _parent As Decoration
-		<JsonIgnore>
-		Public ReadOnly Property Parent As Decoration
+		<JsonIgnore> Public ReadOnly Property Parent As Decoration
 			Get
 				Return _parent
 			End Get
@@ -258,8 +257,7 @@ Namespace Events
 			Temp._parent = decoration
 			Return Temp
 		End Function
-		<JsonIgnore>
-		Public ReadOnly Property Room As RDSingleRoom
+		<JsonIgnore> Public ReadOnly Property Room As RDSingleRoom
 			Get
 				If Parent Is Nothing Then
 					Return RDSingleRoom.Default
@@ -271,8 +269,7 @@ Namespace Events
 	Public MustInherit Class RDBaseRowAction
 		Inherits RDBaseEvent
 		Friend _parent As RDRow
-		<JsonIgnore>
-		Public Property Parent As RDRow
+		<JsonIgnore> Public Property Parent As RDRow
 			Get
 				Return _parent
 			End Get
@@ -284,8 +281,7 @@ Namespace Events
 				_parent = value
 			End Set
 		End Property
-		<JsonIgnore>
-		Public ReadOnly Property Room As RDSingleRoom
+		<JsonIgnore> Public ReadOnly Property Room As RDSingleRoom
 			Get
 				If _parent Is Nothing Then
 					Return RDSingleRoom.Default
@@ -293,8 +289,7 @@ Namespace Events
 				Return Parent.Rooms
 			End Get
 		End Property
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)>
-		Public ReadOnly Property Row As Integer
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)> Public ReadOnly Property Row As Integer
 			Get
 				Return If(Parent?.Row, -1)
 			End Get
@@ -313,16 +308,14 @@ Namespace Events
 	Public MustInherit Class RDBaseBeat
 		Inherits RDBaseRowAction
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rows
-		<JsonIgnore>
-		Public ReadOnly Property BeatSound As Components.RDAudio
+		<JsonIgnore> Public ReadOnly Property BeatSound As Components.RDAudio
 			Get
 				Return If(Parent.LastOrDefault(Of RDSetBeatSound)(Function(i) i.Beat < Beat AndAlso i.Active)?.Sound, Parent.Sound)
 			End Get
 		End Property
-		<JsonIgnore>
-		Public ReadOnly Property HitSound As Components.RDAudio
+		<JsonIgnore> Public ReadOnly Property HitSound As Components.RDAudio
 			Get
-				Dim DefaultAudio = New Components.RDAudio With {.Filename = "sndClapHit", .Offset = 0, .Pan = 100, .Pitch = 100, .Volume = 100}
+				Dim DefaultAudio = New Components.RDAudio With {.Filename = "sndClapHit", .Offset = TimeSpan.Zero, .Pan = 100, .Pitch = 100, .Volume = 100}
 				Select Case Player
 					Case RDPlayerType.P1
 						Return If(Beat.baseLevel.LastOrDefault(Of RDSetClapSounds)(Function(i) i.Active AndAlso i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
@@ -335,8 +328,7 @@ Namespace Events
 				End Select
 			End Get
 		End Property
-		<JsonIgnore>
-		Public ReadOnly Property Player As RDPlayerType
+		<JsonIgnore> Public ReadOnly Property Player As RDPlayerType
 			Get
 				Return If(Beat.baseLevel.LastOrDefault(Of RDChangePlayersRows)(Function(i) i.Active AndAlso i.Players(Row) <> RDPlayerType.NoChange)?.Players(Row), Parent.Player)
 			End Get
@@ -437,12 +429,11 @@ Namespace Events
 		Implements IRDBarBeginningEvent
 
 		Public Song As Components.RDAudio
-		<JsonIgnore>
-		Public Property Offset As UInteger
+		<JsonIgnore> Public Property Offset As TimeSpan
 			Get
 				Return Song.Offset
 			End Get
-			Set(value As UInteger)
+			Set(value As TimeSpan)
 				Song.Offset = value
 			End Set
 		End Property
@@ -657,11 +648,11 @@ Namespace Events
 				Audio.Pan = value
 			End Set
 		End Property
-		Public Property Offset As Integer
+		<JsonConverter(GetType(TimeConverter))> Public Property Offset As TimeSpan
 			Get
 				Return Audio.Offset
 			End Get
-			Set(value As Integer)
+			Set(value As TimeSpan)
 				Audio.Offset = value
 			End Set
 		End Property
@@ -675,19 +666,19 @@ Namespace Events
 		SoundType = SoundTypes.FreezeshotSound Or
 		SoundType = SoundTypes.BurnshotSound)
 		End Function
-		Friend Function ShouldSerializeFilename() As Boolean
+		Public Function ShouldSerializeFilename() As Boolean
 			Return ShouldSerialize()
 		End Function
-		Friend Function ShouldSerializeVolume() As Boolean
+		Public Function ShouldSerializeVolume() As Boolean
 			Return ShouldSerialize()
 		End Function
-		Friend Function ShouldSerializePitch() As Boolean
+		Public Function ShouldSerializePitch() As Boolean
 			Return ShouldSerialize()
 		End Function
-		Friend Function ShouldSerializePan() As Boolean
+		Public Function ShouldSerializePan() As Boolean
 			Return ShouldSerialize()
 		End Function
-		Friend Function ShouldSerializeOffset() As Boolean
+		Public Function ShouldSerializeOffset() As Boolean
 			Return ShouldSerialize()
 		End Function
 
@@ -1290,6 +1281,18 @@ Namespace Events
 		Public Property Narrate As Boolean = True
 		Public Property Text As String
 		Public Property Duration As Single
+		<JsonIgnore> Public Property TimeDuration As TimeSpan
+			Get
+				If UseBeats Then
+					Return TimeSpan.Zero
+				End If
+				Return TimeSpan.FromSeconds(Duration)
+			End Get
+			Set(value As TimeSpan)
+				UseBeats = False
+				Duration = value.TotalSeconds
+			End Set
+		End Property
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShowStatusSign
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
 
