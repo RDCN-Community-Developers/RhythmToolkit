@@ -1884,6 +1884,7 @@ Namespace LevelElements
 	Public Class ADLevel
 		Inherits ADTileCollection
 		Friend _path As String
+		<JsonIgnore> Public ReadOnly Property Calculator As New ADBeatCalculator(Me)
 		Public Property Settings As New ADSettings
 		Public Property Decorations As New List(Of ADBaseEvent)
 		<JsonIgnore> Public ReadOnly Property Path As String

@@ -2088,7 +2088,7 @@ Presets.Dots
 			End Get
 		End Property
 		Public Overrides Function ToString() As String
-			Return $"<{If(IsMidSpin, "MS".PadRight(4), _angle.ToString.PadLeft(4))}>, Count = {Count}"
+			Return $"<{If(IsMidSpin, "MS".PadRight(4), _angle.ToString.PadLeft(4))}>{If(Any, $", Count = {Count}", String.Empty)}"
 		End Function
 	End Class
 	Public MustInherit Class ADBaseEvent
