@@ -32,7 +32,7 @@ Namespace Converters
 				.Add(New ColorConverter)
 				.Add(New PanelColorConverter(value.ColorPalette))
 				.Add(New ConditionConverter(value.Conditionals))
-				.Add(New RDCustomEventConverter(value, inputSettings))
+				.Add(New CustomEventConverter(value, inputSettings))
 				.Add(New TagActionConverter(value, inputSettings))
 				.Add(New BaseRDEventConverter(Of RDBaseEvent)(value, inputSettings))
 			End With
@@ -388,7 +388,7 @@ Namespace Converters
 			Return JObj
 		End Function
 	End Class
-	Friend Class RDCustomEventConverter
+	Friend Class CustomEventConverter
 		Inherits BaseRDEventConverter(Of RDCustomEvent)
 		Public Sub New(level As RDLevel, inputSettings As LevelInputSettings)
 			MyBase.New(level, inputSettings)

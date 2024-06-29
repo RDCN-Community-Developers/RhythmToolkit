@@ -424,20 +424,6 @@ _beat.FromSameLevel(value, True) Then
 			Throw New RhythmBaseException("The row field is missing from the field contained in this object.")
 		End Operator
 	End Class
-	Public Class RDCustomRowEvent
-		Inherits RDBaseRowAction
-		Public Data As New Linq.JObject
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomRowEvent
-		<JsonIgnore> Public ReadOnly Property ActureType As String
-			Get
-				Return Data(NameOf(Type).ToLowerCamelCase).ToString
-			End Get
-		End Property
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rows
-		Public Sub New()
-			Data = New Linq.JObject
-		End Sub
-	End Class
 	Public Class RDPlaySong
 		Inherits RDBaseBeatsPerMinute
 		Implements IRDBarBeginningEvent
