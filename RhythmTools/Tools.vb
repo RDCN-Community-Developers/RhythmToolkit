@@ -65,7 +65,7 @@ Namespace Tools
                     Dim startBeat = group.First().Beat
                     Dim copiedGroup = group.Select(Function(i) Clone(i))
                     For Each copy As RDBaseEvent In copiedGroup
-                        copy.Beat += (item.Beat - startBeat)
+                        copy.Beat += (item.Beat.BeatOnly - startBeat.BeatOnly)
                         copy.Tag = ""
                         Adds.Add(copy)
                     Next

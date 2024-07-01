@@ -1585,7 +1585,7 @@ Namespace LevelElements
 			SaveFile(filepath, New LevelOutputSettings)
 		End Sub
 		Public Sub SaveFile(filepath As String, settings As LevelOutputSettings)
-			If IO.Path.GetFullPath(_path) = IO.Path.GetFullPath(filepath) Then
+			If Not _path.IsNullOrEmpty AndAlso IO.Path.GetFullPath(_path) = IO.Path.GetFullPath(filepath) Then
 				Throw New OverwriteNotAllowedException(_path, GetType(LevelOutputSettings))
 			End If
 			Using file = IO.File.CreateText(filepath)

@@ -447,11 +447,6 @@ _beat.FromSameLevel(value, True) Then
 		Inherits RDBaseBeatsPerMinute
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetBeatsPerMinute
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
-		Public Sub New(beatOnly As Single, bpm As Single, y As UInteger)
-			Me.Beat = New RDBeat(Beat._calculator, beatOnly)
-			Me.Y = y
-			Me.BeatsPerMinute = bpm
-		End Sub
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" BPM:{BeatsPerMinute}"
 		End Function
