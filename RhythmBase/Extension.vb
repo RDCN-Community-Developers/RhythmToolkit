@@ -431,8 +431,8 @@ e.eventsBeatOrder(item1.Beat).BeforeThan(item1, item2))
 (item1.Beat.BeatOnly = item2.Beat.BeatOnly AndAlso
 e.eventsBeatOrder(item1.Beat).BeforeThan(item2, item1))
 		End Function
-		<Extension> Public Function GetHitBeat(e As RDLevel) As IEnumerable(Of Hit)
-			Dim L As New List(Of Hit)
+		<Extension> Public Function GetHitBeat(e As RDLevel) As IEnumerable(Of RDHit)
+			Dim L As New List(Of RDHit)
 			For Each item In e.Rows
 				L.AddRange(item.HitBeats)
 			Next
@@ -472,7 +472,7 @@ e.eventsBeatOrder(item1.Beat).BeforeThan(item2, item1))
 		<Extension> Private Function OneshotBeats(e As RDRow) As IEnumerable(Of RDBaseBeat)
 			Return e.Where(Of RDBaseBeat)(Function(i) i.Type = RDEventType.AddOneshotBeat)
 		End Function
-		<Extension> Public Function HitBeats(e As RDRow) As IEnumerable(Of Hit)
+		<Extension> Public Function HitBeats(e As RDRow) As IEnumerable(Of RDHit)
 			Select Case e.RowType
 				Case RDRowType.Classic
 					Return e.ClassicBeats().SelectMany(Function(i) i.HitTimes)
@@ -932,31 +932,31 @@ e.eventsBeatOrder(item1.Beat).BeforeThan(item2, item1))
 					Return False
 			End Select
 		End Function
-		<Extension> Public Function HitTimes(e As RDAddClassicBeat) As IEnumerable(Of Hit)
-			Return New List(Of Hit) From {New Hit(e, e.GetBeat(6), e.Hold)}.AsEnumerable
+		<Extension> Public Function HitTimes(e As RDAddClassicBeat) As IEnumerable(Of RDHit)
+			Return New List(Of RDHit) From {New RDHit(e, e.GetBeat(6), e.Hold)}.AsEnumerable
 		End Function
-		<Extension> Public Function HitTimes(e As RDAddOneshotBeat) As IEnumerable(Of Hit)
-			Dim L As New List(Of Hit)
+		<Extension> Public Function HitTimes(e As RDAddOneshotBeat) As IEnumerable(Of RDHit)
+			Dim L As New List(Of RDHit)
 			For i As UInteger = 0 To e.Loops
 				For j As SByte = 0 To e.Subdivisions - 1
-					L.Add(New Hit(e, New RDBeat(e._beat._calculator, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + j * (e.Tick / e.Subdivisions)), 0))
+					L.Add(New RDHit(e, New RDBeat(e._beat._calculator, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + j * (e.Tick / e.Subdivisions)), 0))
 				Next
 			Next
 			Return L.AsEnumerable
 		End Function
-		<Extension> Public Function HitTimes(e As RDAddFreeTimeBeat) As IEnumerable(Of Hit)
+		<Extension> Public Function HitTimes(e As RDAddFreeTimeBeat) As IEnumerable(Of RDHit)
 			If e.Pulse = 6 Then
-				Return New List(Of Hit) From {New Hit(e, e.Beat, e.Hold)}.AsEnumerable
+				Return New List(Of RDHit) From {New RDHit(e, e.Beat, e.Hold)}.AsEnumerable
 			End If
-			Return New List(Of Hit)
+			Return New List(Of RDHit)
 		End Function
-		<Extension> Public Function HitTimes(e As RDPulseFreeTimeBeat) As IEnumerable(Of Hit)
+		<Extension> Public Function HitTimes(e As RDPulseFreeTimeBeat) As IEnumerable(Of RDHit)
 			If e.IsHitable Then
-				Return New List(Of Hit) From {New Hit(e, e.Beat, e.Hold)}
+				Return New List(Of RDHit) From {New RDHit(e, e.Beat, e.Hold)}
 			End If
-			Return New List(Of Hit)
+			Return New List(Of RDHit)
 		End Function
-		<Extension> Public Function HitTimes(e As RDBaseBeat) As IEnumerable(Of Hit)
+		<Extension> Public Function HitTimes(e As RDBaseBeat) As IEnumerable(Of RDHit)
 			Select Case e.Type
 				Case RDEventType.AddClassicBeat
 					Return CType(e, RDAddClassicBeat).HitTimes
@@ -967,7 +967,7 @@ e.eventsBeatOrder(item1.Beat).BeforeThan(item2, item1))
 				Case RDEventType.PulseFreeTimeBeat
 					Return CType(e, RDPulseFreeTimeBeat).HitTimes
 				Case Else
-					Return Array.Empty(Of Hit).AsEnumerable
+					Return Array.Empty(Of RDHit).AsEnumerable
 			End Select
 		End Function
 		<Extension> Public Function GetBeat(e As RDAddClassicBeat, index As Byte) As RDBeat

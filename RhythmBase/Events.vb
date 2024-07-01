@@ -230,8 +230,8 @@ _beat.FromSameLevel(value, True) Then
 	End Class
 	Public MustInherit Class RDBaseDecorationAction
 		Inherits RDBaseEvent
-		Friend _parent As Decoration
-		<JsonIgnore> Public ReadOnly Property Parent As Decoration
+		Friend _parent As RDDecoration
+		<JsonIgnore> Public ReadOnly Property Parent As RDDecoration
 			Get
 				Return _parent
 			End Get
@@ -253,7 +253,7 @@ _beat.FromSameLevel(value, True) Then
 			Temp._parent = Parent
 			Return Temp
 		End Function
-		Public Overloads Function Clone(Of T As {RDBaseDecorationAction, New})(decoration As Decoration) As T
+		Public Overloads Function Clone(Of T As {RDBaseDecorationAction, New})(decoration As RDDecoration) As T
 			Dim Temp = MyBase.Clone(Of T)(decoration.Parent)
 			Temp._parent = decoration
 			Return Temp
@@ -641,7 +641,7 @@ PhraseToSay = Words.SayReadyGetSetGo
 				Audio.Offset = value
 			End Set
 		End Property
-		Public Property SoundSubtypes As List(Of SoundSubType)
+		Public Property SoundSubtypes As List(Of RDSoundSubType)
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetGameSound
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
 		Private Function ShouldSerialize() As Boolean

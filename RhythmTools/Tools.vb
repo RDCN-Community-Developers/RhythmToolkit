@@ -144,7 +144,7 @@ Namespace Tools
             '对于每个七拍轨道
             For Each row In rows.Where(Function(i) i.RowType = RDRowType.Classic)
                 Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
-                Dim Decos As New List(Of (deco As Decoration, left As Double)) From {
+                Dim Decos As New List(Of (deco As RDDecoration, left As Double)) From {
                     (Level.CreateDecoration(row.Rooms, Character), 0),
                     (Level.CreateDecoration(row.Rooms, ClassicBeat), 29),
                     (Level.CreateDecoration(row.Rooms, ClassicBeat), 53),
@@ -339,7 +339,7 @@ Namespace Tools
         ''' </summary>
         ''' <param name="decoration">精灵模板</param>
         ''' <param name="count">个数</param>
-        Public Sub AddLotsOfDecos(decoration As Decoration, count As UInteger)
+        Public Sub AddLotsOfDecos(decoration As RDDecoration, count As UInteger)
             For i As UInteger = 0 To count
                 Level.CloneDecoration(decoration)
             Next
@@ -362,9 +362,9 @@ Namespace Tools
         ''' 检查最短按拍间隔(包括长按)
         ''' </summary>
         ''' <returns></returns>
-        Public Function GetLevelMinIntervalTime() As IEnumerable(Of (Hit, Hit, TimeSpan))
-            Dim Pulses As New List(Of Hit)
-            Dim PulsesInterval As New List(Of (Hit, Hit, TimeSpan))
+        Public Function GetLevelMinIntervalTime() As IEnumerable(Of (RDHit, RDHit, TimeSpan))
+            Dim Pulses As New List(Of RDHit)
+            Dim PulsesInterval As New List(Of (RDHit, RDHit, TimeSpan))
             For Each row In Level.Rows
                 Pulses.AddRange(row.HitBeats)
             Next

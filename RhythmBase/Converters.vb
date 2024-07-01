@@ -137,13 +137,13 @@ Namespace Converters
 						Next
 					Case "decorations"
 						Dim Jarr = JArray.Load(reader)
-						outLevel._Decorations.AddRange(Jarr.ToObject(Of List(Of Decoration))(DecorationsSerializer))
+						outLevel._Decorations.AddRange(Jarr.ToObject(Of List(Of RDDecoration))(DecorationsSerializer))
 						For Each item In outLevel.Decorations
 							item.Parent = outLevel
 						Next
 					Case "conditionals"
 						Dim Jarr = JArray.Load(reader)
-						outLevel.Conditionals.AddRange(Jarr.ToObject(Of List(Of BaseConditional))(ConditionalsSerializer))
+						outLevel.Conditionals.AddRange(Jarr.ToObject(Of List(Of RDBaseConditional))(ConditionalsSerializer))
 						For Each item In outLevel.Conditionals
 							item.ParentCollection = outLevel.Conditionals
 						Next
@@ -224,7 +224,7 @@ Namespace Converters
 				With BookmarksSerializer.Converters
 					.Add(New BookmarkConverter(New RDBeatCalculator(outLevel)))
 				End With
-				outLevel.Bookmarks.AddRange(JBookmarks.ToObject(Of List(Of Bookmark))(BookmarksSerializer))
+				outLevel.Bookmarks.AddRange(JBookmarks.ToObject(Of List(Of RDBookmark))(BookmarksSerializer))
 				Return outLevel
 			Catch ex As Exception
 				If outLevel.Settings.Version < 55 Then
@@ -237,12 +237,12 @@ Namespace Converters
 		End Function
 	End Class
 	Friend Class BookmarkConverter
-		Inherits JsonConverter(Of Bookmark)
+		Inherits JsonConverter(Of RDBookmark)
 		Private ReadOnly calculator As RDBeatCalculator
 		Public Sub New(calculator As RDBeatCalculator)
 			Me.calculator = calculator
 		End Sub
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As Bookmark, serializer As JsonSerializer)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDBookmark, serializer As JsonSerializer)
 			Dim beat = value.Beat.BarBeat
 			With writer
 				.WriteStartObject()
@@ -255,11 +255,11 @@ Namespace Converters
 				.WriteEndObject()
 			End With
 		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Bookmark, hasExistingValue As Boolean, serializer As JsonSerializer) As Bookmark
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDBookmark, hasExistingValue As Boolean, serializer As JsonSerializer) As RDBookmark
 			Dim jobj = JToken.ReadFrom(reader)
-			Return New Bookmark With {
+			Return New RDBookmark With {
 				.Beat = calculator.BeatOf(jobj("bar").ToObject(Of UInteger), jobj("beat").ToObject(Of Single)),
-				.Color = [Enum].Parse(Of Bookmark.BookmarkColors)(jobj("color"))
+				.Color = [Enum].Parse(Of RDBookmark.BookmarkColors)(jobj("color"))
 			}
 		End Function
 	End Class
@@ -601,25 +601,25 @@ Namespace Converters
 		End Function
 	End Class
 	Friend Class ConditionalConverter
-		Inherits JsonConverter(Of BaseConditional)
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As BaseConditional, serializer As JsonSerializer)
+		Inherits JsonConverter(Of RDBaseConditional)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDBaseConditional, serializer As JsonSerializer)
 			Dim S As New JsonSerializerSettings
 			S.Converters.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 			S.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
 			writer.WriteRawValue(JsonConvert.SerializeObject(value, S))
 		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As BaseConditional, hasExistingValue As Boolean, serializer As JsonSerializer) As BaseConditional
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDBaseConditional, hasExistingValue As Boolean, serializer As JsonSerializer) As RDBaseConditional
 			Dim J = JObject.Load(reader)
-			Dim ConditionalsType As Type = GetType(BaseConditional)
-			Dim SubClassType As Type = Type.GetType($"{GetType(BaseConditional).Namespace}.{NameOf(Conditions)}.{J("type")}")
-			Dim Conditional As BaseConditional = J.ToObject(SubClassType)
+			Dim ConditionalsType As Type = GetType(RDBaseConditional)
+			Dim SubClassType As Type = Type.GetType($"{GetType(RDBaseConditional).Namespace}.{NameOf(Conditions)}.{J("type")}")
+			Dim Conditional As RDBaseConditional = J.ToObject(SubClassType)
 			Return Conditional
 		End Function
 	End Class
 	Friend Class ConditionConverter
 		Inherits JsonConverter(Of RDCondition)
-		Private ReadOnly conditionals As List(Of BaseConditional)
-		Public Sub New(Conditionals As List(Of BaseConditional))
+		Private ReadOnly conditionals As List(Of RDBaseConditional)
+		Public Sub New(Conditionals As List(Of RDBaseConditional))
 			Me.conditionals = Conditionals
 		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDCondition, serializer As JsonSerializer)

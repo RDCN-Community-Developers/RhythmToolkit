@@ -224,7 +224,7 @@ Namespace Components
 			End Set
 		End Property
 	End Class
-	Public Structure Hit
+	Public Structure RDHit
 		Public ReadOnly Beat As RDBeat
 		Public ReadOnly Hold As Single
 		Public ReadOnly Parent As RDBaseBeat
@@ -1106,7 +1106,7 @@ Namespace Components
 			Return value.value.B
 		End Operator
 	End Class
-	Public Class SoundSubType
+	Public Class RDSoundSubType
 		Enum GroupSubtypes
 			ClapSoundHoldLongEnd
 			ClapSoundHoldLongStart
@@ -1186,7 +1186,7 @@ Namespace Components
 End Namespace
 Namespace LevelElements
 	Public Class RDCondition
-		Public Property ConditionLists As New List(Of (Enabled As Boolean, Conditional As BaseConditional))
+		Public Property ConditionLists As New List(Of (Enabled As Boolean, Conditional As RDBaseConditional))
 		Public Property Duration As Single
 		Public Sub New()
 		End Sub
@@ -1208,7 +1208,7 @@ Namespace LevelElements
 		End Function
 	End Class
 	<JsonObject>
-	Public Class Decoration
+	Public Class RDDecoration
 		Inherits RDOrderedEventCollection(Of RDBaseDecorationAction)
 		Private _id As String
 		<JsonIgnore>
@@ -1272,7 +1272,7 @@ Namespace LevelElements
 		Public Overrides Function ToString() As String
 			Return $"{_id}, {Row}, {_Rooms}, {File.FileName}"
 		End Function
-		Friend Function Clone() As Decoration
+		Friend Function Clone() As RDDecoration
 			Return Me.MemberwiseClone
 		End Function
 	End Class
@@ -1377,7 +1377,7 @@ Namespace LevelElements
 			Return MyBase.Remove(item)
 		End Function
 	End Class
-	Public Class Bookmark
+	Public Class RDBookmark
 		Enum BookmarkColors
 			Blue
 			Red
@@ -1387,7 +1387,7 @@ Namespace LevelElements
 		Public Property Beat As RDBeat
 		Public Property Color As BookmarkColors
 	End Class
-	Public MustInherit Class BaseConditional
+	Public MustInherit Class RDBaseConditional
 		Public Enum ConditionalType
 			LastHit
 			Custom
@@ -1396,7 +1396,7 @@ Namespace LevelElements
 			PlayerMode
 		End Enum
 		<JsonIgnore>
-		Friend ParentCollection As List(Of BaseConditional)
+		Friend ParentCollection As List(Of RDBaseConditional)
 		Public MustOverride ReadOnly Property Type As ConditionalType
 		Public Property Tag As String
 		Public Property Name As String
@@ -1411,7 +1411,7 @@ Namespace LevelElements
 	End Class
 	Namespace Conditions
 		Public Class LastHit
-			Inherits BaseConditional
+			Inherits RDBaseConditional
 			<Flags>
 			Enum HitResult
 				Perfect = &B0
@@ -1427,17 +1427,17 @@ Namespace LevelElements
 			Public Property Result As HitResult
 		End Class
 		Public Class Custom
-			Inherits BaseConditional
+			Inherits RDBaseConditional
 			Public Property Expression As String
 			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Custom
 		End Class
 		Public Class TimesExecuted
-			Inherits BaseConditional
+			Inherits RDBaseConditional
 			Public Property MaxTimes As Integer
 			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.TimesExecuted
 		End Class
 		Public Class Language
-			Inherits BaseConditional
+			Inherits RDBaseConditional
 			Enum Languages
 				English
 				Spanish
@@ -1453,7 +1453,7 @@ Namespace LevelElements
 			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Language
 		End Class
 		Public Class PlayerMode
-			Inherits BaseConditional
+			Inherits RDBaseConditional
 			Public Property TwoPlayerMode As Boolean
 			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.PlayerMode
 		End Class
@@ -1466,19 +1466,19 @@ Namespace LevelElements
 		<JsonIgnore> Public ReadOnly Calculator As New RDBeatCalculator(Me)
 		Public Property Settings As New RDSettings
 		Friend ReadOnly Property _Rows As New List(Of RDRow)(16)
-		Friend ReadOnly Property _Decorations As New List(Of Decoration)
+		Friend ReadOnly Property _Decorations As New List(Of RDDecoration)
 		Public ReadOnly Property Rows As IReadOnlyCollection(Of RDRow)
 			Get
 				Return _Rows.AsReadOnly
 			End Get
 		End Property
-		Public ReadOnly Property Decorations As IReadOnlyCollection(Of Decoration)
+		Public ReadOnly Property Decorations As IReadOnlyCollection(Of RDDecoration)
 			Get
 				Return _Decorations.AsReadOnly
 			End Get
 		End Property
-		Public ReadOnly Property Conditionals As New List(Of BaseConditional)
-		Public ReadOnly Property Bookmarks As New List(Of Bookmark)
+		Public ReadOnly Property Conditionals As New List(Of RDBaseConditional)
+		Public ReadOnly Property Bookmarks As New List(Of RDBookmark)
 		Public ReadOnly Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
 		<JsonIgnore> Public ReadOnly Property Path As String
 			Get
@@ -1513,17 +1513,17 @@ Namespace LevelElements
 				Return rdl
 			End Get
 		End Property
-		Public Function CreateDecoration(room As RDSingleRoom, Optional sprite As RDSprite = Nothing) As Decoration
-			Dim temp As New Decoration(room) With {.Parent = Me, .File = sprite}
+		Public Function CreateDecoration(room As RDSingleRoom, Optional sprite As RDSprite = Nothing) As RDDecoration
+			Dim temp As New RDDecoration(room) With {.Parent = Me, .File = sprite}
 			_Decorations.Add(temp)
 			Return temp
 		End Function
-		Public Function CloneDecoration(decoration As Decoration) As Decoration
+		Public Function CloneDecoration(decoration As RDDecoration) As RDDecoration
 			Dim temp = decoration.Clone
 			Me._Decorations.Add(temp)
 			Return temp
 		End Function
-		Public Function RemoveDecoration(decoration As Decoration) As Boolean
+		Public Function RemoveDecoration(decoration As RDDecoration) As Boolean
 			If Decorations.Contains(decoration) Then
 				MyBase.RemoveRange(decoration)
 				Return _Decorations.Remove(decoration)

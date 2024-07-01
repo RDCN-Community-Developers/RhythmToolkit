@@ -116,9 +116,9 @@ Module Program
 
 		Dim Level As RDLevel = RDLevel.LoadFile("C:\Users\30698\OneDrive\ÎÄµµ\rdlevels\test3\level.rdlevel")
 
-		Dim SpriteCollection As New List(Of RhythmBase.LevelElements.Decoration)
+		Dim SpriteCollection As New List(Of RhythmBase.LevelElements.RDDecoration)
 		'For i = 0 To 100
-		Dim A As New Decoration()
+		Dim A As New RDDecoration()
 		Level.Decorations.Add(A)
 		Dim mv2 = New RDMove() With {.Beat = Level.DefaultBeat}
 		mv2.Position = New RDPointE(0, 0)
