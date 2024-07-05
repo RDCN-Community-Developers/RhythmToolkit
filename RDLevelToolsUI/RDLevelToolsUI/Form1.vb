@@ -15,7 +15,7 @@ Public Class Form1
 	Private Sub CreateLevelButton_Click(sender As Object, e As EventArgs) Handles CreateLevelButton.Click
 		processingLevel = New RDLevel
 		LevelHandler = New RDLevelHandler(processingLevel)
-		Calculator = New RDBeatCalculator(processingLevel)
+		Calculator = processingLevel.Calculator
 		able = True
 		viewIndex = -1
 	End Sub
@@ -24,11 +24,11 @@ Public Class Form1
 		If OpenFileDialog1.ShowDialog <> DialogResult.OK Then
 			Return
 		End If
-		processingLevel = RDLevel.LoadFile(OpenFileDialog1.FileName, New LevelInputSettings)
+		processingLevel = RDLevel.LoadFile(OpenFileDialog1.FileName, New LeveReadOrWriteSettings)
 		Dim file = New IO.FileInfo(OpenFileDialog1.FileName)
 		Text = file.Directory.Name + "\" + file.Name
 		LevelHandler = New RDLevelHandler(processingLevel)
-		Calculator = New RDBeatCalculator(processingLevel)
+		Calculator = processingLevel.Calculator
 		able = True
 		viewIndex = -1
 	End Sub
@@ -78,7 +78,7 @@ Public Class Form1
 			.AccessibleDescription = "事件名称"
 		}
 		Dim propertyLabel As New Label With {
-			.Text = Calculator.BeatOnly_BarBeat(processingEvent.Beat.BeatOnly).ToString,
+			.Text = Calculator.BeatOnlyToBarBeat(processingEvent.Beat.BeatOnly).ToString,
 			.AccessibleName = "节拍",
 			.AccessibleDescription = "事件的节拍位置"
 		}

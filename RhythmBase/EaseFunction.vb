@@ -1,6 +1,12 @@
 ﻿Imports System.Runtime.CompilerServices
 Namespace Components
+    ''' <summary>
+    ''' Ease Calculate module.
+    ''' </summary>
     Public Module Ease
+        ''' <summary>
+        ''' Ease types.
+        ''' </summary>
         Public Enum EaseType As Integer
 #If DEBUG Then
             Unset = -1
@@ -187,8 +193,13 @@ Namespace Components
                 Return (3 - 2 * x) * x ^ 2
             End Function
         End Class
-        <Extension>
-        Public Function Calculate(Type As EaseType, x As Single) As Single
+        ''' <summary>
+        ''' Calculates the value with the specified ease type.
+        ''' </summary>
+        ''' <param name="Type">Ease type.</param>
+        ''' <param name="x">A floating-point number in the range of 0 to 1.</param>
+        ''' <returns>Easing result.</returns>
+        <Extension> Public Function Calculate(Type As EaseType, x As Single) As Single
             Select Case Type
 #If DEBUG Then
                 Case EaseType.Unset
@@ -264,8 +275,15 @@ Namespace Components
                     Return 0
             End Select
         End Function
-        <Extension>
-        Public Function Calculate(Type As EaseType, x As Single, from As Single, [to] As Single) As Single
+        ''' <summary>
+        ''' Calculates the value with the specified ease type.
+        ''' </summary>
+        ''' <param name="Type">Ease type.</param>
+        ''' <param name="x">A floating-point number in the range of 0 to 1.</param>
+        ''' <param name="from">The starting value of the easing result.</param>
+        ''' <param name="to">The endding value of the easing result</param>
+        ''' <returns>Easing result.</returns>
+        <Extension> Public Function Calculate(Type As EaseType, x As Single, from As Single, [to] As Single) As Single
             Return Type.Calculate(x) * ([to] - from) + from
         End Function
     End Module

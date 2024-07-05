@@ -4,9 +4,12 @@ Imports System.Runtime.CompilerServices
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports NAudio
-Imports RhythmBase.Extensions.Extension
+Imports RhythmBase.Extensions.Extensions
 Imports SkiaSharp
 Namespace Assets
+	''' <summary>
+	''' A reference to an asset file.
+	''' </summary>
 	Public Class RDSprite
 		Private _file As String
 		Private _isLoaded As Boolean
@@ -19,13 +22,16 @@ Namespace Assets
 		Private _name As String
 		Private _voice As String
 		Private _size As RDSizeNI
-		Private _clips As New HashSet(Of Clip)
+		Private _clips As New HashSet(Of Expression)
 		Private _rowPreviewOffset As RDSizeN?
 		Private _rowPreviewFrame As UInteger?
 		Private _pivotOffset As RDPointN?
 		Private _portraitOffset As RDSizeN?
 		Private _PortraitSize As RDSizeN?
 		Private _portraitScale As Single?
+		''' <summary>
+		''' The path of the file.
+		''' </summary>
 		<JsonIgnore> Public Property FilePath As String
 			Get
 				Return _file
@@ -34,6 +40,9 @@ Namespace Assets
 				_file = value
 			End Set
 		End Property
+		''' <summary>
+		''' The expression names of the sprite file.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Expressions As IEnumerable(Of String)
 			Get
 				If Not _isLoaded Then
@@ -43,6 +52,9 @@ Namespace Assets
 				Return Clips.Select(Function(i) i.Name)
 			End Get
 		End Property
+		''' <summary>
+		''' The name of the file.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property FileName As String
 			Get
 				If IsSprite Then
@@ -52,17 +64,26 @@ Namespace Assets
 				End If
 			End Get
 		End Property
+		''' <summary>
+		''' The area where the sprite/image is previewed.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Preview As SKRect?
 			Get
 				Return If(RowPreviewFrame Is Nothing, New SKRect, GetFrame(RowPreviewFrame))
 			End Get
 		End Property
+		''' <summary>
+		''' The size of the sprite/image
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property ImageSize As RDSizeNI
 			Get
 				Load()
 				Return _imageSize
 			End Get
 		End Property
+		''' <summary>
+		''' Base layer
+		''' </summary>
 		<JsonIgnore> Public Property Image_Base As SKBitmap
 			Get
 				Load()
@@ -74,6 +95,9 @@ Namespace Assets
 				_image_Base = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Glow layer
+		''' </summary>
 		<JsonIgnore> Public Property Image_Glow As SKBitmap
 			Get
 				Load()
@@ -85,6 +109,9 @@ Namespace Assets
 				_image_Glow = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Outline layer
+		''' </summary>
 		<JsonIgnore> Public Property Image_Outline As SKBitmap
 			Get
 				Load()
@@ -96,6 +123,9 @@ Namespace Assets
 				_image_Outline = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Freeze layer
+		''' </summary>
 		<JsonIgnore> Public Property Image_Freeze As SKBitmap
 			Get
 				Load()
@@ -107,6 +137,9 @@ Namespace Assets
 				_image_Freeze = Value
 			End Set
 		End Property
+		''' <summary>
+		''' The name of the sprite.
+		''' </summary>
 		Public Property Name As String
 			Get
 				Load()
@@ -119,6 +152,9 @@ Namespace Assets
 			End Set
 		End Property
 #If DEBUG Then
+		''' <summary>
+		''' [Unknown] The voice of the sprite.
+		''' </summary>
 		Public Property Voice As String
 			Get
 				Load()
@@ -131,6 +167,9 @@ Namespace Assets
 			End Set
 		End Property
 #End If
+		''' <summary>
+		''' The size of each expression.
+		''' </summary>
 		Public Property Size As RDSizeNI
 			Get
 				Load()
@@ -142,7 +181,10 @@ Namespace Assets
 				_size = Value
 			End Set
 		End Property
-		Public Property Clips As HashSet(Of Clip)
+		''' <summary>
+		''' Information of expressions.
+		''' </summary>
+		Public Property Clips As HashSet(Of Expression)
 			Get
 				Load()
 				Return _clips
@@ -153,6 +195,9 @@ Namespace Assets
 				_clips = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Image offset when the row is previewed.
+		''' </summary>
 		Public Property RowPreviewOffset As RDSizeN?
 			Get
 				Load()
@@ -164,6 +209,9 @@ Namespace Assets
 				_rowPreviewOffset = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Row preview frame.
+		''' </summary>
 		Public Property RowPreviewFrame As UInteger?
 			Get
 				Load()
@@ -175,6 +223,9 @@ Namespace Assets
 				_rowPreviewFrame = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Pivot point offset.
+		''' </summary>
 		Public Property PivotOffset As RDPointN?
 			Get
 				Load()
@@ -186,6 +237,9 @@ Namespace Assets
 				_pivotOffset = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Image offset in dialog box.
+		''' </summary>
 		Public Property PortraitOffset As RDSizeN?
 			Get
 				Load()
@@ -197,6 +251,9 @@ Namespace Assets
 				_portraitOffset = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Image clipping in the dialog box.
+		''' </summary>
 		Public Property PortraitSize As RDSizeN?
 			Get
 				Load()
@@ -208,6 +265,9 @@ Namespace Assets
 				_PortraitSize = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Image scale in the dialog box.
+		''' </summary>
 		Public Property PortraitScale As Single?
 			Get
 				Load()
@@ -219,12 +279,18 @@ Namespace Assets
 				_portraitScale = Value
 			End Set
 		End Property
+		''' <summary>
+		''' Indicates whether the reference is a picture file or sprite.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property IsSprite As Boolean
 			Get
 				Return Path.GetExtension(_file) = String.Empty
 			End Get
 		End Property
-		Public Class Clip
+		''' <summary>
+		''' An expression.
+		''' </summary>
+		Public Class Expression
 			Friend parent As RDSprite
 			Private _name As String
 			Private _frames As List(Of UInteger)
@@ -235,6 +301,9 @@ Namespace Assets
 			Private _portraitOffset As RDSizeN?
 			Private _portraitScale As Single?
 			Private _portraitSize As RDSizeN?
+			''' <summary>
+			''' Expression name.
+			''' </summary>
 			Public Property Name As String
 				Get
 					Return _name
@@ -244,6 +313,9 @@ Namespace Assets
 					_name = Value
 				End Set
 			End Property
+			''' <summary>
+			''' The list of frame indexes for expression.
+			''' </summary>
 			Public Property Frames As List(Of UInteger) 'nullable
 				Get
 					Return _frames
@@ -253,6 +325,9 @@ Namespace Assets
 					_frames = Value
 				End Set
 			End Property
+			''' <summary>
+			''' The start frame of the cycle for the expression.
+			''' </summary>
 			Public Property LoopStart As Integer? 'nullable
 				Get
 					Return _loopStart
@@ -262,6 +337,9 @@ Namespace Assets
 					_loopStart = Value
 				End Set
 			End Property
+			''' <summary>
+			''' The way the expression loops.
+			''' </summary>
 			<JsonConverter(GetType(Newtonsoft.Json.Converters.StringEnumConverter))> Public Property [Loop] As LoopOption
 				Get
 					Return _loop
@@ -271,6 +349,9 @@ Namespace Assets
 					_loop = Value
 				End Set
 			End Property
+			''' <summary>
+			''' The frame rate of the emoticon when <c>loop == yes</c>.
+			''' </summary>
 			Public Property Fps As Single
 				Get
 					Return _fps
@@ -280,6 +361,9 @@ Namespace Assets
 					_fps = Value
 				End Set
 			End Property
+			''' <summary>
+			''' Pivot point offset.
+			''' </summary>
 			Public Property PivotOffset As RDPointN? 'nullable
 				Get
 					Return _pivotOffset
@@ -289,6 +373,9 @@ Namespace Assets
 					_pivotOffset = Value
 				End Set
 			End Property
+			''' <summary>
+			''' Image offset in dialog box.
+			''' </summary>
 			Public Property PortraitOffset As RDSizeN? 'nullable
 				Get
 					Return _portraitOffset
@@ -298,6 +385,9 @@ Namespace Assets
 					_portraitOffset = Value
 				End Set
 			End Property
+			''' <summary>
+			''' Image scale in the dialog box.
+			''' </summary>
 			Public Property PortraitScale As Single? 'nullable
 				Get
 					Return _portraitScale
@@ -307,6 +397,9 @@ Namespace Assets
 					_portraitScale = Value
 				End Set
 			End Property
+			''' <summary>
+			''' Image clipping in the dialog box.
+			''' </summary>
 			Public Property PortraitSize As RDSizeN? 'nullable
 				Get
 					Return _portraitSize
@@ -316,6 +409,10 @@ Namespace Assets
 					_portraitSize = Value
 				End Set
 			End Property
+			''' <summary>
+			''' Get the cropped area on the image for each frame of this expression.
+			''' </summary>
+			''' <returns>An array of rectangles indicating each crop area.</returns>
 			Public Function GetFrameRects() As SKRectI()
 				Return Frames.Select(Function(i) parent.GetFrame(i)).ToArray
 			End Function
@@ -325,6 +422,10 @@ Namespace Assets
 		End Class
 		Public Sub New()
 		End Sub
+		''' <summary>
+		''' Create a reference to the file. The contents of the file are not read.
+		''' </summary>
+		''' <param name="filename">File path.</param>
 		Public Sub New(filename As String)
 			If filename.IsNullOrEmpty Then
 				Throw New ArgumentException("Filename cannot be null.", NameOf(filename))
@@ -336,6 +437,9 @@ Namespace Assets
 				Reload()
 			End If
 		End Sub
+		''' <summary>
+		''' Load the file contents into memory.
+		''' </summary>
 		Public Sub Reload()
 			If IsSprite Then
 
@@ -385,7 +489,7 @@ Namespace Assets
 				_PortraitSize = obj(NameOf(PortraitSize).ToLowerCamelCase)?.ToObject(Of RDSizeN)
 				_portraitScale = obj(NameOf(PortraitScale).ToLowerCamelCase)?.ToObject(Of Single)
 				For Each clip In obj(NameOf(Clips).ToLowerCamelCase)
-					_clips.Add(clip.ToObject(Of Clip))
+					_clips.Add(clip.ToObject(Of Expression))
 				Next
 			Else
 				If File.Exists(_file) Then
@@ -402,10 +506,19 @@ Namespace Assets
 			_isLoaded = True
 			_isModified = False
 		End Sub
+		''' <summary>
+		''' Write JSON data to the text stream.
+		''' </summary>
+		''' <param name="textWriter">Text writer stream.</param>
 		Public Sub WriteJson(textWriter As TextWriter)
-			WriteJson(textWriter, New SpriteOutputSettings)
+			WriteJson(textWriter, New SpriteReadOrWriteSettings)
 		End Sub
-		Public Sub WriteJson(textWriter As TextWriter, setting As SpriteOutputSettings)
+		''' <summary>
+		''' Write JSON data to the text stream.
+		''' </summary>
+		''' <param name="textWriter">Text writer stream.</param>
+		''' <param name="setting">Write settings.</param>
+		Public Sub WriteJson(textWriter As TextWriter, setting As SpriteReadOrWriteSettings)
 			Dim jsonS As New JsonSerializerSettings With {
 				.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver,
 				.NullValueHandling = NullValueHandling.Ignore,
@@ -495,7 +608,12 @@ Namespace Assets
 			End With
 			textWriter.Flush()
 		End Sub
-		Private Function GetFrame(index As UInteger) As SKRectI
+		''' <summary>
+		''' Gets the frame crop area.
+		''' </summary>
+		''' <param name="index">Frame index.</param>
+		''' <returns>A rectangular area that indicates the cropping area.</returns>
+		Public Function GetFrame(index As UInteger) As SKRectI
 			Return GetFrameRect(index, ImageSize.ToSKSizeI, Size.ToSKSizeI)
 		End Function
 		Private Shared Function GetFrameRect(index As UInteger, source As SKSizeI, size As SKSizeI) As SKRectI
@@ -508,30 +626,54 @@ Namespace Assets
 							   leftTop.X + size.Width,
 							   leftTop.Y + size.Height)
 		End Function
-		Public Function AddBlankClip(name As String) As Clip
-			Dim C = Clips.FirstOrDefault(New Clip With {.Name = name})
+		''' <summary>
+		''' Add a blank expression.
+		''' </summary>
+		''' <param name="name">Expression name.</param>
+		''' <returns>Added expression. Further changes can be made on top of this.</returns>
+		Public Function AddBlankExpression(name As String) As Expression
+			Dim C = Clips.FirstOrDefault(New Expression With {.Name = name})
 			Clips.Add(C)
 			Return C
 		End Function
-		Public Function AddBlankClipsForCharacter() As IEnumerable(Of Clip)
+		''' <summary>
+		''' Add a blank emoticon to the creation of character assets.
+		''' </summary>
+		''' <returns>Added expressions. Further changes can be made on top of these.</returns>
+		Public Function AddBlankExpressionsForCharacter() As IEnumerable(Of Expression)
 			Return From n In {"neutral", "happy", "barely", "missed"}
-				   Select AddBlankClip(n)
+				   Select AddBlankExpression(n)
 		End Function
-		Public Function AddBlankClipsForDecoration() As IEnumerable(Of Clip)
+		''' <summary>
+		''' Add a blank emoticon to the creation of sprite assets.
+		''' </summary>
+		''' <returns>Added expression. Further changes can be made on top of this.</returns>
+		Public Function AddBlankExpressionForDecoration() As IEnumerable(Of Expression)
 			Return From n In {"neutral"}
-				   Select AddBlankClip(n)
+				   Select AddBlankExpression(n)
 		End Function
+		''' <summary>
+		''' Save the file.
+		''' </summary>
+		''' <param name="path">the file path.</param>
+		''' <exception cref="OverwriteNotAllowedException">The save path is the same as the reference path.</exception>
 		Public Sub Save(path As String)
-			Save(path, New SpriteOutputSettings)
+			Save(path, New SpriteReadOrWriteSettings)
 		End Sub
-		Public Sub Save(path As String, settings As SpriteOutputSettings)
+		''' <summary>
+		''' Save the file.
+		''' </summary>
+		''' <param name="path">the file path.</param>
+		''' <param name="settings">save settings.</param>
+		''' <exception cref="OverwriteNotAllowedException">The save path is the same as the reference path.</exception>
+		Public Sub Save(path As String, settings As SpriteReadOrWriteSettings)
 
 			Dim file = New FileInfo(path)
 			Dim WithoutExtension As String = IO.Path.Combine(file.Directory.FullName, IO.Path.GetFileNameWithoutExtension(file.Name))
 			If (IO.File.Exists(WithoutExtension + ".json") OrElse
 				(settings.WithImage AndAlso IO.File.Exists(WithoutExtension + ".png"))
 				) And Not settings.OverWrite Then
-				Throw New OverwriteNotAllowedException(path, GetType(LevelOutputSettings))
+				Throw New OverwriteNotAllowedException(path, GetType(LeveReadOrWriteSettings))
 			End If
 
 			If settings.WithImage Then
@@ -548,14 +690,38 @@ Namespace Assets
 			Return $"{ If(IsSprite, ".json", Path.GetExtension(FilePath))}, {If(Name.IsNullOrEmpty, FileName, Name)}"
 		End Function
 	End Class
+	''' <summary>
+	''' A Character.
+	''' </summary>
 	Public Structure RDCharacter
-		Public ReadOnly IsCustom As Boolean
-		Public ReadOnly Character? As Characters
-		Public ReadOnly CustomCharacter As RDSprite
+		''' <summary>
+		''' Whether  in-game character or customized character(sprite).
+		''' </summary>
+		Public ReadOnly Property IsCustom As Boolean
+		''' <summary>
+		''' In-game character.
+		''' <br/>
+		''' If using a customized character, this value will be empty
+		''' </summary>
+		Public ReadOnly Property Character As Characters?
+		''' <summary>
+		''' Customized character(sprite).
+		''' <br/>
+		''' If using an in-game character, this value will be empty
+		''' </summary>
+		Public ReadOnly Property CustomCharacter As RDSprite
+		''' <summary>
+		''' Construct an in-game character.
+		''' </summary>
+		''' <param name="character">Character type.</param>
 		Public Sub New(character As Characters)
 			IsCustom = False
 			Me.Character = character
 		End Sub
+		''' <summary>
+		''' Construct a customized character.
+		''' </summary>
+		''' <param name="character">A sprite.</param>
 		Public Sub New(character As RDSprite)
 			IsCustom = True
 			CustomCharacter = character
@@ -590,8 +756,12 @@ Namespace Extensions
 				Return SKBitmap.Decode(stream)
 			End Using
 		End Function
-		<Extension>
-		Public Sub Save(image As SKBitmap, path As String)
+		''' <summary>
+		''' Save the image to a file path.
+		''' </summary>
+		''' <param name="image"></param>
+		''' <param name="path"></param>
+		<Extension> Public Sub Save(image As SKBitmap, path As String)
 			Using stream = New IO.FileInfo(path).OpenWrite
 				image.Encode(SKEncodedImageFormat.Png, 100).SaveTo(stream)
 			End Using
@@ -604,15 +774,14 @@ Namespace Extensions
 			End Try
 			Return True
 		End Function
-		<Extension>
-		Public Function Copy(image As SKBitmap, rect As SKRectI) As SKBitmap
+		<Extension> Public Function Copy(image As SKBitmap, rect As SKRectI) As SKBitmap
 			Dim result As New SKBitmap(rect.Width, rect.Height)
 			Dim canvas As New SKCanvas(result)
 			canvas.DrawBitmap(image, rect, New SKRectI(0, 0, rect.Width, rect.Height))
 			Return result
 		End Function
-		<Extension>
-		Public Function OutLine(image As SKBitmap) As SKBitmap
+#If DEBUG Then
+		<Extension> Public Function OutLine(image As SKBitmap) As SKBitmap
 			Dim img = image.Copy
 			For x = 0 To img.Width - 1
 				For y = 0 To img.Height - 1
@@ -629,8 +798,7 @@ Namespace Extensions
 			Next
 			Return img
 		End Function
-		<Extension>
-		Public Function OutGlow(image As SKBitmap) As SKBitmap
+		<Extension> Public Function OutGlow(image As SKBitmap) As SKBitmap
 			'Dim output As SKBitmap
 			'Using surface = SKSurface.Create(New SKImageInfo(image.Width, image.Height))
 			'    Dim canvas = surface.Canvas
@@ -651,5 +819,6 @@ Namespace Extensions
 				Return output
 			End Using
 		End Function
+#End If
 	End Module
 End Namespace

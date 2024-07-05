@@ -10,6 +10,9 @@ Imports System.ComponentModel
 #Disable Warning CA1822
 #Disable Warning IDE0060
 Namespace Components
+	''' <summary>
+	''' In-game character.
+	''' </summary>
 	Public Enum Characters
 		Adog
 		Athlete
@@ -95,29 +98,17 @@ Namespace Components
 		Wren
 #End If
 	End Enum
-	'Public Enum wavetype
-	'	BoomAndRush
-	'	Spring
-	'	Spike
-	'	SpikeHuge
-	'	Ball
-	'	[Single]
-	'End Enum
-	'Public Enum ShockWaveType
-	'	size
-	'	distortion
-	'	duration
-	'End Enum
-	'Public Enum Particle
-	'	HitExplosion
-	'	leveleventexplosion
-	'End Enum
-	Public Enum Filters
+	''' <summary>
+	''' Render filter type.
+	''' </summary>
+	Public Enum RDFilters
 		NearestNeighbor
 		BiliNear
 	End Enum
-	<Flags>
-	Public Enum RoomIndex
+	''' <summary>
+	''' Room index.
+	''' </summary>
+	<Flags> Public Enum RoomIndex
 		None = &B0
 		Room1 = &B1
 		Room2 = &B10
@@ -126,9 +117,21 @@ Namespace Components
 		RoomTop = &B10000
 		RoomNotAvaliable = &B1111111
 	End Enum
+	''' <summary>
+	''' Variables.
+	''' </summary>
 	Public NotInheritable Class Variables
+		''' <summary>
+		''' Integer variables.
+		''' </summary>
 		Public ReadOnly i As New LimitedList(Of Integer)(10, 0)
+		''' <summary>
+		''' Float variables.
+		''' </summary>
 		Public ReadOnly f As New LimitedList(Of Single)(10, 0)
+		''' <summary>
+		''' Boolean variables.
+		''' </summary>
 		Public ReadOnly b As New LimitedList(Of Boolean)(10, False)
 		Public barNumber As Integer
 		Public buttonPressCount As Integer
@@ -224,27 +227,36 @@ Namespace Components
 			End Set
 		End Property
 	End Class
+	''' <summary>
+	''' The moment the beat is hit.
+	''' </summary>
 	Public Structure RDHit
-		Public ReadOnly Beat As RDBeat
-		Public ReadOnly Hold As Single
-		Public ReadOnly Parent As RDBaseBeat
-		'Public ReadOnly Property BarBeat As (Bar As UInteger, Beat As Single)
-		'	Get
-		'		Dim Calculator As New BeatCalculator(Parent.ParentLevel)
-		'		Return Calculator.BeatOnly_BarBeat(BeatOnly)
-		'	End Get
-		'End Property
-		'Public ReadOnly Property Time As TimeSpan
-		'	Get
-		'		Dim Calculator As New BeatCalculator(Parent.ParentLevel)
-		'		Return Calculator.BeatOnly_Time(BeatOnly)
-		'	End Get
-		'End Property
+		''' <summary>
+		''' The moment of pressing.
+		''' </summary>
+		Public ReadOnly Property Beat As RDBeat
+		''' <summary>
+		''' The length of time player held it.
+		''' </summary>
+		Public ReadOnly Property Hold As Single
+		''' <summary>
+		''' The source event for this hit.
+		''' </summary>
+		Public ReadOnly Property Parent As RDBaseBeat
+		''' <summary>
+		''' Indicates whether this hit needs to be held down continuously.
+		''' </summary>
 		Public ReadOnly Property Holdable As Boolean
 			Get
 				Return Hold > 0
 			End Get
 		End Property
+		''' <summary>
+		''' Construct a hit.
+		''' </summary>
+		''' <param name="parent">The source event for this hit.</param>
+		''' <param name="beat">The moment of pressing.</param>
+		''' <param name="hold">The source event for this hit.</param>
 		Public Sub New(parent As RDBaseBeat, beat As RDBeat, Optional hold As Single = 0)
 			Me.Parent = parent
 			Me.Beat = beat
@@ -258,7 +270,7 @@ Namespace Components
 		Implements IComparable(Of RDBeat)
 		Implements IEquatable(Of RDBeat)
 		Friend _calculator As RDBeatCalculator
-		Private Shared _isBeatLoaded As Boolean
+		Private _isBeatLoaded As Boolean
 		Private _isBarBeatLoaded As Boolean
 		Private _isTimeSpanLoaded As Boolean
 		Private _isBPMLoaded As Boolean
@@ -273,57 +285,72 @@ Namespace Components
 				Return _calculator?.Collection
 			End Get
 		End Property
+		''' <summary>
+		''' Whether this beat cannot be calculated.
+		''' </summary>
 		Public ReadOnly Property IsEmpty As Boolean
 			Get
 				Return _calculator Is Nothing OrElse Not (_isBeatLoaded OrElse _isBarBeatLoaded OrElse _isTimeSpanLoaded)
 			End Get
 		End Property
+		''' <summary>
+		''' The total number of beats from this moment to the beginning of the level.
+		''' </summary>
 		Public ReadOnly Property BeatOnly As Single
 			Get
 				IfNullThrowException()
 				If Not _isBeatLoaded Then
 					If _isBarBeatLoaded Then
-						_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
+						_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
 					ElseIf _isTimeSpanLoaded Then
-						_beat = _calculator.Time_BeatOnly(_TimeSpan) - 1
+						_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1
 					End If
 					_isBeatLoaded = True
 				End If
 				Return _beat + 1
 			End Get
 		End Property
+		''' <summary>
+		''' The actual bar and beat of this moment.
+		''' </summary>
 		Public ReadOnly Property BarBeat As (bar As UInteger, beat As Single)
 			Get
 				IfNullThrowException()
 				If Not _isBarBeatLoaded Then
 					If _isBeatLoaded Then
-						_BarBeat = _calculator.BeatOnly_BarBeat(_beat + 1)
+						_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1)
 					ElseIf _isTimeSpanLoaded Then
-						_beat = _calculator.Time_BeatOnly(_TimeSpan) - 1
+						_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1
 						_isBeatLoaded = True
-						_BarBeat = _calculator.BeatOnly_BarBeat(_beat + 1)
+						_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1)
 					End If
 					_isBarBeatLoaded = True
 				End If
 				Return _BarBeat
 			End Get
 		End Property
+		''' <summary>
+		''' The total amount of time from the beginning of the level to this beat.
+		''' </summary>
 		Public ReadOnly Property TimeSpan As TimeSpan
 			Get
 				IfNullThrowException()
 				If Not _isTimeSpanLoaded Then
 					If _isBeatLoaded Then
-						_TimeSpan = _calculator.BeatOnly_Time(_beat + 1)
+						_TimeSpan = _calculator.BeatOnlyToTimeSpan(_beat + 1)
 					ElseIf _isBarBeatLoaded Then
-						_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
+						_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
 						_isBeatLoaded = True
-						_TimeSpan = _calculator.BeatOnly_Time(_beat + 1)
+						_TimeSpan = _calculator.BeatOnlyToTimeSpan(_beat + 1)
 					End If
 					_isTimeSpanLoaded = True
 				End If
 				Return _TimeSpan
 			End Get
 		End Property
+		''' <summary>
+		''' The number of beats per minute followed at this moment.
+		''' </summary>
 		Public ReadOnly Property BPM As Single
 			Get
 				If Not _isBPMLoaded Then
@@ -333,6 +360,9 @@ Namespace Components
 				Return _BPM
 			End Get
 		End Property
+		''' <summary>
+		''' The number of beats per bar followed at this moment.
+		''' </summary>
 		Public ReadOnly Property CPB As Single
 			Get
 				If Not _isCPBLoaded Then
@@ -342,19 +372,33 @@ Namespace Components
 				Return _CPB
 			End Get
 		End Property
-		Shared Sub New()
-			_isBeatLoaded = True
-		End Sub
+		''' <summary>
+		''' Construct an instance without specifying a calculator.
+		''' </summary>
+		''' <param name="beatOnly">The total number of beats from this moment to the beginning of the level.</param>
 		Public Sub New(beatOnly As Single)
 			_beat = beatOnly - 1
+			_isBeatLoaded = True
 		End Sub
+		''' <summary>
+		''' Construct an instance with specifying a calculator.
+		''' </summary>
+		''' <param name="calculator">Specified calculator.</param>
+		''' <param name="beatOnly">The total number of beats from this moment to the beginning of the level.</param>
 		Public Sub New(calculator As RDBeatCalculator, beatOnly As Single)
 			If beatOnly < 1 Then
 				Throw New OverflowException($"The beat must not be less than 1, but {beatOnly} is given")
 			End If
 			_calculator = calculator
 			_beat = beatOnly - 1
+			_isBeatLoaded = True
 		End Sub
+		''' <summary>
+		''' Construct an instance with specifying a calculator.
+		''' </summary>
+		''' <param name="calculator">Specified calculator.</param>
+		''' <param name="bar">The actual bar of this moment.</param>
+		''' <param name="beat">The actual beat of this moment.</param>
 		Public Sub New(calculator As RDBeatCalculator, bar As UInteger, beat As Single)
 			If bar < 1 Then
 				Throw New OverflowException($"The bar must not be less than 1, but {bar} is given")
@@ -364,21 +408,38 @@ Namespace Components
 			End If
 			_calculator = calculator
 			_BarBeat = (bar, beat)
-			_beat = _calculator.BarBeat_BeatOnly(bar, beat) - 1
+			_beat = _calculator.BarBeatToBeatOnly(bar, beat) - 1
 			_isBarBeatLoaded = True
 		End Sub
+		''' <summary>
+		''' Construct an instance with specifying a calculator.
+		''' </summary>
+		''' <param name="calculator">Specified calculator.</param>
+		''' <param name="timeSpan">The total amount of time from the start of the level to the moment</param>
 		Public Sub New(calculator As RDBeatCalculator, timeSpan As TimeSpan)
 			If timeSpan < TimeSpan.Zero Then
 				Throw New OverflowException($"The time must not be less than zero, but {timeSpan} is given")
 			End If
 			_calculator = calculator
 			_TimeSpan = timeSpan
-			_beat = _calculator.Time_BeatOnly(timeSpan) - 1
+			_beat = _calculator.TimeSpanToBeatOnly(timeSpan) - 1
 			_isTimeSpanLoaded = True
 		End Sub
+		''' <summary>
+		''' Construct a beat of the 1st beat from the calculator
+		''' </summary>
+		''' <param name="calculator">Specified calculator.</param>
+		''' <returns>The first beat tied to the level.</returns>
 		Public Shared Function [Default](calculator As RDBeatCalculator) As RDBeat
 			Return New RDBeat(calculator, 1)
 		End Function
+		''' <summary>
+		''' Determine if two beats come from the same level
+		''' </summary>
+		''' <param name="a">A beat.</param>
+		''' <param name="b">Another beat.</param>
+		''' <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
+		''' <returns></returns>
 		Public Shared Function FromSameLevel(a As RDBeat, b As RDBeat, Optional [throw] As Boolean = False) As Boolean
 			If a.baseLevel.Equals(b.baseLevel) Then
 				Return True
@@ -389,16 +450,37 @@ Namespace Components
 				Return False
 			End If
 		End Function
+		''' <summary>
+		''' Determine if two beats are from the same level.
+		''' <br/>
+		''' If any of them does not come from any level, it will also return true.
+		''' </summary>
+		''' <param name="a">A beat.</param>
+		''' <param name="b">Another beat.</param>
+		''' <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
+		''' <returns></returns>
 		Public Shared Function FromSameLevelOrNull(a As RDBeat, b As RDBeat, Optional [throw] As Boolean = False) As Boolean
 			Return a.baseLevel Is Nothing OrElse b.baseLevel Is Nothing OrElse FromSameLevel(a, b, [throw])
 		End Function
 		Public Function FromSameLevel(b As RDBeat, Optional [throw] As Boolean = False) As Boolean
 			Return FromSameLevel(Me, b, [throw])
 		End Function
+		''' <summary>
+		''' Determine if two beats are from the same level.
+		''' <br/>
+		''' If any of them does not come from any level, it will also return true.
+		''' </summary>
+		''' <param name="b">Another beat.</param>
+		''' <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
+		''' <returns></returns>	
 		Public Function FromSameLevelOrNull(b As RDBeat, Optional [throw] As Boolean = False) As Boolean
 			Return baseLevel Is Nothing OrElse b.baseLevel Is Nothing OrElse FromSameLevel(b, [throw])
 		End Function
-		Public Function WithoutConnection() As RDBeat
+		''' <summary>
+		''' Returns a new instance of unbinding the level.
+		''' </summary>
+		''' <returns>A new instance of unbinding the level.</returns>
+		Public Function WithoutBinding() As RDBeat
 			Dim result = Me
 			result._calculator = Nothing
 			Return result
@@ -408,22 +490,28 @@ Namespace Components
 				Throw New InvalidRDBeatException
 			End If
 		End Sub
+		''' <summary>
+		''' Refresh the cache.
+		''' </summary>
 		Public Sub ResetCache()
 			Dim m = BeatOnly
 			_isBarBeatLoaded = False
 			_isTimeSpanLoaded = False
 		End Sub
-		Public Sub ResetBPM()
+		''' <summary>
+		''' 
+		''' </summary>
+		Friend Sub ResetBPM()
 			If Not _isBeatLoaded Then
-				_beat = _calculator.Time_BeatOnly(_TimeSpan) - 1
+				_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1
 			End If
 			_isBeatLoaded = True
 			_isTimeSpanLoaded = False
 			_isBPMLoaded = False
 		End Sub
-		Public Sub ResetCPB()
+		Friend Sub ResetCPB()
 			If Not _isBeatLoaded Then
-				_beat = _calculator.BarBeat_BeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
+				_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
 			End If
 			_isBeatLoaded = True
 			_isBarBeatLoaded = False
@@ -432,8 +520,14 @@ Namespace Components
 		Public Shared Operator +(a As RDBeat, b As Single) As RDBeat
 			Return New RDBeat(a._calculator, a.BeatOnly + b)
 		End Operator
+		Public Shared Operator +(a As RDBeat, b As TimeSpan) As RDBeat
+			Return New RDBeat(a._calculator, a.TimeSpan + b)
+		End Operator
 		Public Shared Operator -(a As RDBeat, b As Single) As RDBeat
 			Return New RDBeat(a._calculator, a.BeatOnly - b)
+		End Operator
+		Public Shared Operator -(a As RDBeat, b As TimeSpan) As RDBeat
+			Return New RDBeat(a._calculator, a.TimeSpan - b)
 		End Operator
 		Public Shared Operator >(a As RDBeat, b As RDBeat) As Boolean
 			Return FromSameLevel(a, b, True) AndAlso a.BeatOnly > b.BeatOnly
@@ -479,9 +573,21 @@ Namespace Components
 			Return 0
 		End Function
 	End Structure
+	''' <summary>
+	''' Beat range.
+	''' </summary>
 	Public Structure RDRange
-		Public ReadOnly Start? As RDBeat
-		Public ReadOnly [End]? As RDBeat
+		''' <summary>
+		''' Start beat.
+		''' </summary>
+		Public ReadOnly Property Start As RDBeat?
+		''' <summary>
+		''' End beat.
+		''' </summary>
+		Public ReadOnly Property [End] As RDBeat?
+		''' <summary>
+		''' Beat interval.
+		''' </summary>
 		Public ReadOnly Property BeatInterval As Single
 			Get
 				If Start.HasValue AndAlso [End].HasValue Then
@@ -490,6 +596,10 @@ Namespace Components
 				Return Single.PositiveInfinity
 			End Get
 		End Property
+		''' <summary>
+		''' Time interval.
+		''' </summary>
+		''' <returns></returns>
 		Public ReadOnly Property TimeInterval As TimeSpan
 			Get
 				If Start.HasValue AndAlso [End].HasValue Then
@@ -501,6 +611,8 @@ Namespace Components
 				Return TimeSpan.MaxValue
 			End Get
 		End Property
+		''' <param name="start">Start beat.</param>
+		''' <param name="[end]">End beat.</param>
 		Public Sub New(start As RDBeat?, [end] As RDBeat?)
 			If start.HasValue AndAlso [end].HasValue AndAlso (Not start.Value._calculator.Equals([end].Value._calculator)) Then
 				Throw New RhythmBaseException("RDIndexes must come from the same RDLevel.")
@@ -514,6 +626,7 @@ Namespace Components
 			End If
 		End Sub
 	End Structure
+#If DEBUG Then
 	Public Structure ClassicBeatStatus
 		Public Enum StatusType
 			Unset = -1
@@ -543,10 +656,17 @@ Namespace Components
 		Public Status As StatusType
 		Public BeatCount As UShort
 	End Structure
-	Public Class PanelColor
+#End If
+	''' <summary>
+	''' Palette color
+	''' </summary>
+	Public Class RDPaletteColor
 		Private _panel As Integer
 		Private _color As SKColor?
 		Friend parent As LimitedList(Of SKColor)
+		''' <summary>
+		''' Get or set a custom color.
+		''' </summary>
 		Public Property Color As SKColor?
 			Get
 				Return If(EnablePanel, parent(_panel), Nothing)
@@ -560,7 +680,10 @@ Namespace Components
 				End If
 			End Set
 		End Property
-		Public Property Panel As Integer
+		''' <summary>
+		''' Go back to or set the palette color index.
+		''' </summary>
+		Public Property PaletteIndex As Integer
 			Get
 				Return _panel
 			End Get
@@ -571,17 +694,30 @@ Namespace Components
 				End If
 			End Set
 		End Property
+		''' <summary>
+		''' Specifies whether this object supports alpha channel.
+		''' </summary>
+		''' <returns></returns>
 		Public ReadOnly Property EnableAlpha As Boolean
+		''' <summary>
+		''' Specifies whether this object is used for this color.
+		''' </summary>
 		Public ReadOnly Property EnablePanel As Boolean
 			Get
-				Return Panel >= 0
+				Return PaletteIndex >= 0
 			End Get
 		End Property
+		''' <summary>
+		''' The actual color of this object.<br/>
+		''' If comes from a palette, it's a palette color.
+		''' If not, it's a custom color.
+		''' </summary>
 		Public ReadOnly Property Value As SKColor
 			Get
 				Return If(EnablePanel, parent(_panel), _color)
 			End Get
 		End Property
+		''' <param name="enableAlpha">Specifies whether this object supports alpha channel.</param>
 		Public Sub New(enableAlpha As Boolean)
 			Me.EnableAlpha = enableAlpha
 		End Sub
@@ -589,16 +725,18 @@ Namespace Components
 			Return If(EnablePanel, $"{_panel}: {Value}", Value.ToString)
 		End Function
 	End Class
-	<JsonConverter(GetType(RoomConverter))>
-	Public Structure RDSingleRoom
-
-		Private _data As Byte
-		Public ReadOnly EnableTop As Boolean
-		Public ReadOnly Property Avaliable As Boolean
-			Get
-				Return _data < 5
-			End Get
-		End Property
+	''' <summary>
+	''' Can only be applied to one room.
+	''' </summary>
+	<JsonConverter(GetType(RoomConverter))> Public Structure RDSingleRoom
+		Private _data As RoomIndex
+		''' <summary>
+		''' Whether it can be used in the top room.
+		''' </summary>
+		Public ReadOnly Property EnableTop As Boolean
+		''' <summary>
+		''' Applied rooms.
+		''' </summary>
 		Public Property Room As RoomIndex
 			Get
 				Return _data
@@ -607,20 +745,31 @@ Namespace Components
 				_data = value
 			End Set
 		End Property
+		''' <summary>
+		''' Applied room indexes.
+		''' </summary>
 		Public Property Value As Byte
 			Get
-				Return _data
+				For i = 0 To 4
+					If _data = [Enum].Parse(Of RoomIndex)(1 << i) Then
+						Return i
+					End If
+				Next
+				Return Byte.MaxValue
 			End Get
 			Set(value As Byte)
-
+				_data = 1 << value
 			End Set
 		End Property
 		Public Overrides Function ToString() As String
 			Return $"[{_data}]"
 		End Function
+		''' <summary>
+		''' Represents room 0.
+		''' </summary>
 		Public Shared ReadOnly Property [Default] As RDSingleRoom
 			Get
-				Return New RDSingleRoom() With {._data = 0}
+				Return New RDSingleRoom() With {._data = 0 + Byte.MaxValue}
 			End Get
 		End Property
 		Public Sub New(room As Byte)
@@ -639,43 +788,39 @@ Namespace Components
 			Return HashCode.Combine(_data)
 		End Function
 	End Structure
-
+	''' <summary>
+	''' Indicates that can be applied to multiple rooms.
+	''' </summary>
 	<JsonConverter(GetType(RoomConverter))>
 	Public Structure RDRoom
 		Private _data As RoomIndex
-		Public ReadOnly EnableTop As Boolean
-		Public ReadOnly Multipy As Boolean
+		''' <summary>
+		''' Can be applied to top room.
+		''' </summary>
+		Public ReadOnly Property EnableTop As Boolean
+		''' <summary>
+		''' Whether the specified room is enabled.
+		''' </summary>
+		''' <param name="Index"></param>
 		Default Public Property Room(Index As Byte) As Boolean
 			Get
-				If Not Avaliable Then
-					Return False
-				End If
-				Return _data.HasFlag(CType([Enum].Parse(GetType(RoomIndex), 1 << Index), RoomIndex))
+				Return _data.HasFlag([Enum].Parse(Of RoomIndex)(1 << Index))
 			End Get
 			Set(value As Boolean)
 				If Index = 4 And Not EnableTop Then
 					Exit Property
 				End If
-				If Multipy Then
-					_data = If(value, _data Or 1 << Index, _data And 1 << Index)
-				Else
-					_data = If(value, 1 << Index, _data)
-				End If
+				_data = If(value, _data Or 1 << Index, _data And 1 << Index)
 			End Set
 		End Property
-		Public ReadOnly Property Avaliable As Boolean
-			Get
-				Return Not _data = RoomIndex.RoomNotAvaliable
-			End Get
-		End Property
+		''' <summary>
+		''' List of enabled rooms.
+		''' </summary>
 		Public ReadOnly Property Rooms As List(Of Byte)
 			Get
-				If Not Avaliable Then
-					Return New List(Of Byte)
-				End If
 				Dim L As New List(Of Byte)
 				For i = 0 To 4
-					If _data.HasFlag(CType([Enum].Parse(GetType(RoomIndex), 1 << i), RoomIndex)) Then
+					If _data.HasFlag([Enum].Parse(Of RoomIndex)(1 << i)) Then
 						L.Add(i)
 					End If
 				Next
@@ -685,35 +830,39 @@ Namespace Components
 		Public Overrides Function ToString() As String
 			Return $"[{String.Join(",", Rooms)}]"
 		End Function
+		''' <summary>
+		''' Returns an instance with only room 1 enabled.
+		''' </summary>
+		''' <returns>An instance with only room 1 enabled.</returns>
 		Public Shared Function [Default]() As RDRoom
-			Return New RDRoom(False, False, Array.Empty(Of Byte)) With {
-._data = RoomIndex.RoomNotAvaliable
-}
+			Return New RDRoom(False, Array.Empty(Of Byte)) With {
+				._data = RoomIndex.Room1
+			}
 		End Function
-		Public Sub New(enableTop As Boolean, multipy As Boolean)
+		Public Sub New(enableTop As Boolean)
 			Me.EnableTop = enableTop
-			Me.Multipy = multipy
 		End Sub
-		Public Sub New(enableTop As Boolean, multipy As Boolean, ParamArray rooms() As Byte)
+		Public Sub New(enableTop As Boolean, ParamArray rooms() As Byte)
 			Select Case rooms.Length
 				Case 0
 					_data = RoomIndex.RoomNotAvaliable
 					Exit Sub
 				Case 1
 					Room(rooms.Single) = True
-					Me.EnableTop = rooms.Contains(5)
-					Me.Multipy = False
 				Case Else
 					For Each item In rooms
 						Room(item) = True
 					Next
-					Me.EnableTop = rooms.Contains(5)
-					Me.Multipy = True
 			End Select
-			If enableTop <> Me.EnableTop OrElse multipy <> Me.Multipy Then
+			If enableTop <> Me.EnableTop Then
 				Throw New RhythmBaseException("Parameters are not match.")
 			End If
 		End Sub
+		''' <summary>
+		''' Check if the room is included.
+		''' </summary>
+		''' <param name="rooms">Rooms inspected.</param>
+		''' <returns></returns>
 		Public Function Contains(rooms As RDRoom) As Boolean
 			If _data = RoomIndex.RoomNotAvaliable Then
 				Return False
@@ -735,7 +884,7 @@ Namespace Components
 			Return New RDRoom(room.EnableTop, False, room.Room)
 		End Operator
 		Public Shared Narrowing Operator CType(room As RDRoom) As RDSingleRoom
-			If Not room.Multipy Then
+			If room.Rooms.Count = 1 Then
 				Return New RDSingleRoom(room.Rooms.Single)
 			End If
 		End Operator
@@ -746,37 +895,53 @@ Namespace Components
 			Return HashCode.Combine(_data)
 		End Function
 	End Structure
+	''' <summary>
+	''' Audio.
+	''' </summary>
 	Public NotInheritable Class RDAudio
+		''' <summary>
+		''' File name.
+		''' </summary>
 		Public Property Filename As String
+		''' <summary>
+		''' Audio volume.
+		''' </summary>
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <DefaultValue(100)> Public Property Volume As Integer = 100
+		''' <summary>
+		''' Audio Pitch.
+		''' </summary>
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <DefaultValue(100)> Public Property Pitch As Integer = 100
+		''' <summary>
+		''' Audio Pan.
+		''' </summary>
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> Public Property Pan As Integer = 0
+		''' <summary>
+		''' Audio Offset.
+		''' </summary>
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <JsonConverter(GetType(TimeConverter))> Public Property Offset As TimeSpan = TimeSpan.Zero
 		Public Overrides Function ToString() As String
 			Return Filename
 		End Function
 	End Class
-	<JsonConverter(GetType(Converters.LimitedListConverter))>
-	Public Class LimitedList
+	''' <summary>
+	''' A list that limits the capacity of the list and uses the default value to fill the free capacity.
+	''' </summary>
+	<JsonConverter(GetType(Converters.LimitedListConverter))> Public Class LimitedList
 		Implements ICollection
 		Protected ReadOnly list As List(Of (value As Object, isDefault As Boolean))
-		<JsonIgnore>
-		Public Property DefaultValue As Object
+		''' <summary>
+		''' Default value.
+		''' </summary>
+		<JsonIgnore> Protected Friend Property DefaultValue As Object
 		Public ReadOnly Property Count As Integer Implements ICollection.Count
 			Get
 				Return list.Count
 			End Get
 		End Property
-		Public ReadOnly Property IsSynchronized As Boolean Implements ICollection.IsSynchronized
-			Get
-				Return False
-			End Get
-		End Property
-		Public ReadOnly Property SyncRoot As Object Implements ICollection.SyncRoot
-			Get
-				Return Nothing
-			End Get
-		End Property
+		Public ReadOnly Property IsSynchronized As Boolean = False Implements ICollection.IsSynchronized
+		Public ReadOnly Property SyncRoot As Object = Nothing Implements ICollection.SyncRoot
+		''' <param name="count">Capacity limit.</param>
+		''' <param name="defaultValue">Default value.</param>
 		Public Sub New(count As UInteger, defaultValue As Object)
 			list = New List(Of (value As Object, isDefault As Boolean))(count)
 			For i = 0 To count - 1
@@ -784,26 +949,38 @@ Namespace Components
 			Next
 			Me.DefaultValue = defaultValue
 		End Sub
+		''' <param name="count">Capacity limit.</param>
 		Public Sub New(count As UInteger)
 			Me.New(count, Nothing)
 		End Sub
-		Public Sub Add(item As Object)
+		Protected Friend Sub Add(item As Object)
 			Dim index = list.IndexOf(list.FirstOrDefault(Function(i) i.isDefault = True))
 			If index >= 0 Then
 				list(index) = (item, False)
 			End If
 		End Sub
+		''' <summary>
+		''' Remove all items.
+		''' </summary>
 		Public Sub Clear()
 			For i = 0 To list.Count - 1
 				list(i) = Nothing
 			Next
 		End Sub
-		Public Sub Remove(index As UInteger)
+		''' <summary>
+		''' Remove item.
+		''' </summary>
+		''' <param name="index">Item index.</param>
+		Protected Friend Sub RemoveAt(index As UInteger)
 			If index >= list.Count Then
 				Throw New IndexOutOfRangeException
 			End If
 			list(index) = Nothing
 		End Sub
+		''' <summary>
+		''' Get the default value.
+		''' </summary>
+		''' <returns>The default value.</returns>
 		Protected Overridable Function GetDefaultValue() As Object
 			If TypeOf DefaultValue Is ValueType Then
 				Return Activator.CreateInstance(GetType(Object))
@@ -823,10 +1000,15 @@ Namespace Components
 			Return $"Count = {Count}"
 		End Function
 	End Class
+	''' <summary>
+	''' A list that limits the capacity of the list and uses the default value to fill the free capacity.
+	''' </summary>
 	Public Class LimitedList(Of T)
 		Inherits LimitedList
 		Implements ICollection(Of T)
-		'Private ReadOnly list As List(Of (value As T, isDefault As Boolean))
+		''' <summary>
+		''' Default value
+		''' </summary>
 		<JsonIgnore>
 		Public Overloads Property DefaultValue As T
 			Get
@@ -842,7 +1024,7 @@ Namespace Components
 					Throw New IndexOutOfRangeException
 				End If
 				If list(index).isDefault Then
-					Dim ValueCloned = Clone(DefaultValue)
+					Dim ValueCloned = MClone(DefaultValue)
 					list(index) = (ValueCloned, False)
 					Return ValueCloned
 				End If
@@ -861,17 +1043,14 @@ Namespace Components
 			End Get
 		End Property
 		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of T).IsReadOnly
+		''' <param name="count">Capacity limit.</param>
+		''' <param name="defaultValue">Default value.</param>
 		Public Sub New(count As UInteger, defaultValue As T)
 			MyBase.New(count, defaultValue)
 		End Sub
+		''' <param name="count">Capacity limit.</param>
 		Public Sub New(count As UInteger)
 			Me.New(count, Nothing)
-		End Sub
-		Public Sub RemoveAt(index As UInteger)
-			If index >= MyBase.Count Then
-				Throw New IndexOutOfRangeException
-			End If
-			Item(index) = Nothing
 		End Sub
 		Public Overloads Iterator Function GetEnumerator() As IEnumerator(Of T) Implements IEnumerable(Of T).GetEnumerator
 			For Each i In list
@@ -954,6 +1133,9 @@ Namespace Components
 			Return list.GetEnumerator
 		End Function
 	End Class
+	''' <summary>
+	''' A collection of events that maintains the sequence of events.
+	''' </summary>
 	Public MustInherit Class RDOrderedEventCollection
 		Implements ICollection(Of RDBaseEvent)
 		Friend eventsBeatOrder As New SortedDictionary(Of RDBeat, RDTypedList(Of RDBaseEvent))
@@ -963,6 +1145,10 @@ Namespace Components
 			End Get
 		End Property
 		<JsonIgnore> Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of RDBaseEvent).IsReadOnly
+		''' <summary>
+		''' Returns the beat of the last event.
+		''' </summary>
+		''' <returns>The beat of the last event.</returns>
 		<JsonIgnore> Public ReadOnly Property Length As RDBeat
 			Get
 				Return Me.eventsBeatOrder.LastOrDefault().Value.First.Beat
@@ -1078,6 +1264,11 @@ Namespace Components
 				Next
 			Next
 		End Function
+		''' <summary>
+		''' Get the index of tile.
+		''' </summary>
+		''' <param name="item">The index of tile.</param>
+		''' <returns></returns>
 		Public Function IndexOf(item As ADTile) As Integer
 			Return eventsOrder.IndexOf(item)
 		End Function
@@ -1085,6 +1276,7 @@ Namespace Components
 			Return GetEnumerator()
 		End Function
 	End Class
+#If DEBUG Then
 	Public Class Union(Of A, B)
 		Private value As (A As A, B As B)
 		Public Sub New(value As A)
@@ -1106,7 +1298,14 @@ Namespace Components
 			Return value.value.B
 		End Operator
 	End Class
+#End If
+	''' <summary>
+	''' Subtypes of sound effects.
+	''' </summary>
 	Public Class RDSoundSubType
+		''' <summary>
+		''' Types of sound effects.
+		''' </summary>
 		Enum GroupSubtypes
 			ClapSoundHoldLongEnd
 			ClapSoundHoldLongStart
@@ -1121,7 +1320,13 @@ Namespace Components
 			BurnshotSoundRiser
 			BurnshotSoundCymbal
 		End Enum
+		''' <summary>
+		''' Referenced audio.
+		''' </summary>
 		Private Property Audio As New RDAudio
+		''' <summary>
+		''' Sound effect name.
+		''' </summary>
 		Public Property GroupSubtype As GroupSubtypes
 		Public Property Used As Boolean
 		Public Property Filename As String
@@ -1185,11 +1390,21 @@ Namespace Components
 	End Class
 End Namespace
 Namespace LevelElements
+	''' <summary>
+	''' The conditions of the event.
+	''' </summary>
 	Public Class RDCondition
+		''' <summary>
+		''' Condition list.
+		''' </summary>
 		Public Property ConditionLists As New List(Of (Enabled As Boolean, Conditional As RDBaseConditional))
+		''' <summary>
+		''' The time of effectiveness of the condition.
+		''' </summary>
 		Public Property Duration As Single
 		Public Sub New()
 		End Sub
+#If DEBUG Then
 		Friend Shared Function Load(text As String) As RDCondition
 			Dim out As New RDCondition
 			Dim Matches = Regex.Matches(text, "(~?\d+)(?=[&d])")
@@ -1200,6 +1415,11 @@ Namespace LevelElements
 				Throw New RhythmBaseException($"Illegal condition: {text}.")
 			End If
 		End Function
+#End If
+		''' <summary>
+		''' Converting conditions to strings
+		''' </summary>
+		''' <returns>A string in the format supported by RDLevel.</returns>
 		Public Function Serialize() As String
 			Return String.Join("&", ConditionLists.Select(Of String)(Function(i) If(i.Enabled, "", "~") + i.Conditional.Id.ToString)) + "d" + Duration.ToString
 		End Function
@@ -1207,13 +1427,17 @@ Namespace LevelElements
 			Return Serialize()
 		End Function
 	End Class
-	<JsonObject>
-	Public Class RDDecoration
+	''' <summary>
+	''' A decoration.
+	''' </summary>
+	<JsonObject> Public Class RDDecoration
 		Inherits RDOrderedEventCollection(Of RDBaseDecorationAction)
 		Private _id As String
-		<JsonIgnore>
-		Friend Parent As RDLevel
+		<JsonIgnore> Friend Parent As RDLevel
 		Private _file As RDSprite
+		''' <summary>
+		''' Decorated ID.
+		''' </summary>
 		<JsonProperty("id")> Public Property Id As String
 			Get
 				Return _id
@@ -1222,22 +1446,34 @@ Namespace LevelElements
 				_id = value
 			End Set
 		End Property
+		''' <summary>
+		''' Decoration size.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Size As SKSizeI
 			Get
 				Return If(File?.Size, New SKSizeI(32, 31))
 			End Get
 		End Property
+		''' <summary>
+		''' Decoration expression name list. Empty list if it is an image file.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Expressions As IEnumerable(Of String)
 			Get
 				Return If(File?.Expressions, New List(Of String))
 			End Get
 		End Property
-		Public ReadOnly Property Row As ULong
+		''' <summary>
+		''' Decoration index.
+		''' </summary>
+		<JsonProperty("row")> Public ReadOnly Property Index As ULong
 			Get
 				Return Parent.Decorations.ToList.IndexOf(Me)
 			End Get
 		End Property
-		Public Property Rooms As New RDSingleRoom(0)
+		<JsonProperty("rooms")> Public Property Room As New RDSingleRoom(0)
+		''' <summary>
+		''' The file reference used by the decoration.
+		''' </summary>
 		<JsonProperty("filename")> Public Property File As RDSprite
 			Get
 				Return _file
@@ -1247,15 +1483,29 @@ Namespace LevelElements
 				Parent?.Assets.Add(value)
 			End Set
 		End Property
+		''' <summary>
+		''' Decoration depth.
+		''' </summary>
 		Public Property Depth As Integer
-		Public Property Filter As Filters
+		''' <summary>
+		''' The filter used for this decoration.
+		''' </summary>
+		Public Property Filter As RDFilters
+		''' <summary>
+		''' The initial visibility of this decoration.
+		''' </summary>
 		Public Property Visible As Boolean
 		Sub New()
 		End Sub
+		''' <param name="room">Decoration room.</param>
 		Friend Sub New(room As RDSingleRoom)
-			Me.Rooms = room
+			Me.Room = room
 			Me._id = Me.GetHashCode
 		End Sub
+		''' <summary>
+		''' Add an event to decoration.
+		''' </summary>
+		''' <param name="item">Decoration event.</param>
 		Public Overrides Sub Add(item As RDBaseDecorationAction)
 			item._parent = Me
 			Parent.Add(item)
@@ -1263,6 +1513,10 @@ Namespace LevelElements
 		Friend Sub AddSafely(item As RDBaseDecorationAction)
 			MyBase.Add(item)
 		End Sub
+		''' <summary>
+		''' Remove an event from decoration.
+		''' </summary>
+		''' <param name="item">A decoration event.</param>
 		Public Overrides Function Remove(item As RDBaseDecorationAction) As Boolean
 			Return Parent.Remove(item)
 		End Function
@@ -1270,25 +1524,31 @@ Namespace LevelElements
 			Return MyBase.Remove(item)
 		End Function
 		Public Overrides Function ToString() As String
-			Return $"{_id}, {Row}, {_Rooms}, {File.FileName}"
+			Return $"{_id}, {Index}, {_Room}, {File.FileName}"
 		End Function
 		Friend Function Clone() As RDDecoration
 			Return Me.MemberwiseClone
 		End Function
 	End Class
-	<JsonObject>
-	Public Class RDRow
+	''' <summary>
+	''' A row.
+	''' </summary>
+	<JsonObject> Public Class RDRow
 		Inherits RDOrderedEventCollection(Of RDBaseRowAction)
+		''' <summary>
+		''' Player mode.
+		''' </summary>
 		Public Enum PlayerMode
 			P1
 			P2
 			CPU
 		End Enum
 		Private _rowType As RDRowType
-		<JsonIgnore>
-		Friend Parent As RDLevel
+		<JsonIgnore> Friend Parent As RDLevel
 		Public Property Character As RDCharacter
-		'Public Property CpuMaker As Characters?
+		''' <summary>
+		''' Row type.
+		''' </summary>
 		Public Property RowType As RDRowType
 			Get
 				Return _rowType
@@ -1300,18 +1560,29 @@ Namespace LevelElements
 				End If
 			End Set
 		End Property
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)>
-		Public ReadOnly Property Row As SByte
+		''' <summary>
+		''' Decoration index.
+		''' </summary>
+		<JsonProperty("row", DefaultValueHandling:=DefaultValueHandling.Include)> Public ReadOnly Property Index As SByte
 			Get
 				Return Parent._Rows.IndexOf(Me)
 			End Get
 		End Property
 		Public Property Rooms As New RDSingleRoom(0)
 		Public Property HideAtStart As Boolean
+		''' <summary>
+		''' Initial play mode for this row.
+		''' </summary>
 		Public Property Player As PlayerMode
+		''' <summary>
+		''' Initial beat sound for this row.
+		''' </summary>
 		<JsonIgnore> Public Property Sound As New Components.RDAudio
 		Public Property MuteBeats As Boolean
-		Public Property RowToMimic As SByte = -1
+		''' <summary>
+		''' Mirroring of the row.
+		''' </summary>
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property RowToMimic As SByte = -1
 		Public Property PulseSound As String
 			Get
 				Return Sound.Filename
@@ -1363,6 +1634,10 @@ Namespace LevelElements
 		Friend Function ShouldSerializeRowToMimic() As Boolean
 			Return RowToMimic >= -1
 		End Function
+		''' <summary>
+		''' Add an item to row.
+		''' </summary>
+		''' <param name="item">Row event.</param>
 		Public Overrides Sub Add(item As RDBaseRowAction)
 			item._parent = Me
 			Parent.Add(item)
@@ -1370,6 +1645,10 @@ Namespace LevelElements
 		Friend Sub AddSafely(item As RDBaseRowAction)
 			MyBase.Add(item)
 		End Sub
+		''' <summary>
+		''' Remove an item from row. 
+		''' </summary>
+		''' <param name="item">Row event.</param>
 		Public Overrides Function Remove(item As RDBaseRowAction) As Boolean
 			Return Parent.Remove(item)
 		End Function
@@ -1377,29 +1656,58 @@ Namespace LevelElements
 			Return MyBase.Remove(item)
 		End Function
 	End Class
+	''' <summary>
+	''' Bookmark.
+	''' </summary>
 	Public Class RDBookmark
+		''' <summary>
+		''' Colors available for bookmarks.
+		''' </summary>
 		Enum BookmarkColors
 			Blue
 			Red
 			Yellow
 			Green
 		End Enum
+		''' <summary>
+		''' The beat where the bookmark is located.
+		''' </summary>
 		Public Property Beat As RDBeat
+		''' <summary>
+		''' Color on bookmark.
+		''' </summary>
 		Public Property Color As BookmarkColors
 	End Class
+	''' <summary>
+	''' Condition.
+	''' </summary>
 	Public MustInherit Class RDBaseConditional
-		Public Enum ConditionalType
+		''' <summary>
+		''' Type of condition
+		''' </summary>
+		Public Enum ConditionType
 			LastHit
 			Custom
 			TimesExecuted
 			Language
 			PlayerMode
 		End Enum
-		<JsonIgnore>
-		Friend ParentCollection As List(Of RDBaseConditional)
-		Public MustOverride ReadOnly Property Type As ConditionalType
+		<JsonIgnore> Friend ParentCollection As List(Of RDBaseConditional)
+		''' <summary>
+		''' Type of this condition
+		''' </summary>
+		Public MustOverride ReadOnly Property Type As ConditionType
+		''' <summary>
+		''' Condition tag. Its role has not been clarified.
+		''' </summary>
 		Public Property Tag As String
+		''' <summary>
+		''' Condition name.
+		''' </summary>
 		Public Property Name As String
+		''' <summary>
+		''' 1-based serial number.
+		''' </summary>
 		Public ReadOnly Property Id As Integer
 			Get
 				Return ParentCollection.IndexOf(Me) + 1
@@ -1410,10 +1718,12 @@ Namespace LevelElements
 		End Function
 	End Class
 	Namespace Conditions
+		''' <summary>
+		''' Last hit.
+		''' </summary>
 		Public Class LastHit
 			Inherits RDBaseConditional
-			<Flags>
-			Enum HitResult
+			<Flags> Enum HitResult
 				Perfect = &B0
 				SlightlyEarly = &B10
 				SlightlyLate = &B11
@@ -1422,22 +1732,47 @@ Namespace LevelElements
 				AnyEarlyOrLate = &B111
 				Missed = &B1111
 			End Enum
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.LastHit
+			Public Overrides ReadOnly Property Type As ConditionType = ConditionType.LastHit
+			''' <summary>
+			''' The row.
+			''' </summary>
 			Public Property Row As SByte
+			''' <summary>
+			''' determines under what result the event will be executed.
+			''' </summary>
 			Public Property Result As HitResult
 		End Class
+		''' <summary>
+		''' Expression condition.
+		''' </summary>
 		Public Class Custom
 			Inherits RDBaseConditional
+			''' <summary>
+			''' Expression.
+			''' </summary>
+			''' <returns></returns>
 			Public Property Expression As String
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Custom
+			Public Overrides ReadOnly Property Type As ConditionType = ConditionType.Custom
 		End Class
+		''' <summary>
+		''' Number of executions.
+		''' </summary>
 		Public Class TimesExecuted
 			Inherits RDBaseConditional
+			''' <summary>
+			''' Maximum number of executions.
+			''' </summary>
 			Public Property MaxTimes As Integer
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.TimesExecuted
+			Public Overrides ReadOnly Property Type As ConditionType = ConditionType.TimesExecuted
 		End Class
+		''' <summary>
+		''' Game Language.
+		''' </summary>
 		Public Class Language
 			Inherits RDBaseConditional
+			''' <summary>
+			''' Game Language.
+			''' </summary>
 			Enum Languages
 				English
 				Spanish
@@ -1449,47 +1784,96 @@ Namespace LevelElements
 				Japanese
 				German
 			End Enum
+			''' <summary>
+			''' Game Language.
+			''' </summary>
 			Public Property Language As Languages
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.Language
+			Public Overrides ReadOnly Property Type As ConditionType = ConditionType.Language
 		End Class
+		''' <summary>
+		''' Player mode.
+		''' </summary>
 		Public Class PlayerMode
 			Inherits RDBaseConditional
+			''' <summary>
+			''' Enable two-player mode.
+			''' </summary>
 			Public Property TwoPlayerMode As Boolean
-			Public Overrides ReadOnly Property Type As ConditionalType = ConditionalType.PlayerMode
+			Public Overrides ReadOnly Property Type As ConditionType = ConditionType.PlayerMode
 		End Class
 	End Namespace
+	''' <summary>
+	''' Rhythm Doctor level.
+	''' </summary>
 	Public Class RDLevel
 		Inherits RDOrderedEventCollection(Of RDBaseEvent)
 		Friend _path As String
+		''' <summary>
+		''' Asset collection.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Assets As New HashSet(Of RDSprite)
+		''' <summary>
+		''' Variables.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Variables As New Variables
+		''' <summary>
+		''' The calculator that comes with the level.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Calculator As New RDBeatCalculator(Me)
+		''' <summary>
+		''' Level Settings.
+		''' </summary>
 		Public Property Settings As New RDSettings
 		Friend ReadOnly Property _Rows As New List(Of RDRow)(16)
 		Friend ReadOnly Property _Decorations As New List(Of RDDecoration)
+		''' <summary>
+		''' Level tile collection.
+		''' </summary>
 		Public ReadOnly Property Rows As IReadOnlyCollection(Of RDRow)
 			Get
 				Return _Rows.AsReadOnly
 			End Get
 		End Property
+		''' <summary>
+		''' Level decoration collection.
+		''' </summary>
 		Public ReadOnly Property Decorations As IReadOnlyCollection(Of RDDecoration)
 			Get
 				Return _Decorations.AsReadOnly
 			End Get
 		End Property
+		''' <summary>
+		''' Level condition collection.
+		''' </summary>
 		Public ReadOnly Property Conditionals As New List(Of RDBaseConditional)
+		''' <summary>
+		''' Level bookmark collection.
+		''' </summary>
 		Public ReadOnly Property Bookmarks As New List(Of RDBookmark)
+		''' <summary>
+		''' Level colorPalette collection.
+		''' </summary>
 		Public ReadOnly Property ColorPalette As New LimitedList(Of SKColor)(21, New SKColor(&HFF, &HFF, &HFF, &HFF))
+		''' <summary>
+		''' Level file path.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Path As String
 			Get
 				Return _path
 			End Get
 		End Property
+		''' <summary>
+		''' Level directory path.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Directory As String
 			Get
 				Return IO.Path.GetDirectoryName(_path)
 			End Get
 		End Property
+		''' <summary>
+		''' Default beats with levels.
+		''' The beat is 1.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property DefaultBeat As RDBeat
 			Get
 				Return Calculator.BeatOf(1)
@@ -1502,6 +1886,9 @@ Namespace LevelElements
 				Me.Add(item)
 			Next
 		End Sub
+		''' <summary>
+		''' The default level within the game.
+		''' </summary>
 		Public Shared ReadOnly Property [Default] As RDLevel
 			Get
 				Dim rdl As New RDLevel From {
@@ -1513,16 +1900,32 @@ Namespace LevelElements
 				Return rdl
 			End Get
 		End Property
+		''' <summary>
+		''' Create a decoration and add it to the level.
+		''' </summary>
+		''' <param name="room">The room where this decoration is in.</param>
+		''' <param name="sprite">The sprite referenced by this decoration.</param>
+		''' <returns>Decoration that created and added to the level.</returns>
 		Public Function CreateDecoration(room As RDSingleRoom, Optional sprite As RDSprite = Nothing) As RDDecoration
 			Dim temp As New RDDecoration(room) With {.Parent = Me, .File = sprite}
 			_Decorations.Add(temp)
 			Return temp
 		End Function
+		''' <summary>
+		''' Clone the decoration and add it to the level.
+		''' </summary>
+		''' <param name="decoration">Decoration that was copied.</param>
+		''' <returns></returns>
 		Public Function CloneDecoration(decoration As RDDecoration) As RDDecoration
 			Dim temp = decoration.Clone
 			Me._Decorations.Add(temp)
 			Return temp
 		End Function
+		''' <summary>
+		''' Remove the decoration from the level.
+		''' </summary>
+		''' <param name="decoration">The decoration to be removed.</param>
+		''' <returns></returns>
 		Public Function RemoveDecoration(decoration As RDDecoration) As Boolean
 			If Decorations.Contains(decoration) Then
 				MyBase.RemoveRange(decoration)
@@ -1530,12 +1933,23 @@ Namespace LevelElements
 			End If
 			Return False
 		End Function
+		''' <summary>
+		''' Create a row and add it to the level.
+		''' </summary>
+		''' <param name="room">The room where this row is in.</param>
+		''' <param name="character">The character used by this row.</param>
+		''' <returns>Row that created and added to the level.</returns>
 		Public Function CreateRow(room As RDSingleRoom, character As RDCharacter) As RDRow
 			Dim temp As New RDRow() With {.Character = character, .Rooms = room, .Parent = Me}
 			temp.Parent = Me
 			_Rows.Add(temp)
 			Return temp
 		End Function
+		''' <summary>
+		''' Remove the row from the level.
+		''' </summary>
+		''' <param name="row">The row to be removed.</param>
+		''' <returns></returns>
 		Public Function RemoveRow(row As RDRow) As Boolean
 			If Rows.Contains(row) Then
 				Return _Rows.Remove(row)
@@ -1555,10 +1969,30 @@ Namespace LevelElements
 				Throw New RhythmBaseException("Cannot extract the file.", ex)
 			End Try
 		End Function
+		''' <summary>
+		''' Read from file as level.
+		''' Use default input settings.
+		''' Supports .rdlevel, .rdzip, .zip file extension.
+		''' </summary>
+		''' <param name="filepath">File path.</param>
+		''' <exception cref="VersionTooLowException">The minimum level version number supported by this library is 54.</exception>
+		''' <exception cref="ConvertingException"></exception>
+		''' <exception cref="RhythmBaseException">File not supported.</exception>
+		''' <returns>An instance of a level that reads from a file.</returns>
 		Public Shared Function LoadFile(filepath As String) As RDLevel
-			Return LoadFile(filepath, New LevelInputSettings)
+			Return LoadFile(filepath, New LeveReadOrWriteSettings)
 		End Function
-		Public Shared Function LoadFile(filepath As String, settings As LevelInputSettings) As RDLevel
+		''' <summary>
+		''' Read from file as level.
+		''' Supports .rdlevel, .rdzip, .zip file extension.
+		''' </summary>
+		''' <param name="filepath">File path.</param>
+		''' <param name="settings">Input settings.</param>
+		''' <exception cref="VersionTooLowException">The minimum level version number supported by this library is 54.</exception>
+		''' <exception cref="ConvertingException"></exception>
+		''' <exception cref="RhythmBaseException">File not supported.</exception>
+		''' <returns>An instance of a level that reads from a file.</returns>
+		Public Shared Function LoadFile(filepath As String, settings As LeveReadOrWriteSettings) As RDLevel
 			Dim LevelSerializer = New JsonSerializer()
 			LevelSerializer.Converters.Add(New RDLevelConverter(filepath, settings))
 			'Dim json As String
@@ -1571,39 +2005,70 @@ Namespace LevelElements
 					Throw New RhythmBaseException("File not supported.")
 			End Select
 		End Function
-		Private Function Serializer(settings As LevelOutputSettings) As JsonSerializer
+		Private Function Serializer(settings As LeveReadOrWriteSettings) As JsonSerializer
 			Dim LevelSerializerSettings = New JsonSerializer()
 			LevelSerializerSettings.Converters.Add(New Converters.RDLevelConverter(_path, settings))
 			Return LevelSerializerSettings
 		End Function
-		Private Sub WriteStream(fileStream As TextWriter, settings As LevelOutputSettings)
+		Private Sub WriteStream(fileStream As TextWriter, settings As LeveReadOrWriteSettings)
 			Using writer As New JsonTextWriter(fileStream)
 				Serializer(settings).Serialize(writer, Me)
 			End Using
 		End Sub
+		''' <summary>
+		''' Save the level.
+		''' Use default output settings.
+		''' </summary>
+		''' <param name="filepath">File path.</param>
+		''' <exception cref="OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
 		Public Sub SaveFile(filepath As String)
-			SaveFile(filepath, New LevelOutputSettings)
+			SaveFile(filepath, New LeveReadOrWriteSettings)
 		End Sub
-		Public Sub SaveFile(filepath As String, settings As LevelOutputSettings)
+		''' <summary>
+		''' Save the level.
+		''' </summary>
+		''' <param name="filepath">File path.</param>
+		''' <param name="settings">Output settings.</param>
+		''' <exception cref="OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
+		Public Sub SaveFile(filepath As String, settings As LeveReadOrWriteSettings)
 			If Not _path.IsNullOrEmpty AndAlso IO.Path.GetFullPath(_path) = IO.Path.GetFullPath(filepath) Then
-				Throw New OverwriteNotAllowedException(_path, GetType(LevelOutputSettings))
+				Throw New OverwriteNotAllowedException(_path, GetType(LeveReadOrWriteSettings))
 			End If
 			Using file = IO.File.CreateText(filepath)
 				WriteStream(file, settings)
 			End Using
 		End Sub
+		''' <summary>
+		''' Convert to JObject type.
+		''' </summary>
+		''' <returns>A JObject type that stores all the data for the level.</returns>
 		Public Function ToJObject() As Linq.JObject
 			Return Linq.JObject.FromObject(Me)
 		End Function
+		''' <summary>
+		''' Convert to a string that can be read by the game.
+		''' Use default output settings.
+		''' </summary>
+		''' <returns>Level string.</returns>
 		Public Function ToRDLevelJson() As String
-			Return ToRDLevelJson(New LevelOutputSettings)
+			Return ToRDLevelJson(New LeveReadOrWriteSettings)
 		End Function
-		Public Function ToRDLevelJson(settings As LevelOutputSettings) As String
+		''' <summary>
+		''' Convert to a string that can be read by the game.
+		''' </summary>
+		''' <param name="settings">Output settings.</param>
+		''' <returns>Level string.</returns>
+		Public Function ToRDLevelJson(settings As LeveReadOrWriteSettings) As String
 			Dim file = New IO.StringWriter()
 			WriteStream(file, settings)
 			file.Close()
 			Return file.ToString
 		End Function
+		''' <summary>
+		''' Add event to the level.
+		''' </summary>
+		''' <param name="item">Event to be added.</param>
+		''' <exception cref="RhythmBaseException"></exception>
 		Public Overrides Sub Add(item As RDBaseEvent)
 
 			'添加默认节拍
@@ -1629,16 +2094,25 @@ Namespace LevelElements
 				MyBase.Add(item)
 
 			ElseIf RowTypes.Contains(item.Type) Then
+				Dim rowAction = CType(item, RDBaseRowAction)
+				If rowAction.Parent Is Nothing Then
+					Throw New RhythmBaseException("The Parent property of this event should not be null. Call RDRow.Add() instead.")
+				End If
 				'添加至对应轨道
-				CType(item, RDBaseRowAction).Parent?.AddSafely(item)
+				rowAction.Parent.AddSafely(item)
 				MyBase.Add(item)
 				Return
 
 			ElseIf DecorationTypes.Contains(item.Type) Then
+				Dim decoAction = CType(item, RDBaseDecorationAction)
+				If decoAction.Parent Is Nothing Then
+					Throw New RhythmBaseException("The Parent property of this event should not be null. Call RDDecoration.Add() instead.")
+				End If
 				'添加至对应精灵
-				CType(item, RDBaseDecorationAction).Parent?.AddSafely(item)
+				decoAction.Parent.AddSafely(item)
 				MyBase.Add(item)
 				Return
+
 			Else
 				If item.Type = RDEventType.SetCrotchetsPerBar Then
 					AddSetCrotchetsPerBar(item)
@@ -1649,11 +2123,21 @@ Namespace LevelElements
 				End If
 			End If
 		End Sub
+		''' <summary>
+		''' Determine if the level contains this event.
+		''' </summary>
+		''' <param name="item">Event.</param>
+		''' <returns></returns>
 		Public Overrides Function Contains(item As RDBaseEvent) As Boolean
 			Return (RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.Contains(item))) OrElse
 					(DecorationTypes.Contains(item.Type) AndAlso Decorations.Any(Function(i) i.Contains(item))) OrElse
 					MyBase.Contains(item)
 		End Function
+		''' <summary>
+		''' Remove event from the level.
+		''' </summary>
+		''' <param name="item">Event to be removed.</param>
+		''' <returns></returns>
 		Public Overrides Function Remove(item As RDBaseEvent) As Boolean
 			If RowTypes.Contains(item.Type) AndAlso Rows.Any(Function(i) i.RemoveSafely(CType(item, RDBaseRowAction))) Then
 				MyBase.Remove(item)
@@ -1760,6 +2244,7 @@ Namespace LevelElements
 			RefreshBPMs(item.Beat)
 			'添加事件
 			MyBase.Add(item)
+			Calculator.Refresh()
 		End Sub
 		Protected Friend Function RemoveBaseBeatsPerMinute(item As RDBaseBeatsPerMinute) As Boolean
 			Dim result = MyBase.Remove(item)
@@ -1793,55 +2278,148 @@ Namespace LevelElements
 			Return $"""{Settings.Song}"" Count = {Count}"
 		End Function
 	End Class
+	''' <summary>
+	''' Special artist types.
+	''' </summary>
 	Public Enum RTSpecialArtistTypes
 		None
 		AuthorIsArtist
 		PublicLicense
 	End Enum
+	''' <summary>
+	''' level settings.
+	''' </summary>
 	Public Class RDSettings
+		''' <summary>
+		''' Difficulty level of the level.
+		''' </summary>
 		Public Enum RDDifficultyLevel
 			Easy
 			Medium
 			Tough
 			VeryTough
 		End Enum
+		''' <summary>
+		''' Play mode of the level.
+		''' </summary>
 		Public Enum RDLevelPlayedMode
 			OnePlayerOnly
 			TwoPlayerOnly
 			BothModes
 		End Enum
+		''' <summary>
+		''' Behavior of the first beat of the level.
+		''' </summary>
 		Public Enum RDFirstBeatBehaviors
 			RunNormally
 			RunEventsOnPrebar
 		End Enum
 		Public Enum RDMultiplayerAppearances
 			HorizontalStrips
+			[Nothing]
 		End Enum
+		''' <summary>
+		''' The version number of the level.
+		''' The minimum level version number supported by this library is 55.
+		''' </summary>
 		Public Property Version As Integer = 60
+		''' <summary>
+		''' Song artist.
+		''' </summary>
 		Public Property Artist As String = "" 'Done
+		''' <summary>
+		''' Song name.
+		''' </summary>
 		Public Property Song As String = "" 'Done
+		''' <summary>
+		''' Special artlist type
+		''' </summary>
 		Public Property SpecialArtistType As RTSpecialArtistTypes = RTSpecialArtistTypes.None 'Enum
+		''' <summary>
+		''' File path for proof of artist's permission.
+		''' </summary>
 		Public Property ArtistPermission As String = "" 'Done
+		''' <summary>
+		''' Artlist links.
+		''' </summary>
 		Public Property ArtistLinks As String = "" 'Link
+		''' <summary>
+		''' Level author.
+		''' </summary>
 		Public Property Author As String = "" 'done
+		''' <summary>
+		''' Level difficulty.
+		''' </summary>
 		Public Property Difficulty As RDDifficultyLevel = RDDifficultyLevel.Easy 'Enum
+		''' <summary>
+		''' Show seizure warning.
+		''' </summary>
 		Public Property SeizureWarning As Boolean = False
+		''' <summary>
+		''' Preview image file path.
+		''' </summary>
 		Public Property PreviewImage As String = "" 'FilePath
+		''' <summary>
+		''' Syringe packaging image file path.
+		''' </summary>
 		Public Property SyringeIcon As String = "" 'FilePath
+		''' <summary>
+		''' The file path of the music used for previewing.
+		''' </summary>
 		Public Property PreviewSong As String = "" 'Done
+		''' <summary>
+		''' Start time of preview music.
+		''' </summary>
 		<JsonConverter(GetType(SecondConverter))> Public Property PreviewSongStartTime As TimeSpan
+		''' <summary>
+		''' Duration of preview music.
+		''' </summary>
 		<JsonConverter(GetType(SecondConverter))> Public Property PreviewSongDuration As TimeSpan
-		Public Property SongNameHue As Single
+		''' <summary>
+		''' Hue offset or grayscale of the level name on the syringe.
+		''' </summary>
+		<JsonProperty("songNameHue")> Public Property SongNameHueOrGrayscale As Single
+		''' <summary>
+		''' Whether grayscale is enabled.
+		''' </summary>
 		Public Property SongLabelGrayscale As Boolean
+		''' <summary>
+		''' Level Description.
+		''' </summary>
 		Public Property Description As String = "" 'Done
+		''' <summary>
+		''' Level labels.
+		''' </summary>
 		Public Property Tags As String = "" 'Done
+		''' <summary>
+		''' Separate two-player level file paths.
+		''' It Is uncertain if this attribute Is still being used.
+		''' </summary>
 		Public Property Separate2PLevelFilename As String = "" 'FilePath
+		''' <summary>
+		''' Level play mode.
+		''' </summary>
 		Public Property CanBePlayedOn As RDLevelPlayedMode = RDLevelPlayedMode.OnePlayerOnly 'Enum
+		''' <summary>
+		''' Behavior of the first beat of the level.
+		''' </summary>
 		Public Property FirstBeatBehavior As RDFirstBeatBehaviors = RDFirstBeatBehaviors.RunNormally 'Enum
 		Public Property MultiplayerAppearance As RDMultiplayerAppearances = RDMultiplayerAppearances.HorizontalStrips 'Enum
+		''' <summary>
+		''' A percentage value indicating the total volume of the level.
+		''' </summary>
 		Public Property LevelVolume As Single = 1
+		''' <summary>
+		''' Maximum number of mistakes per rank
+		''' </summary>
 		Public Property RankMaxMistakes As New LimitedList(Of Integer)(4, 20)
+		''' <summary>
+		''' Description of each rank
+		''' </summary>
 		Public Property RankDescription As New LimitedList(Of String)(6, "")
+		''' <summary>
+		''' Mods enabled for the level.
+		''' </summary>
 		<JsonProperty(NullValueHandling:=NullValueHandling.Ignore)> Public Property Mods As List(Of String)
 		'oldBassDrop
 		'startImmediately
@@ -1881,17 +2459,35 @@ Namespace LevelElements
 		Unscaled
 		Tiled
 	End Enum
+	''' <summary>
+	''' Adofal level.
+	''' </summary>
 	Public Class ADLevel
 		Inherits ADTileCollection
 		Friend _path As String
+		''' <summary>
+		''' The calculator that comes with the level.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Calculator As New ADBeatCalculator(Me)
+		''' <summary>
+		''' Level settings.
+		''' </summary>
 		Public Property Settings As New ADSettings
+		''' <summary>
+		''' Level decoration collection.
+		''' </summary>
 		Public Property Decorations As New List(Of ADBaseEvent)
+		''' <summary>
+		''' Level file path.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Path As String
 			Get
 				Return _path
 			End Get
 		End Property
+		''' <summary>
+		''' Level directory path.
+		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Directory As String
 			Get
 				Return IO.Path.GetDirectoryName(_path)
@@ -1904,15 +2500,34 @@ Namespace LevelElements
 				Me.Add(item)
 			Next
 		End Sub
+#If DEBUG Then
+		''' <summary>
+		''' The default level within the game.
+		''' </summary>
 		Public Shared ReadOnly Property [Default] As ADLevel
 			Get
 				Return New ADLevel
 			End Get
 		End Property
+#End If
+		''' <summary>
+		''' Read from file as level.
+		''' Use default input settings.
+		''' Supports .rdlevel, .rdzip, .zip file extension.
+		''' </summary>
+		''' <param name="filepath">File path.</param>
+		''' <returns>An instance of a level that reads from a file.</returns>
 		Public Shared Function LoadFile(filepath As String) As ADLevel
-			Return LoadFile(filepath, New LevelInputSettings)
+			Return LoadFile(filepath, New LeveReadOrWriteSettings)
 		End Function
-		Public Shared Function LoadFile(filepath As String, settings As LevelInputSettings) As ADLevel
+		''' <summary>
+		''' Read from file as level.
+		''' Supports .rdlevel, .rdzip, .zip file extension.
+		''' </summary>
+		''' <param name="filepath">File path.</param>
+		''' <param name="settings">Input settings.</param>
+		''' <returns>An instance of a level that reads from a file.</returns>
+		Public Shared Function LoadFile(filepath As String, settings As LeveReadOrWriteSettings) As ADLevel
 			Dim LevelSerializer = New JsonSerializer()
 			LevelSerializer.Converters.Add(New ADLevelConverter(filepath, settings))
 			Select Case IO.Path.GetExtension(filepath)
@@ -1922,6 +2537,10 @@ Namespace LevelElements
 					Throw New RhythmBaseException("File not supported.")
 			End Select
 		End Function
+		''' <summary>
+		''' Get all the events of the level.
+		''' </summary>
+		''' <returns>An iterator of level events.</returns>
 		Public Overrides Iterator Function Events() As IEnumerable(Of ADBaseEvent)
 			For Each item In MyBase.Events()
 				Yield item

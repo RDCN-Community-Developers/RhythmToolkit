@@ -63,7 +63,7 @@ Namespace Tools
                 Dim eventGroups = Level.GetTaggedEvents(item.ActionTag, Not item.Action = RDTagAction.Actions.Run)
                 For Each group In eventGroups
                     Dim startBeat = group.First().Beat
-                    Dim copiedGroup = group.Select(Function(i) Clone(i))
+                    Dim copiedGroup = group.Select(Function(i) MemberwiseClone(i))
                     For Each copy As RDBaseEvent In copiedGroup
                         copy.Beat += (item.Beat.BeatOnly - startBeat.BeatOnly)
                         copy.Tag = ""
@@ -285,7 +285,7 @@ Namespace Tools
             Dim t As Integer = 0
             Dim C As New RDBeatCalculator(Level)
 
-            Dim txt = Clone(copy)
+            Dim txt = Utils.Utils.MemberwiseClone(copy)
             txt.Beat = New RDBeat(Level.Calculator, 1)
             txt.Text = If(increase, TimeSpan.Zero, finish.TimeSpan - TimeSpan.Zero).ToString
             Level.Add(txt)
@@ -306,13 +306,13 @@ Namespace Tools
             Dim t As Integer = 0
             Dim C As New RDBeatCalculator(Level)
 
-            Dim txt = Clone(copy)
+            Dim txt = Utils.Utils.MemberwiseClone(copy)
             txt.Beat = New RDBeat(Level.Calculator, 1)
             txt.Text = If(increase, (1, 1), (finish - 1).BarBeat).ToString
             Level.Add(txt)
             Do
                 Level.Add(txt.CreateAdvanceText(C.BeatOf(TimeSpan.FromSeconds(t / interval))))
-                txt.Text += vbCrLf + $"{If(increase, C.Time_BarBeat(TimeSpan.FromSeconds(t / interval)), C.Time_BarBeat(finish.TimeSpan - TimeSpan.FromSeconds(t / interval)))}"
+                txt.Text += vbCrLf + $"{If(increase, C.TimeSpanToBarBeat(TimeSpan.FromSeconds(t / interval)), C.TimeSpanToBarBeat(finish.TimeSpan - TimeSpan.FromSeconds(t / interval)))}"
                 t += 1
             Loop Until finish.TimeSpan - TimeSpan.FromSeconds(t / interval) < TimeSpan.Zero
         End Sub

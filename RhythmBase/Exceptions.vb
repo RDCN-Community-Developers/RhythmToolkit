@@ -51,10 +51,13 @@ Namespace Exceptions
     Public Class ConvertingException
         Inherits RhythmBaseException
         Public Sub New(innerException As Exception)
-            MyBase.New("An exception was thrown on reading the level.", innerException)
+            MyBase.New($"An exception was thrown on reading the level.", innerException)
         End Sub
-        Public Sub New(message As String, innerException As Exception)
-            MyBase.New(message, innerException)
+        Public Sub New(message As String)
+            MyBase.New($"An exception was thrown on reading the event: {message}")
+        End Sub
+        Public Sub New([event] As Newtonsoft.Json.Linq.JObject, innerException As Exception)
+            MyBase.New($"An exception was thrown on reading the event. ""{[event]}""", innerException)
         End Sub
     End Class
     Public Class VersionTooLowException

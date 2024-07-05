@@ -882,21 +882,33 @@ Namespace Components
         Private Overloads Function Equals(other As RDPointE) As Boolean Implements IEquatable(Of RDPointE).Equals
             Return other.X = X AndAlso other.Y = Y
         End Function
-        Public Function MultipyByMatrix(matrix(,) As RDExpression?) As RDPointE
+        ''' <summary>
+        ''' This point is multiplied by a 2*2 matrix.
+        ''' </summary>
+        ''' <param name="matrix">2*2 matrix</param>
+        Public Function MultipyByMatrix(matrix(,) As RDExpression) As RDPointE
             If matrix.Rank = 2 AndAlso matrix.Length = 4 Then
                 Return New RDPointE(
 X * matrix(0, 0) + Y * matrix(1, 0),
 X * matrix(0, 1) + Y * matrix(1, 1))
             End If
-            Throw New Exception("Matrix not match.")
+            Throw New Exception("Matrix not match, 2*2 matrix expected.")
         End Function
+        ''' <summary>
+        ''' Rotate.
+        ''' </summary>
         Public Function Rotate(angle As Single) As RDPointE
             Return MultipyByMatrix(
-{
-{CSng(Math.Cos(angle)), CSng(Math.Sin(angle))},
-{CSng(-Math.Sin(angle)), CSng(Math.Cos(angle))}
-})
+            {
+            {CSng(Math.Cos(angle)), CSng(Math.Sin(angle))},
+            {CSng(-Math.Sin(angle)), CSng(Math.Cos(angle))}
+            })
         End Function
+        ''' <summary>
+        ''' Rotate at a given pivot.
+        ''' </summary>
+        ''' <param name="pivot">Giver pivot.</param>
+        ''' <returns></returns>
         Public Function Rotate(pivot As RDPoint, angle As Single) As RDPointE
             Return (Me - New RDSizeE(pivot)).Rotate(angle) + New RDSizeE(pivot)
         End Function

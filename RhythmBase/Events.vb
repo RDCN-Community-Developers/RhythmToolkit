@@ -4,6 +4,9 @@ Imports SkiaSharp
 '#Disable Warning CA1507
 
 Namespace Events
+	''' <summary>
+	''' Rhythm Doctor event types.
+	''' </summary>
 	Public Enum RDEventType
 		AddClassicBeat
 		AddFreeTimeBeat
@@ -13,8 +16,17 @@ Namespace Events
 		CallCustomMethod
 		ChangePlayersRows
 		Comment
+		''' <summary>
+		''' Custom decoration event, from unknown event in the level or user-defined event.
+		''' </summary>
 		CustomDecorationEvent
+		''' <summary>
+		''' Custom event, from unknown event in the level or user-defined event.
+		''' </summary>
 		CustomEvent
+		''' <summary>
+		''' Custom row event, from unknown event in the level or user-defined event.
+		''' </summary>
 		CustomRowEvent
 		CustomFlash
 		FadeRoom
@@ -146,50 +158,68 @@ Namespace Events
 	Public Interface IRDBarBeginningEvent
 	End Interface
 	Public MustInherit Class RDBaseEvent
-		<JsonProperty(NameOf(Type))>
-		Public MustOverride ReadOnly Property Type As RDEventType
-		<JsonIgnore>
-		Public MustOverride ReadOnly Property Tab As RDTabs
-		Friend _beat As RDBeat
-		<JsonIgnore>
-		Public Overridable Property Beat As RDBeat
+		''' <summary>
+		''' Event type.
+		''' </summary>
+		<JsonProperty(NameOf(Type))> Public MustOverride ReadOnly Property Type As RDEventType
+		''' <summary>
+		''' Column to which the event belongs.
+		''' </summary>
+		<JsonIgnore> Public MustOverride ReadOnly Property Tab As RDTabs
+		Friend _beat As RDBeat = New RDBeat(1)
+		''' <summary>
+		''' The beat of the event.
+		''' </summary>
+		<JsonIgnore> Public Overridable Property Beat As RDBeat
 			Get
 				Return _beat
 			End Get
 			Set(value As RDBeat)
 				If _beat.baseLevel IsNot Nothing AndAlso
-value.baseLevel IsNot Nothing AndAlso
-_beat.FromSameLevel(value, True) Then
+					value.baseLevel IsNot Nothing AndAlso
+					_beat.FromSameLevel(value, True) Then
 					_beat.baseLevel.Remove(Me)
 					value.baseLevel.Add(Me)
+					_beat = value
+				Else
+					_beat = value.WithoutBinding()
 				End If
-				_beat = value
 			End Set
 		End Property
+		''' <summary>
+		''' The number of rows this event is on
+		''' </summary>
 		Public Overridable Property Y As Integer
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-		Public Property Tag As String
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)>
-		Public Property [If] As RDCondition
+		''' <summary>
+		''' Event tag.
+		''' </summary>
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Tag As String
+		''' <summary>
+		''' Event conditions.
+		''' </summary>
+		<JsonProperty("if", DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Condition As RDCondition
 		Public Property Active As Boolean = True
+		''' <summary>
+		''' Clone this event and its basic properties.
+		''' </summary>
+		''' <typeparam name="T">Type that will be generated.</typeparam>
+		''' <returns></returns>
 		Public Overridable Function Clone(Of T As {RDBaseEvent, New})() As T
-			Dim temp = New T With {.Beat = Beat, .Y = Y, .[If] = [If], .Tag = Tag, .Active = Active}
-			If Me.If IsNot Nothing Then
-				For Each item In Me.If.ConditionLists
-					temp.If.ConditionLists.Add(item)
+			Dim temp = New T With {.Beat = Beat.WithoutBinding, .Y = Y, .Condition = Condition, .Tag = Tag, .Active = Active}
+			If Me.Condition IsNot Nothing Then
+				For Each item In Me.Condition.ConditionLists
+					temp.Condition.ConditionLists.Add(item)
 				Next
 			End If
-			Beat.baseLevel.Add(temp)
 			Return temp
 		End Function
-		Public Overridable Function Clone(Of T As {RDBaseEvent, New})(level As RDLevel) As T
-			Dim temp = New T With {.Beat = Beat, .Y = Y, .[If] = [If], .Tag = Tag, .Active = Active}
-			If Me.If IsNot Nothing Then
-				For Each item In Me.If.ConditionLists
-					temp.If.ConditionLists.Add(item)
+		Friend Overridable Function Clone(Of T As {RDBaseEvent, New})(level As RDLevel) As T
+			Dim temp = New T With {.Beat = Beat.WithoutBinding, .Y = Y, .Condition = Condition, .Tag = Tag, .Active = Active}
+			If Me.Condition IsNot Nothing Then
+				For Each item In Me.Condition.ConditionLists
+					temp.Condition.ConditionLists.Add(item)
 				Next
 			End If
-			level?.Add(temp)
 			Return temp
 		End Function
 		Public Overrides Function ToString() As String
@@ -201,7 +231,7 @@ _beat.FromSameLevel(value, True) Then
 	End Class
 	Public MustInherit Class RDBaseBeatsPerMinute
 		Inherits RDBaseEvent
-		Private _bpm As Single
+		Private _bpm As Single = 100
 		Public Overrides Property Beat As RDBeat
 			Get
 				Return MyBase.Beat
@@ -248,12 +278,17 @@ _beat.FromSameLevel(value, True) Then
 				Return If(Parent Is Nothing, "", Parent.Id)
 			End Get
 		End Property
+		''' <summary>
+		''' Clone this event and its basic properties. Clone will be added to the level.
+		''' </summary>
+		''' <typeparam name="T">Type that will be generated.</typeparam>
+		''' <returns></returns>
 		Public Overloads Function Clone(Of T As {RDBaseDecorationAction, New})() As T
 			Dim Temp = MyBase.Clone(Of T)()
 			Temp._parent = Parent
 			Return Temp
 		End Function
-		Public Overloads Function Clone(Of T As {RDBaseDecorationAction, New})(decoration As RDDecoration) As T
+		Friend Overloads Function Clone(Of T As {RDBaseDecorationAction, New})(decoration As RDDecoration) As T
 			Dim Temp = MyBase.Clone(Of T)(decoration.Parent)
 			Temp._parent = decoration
 			Return Temp
@@ -263,7 +298,7 @@ _beat.FromSameLevel(value, True) Then
 				If Parent Is Nothing Then
 					Return RDSingleRoom.Default
 				End If
-				Return Parent.Rooms
+				Return Parent.Room
 			End Get
 		End Property
 	End Class
@@ -290,18 +325,24 @@ _beat.FromSameLevel(value, True) Then
 				Return Parent.Rooms
 			End Get
 		End Property
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)> Public ReadOnly Property Row As Integer
+		<JsonIgnore> <Obsolete("This function is obsolete and may be removed in the next release. Use index instead.")> Public ReadOnly Property Row As Integer
+		<JsonProperty("row", DefaultValueHandling:=DefaultValueHandling.Include)> Public ReadOnly Property Index As Integer
 			Get
-				Return If(Parent?.Row, -1)
+				Return If(Parent?.Index, -1)
 			End Get
 		End Property
+		''' <summary>
+		''' Clone this event and its basic properties. Clone will be added to the level.
+		''' </summary>
+		''' <typeparam name="T">Type that will be generated.</typeparam>
+		''' <returns></returns>
 		Public Overloads Function Clone(Of T As {RDBaseRowAction, New})() As T
 			Dim Temp = MyBase.Clone(Of T)()
 			Temp.Parent = Parent
 			Return Temp
 		End Function
-		Public Overloads Function Clone(Of T As {RDBaseRowAction, New})(row As RDRow) As T
-			Dim Temp = MyBase.Clone(Of T)()
+		Friend Overloads Function Clone(Of T As {RDBaseRowAction, New})(row As RDRow) As T
+			Dim Temp = MyBase.Clone(Of T)(row.Parent)
 			Temp.Parent = row
 			Return Temp
 		End Function
@@ -309,31 +350,6 @@ _beat.FromSameLevel(value, True) Then
 	Public MustInherit Class RDBaseBeat
 		Inherits RDBaseRowAction
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rows
-		<JsonIgnore> Public ReadOnly Property BeatSound As Components.RDAudio
-			Get
-				Return If(Parent.LastOrDefault(Of RDSetBeatSound)(Function(i) i.Beat < Beat AndAlso i.Active)?.Sound, Parent.Sound)
-			End Get
-		End Property
-		<JsonIgnore> Public ReadOnly Property HitSound As Components.RDAudio
-			Get
-				Dim DefaultAudio = New Components.RDAudio With {.Filename = "sndClapHit", .Offset = TimeSpan.Zero, .Pan = 100, .Pitch = 100, .Volume = 100}
-				Select Case Player
-					Case RDPlayerType.P1
-						Return If(Beat.baseLevel.LastOrDefault(Of RDSetClapSounds)(Function(i) i.Active AndAlso i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
-					Case RDPlayerType.P2
-						Return If(Beat.baseLevel.LastOrDefault(Of RDSetClapSounds)(Function(i) i.Active AndAlso i.P2Sound IsNot Nothing)?.P2Sound, DefaultAudio)
-					Case RDPlayerType.CPU
-						Return If(Beat.baseLevel.LastOrDefault(Of RDSetClapSounds)(Function(i) i.Active AndAlso i.CpuSound IsNot Nothing)?.CpuSound, DefaultAudio)
-					Case Else
-						Return If(Beat.baseLevel.LastOrDefault(Of RDSetClapSounds)(Function(i) i.Active AndAlso i.P1Sound IsNot Nothing)?.P1Sound, DefaultAudio)
-				End Select
-			End Get
-		End Property
-		<JsonIgnore> Public ReadOnly Property Player As RDPlayerType
-			Get
-				Return If(Beat.baseLevel.LastOrDefault(Of RDChangePlayersRows)(Function(i) i.Active AndAlso i.Players(Row) <> RDPlayerType.NoChange)?.Players(Row), Parent.Player)
-			End Get
-		End Property
 	End Class
 	Public MustInherit Class RDBaseRowAnimation
 		Inherits RDBaseRowAction
@@ -774,7 +790,7 @@ SoundType = SoundTypes.BurnshotSound)
 		Public Property [Variant] As Byte
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetTheme
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
-		Public Property Rooms As New RDRoom(False, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Preset}"
 		End Function
@@ -848,12 +864,12 @@ SoundType = SoundTypes.BurnshotSound)
 			Tile3
 			Tile4
 		End Enum
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property Preset As Presets
 		Public Property Enable As Boolean
 		Public Property Threshold As Single
 		Public Property Intensity As Single
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)> Public Property Color As New PanelColor(False)
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)> Public Property Color As New RDPaletteColor(False)
 		Public Property FloatX As Single
 		Public Property FloatY As Single
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
@@ -925,11 +941,11 @@ Presets.Dots
 		Enum FilterModes
 			NearestNeighbor
 		End Enum
-		Public Property Rooms As New RDRoom(False, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property ContentMode As RDContentModes
 		Public Property Filter As FilterModes '?
-		Public Property Color As New PanelColor(True)
+		Public Property Color As New RDPaletteColor(True)
 		Public Property Interval As Single
 		Public Property BackgroundType As BackgroundTypes
 		Public Property Duration As Single Implements IEaseEvent.Duration
@@ -945,10 +961,10 @@ Presets.Dots
 		Inherits RDBaseEvent
 		Implements IEaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(False, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
 		Public Property ContentMode As RDContentModes
 		Public Property TilingType As RDTilingTypes
-		Public Property Color As New PanelColor(True)
+		Public Property Color As New RDPaletteColor(True)
 		Public Property Image As List(Of RDSprite)
 		Public Property Fps As Single
 		Public Property ScrollX As Single
@@ -977,7 +993,7 @@ Presets.Dots
 			Medium
 			[Long]
 		End Enum
-		Public Property Rooms As New RDRoom(True, True)
+		Public Property Rooms As New RDRoom(True)
 		Public Property Duration As Durations
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Flash
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -986,11 +1002,11 @@ Presets.Dots
 		Inherits RDBaseEvent
 		Implements IEaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property StartColor As New PanelColor(False)
+		Public Property StartColor As New RDPaletteColor(False)
 		Public Property Background As Boolean
-		Public Property EndColor As New PanelColor(False)
+		Public Property EndColor As New RDPaletteColor(False)
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property StartOpacity As Integer
 		Public Property EndOpacity As Integer
@@ -1001,7 +1017,7 @@ Presets.Dots
 		Inherits RDBaseEvent
 		Implements IEaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property CameraPosition As RDPointE?
 		Public Property Zoom As Integer?
 		Public Property Angle As RDExpression?
@@ -1080,10 +1096,10 @@ Presets.Dots
 			Smoke
 #End If
 		End Enum
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property TintColor As New PanelColor(True)
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property TintColor As New RDPaletteColor(True)
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Border As RDBorders
-		Public Property BorderColor As New PanelColor(True)
+		Public Property BorderColor As New RDPaletteColor(True)
 		Public Property Opacity As Integer
 		Public Property Tint As Boolean
 		Public Property Duration As Single Implements IEaseEvent.Duration
@@ -1103,7 +1119,7 @@ Presets.Dots
 			Return Duration <> 0
 		End Function
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString() + $"row:{Row}"
+			Return MyBase.ToString() + $"row:{Index}"
 		End Function
 	End Class
 	Public Class RDBassDrop
@@ -1114,7 +1130,7 @@ Presets.Dots
 			Medium
 			High
 		End Enum
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property Strength As StrengthType
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.BassDrop
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1127,7 +1143,7 @@ Presets.Dots
 			Medium
 			High
 		End Enum
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property ShakeLevel As ShakeLevels
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShakeScreen
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1135,7 +1151,7 @@ Presets.Dots
 	Public Class RDFlipScreen
 		Inherits RDBaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property FlipX As Boolean
 		Public Property FlipY As Boolean
 
@@ -1145,7 +1161,7 @@ Presets.Dots
 	Public Class RDInvertColors
 		Inherits RDBaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(False, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
 		Public Property Enable As Boolean
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.InvertColors
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1153,7 +1169,7 @@ Presets.Dots
 	Public Class RDPulseCamera
 		Inherits RDBaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property Strength As Byte
 		Public Property Count As Integer
 		Public Property Frequency As Single
@@ -1171,8 +1187,8 @@ Presets.Dots
 			OneColor
 			Random
 		End Enum
-		Public Property Rooms As New RDRoom(False, True) Implements IRDRoomEvent.Rooms
-		Public Property Color As New PanelColor(False)
+		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
+		Public Property Color As New RDPaletteColor(False)
 		Public Property Text As String
 		Public Property Direction As Directions
 		Public Property Mode As Modes
@@ -1279,12 +1295,12 @@ Presets.Dots
 				Return _children '.OrderBy(Function(i) i.Bar * 50 + i.Beat).ToList
 			End Get
 		End Property
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property FadeOutRate As Single
-		Public Property Color As New PanelColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
+		Public Property Color As New RDPaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 		Public Property Angle As Single
 		Public Property Size As UInteger
-		Public Property OutlineColor As New PanelColor(True) With {.Color = New SKColor(0, 0, 0, &HFF)}
+		Public Property OutlineColor As New RDPaletteColor(True) With {.Color = New SKColor(0, 0, 0, &HFF)}
 		<JsonProperty> Friend ReadOnly Property Id As Integer
 			Get
 				Return GeneratedId
@@ -1379,7 +1395,7 @@ Presets.Dots
 				Return MyBase.Target
 			End Get
 		End Property
-		Public Property Color As New PanelColor(False) With {.Color = New SKColor(242, 230, 68)}
+		Public Property Color As New RDPaletteColor(False) With {.Color = New SKColor(242, 230, 68)}
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Comment
 		Public Function ShouldSerializeTarget() As Boolean
 			Return Tab = RDTabs.Sprites
@@ -1392,7 +1408,7 @@ Presets.Dots
 			Add
 			Cancel
 		End Enum
-		Public Property Rooms As New RDRoom(False, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
 		Public Property SourceBeat As Single
 		Public Property Length As Single
 		Public Property Action As Actions
@@ -1413,7 +1429,7 @@ Presets.Dots
 			Full
 			[Short]
 		End Enum
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property Action As Actions
 		Public Property Hand As RDPlayerHands
 		Public Property Align As Boolean
@@ -1431,14 +1447,14 @@ Presets.Dots
 			Outline
 			Glow
 		End Enum
-		Public Property TintColor As New PanelColor(True)
+		Public Property TintColor As New RDPaletteColor(True)
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Border As Borders
-		Public Property BorderColor As New PanelColor(True)
+		Public Property BorderColor As New RDPaletteColor(True)
 		Public Property Opacity As Integer
 		Public Property Tint As Boolean
 		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property Hands As RDPlayerHands
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PaintHands
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1452,7 +1468,7 @@ Presets.Dots
 			Paige
 			Edega
 		End Enum
-		Public Property Rooms As New RDRoom(True, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
 		Public Property Hand As RDPlayerHands
 		Public Property Character As String
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetHandOwner
@@ -1579,10 +1595,10 @@ Presets.Dots
 		Implements IEaseEvent
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Border As RDBorders
-		Public Property BorderColor As New PanelColor(True)
+		Public Property BorderColor As New RDPaletteColor(True)
 		Public Property Opacity As Integer
 		Public Property Tint As Boolean
-		Public Property TintColor As New PanelColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
+		Public Property TintColor As New RDPaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Tint
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Sprites
@@ -1660,39 +1676,10 @@ Presets.Dots
 			ThreeBeat
 			FourBeat
 		End Enum
-		Public Property Tick As Single
+		Public Property Tick As Single = 1
 		Public Property Swing As Single
 		Public Property Hold As Single
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property SetXs As ClassicBeatPatterns?
-		<JsonIgnore> Public ReadOnly Property Pattern As String
-			Get
-				Return Utils.GetPatternString(RowXs)
-			End Get
-		End Property
-		<JsonIgnore> Public ReadOnly Property RowXs As LimitedList(Of Patterns)
-			Get
-				If SetXs Is Nothing Then
-					Dim X = Parent.LastOrDefault(Of RDSetRowXs)(Function(i) i.Active AndAlso IsBehind(i), New RDSetRowXs)
-					Return X.Pattern
-				Else
-					Dim T As New LimitedList(Of Patterns)(6, Patterns.None)
-					Select Case SetXs
-						Case ClassicBeatPatterns.ThreeBeat
-							T(1) = Patterns.X
-							T(2) = Patterns.X
-							T(4) = Patterns.X
-							T(5) = Patterns.X
-						Case ClassicBeatPatterns.FourBeat
-							T(1) = Patterns.X
-							T(3) = Patterns.X
-							T(5) = Patterns.X
-						Case Else
-							Throw New RhythmBaseException("How?")
-					End Select
-					Return T
-				End If
-			End Get
-		End Property
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.AddClassicBeat
 		Public Overrides Function ToString() As String
 			Return $"{MyBase.ToString()} {Utils.GetPatternString(RowXs)} {If(_Swing = 0.5 Or _Swing = 0, "", " Swing")}"
@@ -1702,7 +1689,7 @@ Presets.Dots
 		Inherits RDBaseBeat
 		Private _pattern As New LimitedList(Of Patterns)(6, Patterns.None)
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetRowXs
-		<JsonConverter(GetType(Converters.PatternConverter))> Public Property Pattern As LimitedList(Of Patterns)
+		<JsonConverter(GetType(PatternConverter))> Public Property Pattern As LimitedList(Of Patterns)
 			Get
 				Return _pattern
 			End Get
@@ -1823,7 +1810,7 @@ Presets.Dots
 		Implements IEaseEvent
 		Implements IRDRoomEvent
 		<JsonProperty>
-		Public Property Rooms As New RDRoom(False, True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Heights As New List(Of Integer)(4)
 		Public Property TransitionTime As Single Implements IEaseEvent.Duration
@@ -1889,7 +1876,7 @@ Presets.Dots
 		Public Property SourceRoom As Byte
 		Public Property Image As List(Of RDSprite)
 		Public Property Fps As UInteger
-		Public Property KeyColor As New PanelColor(False)
+		Public Property KeyColor As New RDPaletteColor(False)
 		Public Property ColorCutoff As Single
 		Public Property ColorFeathering As Single
 		Public Property ContentMode As ContentModes

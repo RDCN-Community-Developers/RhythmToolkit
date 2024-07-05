@@ -119,14 +119,14 @@ Module Program
 		Dim SpriteCollection As New List(Of RhythmBase.LevelElements.RDDecoration)
 		'For i = 0 To 100
 		Dim A As New RDDecoration()
-		Level.Decorations.Add(A)
+		Level.Add(A)
 		Dim mv2 = New RDMove() With {.Beat = Level.DefaultBeat}
 		mv2.Position = New RDPointE(0, 0)
 		mv2.Scale = New RDPointE(0.1F, 0.1F)
 		A.Add(mv2)
 		SpriteCollection.Add(A)
 		'Next
-		Dim Calculator As New RDBeatCalculator(Level)
+		Dim Calculator = Level.Calculator
 
 		For time = 0 To 182 Step 0.1
 			For index = 0 To Level.Decorations.Count - 1
