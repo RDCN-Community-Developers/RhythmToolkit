@@ -2,6 +2,16 @@
     ''' <summary>
     ''' Level import settings.
     ''' </summary>
+    Public Enum ActionOnUnreadableEvents
+        ''' <summary>
+        ''' Stores unreadable events in <see cref="LeveReadOrWriteSettings.UnreadableEvents"/> for restoration.
+        ''' </summary>
+        Store
+        ''' <summary>
+        ''' An exception will be thrown.
+        ''' </summary>
+        ThrowException
+    End Enum
     Public Class LeveReadOrWriteSettings
         ''' <summary>
         ''' Enable resource preloading. This may grow read times. 
@@ -15,18 +25,14 @@
         Public Property UsingIdFromFile As Boolean = True
         ''' <summary>
         ''' Action on unreadable events.
-        ''' <list type="table">
-        ''' <item><see langword="true"/>: Stores unreadable events in <see cref="LeveReadOrWriteSettings.StoreErrorEvents"/> for restoration.</item>
-        ''' <item><see langword="false"/>: an exception will be thrown.</item>
-        ''' </list>
-        ''' Defaults to <see langword="false"/>.
+        ''' Defaults to <see cref="ActionOnUnreadableEvents.ThrowException"/>.
         ''' </summary>
-        Public Property StoreErrorEvents As Boolean = False
+        Public Property UnreadableEventAction As ActionOnUnreadableEvents = ActionOnUnreadableEvents.ThrowException
         ''' <summary>
-        ''' Stores unreadable event data when the <see cref="LeveReadOrWriteSettings.StoreErrorEvents"/> is <see langword="true"/>.
+        ''' Stores unreadable event data when the <see cref="LeveReadOrWriteSettings.UnreadableEventAction"/> is <see langword="true"/>.
         ''' </summary>
         ''' <returns></returns>
-        Public Property ErrorEvents As New List(Of Newtonsoft.Json.Linq.JObject)
+        Public Property UnreadableEvents As New List(Of Newtonsoft.Json.Linq.JObject)
         ''' <summary>
         ''' Whether to overwrite the source file.
         ''' If <see langword="false"/> and the export path is the same as the source path, an exception will be thrown.

@@ -769,11 +769,11 @@ Namespace Components
 		''' </summary>
 		Public Shared ReadOnly Property [Default] As RDSingleRoom
 			Get
-				Return New RDSingleRoom() With {._data = 0 + Byte.MaxValue}
+				Return New RDSingleRoom() With {._data = Byte.MaxValue}
 			End Get
 		End Property
 		Public Sub New(room As Byte)
-			_data = room
+			_data = 1 << room
 		End Sub
 		Public Shared Operator =(R1 As RDSingleRoom, R2 As RDSingleRoom) As Boolean
 			Return R1._data = R2._data
@@ -1892,10 +1892,15 @@ Namespace LevelElements
 		Public Shared ReadOnly Property [Default] As RDLevel
 			Get
 				Dim rdl As New RDLevel From {
-					New RDPlaySong With {.Song = New Components.RDAudio With {.Filename = "sndOrientalTechno"}},
-					New RDSetTheme With {.Preset = RDSetTheme.Theme.OrientalTechno}
+					New RDPlaySong With {
+						.Song = New Components.RDAudio With {.Filename = "sndOrientalTechno"}},
+					New RDSetTheme With {
+						.Preset = RDSetTheme.Theme.OrientalTechno}
 				}
-				Dim samurai = rdl.CreateRow(New RDSingleRoom(0), New RDCharacter(Characters.Samurai))
+				Dim samurai = rdl.CreateRow(
+					New RDSingleRoom(0), New RDCharacter(Characters.Samurai)
+					)
+				samurai.PulseSound = "Shaker"
 				samurai.Add(New RDAddClassicBeat)
 				Return rdl
 			End Get

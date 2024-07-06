@@ -456,8 +456,8 @@ Namespace Converters
 				Dim rowId = jobj("row").ToObject(Of Short)
 				If rowId = -1 Then
 					If obj.Type <> RDEventType.TintRows Then
-						If settings.StoreErrorEvents Then
-							settings.ErrorEvents.Add(jobj)
+						If settings.UnreadableEventAction = ActionOnUnreadableEvents.Store Then
+							settings.UnreadableEvents.Add(jobj)
 							Return Nothing
 						Else
 							Throw New ConvertingException($"Cannot find the row ""{jobj("target")}"" at {obj}")
@@ -485,8 +485,8 @@ Namespace Converters
 			Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = decoId)
 			obj._parent = Parent
 			If Parent Is Nothing AndAlso decoId = String.Empty AndAlso obj.Type <> RDEventType.Comment Then
-				If settings.StoreErrorEvents Then
-					settings.ErrorEvents.Add(jobj)
+				If settings.UnreadableEventAction = ActionOnUnreadableEvents.Store Then
+					settings.UnreadableEvents.Add(jobj)
 					Return Nothing
 				Else
 					Throw New ConvertingException($"Cannot find the decoration ""{jobj("target")}"" at {obj}")

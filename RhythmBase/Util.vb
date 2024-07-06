@@ -54,8 +54,6 @@ Namespace Utils
 		''' </summary>
 		Public ReadOnly DecorationTypes As ObjectModel.ReadOnlyCollection(Of RDEventType) =
 			ConvertToRDEnums(Of RDBaseDecorationAction)().AsReadOnly
-
-		Public ReadOnly WrongItemList As New List(Of JObject)
 	End Module
 	''' <summary>
 	''' Beat calculator.

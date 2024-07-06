@@ -790,7 +790,7 @@ SoundType = SoundTypes.BurnshotSound)
 		Public Property [Variant] As Byte
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetTheme
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
-		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Preset}"
 		End Function
@@ -864,7 +864,7 @@ SoundType = SoundTypes.BurnshotSound)
 			Tile3
 			Tile4
 		End Enum
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property Preset As Presets
 		Public Property Enable As Boolean
 		Public Property Threshold As Single
@@ -941,7 +941,7 @@ Presets.Dots
 		Enum FilterModes
 			NearestNeighbor
 		End Enum
-		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property ContentMode As RDContentModes
 		Public Property Filter As FilterModes '?
@@ -961,7 +961,7 @@ Presets.Dots
 		Inherits RDBaseEvent
 		Implements IEaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
 		Public Property ContentMode As RDContentModes
 		Public Property TilingType As RDTilingTypes
 		Public Property Color As New RDPaletteColor(True)
@@ -993,7 +993,7 @@ Presets.Dots
 			Medium
 			[Long]
 		End Enum
-		Public Property Rooms As New RDRoom(True)
+		Public Property Rooms As New RDRoom(True, 0)
 		Public Property Duration As Durations
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Flash
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1002,7 +1002,7 @@ Presets.Dots
 		Inherits RDBaseEvent
 		Implements IEaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property StartColor As New RDPaletteColor(False)
 		Public Property Background As Boolean
@@ -1017,7 +1017,7 @@ Presets.Dots
 		Inherits RDBaseEvent
 		Implements IEaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property CameraPosition As RDPointE?
 		Public Property Zoom As Integer?
 		Public Property Angle As RDExpression?
@@ -1130,7 +1130,7 @@ Presets.Dots
 			Medium
 			High
 		End Enum
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property Strength As StrengthType
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.BassDrop
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1143,7 +1143,7 @@ Presets.Dots
 			Medium
 			High
 		End Enum
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property ShakeLevel As ShakeLevels
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShakeScreen
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1151,7 +1151,7 @@ Presets.Dots
 	Public Class RDFlipScreen
 		Inherits RDBaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property FlipX As Boolean
 		Public Property FlipY As Boolean
 
@@ -1161,7 +1161,7 @@ Presets.Dots
 	Public Class RDInvertColors
 		Inherits RDBaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
 		Public Property Enable As Boolean
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.InvertColors
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1169,7 +1169,7 @@ Presets.Dots
 	Public Class RDPulseCamera
 		Inherits RDBaseEvent
 		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property Strength As Byte
 		Public Property Count As Integer
 		Public Property Frequency As Single
@@ -1187,7 +1187,7 @@ Presets.Dots
 			OneColor
 			Random
 		End Enum
-		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
 		Public Property Color As New RDPaletteColor(False)
 		Public Property Text As String
 		Public Property Direction As Directions
@@ -1295,7 +1295,7 @@ Presets.Dots
 				Return _children '.OrderBy(Function(i) i.Bar * 50 + i.Beat).ToList
 			End Get
 		End Property
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property FadeOutRate As Single
 		Public Property Color As New RDPaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 		Public Property Angle As Single
@@ -1408,7 +1408,7 @@ Presets.Dots
 			Add
 			Cancel
 		End Enum
-		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
 		Public Property SourceBeat As Single
 		Public Property Length As Single
 		Public Property Action As Actions
@@ -1429,7 +1429,7 @@ Presets.Dots
 			Full
 			[Short]
 		End Enum
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property Action As Actions
 		Public Property Hand As RDPlayerHands
 		Public Property Align As Boolean
@@ -1454,7 +1454,7 @@ Presets.Dots
 		Public Property Opacity As Integer
 		Public Property Tint As Boolean
 		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property Hands As RDPlayerHands
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PaintHands
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
@@ -1468,7 +1468,7 @@ Presets.Dots
 			Paige
 			Edega
 		End Enum
-		Public Property Rooms As New RDRoom(True) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property Hand As RDPlayerHands
 		Public Property Character As String
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetHandOwner
@@ -1810,7 +1810,7 @@ Presets.Dots
 		Implements IEaseEvent
 		Implements IRDRoomEvent
 		<JsonProperty>
-		Public Property Rooms As New RDRoom(False) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Heights As New List(Of Integer)(4)
 		Public Property TransitionTime As Single Implements IEaseEvent.Duration
