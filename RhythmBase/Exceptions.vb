@@ -127,4 +127,12 @@ To correct this, change the path or filename or set the OverWrite property of {_
             Me.Item = item
         End Sub
     End Class
+    Class UnreadableEventException
+        Inherits RhythmBaseException
+        Public Item As RDBaseEvent
+        Public Sub New(message As String, item As RDBaseEvent)
+            MyBase.New(message)
+            Me.Item = item
+        End Sub
+    End Class
 End Namespace

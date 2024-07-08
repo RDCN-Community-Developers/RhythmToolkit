@@ -1821,7 +1821,7 @@ Presets.Dots
 		Inherits RDBaseEvent
 		Implements IEaseEvent
 		Public Property RoomPosition As RDPointE?
-		Public Property Scale As RDPointE?
+		Public Property Scale As RDSizeE?
 		Public Property Angle As RDExpression?
 		Public Property Pivot As RDPointE?
 		Public Property Duration As Single Implements IEaseEvent.Duration
@@ -2385,8 +2385,47 @@ Presets.Dots
 		Inherits ADBaseTaggedTileAction
 		Implements IEaseEvent
 		Public Enum Filters
-			Neon
 			Grayscale
+			Sepia
+			Invert
+			VHS
+			EightiesTV
+			FiftiesTV
+			Arcade
+			LED
+			Rain
+			Blizzard
+			PixelSnow
+			Compression
+			Glitch
+			Pixelate
+			Waves
+			[Static]
+			Grain
+			MotionBlur
+			Fisheye
+			Aberration
+			Drawing
+			Neon
+			Handheld
+			NightVision
+			Funk
+			Tunnel
+			Weird3D
+			Blur
+			BlurFocus
+			GaussianBlur
+			HexagonBlack
+			Posterize
+			Sharpen
+			Contrast
+			EdgeBlackLine
+			OilPaint
+			SuperDot
+			WaterDrop
+			LightWater
+			Petals
+			PetalsInstant
 		End Enum
 		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetFilter
 		Public Property Filter As Filters

@@ -843,6 +843,7 @@ Namespace Components
 			Me.EnableTop = enableTop
 		End Sub
 		Public Sub New(enableTop As Boolean, ParamArray rooms() As Byte)
+			Me.EnableTop = enableTop
 			Select Case rooms.Length
 				Case 0
 					_data = RoomIndex.RoomNotAvaliable
@@ -854,9 +855,9 @@ Namespace Components
 						Room(item) = True
 					Next
 			End Select
-			If enableTop <> Me.EnableTop Then
-				Throw New RhythmBaseException("Parameters are not match.")
-			End If
+			'If enableTop <> Me.EnableTop Then
+			'	Throw New RhythmBaseException("Parameters are not match.")
+			'End If
 		End Sub
 		''' <summary>
 		''' Check if the room is included.
@@ -1239,6 +1240,27 @@ Namespace Components
 		Friend eventsOrder As New List(Of ADTile)
 		Public ReadOnly Property Count As Integer = eventsOrder.Count Implements ICollection(Of ADTile).Count
 		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of ADTile).IsReadOnly
+		Public ReadOnly Property EndTile As New ADTile
+		Default Public ReadOnly Property item(index As Integer) As ADTile
+			Get
+				If index = eventsOrder.Count Then
+					Return EndTile
+				End If
+				Return eventsOrder(index)
+			End Get
+		End Property
+		Public Overridable ReadOnly Iterator Property Events As IEnumerable(Of ADBaseEvent)
+			Get
+				For Each tile In eventsOrder
+					For Each action In tile
+						Yield action
+					Next
+				Next
+				For Each action In EndTile
+					Yield action
+				Next
+			End Get
+		End Property
 		Public Sub Add(item As ADTile) Implements ICollection(Of ADTile).Add
 			eventsOrder.Add(item)
 		End Sub
@@ -1256,13 +1278,6 @@ Namespace Components
 		End Function
 		Public Function GetEnumerator() As IEnumerator(Of ADTile) Implements IEnumerable(Of ADTile).GetEnumerator
 			Return eventsOrder.GetEnumerator
-		End Function
-		Public Overridable Iterator Function Events() As IEnumerable(Of ADBaseEvent)
-			For Each item In eventsOrder
-				For Each action In item
-					Yield action
-				Next
-			Next
 		End Function
 		''' <summary>
 		''' Get the index of tile.
@@ -2101,7 +2116,7 @@ Namespace LevelElements
 			ElseIf RowTypes.Contains(item.Type) Then
 				Dim rowAction = CType(item, RDBaseRowAction)
 				If rowAction.Parent Is Nothing Then
-					Throw New RhythmBaseException("The Parent property of this event should not be null. Call RDRow.Add() instead.")
+					Throw New UnreadableEventException("The Parent property of this event should not be null. Call RDRow.Add() instead.", item)
 				End If
 				'添加至对应轨道
 				rowAction.Parent.AddSafely(item)
@@ -2111,7 +2126,7 @@ Namespace LevelElements
 			ElseIf DecorationTypes.Contains(item.Type) Then
 				Dim decoAction = CType(item, RDBaseDecorationAction)
 				If decoAction.Parent Is Nothing Then
-					Throw New RhythmBaseException("The Parent property of this event should not be null. Call RDDecoration.Add() instead.")
+					Throw New UnreadableEventException("The Parent property of this event should not be null. Call RDDecoration.Add() instead.", item)
 				End If
 				'添加至对应精灵
 				decoAction.Parent.AddSafely(item)
@@ -2498,11 +2513,21 @@ Namespace LevelElements
 				Return IO.Path.GetDirectoryName(_path)
 			End Get
 		End Property
+		Public Overrides ReadOnly Iterator Property Events As IEnumerable(Of ADBaseEvent)
+			Get
+				For Each tile In MyBase.Events
+					Yield tile
+				Next
+				For Each tile In Decorations
+					Yield tile
+				Next
+			End Get
+		End Property
 		Public Sub New()
 		End Sub
 		Public Sub New(items As IEnumerable(Of ADTile))
-			For Each item In items
-				Me.Add(item)
+			For Each tile In items
+				Me.Add(tile)
 			Next
 		End Sub
 #If DEBUG Then
@@ -2546,14 +2571,6 @@ Namespace LevelElements
 		''' Get all the events of the level.
 		''' </summary>
 		''' <returns>An iterator of level events.</returns>
-		Public Overrides Iterator Function Events() As IEnumerable(Of ADBaseEvent)
-			For Each item In MyBase.Events()
-				Yield item
-			Next
-			For Each item In Decorations
-				Yield item
-			Next
-		End Function
 	End Class
 	Public Class ADSettings
 		Public Property Version As Integer '13

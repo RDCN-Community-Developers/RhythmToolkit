@@ -1930,7 +1930,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 				Return New RDPointE
 			End If
 			Dim previousPosition As RDPointE = e.RoomPosition
-			Dim previousPivot As New RDPointE(e.Pivot?.X * e.Scale?.X, e.Pivot?.Y * e.Scale?.Y)
+			Dim previousPivot As New RDPointE(e.Pivot?.X * e.Scale?.Width, e.Pivot?.Y * e.Scale?.Height)
 			Return previousPosition + New RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue))
 		End Function
 	End Module

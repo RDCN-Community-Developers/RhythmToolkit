@@ -54,6 +54,7 @@ Namespace Utils
 		''' </summary>
 		Public ReadOnly DecorationTypes As ObjectModel.ReadOnlyCollection(Of RDEventType) =
 			ConvertToRDEnums(Of RDBaseDecorationAction)().AsReadOnly
+		Public ReadOnly RDScreenSize As New RDSizeNI(352, 198)
 	End Module
 	''' <summary>
 	''' Beat calculator.
@@ -228,15 +229,15 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 		''' <summary>
 		''' Converts percentage point to pixel point with default screen size (352 * 198).
 		''' </summary>
-		Public Function PercentToPixel(point As (X As Single?, Y As Single?)) As (X As Single?, Y As Single?)
-			Return PercentToPixel(point, (352, 198))
+		Public Function PercentToPixel(point As RDPointE) As RDPointE
+			Return PercentToPixel(point, RDScreenSize)
 		End Function
 		''' <summary>
 		''' Converts percentage point to pixel point with specified size.
 		''' </summary>
 		''' <param name="size">Specified size.</param>
-		Public Function PercentToPixel(point As (X As Single?, Y As Single?), size As (X As Single, Y As Single)) As (X As Single?, Y As Single?)
-			Return (point.X * size.X / 100, point.Y * size.Y / 100)
+		Public Function PercentToPixel(point As RDPointE, size As RDSizeE) As RDPointE
+			Return New RDPointE(point.X * size.Width / 100, point.Y * size.Height / 100)
 		End Function
 		''' <summary>
 		''' Converts pixel point to percentage point with default screen size (352 * 198).

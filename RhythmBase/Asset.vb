@@ -433,7 +433,7 @@ Namespace Assets
 			_file = filename
 		End Sub
 		Private Sub Load()
-			If Not _isLoaded Then
+			If Not _isLoaded AndAlso Not _file.IsNullOrEmpty Then
 				Reload()
 			End If
 		End Sub
@@ -751,7 +751,7 @@ Namespace Assets
 End Namespace
 Namespace Extensions
 	Public Module ImageExtension
-		Public Function LoadImage(path As String) As SKBitmap
+		Public Function FromFile(path As String) As SKBitmap
 			Using stream = New IO.FileInfo(path).OpenRead
 				Return SKBitmap.Decode(stream)
 			End Using

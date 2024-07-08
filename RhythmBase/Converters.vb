@@ -210,7 +210,18 @@ Namespace Converters
 
 								End Select
 							End If
+							'Try
 							outLevel.Add(TempEvent)
+							'Catch ex As UnreadableEventException
+							'	Select Case settings.UnreadableEventAction
+							'		Case ActionOnUnreadableEvents.Store
+							'			settings.UnreadableEvents.Add(item)
+							'		Case ActionOnUnreadableEvents.ThrowException
+							'			Throw New RhythmBaseException("", ex)
+							'		Case Else
+
+							'	End Select
+							'End Try
 						End If
 					End If
 				Next
@@ -456,12 +467,15 @@ Namespace Converters
 				Dim rowId = jobj("row").ToObject(Of Short)
 				If rowId = -1 Then
 					If obj.Type <> RDEventType.TintRows Then
-						If settings.UnreadableEventAction = ActionOnUnreadableEvents.Store Then
-							settings.UnreadableEvents.Add(jobj)
-							Return Nothing
-						Else
-							Throw New ConvertingException($"Cannot find the row ""{jobj("target")}"" at {obj}")
-						End If
+						Select Case settings.UnreadableEventAction
+							Case ActionOnUnreadableEvents.Store
+								settings.UnreadableEvents.Add(jobj)
+								Return Nothing
+							Case ActionOnUnreadableEvents.ThrowException
+								Throw New ConvertingException($"Cannot find the row ""{jobj("target")}"" at {obj}")
+							Case Else
+
+						End Select
 					End If
 				Else
 					Dim Parent = level._Rows(rowId)
@@ -484,13 +498,16 @@ Namespace Converters
 			Dim decoId As String = jobj("target")?.ToObject(Of String)
 			Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = decoId)
 			obj._parent = Parent
-			If Parent Is Nothing AndAlso decoId = String.Empty AndAlso obj.Type <> RDEventType.Comment Then
-				If settings.UnreadableEventAction = ActionOnUnreadableEvents.Store Then
-					settings.UnreadableEvents.Add(jobj)
-					Return Nothing
-				Else
-					Throw New ConvertingException($"Cannot find the decoration ""{jobj("target")}"" at {obj}")
-				End If
+			If Parent Is Nothing AndAlso obj.Type <> RDEventType.Comment Then
+				Select Case settings.UnreadableEventAction
+					Case ActionOnUnreadableEvents.Store
+						settings.UnreadableEvents.Add(jobj)
+						Return Nothing
+					Case ActionOnUnreadableEvents.ThrowException
+						Throw New ConvertingException($"Cannot find the decoration ""{jobj("target")}"" at {obj}")
+					Case Else
+
+				End Select
 			End If
 			Return obj
 		End Function
