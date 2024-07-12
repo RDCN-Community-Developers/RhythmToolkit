@@ -41,6 +41,32 @@ Namespace Components
 		Public Shared Function Round(value As RDPointN) As RDPointNI
 			Return New RDPointNI(Math.Truncate(value.X), Math.Truncate(value.Y))
 		End Function
+		Public Function MultipyByMatrix(matrix(,) As Single) As RDPoint
+			If matrix.Rank = 2 AndAlso matrix.Length = 4 Then
+				Return New RDPoint(
+					X * matrix(0, 0) + Y * matrix(1, 0),
+					X * matrix(0, 1) + Y * matrix(1, 1))
+			End If
+			Throw New Exception("Matrix not match, 2*2 matrix expected.")
+		End Function
+		''' <summary>
+		''' Rotate.
+		''' </summary>
+		Public Function Rotate(angle As Single) As RDPoint
+			Return MultipyByMatrix(
+			{
+			{CSng(Math.Cos(angle)), CSng(Math.Sin(angle))},
+			{CSng(-Math.Sin(angle)), CSng(Math.Cos(angle))}
+			})
+		End Function
+		''' <summary>
+		''' Rotate at a given pivot.
+		''' </summary>
+		''' <param name="pivot">Giver pivot.</param>
+		''' <returns></returns>
+		Public Function Rotate(pivot As RDPointN, angle As Single) As RDPointN
+			Return (CType(Me, RDPointN) - New RDSizeN(pivot)).Rotate(angle) + New RDSizeN(pivot)
+		End Function
 		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
 			Return obj.GetType = GetType(RDPointNI) AndAlso Equals(CType(obj, RDPointNI))
 		End Function
@@ -116,6 +142,32 @@ Namespace Components
 		End Function
 		Public Shared Function Subtract(pt As RDPointN, sz As RDSizeN) As RDPointN
 			Return New RDPointN(pt.X - sz.Width, pt.Y - sz.Height)
+		End Function
+		Public Function MultipyByMatrix(matrix(,) As Single) As RDPointN
+			If matrix.Rank = 2 AndAlso matrix.Length = 4 Then
+				Return New RDPointN(
+X * matrix(0, 0) + Y * matrix(1, 0),
+X * matrix(0, 1) + Y * matrix(1, 1))
+			End If
+			Throw New Exception("Matrix not match, 2*2 matrix expected.")
+		End Function
+		''' <summary>
+		''' Rotate.
+		''' </summary>
+		Public Function Rotate(angle As Single) As RDPointN
+			Return MultipyByMatrix(
+			{
+			{CSng(Math.Cos(angle)), CSng(Math.Sin(angle))},
+			{CSng(-Math.Sin(angle)), CSng(Math.Cos(angle))}
+			})
+		End Function
+		''' <summary>
+		''' Rotate at a given pivot.
+		''' </summary>
+		''' <param name="pivot">Giver pivot.</param>
+		''' <returns></returns>
+		Public Function Rotate(pivot As RDPointN, angle As Single) As RDPointN
+			Return (Me - New RDSizeN(pivot)).Rotate(angle) + New RDSizeN(pivot)
 		End Function
 		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
 			Return obj.GetType = GetType(RDPointN) AndAlso Equals(CType(obj, RDPointN))
@@ -356,6 +408,18 @@ Namespace Components
 			Me.Top = top
 			Me.Bottom = bottom
 		End Sub
+		Public Sub New(location As RDPointNI, size As RDSizeNI)
+			Me.New(location.X,
+				   location.Y + size.Height,
+				   location.X + size.Width,
+				   location.Y)
+		End Sub
+		Public Sub New(size As RDSizeNI)
+			Me.New(0, size.Height, size.Width, 0)
+		End Sub
+		Public Sub New(width As Integer, height As Integer)
+			Me.New(0, height, width, 0)
+		End Sub
 		Public ReadOnly Property Location As RDPointNI
 			Get
 				Return New RDPointNI(Left, Bottom)
@@ -366,18 +430,6 @@ Namespace Components
 				Return New RDSizeNI(Width, Height)
 			End Get
 		End Property
-		Public Shared Function Create(x As Integer, y As Integer, width As Integer, height As Integer) As RDRectNI
-			Return New RDRectNI(x, y + height, x + width, y)
-		End Function
-		Public Shared Function Create(location As RDPointNI, size As RDSizeNI) As RDRectNI
-			Create(location.X, location.Y, size.Width, size.Height)
-		End Function
-		Public Shared Function Create(size As RDSizeNI) As RDRectNI
-			Create(0, 0, size.Width, size.Height)
-		End Function
-		Public Shared Function Create(width As Integer, height As Integer) As RDRectNI
-			Create(0, 0, width, height)
-		End Function
 		Public Shared Function Inflate(rect As RDRectNI, size As RDSizeNI) As RDRectNI
 			Dim result As New RDRectNI(rect.Left, rect.Top, rect.Right, rect.Bottom)
 			result.Inflate(size)
@@ -427,7 +479,13 @@ Namespace Components
 				)
 		End Function
 		Public Shared Function Intersect(rect1 As RDRectNI, rect2 As RDRectNI) As RDRectNI
-			Return New RDRectNI
+			Return If(rect1.IntersectsWithInclusive(rect2),
+				New RDRectNI(
+					Math.Max(rect1.Left, rect2.Left),
+					Math.Max(rect1.Top, rect2.Top),
+					Math.Min(rect1.Right, rect2.Right),
+					Math.Min(rect1.Bottom, rect2.Bottom)),
+				New RDRectNI)
 		End Function
 		Public Shared Function Truncate(rect As RDRectN) As RDRectNI
 			Return New RDRectNI(
@@ -437,9 +495,15 @@ Namespace Components
 				rect.Bottom
 				)
 		End Function
-		Public Function Contains(x As Integer, y As Integer) As Boolean
-			Return Left < x AndAlso x < Right AndAlso Bottom < y AndAlso y < Top
-		End Function
+		Public Sub Offset(x As Integer, y As Integer)
+			Left += x
+			Top += y
+			Right += x
+			Bottom += y
+		End Sub
+		Public Sub Offset(p As RDPointNI)
+			Offset(p.X, p.Y)
+		End Sub
 		Public Sub Inflate(size As RDSizeNI)
 			Left -= size.Width
 			Top += size.Height
@@ -452,24 +516,27 @@ Namespace Components
 			Right += width
 			Bottom -= height
 		End Sub
+		Public Function Contains(x As Integer, y As Integer) As Boolean
+			Return Left < x AndAlso x < Right AndAlso Bottom < y AndAlso y < Top
+		End Function
+		Public Function Contains(p As RDPointN) As Boolean
+			Return Left < p.X AndAlso p.X < Right AndAlso Bottom < p.Y AndAlso p.Y < Top
+		End Function
+		Public Function Contains(rect As RDRectNI) As Boolean
+			Return Left < rect.Left AndAlso rect.Right < Right AndAlso Bottom < rect.Bottom AndAlso rect.Top < Top
+		End Function
 		Public Function Union(rect As RDRectNI) As RDRectNI
 			Return Union(Me, rect)
+		End Function
+		Public Function Intersect(rect As RDRectNI)
+			Return Intersect(Me, rect)
 		End Function
 		Public Function IntersectsWith(rect As RDRectNI) As Boolean
 			Return Left < rect.Right AndAlso Right > rect.Left AndAlso Top < rect.Bottom AndAlso Bottom > rect.Top
 		End Function
-		Public Function IntersecIntersectsWithInclusivetsWith(rect As RDRectNI) As Boolean
+		Public Function IntersectsWithInclusive(rect As RDRectNI) As Boolean
 			Return Left <= rect.Right AndAlso Right >= rect.Left AndAlso Top <= rect.Bottom AndAlso Bottom >= rect.Top
 		End Function
-		Public Sub Offset(x As Integer, y As Integer)
-			Left += x
-			Top += y
-			Right += x
-			Bottom += y
-		End Sub
-		Public Sub Offset(p As RDPointNI)
-			Offset(p.X, p.Y)
-		End Sub
 		Public Shared Operator =(rect1 As RDRectNI, rect2 As RDRectNI) As Boolean
 			Return rect1.Equals(rect2)
 		End Operator
@@ -487,6 +554,123 @@ Namespace Components
 		End Function
 		Public Overloads Function Equals(other As RDRectNI) As Boolean Implements IEquatable(Of RDRectNI).Equals
 			Return Left = other.Left AndAlso Top = other.Top AndAlso Right = other.Right AndAlso Bottom = other.Bottom
+		End Function
+		Public Shared Widening Operator CType(rect As RDRectNI) As RDRectN
+			Return New RDRectN(rect.Left, rect.Top, rect.Right, rect.Bottom)
+		End Operator
+		Public Shared Widening Operator CType(rect As RDRectNI) As RDRectI
+			Return New RDRectI(rect.Left, rect.Top, rect.Right, rect.Bottom)
+		End Operator
+		Public Shared Widening Operator CType(rect As RDRectNI) As RDRectE
+			Return New RDRectE(rect.Left, rect.Top, rect.Right, rect.Bottom)
+		End Operator
+	End Structure
+	Public Structure RDRotatedRectNI
+		Implements IEquatable(Of RDRotatedRectNI)
+		Public Property Location As RDPointNI
+		Public Property Size As RDSizeNI
+		Public Property Pivot As RDPointNI
+		''' <summary>
+		''' Radius angle value
+		''' </summary>
+		''' <returns></returns>
+		Public Property Angle As Single
+		Public ReadOnly Property LeftTop As RDPointN
+			Get
+				Return (Location - Pivot + New RDSizeNI(0, Size.Height)).Rotate(Location, Angle)
+			End Get
+		End Property
+		Public ReadOnly Property RightTop As RDPointN
+			Get
+				Return (Location - Pivot + Size).Rotate(Location, Angle)
+			End Get
+		End Property
+		Public ReadOnly Property LeftBottom As RDPointN
+			Get
+				Return (Location - Pivot).Rotate(Location, Angle)
+			End Get
+		End Property
+		Public ReadOnly Property RightBottom As RDPointN
+			Get
+				Return (Location - Pivot + New RDSizeNI(Size.Width, 0)).Rotate(Location, Angle)
+			End Get
+		End Property
+		Public ReadOnly Property WithoutRotate As RDRectNI
+			Get
+				Return New RDRectNI(Location - Pivot, Size)
+			End Get
+		End Property
+		Public Sub New(location As RDPointNI, size As RDSizeNI, pivot As RDPointNI, angle As Single)
+			Me.Location = location
+			Me.Size = size
+			Me.Pivot = pivot
+			Me.Angle = angle
+		End Sub
+		Public Sub New(rect As RDRectNI)
+			Me.New(rect.Location, rect.Size, New RDPointNI, 0)
+		End Sub
+		Public Shared Function Inflate(rect As RDRotatedRectNI, size As RDSizeNI) As RDRotatedRectNI
+			Dim result = rect
+			result.Inflate(size)
+			Return result
+		End Function
+		Public Shared Function Inflate(rect As RDRotatedRectNI, x As Integer, y As Integer) As RDRotatedRectNI
+			Dim result = rect
+			result.Inflate(x, y)
+			Return result
+		End Function
+		Public Sub Offset(x As Integer, y As Integer)
+			Location += New RDPointNI(x, y)
+		End Sub
+		Public Sub Offset(p As RDPointNI)
+			Offset(p.X, p.Y)
+		End Sub
+		Public Sub Inflate(size As RDSizeNI)
+			Me.Size += New RDSizeNI(size.Width * 2, size.Height * 2)
+			Me.Pivot -= New RDPointNI(size.Width, size.Height)
+		End Sub
+		Public Sub Inflate(width As Integer, height As Integer)
+			Me.Size += New RDSizeNI(width * 2, height * 2)
+			Me.Pivot -= New RDPointNI(width, height)
+		End Sub
+		Public Function Contains(x As Integer, y As Integer) As Boolean
+			Return WithoutRotate.Contains(New RDPointN(x, y).Rotate(-Angle))
+		End Function
+		Public Function Contains(p As RDPointN) As Boolean
+			Return WithoutRotate.Contains(p.Rotate(-Angle))
+		End Function
+		Public Function Contains(rect As RDRotatedRectNI) As Boolean
+			Return Contains(rect.LeftTop) AndAlso
+				Contains(rect.RightTop) AndAlso
+				Contains(rect.LeftBottom) AndAlso
+				Contains(rect.RightBottom)
+		End Function
+		Public Function IntersectsWith(rect As RDRotatedRectNI) As Boolean
+			Return Contains(rect.LeftTop) OrElse
+				Contains(rect.RightTop) OrElse
+				Contains(rect.LeftBottom) OrElse
+				Contains(rect.RightBottom)
+		End Function
+		'Public Function IntersectsWithInclusive(rect As RDRectNIR) As Boolean
+		'	Return Left <= rect.Right AndAlso Right >= rect.Left AndAlso Top <= rect.Bottom AndAlso Bottom >= rect.Top
+		'End Function
+		Public Shared Operator =(rect1 As RDRotatedRectNI, rect2 As RDRotatedRectNI) As Boolean
+			Return rect1.Equals(rect2)
+		End Operator
+		Public Shared Operator <>(rect1 As RDRotatedRectNI, rect2 As RDRotatedRectNI) As Boolean
+			Return Not rect1.Equals(rect2)
+		End Operator
+		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
+			Return obj.GetType = GetType(RDRotatedRectNI) AndAlso Equals(CType(obj, RDRotatedRectNI))
+		End Function
+		Public Overrides Function GetHashCode() As Integer
+			Return HashCode.Combine(Location, Size, Pivot, Angle)
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"{{Location={Location},Size={Size},Pivot={Pivot},Angle={Angle}}}"
+		End Function
+		Public Overloads Function Equals(other As RDRotatedRectNI) As Boolean Implements IEquatable(Of RDRotatedRectNI).Equals
+			Return Location = other.Location AndAlso Size = other.Size AndAlso Pivot = other.Pivot AndAlso Angle = other.Angle
 		End Function
 	End Structure
 	Public Structure RDRectN
@@ -511,6 +695,18 @@ Namespace Components
 			Me.Top = top
 			Me.Bottom = bottom
 		End Sub
+		Public Sub New(location As RDPointN, size As RDSizeN)
+			Me.New(location.X,
+				   location.Y + size.Height,
+				   location.X + size.Width,
+				   location.Y)
+		End Sub
+		Public Sub New(size As RDSizeN)
+			Me.New(0, size.Height, size.Width, 0)
+		End Sub
+		Public Sub New(width As Single, height As Single)
+			Me.New(0, height, width, 0)
+		End Sub
 		Public ReadOnly Property Location As RDPointNI
 			Get
 				Return New RDPointNI(Left, Bottom)
@@ -521,18 +717,6 @@ Namespace Components
 				Return New RDSizeNI(Width, Height)
 			End Get
 		End Property
-		Public Shared Function Create(x As Single, y As Single, width As Single, height As Single) As RDRectN
-			Return New RDRectN(x, y + height, x + width, y)
-		End Function
-		Public Shared Function Create(location As RDPointNI, size As RDSizeNI) As RDRectN
-			Create(location.X, location.Y, size.Width, size.Height)
-		End Function
-		Public Shared Function Create(size As RDSizeNI) As RDRectN
-			Create(0, 0, size.Width, size.Height)
-		End Function
-		Public Shared Function Create(width As Single, height As Single) As RDRectN
-			Create(0, 0, width, height)
-		End Function
 		Public Shared Function Inflate(rect As RDRectN, size As RDSizeNI) As RDRectN
 			Dim result As New RDRectN(rect.Left, rect.Top, rect.Right, rect.Bottom)
 			result.Inflate(size)
@@ -551,7 +735,33 @@ Namespace Components
 				Math.Min(rect1.Bottom, rect2.Bottom)
 				)
 		End Function
-		Public Sub Inflate(size As RDSizeNI)
+		Public Shared Function Intersect(rect1 As RDRectN, rect2 As RDRectN) As RDRectN
+			Return If(rect1.IntersectsWithInclusive(rect2),
+				New RDRectN(
+					Math.Max(rect1.Left, rect2.Left),
+					Math.Max(rect1.Top, rect2.Top),
+					Math.Min(rect1.Right, rect2.Right),
+					Math.Min(rect1.Bottom, rect2.Bottom)),
+				New RDRectN)
+		End Function
+		Public Shared Function Truncate(rect As RDRectN) As RDRectN
+			Return New RDRectN(
+				rect.Left,
+				rect.Top,
+				rect.Right,
+				rect.Bottom
+				)
+		End Function
+		Public Sub Offset(x As Single, y As Single)
+			Left += x
+			Top += y
+			Right += x
+			Bottom += y
+		End Sub
+		Public Sub Offset(p As RDPointN)
+			Offset(p.X, p.Y)
+		End Sub
+		Public Sub Inflate(size As RDSizeN)
 			Left -= size.Width
 			Top += size.Height
 			Right += size.Width
@@ -565,6 +775,9 @@ Namespace Components
 		End Sub
 		Public Function Union(rect As RDRectN) As RDRectN
 			Return Union(Me, rect)
+		End Function
+		Public Function IntersectsWithInclusive(rect As RDRectN) As Boolean
+			Return Left <= rect.Right AndAlso Right >= rect.Left AndAlso Top <= rect.Bottom AndAlso Bottom >= rect.Top
 		End Function
 		Public Shared Operator =(rect1 As RDRectN, rect2 As RDRectN) As Boolean
 			Return rect1.Equals(rect2)
@@ -584,6 +797,12 @@ Namespace Components
 		Public Overloads Function Equals(other As RDRectN) As Boolean Implements IEquatable(Of RDRectN).Equals
 			Return Left = other.Left AndAlso Top = other.Top AndAlso Right = other.Right AndAlso Bottom = other.Bottom
 		End Function
+		Public Shared Widening Operator CType(rect As RDRectN) As RDRect
+			Return New RDRect(rect.Left, rect.Top, rect.Right, rect.Bottom)
+		End Operator
+		Public Shared Widening Operator CType(rect As RDRectN) As RDRectE
+			Return New RDRectE(rect.Left, rect.Top, rect.Right, rect.Bottom)
+		End Operator
 	End Structure
 	''' <summary>
 	''' A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="integer"/>
@@ -632,6 +851,32 @@ Namespace Components
 		End Function
 		Public Shared Function Round(value As RDPoint) As RDPointI
 			Return New RDPointI(If(value.X Is Nothing, Nothing, Math.Truncate(value.X.Value)), If(value.Y Is Nothing, Nothing, Math.Truncate(value.Y.Value)))
+		End Function
+		Public Function MultipyByMatrix(matrix(,) As Single) As RDPoint
+			If matrix.Rank = 2 AndAlso matrix.Length = 4 Then
+				Return New RDPoint(
+					X * matrix(0, 0) + Y * matrix(1, 0),
+					X * matrix(0, 1) + Y * matrix(1, 1))
+			End If
+			Throw New Exception("Matrix not match, 2*2 matrix expected.")
+		End Function
+		''' <summary>
+		''' Rotate.
+		''' </summary>
+		Public Function Rotate(angle As Single) As RDPoint
+			Return MultipyByMatrix(
+			{
+				{CSng(Math.Cos(angle)), CSng(Math.Sin(angle))},
+				{CSng(-Math.Sin(angle)), CSng(Math.Cos(angle))}
+			})
+		End Function
+		''' <summary>
+		''' Rotate at a given pivot.
+		''' </summary>
+		''' <param name="pivot">Giver pivot.</param>
+		''' <returns></returns>
+		Public Function Rotate(pivot As RDPointN, angle As Single) As RDPoint
+			Return (CType(Me, RDPoint) - New RDSizeN(pivot)).Rotate(angle) + New RDSizeN(pivot)
 		End Function
 		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
 			Return obj.GetType = GetType(RDPointI) AndAlso Equals(CType(obj, RDPointI))
@@ -710,6 +955,32 @@ Namespace Components
 		End Function
 		Public Shared Function Subtract(pt As RDPoint, sz As RDSize) As RDPoint
 			Return New RDPoint(pt.X - sz.Width, pt.Y - sz.Height)
+		End Function
+		Public Function MultipyByMatrix(matrix(,) As Single) As RDPoint
+			If matrix.Rank = 2 AndAlso matrix.Length = 4 Then
+				Return New RDPoint(
+					X * matrix(0, 0) + Y * matrix(1, 0),
+					X * matrix(0, 1) + Y * matrix(1, 1))
+			End If
+			Throw New Exception("Matrix not match, 2*2 matrix expected.")
+		End Function
+		''' <summary>
+		''' Rotate.
+		''' </summary>
+		Public Function Rotate(angle As Single) As RDPoint
+			Return MultipyByMatrix(
+			{
+			{CSng(Math.Cos(angle)), CSng(Math.Sin(angle))},
+			{CSng(-Math.Sin(angle)), CSng(Math.Cos(angle))}
+			})
+		End Function
+		''' <summary>
+		''' Rotate at a given pivot.
+		''' </summary>
+		''' <param name="pivot">Giver pivot.</param>
+		''' <returns></returns>
+		Public Function Rotate(pivot As RDPointN, angle As Single) As RDPoint
+			Return (Me - New RDSizeN(pivot)).Rotate(angle) + New RDSizeN(pivot)
 		End Function
 		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
 			Return obj.GetType = GetType(RDPoint) AndAlso Equals(CType(obj, RDPoint))
@@ -925,6 +1196,318 @@ Namespace Components
 		End Operator
 		Public Shared Narrowing Operator CType(size As RDSize) As RDPoint
 			Return New RDPoint(size.Width, size.Height)
+		End Operator
+	End Structure
+	Public Structure RDRectI
+		Implements IEquatable(Of RDRectI)
+		Public Property Left As Integer?
+		Public Property Right As Integer?
+		Public Property Top As Integer?
+		Public Property Bottom As Integer?
+		Public ReadOnly Property Width As Integer?
+			Get
+				Return Right - Left
+			End Get
+		End Property
+		Public ReadOnly Property Height As Integer?
+			Get
+				Return Top - Bottom
+			End Get
+		End Property
+		Public Sub New(left As Integer?, top As Integer?, right As Integer?, bottom As Integer?)
+			Me.Left = left
+			Me.Right = right
+			Me.Top = top
+			Me.Bottom = bottom
+		End Sub
+		Public Sub New(location As RDPointI, size As RDSizeI)
+			Me.New(location.X,
+				   location.Y + size.Height,
+				   location.X + size.Width,
+				   location.Y)
+		End Sub
+		Public Sub New(size As RDSizeI)
+			Me.New(0, size.Height, size.Width, 0)
+		End Sub
+		Public Sub New(width As Integer?, height As Integer?)
+			Me.New(0, height, width, 0)
+		End Sub
+		Public ReadOnly Property Location As RDPointI
+			Get
+				Return New RDPointI(Left, Bottom)
+			End Get
+		End Property
+		Public ReadOnly Property Size As RDSizeI
+			Get
+				Return New RDSizeI(Width, Height)
+			End Get
+		End Property
+		Public Shared Function Inflate(rect As RDRectI, size As RDSizeI) As RDRectI
+			Dim result As New RDRectI(rect.Left, rect.Top, rect.Right, rect.Bottom)
+			result.Inflate(size)
+			Return result
+		End Function
+		Public Shared Function Inflate(rect As RDRectI, x As Integer?, y As Integer?) As RDRectI
+			Dim result As New RDRectI(rect.Left, rect.Top, rect.Right, rect.Bottom)
+			result.Inflate(x, y)
+			Return result
+		End Function
+		Public Shared Function Ceiling(rect As RDRect) As RDRectI
+			Return Ceiling(rect, False)
+		End Function
+		Public Shared Function Ceiling(rect As RDRect, outwards As Boolean) As RDRectI
+			Return New RDRectI(
+			If(rect.Left Is Nothing, Nothing,
+				If(outwards AndAlso rect.Width > 0, Math.Floor(rect.Left.Value), Math.Ceiling(rect.Left.Value))),
+			If(rect.Top Is Nothing, Nothing,
+				If(outwards AndAlso rect.Height > 0, Math.Floor(rect.Top.Value), Math.Ceiling(rect.Top.Value))),
+			If(rect.Right Is Nothing, Nothing,
+				If(outwards AndAlso rect.Width < 0, Math.Floor(rect.Right.Value), Math.Ceiling(rect.Right.Value))),
+			If(rect.Bottom Is Nothing, Nothing,
+				If(outwards AndAlso rect.Height < 0, Math.Floor(rect.Bottom.Value), Math.Ceiling(rect.Bottom.Value)))
+				)
+		End Function
+		Public Shared Function Floor(rect As RDRect) As RDRectI
+			Return Ceiling(rect, False)
+		End Function
+		Public Shared Function Floor(rect As RDRect, inwards As Boolean) As RDRectI
+			Return New RDRectI(
+			If(rect.Left Is Nothing, Nothing,
+				If(inwards AndAlso rect.Width > 0, Math.Ceiling(rect.Left.Value), Math.Floor(rect.Left.Value))),
+			If(rect.Top Is Nothing, Nothing,
+				If(inwards AndAlso rect.Height > 0, Math.Ceiling(rect.Top.Value), Math.Floor(rect.Top.Value))),
+			If(rect.Right Is Nothing, Nothing,
+				If(inwards AndAlso rect.Width < 0, Math.Ceiling(rect.Right.Value), Math.Floor(rect.Right.Value))),
+			If(rect.Bottom Is Nothing, Nothing,
+				If(inwards AndAlso rect.Height < 0, Math.Ceiling(rect.Bottom.Value), Math.Floor(rect.Bottom.Value)))
+				)
+		End Function
+		Public Shared Function Round(rect As RDRect) As RDRectI
+			Return New RDRectI(
+				If(rect.Left Is Nothing, Nothing, Math.Round(rect.Left.Value)),
+				If(rect.Top Is Nothing, Nothing, Math.Round(rect.Top.Value)),
+				If(rect.Right Is Nothing, Nothing, Math.Round(rect.Right.Value)),
+				If(rect.Bottom Is Nothing, Nothing, Math.Round(rect.Bottom.Value))
+				)
+		End Function
+		Public Shared Function Union(rect1 As RDRectI, rect2 As RDRectI) As RDRectI
+			Return New RDRectI(
+				If(rect1.Left Is Nothing OrElse rect2.Left Is Nothing, Nothing, Math.Min(rect1.Left.Value, rect2.Left.Value)),
+				If(rect1.Top Is Nothing OrElse rect2.Top Is Nothing, Nothing, Math.Min(rect1.Top.Value, rect2.Top.Value)),
+				If(rect1.Right Is Nothing OrElse rect2.Right Is Nothing, Nothing, Math.Min(rect1.Right.Value, rect2.Right.Value)),
+				If(rect1.Bottom Is Nothing OrElse rect2.Bottom Is Nothing, Nothing, Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))
+				)
+		End Function
+		Public Shared Function Intersect(rect1 As RDRectI, rect2 As RDRectI) As RDRectI
+			Return If(rect1.IntersectsWithInclusive(rect2),
+				New RDRectI(
+					If(rect1.Left Is Nothing OrElse rect2.Left Is Nothing, Nothing, Math.Max(rect1.Left.Value, rect2.Left.Value)),
+					If(rect1.Top Is Nothing OrElse rect2.Top Is Nothing, Nothing, Math.Max(rect1.Top.Value, rect2.Top.Value)),
+					If(rect1.Right Is Nothing OrElse rect2.Right Is Nothing, Nothing, Math.Min(rect1.Right.Value, rect2.Right.Value)),
+					If(rect1.Bottom Is Nothing OrElse rect2.Bottom Is Nothing, Nothing, Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))),
+				New RDRectI)
+		End Function
+		Public Shared Function Truncate(rect As RDRect) As RDRectI
+			Return New RDRectI(
+				rect.Left,
+				rect.Top,
+				rect.Right,
+				rect.Bottom
+				)
+		End Function
+		Public Sub Offset(x As Integer?, y As Integer?)
+			Left += x
+			Top += y
+			Right += x
+			Bottom += y
+		End Sub
+		Public Sub Offset(p As RDPointI)
+			Offset(p.X, p.Y)
+		End Sub
+		Public Sub Inflate(size As RDSizeI)
+			Left -= size.Width
+			Top += size.Height
+			Right += size.Width
+			Bottom -= size.Height
+		End Sub
+		Public Sub Inflate(width As Integer?, height As Integer?)
+			Left -= width
+			Top += height
+			Right += width
+			Bottom -= height
+		End Sub
+		Public Function Union(rect As RDRectI) As RDRectI
+			Return Union(Me, rect)
+		End Function
+		Public Function IntersectsWithInclusive(rect As RDRectI) As Boolean
+			Return Left <= rect.Right AndAlso Right >= rect.Left AndAlso Top <= rect.Bottom AndAlso Bottom >= rect.Top
+		End Function
+		Public Shared Operator =(rect1 As RDRectI, rect2 As RDRectI) As Boolean
+			Return rect1.Equals(rect2)
+		End Operator
+		Public Shared Operator <>(rect1 As RDRectI, rect2 As RDRectI) As Boolean
+			Return Not rect1.Equals(rect2)
+		End Operator
+		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
+			Return obj.GetType = GetType(RDRectI) AndAlso Equals(CType(obj, RDRectI))
+		End Function
+		Public Overrides Function GetHashCode() As Integer
+			Return HashCode.Combine(Left, Top, Right, Bottom)
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"{{Location=[{Left},{Bottom}],Size=[{Width},{Height}]}}"
+		End Function
+		Public Overloads Function Equals(other As RDRectI) As Boolean Implements IEquatable(Of RDRectI).Equals
+			Return Left = other.Left AndAlso Top = other.Top AndAlso Right = other.Right AndAlso Bottom = other.Bottom
+		End Function
+		Public Shared Widening Operator CType(rect As RDRectI) As RDRect
+			Return New RDRect(rect.Left, rect.Top, rect.Right, rect.Bottom)
+		End Operator
+		Public Shared Widening Operator CType(rect As RDRectI) As RDRectE
+			Return New RDRectE(rect.Left, rect.Top, rect.Right, rect.Bottom)
+		End Operator
+	End Structure
+	Public Structure RDRect
+		Implements IEquatable(Of RDRect)
+		Public Property Left As Single?
+		Public Property Right As Single?
+		Public Property Top As Single?
+		Public Property Bottom As Single?
+		Public ReadOnly Property Width As Single?
+			Get
+				Return Right - Left
+			End Get
+		End Property
+		Public ReadOnly Property Height As Single?
+			Get
+				Return Top - Bottom
+			End Get
+		End Property
+		Public Sub New(left As Single?, top As Single?, right As Single?, bottom As Single?)
+			Me.Left = left
+			Me.Right = right
+			Me.Top = top
+			Me.Bottom = bottom
+		End Sub
+		Public Sub New(location As RDPoint, size As RDSize)
+			Me.New(location.X,
+				   location.Y + size.Height,
+				   location.X + size.Width,
+				   location.Y)
+		End Sub
+		Public Sub New(size As RDSize)
+			Me.New(0, size.Height, size.Width, 0)
+		End Sub
+		Public Sub New(width As Single?, height As Single?)
+			Me.New(0, height, width, 0)
+		End Sub
+		Public ReadOnly Property Location As RDPoint
+			Get
+				Return New RDPoint(Left, Bottom)
+			End Get
+		End Property
+		Public ReadOnly Property Size As RDSize
+			Get
+				Return New RDSize(Width, Height)
+			End Get
+		End Property
+		Public Shared Function Inflate(rect As RDRect, size As RDSize) As RDRect
+			Dim result As New RDRect(rect.Left, rect.Top, rect.Right, rect.Bottom)
+			result.Inflate(size)
+			Return result
+		End Function
+		Public Shared Function Inflate(rect As RDRect, x As Single?, y As Single?) As RDRect
+			Dim result As New RDRect(rect.Left, rect.Top, rect.Right, rect.Bottom)
+			result.Inflate(x, y)
+			Return result
+		End Function
+		Public Shared Function Union(rect1 As RDRect, rect2 As RDRect) As RDRect
+			Return New RDRect(
+				If(rect1.Left Is Nothing OrElse rect2.Left Is Nothing, Nothing, Math.Min(rect1.Left.Value, rect2.Left.Value)),
+				If(rect1.Top Is Nothing OrElse rect2.Top Is Nothing, Nothing, Math.Min(rect1.Top.Value, rect2.Top.Value)),
+				If(rect1.Right Is Nothing OrElse rect2.Right Is Nothing, Nothing, Math.Min(rect1.Right.Value, rect2.Right.Value)),
+				If(rect1.Bottom Is Nothing OrElse rect2.Bottom Is Nothing, Nothing, Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))
+				)
+		End Function
+		Public Shared Function Intersect(rect1 As RDRect, rect2 As RDRect) As RDRect
+			Return If(rect1.IntersectsWithInclusive(rect2),
+				New RDRect(
+					If(rect1.Left Is Nothing OrElse rect2.Left Is Nothing, Nothing, Math.Max(rect1.Left.Value, rect2.Left.Value)),
+					If(rect1.Top Is Nothing OrElse rect2.Top Is Nothing, Nothing, Math.Max(rect1.Top.Value, rect2.Top.Value)),
+					If(rect1.Right Is Nothing OrElse rect2.Right Is Nothing, Nothing, Math.Min(rect1.Right.Value, rect2.Right.Value)),
+					If(rect1.Bottom Is Nothing OrElse rect2.Bottom Is Nothing, Nothing, Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))),
+				New RDRect)
+		End Function
+		Public Shared Function Truncate(rect As RDRect) As RDRect
+			Return New RDRect(
+				rect.Left,
+				rect.Top,
+				rect.Right,
+				rect.Bottom
+				)
+		End Function
+		Public Sub Offset(x As Single?, y As Single?)
+			Left += x
+			Top += y
+			Right += x
+			Bottom += y
+		End Sub
+		Public Sub Offset(p As RDPoint)
+			Offset(p.X, p.Y)
+		End Sub
+		Public Sub Inflate(size As RDSize)
+			Left -= size.Width
+			Top += size.Height
+			Right += size.Width
+			Bottom -= size.Height
+		End Sub
+		Public Sub Inflate(width As Single?, height As Single?)
+			Left -= width
+			Top += height
+			Right += width
+			Bottom -= height
+		End Sub
+		Public Function Contains(x As Single?, y As Single?) As Boolean
+			Return Left < x AndAlso x < Right AndAlso Bottom < y AndAlso y < Top
+		End Function
+		Public Function Contains(p As RDPoint) As Boolean
+			Return Left < p.X AndAlso p.X < Right AndAlso Bottom < p.Y AndAlso p.Y < Top
+		End Function
+		Public Function Contains(rect As RDRect) As Boolean
+			Return Left < rect.Left AndAlso rect.Right < Right AndAlso Bottom < rect.Bottom AndAlso rect.Top < Top
+		End Function
+		Public Function Union(rect As RDRect) As RDRect
+			Return Union(Me, rect)
+		End Function
+		Public Function Intersect(rect As RDRect)
+			Return Intersect(Me, rect)
+		End Function
+		Public Function IntersectsWith(rect As RDRect) As Boolean
+			Return Left < rect.Right AndAlso Right > rect.Left AndAlso Top < rect.Bottom AndAlso Bottom > rect.Top
+		End Function
+		Public Function IntersectsWithInclusive(rect As RDRect) As Boolean
+			Return Left <= rect.Right AndAlso Right >= rect.Left AndAlso Top <= rect.Bottom AndAlso Bottom >= rect.Top
+		End Function
+		Public Shared Operator =(rect1 As RDRect, rect2 As RDRect) As Boolean
+			Return rect1.Equals(rect2)
+		End Operator
+		Public Shared Operator <>(rect1 As RDRect, rect2 As RDRect) As Boolean
+			Return Not rect1.Equals(rect2)
+		End Operator
+		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
+			Return obj.GetType = GetType(RDRect) AndAlso Equals(CType(obj, RDRect))
+		End Function
+		Public Overrides Function GetHashCode() As Integer
+			Return HashCode.Combine(Left, Top, Right, Bottom)
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"{{Location=[{Left},{Bottom}],Size=[{Width},{Height}]}}"
+		End Function
+		Public Overloads Function Equals(other As RDRect) As Boolean Implements IEquatable(Of RDRect).Equals
+			Return Left = other.Left AndAlso Top = other.Top AndAlso Right = other.Right AndAlso Bottom = other.Bottom
+		End Function
+		Public Shared Widening Operator CType(rect As RDRect) As RDRectE
+			Return New RDRectE(rect.Left, rect.Top, rect.Right, rect.Bottom)
 		End Operator
 	End Structure
 	''' <summary>
@@ -1219,7 +1802,7 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		''' </summary>
 		''' <param name="pivot">Giver pivot.</param>
 		''' <returns></returns>
-		Public Function Rotate(pivot As RDPoint, angle As Single) As RDPointE
+		Public Function Rotate(pivot As RDPointE, angle As Single) As RDPointE
 			Return (Me - New RDSizeE(pivot)).Rotate(angle) + New RDSizeE(pivot)
 		End Function
 
@@ -1406,5 +1989,107 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Shared Narrowing Operator CType(size As RDSizeE) As RDPointE
 			Return New RDPointE(size.Width, size.Height)
 		End Operator
+	End Structure
+	Public Structure RDRectE
+		Implements IEquatable(Of RDRectE)
+		Public Property Left As RDExpression?
+		Public Property Right As RDExpression?
+		Public Property Top As RDExpression?
+		Public Property Bottom As RDExpression?
+		Public ReadOnly Property Width As RDExpression?
+			Get
+				Return Right - Left
+			End Get
+		End Property
+		Public ReadOnly Property Height As RDExpression?
+			Get
+				Return Top - Bottom
+			End Get
+		End Property
+		Public Sub New(left As RDExpression?, top As RDExpression?, right As RDExpression?, bottom As RDExpression?)
+			Me.Left = left
+			Me.Right = right
+			Me.Top = top
+			Me.Bottom = bottom
+		End Sub
+		Public Sub New(location As RDPointE, size As RDSizeE)
+			Me.New(location.X,
+				   location.Y + size.Height,
+				   location.X + size.Width,
+				   location.Y)
+		End Sub
+		Public Sub New(size As RDSizeE)
+			Me.New(0, size.Height, size.Width, 0)
+		End Sub
+		Public Sub New(width As RDExpression?, height As RDExpression?)
+			Me.New(0, height, width, 0)
+		End Sub
+		Public ReadOnly Property Location As RDPointE
+			Get
+				Return New RDPointE(Left, Bottom)
+			End Get
+		End Property
+		Public ReadOnly Property Size As RDSizeE
+			Get
+				Return New RDSizeE(Width, Height)
+			End Get
+		End Property
+		Public Shared Function Inflate(rect As RDRectE, size As RDSizeE) As RDRectE
+			Dim result As New RDRectE(rect.Left, rect.Top, rect.Right, rect.Bottom)
+			result.Inflate(size)
+			Return result
+		End Function
+		Public Shared Function Inflate(rect As RDRectE, x As RDExpression?, y As RDExpression?) As RDRectE
+			Dim result As New RDRectE(rect.Left, rect.Top, rect.Right, rect.Bottom)
+			result.Inflate(x, y)
+			Return result
+		End Function
+		Public Shared Function Truncate(rect As RDRectE) As RDRectE
+			Return New RDRectE(
+				rect.Left,
+				rect.Top,
+				rect.Right,
+				rect.Bottom
+				)
+		End Function
+		Public Sub Offset(x As RDExpression?, y As RDExpression?)
+			Left += x
+			Top += y
+			Right += x
+			Bottom += y
+		End Sub
+		Public Sub Offset(p As RDPointE)
+			Offset(p.X, p.Y)
+		End Sub
+		Public Sub Inflate(size As RDSizeE)
+			Left -= size.Width
+			Top += size.Height
+			Right += size.Width
+			Bottom -= size.Height
+		End Sub
+		Public Sub Inflate(width As RDExpression?, height As RDExpression?)
+			Left -= width
+			Top += height
+			Right += width
+			Bottom -= height
+		End Sub
+		Public Shared Operator =(rect1 As RDRectE, rect2 As RDRectE) As Boolean
+			Return rect1.Equals(rect2)
+		End Operator
+		Public Shared Operator <>(rect1 As RDRectE, rect2 As RDRectE) As Boolean
+			Return Not rect1.Equals(rect2)
+		End Operator
+		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
+			Return obj.GetType = GetType(RDRectE) AndAlso Equals(CType(obj, RDRectE))
+		End Function
+		Public Overrides Function GetHashCode() As Integer
+			Return HashCode.Combine(Left, Top, Right, Bottom)
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"{{Location=[{Left},{Bottom}],Size=[{Width},{Height}]}}"
+		End Function
+		Public Overloads Function Equals(other As RDRectE) As Boolean Implements IEquatable(Of RDRectE).Equals
+			Return Left = other.Left AndAlso Top = other.Top AndAlso Right = other.Right AndAlso Bottom = other.Bottom
+		End Function
 	End Structure
 End Namespace

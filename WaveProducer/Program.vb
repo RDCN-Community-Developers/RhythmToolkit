@@ -116,13 +116,14 @@ Module Program
 
 		Dim Level As RDLevel = RDLevel.LoadFile("C:\Users\30698\OneDrive\ÎÄµµ\rdlevels\test3\level.rdlevel")
 
-		Dim SpriteCollection As New List(Of RhythmBase.LevelElements.RDDecoration)
+		Dim SpriteCollection As New List(Of RDDecoration)
 		'For i = 0 To 100
-		Dim A As New RDDecoration()
-		Level.Add(A)
-		Dim mv2 = New RDMove() With {.Beat = Level.DefaultBeat}
-		mv2.Position = New RDPointE(0, 0)
-		mv2.Scale = New RDPointE(0.1F, 0.1F)
+		Dim A = Level.CreateDecoration(RDSingleRoom.Default)
+		Dim mv2 As New RDMove With {
+			.Beat = Level.DefaultBeat,
+			.Position = New RDPointE(0, 0),
+			.Scale = New RDPointE(0.1F, 0.1F)
+		}
 		A.Add(mv2)
 		SpriteCollection.Add(A)
 		'Next
@@ -137,7 +138,7 @@ Module Program
 				mv.Position = New RDPointE(CType(Nothing, Single?), CSng(frame((frame.Length - 1) * index / 100) / max))
 				mv.Duration = 1.5
 				mv.Ease = EaseType.InOutSine
-				Level.add(mv)
+				Level.Add(mv)
 			Next
 			If CInt(time) Mod 10 = 0 Then
 				Console.WriteLine(time)

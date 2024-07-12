@@ -166,7 +166,7 @@ Namespace Events
 		''' Column to which the event belongs.
 		''' </summary>
 		<JsonIgnore> Public MustOverride ReadOnly Property Tab As RDTabs
-		Friend _beat As RDBeat = New RDBeat(1)
+		Friend _beat As New RDBeat(1)
 		''' <summary>
 		''' The beat of the event.
 		''' </summary>
@@ -325,7 +325,7 @@ Namespace Events
 				Return Parent.Rooms
 			End Get
 		End Property
-		<JsonIgnore> <Obsolete("This function is obsolete and may be removed in the next release. Use index instead.")> Public ReadOnly Property Row As Integer
+		<JsonIgnore> <Obsolete("This function is obsolete and may be removed in the next release. Use Index instead.")> Public ReadOnly Property Row As Integer
 		<JsonProperty("row", DefaultValueHandling:=DefaultValueHandling.Include)> Public ReadOnly Property Index As Integer
 			Get
 				Return If(Parent?.Index, -1)
@@ -1934,27 +1934,27 @@ Presets.Dots
 		CustomTileEvent
 		EditorComment
 		Flash
-		'FreeRoam
-		'FreeRoamRemove
-		'FreeRoamTwirl
+		FreeRoam
+		FreeRoamRemove
+		FreeRoamTwirl
 		'FreeRoamWarning
 		HallOfMirrors
-		'Hide
-		'Hold
+		Hide
+		Hold
 		'KillPlayer
 		MoveCamera
 		MoveDecorations
 		MoveTrack
-		'MultiPlanet
+		MultiPlanet
 		'Multitap
 		Pause
 		PlaySound
 		PositionTrack
 		RecolorTrack
 		RepeatEvents
-		'ScaleMargin
+		ScaleMargin
 		ScalePlanets
-		'ScaleRadius
+		ScaleRadius
 		ScreenScroll
 		ScreenTile
 		SetConditionalEvents
@@ -1963,7 +1963,7 @@ Presets.Dots
 		'SetFilterAdvanced
 		'SetFloorIcon
 		SetHitsound
-		'SetHoldSound
+		SetHoldSound
 		SetObject
 		SetPlanetRotation
 		SetSpeed
@@ -2037,8 +2037,16 @@ Presets.Dots
 		End Property
 		Public ReadOnly Property IsMidSpin As Boolean
 			Get
-				Return _angle < -180
+				Return _angle < -180 OrElse _angle > 180
 			End Get
+		End Property
+		Public Property Beat As ADBeat
+			Get
+				Return New ADBeat(Parent.Calculator, Index + _angle / 180)
+			End Get
+			Set(value As ADBeat)
+
+			End Set
 		End Property
 		<JsonIgnore>
 		Public Property Parent As ADLevel
@@ -2056,7 +2064,8 @@ Presets.Dots
 			End Get
 		End Property
 		Public Overrides Function ToString() As String
-			Return $"<{If(IsMidSpin, "MS".PadRight(4), _angle.ToString.PadLeft(4))}>{If(Any, $", Count = {Count}", String.Empty)}"
+			Return $"[{Index}]{Beat}<{If(IsMidSpin, "MS".PadRight(4), _angle.ToString.PadLeft(4))}>{If(Any, $", Count = {Count}", String.Empty)}"
+			Return $"{Beat}{If(Any, $", Count = {Count}", String.Empty)}"
 		End Function
 	End Class
 	Public MustInherit Class ADBaseEvent
@@ -2656,5 +2665,71 @@ Presets.Dots
 		Public Property Parallax As RDSizeN
 		Public Property ParallaxOffset As RDSizeN
 		Public Property Tag As String
+	End Class
+	Public Class ADHold
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Hold
+		Public Property Duration As Integer
+		Public Property DistanceMultiplier As Integer
+		Public Property LandingAnimation As Boolean
+	End Class
+	Public Class ADSetHoldSound
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetHoldSound
+		Public Property HoldStartSound As String
+		Public Property HoldLoopSound As String
+		Public Property HoldEndSound As String
+		Public Property HoldMidSound As String
+		Public Property HoldMidSoundType As String
+		Public Property HoldMidSoundDelay As Single
+		Public Property HoldMidSoundTimingRelativeTo As String
+		Public Property HoldSoundVolume As Integer
+	End Class
+	Public Class ADMultiPlanet
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.MultiPlanet
+		Public Property Planets As String
+	End Class
+	Public Class ADFreeRoam
+		Inherits ADBaseTileEvent
+		Implements IEaseEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.FreeRoam
+		Public Property Duration As Single Implements IEaseEvent.Duration
+		Public Property Size() As Integer
+		Public Property PositionOffset() As Integer
+		Public Property OutTime As Integer
+		Public Property OutEase As EaseType Implements IEaseEvent.Ease
+		Public Property HitsoundOnBeats As String
+		Public Property HitsoundOffBeats As String
+		Public Property CountdownTicks As Integer
+		Public Property AngleCorrectionDir As Integer
+	End Class
+	Public Class ADFreeRoamTwirl
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.FreeRoamTwirl
+		Public Property Position() As Integer
+	End Class
+	Public Class ADFreeRoamRemove
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType
+		Public Property Position() As Integer
+		Public Property Size() As Integer
+	End Class
+
+	Public Class ADHide
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Hide
+		Public Property HideJudgment As Boolean
+		Public Property HideTileIcon As Boolean
+	End Class
+	Public Class ADScaleMargin
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScaleMargin
+		Public Property Scale As Integer
+	End Class
+	Public Class ADScaleRadius
+		Inherits ADBaseTileEvent
+		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScaleRadius
+		Public Property Scale As Integer
 	End Class
 End Namespace

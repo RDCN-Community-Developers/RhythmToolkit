@@ -1071,6 +1071,15 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 				e.Add(item)
 			Next
 		End Sub
+		<Extension> Public Function Where(e As ADTileCollection, predicate As Func(Of ADTile, Boolean)) As IEnumerable(Of ADTile)
+			Return e.AsEnumerable.Where(predicate)
+		End Function
+		<Extension> Public Function EventsWhere(e As ADTileCollection, predicate As Func(Of ADBaseEvent, Boolean)) As IEnumerable(Of ADBaseEvent)
+			Return e.Events.Where(predicate)
+		End Function
+		<Extension> Public Function EventsWhere(Of T As ADBaseEvent)(e As ADTileCollection) As IEnumerable(Of T)
+			Return e.Events.OfType(Of T)
+		End Function
 #End Region
 		Public Enum Wavetype
 			BoomAndRush

@@ -380,6 +380,14 @@ Namespace Components
 			_beat = beatOnly - 1
 			_isBeatLoaded = True
 		End Sub
+		Public Sub New(bar As UInteger, beat As Single)
+			_BarBeat = (bar, beat)
+			_isBarBeatLoaded = True
+		End Sub
+		Public Sub New(timeSpan As TimeSpan)
+			_TimeSpan = timeSpan
+			_isTimeSpanLoaded = True
+		End Sub
 		''' <summary>
 		''' Construct an instance with specifying a calculator.
 		''' </summary>
@@ -571,6 +579,198 @@ Namespace Components
 				Return -1
 			End If
 			Return 0
+		End Function
+	End Structure
+	Public Structure ADBeat
+		Implements IComparable(Of ADBeat)
+		Implements IEquatable(Of ADBeat)
+		Friend _calculator As ADBeatCalculator
+		Private _isBeatLoaded As Boolean
+		Private _isTimeSpanLoaded As Boolean
+		Private _isBpmLoaded As Boolean
+		Private _beat As Single
+		Private _timeSpan As TimeSpan
+		Private _bpm As Single
+		Friend ReadOnly Property baseLevel As ADLevel
+			Get
+				Return _calculator.Collection
+			End Get
+		End Property
+		Public Property BeatOnly As Single
+			Get
+				Return _beat + 1
+			End Get
+			Set(value As Single)
+
+			End Set
+		End Property
+		Public Property TimeSpan As TimeSpan
+			Get
+				Return _timeSpan
+			End Get
+			Set(value As TimeSpan)
+
+			End Set
+		End Property
+		Public Sub New(beat As Single)
+			_beat = beat
+			_isBeatLoaded = True
+		End Sub
+		Public Sub New(timeSpan As TimeSpan)
+			_timeSpan = timeSpan
+			_isTimeSpanLoaded = True
+		End Sub
+		Public Sub New(calculator As ADBeatCalculator, beat As Single)
+			_calculator = calculator
+			_beat = beat
+			_isBeatLoaded = True
+		End Sub
+		Public Sub New(calculator As ADBeatCalculator, timeSpan As TimeSpan)
+			If timeSpan < TimeSpan.Zero Then
+				Throw New OverflowException($"The time must not be less than zero, but {timeSpan} is given")
+			End If
+			_calculator = calculator
+			_timeSpan = timeSpan
+			_isTimeSpanLoaded = True
+		End Sub
+		''' <summary>
+		''' Construct a beat of the 1st beat from the calculator
+		''' </summary>
+		''' <param name="calculator">Specified calculator.</param>
+		''' <returns>The first beat tied to the level.</returns>
+		Public Shared Function [Default](calculator As ADBeatCalculator) As ADBeat
+			Return New ADBeat(calculator, 1)
+		End Function
+		''' <summary>
+		''' Determine if two beats come from the same level
+		''' </summary>
+		''' <param name="a">A beat.</param>
+		''' <param name="b">Another beat.</param>
+		''' <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
+		''' <returns></returns>
+		Public Shared Function FromSameLevel(a As ADBeat, b As ADBeat, Optional [throw] As Boolean = False) As Boolean
+			If a.baseLevel.Equals(b.baseLevel) Then
+				Return True
+			Else
+				If [throw] Then
+					Throw New RhythmBaseException("Beats must come from the same ADLevel.")
+				End If
+				Return False
+			End If
+		End Function
+		''' <summary>
+		''' Determine if two beats are from the same level.
+		''' <br/>
+		''' If any of them does not come from any level, it will also return true.
+		''' </summary>
+		''' <param name="a">A beat.</param>
+		''' <param name="b">Another beat.</param>
+		''' <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
+		''' <returns></returns>
+		Public Shared Function FromSameLevelOrNull(a As ADBeat, b As ADBeat, Optional [throw] As Boolean = False) As Boolean
+			Return a.baseLevel Is Nothing OrElse b.baseLevel Is Nothing OrElse FromSameLevel(a, b, [throw])
+		End Function
+		Public Function FromSameLevel(b As ADBeat, Optional [throw] As Boolean = False) As Boolean
+			Return FromSameLevel(Me, b, [throw])
+		End Function
+		''' <summary>
+		''' Determine if two beats are from the same level.
+		''' <br/>
+		''' If any of them does not come from any level, it will also return true.
+		''' </summary>
+		''' <param name="b">Another beat.</param>
+		''' <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
+		''' <returns></returns>	
+		Public Function FromSameLevelOrNull(b As ADBeat, Optional [throw] As Boolean = False) As Boolean
+			Return baseLevel Is Nothing OrElse b.baseLevel Is Nothing OrElse FromSameLevel(b, [throw])
+		End Function
+		''' <summary>
+		''' Returns a new instance of unbinding the level.
+		''' </summary>
+		''' <returns>A new instance of unbinding the level.</returns>
+		Public Function WithoutBinding() As ADBeat
+			Dim result = Me
+			result._calculator = Nothing
+			Return result
+		End Function
+		Private Sub IfNullThrowException()
+			If IsEmpty Then
+				Throw New InvalidRDBeatException
+			End If
+		End Sub
+		''' <summary>
+		''' Refresh the cache.
+		''' </summary>
+		Public Sub ResetCache()
+			Dim m = BeatOnly
+			_isTimeSpanLoaded = False
+		End Sub
+		Friend Sub ResetBPM()
+			'If Not _isBeatLoaded Then
+			'	_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1
+			'End If
+			_isBeatLoaded = True
+			_isTimeSpanLoaded = False
+			_isBPMLoaded = False
+		End Sub
+		Friend Sub ResetCPB()
+			'If Not _isBeatLoaded Then
+			'	_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1
+			'End If
+			_isBeatLoaded = True
+		End Sub
+		Public ReadOnly Property IsEmpty As Boolean
+			Get
+				Return _calculator Is Nothing OrElse Not (_isBeatLoaded OrElse _isTimeSpanLoaded)
+			End Get
+		End Property
+		Public Shared Operator +(a As ADBeat, b As Single) As ADBeat
+			Return New ADBeat(a._calculator, a.BeatOnly + b)
+		End Operator
+		Public Shared Operator +(a As ADBeat, b As TimeSpan) As ADBeat
+			Return New ADBeat(a._calculator, a.TimeSpan + b)
+		End Operator
+		Public Shared Operator -(a As ADBeat, b As Single) As ADBeat
+			Return New ADBeat(a._calculator, a.BeatOnly - b)
+		End Operator
+		Public Shared Operator -(a As ADBeat, b As TimeSpan) As ADBeat
+			Return New ADBeat(a._calculator, a.TimeSpan - b)
+		End Operator
+		Public Shared Operator >(a As ADBeat, b As ADBeat) As Boolean
+			Return FromSameLevel(a, b, True) AndAlso a.BeatOnly > b.BeatOnly
+		End Operator
+		Public Shared Operator <(a As ADBeat, b As ADBeat) As Boolean
+			Return FromSameLevel(a, b, True) AndAlso a.BeatOnly < b.BeatOnly
+		End Operator
+		Public Shared Operator >=(a As ADBeat, b As ADBeat) As Boolean
+			Return FromSameLevel(a, b, True) AndAlso a.BeatOnly >= b.BeatOnly
+		End Operator
+		Public Shared Operator <=(a As ADBeat, b As ADBeat) As Boolean
+			Return FromSameLevel(a, b, True) AndAlso a.BeatOnly <= b.BeatOnly
+		End Operator
+		Public Shared Operator =(a As ADBeat, b As ADBeat) As Boolean
+			Return FromSameLevel(a, b, True) AndAlso
+				(a._beat = b._beat) OrElse
+				(a._isTimeSpanLoaded AndAlso b._isTimeSpanLoaded AndAlso a._timeSpan = b._timeSpan) OrElse
+				(a.BeatOnly = b.BeatOnly)
+		End Operator
+		Public Shared Operator <>(a As ADBeat, b As ADBeat) As Boolean
+			Return Not a = b
+		End Operator
+		Public Function CompareTo(other As ADBeat) As Integer Implements IComparable(Of ADBeat).CompareTo
+			Return _beat - other._beat
+		End Function
+		Public Overrides Function ToString() As String
+			Return $"[{BeatOnly}]"
+		End Function
+		Public Overrides Function Equals(<CodeAnalysis.NotNull> obj As Object) As Boolean
+			Return obj.GetType = GetType(ADBeat) AndAlso Equals(CType(obj, ADBeat))
+		End Function
+		Public Overloads Function Equals(other As ADBeat) As Boolean Implements IEquatable(Of ADBeat).Equals
+			Return Me = other
+		End Function
+		Public Overrides Function GetHashCode() As Integer
+			Return HashCode.Combine(Me.BeatOnly, Me.baseLevel)
 		End Function
 	End Structure
 	''' <summary>
@@ -1237,21 +1437,25 @@ Namespace Components
 	End Class
 	Public MustInherit Class ADTileCollection
 		Implements ICollection(Of ADTile)
-		Friend eventsOrder As New List(Of ADTile)
-		Public ReadOnly Property Count As Integer = eventsOrder.Count Implements ICollection(Of ADTile).Count
+		Friend tileOrder As New List(Of ADTile)
+		Public ReadOnly Property Count As Integer Implements ICollection(Of ADTile).Count
+			Get
+				Return tileOrder.Count
+			End Get
+		End Property
 		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of ADTile).IsReadOnly
 		Public ReadOnly Property EndTile As New ADTile
 		Default Public ReadOnly Property item(index As Integer) As ADTile
 			Get
-				If index = eventsOrder.Count Then
+				If index = tileOrder.Count Then
 					Return EndTile
 				End If
-				Return eventsOrder(index)
+				Return tileOrder(index)
 			End Get
 		End Property
 		Public Overridable ReadOnly Iterator Property Events As IEnumerable(Of ADBaseEvent)
 			Get
-				For Each tile In eventsOrder
+				For Each tile In tileOrder
 					For Each action In tile
 						Yield action
 					Next
@@ -1262,22 +1466,22 @@ Namespace Components
 			End Get
 		End Property
 		Public Sub Add(item As ADTile) Implements ICollection(Of ADTile).Add
-			eventsOrder.Add(item)
+			tileOrder.Add(item)
 		End Sub
 		Public Sub Clear() Implements ICollection(Of ADTile).Clear
-			eventsOrder.Clear()
+			tileOrder.Clear()
 		End Sub
 		Public Sub CopyTo(array() As ADTile, arrayIndex As Integer) Implements ICollection(Of ADTile).CopyTo
-			eventsOrder.CopyTo(array, arrayIndex)
+			tileOrder.CopyTo(array, arrayIndex)
 		End Sub
 		Public Function Contains(item As ADTile) As Boolean Implements ICollection(Of ADTile).Contains
-			Return eventsOrder.Contains(item)
+			Return tileOrder.Contains(item)
 		End Function
 		Public Function Remove(item As ADTile) As Boolean Implements ICollection(Of ADTile).Remove
-			Return eventsOrder.Remove(item)
+			Return tileOrder.Remove(item)
 		End Function
 		Public Function GetEnumerator() As IEnumerator(Of ADTile) Implements IEnumerable(Of ADTile).GetEnumerator
-			Return eventsOrder.GetEnumerator
+			Return tileOrder.GetEnumerator
 		End Function
 		''' <summary>
 		''' Get the index of tile.
@@ -1285,7 +1489,10 @@ Namespace Components
 		''' <param name="item">The index of tile.</param>
 		''' <returns></returns>
 		Public Function IndexOf(item As ADTile) As Integer
-			Return eventsOrder.IndexOf(item)
+			If item Is EndTile Then
+				Return Count
+			End If
+			Return tileOrder.IndexOf(item)
 		End Function
 		Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
 			Return GetEnumerator()
@@ -1826,7 +2033,7 @@ Namespace LevelElements
 		''' <summary>
 		''' Asset collection.
 		''' </summary>
-		<JsonIgnore> Public ReadOnly Assets As New HashSet(Of RDSprite)
+		<JsonIgnore> Public ReadOnly Property Assets As New HashSet(Of RDSprite)
 		''' <summary>
 		''' Variables.
 		''' </summary>
@@ -1834,7 +2041,7 @@ Namespace LevelElements
 		''' <summary>
 		''' The calculator that comes with the level.
 		''' </summary>
-		<JsonIgnore> Public ReadOnly Calculator As New RDBeatCalculator(Me)
+		<JsonIgnore> Public ReadOnly Property Calculator As New RDBeatCalculator(Me)
 		''' <summary>
 		''' Level Settings.
 		''' </summary>
@@ -2486,10 +2693,6 @@ Namespace LevelElements
 		Inherits ADTileCollection
 		Friend _path As String
 		''' <summary>
-		''' The calculator that comes with the level.
-		''' </summary>
-		<JsonIgnore> Public ReadOnly Property Calculator As New ADBeatCalculator(Me)
-		''' <summary>
 		''' Level settings.
 		''' </summary>
 		Public Property Settings As New ADSettings
@@ -2513,6 +2716,9 @@ Namespace LevelElements
 				Return IO.Path.GetDirectoryName(_path)
 			End Get
 		End Property
+		''' <summary>
+		''' Get all the events of the level.
+		''' </summary>
 		Public Overrides ReadOnly Iterator Property Events As IEnumerable(Of ADBaseEvent)
 			Get
 				For Each tile In MyBase.Events
@@ -2523,6 +2729,10 @@ Namespace LevelElements
 				Next
 			End Get
 		End Property
+		''' <summary>
+		''' The calculator that comes with the level.
+		''' </summary>
+		<JsonIgnore> Public ReadOnly Property Calculator As New ADBeatCalculator(Me)
 		Public Sub New()
 		End Sub
 		Public Sub New(items As IEnumerable(Of ADTile))
@@ -2567,10 +2777,6 @@ Namespace LevelElements
 					Throw New RhythmBaseException("File not supported.")
 			End Select
 		End Function
-		''' <summary>
-		''' Get all the events of the level.
-		''' </summary>
-		''' <returns>An iterator of level events.</returns>
 	End Class
 	Public Class ADSettings
 		Public Property Version As Integer '13

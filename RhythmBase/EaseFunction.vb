@@ -8,9 +8,7 @@ Namespace Components
         ''' Ease types.
         ''' </summary>
         Public Enum EaseType As Integer
-#If DEBUG Then
             Unset = -1
-#End If
             Linear
 
             InSine
@@ -201,10 +199,8 @@ Namespace Components
         ''' <returns>Easing result.</returns>
         <Extension> Public Function Calculate(Type As EaseType, x As Single) As Single
             Select Case Type
-#If DEBUG Then
                 Case EaseType.Unset
                     Return EaseFunction.None(x)
-#End If
                 Case EaseType.Linear
                     Return EaseFunction.Linear(x)
                 Case EaseType.InSine

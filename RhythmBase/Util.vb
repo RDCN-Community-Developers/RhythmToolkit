@@ -215,14 +215,32 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 		Public Function CrotchetsPerBarOf(beat As RDBeat) As Single
 			Return If(_CPBList.LastOrDefault(Function(i) i.Beat < beat)?.CrotchetsPerBar, 8)
 		End Function
+
 	End Class
 	''' <summary>
 	''' Beat Calculator.
 	''' </summary>
 	Public Class ADBeatCalculator
 		Friend Collection As ADLevel
+		Private _DefaultBpm As Single
+		Private _MidSpins As List(Of ADTile)
+		Private _SetSpeeds As List(Of ADSetSpeed)
+		Private _Twirls As List(Of ADTwirl)
+		Private _Pauses As List(Of ADPause)
+		Private _Holds As List(Of ADHold)
+		Private _Freeroams As List(Of ADFreeRoam)
 		Friend Sub New(level As ADLevel)
 			Collection = level
+			Refresh()
+		End Sub
+		Private Sub Refresh()
+			_DefaultBpm = Collection.Settings.Bpm
+			_MidSpins = Collection.Where(Function(i) i.IsMidSpin).ToList
+			_SetSpeeds = Collection.EventsWhere(Of ADSetSpeed).ToList
+			_Twirls = Collection.EventsWhere(Of ADTwirl).ToList
+			_Pauses = Collection.EventsWhere(Of ADPause).ToList
+			_Holds = Collection.EventsWhere(Of ADHold).ToList
+			_Freeroams = Collection.EventsWhere(Of ADFreeRoam).ToList
 		End Sub
 	End Class
 	Public Module Utils
@@ -276,6 +294,12 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 				End Select
 			Next
 			Return out
+		End Function
+		Public Function DegreeToRadius(degree As Single) As Single
+			Return Single.Pi * degree / 180
+		End Function
+		Public Function RadiusToDegree(radius As Single) As Single
+			Return radius * 180 / Single.Pi
 		End Function
 	End Module
 	Public Module TypeConvert

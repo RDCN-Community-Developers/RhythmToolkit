@@ -861,7 +861,7 @@ Namespace Converters
 			Dim jobj = MyBase.SetSerializedObject(value, serializer)
 
 			Dim s = jobj.First
-			s.AddBeforeSelf(New JProperty("floor", level.eventsOrder.IndexOf(value.Parent)))
+			s.AddBeforeSelf(New JProperty("floor", level.tileOrder.IndexOf(value.Parent)))
 
 			Return jobj
 		End Function
@@ -1085,7 +1085,7 @@ Namespace Converters
 			MiliSecond
 			Microsecond
 		End Enum
-		Private _timeType
+		Private ReadOnly _timeType
 		Public Sub New()
 			_timeType = TimeType.MiliSecond
 		End Sub
