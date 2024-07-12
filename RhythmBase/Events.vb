@@ -175,14 +175,25 @@ Namespace Events
 				Return _beat
 			End Get
 			Set(value As RDBeat)
-				If _beat.baseLevel IsNot Nothing AndAlso
-					value.baseLevel IsNot Nothing AndAlso
-					_beat.FromSameLevel(value, True) Then
+				'If _beat.baseLevel IsNot Nothing AndAlso
+				'	value.baseLevel IsNot Nothing AndAlso
+				'	_beat.FromSameLevel(value, True) Then
+				'	_beat.baseLevel.Remove(Me)
+				'	value.baseLevel.Add(Me)
+				'	_beat = value
+				'Else
+				'	_beat = value.WithoutBinding()
+				'End If
+				If _beat.baseLevel Is Nothing Then
+					If value.baseLevel Is Nothing Then
+						_beat = value
+					Else
+						_beat = value.WithoutBinding()
+					End If
+				Else
+					value = New RDBeat(_beat.baseLevel.Calculator, value)
 					_beat.baseLevel.Remove(Me)
 					value.baseLevel.Add(Me)
-					_beat = value
-				Else
-					_beat = value.WithoutBinding()
 				End If
 			End Set
 		End Property
@@ -201,10 +212,16 @@ Namespace Events
 		Public Property Active As Boolean = True
 		''' <summary>
 		''' Clone this event and its basic properties.
+		''' If it is of the same type as the source event, then it will be cloned.
 		''' </summary>
 		''' <typeparam name="T">Type that will be generated.</typeparam>
 		''' <returns></returns>
 		Public Overridable Function Clone(Of T As {RDBaseEvent, New})() As T
+			If ConvertToRDEnum(Of T)() = Type Then
+				Dim e = CType(MemberwiseClone(), T)
+				e._beat = Beat.WithoutBinding()
+				Return e
+			End If
 			Dim temp = New T With {.Beat = Beat.WithoutBinding, .Y = Y, .Condition = Condition, .Tag = Tag, .Active = Active}
 			If Me.Condition IsNot Nothing Then
 				For Each item In Me.Condition.ConditionLists
@@ -514,6 +531,9 @@ Namespace Events
 		Public Property Sound As Components.RDAudio
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PlaySound
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {If(IsCustom, Sound.ToString, CustomSoundType.ToString)}"
+		End Function
 	End Class
 	Public Class RDSetClapSounds
 		Inherits RDBaseEvent
@@ -539,7 +559,7 @@ Namespace Events
 			GatherNoCeil
 			GatherAndCeil
 		End Enum
-		Public Property IntervalType As String
+		Public Property IntervalType As IntervalTypes
 		Public Property Interval As Integer
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetHeartExplodeInterval
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
@@ -589,8 +609,7 @@ Namespace Events
 		Public Property Volume As UInteger
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SayReadyGetSetGo
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
-		<JsonIgnore>
-		Public ReadOnly Property Splitable As Boolean
+		<JsonIgnore> Public ReadOnly Property Splitable As Boolean
 			Get
 				Return PhraseToSay = Words.SayReaDyGetSetGoNew OrElse
 PhraseToSay = Words.SayGetSetGo OrElse
@@ -599,6 +618,9 @@ PhraseToSay = Words.SayGetSetOne OrElse
 PhraseToSay = Words.SayReadyGetSetGo
 			End Get
 		End Property
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {VoiceSource}: {PhraseToSay}"
+		End Function
 	End Class
 	Public Class RDSetGameSound
 		Inherits RDBaseEvent
@@ -680,6 +702,9 @@ SoundType = SoundTypes.BurnshotSound)
 		End Function
 		Public Function ShouldSerializeOffset() As Boolean
 			Return ShouldSerialize()
+		End Function
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {SoundType}"
 		End Function
 	End Class
 	Public Class RDSetBeatSound
@@ -956,6 +981,9 @@ Presets.Dots
 		Public Property TilingType As RDTilingTypes
 		Public Overrides ReadOnly Property Type As RDEventType = Events.RDEventType.SetBackgroundColor
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {If(BackgroundType = BackgroundTypes.Color, Color.ToString, String.Join(","c, Image.Select(Function(i) i.ToString)))}"
+		End Function
 	End Class
 	Public Class RDSetForeground
 		Inherits RDBaseEvent
@@ -974,6 +1002,9 @@ Presets.Dots
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetForeground
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Color},{String.Join(","c, Image.Select(Function(i) i.ToString))}"
+		End Function
 	End Class
 	Public Class RDSetSpeed
 		Inherits RDBaseEvent
@@ -982,9 +1013,11 @@ Presets.Dots
 		Public Property Speed As Single
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetSpeed
-		<JsonIgnore>
-		Public Property Rooms As RDRoom = RDRoom.Default
+		<JsonIgnore> Public Property Rooms As RDRoom = RDRoom.Default
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" Speed:{Speed}"
+		End Function
 	End Class
 	Public Class RDFlash
 		Inherits RDBaseEvent
@@ -997,6 +1030,9 @@ Presets.Dots
 		Public Property Duration As Durations
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Flash
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Duration}"
+		End Function
 	End Class
 	Public Class RDCustomFlash
 		Inherits RDBaseEvent
@@ -1012,6 +1048,9 @@ Presets.Dots
 		Public Property EndOpacity As Integer
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomFlash
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {StartColor}=>{EndColor}"
+		End Function
 	End Class
 	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class RDMoveCamera
 		Inherits RDBaseEvent
@@ -1085,6 +1124,9 @@ Presets.Dots
 		Public Property Replace As Boolean
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PlayExpression
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Expression}"
+		End Function
 	End Class
 	Public Class RDTintRows
 		Inherits RDBaseRowAnimation
@@ -1119,7 +1161,7 @@ Presets.Dots
 			Return Duration <> 0
 		End Function
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString() + $"row:{Index}"
+			Return MyBase.ToString() + $" {Border}{If(Border = RDBorders.None, "", ":" + BorderColor.ToString)}"
 		End Function
 	End Class
 	Public Class RDBassDrop
@@ -1134,6 +1176,9 @@ Presets.Dots
 		Public Property Strength As StrengthType
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.BassDrop
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Strength}"
+		End Function
 	End Class
 	Public Class RDShakeScreen
 		Inherits RDBaseEvent
@@ -1147,6 +1192,9 @@ Presets.Dots
 		Public Property ShakeLevel As ShakeLevels
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShakeScreen
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {ShakeLevel}"
+		End Function
 	End Class
 	Public Class RDFlipScreen
 		Inherits RDBaseEvent
@@ -1154,9 +1202,25 @@ Presets.Dots
 		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
 		Public Property FlipX As Boolean
 		Public Property FlipY As Boolean
-
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.FlipScreen
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Dim result As String
+			If FlipX Then
+				If FlipY Then
+					result = "X"
+				Else
+					result = "^v"
+				End If
+			Else
+				If FlipY Then
+					result = "<>"
+				Else
+					result = ""
+				End If
+			End If
+			Return MyBase.ToString() + $" {result}"
+		End Function
 	End Class
 	Public Class RDInvertColors
 		Inherits RDBaseEvent
@@ -1165,6 +1229,9 @@ Presets.Dots
 		Public Property Enable As Boolean
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.InvertColors
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Enable}"
+		End Function
 	End Class
 	Public Class RDPulseCamera
 		Inherits RDBaseEvent
@@ -1175,6 +1242,9 @@ Presets.Dots
 		Public Property Frequency As Single
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PulseCamera
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Strength},{Count},{Frequency}"
+		End Function
 	End Class
 	Public Class RDTextExplosion
 		Inherits RDBaseEvent
@@ -1194,6 +1264,9 @@ Presets.Dots
 		Public Property Mode As Modes
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.TextExplosion
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Text}"
+		End Function
 	End Class
 	Public Class RDNarrateRowInfo
 		Inherits RDBaseRowAction
@@ -1213,6 +1286,9 @@ Presets.Dots
 		Public Property NarrateSkipBeats As String
 		Public Property CustomPattern As New LimitedList(Of Patterns)(6)
 		Public Property SkipsUnstable As Boolean
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {InfoType}:{NarrateSkipBeats}"
+		End Function
 	End Class
 	Public Class RDReadNarration
 		Inherits RDBaseEvent
@@ -1230,6 +1306,9 @@ Presets.Dots
 		Public Property Category As NarrationCategory
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
 		Public Property Rooms As RDRoom = RDRoom.Default
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Text}"
+		End Function
 	End Class
 	Public Class RDShowDialogue
 		Inherits RDBaseEvent
@@ -1248,6 +1327,9 @@ Presets.Dots
 		Public Property PlayTextSounds As Boolean
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShowDialogue
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Text}"
+		End Function
 	End Class
 	Public Class RDShowStatusSign
 		Inherits RDBaseEvent
@@ -1269,6 +1351,9 @@ Presets.Dots
 		End Property
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShowStatusSign
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Text}"
+		End Function
 	End Class
 	Public Class RDFloatingText
 		Inherits RDBaseEvent
@@ -1288,7 +1373,7 @@ Presets.Dots
 		Private ReadOnly GeneratedId As UInteger
 		Private ReadOnly _children As New List(Of RDAdvanceText)
 		Private _mode As OutMode = OutMode.FadeOut
-		Public Overrides ReadOnly Property Type As RDEventType = Events.RDEventType.FloatingText
+		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.FloatingText
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
 		<JsonIgnore> Public ReadOnly Property Children As List(Of RDAdvanceText)
 			Get
@@ -1323,7 +1408,7 @@ Presets.Dots
 			_PrivateId += 1
 		End Sub
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString() + $" Text:{_Text}"
+			Return MyBase.ToString() + $" {_Text}"
 		End Function
 	End Class
 	Public Class RDAdvanceText
@@ -1349,7 +1434,7 @@ Presets.Dots
 		End Property
 #Enable Warning IDE0051
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString + $" Index: {_Parent.Children.IndexOf(Me)}"
+			Return MyBase.ToString + $" Index:{_Parent.Children.IndexOf(Me)}"
 		End Function
 	End Class
 	Public Class RDChangePlayersRows
@@ -1399,6 +1484,9 @@ Presets.Dots
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Comment
 		Public Function ShouldSerializeTarget() As Boolean
 			Return Tab = RDTabs.Sprites
+		End Function
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Text}"
 		End Function
 	End Class
 	Public Class RDStutter
@@ -1527,6 +1615,9 @@ Presets.Dots
 		<JsonProperty("Tag")> Public Property ActionTag As String
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.TagAction
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {ActionTag}"
+		End Function
 	End Class
 	Public Class RDCallCustomMethod
 		Inherits RDBaseEvent
@@ -1540,6 +1631,9 @@ Presets.Dots
 		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CallCustomMethod
 		<JsonIgnore> Public Property Rooms As RDRoom = RDRoom.Default
 		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {MethodName}"
+		End Function
 	End Class
 	Public Class RDNewWindowDance
 		Inherits RDBaseEvent
@@ -1607,6 +1701,9 @@ Presets.Dots
 		End Function
 		Friend Function ShouldSerializeEase() As Boolean
 			Return Duration <> 0
+		End Function
+		Public Overrides Function ToString() As String
+			Return MyBase.ToString() + $" {Border}{If(Border = RDBorders.None, "", ":" + BorderColor.ToString)}"
 		End Function
 	End Class
 	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class RDTile

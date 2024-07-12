@@ -72,7 +72,7 @@ Namespace Exceptions
             LevelVersion = version
         End Sub
     End Class
-    Class SpriteException
+    Public Class SpriteException
         Inherits Exception
         Public Sub New()
             MyBase.New()
@@ -84,7 +84,7 @@ Namespace Exceptions
             MyBase.New(message, innerException)
         End Sub
     End Class
-    Class FileExtensionMismatchException
+    Public Class FileExtensionMismatchException
         Inherits SpriteException
         Public Sub New()
             MyBase.New()
@@ -96,7 +96,7 @@ Namespace Exceptions
             MyBase.New(message, innerException)
         End Sub
     End Class
-    Class OverwriteNotAllowedException
+    Public Class OverwriteNotAllowedException
         Inherits RhythmBaseException
         Public Property FilePath As String
         Private ReadOnly _referType As Type
@@ -111,11 +111,11 @@ To correct this, change the path or filename or set the OverWrite property of {_
             _referType = referType
         End Sub
     End Class
-    Class InvalidRDBeatException
+    Public Class InvalidRDBeatException
         Inherits RhythmBaseException
         Public Overrides ReadOnly Property Message As String = "The beat is invalid, possibly because the beat is not associated with the RDLevel."
     End Class
-    Class IllegalBeatException
+    Public Class IllegalBeatException
         Inherits RhythmBaseException
         Public Item As IRDBarBeginningEvent
         Public Overrides ReadOnly Property Message As String
@@ -127,7 +127,7 @@ To correct this, change the path or filename or set the OverWrite property of {_
             Me.Item = item
         End Sub
     End Class
-    Class UnreadableEventException
+    Public Class UnreadableEventException
         Inherits RhythmBaseException
         Public Item As RDBaseEvent
         Public Sub New(message As String, item As RDBaseEvent)

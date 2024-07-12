@@ -156,7 +156,6 @@ Namespace Converters
 			End While
 			reader.Close()
 
-			Dim itemToThrow As JObject
 
 			Try
 #Disable Warning BC42104
@@ -184,7 +183,6 @@ Namespace Converters
 
 
 				For Each item In JEvents
-					itemToThrow = item
 					Dim eventType = RDConvertToType(item("type"))
 					If eventType Is Nothing Then
 						Dim TempEvent As RDBaseEvent

@@ -4,6 +4,7 @@ Imports System.Text.RegularExpressions
 Imports Newtonsoft.Json
 Imports SkiaSharp
 Imports System.ComponentModel
+Imports System.Formats
 #Disable Warning CA1507
 #Disable Warning IDE1006
 #Disable Warning CA1812
@@ -377,14 +378,26 @@ Namespace Components
 		''' </summary>
 		''' <param name="beatOnly">The total number of beats from this moment to the beginning of the level.</param>
 		Public Sub New(beatOnly As Single)
+			If beatOnly < 1 Then
+				Throw New OverflowException($"The beat must not be less than 1, but {beatOnly} is given")
+			End If
 			_beat = beatOnly - 1
 			_isBeatLoaded = True
 		End Sub
 		Public Sub New(bar As UInteger, beat As Single)
+			If bar < 1 Then
+				Throw New OverflowException($"The bar must not be less than 1, but {bar} is given")
+			End If
+			If beat < 1 Then
+				Throw New OverflowException($"The beat must not be less than 1, but {beat} is given")
+			End If
 			_BarBeat = (bar, beat)
 			_isBarBeatLoaded = True
 		End Sub
 		Public Sub New(timeSpan As TimeSpan)
+			If timeSpan < TimeSpan.Zero Then
+				Throw New OverflowException($"The time must not be less than zero, but {timeSpan} is given")
+			End If
 			_TimeSpan = timeSpan
 			_isTimeSpanLoaded = True
 		End Sub
@@ -394,12 +407,8 @@ Namespace Components
 		''' <param name="calculator">Specified calculator.</param>
 		''' <param name="beatOnly">The total number of beats from this moment to the beginning of the level.</param>
 		Public Sub New(calculator As RDBeatCalculator, beatOnly As Single)
-			If beatOnly < 1 Then
-				Throw New OverflowException($"The beat must not be less than 1, but {beatOnly} is given")
-			End If
+			Me.New(beatOnly)
 			_calculator = calculator
-			_beat = beatOnly - 1
-			_isBeatLoaded = True
 		End Sub
 		''' <summary>
 		''' Construct an instance with specifying a calculator.
@@ -408,16 +417,9 @@ Namespace Components
 		''' <param name="bar">The actual bar of this moment.</param>
 		''' <param name="beat">The actual beat of this moment.</param>
 		Public Sub New(calculator As RDBeatCalculator, bar As UInteger, beat As Single)
-			If bar < 1 Then
-				Throw New OverflowException($"The bar must not be less than 1, but {bar} is given")
-			End If
-			If beat < 1 Then
-				Throw New OverflowException($"The beat must not be less than 1, but {beat} is given")
-			End If
+			Me.New(bar, beat)
 			_calculator = calculator
-			_BarBeat = (bar, beat)
 			_beat = _calculator.BarBeatToBeatOnly(bar, beat) - 1
-			_isBarBeatLoaded = True
 		End Sub
 		''' <summary>
 		''' Construct an instance with specifying a calculator.
@@ -425,13 +427,43 @@ Namespace Components
 		''' <param name="calculator">Specified calculator.</param>
 		''' <param name="timeSpan">The total amount of time from the start of the level to the moment</param>
 		Public Sub New(calculator As RDBeatCalculator, timeSpan As TimeSpan)
-			If timeSpan < TimeSpan.Zero Then
-				Throw New OverflowException($"The time must not be less than zero, but {timeSpan} is given")
-			End If
+			Me.New(timeSpan)
 			_calculator = calculator
-			_TimeSpan = timeSpan
 			_beat = _calculator.TimeSpanToBeatOnly(timeSpan) - 1
-			_isTimeSpanLoaded = True
+		End Sub
+		''' <summary>
+		''' Construct an instance with specifying a calculator.
+		''' </summary>
+		''' <param name="calculator">Specified calculator.</param>
+		''' <param name="beat">Another instance.</param>
+		Public Sub New(calculator As RDBeatCalculator, beat As RDBeat)
+			If beat._isBeatLoaded Then
+				If beat._beat < 1 Then
+					Throw New OverflowException($"The beat must not be less than 1, but {beat._beat} is given")
+				End If
+				_beat = beat._beat
+				_isBeatLoaded = True
+				_calculator = calculator
+			ElseIf beat._isBarBeatLoaded Then
+				If beat._BarBeat.Bar < 1 Then
+					Throw New OverflowException($"The bar must not be less than 1, but {beat._BarBeat.Bar} is given")
+				End If
+				If beat._BarBeat.Beat < 1 Then
+					Throw New OverflowException($"The beat must not be less than 1, but {beat._BarBeat.Beat} is given")
+				End If
+				_BarBeat = beat._BarBeat
+				_isBarBeatLoaded = True
+				_calculator = calculator
+				_beat = _calculator.BarBeatToBeatOnly(beat._BarBeat.Bar, beat._BarBeat.Beat) - 1
+			ElseIf beat._isTimeSpanLoaded Then
+				If beat._TimeSpan < TimeSpan.Zero Then
+					Throw New OverflowException($"The time must not be less than zero, but {beat._TimeSpan} is given")
+				End If
+				_TimeSpan = beat._TimeSpan
+				_isTimeSpanLoaded = True
+				_calculator = calculator
+				_beat = _calculator.TimeSpanToBeatOnly(TimeSpan) - 1
+			End If
 		End Sub
 		''' <summary>
 		''' Construct a beat of the 1st beat from the calculator
@@ -490,6 +522,9 @@ Namespace Components
 		''' <returns>A new instance of unbinding the level.</returns>
 		Public Function WithoutBinding() As RDBeat
 			Dim result = Me
+			If result._calculator IsNot Nothing Then
+				result.Cache()
+			End If
 			result._calculator = Nothing
 			Return result
 		End Function
@@ -502,9 +537,16 @@ Namespace Components
 		''' Refresh the cache.
 		''' </summary>
 		Public Sub ResetCache()
-			Dim m = BeatOnly
+			Dim __ As Object = BeatOnly
 			_isBarBeatLoaded = False
 			_isTimeSpanLoaded = False
+		End Sub
+		Public Sub Cache()
+			IfNullThrowException()
+			Dim __ As Object
+			__ = BeatOnly
+			__ = BarBeat
+			__ = TimeSpan
 		End Sub
 		''' <summary>
 		''' 
@@ -526,16 +568,36 @@ Namespace Components
 			_isCPBLoaded = False
 		End Sub
 		Public Shared Operator +(a As RDBeat, b As Single) As RDBeat
-			Return New RDBeat(a._calculator, a.BeatOnly + b)
+			If Not a.IsEmpty Then
+				Return New RDBeat(a._calculator, a.BeatOnly + b)
+			ElseIf a._isBeatLoaded Then
+				Return New RDBeat(a._calculator, a._beat + b)
+			End If
+			Throw New ArgumentNullException(NameOf(a), "The beat cannot be calculate.")
 		End Operator
 		Public Shared Operator +(a As RDBeat, b As TimeSpan) As RDBeat
-			Return New RDBeat(a._calculator, a.TimeSpan + b)
+			If Not a.IsEmpty Then
+				Return New RDBeat(a._calculator, a.TimeSpan + b)
+			ElseIf a._isBeatLoaded Then
+				Return New RDBeat(a._calculator, a._TimeSpan + b)
+			End If
+			Throw New ArgumentNullException(NameOf(a), "The beat cannot be calculate.")
 		End Operator
 		Public Shared Operator -(a As RDBeat, b As Single) As RDBeat
-			Return New RDBeat(a._calculator, a.BeatOnly - b)
+			If Not a.IsEmpty Then
+				Return New RDBeat(a._calculator, a.BeatOnly - b)
+			ElseIf a._isBeatLoaded Then
+				Return New RDBeat(a._calculator, a._beat - b)
+			End If
+			Throw New ArgumentNullException(NameOf(a), "The beat cannot be calculate.")
 		End Operator
 		Public Shared Operator -(a As RDBeat, b As TimeSpan) As RDBeat
-			Return New RDBeat(a._calculator, a.TimeSpan - b)
+			If Not a.IsEmpty Then
+				Return New RDBeat(a._calculator, a.TimeSpan - b)
+			ElseIf a._isBeatLoaded Then
+				Return New RDBeat(a._calculator, a._TimeSpan - b)
+			End If
+			Throw New ArgumentNullException(NameOf(a), "The beat cannot be calculate.")
 		End Operator
 		Public Shared Operator >(a As RDBeat, b As RDBeat) As Boolean
 			Return FromSameLevel(a, b, True) AndAlso a.BeatOnly > b.BeatOnly
@@ -560,6 +622,9 @@ Namespace Components
 			Return Not a = b
 		End Operator
 		Public Overrides Function ToString() As String
+			If IsEmpty Then
+				Return $"[{If(_isBeatLoaded, _beat.ToString, "?")},{If(_isBarBeatLoaded, _BarBeat.ToString, "?")},{If(_isTimeSpanLoaded, _TimeSpan.ToString, "?")}]"
+			End If
 			Return $"[{BarBeat.bar},{BarBeat.beat}]"
 		End Function
 		Public Overrides Function Equals(<CodeAnalysis.NotNull> obj As Object) As Boolean
@@ -1899,6 +1964,9 @@ Namespace LevelElements
 		''' Color on bookmark.
 		''' </summary>
 		Public Property Color As BookmarkColors
+		Public Overrides Function ToString() As String
+			Return $"{Beat}, {Color}"
+		End Function
 	End Class
 	''' <summary>
 	''' Condition.
@@ -2379,7 +2447,7 @@ Namespace LevelElements
 			If Contains(item) Then
 				If item.Type = RDEventType.SetCrotchetsPerBar Then
 					Return RemoveSetCrotchetsPerBar(item)
-				ElseIf ConvertToADEnums(Of RDBaseBeatsPerMinute).Contains(item.Type) Then
+				ElseIf ConvertToRDEnums(Of RDBaseBeatsPerMinute).Contains(item.Type) Then
 					Return RemoveBaseBeatsPerMinute(item)
 				Else
 					Dim result = MyBase.Remove(item)
