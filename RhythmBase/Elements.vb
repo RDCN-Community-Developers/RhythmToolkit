@@ -1691,7 +1691,6 @@ Namespace LevelElements
 		Public Property Duration As Single
 		Public Sub New()
 		End Sub
-#If DEBUG Then
 		Friend Shared Function Load(text As String) As RDCondition
 			Dim out As New RDCondition
 			Dim Matches = Regex.Matches(text, "(~?\d+)(?=[&d])")
@@ -1702,7 +1701,6 @@ Namespace LevelElements
 				Throw New RhythmBaseException($"Illegal condition: {text}.")
 			End If
 		End Function
-#End If
 		''' <summary>
 		''' Converting conditions to strings
 		''' </summary>

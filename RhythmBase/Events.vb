@@ -385,6 +385,10 @@ Namespace Events
 		End Sub
 		Public Sub New(data As Linq.JObject)
 			Me.Data = data
+			Beat = New RDBeat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
+			Tag = data("tag")?.ToObject(Of String)
+			Condition = If(data("condition") Is Nothing, Nothing, RDCondition.Load(data("condition")?.ToObject(Of String)))
+			Active = If(data("active")?.ToObject(Of Boolean), True)
 		End Sub
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
@@ -430,6 +434,10 @@ Namespace Events
 		End Sub
 		Public Sub New(data As Linq.JObject)
 			Me.Data = data
+			Beat = New RDBeat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
+			Tag = data("tag")?.ToObject(Of String)
+			Condition = If(data("condition") Is Nothing, Nothing, RDCondition.Load(data("condition")?.ToObject(Of String)))
+			Active = If(data("active")?.ToObject(Of Boolean), True)
 		End Sub
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
@@ -465,6 +473,10 @@ Namespace Events
 		End Sub
 		Public Sub New(data As Linq.JObject)
 			Me.Data = data
+			Beat = New RDBeat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
+			Tag = data("tag")?.ToObject(Of String)
+			Condition = If(data("condition") Is Nothing, Nothing, RDCondition.Load(data("condition")?.ToObject(Of String)))
+			Active = If(data("active")?.ToObject(Of Boolean), True)
 		End Sub
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
