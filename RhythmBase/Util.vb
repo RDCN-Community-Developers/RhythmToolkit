@@ -433,6 +433,38 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 				End Try
 			End If
 		End Function
+		<Extension> Public Function GetSerializer(rdlevel As RDLevel, settings As LevelReadOrWriteSettings) As JsonSerializer
+			Dim EventsSerializer As New JsonSerializer With {
+						.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
+					}
+			With EventsSerializer.Converters
+				.Add(New PanelColorConverter(rdlevel.ColorPalette))
+				.Add(New AssetConverter(rdlevel.Path, rdlevel.Assets, settings))
+				.Add(New ConditionConverter(rdlevel.Conditionals))
+				.Add(New TagActionConverter(rdlevel, settings))
+				.Add(New CustomDecorationEventConverter(rdlevel, settings))
+				.Add(New CustomRowEventConverter(rdlevel, settings))
+				.Add(New CustomEventConverter(rdlevel, settings))
+				.Add(New BaseRowActionConverter(Of RDBaseRowAction)(rdlevel, settings))
+				.Add(New BaseDecorationActionConverter(Of RDBaseDecorationAction)(rdlevel, settings))
+				.Add(New BaseRDEventConverter(Of RDBaseEvent)(rdlevel, settings))
+				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+			End With
+			Return EventsSerializer
+		End Function
+		<Extension> Public Function GetSerializer(adlevel As ADLevel, settings As LevelReadOrWriteSettings) As JsonSerializer
+			Dim AllInOneSerializer As New JsonSerializer
+			With AllInOneSerializer.Converters
+				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
+				.Add(New ColorConverter)
+				.Add(New ADTileConverter(adlevel))
+				.Add(New ADCustomTileEventConverter(adlevel, settings))
+				.Add(New ADCustomEventConverter(adlevel, settings))
+				.Add(New ADBaseTileEventConverter(Of ADBaseTileEvent)(adlevel, settings))
+				.Add(New ADBaseEventConverter(Of ADBaseEvent)(adlevel, settings))
+			End With
+			Return AllInOneSerializer
+		End Function
 	End Module
 	''' <summary>
 	''' Provides methods for creating and reading property names.

@@ -24,7 +24,7 @@ Public Class Form1
 		If OpenFileDialog1.ShowDialog <> DialogResult.OK Then
 			Return
 		End If
-		processingLevel = RDLevel.LoadFile(OpenFileDialog1.FileName, New LeveReadOrWriteSettings)
+		processingLevel = RDLevel.LoadFile(OpenFileDialog1.FileName, New LevelReadOrWriteSettings)
 		Dim file = New IO.FileInfo(OpenFileDialog1.FileName)
 		Text = file.Directory.Name + "\" + file.Name
 		LevelHandler = New RDLevelHandler(processingLevel)

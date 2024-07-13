@@ -8,8 +8,8 @@ Namespace Converters
 	Friend Class RDLevelConverter
 		Inherits JsonConverter(Of RDLevel)
 		Private ReadOnly fileLocation As String
-		Private ReadOnly settings As LeveReadOrWriteSettings
-		Public Sub New(location As String, settings As LeveReadOrWriteSettings)
+		Private ReadOnly settings As LevelReadOrWriteSettings
+		Public Sub New(location As String, settings As LevelReadOrWriteSettings)
 			fileLocation = location
 			Me.settings = settings
 		End Sub
@@ -159,27 +159,12 @@ Namespace Converters
 
 			Try
 #Disable Warning BC42104
-				Dim EventsSerializer As New JsonSerializer With {
-						.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
-					}
-				With EventsSerializer.Converters
-					.Add(New PanelColorConverter(outLevel.ColorPalette))
-					.Add(New AssetConverter(outLevel.Path, outLevel.Assets, settings))
-					.Add(New ConditionConverter(outLevel.Conditionals))
-					.Add(New TagActionConverter(outLevel, settings))
-					.Add(New CustomDecorationEventConverter(outLevel, settings))
-					.Add(New CustomRowEventConverter(outLevel, settings))
-					.Add(New CustomEventConverter(outLevel, settings))
-					.Add(New BaseRowActionConverter(Of RDBaseRowAction)(outLevel, settings))
-					.Add(New BaseDecorationActionConverter(Of RDBaseDecorationAction)(outLevel, settings))
-					.Add(New BaseRDEventConverter(Of RDBaseEvent)(outLevel, settings))
-					.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
-				End With
+				Dim EventsSerializer = outLevel.GetSerializer(settings)
 
 				Dim FloatingTextCollection As New List(Of ([event] As RDFloatingText, id As Integer))
 				Dim AdvanceTextCollection As New List(Of ([event] As RDAdvanceText, id As Integer))
 
-				Dim calculator As New RDBeatCalculator(outLevel)
+				'Dim calculator As New RDBeatCalculator(outLevel)
 
 
 				For Each item In JEvents
@@ -336,7 +321,7 @@ Namespace Converters
 	Friend Class BaseRDEventConverter(Of T As RDBaseEvent)
 		Inherits JsonConverter(Of T)
 		Protected ReadOnly level As RDLevel
-		Protected ReadOnly settings As LeveReadOrWriteSettings
+		Protected ReadOnly settings As LevelReadOrWriteSettings
 		Private _canread As Boolean = True
 		Private _canwrite As Boolean = True
 		Public Overrides ReadOnly Property CanRead As Boolean
@@ -349,7 +334,7 @@ Namespace Converters
 				Return _canwrite
 			End Get
 		End Property
-		Public Sub New(level As RDLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			Me.level = level
 			Me.settings = inputSettings
 		End Sub
@@ -399,7 +384,7 @@ Namespace Converters
 	End Class
 	Friend Class CustomEventConverter
 		Inherits BaseRDEventConverter(Of RDCustomEvent)
-		Public Sub New(level As RDLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As RDCustomEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As RDCustomEvent
@@ -418,7 +403,7 @@ Namespace Converters
 	End Class
 	Friend Class CustomRowEventConverter
 		Inherits BaseRowActionConverter(Of RDCustomRowEvent)
-		Public Sub New(level As RDLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As RDCustomRowEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As RDCustomRowEvent
@@ -437,7 +422,7 @@ Namespace Converters
 	End Class
 	Friend Class CustomDecorationEventConverter
 		Inherits BaseDecorationActionConverter(Of RDCustomDecorationEvent)
-		Public Sub New(level As RDLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As RDCustomDecorationEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As RDCustomDecorationEvent
@@ -456,7 +441,7 @@ Namespace Converters
 	End Class
 	Friend Class BaseRowActionConverter(Of T As RDBaseRowAction)
 		Inherits BaseRDEventConverter(Of T)
-		Public Sub New(level As RDLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
@@ -487,7 +472,7 @@ Namespace Converters
 	End Class
 	Friend Class BaseDecorationActionConverter(Of T As RDBaseDecorationAction)
 		Inherits BaseRDEventConverter(Of T)
-		Public Sub New(level As RDLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
@@ -514,8 +499,8 @@ Namespace Converters
 		Inherits JsonConverter(Of RDSprite)
 		Private ReadOnly fileLocation As String
 		Private ReadOnly assets As HashSet(Of RDSprite)
-		Private ReadOnly settings As LeveReadOrWriteSettings
-		Public Sub New(location As String, assets As HashSet(Of RDSprite), settings As LeveReadOrWriteSettings)
+		Private ReadOnly settings As LevelReadOrWriteSettings
+		Public Sub New(location As String, assets As HashSet(Of RDSprite), settings As LevelReadOrWriteSettings)
 			fileLocation = location
 			Me.assets = assets
 			Me.settings = settings
@@ -574,7 +559,7 @@ Namespace Converters
 	End Class
 	Friend Class TagActionConverter
 		Inherits BaseRDEventConverter(Of RDTagAction)
-		Public Sub New(level As RDLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
 		Public Overrides Function SetSerializedObject(value As RDTagAction, serializer As JsonSerializer) As JObject
@@ -677,8 +662,8 @@ Namespace Converters
 	Friend Class ADLevelConverter
 		Inherits JsonConverter(Of ADLevel)
 		Private ReadOnly fileLocation As String
-		Private ReadOnly settings As LeveReadOrWriteSettings
-		Public Sub New(location As String, settings As LeveReadOrWriteSettings)
+		Private ReadOnly settings As LevelReadOrWriteSettings
+		Public Sub New(location As String, settings As LevelReadOrWriteSettings)
 			fileLocation = location
 			Me.settings = settings
 		End Sub
@@ -729,17 +714,7 @@ Namespace Converters
 			Dim JActions As JArray
 			Dim JDecorations As JArray
 
-			Dim AllInOneSerializer As New JsonSerializer
-			With AllInOneSerializer.Converters
-				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
-				.Add(New ColorConverter)
-				.Add(New ADTileConverter(outLevel))
-				.Add(New ADCustomTileEventConverter(outLevel, settings))
-				.Add(New ADCustomEventConverter(outLevel, settings))
-				.Add(New ADBaseTileEventConverter(Of ADBaseTileEvent)(outLevel, settings))
-				.Add(New ADBaseEventConverter(Of ADBaseEvent)(outLevel, settings))
-			End With
-
+			Dim AllInOneSerializer = outLevel.GetSerializer(settings)
 
 			While reader.Read
 				Dim name = reader.Value
@@ -784,7 +759,7 @@ Namespace Converters
 	Friend Class ADBaseEventConverter(Of T As ADBaseEvent)
 		Inherits JsonConverter(Of T)
 		Protected ReadOnly level As ADLevel
-		Protected ReadOnly settings As LeveReadOrWriteSettings
+		Protected ReadOnly settings As LevelReadOrWriteSettings
 		Protected _canread As Boolean = True
 		Protected _canwrite As Boolean = True
 		Public Overrides ReadOnly Property CanRead As Boolean
@@ -797,7 +772,7 @@ Namespace Converters
 				Return _canwrite
 			End Get
 		End Property
-		Public Sub New(level As ADLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As ADLevel, inputSettings As LevelReadOrWriteSettings)
 			Me.level = level
 			Me.settings = inputSettings
 		End Sub
@@ -834,7 +809,7 @@ Namespace Converters
 	End Class
 	Friend Class ADBaseTileEventConverter(Of T As ADBaseTileEvent)
 		Inherits ADBaseEventConverter(Of T)
-		Public Sub New(level As ADLevel, inputSettings As LeveReadOrWriteSettings)
+		Public Sub New(level As ADLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
@@ -866,7 +841,7 @@ Namespace Converters
 	End Class
 	Friend Class ADCustomEventConverter
 		Inherits ADBaseEventConverter(Of ADCustomEvent)
-		Public Sub New(level As ADLevel, settings As LeveReadOrWriteSettings)
+		Public Sub New(level As ADLevel, settings As LevelReadOrWriteSettings)
 			MyBase.New(level, settings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As ADCustomEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As ADCustomEvent
@@ -878,7 +853,7 @@ Namespace Converters
 	End Class
 	Friend Class ADCustomTileEventConverter
 		Inherits ADBaseTileEventConverter(Of ADCustomTileEvent)
-		Public Sub New(level As ADLevel, settings As LeveReadOrWriteSettings)
+		Public Sub New(level As ADLevel, settings As LevelReadOrWriteSettings)
 			MyBase.New(level, settings)
 		End Sub
 		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As ADCustomTileEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As ADCustomTileEvent

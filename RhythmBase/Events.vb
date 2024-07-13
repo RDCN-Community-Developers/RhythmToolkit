@@ -175,15 +175,6 @@ Namespace Events
 				Return _beat
 			End Get
 			Set(value As RDBeat)
-				'If _beat.baseLevel IsNot Nothing AndAlso
-				'	value.baseLevel IsNot Nothing AndAlso
-				'	_beat.FromSameLevel(value, True) Then
-				'	_beat.baseLevel.Remove(Me)
-				'	value.baseLevel.Add(Me)
-				'	_beat = value
-				'Else
-				'	_beat = value.WithoutBinding()
-				'End If
 				If _beat.baseLevel Is Nothing Then
 					If value.baseLevel Is Nothing Then
 						_beat = value
@@ -398,6 +389,31 @@ Namespace Events
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
 		End Function
+		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?) As Boolean
+			Return TryConvert(value, type, New LevelReadOrWriteSettings)
+		End Function
+		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?, settings As LevelReadOrWriteSettings) As Boolean
+			Dim serializer = _beat.baseLevel.GetSerializer(settings)
+			Dim eventType = RDConvertToType(Data("type"))
+			If eventType Is Nothing Then
+				Dim TempEvent As RDBaseEvent
+				If Data("target") IsNot Nothing Then
+					TempEvent = Data.ToObject(Of RDCustomDecorationEvent)(serializer)
+				ElseIf Data("row") IsNot Nothing Then
+					TempEvent = Data.ToObject(Of RDCustomRowEvent)(serializer)
+				Else
+					TempEvent = Data.ToObject(Of RDCustomEvent)(serializer)
+				End If
+				value = TempEvent
+				type = Nothing
+				Return False
+			Else
+				Dim TempEvent As RDBaseEvent = Data.ToObject(eventType, serializer)
+				value = TempEvent
+				type = [Enum].Parse(Of RDEventType)(Data("type"))
+				Return True
+			End If
+		End Function
 	End Class
 	Public Class RDCustomDecorationEvent
 		Inherits RDBaseDecorationAction
@@ -418,10 +434,16 @@ Namespace Events
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
 		End Function
+		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?) As Boolean
+			Return TryConvert(value, type, New LevelReadOrWriteSettings)
+		End Function
+		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?, settings As LevelReadOrWriteSettings) As Boolean
+			Return CType(Me, RDCustomEvent).TryConvert(value, type, settings)
+		End Function
 		Public Shared Widening Operator CType(e As RDCustomDecorationEvent) As RDCustomEvent
 			Return New RDCustomEvent(e.Data)
 		End Operator
-		Public Shared Widening Operator CType(e As RDCustomEvent) As RDCustomDecorationEvent
+		Public Shared Narrowing Operator CType(e As RDCustomEvent) As RDCustomDecorationEvent
 			If e.Data("row") IsNot Nothing Then
 				Return New RDCustomDecorationEvent(e.Data)
 			End If
@@ -446,6 +468,12 @@ Namespace Events
 		End Sub
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
+		End Function
+		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?) As Boolean
+			Return TryConvert(value, type, New LevelReadOrWriteSettings)
+		End Function
+		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?, settings As LevelReadOrWriteSettings) As Boolean
+			Return CType(Me, RDCustomEvent).TryConvert(value, type, settings)
 		End Function
 		Public Shared Widening Operator CType(e As RDCustomRowEvent) As RDCustomEvent
 			Return New RDCustomEvent(e.Data)
@@ -2173,8 +2201,7 @@ Presets.Dots
 	End Class
 	Public MustInherit Class ADBaseTileEvent
 		Inherits ADBaseEvent
-		<JsonIgnore>
-		Public Property Parent As ADTile
+		<JsonIgnore> Public Property Parent As ADTile
 		Public Overrides Function ToString() As String
 			Return $"{Type}"
 		End Function
@@ -2196,6 +2223,20 @@ Presets.Dots
 		Public Overrides Function ToString() As String
 			Return ActureType
 		End Function
+		'Public Overridable Function TryConvert(ByRef value As ADBaseEvent, ByRef type As ADEventType?) As Boolean
+		'	Return TryConvert(value, type, New LevelReadOrWriteSettings)
+		'End Function
+		'Public Overridable Function TryConvert(ByRef value As ADBaseEvent, ByRef type As ADEventType?, settings As LevelReadOrWriteSettings) As Boolean
+		'	Dim serializer = ADLevel.
+		'	Dim SubClassType As Type = ADConvertToType(Data("eventType").ToObject(Of String))
+
+		'	Dim result = If(SubClassType IsNot Nothing,
+		'		jobj.ToObject(SubClassType, serializer),
+		'		jobj.ToObject(Of ADCustomEvent)(serializer))
+
+		'	Return existingValue
+		'End Function
+
 	End Class
 	Public Class ADCustomTileEvent
 		Inherits ADBaseTileEvent

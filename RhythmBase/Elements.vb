@@ -1290,7 +1290,7 @@ Namespace Components
 					Throw New IndexOutOfRangeException
 				End If
 				If list(index).isDefault Then
-					Dim ValueCloned = MClone(DefaultValue)
+					Dim ValueCloned = DefaultValue
 					list(index) = (ValueCloned, False)
 					Return ValueCloned
 				End If
@@ -2275,7 +2275,7 @@ Namespace LevelElements
 		''' <exception cref="RhythmBaseException">File not supported.</exception>
 		''' <returns>An instance of a level that reads from a file.</returns>
 		Public Shared Function LoadFile(filepath As String) As RDLevel
-			Return LoadFile(filepath, New LeveReadOrWriteSettings)
+			Return LoadFile(filepath, New LevelReadOrWriteSettings)
 		End Function
 		''' <summary>
 		''' Read from file as level.
@@ -2287,7 +2287,7 @@ Namespace LevelElements
 		''' <exception cref="ConvertingException"></exception>
 		''' <exception cref="RhythmBaseException">File not supported.</exception>
 		''' <returns>An instance of a level that reads from a file.</returns>
-		Public Shared Function LoadFile(filepath As String, settings As LeveReadOrWriteSettings) As RDLevel
+		Public Shared Function LoadFile(filepath As String, settings As LevelReadOrWriteSettings) As RDLevel
 			Dim LevelSerializer = New JsonSerializer()
 			LevelSerializer.Converters.Add(New RDLevelConverter(filepath, settings))
 			'Dim json As String
@@ -2300,12 +2300,12 @@ Namespace LevelElements
 					Throw New RhythmBaseException("File not supported.")
 			End Select
 		End Function
-		Private Function Serializer(settings As LeveReadOrWriteSettings) As JsonSerializer
+		Private Function Serializer(settings As LevelReadOrWriteSettings) As JsonSerializer
 			Dim LevelSerializerSettings = New JsonSerializer()
 			LevelSerializerSettings.Converters.Add(New Converters.RDLevelConverter(_path, settings))
 			Return LevelSerializerSettings
 		End Function
-		Private Sub WriteStream(fileStream As TextWriter, settings As LeveReadOrWriteSettings)
+		Private Sub WriteStream(fileStream As TextWriter, settings As LevelReadOrWriteSettings)
 			Using writer As New JsonTextWriter(fileStream)
 				Serializer(settings).Serialize(writer, Me)
 			End Using
@@ -2317,7 +2317,7 @@ Namespace LevelElements
 		''' <param name="filepath">File path.</param>
 		''' <exception cref="OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
 		Public Sub SaveFile(filepath As String)
-			SaveFile(filepath, New LeveReadOrWriteSettings)
+			SaveFile(filepath, New LevelReadOrWriteSettings)
 		End Sub
 		''' <summary>
 		''' Save the level.
@@ -2325,9 +2325,9 @@ Namespace LevelElements
 		''' <param name="filepath">File path.</param>
 		''' <param name="settings">Output settings.</param>
 		''' <exception cref="OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
-		Public Sub SaveFile(filepath As String, settings As LeveReadOrWriteSettings)
+		Public Sub SaveFile(filepath As String, settings As LevelReadOrWriteSettings)
 			If Not _path.IsNullOrEmpty AndAlso IO.Path.GetFullPath(_path) = IO.Path.GetFullPath(filepath) Then
-				Throw New OverwriteNotAllowedException(_path, GetType(LeveReadOrWriteSettings))
+				Throw New OverwriteNotAllowedException(_path, GetType(LevelReadOrWriteSettings))
 			End If
 			Using file = IO.File.CreateText(filepath)
 				WriteStream(file, settings)
@@ -2346,14 +2346,14 @@ Namespace LevelElements
 		''' </summary>
 		''' <returns>Level string.</returns>
 		Public Function ToRDLevelJson() As String
-			Return ToRDLevelJson(New LeveReadOrWriteSettings)
+			Return ToRDLevelJson(New LevelReadOrWriteSettings)
 		End Function
 		''' <summary>
 		''' Convert to a string that can be read by the game.
 		''' </summary>
 		''' <param name="settings">Output settings.</param>
 		''' <returns>Level string.</returns>
-		Public Function ToRDLevelJson(settings As LeveReadOrWriteSettings) As String
+		Public Function ToRDLevelJson(settings As LevelReadOrWriteSettings) As String
 			Dim file = New IO.StringWriter()
 			WriteStream(file, settings)
 			file.Close()
@@ -2826,7 +2826,7 @@ Namespace LevelElements
 		''' <param name="filepath">File path.</param>
 		''' <returns>An instance of a level that reads from a file.</returns>
 		Public Shared Function LoadFile(filepath As String) As ADLevel
-			Return LoadFile(filepath, New LeveReadOrWriteSettings)
+			Return LoadFile(filepath, New LevelReadOrWriteSettings)
 		End Function
 		''' <summary>
 		''' Read from file as level.
@@ -2835,7 +2835,7 @@ Namespace LevelElements
 		''' <param name="filepath">File path.</param>
 		''' <param name="settings">Input settings.</param>
 		''' <returns>An instance of a level that reads from a file.</returns>
-		Public Shared Function LoadFile(filepath As String, settings As LeveReadOrWriteSettings) As ADLevel
+		Public Shared Function LoadFile(filepath As String, settings As LevelReadOrWriteSettings) As ADLevel
 			Dim LevelSerializer = New JsonSerializer()
 			LevelSerializer.Converters.Add(New ADLevelConverter(filepath, settings))
 			Select Case IO.Path.GetExtension(filepath)

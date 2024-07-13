@@ -673,7 +673,7 @@ Namespace Assets
 			If (IO.File.Exists(WithoutExtension + ".json") OrElse
 				(settings.WithImage AndAlso IO.File.Exists(WithoutExtension + ".png"))
 				) And Not settings.OverWrite Then
-				Throw New OverwriteNotAllowedException(path, GetType(LeveReadOrWriteSettings))
+				Throw New OverwriteNotAllowedException(path, GetType(LevelReadOrWriteSettings))
 			End If
 
 			If settings.WithImage Then

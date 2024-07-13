@@ -4,7 +4,7 @@
     ''' </summary>
     Public Enum ActionOnUnreadableEvents
         ''' <summary>
-        ''' Stores unreadable events in <see cref="LeveReadOrWriteSettings.UnreadableEvents"/> for restoration.
+        ''' Stores unreadable events in <see cref="LevelReadOrWriteSettings.UnreadableEvents"/> for restoration.
         ''' </summary>
         Store
         ''' <summary>
@@ -12,7 +12,7 @@
         ''' </summary>
         ThrowException
     End Enum
-    Public Class LeveReadOrWriteSettings
+    Public Class LevelReadOrWriteSettings
         ''' <summary>
         ''' Enable resource preloading. This may grow read times. 
         ''' Defaults to <see langword="false"/>.
@@ -29,7 +29,7 @@
         ''' </summary>
         Public Property UnreadableEventAction As ActionOnUnreadableEvents = ActionOnUnreadableEvents.ThrowException
         ''' <summary>
-        ''' Stores unreadable event data when the <see cref="LeveReadOrWriteSettings.UnreadableEventAction"/> is <see langword="true"/>.
+        ''' Stores unreadable event data when the <see cref="LevelReadOrWriteSettings.UnreadableEventAction"/> is <see langword="true"/>.
         ''' </summary>
         ''' <returns></returns>
         Public Property UnreadableEvents As New List(Of Newtonsoft.Json.Linq.JObject)
