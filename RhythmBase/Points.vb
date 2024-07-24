@@ -100,8 +100,8 @@ Namespace Components
 		Public Shared Widening Operator CType(p As RDPointNI) As RDPointI
 			Return New RDPointI(p.X, p.Y)
 		End Operator
-		Public Shared Widening Operator CType(p As RDPointNI) As RDPointE
-			Return New RDPointE(p.X, p.Y)
+		Public Shared Widening Operator CType(p As RDPointNI) As PointE
+			Return New PointE(p.X, p.Y)
 		End Operator
 		Public Shared Narrowing Operator CType(p As RDPointNI) As RDSizeNI
 			Return New RDSizeNI(p.X, p.Y)
@@ -205,8 +205,8 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Shared Widening Operator CType(p As RDPointN) As RDPoint
 			Return New RDPoint(p.X, p.Y)
 		End Operator
-		Public Shared Widening Operator CType(p As RDPointN) As RDPointE
-			Return New RDPointE(p.X, p.Y)
+		Public Shared Widening Operator CType(p As RDPointN) As PointE
+			Return New PointE(p.X, p.Y)
 		End Operator
 		Public Shared Narrowing Operator CType(p As RDPointN) As RDSizeN
 			Return New RDSizeN(p.X, p.Y)
@@ -908,8 +908,8 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Shared Widening Operator CType(p As RDPointI) As RDPoint
 			Return New RDPoint(p.X, p.Y)
 		End Operator
-		Public Shared Widening Operator CType(p As RDPointI) As RDPointE
-			Return New RDPointE(p.X, p.Y)
+		Public Shared Widening Operator CType(p As RDPointI) As PointE
+			Return New PointE(p.X, p.Y)
 		End Operator
 		Public Shared Narrowing Operator CType(p As RDPointI) As RDSizeI
 			Return New RDSizeI(p.X, p.Y)
@@ -1015,8 +1015,8 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Shared Operator <>(left As RDPoint, right As RDPoint) As Boolean
 			Return Not left.Equals(right)
 		End Operator
-		Public Shared Widening Operator CType(p As RDPoint) As RDPointE
-			Return New RDPointE(p.X, p.Y)
+		Public Shared Widening Operator CType(p As RDPoint) As PointE
+			Return New PointE(p.X, p.Y)
 		End Operator
 	End Structure
 	''' <summary>
@@ -1513,9 +1513,9 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 	''' <summary>
 	''' An Expression
 	''' </summary>
-	<JsonConverter(GetType(RDExpressionConverter))>
-	Public Structure RDExpression
-		Implements IEquatable(Of RDExpression)
+	<JsonConverter(GetType(ExpressionConverter))>
+	Public Structure Expression
+		Implements IEquatable(Of Expression)
 		Private ReadOnly _exp As String
 		Public ReadOnly IsNumeric As Boolean
 		Public ReadOnly Property NumericValue As Single
@@ -1554,9 +1554,9 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			_exp = value
 		End Sub
 		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
-			Return obj.GetType = GetType(RDExpression) AndAlso Equals(CType(obj, RDExpression))
+			Return obj.GetType = GetType(Expression) AndAlso Equals(CType(obj, Expression))
 		End Function
-		Public Overloads Function Equals(other As RDExpression) As Boolean Implements IEquatable(Of RDExpression).Equals
+		Public Overloads Function Equals(other As Expression) As Boolean Implements IEquatable(Of Expression).Equals
 			Return (IsNumeric = other.IsNumeric AndAlso NumericValue = other.NumericValue) OrElse _exp = other._exp
 		End Function
 		Public Overrides Function GetHashCode() As Integer
@@ -1567,115 +1567,115 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Overrides Function ToString() As String
 			Return ExpressionValue
 		End Function
-		Public Shared Function Nullable(s As String) As RDExpression?
+		Public Shared Function Nullable(s As String) As Expression?
 			If s?.Length Then
-				Return New RDExpression(s)
+				Return New Expression(s)
 			End If
 			Return Nothing
 		End Function
-		Public Shared Operator +(left As RDExpression, right As Single) As RDExpression
+		Public Shared Operator +(left As Expression, right As Single) As Expression
 			If left.IsNumeric Then
-				Return New RDExpression(left.NumericValue + right)
+				Return New Expression(left.NumericValue + right)
 			Else
-				Return New RDExpression($"{left.ExpressionValue}+{right}")
+				Return New Expression($"{left.ExpressionValue}+{right}")
 			End If
 		End Operator
-		Public Shared Operator +(left As Single, right As RDExpression) As RDExpression
+		Public Shared Operator +(left As Single, right As Expression) As Expression
 			If right.IsNumeric Then
-				Return New RDExpression(left + right.NumericValue)
+				Return New Expression(left + right.NumericValue)
 			Else
-				Return New RDExpression($"{left}+{right.ExpressionValue}")
+				Return New Expression($"{left}+{right.ExpressionValue}")
 			End If
 		End Operator
-		Public Shared Operator +(left As RDExpression, right As RDExpression) As RDExpression
+		Public Shared Operator +(left As Expression, right As Expression) As Expression
 			If left.IsNumeric AndAlso right.IsNumeric Then
-				Return New RDExpression(left.NumericValue + right.NumericValue)
+				Return New Expression(left.NumericValue + right.NumericValue)
 			Else
-				Return New RDExpression($"{left.ExpressionValue}+{right.ExpressionValue}")
+				Return New Expression($"{left.ExpressionValue}+{right.ExpressionValue}")
 			End If
 		End Operator
-		Public Shared Operator -(left As RDExpression, right As Single) As RDExpression
+		Public Shared Operator -(left As Expression, right As Single) As Expression
 			If left.IsNumeric Then
-				Return New RDExpression(left.NumericValue - right)
+				Return New Expression(left.NumericValue - right)
 			Else
-				Return New RDExpression($"{left.ExpressionValue}-{right}")
+				Return New Expression($"{left.ExpressionValue}-{right}")
 			End If
 		End Operator
-		Public Shared Operator -(left As Single, right As RDExpression) As RDExpression
+		Public Shared Operator -(left As Single, right As Expression) As Expression
 			If right.IsNumeric Then
-				Return New RDExpression(left - right.NumericValue)
+				Return New Expression(left - right.NumericValue)
 			Else
-				Return New RDExpression($"{left}-{right.ExpressionValue}")
+				Return New Expression($"{left}-{right.ExpressionValue}")
 			End If
 		End Operator
-		Public Shared Operator -(left As RDExpression, right As RDExpression) As RDExpression
+		Public Shared Operator -(left As Expression, right As Expression) As Expression
 			If left.IsNumeric AndAlso right.IsNumeric Then
-				Return New RDExpression(left.NumericValue - right.NumericValue)
+				Return New Expression(left.NumericValue - right.NumericValue)
 			Else
-				Return New RDExpression($"{left.ExpressionValue}-{right.ExpressionValue}")
+				Return New Expression($"{left.ExpressionValue}-{right.ExpressionValue}")
 			End If
 		End Operator
-		Public Shared Operator *(left As RDExpression, right As Single) As RDExpression
+		Public Shared Operator *(left As Expression, right As Single) As Expression
 			If left.IsNumeric Then
-				Return New RDExpression(left.NumericValue * right)
+				Return New Expression(left.NumericValue * right)
 			Else
-				Return New RDExpression($"({left.ExpressionValue})*{right}")
+				Return New Expression($"({left.ExpressionValue})*{right}")
 			End If
 		End Operator
-		Public Shared Operator *(left As Single, right As RDExpression) As RDExpression
+		Public Shared Operator *(left As Single, right As Expression) As Expression
 			If right.IsNumeric Then
-				Return New RDExpression(left * right.NumericValue)
+				Return New Expression(left * right.NumericValue)
 			Else
-				Return New RDExpression($"{left}*({right.ExpressionValue})")
+				Return New Expression($"{left}*({right.ExpressionValue})")
 			End If
 		End Operator
-		Public Shared Operator *(left As RDExpression, right As RDExpression) As RDExpression
+		Public Shared Operator *(left As Expression, right As Expression) As Expression
 			If left.IsNumeric AndAlso right.IsNumeric Then
-				Return New RDExpression(left.NumericValue * right.NumericValue)
+				Return New Expression(left.NumericValue * right.NumericValue)
 			Else
-				Return New RDExpression($"({left.ExpressionValue})*({right.ExpressionValue})")
+				Return New Expression($"({left.ExpressionValue})*({right.ExpressionValue})")
 			End If
 		End Operator
-		Public Shared Operator /(left As RDExpression, right As Single) As RDExpression
+		Public Shared Operator /(left As Expression, right As Single) As Expression
 			If left.IsNumeric Then
-				Return New RDExpression(left.NumericValue / right)
+				Return New Expression(left.NumericValue / right)
 			Else
-				Return New RDExpression($"({left.ExpressionValue})/{right}")
+				Return New Expression($"({left.ExpressionValue})/{right}")
 			End If
 		End Operator
-		Public Shared Operator /(left As Single, right As RDExpression) As RDExpression
+		Public Shared Operator /(left As Single, right As Expression) As Expression
 			If right.IsNumeric Then
-				Return New RDExpression(left / right.NumericValue)
+				Return New Expression(left / right.NumericValue)
 			Else
-				Return New RDExpression($"{left}/({right.ExpressionValue})")
+				Return New Expression($"{left}/({right.ExpressionValue})")
 			End If
 		End Operator
-		Public Shared Operator /(left As RDExpression, right As RDExpression) As RDExpression
+		Public Shared Operator /(left As Expression, right As Expression) As Expression
 			If left.IsNumeric AndAlso right.IsNumeric Then
-				Return New RDExpression(left.NumericValue / right.NumericValue)
+				Return New Expression(left.NumericValue / right.NumericValue)
 			Else
-				Return New RDExpression($"({left.ExpressionValue})/({right.ExpressionValue})")
+				Return New Expression($"({left.ExpressionValue})/({right.ExpressionValue})")
 			End If
 		End Operator
-		Public Shared Operator =(left As RDExpression, right As RDExpression) As Boolean
+		Public Shared Operator =(left As Expression, right As Expression) As Boolean
 			Return left.Equals(right)
 		End Operator
-		Public Shared Operator <>(left As RDExpression, right As RDExpression) As Boolean
+		Public Shared Operator <>(left As Expression, right As Expression) As Boolean
 			Return Not left = right
 		End Operator
-		Public Shared Widening Operator CType(v As Single) As RDExpression
-			Return New RDExpression(v)
+		Public Shared Widening Operator CType(v As Single) As Expression
+			Return New Expression(v)
 		End Operator
-		Public Shared Widening Operator CType(v As String) As RDExpression
-			Return New RDExpression(v)
+		Public Shared Widening Operator CType(v As String) As Expression
+			Return New Expression(v)
 		End Operator
 	End Structure
 	''' <summary>
-	''' A point whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="RDExpression"/>
+	''' A point whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="Expression"/>
 	''' </summary>
 	<JsonConverter(GetType(RDPointsConverter))>
-	Public Structure RDPointE
-		Implements IEquatable(Of RDPointE)
+	Public Structure PointE
+		Implements IEquatable(Of PointE)
 		Public Sub New(sz As RDSize)
 			X = sz.Width
 			Y = sz.Height
@@ -1684,39 +1684,39 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			_X = x
 			_Y = y
 		End Sub
-		Public Sub New(x As RDExpression?, y As Single)
+		Public Sub New(x As Expression?, y As Single)
 			_X = x
 			_Y = y
 		End Sub
-		Public Sub New(x As Single, y As RDExpression?)
+		Public Sub New(x As Single, y As Expression?)
 			_X = x
 			_Y = y
 		End Sub
-		Public Sub New(x As RDExpression?, y As RDExpression?)
+		Public Sub New(x As Expression?, y As Expression?)
 			_X = x
 			_Y = y
 		End Sub
 		Public Sub New(x As String, y As Single)
-			_X = RDExpression.Nullable(x)
+			_X = Expression.Nullable(x)
 			_Y = y
 		End Sub
 		Public Sub New(x As Single, y As String)
 			_X = x
-			_Y = RDExpression.Nullable(y)
+			_Y = Expression.Nullable(y)
 		End Sub
-		Public Sub New(x As String, y As RDExpression?)
-			_X = RDExpression.Nullable(x)
+		Public Sub New(x As String, y As Expression?)
+			_X = Expression.Nullable(x)
 			_Y = y
 		End Sub
-		Public Sub New(x As RDExpression?, y As String)
+		Public Sub New(x As Expression?, y As String)
 			_X = x
 			If y?.Length Then
 				_Y = y
 			End If
 		End Sub
 		Public Sub New(x As String, y As String)
-			_X = RDExpression.Nullable(x)
-			_Y = RDExpression.Nullable(y)
+			_X = Expression.Nullable(x)
+			_Y = Expression.Nullable(y)
 		End Sub
 		Public Sub New(p As RDPointI)
 			_X = p.X
@@ -1731,8 +1731,8 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 				Return X Is Nothing AndAlso Y Is Nothing
 			End Get
 		End Property
-		Public Property X As RDExpression?
-		Public Property Y As RDExpression?
+		Public Property X As Expression?
+		Public Property Y As Expression?
 		Public Sub Offset(p As RDPoint)
 			X += p.X
 			Y += p.Y
@@ -1741,24 +1741,24 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			X += dx
 			Y += dy
 		End Sub
-		Public Shared Function Add(pt As RDPointE, sz As RDSizeI) As RDPointE
+		Public Shared Function Add(pt As PointE, sz As RDSizeI) As PointE
 			Dim x = pt.X + sz.Width
-			Return New RDPointE(pt.X + sz.Width, pt.Y + sz.Height)
+			Return New PointE(pt.X + sz.Width, pt.Y + sz.Height)
 		End Function
-		Public Shared Function Add(pt As RDPointE, sz As RDSize) As RDPointE
-			Return New RDPointE(pt.X + sz.Width, pt.Y + sz.Height)
+		Public Shared Function Add(pt As PointE, sz As RDSize) As PointE
+			Return New PointE(pt.X + sz.Width, pt.Y + sz.Height)
 		End Function
-		Public Shared Function Add(pt As RDPointE, sz As RDSizeE) As RDPointE
-			Return New RDPointE(pt.X + sz.Width, pt.Y + sz.Height)
+		Public Shared Function Add(pt As PointE, sz As RDSizeE) As PointE
+			Return New PointE(pt.X + sz.Width, pt.Y + sz.Height)
 		End Function
-		Public Shared Function Subtract(pt As RDPointE, sz As RDSizeI) As RDPointE
-			Return New RDPointE(pt.X - sz.Width, pt.Y - sz.Height)
+		Public Shared Function Subtract(pt As PointE, sz As RDSizeI) As PointE
+			Return New PointE(pt.X - sz.Width, pt.Y - sz.Height)
 		End Function
-		Public Shared Function Subtract(pt As RDPointE, sz As RDSize) As RDPointE
-			Return New RDPointE(pt.X - sz.Width, pt.Y - sz.Height)
+		Public Shared Function Subtract(pt As PointE, sz As RDSize) As PointE
+			Return New PointE(pt.X - sz.Width, pt.Y - sz.Height)
 		End Function
-		Public Shared Function Subtract(pt As RDPointE, sz As RDSizeE) As RDPointE
-			Return New RDPointE(pt.X - sz.Width, pt.Y - sz.Height)
+		Public Shared Function Subtract(pt As PointE, sz As RDSizeE) As PointE
+			Return New PointE(pt.X - sz.Width, pt.Y - sz.Height)
 		End Function
 		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
 			Return obj.GetType = GetType(RDPoint) AndAlso Equals(CType(obj, RDPoint))
@@ -1772,16 +1772,16 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Overrides Function ToString() As String
 			Return $"[{If(X?.ExpressionValue, "null")}, {If(Y?.ExpressionValue, "null")}]"
 		End Function
-		Private Overloads Function Equals(other As RDPointE) As Boolean Implements IEquatable(Of RDPointE).Equals
+		Private Overloads Function Equals(other As PointE) As Boolean Implements IEquatable(Of PointE).Equals
 			Return other.X = X AndAlso other.Y = Y
 		End Function
 		''' <summary>
 		''' This point is multiplied by a 2*2 matrix.
 		''' </summary>
 		''' <param name="matrix">2*2 matrix</param>
-		Public Function MultipyByMatrix(matrix(,) As RDExpression) As RDPointE
+		Public Function MultipyByMatrix(matrix(,) As Expression) As PointE
 			If matrix.Rank = 2 AndAlso matrix.Length = 4 Then
-				Return New RDPointE(
+				Return New PointE(
 X * matrix(0, 0) + Y * matrix(1, 0),
 X * matrix(0, 1) + Y * matrix(1, 1))
 			End If
@@ -1790,7 +1790,7 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		''' <summary>
 		''' Rotate.
 		''' </summary>
-		Public Function Rotate(angle As Single) As RDPointE
+		Public Function Rotate(angle As Single) As PointE
 			Return MultipyByMatrix(
 			{
 			{CSng(Math.Cos(angle)), CSng(Math.Sin(angle))},
@@ -1802,40 +1802,40 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		''' </summary>
 		''' <param name="pivot">Giver pivot.</param>
 		''' <returns></returns>
-		Public Function Rotate(pivot As RDPointE, angle As Single) As RDPointE
+		Public Function Rotate(pivot As PointE, angle As Single) As PointE
 			Return (Me - New RDSizeE(pivot)).Rotate(angle) + New RDSizeE(pivot)
 		End Function
 
-		Public Shared Operator +(pt As RDPointE, sz As RDSizeI) As RDPointE
+		Public Shared Operator +(pt As PointE, sz As RDSizeI) As PointE
 			Return Add(pt, sz)
 		End Operator
-		Public Shared Operator +(pt As RDPointE, sz As RDSize) As RDPointE
+		Public Shared Operator +(pt As PointE, sz As RDSize) As PointE
 			Return Add(pt, sz)
 		End Operator
-		Public Shared Operator +(pt As RDPointE, sz As RDSizeE) As RDPointE
+		Public Shared Operator +(pt As PointE, sz As RDSizeE) As PointE
 			Return Add(pt, sz)
 		End Operator
-		Public Shared Operator -(pt As RDPointE, sz As RDSizeI) As RDPointE
+		Public Shared Operator -(pt As PointE, sz As RDSizeI) As PointE
 			Return Subtract(pt, sz)
 		End Operator
-		Public Shared Operator -(pt As RDPointE, sz As RDSize) As RDPointE
+		Public Shared Operator -(pt As PointE, sz As RDSize) As PointE
 			Return Subtract(pt, sz)
 		End Operator
-		Public Shared Operator -(pt As RDPointE, sz As RDSizeE) As RDPointE
+		Public Shared Operator -(pt As PointE, sz As RDSizeE) As PointE
 			Return Subtract(pt, sz)
 		End Operator
-		Public Shared Operator =(left As RDPointE, right As RDPointE) As Boolean
+		Public Shared Operator =(left As PointE, right As PointE) As Boolean
 			Return left.Equals(right)
 		End Operator
-		Public Shared Operator <>(left As RDPointE, right As RDPointE) As Boolean
+		Public Shared Operator <>(left As PointE, right As PointE) As Boolean
 			Return Not left.Equals(right)
 		End Operator
-		Public Shared Narrowing Operator CType(v As RDPointE) As RDSizeE
+		Public Shared Narrowing Operator CType(v As PointE) As RDSizeE
 			Return New RDSizeE(v)
 		End Operator
 	End Structure
 	''' <summary>
-	''' A size whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="RDExpression"/>
+	''' A size whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="Expression"/>
 	''' </summary>
 	<JsonConverter(GetType(RDPointsConverter))>
 	Public Structure RDSizeE
@@ -1844,37 +1844,37 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			_Width = width
 			_Height = height
 		End Sub
-		Public Sub New(width As RDExpression?, height As Single)
+		Public Sub New(width As Expression?, height As Single)
 			_Width = width
 			_Height = height
 		End Sub
-		Public Sub New(width As Single, height As RDExpression?)
+		Public Sub New(width As Single, height As Expression?)
 			_Width = width
 			_Height = height
 		End Sub
-		Public Sub New(width As RDExpression?, height As RDExpression?)
+		Public Sub New(width As Expression?, height As Expression?)
 			_Width = width
 			_Height = height
 		End Sub
 		Public Sub New(width As String, height As Single)
-			_Width = RDExpression.Nullable(width)
+			_Width = Expression.Nullable(width)
 			_Height = height
 		End Sub
 		Public Sub New(width As Single, height As String)
 			_Width = width
-			_Height = RDExpression.Nullable(height)
+			_Height = Expression.Nullable(height)
 		End Sub
 		Public Sub New(width As String, height As String)
-			_Width = RDExpression.Nullable(width)
-			_Height = RDExpression.Nullable(height)
+			_Width = Expression.Nullable(width)
+			_Height = Expression.Nullable(height)
 		End Sub
-		Public Sub New(width As String, height As RDExpression?)
-			_Width = RDExpression.Nullable(width)
+		Public Sub New(width As String, height As Expression?)
+			_Width = Expression.Nullable(width)
 			_Height = height
 		End Sub
-		Public Sub New(width As RDExpression?, height As String)
+		Public Sub New(width As Expression?, height As String)
 			_Width = width
-			_Height = RDExpression.Nullable(height)
+			_Height = Expression.Nullable(height)
 		End Sub
 		Public Sub New(p As RDSizeI)
 			_Width = p.Width
@@ -1892,7 +1892,7 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			_Width = p.X
 			_Height = p.Y
 		End Sub
-		Public Sub New(p As RDPointE)
+		Public Sub New(p As PointE)
 			_Width = p.X
 			_Height = p.Y
 		End Sub
@@ -1901,9 +1901,9 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 				Return Width Is Nothing AndAlso Height Is Nothing
 			End Get
 		End Property
-		Public Property Width As RDExpression?
-		Public Property Height As RDExpression?
-		Public ReadOnly Property Area As RDExpression?
+		Public Property Width As Expression?
+		Public Property Height As Expression?
+		Public ReadOnly Property Area As Expression?
 			Get
 				Return Width * Height
 			End Get
@@ -1932,8 +1932,8 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Overloads Function Equals(other As RDSizeE) As Boolean Implements IEquatable(Of RDSizeE).Equals
 			Return Width = other.Width AndAlso Height = other.Height
 		End Function
-		Public Function ToRDPointE() As RDPointE
-			Return New RDPointE(Width, Height)
+		Public Function ToRDPointE() As PointE
+			Return New PointE(Width, Height)
 		End Function
 		Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
 			Return obj.GetType = GetType(RDSize) AndAlso Equals(CType(obj, RDSize))
@@ -1968,16 +1968,16 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Shared Operator *(left As RDSizeE, right As Single) As RDSizeE
 			Return New RDSizeE(left.Width * right, left.Height * right)
 		End Operator
-		Public Shared Operator *(left As RDExpression, right As RDSizeE) As RDSizeE
+		Public Shared Operator *(left As Expression, right As RDSizeE) As RDSizeE
 			Return New RDSizeE(left * right.Width, left * right.Height)
 		End Operator
-		Public Shared Operator *(left As RDSizeE, right As RDExpression) As RDSizeE
+		Public Shared Operator *(left As RDSizeE, right As Expression) As RDSizeE
 			Return New RDSizeE(left.Width * right, left.Height * right)
 		End Operator
 		Public Shared Operator /(left As RDSizeE, right As Single) As RDSizeE
 			Return New RDSizeE(left.Width / right, left.Height / right)
 		End Operator
-		Public Shared Operator /(left As RDSizeE, right As RDExpression) As RDSizeE
+		Public Shared Operator /(left As RDSizeE, right As Expression) As RDSizeE
 			Return New RDSizeE(left.Width / right, left.Height / right)
 		End Operator
 		Public Shared Operator =(sz1 As RDSizeE, sz2 As RDSizeE) As Boolean
@@ -1986,33 +1986,33 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Shared Operator <>(sz1 As RDSizeE, sz2 As RDSizeE) As Boolean
 			Return Not sz1.Equals(sz2)
 		End Operator
-		Public Shared Narrowing Operator CType(size As RDSizeE) As RDPointE
-			Return New RDPointE(size.Width, size.Height)
+		Public Shared Narrowing Operator CType(size As RDSizeE) As PointE
+			Return New PointE(size.Width, size.Height)
 		End Operator
 	End Structure
 	Public Structure RDRectE
 		Implements IEquatable(Of RDRectE)
-		Public Property Left As RDExpression?
-		Public Property Right As RDExpression?
-		Public Property Top As RDExpression?
-		Public Property Bottom As RDExpression?
-		Public ReadOnly Property Width As RDExpression?
+		Public Property Left As Expression?
+		Public Property Right As Expression?
+		Public Property Top As Expression?
+		Public Property Bottom As Expression?
+		Public ReadOnly Property Width As Expression?
 			Get
 				Return Right - Left
 			End Get
 		End Property
-		Public ReadOnly Property Height As RDExpression?
+		Public ReadOnly Property Height As Expression?
 			Get
 				Return Top - Bottom
 			End Get
 		End Property
-		Public Sub New(left As RDExpression?, top As RDExpression?, right As RDExpression?, bottom As RDExpression?)
+		Public Sub New(left As Expression?, top As Expression?, right As Expression?, bottom As Expression?)
 			Me.Left = left
 			Me.Right = right
 			Me.Top = top
 			Me.Bottom = bottom
 		End Sub
-		Public Sub New(location As RDPointE, size As RDSizeE)
+		Public Sub New(location As PointE, size As RDSizeE)
 			Me.New(location.X,
 				   location.Y + size.Height,
 				   location.X + size.Width,
@@ -2021,12 +2021,12 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 		Public Sub New(size As RDSizeE)
 			Me.New(0, size.Height, size.Width, 0)
 		End Sub
-		Public Sub New(width As RDExpression?, height As RDExpression?)
+		Public Sub New(width As Expression?, height As Expression?)
 			Me.New(0, height, width, 0)
 		End Sub
-		Public ReadOnly Property Location As RDPointE
+		Public ReadOnly Property Location As PointE
 			Get
-				Return New RDPointE(Left, Bottom)
+				Return New PointE(Left, Bottom)
 			End Get
 		End Property
 		Public ReadOnly Property Size As RDSizeE
@@ -2039,7 +2039,7 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			result.Inflate(size)
 			Return result
 		End Function
-		Public Shared Function Inflate(rect As RDRectE, x As RDExpression?, y As RDExpression?) As RDRectE
+		Public Shared Function Inflate(rect As RDRectE, x As Expression?, y As Expression?) As RDRectE
 			Dim result As New RDRectE(rect.Left, rect.Top, rect.Right, rect.Bottom)
 			result.Inflate(x, y)
 			Return result
@@ -2052,13 +2052,13 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 				rect.Bottom
 				)
 		End Function
-		Public Sub Offset(x As RDExpression?, y As RDExpression?)
+		Public Sub Offset(x As Expression?, y As Expression?)
 			Left += x
 			Top += y
 			Right += x
 			Bottom += y
 		End Sub
-		Public Sub Offset(p As RDPointE)
+		Public Sub Offset(p As PointE)
 			Offset(p.X, p.Y)
 		End Sub
 		Public Sub Inflate(size As RDSizeE)
@@ -2067,7 +2067,7 @@ X * matrix(0, 1) + Y * matrix(1, 1))
 			Right += size.Width
 			Bottom -= size.Height
 		End Sub
-		Public Sub Inflate(width As RDExpression?, height As RDExpression?)
+		Public Sub Inflate(width As Expression?, height As Expression?)
 			Left -= width
 			Top += height
 			Right += width

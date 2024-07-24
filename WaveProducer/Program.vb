@@ -2,7 +2,7 @@ Imports System
 Imports NAudio.Dsp
 Imports NAudio.Wave
 Imports MathNet.Numerics
-Imports RhythmBase.LevelElements
+Imports RhythmBase.Components
 Imports RhythmBase.Components
 Imports RhythmBase.Events
 Imports RhythmBase.Utils
@@ -116,13 +116,13 @@ Module Program
 
 		Dim Level As RDLevel = RDLevel.LoadFile("C:\Users\30698\OneDrive\ÎÄµµ\rdlevels\test3\level.rdlevel")
 
-		Dim SpriteCollection As New List(Of RDDecoration)
+		Dim SpriteCollection As New List(Of DecorationEventCollection)
 		'For i = 0 To 100
-		Dim A = Level.CreateDecoration(RDSingleRoom.Default)
-		Dim mv2 As New RDMove With {
+		Dim A = Level.CreateDecoration(SingleRoom.Default)
+		Dim mv2 As New Move With {
 			.Beat = Level.DefaultBeat,
-			.Position = New RDPointE(0, 0),
-			.Scale = New RDPointE(0.1F, 0.1F)
+			.Position = New PointE(0, 0),
+			.Scale = New PointE(0.1F, 0.1F)
 		}
 		A.Add(mv2)
 		SpriteCollection.Add(A)
@@ -132,10 +132,10 @@ Module Program
 		For time = 0 To 182 Step 0.1
 			For index = 0 To Level.Decorations.Count - 1
 				Dim t = Calculator.BeatOf(TimeSpan.FromSeconds(time))
-				Dim mv = New RDMove() With {.Beat = t}
+				Dim mv = New Move() With {.Beat = t}
 				Level.Decorations(index).Add(mv)
 				Dim frame = Frames((Frames.Length - 1) * time / 182)
-				mv.Position = New RDPointE(CType(Nothing, Single?), CSng(frame((frame.Length - 1) * index / 100) / max))
+				mv.Position = New PointE(CType(Nothing, Single?), CSng(frame((frame.Length - 1) * index / 100) / max))
 				mv.Duration = 1.5
 				mv.Ease = EaseType.InOutSine
 				Level.Add(mv)

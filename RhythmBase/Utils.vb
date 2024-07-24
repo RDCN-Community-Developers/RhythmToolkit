@@ -6,63 +6,13 @@ Imports Newtonsoft.Json.Linq
 '' 工具类
 '' </summary>
 Namespace Utils
-	Public Module [Global]
-
-		Private ReadOnly RDETypes As ObjectModel.ReadOnlyCollection(Of Type) =
-			GetType(RDBaseEvent).Assembly.GetTypes() _
-				.Where(Function(i) i.IsAssignableTo(GetType(RDBaseEvent))).ToList.AsReadOnly
-		''' <summary>
-		''' A dictionary that records the correspondence of <see cref="RDEventType"/> to event types inheriting from <see cref="RDBaseEvent"/>.
-		''' </summary>
-		Public ReadOnly RDETypesToEnum As ObjectModel.ReadOnlyDictionary(Of Type, RDEventType()) =
-			RDETypes.ToDictionary(Function(i) i,
-						  Function(i) RDETypes _
-							  .Where(Function(j) (j = i OrElse j.IsAssignableTo(i)) AndAlso Not j.IsAbstract) _
-							  .Select(Function(j) RDConvertToEnum(j)) _
-							  .ToArray).AsReadOnly
-		''' <summary>
-		''' A dictionary that records the correspondence of event types inheriting from <see cref="RDBaseEvent"/> to <see cref="RDEventType"/>.
-		''' </summary>
-		Public ReadOnly RDEnumToEType As ObjectModel.ReadOnlyDictionary(Of RDEventType, Type) =
-			[Enum].GetValues(Of RDEventType).ToDictionary(Function(i) i, Function(i) i.ConvertToType).AsReadOnly
-
-		Private ReadOnly ADETypes As ObjectModel.ReadOnlyCollection(Of Type) =
-			GetType(ADBaseEvent).Assembly.GetTypes() _
-				.Where(Function(i) i.IsAssignableTo(GetType(ADBaseEvent))).ToList.AsReadOnly
-		''' <summary>
-		''' A dictionary that records the correspondence of <see cref="ADEventType"/> to event types inheriting from <see cref="ADBaseEvent"/>.
-		''' </summary>
-		Public ReadOnly ADETypesToEnum As ObjectModel.ReadOnlyDictionary(Of Type, ADEventType()) =
-			ADETypes.ToDictionary(Function(i) i,
-						  Function(i) ADETypes _
-							  .Where(Function(j) (j = i OrElse j.IsAssignableTo(i)) AndAlso Not j.IsAbstract) _
-							  .Select(Function(j) ADConvertToEnum(j)) _
-							  .ToArray).AsReadOnly
-		''' <summary>
-		''' A dictionary that records the correspondence of event types inheriting from <see cref="ADBaseEvent"/> to <see cref="ADEventType"/>.
-		''' </summary>
-		Public ReadOnly ADEnumToEType As ObjectModel.ReadOnlyDictionary(Of ADEventType, Type) =
-			[Enum].GetValues(Of ADEventType).ToDictionary(Function(i) i, Function(i) i.ConvertToType).AsReadOnly
-
-		''' <summary>
-		''' Event types that inherit from <see cref="RDBaseRowAction"/>.
-		''' </summary>
-		Public ReadOnly RowTypes As ObjectModel.ReadOnlyCollection(Of RDEventType) =
-			ConvertToRDEnums(Of RDBaseRowAction)().AsReadOnly
-		''' <summary>
-		''' Event types that inherit from <see cref="RDBaseDecorationAction"/>
-		''' </summary>
-		Public ReadOnly DecorationTypes As ObjectModel.ReadOnlyCollection(Of RDEventType) =
-			ConvertToRDEnums(Of RDBaseDecorationAction)().AsReadOnly
-		Public ReadOnly RDScreenSize As New RDSizeNI(352, 198)
-	End Module
 	''' <summary>
 	''' Beat calculator.
 	''' </summary>
-	Public Class RDBeatCalculator
+	Public Class BeatCalculator
 		Friend ReadOnly Collection As RDLevel
-		Private _BPMList As List(Of RDBaseBeatsPerMinute)
-		Private _CPBList As List(Of RDSetCrotchetsPerBar)
+		Private _BPMList As List(Of BaseBeatsPerMinute)
+		Private _CPBList As List(Of SetCrotchetsPerBar)
 		Friend Sub New(level As RDLevel)
 			Collection = level
 			Refresh()
@@ -71,8 +21,8 @@ Namespace Utils
 		''' Refresh the cache.
 		''' </summary>
 		Public Sub Refresh()
-			_BPMList = Collection.Where(Of RDBaseBeatsPerMinute).ToList
-			_CPBList = Collection.Where(Of RDSetCrotchetsPerBar).ToList
+			_BPMList = Collection.Where(Of BaseBeatsPerMinute).ToList
+			_CPBList = Collection.Where(Of SetCrotchetsPerBar).ToList
 		End Sub
 		''' <summary>
 		''' Convert beat data.
@@ -124,7 +74,7 @@ Namespace Utils
 		Public Function TimeSpanToBarBeat(timeSpan As TimeSpan) As (bar As UInteger, beat As Single)
 			Return BeatOnlyToBarBeat(TimeSpanToBeatOnly(timeSpan))
 		End Function
-		Private Shared Function BarBeatToBeatOnly(bar As UInteger, beat As Single, Collection As IEnumerable(Of RDSetCrotchetsPerBar)) As Single
+		Private Shared Function BarBeatToBeatOnly(bar As UInteger, beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As Single
 			Dim foreCPB As (BeatOnly As Single, Bar As UInteger, CPB As UInteger) = (1, 1, 8)
 			Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Beat.BarBeat.bar < bar)
 			If LastCPB IsNot Nothing Then
@@ -133,7 +83,7 @@ Namespace Utils
 			Dim result = foreCPB.BeatOnly + (bar - foreCPB.Bar) * foreCPB.CPB + beat - 1
 			Return result
 		End Function
-		Private Shared Function BeatOnlyToBarBeat(beat As Single, Collection As IEnumerable(Of RDSetCrotchetsPerBar)) As (bar As UInteger, beat As Single)
+		Private Shared Function BeatOnlyToBarBeat(beat As Single, Collection As IEnumerable(Of SetCrotchetsPerBar)) As (bar As UInteger, beat As Single)
 			Dim foreCPB As (BeatOnly As Single, Bar As UInteger, CPB As UInteger) = (1, 1, 8)
 			Dim LastCPB = Collection.LastOrDefault(Function(i) i.Active AndAlso i.Beat.BeatOnly < beat)
 			If LastCPB IsNot Nothing Then
@@ -143,14 +93,14 @@ Namespace Utils
 				(beat - foreCPB.BeatOnly) Mod foreCPB.CPB + 1)
 			Return result
 		End Function
-		Private Shared Function BeatOnlyToTimeSpan(beatOnly As Single, BPMCollection As IEnumerable(Of RDBaseBeatsPerMinute)) As TimeSpan
+		Private Shared Function BeatOnlyToTimeSpan(beatOnly As Single, BPMCollection As IEnumerable(Of BaseBeatsPerMinute)) As TimeSpan
 			Dim fore As (BeatOnly As Single, BPM As Single) = (1, 100)
 			Dim foreBPM = BPMCollection.FirstOrDefault()
 			If foreBPM IsNot Nothing Then
 				fore = (foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute)
 			End If
 			Dim resultMinute As Single = 0
-			For Each item As RDBaseBeatsPerMinute In BPMCollection
+			For Each item As BaseBeatsPerMinute In BPMCollection
 				If beatOnly > item.Beat.BeatOnly Then
 					resultMinute += (item.Beat.BeatOnly - fore.BeatOnly) / fore.BPM
 					fore = (item.Beat.BeatOnly, item.BeatsPerMinute)
@@ -161,14 +111,14 @@ Namespace Utils
 			resultMinute += (beatOnly - fore.BeatOnly) / fore.BPM
 			Return TimeSpan.FromMinutes(resultMinute)
 		End Function
-		Private Shared Function TimeSpanToBeatOnly(timeSpan As TimeSpan, BPMCollection As IEnumerable(Of RDBaseBeatsPerMinute)) As Single
+		Private Shared Function TimeSpanToBeatOnly(timeSpan As TimeSpan, BPMCollection As IEnumerable(Of BaseBeatsPerMinute)) As Single
 			Dim fore As (BeatOnly As Single, BPM As Single) = (1, 100)
 			Dim foreBPM = BPMCollection.FirstOrDefault()
 			If foreBPM IsNot Nothing Then
 				fore = (foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute)
 			End If
 			Dim beatOnly As Single = 1
-			For Each item As RDBaseBeatsPerMinute In BPMCollection
+			For Each item As BaseBeatsPerMinute In BPMCollection
 				If timeSpan > BeatOnlyToTimeSpan(item.Beat.BeatOnly, BPMCollection) Then
 					beatOnly +=
 (
@@ -188,74 +138,75 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 		''' <summary>
 		''' Creates a beat instance.
 		''' </summary>
-		Public Function BeatOf(beatOnly As Single) As RDBeat
-			Return New RDBeat(Me, beatOnly)
+		Public Function BeatOf(beatOnly As Single) As Beat
+			Return New Beat(Me, beatOnly)
 		End Function
 		''' <summary>
 		''' Creates a beat instance.
 		''' </summary>
-		Public Function BeatOf(bar As UInteger, beat As Single) As RDBeat
-			Return New RDBeat(Me, bar, beat)
+		Public Function BeatOf(bar As UInteger, beat As Single) As Beat
+			Return New Beat(Me, bar, beat)
 		End Function
 		''' <summary>
 		''' Creates a beat instance.
 		''' </summary>
-		Public Function BeatOf(timeSpan As TimeSpan) As RDBeat
-			Return New RDBeat(Me, timeSpan)
+		Public Function BeatOf(timeSpan As TimeSpan) As Beat
+			Return New Beat(Me, timeSpan)
 		End Function
 		''' <summary>
 		''' Calculate the BPM of the moment in which the beat is.
 		''' </summary>
-		Public Function BeatsPerMinuteOf(beat As RDBeat) As Single
+		Public Function BeatsPerMinuteOf(beat As Beat) As Single
 			Return If(_BPMList.LastOrDefault(Function(i) i.Beat < beat)?.BeatsPerMinute, 100)
 		End Function
 		''' <summary>
 		''' Calculate the CPB of the moment in which the beat is.
 		''' </summary>
-		Public Function CrotchetsPerBarOf(beat As RDBeat) As Single
+		Public Function CrotchetsPerBarOf(beat As Beat) As Single
 			Return If(_CPBList.LastOrDefault(Function(i) i.Beat < beat)?.CrotchetsPerBar, 8)
 		End Function
-
-	End Class
-	''' <summary>
-	''' Beat Calculator.
-	''' </summary>
-	Public Class ADBeatCalculator
-		Friend Collection As ADLevel
-		Private _DefaultBpm As Single
-		Private _MidSpins As List(Of ADTile)
-		Private _SetSpeeds As List(Of ADSetSpeed)
-		Private _Twirls As List(Of ADTwirl)
-		Private _Pauses As List(Of ADPause)
-		Private _Holds As List(Of ADHold)
-		Private _Freeroams As List(Of ADFreeRoam)
-		Friend Sub New(level As ADLevel)
-			Collection = level
-			Refresh()
-		End Sub
-		Private Sub Refresh()
-			_DefaultBpm = Collection.Settings.Bpm
-			_MidSpins = Collection.Where(Function(i) i.IsMidSpin).ToList
-			_SetSpeeds = Collection.EventsWhere(Of ADSetSpeed).ToList
-			_Twirls = Collection.EventsWhere(Of ADTwirl).ToList
-			_Pauses = Collection.EventsWhere(Of ADPause).ToList
-			_Holds = Collection.EventsWhere(Of ADHold).ToList
-			_Freeroams = Collection.EventsWhere(Of ADFreeRoam).ToList
-		End Sub
 	End Class
 	Public Module Utils
+		Private ReadOnly EventTypes As ObjectModel.ReadOnlyCollection(Of Type) =
+			GetType(BaseEvent).Assembly.GetTypes() _
+				.Where(Function(i) i.IsAssignableTo(GetType(BaseEvent))).ToList.AsReadOnly
+		''' <summary>
+		''' A dictionary that records the correspondence of event types inheriting from <see cref="BaseEvent"/> to <see cref="EventType"/>.
+		''' </summary>
+		Public ReadOnly EventTypeToEnums As ObjectModel.ReadOnlyDictionary(Of Type, EventType()) =
+			EventTypes.ToDictionary(Function(i) i,
+						  Function(i) EventTypes _
+							  .Where(Function(j) (j = i OrElse j.IsAssignableTo(i)) AndAlso Not j.IsAbstract) _
+							  .Select(Function(j) ConvertToEnum(j)) _
+							  .ToArray).AsReadOnly
+		''' <summary>
+		''' A dictionary that records the correspondence of <see cref="EventType"/> to event types inheriting from <see cref="BaseEvent"/>.
+		''' </summary>
+		Public ReadOnly EnumToEventType As ObjectModel.ReadOnlyDictionary(Of EventType, Type) =
+			[Enum].GetValues(Of EventType).ToDictionary(Function(i) i, Function(i) i.ConvertToType).AsReadOnly
+		''' <summary>
+		''' Event types that inherit from <see cref="BaseRowAction"/>.
+		''' </summary>
+		Public ReadOnly RowTypes As ObjectModel.ReadOnlyCollection(Of EventType) =
+			ConvertToEnums(Of BaseRowAction)().AsReadOnly
+		''' <summary>
+		''' Event types that inherit from <see cref="BaseDecorationAction"/>
+		''' </summary>
+		Public ReadOnly DecorationTypes As ObjectModel.ReadOnlyCollection(Of EventType) =
+			ConvertToEnums(Of BaseDecorationAction)().AsReadOnly
+		Public ReadOnly RDScreenSize As New RDSizeNI(352, 198)
 		''' <summary>
 		''' Converts percentage point to pixel point with default screen size (352 * 198).
 		''' </summary>
-		Public Function PercentToPixel(point As RDPointE) As RDPointE
+		Public Function PercentToPixel(point As PointE) As PointE
 			Return PercentToPixel(point, RDScreenSize)
 		End Function
 		''' <summary>
 		''' Converts percentage point to pixel point with specified size.
 		''' </summary>
 		''' <param name="size">Specified size.</param>
-		Public Function PercentToPixel(point As RDPointE, size As RDSizeE) As RDPointE
-			Return New RDPointE(point.X * size.Width / 100, point.Y * size.Height / 100)
+		Public Function PercentToPixel(point As PointE, size As RDSizeE) As PointE
+			Return New PointE(point.X * size.Width / 100, point.Y * size.Height / 100)
 		End Function
 		''' <summary>
 		''' Converts pixel point to percentage point with default screen size (352 * 198).
@@ -301,24 +252,20 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 		Public Function RadiusToDegree(radius As Single) As Single
 			Return radius * 180 / Single.Pi
 		End Function
-	End Module
-	Public Module TypeConvert
 		''' <summary>
 		''' Conversion between types and enumerations.
 		''' </summary>
-		Public Function RDConvertToEnum(type As Type) As RDEventType
-			If RDETypesToEnum Is Nothing Then
-				Dim result As RDEventType
-				If type.Name.StartsWith("RD") Then
-					Dim name = type.Name.Substring(2)
-					If [Enum].TryParse(name, result) Then
-						Return result
-					End If
+		Public Function ConvertToEnum(type As Type) As EventType
+			If EventTypeToEnums Is Nothing Then
+				Dim result As EventType
+				Dim name = type.Name
+				If [Enum].TryParse(name, result) Then
+					Return result
 				End If
 				Throw New IllegalEventTypeException(type, "Unable to find a matching EventType.")
 			Else
 				Try
-					Return RDETypesToEnum(type).Single
+					Return EventTypeToEnums(type).Single
 				Catch ex As Exception
 					Throw New IllegalEventTypeException(type, "Multiple matching EventTypes were found. Please check if the type is an abstract class type.", New ArgumentException("Multiple matching EventTypes were found. Please check if the type is an abstract class type.", NameOf(type)))
 				End Try
@@ -327,42 +274,15 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 		''' <summary>
 		''' Conversion between types and enumerations.
 		''' </summary>
-		Public Function ADConvertToEnum(type As Type) As ADEventType
-			If ADETypesToEnum Is Nothing Then
-				Dim result As ADEventType
-				If type.Name.StartsWith("AD") Then
-					Dim name = type.Name.Substring(2)
-					If [Enum].TryParse(name, result) Then
-						Return result
-					End If
-				End If
-				Throw New IllegalEventTypeException(type, "Unable to find a matching EventType.")
-			Else
-				Try
-					Return ADETypesToEnum(type).Single
-				Catch ex As Exception
-					Throw New IllegalEventTypeException(type, "Multiple matching EventTypes were found. Please check if the type is an abstract class type.", New ArgumentException("Multiple matching EventTypes were found. Please check if the type is an abstract class type.", NameOf(type)))
-				End Try
-			End If
+		Public Function ConvertToEnum(Of T As {BaseEvent, New})() As EventType
+			Return ConvertToEnum(GetType(T))
 		End Function
 		''' <summary>
 		''' Conversion between types and enumerations.
 		''' </summary>
-		Public Function ConvertToRDEnum(Of T As {RDBaseEvent, New})() As RDEventType
-			Return RDConvertToEnum(GetType(T))
-		End Function
-		''' <summary>
-		''' Conversion between types and enumerations.
-		''' </summary>
-		Public Function ConvertToADEnum(Of T As {ADBaseEvent, New})() As ADEventType
-			Return ADConvertToEnum(GetType(T))
-		End Function
-		''' <summary>
-		''' Conversion between types and enumerations.
-		''' </summary>
-		Public Function ConvertToRDEnums(Of T As RDBaseEvent)() As RDEventType()
+		Public Function ConvertToEnums(Of T As BaseEvent)() As EventType()
 			Try
-				Return RDETypesToEnum(GetType(T))
+				Return EventTypeToEnums(GetType(T))
 			Catch ex As Exception
 				Throw New IllegalEventTypeException(GetType(T), "This exception is not expected. Please contact the developer to handle this exception.", ex)
 			End Try
@@ -370,100 +290,52 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 		''' <summary>
 		''' Conversion between types and enumerations.
 		''' </summary>
-		Public Function ConvertToADEnums(Of T As RDBaseEvent)() As ADEventType()
-			Try
-				Return ADETypesToEnum(GetType(T))
-			Catch ex As Exception
-				Throw New IllegalEventTypeException(GetType(T), "This exception is not expected. Please contact the developer to handle this exception.")
-			End Try
-		End Function
-		''' <summary>
-		''' Conversion between types and enumerations.
-		''' </summary>
-		Public Function RDConvertToType(type As String) As Type
-			Dim result As RDEventType
+		Public Function ConvertToType(type As String) As Type
+			Dim result As EventType
 			If [Enum].TryParse(type, result) Then
 				Return result.ConvertToType()
 			End If
-			Return RDEventType.CustomEvent.ConvertToType
+			Return EventType.CustomEvent.ConvertToType
 		End Function
 		''' <summary>
 		''' Conversion between types and enumerations.
 		''' </summary>
-		Public Function ADConvertToType(type As String) As Type
-			Dim result As ADEventType
-			If [Enum].TryParse(type, result) Then
-				Return result.ConvertToType()
-			End If
-			Return ADEventType.CustomEvent.ConvertToType
-		End Function
-		''' <summary>
-		''' Conversion between types and enumerations.
-		''' </summary>
-		<Extension> Public Function ConvertToType(type As RDEventType) As Type
-			If RDEnumToEType Is Nothing Then
-				Dim result = System.Type.GetType($"{GetType(RDBaseEvent).Namespace}.RD{type}")
+		<Extension> Public Function ConvertToType(type As EventType) As Type
+			If EnumToEventType Is Nothing Then
+				Dim result = System.Type.GetType($"{GetType(BaseEvent).Namespace}.{type}")
 				If result Is Nothing Then
 					Throw New RhythmBaseException($"Illegal Type: {type}.")
 				End If
 				Return result
 			Else
 				Try
-					Return RDEnumToEType(type)
+					Return EnumToEventType(type)
 				Catch ex As Exception
 					Throw New IllegalEventTypeException(type, "This value does not exist in the EventType enumeration.")
 				End Try
 			End If
 		End Function
-		''' <summary>
-		''' Conversion between types and enumerations.
-		''' </summary>
-		<Extension> Public Function ConvertToType(type As ADEventType) As Type
-			If ADEnumToEType Is Nothing Then
-				Dim result = System.Type.GetType($"{GetType(ADBaseEvent).Namespace}.AD{type}")
-				If result Is Nothing Then
-					Throw New RhythmBaseException($"Illegal Type: {type}.")
-				End If
-				Return result
-			Else
-				Try
-					Return ADEnumToEType(type)
-				Catch ex As Exception
-					Throw New IllegalEventTypeException(type, "This value does not exist in the EventType enumeration.")
-				End Try
-			End If
-		End Function
-		<Extension> Public Function GetSerializer(rdlevel As RDLevel, settings As LevelReadOrWriteSettings) As JsonSerializer
-			Dim EventsSerializer As New JsonSerializer With {
-						.ContractResolver = New Serialization.CamelCasePropertyNamesContractResolver
+		<Extension> Public Function GetSerializer(rdlevel As RDLevel, settings As LevelReadOrWriteSettings) As JsonSerializerSettings
+			Dim EventsSerializer As New JsonSerializerSettings With {
+						.ContractResolver = New RDContractResolver
 					}
 			With EventsSerializer.Converters
 				.Add(New PanelColorConverter(rdlevel.ColorPalette))
+				.Add(New ColorConverter)
+				.Add(New ConditionalConverter)
+				.Add(New CharacterConverter(rdlevel.Path, rdlevel.Assets))
 				.Add(New AssetConverter(rdlevel.Path, rdlevel.Assets, settings))
 				.Add(New ConditionConverter(rdlevel.Conditionals))
 				.Add(New TagActionConverter(rdlevel, settings))
 				.Add(New CustomDecorationEventConverter(rdlevel, settings))
 				.Add(New CustomRowEventConverter(rdlevel, settings))
 				.Add(New CustomEventConverter(rdlevel, settings))
-				.Add(New BaseRowActionConverter(Of RDBaseRowAction)(rdlevel, settings))
-				.Add(New BaseDecorationActionConverter(Of RDBaseDecorationAction)(rdlevel, settings))
-				.Add(New BaseRDEventConverter(Of RDBaseEvent)(rdlevel, settings))
+				.Add(New BaseRowActionConverter(Of BaseRowAction)(rdlevel, settings))
+				.Add(New BaseDecorationActionConverter(Of BaseDecorationAction)(rdlevel, settings))
+				.Add(New BaseEventConverter(Of BaseEvent)(rdlevel, settings))
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 			End With
 			Return EventsSerializer
-		End Function
-		<Extension> Public Function GetSerializer(adlevel As ADLevel, settings As LevelReadOrWriteSettings) As JsonSerializer
-			Dim AllInOneSerializer As New JsonSerializer
-			With AllInOneSerializer.Converters
-				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
-				.Add(New ColorConverter)
-				.Add(New ADTileConverter(adlevel))
-				.Add(New ADCustomTileEventConverter(adlevel, settings))
-				.Add(New ADCustomEventConverter(adlevel, settings))
-				.Add(New ADBaseTileEventConverter(Of ADBaseTileEvent)(adlevel, settings))
-				.Add(New ADBaseEventConverter(Of ADBaseEvent)(adlevel, settings))
-			End With
-			Return AllInOneSerializer
 		End Function
 	End Module
 	''' <summary>

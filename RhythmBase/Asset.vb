@@ -6,11 +6,12 @@ Imports Newtonsoft.Json.Linq
 Imports NAudio
 Imports RhythmBase.Extensions.Extensions
 Imports SkiaSharp
+Imports System.ComponentModel
 Namespace Assets
 	''' <summary>
 	''' A reference to an asset file.
 	''' </summary>
-	Public Class RDSprite
+	Public Class Sprite
 		Private _file As String
 		Private _isLoaded As Boolean
 		Private _isModified As Boolean
@@ -84,7 +85,7 @@ Namespace Assets
 		''' <summary>
 		''' Base layer
 		''' </summary>
-		<JsonIgnore> Public Property Image_Base As SKBitmap
+		<JsonIgnore> Public Property ImageBase As SKBitmap
 			Get
 				Load()
 				Return _image_Base
@@ -98,7 +99,7 @@ Namespace Assets
 		''' <summary>
 		''' Glow layer
 		''' </summary>
-		<JsonIgnore> Public Property Image_Glow As SKBitmap
+		<JsonIgnore> Public Property ImageGlow As SKBitmap
 			Get
 				Load()
 				Return _image_Glow
@@ -112,7 +113,7 @@ Namespace Assets
 		''' <summary>
 		''' Outline layer
 		''' </summary>
-		<JsonIgnore> Public Property Image_Outline As SKBitmap
+		<JsonIgnore> Public Property ImageOutline As SKBitmap
 			Get
 				Load()
 				Return _image_Outline
@@ -126,7 +127,7 @@ Namespace Assets
 		''' <summary>
 		''' Freeze layer
 		''' </summary>
-		<JsonIgnore> Public Property Image_Freeze As SKBitmap
+		<JsonIgnore> Public Property ImageFreeze As SKBitmap
 			Get
 				Load()
 				Return _image_Freeze
@@ -291,7 +292,7 @@ Namespace Assets
 		''' An expression.
 		''' </summary>
 		Public Class Expression
-			Friend parent As RDSprite
+			Friend parent As Sprite
 			Private _name As String
 			Private _frames As List(Of UInteger)
 			Private _loopStart As Integer?
@@ -613,7 +614,10 @@ Namespace Assets
 		''' </summary>
 		''' <param name="index">Frame index.</param>
 		''' <returns>A rectangular area that indicates the cropping area.</returns>
-		Public Function GetFrame(index As UInteger) As SKRectI
+		Public Function GetFrame(index As Integer) As SKRectI
+			If index < 0 Then
+				Throw New OverflowException
+			End If
 			Return GetFrameRect(index, ImageSize.ToSKSizeI, Size.ToSKSizeI)
 		End Function
 		Private Shared Function GetFrameRect(index As UInteger, source As SKSizeI, size As SKSizeI) As SKRectI
@@ -677,10 +681,10 @@ Namespace Assets
 			End If
 
 			If settings.WithImage Then
-				Image_Base.Save(WithoutExtension + ".png")
-				Image_Glow?.Save(WithoutExtension + "_glow.png")
-				Image_Outline?.Save(WithoutExtension + "_outline.png")
-				Image_Freeze?.Save(WithoutExtension + "_freeze.png")
+				ImageBase.Save(WithoutExtension + ".png")
+				ImageGlow?.Save(WithoutExtension + "_glow.png")
+				ImageOutline?.Save(WithoutExtension + "_outline.png")
+				ImageFreeze?.Save(WithoutExtension + "_freeze.png")
 			End If
 
 			WriteJson(New FileInfo(WithoutExtension + ".json").CreateText, settings)
@@ -709,7 +713,7 @@ Namespace Assets
 		''' <br/>
 		''' If using an in-game character, this value will be empty
 		''' </summary>
-		Public ReadOnly Property CustomCharacter As RDSprite
+		Public ReadOnly Property CustomCharacter As Sprite
 		''' <summary>
 		''' Construct an in-game character.
 		''' </summary>
@@ -722,7 +726,7 @@ Namespace Assets
 		''' Construct a customized character.
 		''' </summary>
 		''' <param name="character">A sprite.</param>
-		Public Sub New(character As RDSprite)
+		Public Sub New(character As Sprite)
 			IsCustom = True
 			CustomCharacter = character
 		End Sub
@@ -730,18 +734,49 @@ Namespace Assets
 			Return If(IsCustom, CustomCharacter.FileName, Character)
 		End Function
 	End Structure
-	Public Class RDAudio
+	''' <summary>
+	''' Audio.
+	''' </summary>
+	Public Class Audio
 		Private ReadOnly _file As String
+		''' <summary>
+		''' File name.
+		''' </summary>
+		Public Property Filename As String
+		''' <summary>
+		''' Audio volume.
+		''' </summary>
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <DefaultValue(100)> Public Property Volume As Integer = 100
+		''' <summary>
+		''' Audio Pitch.
+		''' </summary>
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <DefaultValue(100)> Public Property Pitch As Integer = 100
+		''' <summary>
+		''' Audio Pan.
+		''' </summary>
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> Public Property Pan As Integer = 0
+		''' <summary>
+		''' Audio Offset.
+		''' </summary>
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <JsonConverter(GetType(TimeConverter))> Public Property Offset As TimeSpan = TimeSpan.Zero
 		Public ReadOnly Property FilePath As String
 			Get
 				Return _file
 			End Get
 		End Property
 		Public ReadOnly Property IsFile As Boolean
+			Get
+				IsFile = {".mp3", ".wav", ".ogg", ".aif", ".aiff"}.Contains(Path.GetExtension(Filename))
+			End Get
+		End Property
+		Public Sub New()
+		End Sub
 		Public Sub New(name As String)
 			_file = name
-			IsFile = {".mp3", ".wav", ".ogg", ".aif", ".aiff"}.Contains(IO.Path.GetExtension(name))
 		End Sub
+		Public Overrides Function ToString() As String
+			Return Filename
+		End Function
 	End Class
 	Public Enum LoopOption
 		no

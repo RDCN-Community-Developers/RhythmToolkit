@@ -1,5 +1,5 @@
 Imports RhythmBase
-Imports RhythmBase.LevelElements
+Imports RhythmBase.Components
 Imports RhythmBase.Settings
 Imports RhythmBase.Utils
 Imports RhythmBase.Tools

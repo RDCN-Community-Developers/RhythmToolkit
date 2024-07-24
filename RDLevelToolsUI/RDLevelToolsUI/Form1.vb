@@ -1,4 +1,4 @@
-﻿Imports RhythmBase.LevelElements
+﻿Imports RhythmBase.Components
 Imports RhythmBase
 Imports RhythmBase.Events
 Imports RhythmBase.Settings
@@ -8,13 +8,13 @@ Imports System.Reflection
 Imports RhythmBase.Components
 Public Class Form1
 	Private able As Boolean = False
-	Private LevelHandler As RDLevelHandler
-	Private Calculator As RDBeatCalculator
+	Private LevelHandler As LevelHandler
+	Private Calculator As BeatCalculator
 	Private processingLevel As RDLevel
 	Private viewIndex As Integer = -1
 	Private Sub CreateLevelButton_Click(sender As Object, e As EventArgs) Handles CreateLevelButton.Click
 		processingLevel = New RDLevel
-		LevelHandler = New RDLevelHandler(processingLevel)
+		LevelHandler = New LevelHandler(processingLevel)
 		Calculator = processingLevel.Calculator
 		able = True
 		viewIndex = -1
@@ -27,7 +27,7 @@ Public Class Form1
 		processingLevel = RDLevel.LoadFile(OpenFileDialog1.FileName, New LevelReadOrWriteSettings)
 		Dim file = New IO.FileInfo(OpenFileDialog1.FileName)
 		Text = file.Directory.Name + "\" + file.Name
-		LevelHandler = New RDLevelHandler(processingLevel)
+		LevelHandler = New LevelHandler(processingLevel)
 		Calculator = processingLevel.Calculator
 		able = True
 		viewIndex = -1
@@ -70,7 +70,7 @@ Public Class Form1
 		Dim processingEvent = processingLevel(viewIndex)
 		Dim T As Type = processingEvent.GetType
 
-		Dim enump = GetType(RDEventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
+		Dim enump = GetType(EventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
 
 		Dim nameLabel As New Label With {
 			.Text = Manager.GetValue(enump),
@@ -142,7 +142,7 @@ Public Class Form1
 					}
 					pNumericUpDown.DataBindings.Add("Value", processingEvent, p.Name)
 					editorControl = pNumericUpDown
-				ElseIf editorType = GetType(RDExpression) Then
+				ElseIf editorType = GetType(Expression) Then
 					Dim pTextBox = New TextBox
 					pTextBox.DataBindings.Add("Text", processingEvent, p.Name)
 					editorControl = pTextBox

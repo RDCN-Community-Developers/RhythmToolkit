@@ -117,20 +117,20 @@ To correct this, change the path or filename or set the OverWrite property of {_
     End Class
     Public Class IllegalBeatException
         Inherits RhythmBaseException
-        Public Item As IRDBarBeginningEvent
+        Public Item As IBarBeginningEvent
         Public Overrides ReadOnly Property Message As String
             Get
-                Return $"This beat is invalid, the event {CType(Item, RDBaseEvent).Type} only allows the beat to be at the beginning of the bar."
+                Return $"This beat is invalid, the event {CType(Item, BaseEvent).Type} only allows the beat to be at the beginning of the bar."
             End Get
         End Property
-        Public Sub New(item As IRDBarBeginningEvent)
+        Public Sub New(item As IBarBeginningEvent)
             Me.Item = item
         End Sub
     End Class
     Public Class UnreadableEventException
         Inherits RhythmBaseException
-        Public Item As RDBaseEvent
-        Public Sub New(message As String, item As RDBaseEvent)
+        Public Item As BaseEvent
+        Public Sub New(message As String, item As BaseEvent)
             MyBase.New(message)
             Me.Item = item
         End Sub

@@ -1,13 +1,16 @@
-﻿Imports NAudio.CoreAudioApi
-Imports Newtonsoft.Json
+﻿Imports Newtonsoft.Json
 Imports SkiaSharp
 '#Disable Warning CA1507
 
 Namespace Events
+	Public Interface IEaseEvent
+		Property Ease As EaseType
+		Property Duration As Single
+	End Interface
 	''' <summary>
 	''' Rhythm Doctor event types.
 	''' </summary>
-	Public Enum RDEventType
+	Public Enum EventType
 		AddClassicBeat
 		AddFreeTimeBeat
 		AddOneshotBeat
@@ -85,24 +88,24 @@ Namespace Events
 		Tint
 		TintRows
 	End Enum
-	Public Enum RDPlayerType
+	Public Enum PlayerType
 		P1
 		P2
 		CPU
 		NoChange
 	End Enum
-	Public Enum RDTilingTypes
+	Public Enum TilingTypes
 		Scroll
 		Pulse
 	End Enum
-	Public Enum RDContentModes
+	Public Enum ContentModes
 		ScaleToFill
 		AspectFit
 		AspectFill
 		Center
 		Tiled
 	End Enum
-	Public Enum RDDefaultAudios
+	Public Enum DefaultAudios
 		sndTutorialHouse_Base
 		sndTutorialHouse_Rest
 		sndTutorialHouse_AmenFill
@@ -113,11 +116,11 @@ Namespace Events
 		sndTutorialHouse_Burn2
 		sndTutorialHouse_BurnCPU
 	End Enum
-	Public Enum RDRowType
+	Public Enum RowType
 		Classic
 		Oneshot
 	End Enum
-	Public Enum RDTabs
+	Public Enum Tabs
 		Song
 		Rows
 		Actions
@@ -125,14 +128,14 @@ Namespace Events
 		Rooms
 		Unknown
 	End Enum
-	Public Enum RDPlayerHands
+	Public Enum PlayerHands
 		Left
 		Right
 		Both
 		p1
 		p2
 	End Enum
-	Public Enum RDBorders
+	Public Enum Borders
 		None
 		Outline
 		Glow
@@ -145,36 +148,32 @@ Namespace Events
 		Banana
 		[Return]
 	End Enum
-	Public Interface IEaseEvent
-		Property Ease As EaseType
-		Property Duration As Single
+	Public Interface IRoomEvent
+		Property Rooms As Room
 	End Interface
-	Public Interface IRDRoomEvent
-		Property Rooms As RDRoom
+	Public Interface ISingleRoomEvent
+		Property Room As SingleRoom
 	End Interface
-	Public Interface ISingleRDRoomEvent
-		Property Room As RDSingleRoom
+	Public Interface IBarBeginningEvent
 	End Interface
-	Public Interface IRDBarBeginningEvent
-	End Interface
-	Public MustInherit Class RDBaseEvent
+	Public MustInherit Class BaseEvent
 		''' <summary>
 		''' Event type.
 		''' </summary>
-		<JsonProperty(NameOf(Type))> Public MustOverride ReadOnly Property Type As RDEventType
+		<JsonProperty(NameOf(Type))> Public MustOverride ReadOnly Property Type As EventType
 		''' <summary>
 		''' Column to which the event belongs.
 		''' </summary>
-		<JsonIgnore> Public MustOverride ReadOnly Property Tab As RDTabs
-		Friend _beat As New RDBeat(1)
+		<JsonIgnore> Public MustOverride ReadOnly Property Tab As Tabs
+		Friend _beat As New Beat(1)
 		''' <summary>
 		''' The beat of the event.
 		''' </summary>
-		<JsonIgnore> Public Overridable Property Beat As RDBeat
+		<JsonIgnore> Public Overridable Property Beat As Beat
 			Get
 				Return _beat
 			End Get
-			Set(value As RDBeat)
+			Set(value As Beat)
 				If _beat.baseLevel Is Nothing Then
 					If value.baseLevel Is Nothing Then
 						_beat = value
@@ -182,9 +181,10 @@ Namespace Events
 						_beat = value.WithoutBinding()
 					End If
 				Else
-					value = New RDBeat(_beat.baseLevel.Calculator, value)
+					value = New Beat(_beat.baseLevel.Calculator, value)
 					_beat.baseLevel.Remove(Me)
 					value.baseLevel.Add(Me)
+					_beat = value
 				End If
 			End Set
 		End Property
@@ -199,7 +199,7 @@ Namespace Events
 		''' <summary>
 		''' Event conditions.
 		''' </summary>
-		<JsonProperty("if", DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Condition As RDCondition
+		<JsonProperty("if", DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Condition As Condition
 		Public Property Active As Boolean = True
 		''' <summary>
 		''' Clone this event and its basic properties.
@@ -207,8 +207,8 @@ Namespace Events
 		''' </summary>
 		''' <typeparam name="T">Type that will be generated.</typeparam>
 		''' <returns></returns>
-		Public Overridable Function Clone(Of T As {RDBaseEvent, New})() As T
-			If ConvertToRDEnum(Of T)() = Type Then
+		Public Overridable Function Clone(Of T As {BaseEvent, New})() As T
+			If ConvertToEnum(Of T)() = Type Then
 				Dim e = CType(MemberwiseClone(), T)
 				e._beat = Beat.WithoutBinding()
 				Return e
@@ -221,7 +221,7 @@ Namespace Events
 			End If
 			Return temp
 		End Function
-		Friend Overridable Function Clone(Of T As {RDBaseEvent, New})(level As RDLevel) As T
+		Friend Overridable Function Clone(Of T As {BaseEvent, New})(level As RDLevel) As T
 			Dim temp = New T With {.Beat = Beat.WithoutBinding, .Y = Y, .Condition = Condition, .Tag = Tag, .Active = Active}
 			If Me.Condition IsNot Nothing Then
 				For Each item In Me.Condition.ConditionLists
@@ -237,14 +237,14 @@ Namespace Events
 			Return Not Active
 		End Function
 	End Class
-	Public MustInherit Class RDBaseBeatsPerMinute
-		Inherits RDBaseEvent
+	Public MustInherit Class BaseBeatsPerMinute
+		Inherits BaseEvent
 		Private _bpm As Single = 100
-		Public Overrides Property Beat As RDBeat
+		Public Overrides Property Beat As Beat
 			Get
 				Return MyBase.Beat
 			End Get
-			Set(value As RDBeat)
+			Set(value As Beat)
 				MyBase.Beat = value
 				ResetTimeLine()
 			End Set
@@ -266,10 +266,10 @@ Namespace Events
 			End If
 		End Sub
 	End Class
-	Public MustInherit Class RDBaseDecorationAction
-		Inherits RDBaseEvent
-		Friend _parent As RDDecoration
-		<JsonIgnore> Public ReadOnly Property Parent As RDDecoration
+	Public MustInherit Class BaseDecorationAction
+		Inherits BaseEvent
+		Friend _parent As DecorationEventCollection
+		<JsonIgnore> Public ReadOnly Property Parent As DecorationEventCollection
 			Get
 				Return _parent
 			End Get
@@ -291,33 +291,33 @@ Namespace Events
 		''' </summary>
 		''' <typeparam name="T">Type that will be generated.</typeparam>
 		''' <returns></returns>
-		Public Overloads Function Clone(Of T As {RDBaseDecorationAction, New})() As T
+		Public Overloads Function Clone(Of T As {BaseDecorationAction, New})() As T
 			Dim Temp = MyBase.Clone(Of T)()
 			Temp._parent = Parent
 			Return Temp
 		End Function
-		Friend Overloads Function Clone(Of T As {RDBaseDecorationAction, New})(decoration As RDDecoration) As T
+		Friend Overloads Function Clone(Of T As {BaseDecorationAction, New})(decoration As DecorationEventCollection) As T
 			Dim Temp = MyBase.Clone(Of T)(decoration.Parent)
 			Temp._parent = decoration
 			Return Temp
 		End Function
-		<JsonIgnore> Public ReadOnly Property Room As RDSingleRoom
+		<JsonIgnore> Public ReadOnly Property Room As SingleRoom
 			Get
 				If Parent Is Nothing Then
-					Return RDSingleRoom.Default
+					Return SingleRoom.Default
 				End If
 				Return Parent.Room
 			End Get
 		End Property
 	End Class
-	Public MustInherit Class RDBaseRowAction
-		Inherits RDBaseEvent
-		Friend _parent As RDRow
-		<JsonIgnore> Public Property Parent As RDRow
+	Public MustInherit Class BaseRowAction
+		Inherits BaseEvent
+		Friend _parent As RowEventCollection
+		<JsonIgnore> Public Property Parent As RowEventCollection
 			Get
 				Return _parent
 			End Get
-			Friend Set(value As RDRow)
+			Friend Set(value As RowEventCollection)
 				If _parent IsNot Nothing Then
 					_parent.Remove(Me)
 					value?.Add(Me)
@@ -325,10 +325,10 @@ Namespace Events
 				_parent = value
 			End Set
 		End Property
-		<JsonIgnore> Public ReadOnly Property Room As RDSingleRoom
+		<JsonIgnore> Public ReadOnly Property Room As SingleRoom
 			Get
 				If _parent Is Nothing Then
-					Return RDSingleRoom.Default
+					Return SingleRoom.Default
 				End If
 				Return Parent.Rooms
 			End Get
@@ -344,34 +344,34 @@ Namespace Events
 		''' </summary>
 		''' <typeparam name="T">Type that will be generated.</typeparam>
 		''' <returns></returns>
-		Public Overloads Function Clone(Of T As {RDBaseRowAction, New})() As T
+		Public Overloads Function Clone(Of T As {BaseRowAction, New})() As T
 			Dim Temp = MyBase.Clone(Of T)()
 			Temp.Parent = Parent
 			Return Temp
 		End Function
-		Friend Overloads Function Clone(Of T As {RDBaseRowAction, New})(row As RDRow) As T
+		Friend Overloads Function Clone(Of T As {BaseRowAction, New})(row As RowEventCollection) As T
 			Dim Temp = MyBase.Clone(Of T)(row.Parent)
 			Temp.Parent = row
 			Return Temp
 		End Function
 	End Class
-	Public MustInherit Class RDBaseBeat
-		Inherits RDBaseRowAction
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rows
+	Public MustInherit Class BaseBeat
+		Inherits BaseRowAction
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
 	End Class
-	Public MustInherit Class RDBaseRowAnimation
-		Inherits RDBaseRowAction
+	Public MustInherit Class BaseRowAnimation
+		Inherits BaseRowAction
 	End Class
-	Public Class RDCustomEvent
-		Inherits RDBaseEvent
+	Public Class CustomEvent
+		Inherits BaseEvent
 		<JsonIgnore> Public Data As New Linq.JObject
-		<JsonIgnore> Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomEvent
+		<JsonIgnore> Public Overrides ReadOnly Property Type As EventType = EventType.CustomEvent
 		<JsonIgnore> Public ReadOnly Property ActureType As String
 			Get
 				Return Data(NameOf(Type).ToLowerCamelCase).ToString
 			End Get
 		End Property
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Unknown
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Unknown
 		Public Overrides Property Y As Integer
 			Get
 				Return CInt(If(Data(NameOf(Y).ToLowerCamelCase), 0))
@@ -385,122 +385,122 @@ Namespace Events
 		End Sub
 		Public Sub New(data As Linq.JObject)
 			Me.Data = data
-			Beat = New RDBeat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
+			Beat = New Beat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
 			Tag = data("tag")?.ToObject(Of String)
-			Condition = If(data("condition") Is Nothing, Nothing, RDCondition.Load(data("condition")?.ToObject(Of String)))
+			Condition = If(data("condition") Is Nothing, Nothing, Condition.Load(data("condition")?.ToObject(Of String)))
 			Active = If(data("active")?.ToObject(Of Boolean), True)
 		End Sub
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
 		End Function
-		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?) As Boolean
+		Public Overridable Function TryConvert(ByRef value As BaseEvent, ByRef type As EventType?) As Boolean
 			Return TryConvert(value, type, New LevelReadOrWriteSettings)
 		End Function
-		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?, settings As LevelReadOrWriteSettings) As Boolean
-			Dim serializer = _beat.baseLevel.GetSerializer(settings)
-			Dim eventType = RDConvertToType(Data("type"))
+		Public Overridable Function TryConvert(ByRef value As BaseEvent, ByRef type As EventType?, settings As LevelReadOrWriteSettings) As Boolean
+			Dim serializer = JsonSerializer.Create(_beat.baseLevel.GetSerializer(settings))
+			Dim eventType = ConvertToType(Data("type"))
 			If eventType Is Nothing Then
-				Dim TempEvent As RDBaseEvent
+				Dim TempEvent As BaseEvent
 				If Data("target") IsNot Nothing Then
-					TempEvent = Data.ToObject(Of RDCustomDecorationEvent)(serializer)
+					TempEvent = Data.ToObject(Of CustomDecorationEvent)(serializer)
 				ElseIf Data("row") IsNot Nothing Then
-					TempEvent = Data.ToObject(Of RDCustomRowEvent)(serializer)
+					TempEvent = Data.ToObject(Of CustomRowEvent)(serializer)
 				Else
-					TempEvent = Data.ToObject(Of RDCustomEvent)(serializer)
+					TempEvent = Data.ToObject(Of CustomEvent)(serializer)
 				End If
 				value = TempEvent
 				type = Nothing
 				Return False
 			Else
-				Dim TempEvent As RDBaseEvent = Data.ToObject(eventType, serializer)
+				Dim TempEvent As BaseEvent = Data.ToObject(eventType, serializer)
 				value = TempEvent
-				type = [Enum].Parse(Of RDEventType)(Data("type"))
+				type = [Enum].Parse(Of EventType)(Data("type"))
 				Return True
 			End If
 		End Function
 	End Class
-	Public Class RDCustomDecorationEvent
-		Inherits RDBaseDecorationAction
+	Public Class CustomDecorationEvent
+		Inherits BaseDecorationAction
 		Public Data As New Linq.JObject
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomDecorationEvent
+		Public Overrides ReadOnly Property Type As EventType = EventType.CustomDecorationEvent
 		<JsonIgnore> Public ReadOnly Property ActureType As String
 			Get
 				Return Data(NameOf(Type).ToLowerCamelCase).ToString
 			End Get
 		End Property
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Sprites
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
 		Public Sub New()
 			Data = New Linq.JObject
 		End Sub
 		Public Sub New(data As Linq.JObject)
 			Me.Data = data
-			Beat = New RDBeat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
+			Beat = New Beat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
 			Tag = data("tag")?.ToObject(Of String)
-			Condition = If(data("condition") Is Nothing, Nothing, RDCondition.Load(data("condition")?.ToObject(Of String)))
+			Condition = If(data("condition") Is Nothing, Nothing, Condition.Load(data("condition")?.ToObject(Of String)))
 			Active = If(data("active")?.ToObject(Of Boolean), True)
 		End Sub
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
 		End Function
-		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?) As Boolean
+		Public Overridable Function TryConvert(ByRef value As BaseEvent, ByRef type As EventType?) As Boolean
 			Return TryConvert(value, type, New LevelReadOrWriteSettings)
 		End Function
-		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?, settings As LevelReadOrWriteSettings) As Boolean
-			Return CType(Me, RDCustomEvent).TryConvert(value, type, settings)
+		Public Overridable Function TryConvert(ByRef value As BaseEvent, ByRef type As EventType?, settings As LevelReadOrWriteSettings) As Boolean
+			Return CType(Me, CustomEvent).TryConvert(value, type, settings)
 		End Function
-		Public Shared Widening Operator CType(e As RDCustomDecorationEvent) As RDCustomEvent
-			Return New RDCustomEvent(e.Data)
+		Public Shared Widening Operator CType(e As CustomDecorationEvent) As CustomEvent
+			Return New CustomEvent(e.Data)
 		End Operator
-		Public Shared Narrowing Operator CType(e As RDCustomEvent) As RDCustomDecorationEvent
+		Public Shared Narrowing Operator CType(e As CustomEvent) As CustomDecorationEvent
 			If e.Data("row") IsNot Nothing Then
-				Return New RDCustomDecorationEvent(e.Data)
+				Return New CustomDecorationEvent(e.Data)
 			End If
 			Throw New RhythmBaseException("The row field is missing from the field contained in this object.")
 		End Operator
 	End Class
-	Public Class RDCustomRowEvent
-		Inherits RDBaseRowAction
+	Public Class CustomRowEvent
+		Inherits BaseRowAction
 		Public Data As New Linq.JObject
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomRowEvent
+		Public Overrides ReadOnly Property Type As EventType = EventType.CustomRowEvent
 		<JsonIgnore> Public ReadOnly Property ActureType As String
 			Get
 				Return Data(NameOf(Type).ToLowerCamelCase).ToString
 			End Get
 		End Property
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rows
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rows
 		Public Sub New()
 			Data = New Linq.JObject
 		End Sub
 		Public Sub New(data As Linq.JObject)
 			Me.Data = data
-			Beat = New RDBeat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
+			Beat = New Beat(data("bar").ToObject(Of UInteger), If(data("beat")?.ToObject(Of Single), 1))
 			Tag = data("tag")?.ToObject(Of String)
-			Condition = If(data("condition") Is Nothing, Nothing, RDCondition.Load(data("condition")?.ToObject(Of String)))
+			Condition = If(data("condition") Is Nothing, Nothing, Condition.Load(data("condition")?.ToObject(Of String)))
 			Active = If(data("active")?.ToObject(Of Boolean), True)
 		End Sub
 		Public Overrides Function ToString() As String
 			Return $"{Beat} *{ActureType}"
 		End Function
-		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?) As Boolean
+		Public Overridable Function TryConvert(ByRef value As BaseEvent, ByRef type As EventType?) As Boolean
 			Return TryConvert(value, type, New LevelReadOrWriteSettings)
 		End Function
-		Public Overridable Function TryConvert(ByRef value As RDBaseEvent, ByRef type As RDEventType?, settings As LevelReadOrWriteSettings) As Boolean
-			Return CType(Me, RDCustomEvent).TryConvert(value, type, settings)
+		Public Overridable Function TryConvert(ByRef value As BaseEvent, ByRef type As EventType?, settings As LevelReadOrWriteSettings) As Boolean
+			Return CType(Me, CustomEvent).TryConvert(value, type, settings)
 		End Function
-		Public Shared Widening Operator CType(e As RDCustomRowEvent) As RDCustomEvent
-			Return New RDCustomEvent(e.Data)
+		Public Shared Widening Operator CType(e As CustomRowEvent) As CustomEvent
+			Return New CustomEvent(e.Data)
 		End Operator
-		Public Shared Narrowing Operator CType(e As RDCustomEvent) As RDCustomRowEvent
+		Public Shared Narrowing Operator CType(e As CustomEvent) As CustomRowEvent
 			If e.Data("row") IsNot Nothing Then
-				Return New RDCustomRowEvent(e.Data)
+				Return New CustomRowEvent(e.Data)
 			End If
 			Throw New RhythmBaseException("The row field is missing from the field contained in this object.")
 		End Operator
 	End Class
-	Public Class RDPlaySong
-		Inherits RDBaseBeatsPerMinute
-		Implements IRDBarBeginningEvent
-		Public Song As Components.RDAudio
+	Public Class PlaySong
+		Inherits BaseBeatsPerMinute
+		Implements IBarBeginningEvent
+		Public Song As Audio
 		<JsonIgnore> Public Property Offset As TimeSpan
 			Get
 				Return Song.Offset
@@ -510,27 +510,27 @@ Namespace Events
 			End Set
 		End Property
 		Public Property [Loop] As Boolean
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PlaySong
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Overrides ReadOnly Property Type As EventType = EventType.PlaySong
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" BPM:{BeatsPerMinute}, Song:{Song.Filename}"
 		End Function
 	End Class
-	Public Class RDSetBeatsPerMinute
-		Inherits RDBaseBeatsPerMinute
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetBeatsPerMinute
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+	Public Class SetBeatsPerMinute
+		Inherits BaseBeatsPerMinute
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetBeatsPerMinute
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" BPM:{BeatsPerMinute}"
 		End Function
 	End Class
-	Public Class RDSetCrotchetsPerBar
-		Inherits RDBaseEvent
-		Implements IRDBarBeginningEvent
+	Public Class SetCrotchetsPerBar
+		Inherits BaseEvent
+		Implements IBarBeginningEvent
 		Private _visualBeatMultiplier As Single = 0
 		Protected Friend _crotchetsPerBar As UInteger = 7
-		Public Overrides ReadOnly Property Type As RDEventType = Events.RDEventType.SetCrotchetsPerBar
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetCrotchetsPerBar
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		Public Property VisualBeatMultiplier As Single
 			Get
 				Return _visualBeatMultiplier + 1
@@ -557,8 +557,8 @@ Namespace Events
 			Return MyBase.ToString() + $" CPB:{_crotchetsPerBar + 1}"
 		End Function
 	End Class
-	Public Class RDPlaySound
-		Inherits RDBaseEvent
+	Public Class PlaySound
+		Inherits BaseEvent
 		Enum CustomSoundTypes
 			CueSound
 			MusicSound
@@ -568,31 +568,31 @@ Namespace Events
 		End Enum
 		Public Property IsCustom As Boolean
 		Public Property CustomSoundType As CustomSoundTypes
-		Public Property Sound As Components.RDAudio
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PlaySound
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Property Sound As Audio
+		Public Overrides ReadOnly Property Type As EventType = EventType.PlaySound
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {If(IsCustom, Sound.ToString, CustomSoundType.ToString)}"
 		End Function
 	End Class
-	Public Class RDSetClapSounds
-		Inherits RDBaseEvent
-		Public Property P1Sound As Components.RDAudio
-		Public Property P2Sound As Components.RDAudio
-		Public Property CpuSound As Components.RDAudio
-		Public Property RowType As RDRowType
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetClapSounds
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+	Public Class SetClapSounds
+		Inherits BaseEvent
+		Public Property P1Sound As Audio
+		Public Property P2Sound As Audio
+		Public Property CpuSound As Audio
+		Public Property RowType As RowType
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetClapSounds
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 	End Class
-	Public Class RDSetHeartExplodeVolume
-		Inherits RDBaseEvent
-		Implements IRDBarBeginningEvent
+	Public Class SetHeartExplodeVolume
+		Inherits BaseEvent
+		Implements IBarBeginningEvent
 		Public Property Volume As UInteger
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetHeartExplodeVolume
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetHeartExplodeVolume
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 	End Class
-	Public Class RDSetHeartExplodeInterval
-		Inherits RDBaseEvent
+	Public Class SetHeartExplodeInterval
+		Inherits BaseEvent
 		Enum IntervalTypes
 			OneBeatAfter
 			Instant
@@ -601,11 +601,11 @@ Namespace Events
 		End Enum
 		Public Property IntervalType As IntervalTypes
 		Public Property Interval As Integer
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetHeartExplodeInterval
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetHeartExplodeInterval
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 	End Class
-	Public Class RDSayReadyGetSetGo
-		Inherits RDBaseEvent
+	Public Class SayReadyGetSetGo
+		Inherits BaseEvent
 		Enum Words
 			SayReaDyGetSetGoNew
 			SayGetSetGo
@@ -647,8 +647,8 @@ Namespace Events
 		Public Property VoiceSource As VoiceSources
 		Public Property Tick As Single
 		Public Property Volume As UInteger
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SayReadyGetSetGo
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Overrides ReadOnly Property Type As EventType = EventType.SayReadyGetSetGo
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		<JsonIgnore> Public ReadOnly Property Splitable As Boolean
 			Get
 				Return PhraseToSay = Words.SayReaDyGetSetGoNew OrElse
@@ -662,8 +662,8 @@ PhraseToSay = Words.SayReadyGetSetGo
 			Return MyBase.ToString() + $" {VoiceSource}: {PhraseToSay}"
 		End Function
 	End Class
-	Public Class RDSetGameSound
-		Inherits RDBaseEvent
+	Public Class SetGameSound
+		Inherits BaseEvent
 		Enum SoundTypes
 			SmallMistake
 			BigMistake
@@ -677,7 +677,7 @@ PhraseToSay = Words.SayReadyGetSetGo
 			FreezeshotSound
 			BurnshotSound
 		End Enum
-		Private Property Audio As New Components.RDAudio
+		Private Property Audio As New Audio
 		Public Property SoundType As SoundTypes
 		Public Property Filename As String
 			Get
@@ -719,9 +719,9 @@ PhraseToSay = Words.SayReadyGetSetGo
 				Audio.Offset = value
 			End Set
 		End Property
-		Public Property SoundSubtypes As List(Of RDSoundSubType)
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetGameSound
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Property SoundSubtypes As List(Of SoundSubType)
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetGameSound
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		Private Function ShouldSerialize() As Boolean
 			Return Not (
 SoundType = SoundTypes.ClapSoundHold Or
@@ -747,14 +747,14 @@ SoundType = SoundTypes.BurnshotSound)
 			Return MyBase.ToString() + $" {SoundType}"
 		End Function
 	End Class
-	Public Class RDSetBeatSound
-		Inherits RDBaseRowAction
-		Public Property Sound As New Components.RDAudio
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetBeatSound
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+	Public Class SetBeatSound
+		Inherits BaseRowAction
+		Public Property Sound As New Audio
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetBeatSound
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 	End Class
-	Public Class RDSetCountingSound
-		Inherits RDBaseRowAction
+	Public Class SetCountingSound
+		Inherits BaseRowAction
 		Enum VoiceSources
 			'ClassicBeat
 			JyiCount
@@ -787,16 +787,16 @@ SoundType = SoundTypes.BurnshotSound)
 		Public Property Enabled As Boolean
 		Public Property SubdivOffset As Single
 		Public Property Volume As Integer = 100
-		Public Property Sounds As New LimitedList(Of Components.RDAudio)(7, New Components.RDAudio)
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetCountingSound
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Song
+		Public Property Sounds As New LimitedList(Of Audio)(7, New Audio)
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetCountingSound
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
 		Public Function ShouldSerializeSounds() As Boolean
 			Return VoiceSource = VoiceSources.Custom
 		End Function
 	End Class
-	Public Class RDSetTheme
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
+	Public Class SetTheme
+		Inherits BaseEvent
+		Implements IRoomEvent
 		Enum Theme
 			None
 			Intimate
@@ -853,17 +853,17 @@ SoundType = SoundTypes.BurnshotSound)
 		End Enum
 		Public Property Preset As Theme = Theme.None
 		Public Property [Variant] As Byte
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetTheme
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
-		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetTheme
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+		Public Property Rooms As New Room(False, 0) Implements IRoomEvent.Rooms
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Preset}"
 		End Function
 	End Class
-	Public Class RDSetVFXPreset
-		Inherits RDBaseEvent
+	Public Class SetVFXPreset
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Implements IRDRoomEvent
+		Implements IRoomEvent
 		Enum Presets
 			SilhouettesOnHBeat
 			Vignette
@@ -929,18 +929,18 @@ SoundType = SoundTypes.BurnshotSound)
 			Tile3
 			Tile4
 		End Enum
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property Preset As Presets
 		Public Property Enable As Boolean
 		Public Property Threshold As Single
 		Public Property Intensity As Single
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)> Public Property Color As New RDPaletteColor(False)
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)> Public Property Color As New PaletteColor(False)
 		Public Property FloatX As Single
 		Public Property FloatY As Single
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetVFXPreset
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetVFXPreset
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Preset}"
 		End Function
@@ -995,10 +995,10 @@ Presets.Dots
 }.Contains(Preset)
 		End Function
 	End Class
-	Public Class RDSetBackgroundColor
-		Inherits RDBaseEvent
+	Public Class SetBackgroundColor
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Implements IRDRoomEvent
+		Implements IRoomEvent
 		Enum BackgroundTypes
 			Color
 			Image
@@ -1006,107 +1006,107 @@ Presets.Dots
 		Enum FilterModes
 			NearestNeighbor
 		End Enum
-		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New Room(False, 0) Implements IRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property ContentMode As RDContentModes
+		Public Property ContentMode As ContentModes
 		Public Property Filter As FilterModes '?
-		Public Property Color As New RDPaletteColor(True)
+		Public Property Color As New PaletteColor(True)
 		Public Property Interval As Single
 		Public Property BackgroundType As BackgroundTypes
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Fps As Integer
-		Public Property Image As List(Of RDSprite)
+		Public Property Image As List(Of Sprite)
 		Public Property ScrollX As Integer
 		Public Property ScrollY As Integer
-		Public Property TilingType As RDTilingTypes
-		Public Overrides ReadOnly Property Type As RDEventType = Events.RDEventType.SetBackgroundColor
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Property TilingType As TilingTypes
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetBackgroundColor
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {If(BackgroundType = BackgroundTypes.Color, Color.ToString, String.Join(","c, Image.Select(Function(i) i.ToString)))}"
 		End Function
 	End Class
-	Public Class RDSetForeground
-		Inherits RDBaseEvent
+	Public Class SetForeground
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
-		Public Property ContentMode As RDContentModes
-		Public Property TilingType As RDTilingTypes
-		Public Property Color As New RDPaletteColor(True)
-		Public Property Image As List(Of RDSprite)
+		Implements IRoomEvent
+		Public Property Rooms As New Room(False, 0) Implements IRoomEvent.Rooms
+		Public Property ContentMode As ContentModes
+		Public Property TilingType As TilingTypes
+		Public Property Color As New PaletteColor(True)
+		Public Property Image As List(Of Sprite)
 		Public Property Fps As Single
 		Public Property ScrollX As Single
 		Public Property ScrollY As Single
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Interval As Single
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetForeground
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetForeground
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Color},{String.Join(","c, Image.Select(Function(i) i.ToString))}"
 		End Function
 	End Class
-	Public Class RDSetSpeed
-		Inherits RDBaseEvent
+	Public Class SetSpeed
+		Inherits BaseEvent
 		Implements IEaseEvent
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Speed As Single
 		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetSpeed
-		<JsonIgnore> Public Property Rooms As RDRoom = RDRoom.Default
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetSpeed
+		<JsonIgnore> Public Property Rooms As Room = Room.Default
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" Speed:{Speed}"
 		End Function
 	End Class
-	Public Class RDFlash
-		Inherits RDBaseEvent
+	Public Class Flash
+		Inherits BaseEvent
 		Enum Durations
 			[Short]
 			Medium
 			[Long]
 		End Enum
-		Public Property Rooms As New RDRoom(True, 0)
+		Public Property Rooms As New Room(True, 0)
 		Public Property Duration As Durations
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Flash
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.Flash
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Duration}"
 		End Function
 	End Class
-	Public Class RDCustomFlash
-		Inherits RDBaseEvent
+	Public Class CustomFlash
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
+		Implements IRoomEvent
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property StartColor As New RDPaletteColor(False)
+		Public Property StartColor As New PaletteColor(False)
 		Public Property Background As Boolean
-		Public Property EndColor As New RDPaletteColor(False)
+		Public Property EndColor As New PaletteColor(False)
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property StartOpacity As Integer
 		Public Property EndOpacity As Integer
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CustomFlash
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.CustomFlash
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {StartColor}=>{EndColor}"
 		End Function
 	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class RDMoveCamera
-		Inherits RDBaseEvent
+	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class MoveCamera
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
-		Public Property CameraPosition As RDPointE?
+		Implements IRoomEvent
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
+		Public Property CameraPosition As PointE?
 		Public Property Zoom As Integer?
-		Public Property Angle As RDExpression?
+		Public Property Angle As Expression?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.MoveCamera
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.MoveCamera
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDHideRow
-		Inherits RDBaseRowAnimation
+	Public Class HideRow
+		Inherits BaseRowAnimation
 		Enum Transitions
 			Smooth
 			Instant
@@ -1120,11 +1120,11 @@ Presets.Dots
 		End Enum
 		Public Property Transition As Transitions
 		Public Property Show As Shows
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.HideRow
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.HideRow
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class RDMoveRow
-		Inherits RDBaseRowAnimation
+	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class MoveRow
+		Inherits BaseRowAnimation
 		Implements IEaseEvent
 		Enum Targets
 			WholeRow
@@ -1133,14 +1133,14 @@ Presets.Dots
 		End Enum
 		Public Property CustomPosition As Boolean
 		Public Property Target As Targets
-		Public Property RowPosition As RDPointE?
-		Public Property Scale As RDPointE?
-		Public Property Angle As RDExpression?
+		Public Property RowPosition As PointE?
+		Public Property Scale As PointE?
+		Public Property Angle As Expression?
 		Public Property Pivot As Single?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.MoveRow
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.MoveRow
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
 	'Public Class ShowSubdivisionsRows
 	'    Inherits BaseEvent
@@ -1158,18 +1158,18 @@ Presets.Dots
 
 	'End Class
 
-	Public Class RDPlayExpression
-		Inherits RDBaseRowAnimation
+	Public Class PlayExpression
+		Inherits BaseRowAnimation
 		Public Property Expression As String
 		Public Property Replace As Boolean
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PlayExpression
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.PlayExpression
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Expression}"
 		End Function
 	End Class
-	Public Class RDTintRows
-		Inherits RDBaseRowAnimation
+	Public Class TintRows
+		Inherits BaseRowAnimation
 		Implements IEaseEvent
 		Enum RowEffect
 			None
@@ -1178,16 +1178,16 @@ Presets.Dots
 			Smoke
 #End If
 		End Enum
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property TintColor As New RDPaletteColor(True)
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property TintColor As New PaletteColor(True)
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property Border As RDBorders
-		Public Property BorderColor As New RDPaletteColor(True)
+		Public Property Border As Borders
+		Public Property BorderColor As New PaletteColor(True)
 		Public Property Opacity As Integer
 		Public Property Tint As Boolean
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Effect As RowEffect
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.TintRows
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.TintRows
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		<JsonIgnore>
 		Public ReadOnly Property TintAll As Boolean
 			Get
@@ -1201,49 +1201,49 @@ Presets.Dots
 			Return Duration <> 0
 		End Function
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString() + $" {Border}{If(Border = RDBorders.None, "", ":" + BorderColor.ToString)}"
+			Return MyBase.ToString() + $" {Border}{If(Border = Borders.None, "", ":" + BorderColor.ToString)}"
 		End Function
 	End Class
-	Public Class RDBassDrop
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
+	Public Class BassDrop
+		Inherits BaseEvent
+		Implements IRoomEvent
 		Enum StrengthType
 			Low
 			Medium
 			High
 		End Enum
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property Strength As StrengthType
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.BassDrop
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.BassDrop
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Strength}"
 		End Function
 	End Class
-	Public Class RDShakeScreen
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
+	Public Class ShakeScreen
+		Inherits BaseEvent
+		Implements IRoomEvent
 		Enum ShakeLevels
 			Low
 			Medium
 			High
 		End Enum
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property ShakeLevel As ShakeLevels
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShakeScreen
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.ShakeScreen
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {ShakeLevel}"
 		End Function
 	End Class
-	Public Class RDFlipScreen
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
+	Public Class FlipScreen
+		Inherits BaseEvent
+		Implements IRoomEvent
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property FlipX As Boolean
 		Public Property FlipY As Boolean
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.FlipScreen
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.FlipScreen
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Dim result As String
 			If FlipX Then
@@ -1262,33 +1262,33 @@ Presets.Dots
 			Return MyBase.ToString() + $" {result}"
 		End Function
 	End Class
-	Public Class RDInvertColors
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
+	Public Class InvertColors
+		Inherits BaseEvent
+		Implements IRoomEvent
+		Public Property Rooms As New Room(False, 0) Implements IRoomEvent.Rooms
 		Public Property Enable As Boolean
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.InvertColors
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.InvertColors
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Enable}"
 		End Function
 	End Class
-	Public Class RDPulseCamera
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
+	Public Class PulseCamera
+		Inherits BaseEvent
+		Implements IRoomEvent
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property Strength As Byte
 		Public Property Count As Integer
 		Public Property Frequency As Single
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PulseCamera
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.PulseCamera
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Strength},{Count},{Frequency}"
 		End Function
 	End Class
-	Public Class RDTextExplosion
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
+	Public Class TextExplosion
+		Inherits BaseEvent
+		Implements IRoomEvent
 		Enum Directions
 			Left
 			Right
@@ -1297,20 +1297,20 @@ Presets.Dots
 			OneColor
 			Random
 		End Enum
-		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
-		Public Property Color As New RDPaletteColor(False)
+		Public Property Rooms As New Room(False, 0) Implements IRoomEvent.Rooms
+		Public Property Color As New PaletteColor(False)
 		Public Property Text As String
 		Public Property Direction As Directions
 		Public Property Mode As Modes
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.TextExplosion
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.TextExplosion
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Text}"
 		End Function
 	End Class
-	Public Class RDNarrateRowInfo
-		Inherits RDBaseRowAction
-		Implements IRDRoomEvent
+	Public Class NarrateRowInfo
+		Inherits BaseRowAction
+		Implements IRoomEvent
 		Public Enum NarrateInfoType
 			Connect
 			Update
@@ -1318,9 +1318,9 @@ Presets.Dots
 			Online
 			Offline
 		End Enum
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.NarrateRowInfo
-		Public Property Rooms As RDRoom Implements IRDRoomEvent.Rooms
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.NarrateRowInfo
+		Public Property Rooms As Room Implements IRoomEvent.Rooms
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Property InfoType As NarrateInfoType
 		Public Property SoundOnly As Boolean
 		Public Property NarrateSkipBeats As String
@@ -1330,8 +1330,8 @@ Presets.Dots
 			Return MyBase.ToString() + $" {InfoType}:{NarrateSkipBeats}"
 		End Function
 	End Class
-	Public Class RDReadNarration
-		Inherits RDBaseEvent
+	Public Class ReadNarration
+		Inherits BaseEvent
 		Public Enum NarrationCategory
 			Fallback
 			Navigation
@@ -1341,17 +1341,17 @@ Presets.Dots
 			Description = 6
 			Subtitles
 		End Enum
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ReadNarration
+		Public Overrides ReadOnly Property Type As EventType = EventType.ReadNarration
 		Public Property Text As String
 		Public Property Category As NarrationCategory
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
-		Public Property Rooms As RDRoom = RDRoom.Default
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+		Public Property Rooms As Room = Room.Default
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Text}"
 		End Function
 	End Class
-	Public Class RDShowDialogue
-		Inherits RDBaseEvent
+	Public Class ShowDialogue
+		Inherits BaseEvent
 		Enum Sides
 			Bottom
 			Top
@@ -1365,14 +1365,14 @@ Presets.Dots
 		Public Property PortraitSide As PortraitSides
 		Public Property Speed As Integer = 1 '?
 		Public Property PlayTextSounds As Boolean
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShowDialogue
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.ShowDialogue
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Text}"
 		End Function
 	End Class
-	Public Class RDShowStatusSign
-		Inherits RDBaseEvent
+	Public Class ShowStatusSign
+		Inherits BaseEvent
 		Public Property UseBeats As Boolean = True
 		Public Property Narrate As Boolean = True
 		Public Property Text As String
@@ -1389,15 +1389,15 @@ Presets.Dots
 				Duration = value.TotalSeconds
 			End Set
 		End Property
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShowStatusSign
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.ShowStatusSign
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Text}"
 		End Function
 	End Class
-	Public Class RDFloatingText
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
+	Public Class FloatingText
+		Inherits BaseEvent
+		Implements IRoomEvent
 		<Flags> Public Enum OutMode
 			FadeOut
 			HideAbruptly
@@ -1411,27 +1411,27 @@ Presets.Dots
 		End Enum
 		Private Shared _PrivateId As UInteger = 0
 		Private ReadOnly GeneratedId As UInteger
-		Private ReadOnly _children As New List(Of RDAdvanceText)
+		Private ReadOnly _children As New List(Of AdvanceText)
 		Private _mode As OutMode = OutMode.FadeOut
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.FloatingText
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
-		<JsonIgnore> Public ReadOnly Property Children As List(Of RDAdvanceText)
+		Public Overrides ReadOnly Property Type As EventType = EventType.FloatingText
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+		<JsonIgnore> Public ReadOnly Property Children As List(Of AdvanceText)
 			Get
 				Return _children '.OrderBy(Function(i) i.Bar * 50 + i.Beat).ToList
 			End Get
 		End Property
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property FadeOutRate As Single
-		Public Property Color As New RDPaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
+		Public Property Color As New PaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 		Public Property Angle As Single
 		Public Property Size As UInteger
-		Public Property OutlineColor As New RDPaletteColor(True) With {.Color = New SKColor(0, 0, 0, &HFF)}
+		Public Property OutlineColor As New PaletteColor(True) With {.Color = New SKColor(0, 0, 0, &HFF)}
 		<JsonProperty> Friend ReadOnly Property Id As Integer
 			Get
 				Return GeneratedId
 			End Get
 		End Property
-		Public Property TextPosition As RDPoint = New RDPoint(50, 50)
+		Public Property TextPosition As New RDPoint(50, 50)
 		Public Property Anchor As AnchorStyle
 		Public Property Mode As OutMode
 			Get
@@ -1451,20 +1451,20 @@ Presets.Dots
 			Return MyBase.ToString() + $" {_Text}"
 		End Function
 	End Class
-	Public Class RDAdvanceText
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
-		Public Overrides ReadOnly Property Type As RDEventType = Events.RDEventType.AdvanceText
-		<JsonIgnore> Public Property Rooms As RDRoom Implements IRDRoomEvent.Rooms
+	Public Class AdvanceText
+		Inherits BaseEvent
+		Implements IRoomEvent
+		Public Overrides ReadOnly Property Type As EventType = EventType.AdvanceText
+		<JsonIgnore> Public Property Rooms As Room Implements IRoomEvent.Rooms
 			Get
 				Return Parent.Rooms
 			End Get
-			Set(value As RDRoom)
+			Set(value As Room)
 				Parent.Rooms = value
 			End Set
 		End Property
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
-		<JsonIgnore> Public Property Parent As RDFloatingText
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+		<JsonIgnore> Public Property Parent As FloatingText
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property FadeOutDuration As Single
 #Disable Warning IDE0051
 		<JsonProperty> Private ReadOnly Property Id As Integer
@@ -1477,8 +1477,8 @@ Presets.Dots
 			Return MyBase.ToString + $" Index:{_Parent.Children.IndexOf(Me)}"
 		End Function
 	End Class
-	Public Class RDChangePlayersRows
-		Inherits RDBaseEvent
+	Public Class ChangePlayersRows
+		Inherits BaseEvent
 		Enum CpuType
 			None
 			Otto
@@ -1492,23 +1492,23 @@ Presets.Dots
 			OnePlayer
 			TwoPlayers
 		End Enum
-		Public Property Players As New List(Of RDPlayerType)(16)
+		Public Property Players As New List(Of PlayerType)(16)
 		Public Property PlayerMode As PlayerModes
 		Public Property CpuMarkers() As New List(Of CpuType)(16)
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ChangePlayersRows
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.ChangePlayersRows
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDFinishLevel
-		Inherits RDBaseEvent
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.FinishLevel
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+	Public Class FinishLevel
+		Inherits BaseEvent
+		Public Overrides ReadOnly Property Type As EventType = EventType.FinishLevel
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDComment
-		Inherits RDBaseDecorationAction
+	Public Class Comment
+		Inherits BaseDecorationAction
 #Disable Warning CA1507
-		<JsonProperty("tab")> Public Property CustomTab As RDTabs
+		<JsonProperty("tab")> Public Property CustomTab As Tabs
 #Enable Warning CA1507
-		<JsonIgnore> Public Overrides ReadOnly Property Tab As RDTabs
+		<JsonIgnore> Public Overrides ReadOnly Property Tab As Tabs
 			Get
 				Return CustomTab
 			End Get
@@ -1520,33 +1520,33 @@ Presets.Dots
 				Return MyBase.Target
 			End Get
 		End Property
-		Public Property Color As New RDPaletteColor(False) With {.Color = New SKColor(242, 230, 68)}
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Comment
+		Public Property Color As New PaletteColor(False) With {.Color = New SKColor(242, 230, 68)}
+		Public Overrides ReadOnly Property Type As EventType = EventType.Comment
 		Public Function ShouldSerializeTarget() As Boolean
-			Return Tab = RDTabs.Sprites
+			Return Tab = Tabs.Sprites
 		End Function
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Text}"
 		End Function
 	End Class
-	Public Class RDStutter
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
+	Public Class Stutter
+		Inherits BaseEvent
+		Implements IRoomEvent
 		Enum Actions
 			Add
 			Cancel
 		End Enum
-		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New Room(False, 0) Implements IRoomEvent.Rooms
 		Public Property SourceBeat As Single
 		Public Property Length As Single
 		Public Property Action As Actions
 		Public Property Loops As Integer
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Stutter
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.Stutter
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDShowHands
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
+	Public Class ShowHands
+		Inherits BaseEvent
+		Implements IRoomEvent
 		Enum Actions
 			Show
 			Hide
@@ -1557,53 +1557,53 @@ Presets.Dots
 			Full
 			[Short]
 		End Enum
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property Action As Actions
-		Public Property Hand As RDPlayerHands
+		Public Property Hand As PlayerHands
 		Public Property Align As Boolean
 		Public Property Instant As Boolean
 		Public Property Extent As Extents
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShowHands
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.ShowHands
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDPaintHands
-		Inherits RDBaseEvent
+	Public Class PaintHands
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Implements IRDRoomEvent
+		Implements IRoomEvent
 		Enum Borders
 			None
 			Outline
 			Glow
 		End Enum
-		Public Property TintColor As New RDPaletteColor(True)
+		Public Property TintColor As New PaletteColor(True)
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Border As Borders
-		Public Property BorderColor As New RDPaletteColor(True)
+		Public Property BorderColor As New PaletteColor(True)
 		Public Property Opacity As Integer
 		Public Property Tint As Boolean
 		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
-		Public Property Hands As RDPlayerHands
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PaintHands
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
+		Public Property Hands As PlayerHands
+		Public Overrides ReadOnly Property Type As EventType = EventType.PaintHands
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDSetHandOwner
-		Inherits RDBaseEvent
-		Implements IRDRoomEvent
+	Public Class SetHandOwner
+		Inherits BaseEvent
+		Implements IRoomEvent
 		Enum Characters
 			Players
 			Ian
 			Paige
 			Edega
 		End Enum
-		Public Property Rooms As New RDRoom(True, 0) Implements IRDRoomEvent.Rooms
-		Public Property Hand As RDPlayerHands
+		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
+		Public Property Hand As PlayerHands
 		Public Property Character As String
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetHandOwner
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetHandOwner
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDSetPlayStyle
-		Inherits RDBaseEvent
+	Public Class SetPlayStyle
+		Inherits BaseEvent
 		Enum PlayStyles
 			Normal
 			[Loop]
@@ -1615,11 +1615,11 @@ Presets.Dots
 		Public Property PlayStyle As PlayStyles
 		Public Property NextBar As Integer
 		Public Property Relative As Boolean
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetPlayStyle
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetPlayStyle
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDTagAction
-		Inherits RDBaseEvent
+	Public Class TagAction
+		Inherits BaseEvent
 		<Flags>
 		Enum Actions
 			Run = &B10
@@ -1653,14 +1653,14 @@ Presets.Dots
 		End Enum
 		<JsonIgnore> Public Property Action As Actions
 		<JsonProperty("Tag")> Public Property ActionTag As String
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.TagAction
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.TagAction
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {ActionTag}"
 		End Function
 	End Class
-	Public Class RDCallCustomMethod
-		Inherits RDBaseEvent
+	Public Class CallCustomMethod
+		Inherits BaseEvent
 		Enum ExecutionTimeOptions
 			OnPrebar
 			OnBar
@@ -1668,15 +1668,15 @@ Presets.Dots
 		Public Property MethodName As String
 		Public Property ExecutionTime As ExecutionTimeOptions
 		Public Property SortOffset As Integer
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.CallCustomMethod
-		<JsonIgnore> Public Property Rooms As RDRoom = RDRoom.Default
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.CallCustomMethod
+		<JsonIgnore> Public Property Rooms As Room = Room.Default
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {MethodName}"
 		End Function
 	End Class
-	Public Class RDNewWindowDance
-		Inherits RDBaseEvent
+	Public Class NewWindowDance
+		Inherits BaseEvent
 		Implements IEaseEvent
 		Enum Presets
 			Move
@@ -1698,44 +1698,44 @@ Presets.Dots
 		End Enum
 		Public Property Preset As String
 		Public Property SamePresetBehavior As String
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As RDPointE
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As PointE
 		Public Property Reference As References
 		Public Property UseCircle As Boolean
 		Public Property Speed As Single
 		Public Property Amplitude As New Single
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property AmplitudeVector As RDPointE
-		Public Property Angle As RDExpression?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property AmplitudeVector As PointE
+		Public Property Angle As Expression?
 		Public Property Frequency As Single
 		Public Property Period As Single
 		Public Property EaseType As EaseTypes
 		Public Property SubEase As EaseType
 		Public Property EasingDuration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.NewWindowDance
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Actions
+		Public Overrides ReadOnly Property Type As EventType = EventType.NewWindowDance
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 	End Class
-	Public Class RDPlayAnimation
-		Inherits RDBaseDecorationAction
-		Public Overrides ReadOnly Property Type As RDEventType = Events.RDEventType.PlayAnimation
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Sprites
+	Public Class PlayAnimation
+		Inherits BaseDecorationAction
+		Public Overrides ReadOnly Property Type As EventType = EventType.PlayAnimation
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Populate)>
 		Public Property Expression As String
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" Expression:{Expression}"
 		End Function
 	End Class
-	Public Class RDTint
-		Inherits RDBaseDecorationAction
+	Public Class Tint
+		Inherits BaseDecorationAction
 		Implements IEaseEvent
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property Border As RDBorders
-		Public Property BorderColor As New RDPaletteColor(True)
+		Public Property Border As Borders
+		Public Property BorderColor As New PaletteColor(True)
 		Public Property Opacity As Integer
 		Public Property Tint As Boolean
-		Public Property TintColor As New RDPaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
+		Public Property TintColor As New PaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Tint
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Sprites
+		Public Overrides ReadOnly Property Type As EventType = EventType.Tint
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
 		Friend Function ShouldSerializeDuration() As Boolean
 			Return Duration <> 0
 		End Function
@@ -1743,18 +1743,18 @@ Presets.Dots
 			Return Duration <> 0
 		End Function
 		Public Overrides Function ToString() As String
-			Return MyBase.ToString() + $" {Border}{If(Border = RDBorders.None, "", ":" + BorderColor.ToString)}"
+			Return MyBase.ToString() + $" {Border}{If(Border = Borders.None, "", ":" + BorderColor.ToString)}"
 		End Function
 	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class RDTile
-		Inherits RDBaseDecorationAction
+	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class Tile
+		Inherits BaseDecorationAction
 		Implements IEaseEvent
 		Public Enum TilingTypes
 			Scroll
 			Pulse
 		End Enum
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Tile
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Sprites
+		Public Overrides ReadOnly Property Type As EventType = EventType.Tile
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
 		Public Property Position As RDPoint?
 		Public Property Tiling As RDPoint?
 		Public Property Speed As RDPoint?
@@ -1776,15 +1776,15 @@ Presets.Dots
 			Return TilingType = TilingTypes.Pulse
 		End Function
 	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class RDMove
-		Inherits RDBaseDecorationAction
+	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class Move
+		Inherits BaseDecorationAction
 		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.Move
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Sprites
-		Public Property Position As RDPointE?
-		Public Property Scale As RDPointE?
-		Public Property Angle As RDExpression?
-		Public Property Pivot As RDPointE?
+		Public Overrides ReadOnly Property Type As EventType = EventType.Move
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
+		Public Property Position As PointE?
+		Public Property Scale As PointE?
+		Public Property Angle As Expression?
+		Public Property Pivot As PointE?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		<JsonIgnore> Public Overrides Property Y As Integer
@@ -1798,17 +1798,17 @@ Presets.Dots
 			Return MyBase.ToString()
 		End Function
 	End Class
-	Public Class RDSetVisible
-		Inherits RDBaseDecorationAction
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetVisible
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Sprites
+	Public Class SetVisible
+		Inherits BaseDecorationAction
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetVisible
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
 		Public Property Visible As Boolean
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {_Visible}"
 		End Function
 	End Class
-	Public Class RDAddClassicBeat
-		Inherits RDBaseBeat
+	Public Class AddClassicBeat
+		Inherits BaseBeat
 		Enum ClassicBeatPatterns
 			ThreeBeat
 			FourBeat
@@ -1816,16 +1816,16 @@ Presets.Dots
 		Public Property Tick As Single = 1
 		Public Property Swing As Single
 		Public Property Hold As Single
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property SetXs As ClassicBeatPatterns?
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.AddClassicBeat
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Populate)> Public Property SetXs As ClassicBeatPatterns?
+		Public Overrides ReadOnly Property Type As EventType = EventType.AddClassicBeat
 		Public Overrides Function ToString() As String
 			Return $"{MyBase.ToString()} {Utils.GetPatternString(RowXs)} {If(_Swing = 0.5 Or _Swing = 0, "", " Swing")}"
 		End Function
 	End Class
-	Public Class RDSetRowXs
-		Inherits RDBaseBeat
+	Public Class SetRowXs
+		Inherits BaseBeat
 		Private _pattern As New LimitedList(Of Patterns)(6, Patterns.None)
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetRowXs
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetRowXs
 		<JsonConverter(GetType(PatternConverter))> Public Property Pattern As LimitedList(Of Patterns)
 			Get
 				Return _pattern
@@ -1842,8 +1842,8 @@ Presets.Dots
 			Return MyBase.ToString() + $" {GetPatternString()}"
 		End Function
 	End Class
-	Public Class RDAddOneshotBeat
-		Inherits RDBaseBeat
+	Public Class AddOneshotBeat
+		Inherits BaseBeat
 		Public Enum Pulse
 			Wave
 			Square
@@ -1880,7 +1880,7 @@ Presets.Dots
 				End If
 			End Set
 		End Property
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.AddOneshotBeat
+		Public Overrides ReadOnly Property Type As EventType = EventType.AddOneshotBeat
 		Friend Function ShouldSerializeSkipshot() As Boolean
 			Return Skipshot
 		End Function
@@ -1891,8 +1891,8 @@ Presets.Dots
 			Return MyBase.ToString() + $" {_FreezeBurnMode} {_PulseType}"
 		End Function
 	End Class
-	Public Class RDSetOneshotWave
-		Inherits RDBaseBeat
+	Public Class SetOneshotWave
+		Inherits BaseBeat
 		Enum Waves
 			BoomAndRush
 			Ball
@@ -1904,19 +1904,19 @@ Presets.Dots
 		Public Property WaveType As Waves
 		Public Property Height As Integer
 		Public Property Width As Integer
-		Public Overrides ReadOnly Property Type As RDEventType = Events.RDEventType.SetOneshotWave
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetOneshotWave
 	End Class
-	Public Class RDAddFreeTimeBeat
-		Inherits RDBaseBeat
+	Public Class AddFreeTimeBeat
+		Inherits BaseBeat
 		Public Property Hold As Single
 		Public Property Pulse As Byte
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.AddFreeTimeBeat
+		Public Overrides ReadOnly Property Type As EventType = EventType.AddFreeTimeBeat
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {_Pulse + 1}"
 		End Function
 	End Class
-	Public Class RDPulseFreeTimeBeat
-		Inherits RDBaseBeat
+	Public Class PulseFreeTimeBeat
+		Inherits BaseBeat
 		Enum ActionType
 			Increment
 			Decrement
@@ -1926,7 +1926,7 @@ Presets.Dots
 		Public Property Hold As Single
 		Public Property Action As ActionType
 		Public Property CustomPulse As UInteger
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.PulseFreeTimeBeat
+		Public Overrides ReadOnly Property Type As EventType = EventType.PulseFreeTimeBeat
 		Public Overrides Function ToString() As String
 			Dim Out As String = ""
 			Select Case _Action
@@ -1942,59 +1942,59 @@ Presets.Dots
 			Return MyBase.ToString() + $" {Out}"
 		End Function
 	End Class
-	Public Class RDShowRooms
-		Inherits RDBaseEvent
+	Public Class ShowRooms
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Implements IRDRoomEvent
+		Implements IRoomEvent
 		<JsonProperty>
-		Public Property Rooms As New RDRoom(False, 0) Implements IRDRoomEvent.Rooms
+		Public Property Rooms As New Room(False, 0) Implements IRoomEvent.Rooms
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Heights As New List(Of Integer)(4)
 		Public Property TransitionTime As Single Implements IEaseEvent.Duration
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ShowRooms
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rooms
+		Public Overrides ReadOnly Property Type As EventType = EventType.ShowRooms
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
 	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class RDMoveRoom
-		Inherits RDBaseEvent
+	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class MoveRoom
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Public Property RoomPosition As RDPointE?
+		Public Property RoomPosition As PointE?
 		Public Property Scale As RDSizeE?
-		Public Property Angle As RDExpression?
-		Public Property Pivot As RDPointE?
+		Public Property Angle As Expression?
+		Public Property Pivot As PointE?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.MoveRoom
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rooms
+		Public Overrides ReadOnly Property Type As EventType = EventType.MoveRoom
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
 		<JsonIgnore>
-		Public ReadOnly Property Rooms As RDRoom
+		Public ReadOnly Property Rooms As Room
 			Get
-				Return New RDSingleRoom(Y)
+				Return New SingleRoom(Y)
 			End Get
 		End Property
 	End Class
-	Public Class RDReorderRooms
-		Inherits RDBaseEvent
+	Public Class ReorderRooms
+		Inherits BaseEvent
 		Public Property Order As List(Of UInteger)
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.ReorderRooms
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rooms
+		Public Overrides ReadOnly Property Type As EventType = EventType.ReorderRooms
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
 	End Class
-	Public Class RDSetRoomContentMode
-		Inherits RDBaseEvent
+	Public Class SetRoomContentMode
+		Inherits BaseEvent
 		Enum Modes
 			Center
 			AspectFill
 		End Enum
 		Public Property Mode As String
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetRoomContentMode
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rooms
-		<JsonIgnore> Public ReadOnly Property Room As RDRoom
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetRoomContentMode
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
+		<JsonIgnore> Public ReadOnly Property Room As Room
 			Get
-				Return New RDSingleRoom(Y)
+				Return New SingleRoom(Y)
 			End Get
 		End Property
 	End Class
-	Public Class RDMaskRoom
-		Inherits RDBaseEvent
+	Public Class MaskRoom
+		Inherits BaseEvent
 		Enum MaskTypes
 			Image
 			Room
@@ -2011,875 +2011,46 @@ Presets.Dots
 		Public Property MaskType As MaskTypes
 		Public Property AlphaMode As AlphaModes
 		Public Property SourceRoom As Byte
-		Public Property Image As List(Of RDSprite)
+		Public Property Image As List(Of Sprite)
 		Public Property Fps As UInteger
-		Public Property KeyColor As New RDPaletteColor(False)
+		Public Property KeyColor As New PaletteColor(False)
 		Public Property ColorCutoff As Single
 		Public Property ColorFeathering As Single
 		Public Property ContentMode As ContentModes
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.MaskRoom
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rooms
-		<JsonIgnore> Public ReadOnly Property Room As RDRoom
+		Public Overrides ReadOnly Property Type As EventType = EventType.MaskRoom
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
+		<JsonIgnore> Public ReadOnly Property Room As Room
 			Get
-				Return New RDSingleRoom(Y)
+				Return New SingleRoom(Y)
 			End Get
 		End Property
 	End Class
-	Public Class RDFadeRoom
-		Inherits RDBaseEvent
+	Public Class FadeRoom
+		Inherits BaseEvent
 		Implements IEaseEvent
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Opacity As UInteger
 		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.FadeRoom
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rooms
-		<JsonIgnore> Public ReadOnly Property Room As RDRoom
+		Public Overrides ReadOnly Property Type As EventType = EventType.FadeRoom
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
+		<JsonIgnore> Public ReadOnly Property Room As Room
 			Get
-				Return New RDSingleRoom(Y)
+				Return New SingleRoom(Y)
 			End Get
 		End Property
 	End Class
-	Public Class RDSetRoomPerspective
-		Inherits RDBaseEvent
+	Public Class SetRoomPerspective
+		Inherits BaseEvent
 		Implements IEaseEvent
-		Public Property CornerPositions As New List(Of RDPointE?)(4)
+		Public Property CornerPositions As New List(Of PointE?)(4)
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Overrides ReadOnly Property Type As RDEventType = RDEventType.SetRoomPerspective
-		Public Overrides ReadOnly Property Tab As RDTabs = RDTabs.Rooms
-		<JsonIgnore> Public ReadOnly Property Room As RDRoom
+		Public Overrides ReadOnly Property Type As EventType = EventType.SetRoomPerspective
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
+		<JsonIgnore> Public ReadOnly Property Room As Room
 			Get
-				Return New RDSingleRoom(Y)
+				Return New SingleRoom(Y)
 			End Get
 		End Property
-	End Class
-	Public Enum ADEventType
-		'AddComponent
-		AddDecoration
-		AddObject
-		AddText
-		AnimateTrack
-		AutoPlayTiles
-		Bloom
-		Bookmark
-		'CallMethod
-		'ChangeTrack
-		Checkpoint
-		ColorTrack
-		CustomBackground
-		CustomEvent
-		CustomTileEvent
-		EditorComment
-		Flash
-		FreeRoam
-		FreeRoamRemove
-		FreeRoamTwirl
-		'FreeRoamWarning
-		HallOfMirrors
-		Hide
-		Hold
-		'KillPlayer
-		MoveCamera
-		MoveDecorations
-		MoveTrack
-		MultiPlanet
-		'Multitap
-		Pause
-		PlaySound
-		PositionTrack
-		RecolorTrack
-		RepeatEvents
-		ScaleMargin
-		ScalePlanets
-		ScaleRadius
-		ScreenScroll
-		ScreenTile
-		SetConditionalEvents
-		SetDefaultText
-		SetFilter
-		'SetFilterAdvanced
-		'SetFloorIcon
-		SetHitsound
-		SetHoldSound
-		SetObject
-		SetPlanetRotation
-		SetSpeed
-		SetText
-		ShakeScreen
-		'TileDimensions
-		Twirl
-	End Enum
-	Public Enum ADTrackColorTypes
-		[Single]
-		Stripes
-		Glow
-		Blink
-		Switch
-		Rainbow
-		Volume
-	End Enum
-	Public Enum ADTrackColorPulses
-		None
-		Forward
-		Backward
-	End Enum
-	Public Enum ADTrackStyles
-		Standard
-		Neon
-		NeonLight
-		Basic
-		Gems
-		Minimal
-	End Enum
-	Public Enum TileRelativeTo
-		ThisTile
-		Start
-		[End]
-	End Enum
-	Public Enum ADCameraRelativeTo
-		Player
-		Tile
-		[Global]
-		LastPosition
-		LastPositionNoRotation
-	End Enum
-	Public Enum ADDecorationRelativeTo
-		Tile
-		[Global]
-		RedPlanet
-		BluePlanet
-		GreenPlanet
-		Camera
-		CameraAspect
-		LastPosition
-	End Enum
-	Public Enum ADEasePartBehaviors
-		Repeat
-		Mirror
-	End Enum
-	Public Class ADTile
-		Inherits ADTypedList(Of ADBaseTileEvent)
-		Private _angle As Single
-		Public Property Angle As Single
-			Get
-				Return _angle
-			End Get
-			Set(value As Single)
-				If -360 < value AndAlso value < 360 Then
-					_angle = (value + 540) Mod 360 - 180
-				Else
-					_angle = -999
-				End If
-			End Set
-		End Property
-		Public ReadOnly Property IsMidSpin As Boolean
-			Get
-				Return _angle < -180 OrElse _angle > 180
-			End Get
-		End Property
-		Public Property Beat As ADBeat
-			Get
-				Return New ADBeat(Parent.Calculator, Index + _angle / 180)
-			End Get
-			Set(value As ADBeat)
-
-			End Set
-		End Property
-		<JsonIgnore>
-		Public Property Parent As ADLevel
-		Public Sub New()
-		End Sub
-		Public Sub New(actions As IEnumerable(Of ADBaseTileEvent))
-			For Each i In actions
-				i.Parent = Me
-				Add(i)
-			Next
-		End Sub
-		Public ReadOnly Property Index As Integer
-			Get
-				Return Parent.IndexOf(Me)
-			End Get
-		End Property
-		Public Overrides Function ToString() As String
-			Return $"[{Index}]{Beat}<{If(IsMidSpin, "MS".PadRight(4), _angle.ToString.PadLeft(4))}>{If(Any, $", Count = {Count}", String.Empty)}"
-			Return $"{Beat}{If(Any, $", Count = {Count}", String.Empty)}"
-		End Function
-	End Class
-	Public MustInherit Class ADBaseEvent
-		Public MustOverride ReadOnly Property Type As ADEventType
-		Public Overrides Function ToString() As String
-			Return Type.ToString
-		End Function
-	End Class
-	Public MustInherit Class ADBaseTileEvent
-		Inherits ADBaseEvent
-		<JsonIgnore> Public Property Parent As ADTile
-		Public Overrides Function ToString() As String
-			Return $"{Type}"
-		End Function
-	End Class
-	Public MustInherit Class ADBaseTaggedTileAction
-		Inherits ADBaseTileEvent
-		Public Property AngleOffset As Single
-		Public Property EventTag As String
-	End Class
-	Public Class ADCustomEvent
-		Inherits ADBaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.CustomEvent
-		<JsonIgnore> Public ReadOnly Property ActureType As String
-			Get
-				Return Data("eventType").ToString
-			End Get
-		End Property
-		Public Property Data As Linq.JObject
-		Public Overrides Function ToString() As String
-			Return ActureType
-		End Function
-		'Public Overridable Function TryConvert(ByRef value As ADBaseEvent, ByRef type As ADEventType?) As Boolean
-		'	Return TryConvert(value, type, New LevelReadOrWriteSettings)
-		'End Function
-		'Public Overridable Function TryConvert(ByRef value As ADBaseEvent, ByRef type As ADEventType?, settings As LevelReadOrWriteSettings) As Boolean
-		'	Dim serializer = ADLevel.
-		'	Dim SubClassType As Type = ADConvertToType(Data("eventType").ToObject(Of String))
-
-		'	Dim result = If(SubClassType IsNot Nothing,
-		'		jobj.ToObject(SubClassType, serializer),
-		'		jobj.ToObject(Of ADCustomEvent)(serializer))
-
-		'	Return existingValue
-		'End Function
-
-	End Class
-	Public Class ADCustomTileEvent
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.CustomTileEvent
-		<JsonIgnore> Public ReadOnly Property ActureType As String
-			Get
-				Return Data("eventType").ToString
-			End Get
-		End Property
-		Public Property Data As Linq.JObject
-		Public Overrides Function ToString() As String
-			Return $"{Parent.Index}({Parent.Angle}): {ActureType}"
-		End Function
-	End Class
-	Public Class ADSetSpeed
-		Inherits ADBaseTaggedTileAction
-		Public Enum SpeedTypes
-			Bpm
-			Multiplier
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetSpeed
-		Public Property SpeedType As SpeedTypes
-		Public Property BeatsPerMinute As Single
-		Public Property BpmMultiplier As Single
-	End Class
-	Public Class ADTwirl
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Twirl
-	End Class
-	Public Class ADCheckpoint
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Checkpoint
-		Public Property TileOffset As Integer
-	End Class
-	Public Class ADSetHitsound
-		Inherits ADBaseTileEvent
-		Public Enum GameSounds
-			Hitsound
-			Midspin
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetHitsound
-		Public Property GameSound As String
-		Public Property Hitsound As String
-		Public Property HitsoundVolume As Integer
-	End Class
-	Public Class ADPlaySound
-		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.PlaySound
-		Public Property Hitsound As String
-		Public Property HitsoundVolume As Integer
-	End Class
-	Public Class ADSetPlanetRotation
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetPlanetRotation
-		Public Property Ease As String
-		Public Property EaseParts As Integer '??????????????????????????
-		Public Property EasePartBehavior As ADEasePartBehaviors
-	End Class
-	Public Class ADPause
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Pause
-		Public Property Duration As Single
-		Public Property CountdownTicks As Integer
-		Public Property AngleCorrectionDir As Integer
-	End Class
-	Public Class ADAutoPlayTiles
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AutoPlayTiles
-		Public Property Enabled As Boolean
-		Public Property ShowStatusText As Boolean
-		Public Property SafetyTiles As Boolean
-	End Class
-	Public Class ADScalePlanets
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Enum TargetPlanets
-			FirePlanet
-			IcePlanet
-			GreenPlanet
-			All
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScalePlanets
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property TargetPlanet As TargetPlanets
-		Public Property Scale As Integer
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-	End Class
-	Public Class ADColorTrack
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ColorTrack
-		Public Property TrackColorType As ADTrackColorTypes
-		Public Property TrackColor As SKColor
-		Public Property SecondaryTrackColor As SKColor
-		Public Property TrackColorAnimDuration As Single
-		Public Property TrackColorPulse As ADTrackColorPulses
-		Public Property TrackPulseLength As Single
-		Public Property TrackStyle As ADTrackStyles
-		Public Property TrackTexture As String 'ADAsset
-		Public Property TrackTextureScale As Single
-		Public Property TrackGlowIntensity As Single
-	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)>
-	Public Class ADAnimateTrack
-		Inherits ADBaseTileEvent
-		Public Enum TrackAnimations
-			None
-			Assemble
-			Assemble_Far
-			Extend
-			Grow
-			Grow_Spin
-			Fade
-			Drop
-			Rise
-		End Enum
-		Public Enum TrackDisappearAnimations
-			None
-			Scatter
-			Scatter_Far
-			Retract
-			Shrink
-			Shrink_Spin
-			Fade
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AnimateTrack
-		Public Property TrackAnimation As TrackAnimations?
-		Public Property TrackDisappearAnimation As TrackDisappearAnimations?
-		Public Property BeatsAhead As Integer
-		Public Property BeatsBehind As Integer
-	End Class
-	Public Class ADRecolorTrack
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.RecolorTrack
-		Public Property StartTile() As Object ''''ADTileRefer
-		Public Property EndTile() As Object ''''ADTileRefer
-		Public Property GapLength As Integer
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property TrackColorType As ADTrackColorTypes
-		Public Property TrackColor As SKColor
-		Public Property SecondaryTrackColor As SKColor
-		Public Property TrackColorAnimDuration As Single
-		Public Property TrackColorPulse As ADTrackColorPulses
-		Public Property TrackPulseLength As Single
-		Public Property TrackStyle As ADTrackStyles
-		Public Property TrackGlowIntensity As Single
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-	End Class
-	Public Class ADMoveTrack
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.MoveTrack
-		Public Property StartTile() As Object ''''ADTileRefer
-		Public Property EndTile() As Object ''''ADTileRefer
-		Public Property GapLength As Integer
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property PositionOffset As RDPoint
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property MaxVfxOnly As Boolean
-	End Class
-	Public Class ADPositionTrack
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.PositionTrack
-		Public Property PositionOffset As RDPoint
-		Public Property RelativeTo() As Object ''''ADTileRefer
-		Public Property Rotation As Single
-		Public Property Scale As Single
-		Public Property Opacity As Single
-		Public Property JustThisTile As Boolean
-		Public Property SditorOnly As Boolean
-		<JsonProperty(NullValueHandling:=NullValueHandling.Ignore)> Public Property StickToFloors As Boolean?
-	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class ADMoveDecorations
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Enum MaskingTypes
-			None
-			Mask
-			VisibleInsideMask
-			VisibleOutsideMask
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.MoveDecorations
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Tag As String
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		'Belows are nullable
-		Public Property PositionOffset As RDPoint?
-		Public Property ParallaxOffset As RDPoint?
-		Public Property Visible As Boolean?
-		Public Property RelativeTo As ADDecorationRelativeTo?
-		Public Property DecorationImage As String
-		Public Property PivotOffset As RDSize?
-		Public Property RotationOffset As Single?
-		Public Property Scale As RDSize?
-		Public Property Color As SKColor?
-		Public Property Opacity As Single?
-		Public Property Depth As Integer?
-		Public Property Parallax As RDPoint?
-		Public Property MaskingType As MaskingTypes?
-		Public Property UseMaskingDepth As Boolean?
-		Public Property MaskingFrontDepth As Integer?
-		Public Property MaskingBackDepth As Integer?
-	End Class
-	Public Class ADSetText
-		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetText
-		Public Property DecText As String
-		Public Property Tag As String
-	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class ADSetObject
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetObject
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Tag As String
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		'Belows are nullable
-		Public Property PlanetColor As SKColor?
-		Public Property PlanetTailColor As SKColor?
-		Public Property TrackAngle As Single?
-		Public Property TrackColorType As ADTrackColorTypes?
-		Public Property TrackColor As SKColor?
-		Public Property SecondaryTrackColor As SKColor?
-		Public Property TrackColorAnimDuration As Single?
-		Public Property TrackOpacity As Single?
-		Public Property TrackStyle As ADTrackStyles?
-		Public Property TrackIcon As String
-		Public Property TrackIconAngle As Single?
-		Public Property TrackRedSwirl As Boolean?
-		Public Property TrackGraySetSpeedIcon As Boolean?
-		Public Property TrackGlowEnabled As Boolean?
-		Public Property TrackGlowColor As SKColor?
-	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class ADSetDefaultText
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetDefaultText
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		'Belows are nullable
-		Public Property DefaultTextColor As SKColor?
-		Public Property DefaultTextShadowColor As SKColor?
-		Public Property LevelTitlePosition As RDPoint?
-		Public Property LevelTitleText As String
-		Public Property CongratsText As String
-		Public Property PerfectText As String
-	End Class
-	Public Class ADCustomBackground
-		Inherits ADBaseTaggedTileAction
-		Public Enum BgDisplayModes
-			FitToScreen
-			Unscaled
-			Tiled
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.CustomBackground
-		Public Property Color As SKColor
-		Public Property BgImage As String
-		Public Property ImageColor As SKColor
-		Public Property Parallax As RDPoint
-		Public Property BgDisplayMode As BgDisplayModes
-		Public Property ImageSmoothing As Boolean
-		Public Property LockRot As Boolean
-		Public Property LoopBG As Boolean
-		Public Property ScalingRatio As Single
-	End Class
-	Public Class ADFlash
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Flash
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Plane As String
-		Public Property StartColor As SKColor
-		Public Property StartOpacity As Single
-		Public Property EndColor As SKColor
-		Public Property EndOpacity As Single
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-	End Class
-	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class ADMoveCamera
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.MoveCamera
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property DontDisable As Boolean
-		Public Property MinVfxOnly As Boolean
-		'Belows are nullable
-		Public Property RelativeTo As ADCameraRelativeTo
-		Public Property Position As RDPoint?
-		Public Property Rotation As Single
-		Public Property Zoom As Single
-	End Class
-	Public Class ADSetFilter
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Enum Filters
-			Grayscale
-			Sepia
-			Invert
-			VHS
-			EightiesTV
-			FiftiesTV
-			Arcade
-			LED
-			Rain
-			Blizzard
-			PixelSnow
-			Compression
-			Glitch
-			Pixelate
-			Waves
-			[Static]
-			Grain
-			MotionBlur
-			Fisheye
-			Aberration
-			Drawing
-			Neon
-			Handheld
-			NightVision
-			Funk
-			Tunnel
-			Weird3D
-			Blur
-			BlurFocus
-			GaussianBlur
-			HexagonBlack
-			Posterize
-			Sharpen
-			Contrast
-			EdgeBlackLine
-			OilPaint
-			SuperDot
-			WaterDrop
-			LightWater
-			Petals
-			PetalsInstant
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetFilter
-		Public Property Filter As Filters
-		Public Property Enabled As String
-		Public Property Intensity As Integer
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property DisableOthers As String
-	End Class
-	Public Class ADHallOfMirrors
-		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.HallOfMirrors
-		Public Property Enabled As Boolean
-	End Class
-	Public Class ADShakeScreen
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ShakeScreen
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Strength As Single
-		Public Property Intensity As Single
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property FadeOut As Single
-	End Class
-	Public Class ADBloom
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Bloom
-		Public Property Enabled As Boolean
-		Public Property Threshold As Integer
-		Public Property Intensity As Integer
-		Public Property Color As SKColor
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-	End Class
-	Public Class ADScreenTile
-		Inherits ADBaseTaggedTileAction
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScreenTile
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Tile As RDPoint
-		Public Property Ease As EaseType Implements IEaseEvent.Ease
-	End Class
-	Public Class ADScreenScroll
-		Inherits ADBaseTaggedTileAction
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScreenScroll
-		Public Property Scroll As RDSizeN
-	End Class
-	Public Class ADRepeatEvents
-		Inherits ADBaseTileEvent
-		Public Enum RepeatTypes
-			Beat
-			Floor
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.RepeatEvents
-		Public Property RepeatType As RepeatTypes
-		Public Property Repetitions As Integer
-		Public Property FloorCount As Integer '?????????
-		Public Property Interval As Single
-		Public Property ExecuteOnCurrentFloor As Boolean
-		Public Property Tag As String
-	End Class
-	Public Class ADSetConditionalEvents
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetConditionalEvents
-		Public Property PerfectTag As String
-		Public Property HitTag As String
-		Public Property EarlyPerfectTag As String
-		Public Property LatePerfectTag As String
-		Public Property BarelyTag As String
-		Public Property VeryEarlyTag As String
-		Public Property VeryLateTag As String
-		Public Property MissTag As String
-		Public Property TooEarlyTag As String
-		Public Property TooLateTag As String
-		Public Property LossTag As String
-		Public Property OnCheckpointTag As String
-	End Class
-	Public Class ADEditorComment
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.EditorComment
-		Public Property Comment As String
-	End Class
-	Public Class ADBookmark
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Bookmark
-	End Class
-	Public Class ADAddDecoration
-		Inherits ADBaseTileEvent
-		Public Enum BlendModes
-			None
-			Darken
-			Multiply
-			ColorBurn
-			LinearBurn
-			DarkerColor
-			Lighten
-			Screen
-			ColorDodge
-			LinearDodge
-			LighterColor
-			Overlay
-			SoftLight
-			HardLight
-			VividLight
-			LinearLight
-			PinLight
-			HardMix
-			Difference
-			Exclusion
-			Subtract
-			Divide
-			Hue
-			Saturation
-			Color
-			Luminosity
-		End Enum
-		Public Enum MaskingTypes
-			None
-			Mask
-			VisibleInsideMask
-			VisibleOutsideMask
-		End Enum
-		Public Enum HitboxTypes
-			None
-			Kill
-			[Event]
-		End Enum
-		Public Enum FailHitboxTypes
-			Box
-			Circle
-			Capsule
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AddDecoration
-		Public Property DecorationImage As String
-		Public Property Position As RDPointN
-		Public Property RelativeTo As ADDecorationRelativeTo
-		Public Property PivotOffset As RDSizeN
-		Public Property Rotation As Single
-		Public Property LockRotation As Boolean
-		Public Property Scale As RDSizeN
-		Public Property LockScale As Boolean
-		Public Property Tile As RDSizeN
-		Public Property Color As SKColor
-		Public Property Opacity As Single
-		Public Property Depth As Integer
-		Public Property Parallax As RDSizeN
-		Public Property ParallaxOffset As RDSizeN
-		Public Property Tag As String
-		Public Property ImageSmoothing As Boolean
-		Public Property BlendMode As BlendModes
-		Public Property MaskingType As MaskingTypes
-		Public Property UseMaskingDepth As Boolean
-		Public Property MaskingFrontDepth As Integer
-		Public Property MaskingBackDepth As Integer
-		Public Property Hitbox As HitboxTypes
-		Public Property HitboxEventTag As String
-		Public Property FailHitboxType As FailHitboxTypes
-		Public Property FailHitboxScale As RDSizeN
-		Public Property FailHitboxOffset As RDSizeN
-		Public Property FailHitboxRotation As Integer
-		Public Property Components As String
-	End Class
-	Public Class ADAddText
-		Inherits ADBaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AddText
-		Public Property DecText As String
-		Public Property Font As String
-		Public Property Position As RDPointN
-		Public Property RelativeTo As ADCameraRelativeTo
-		Public Property PivotOffset As RDSizeN
-		Public Property Rotation As Single
-		Public Property LockRotation As Boolean
-		Public Property Scale As RDSizeN
-		Public Property LockScale As Boolean
-		Public Property Color As SKColor
-		Public Property Opacity As Single
-		Public Property Depth As Integer
-		Public Property Parallax As RDSizeN
-		Public Property ParallaxOffset As RDSizeN
-		Public Property Tag As String
-	End Class
-	Public Class ADAddObject
-		Inherits ADBaseEvent
-		Public Enum ObjectTypes
-			Floor
-			Planet
-		End Enum
-		Public Enum PlanetColorTypes
-			DefaultRed
-			planetColorType
-			Gold
-			Overseer
-			Custom
-		End Enum
-		Public Enum TrackTypes
-			Normal
-			Midspin
-		End Enum
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.AddObject
-		Public Property ObjectType As ObjectTypes
-		Public Property PlanetColorType As PlanetColorTypes
-		Public Property PlanetColor As SKColor
-		Public Property PlanetTailColor As SKColor
-		Public Property TrackType As TrackTypes
-		Public Property TrackAngle As Single
-		Public Property TrackColorType As ADTrackColorTypes
-		Public Property TrackColor As SKColor
-		Public Property SecondaryTrackColor As SKColor
-		Public Property TrackColorAnimDuration As Single
-		Public Property TrackOpacity As Single
-		Public Property TrackStyle As ADTrackStyles
-		Public Property TrackIcon As String
-		Public Property TrackIconAngle As Single
-		Public Property TrackRedSwirl As Boolean
-		Public Property TrackGraySetSpeedIcon As Boolean
-		Public Property TrackSetSpeedIconBpm As Single
-		Public Property TrackGlowEnabled As Boolean
-		Public Property TrackGlowColor As SKColor
-		Public Property Position As RDPointN
-		Public Property RelativeTo As ADCameraRelativeTo
-		Public Property PivotOffset As RDSizeN
-		Public Property Rotation As Single
-		Public Property LockRotation As Boolean
-		Public Property Scale As RDSizeN
-		Public Property LockScale As Boolean
-		Public Property Depth As Integer
-		Public Property Parallax As RDSizeN
-		Public Property ParallaxOffset As RDSizeN
-		Public Property Tag As String
-	End Class
-	Public Class ADHold
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Hold
-		Public Property Duration As Integer
-		Public Property DistanceMultiplier As Integer
-		Public Property LandingAnimation As Boolean
-	End Class
-	Public Class ADSetHoldSound
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.SetHoldSound
-		Public Property HoldStartSound As String
-		Public Property HoldLoopSound As String
-		Public Property HoldEndSound As String
-		Public Property HoldMidSound As String
-		Public Property HoldMidSoundType As String
-		Public Property HoldMidSoundDelay As Single
-		Public Property HoldMidSoundTimingRelativeTo As String
-		Public Property HoldSoundVolume As Integer
-	End Class
-	Public Class ADMultiPlanet
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.MultiPlanet
-		Public Property Planets As String
-	End Class
-	Public Class ADFreeRoam
-		Inherits ADBaseTileEvent
-		Implements IEaseEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.FreeRoam
-		Public Property Duration As Single Implements IEaseEvent.Duration
-		Public Property Size() As Integer
-		Public Property PositionOffset() As Integer
-		Public Property OutTime As Integer
-		Public Property OutEase As EaseType Implements IEaseEvent.Ease
-		Public Property HitsoundOnBeats As String
-		Public Property HitsoundOffBeats As String
-		Public Property CountdownTicks As Integer
-		Public Property AngleCorrectionDir As Integer
-	End Class
-	Public Class ADFreeRoamTwirl
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.FreeRoamTwirl
-		Public Property Position() As Integer
-	End Class
-	Public Class ADFreeRoamRemove
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType
-		Public Property Position() As Integer
-		Public Property Size() As Integer
-	End Class
-
-	Public Class ADHide
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.Hide
-		Public Property HideJudgment As Boolean
-		Public Property HideTileIcon As Boolean
-	End Class
-	Public Class ADScaleMargin
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScaleMargin
-		Public Property Scale As Integer
-	End Class
-	Public Class ADScaleRadius
-		Inherits ADBaseTileEvent
-		Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScaleRadius
-		Public Property Scale As Integer
 	End Class
 End Namespace

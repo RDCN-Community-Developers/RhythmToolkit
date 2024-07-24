@@ -1,8 +1,8 @@
 ﻿using SkiaSharp;
-using static RhythmBase.Events.RDSetTheme;
+using static RhythmBase.Events.SetTheme;
 using System;
 using RhythmBase.Events;
-using RhythmBase.LevelElements;
+using RhythmBase.Components;
 
 namespace RhythmEdega
 {
