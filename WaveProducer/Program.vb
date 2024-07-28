@@ -114,7 +114,7 @@ Module Program
 
 
 
-		Dim Level As RDLevel = RDLevel.LoadFile("C:\Users\30698\OneDrive\文档\rdlevels\test3\level.rdlevel")
+		Dim Level As RDLevel = RDLevel.Read("C:\Users\30698\OneDrive\文档\rdlevels\test3\level.rdlevel")
 
 		Dim SpriteCollection As New List(Of DecorationEventCollection)
 		'For i = 0 To 100
@@ -147,7 +147,7 @@ Module Program
 
 
 
-		Level.SaveFile("C:\Users\30698\OneDrive\文档\rdlevels\test3\levelEdited.rdlevel")
+		Level.Write("C:\Users\30698\OneDrive\文档\rdlevels\test3\levelEdited.rdlevel")
 
 
 		'Dim mag() As Double = FFT(singleChannelData, 2048)

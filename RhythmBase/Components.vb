@@ -889,7 +889,7 @@ Namespace Components
 				Return _data.HasFlag([Enum].Parse(Of RoomIndex)(1 << Index))
 			End Get
 			Set(value As Boolean)
-				If Index = 4 And Not EnableTop Then
+				If Index >= 4 And Not EnableTop Then
 					Exit Property
 				End If
 				_data = If(value, _data Or 1 << Index, _data And 1 << Index)
@@ -1944,19 +1944,6 @@ Namespace Components
 			End If
 			Return False
 		End Function
-		Private Shared Function LoadZip(RDLevelFile As String) As FileInfo
-			Dim tempDirectoryName As String = RDLevelFile
-			Dim tempDirectory = New IO.DirectoryInfo(IO.Path.Combine(IO.Path.GetTempPath, IO.Path.GetRandomFileName))
-			tempDirectory.Create()
-			Try
-				ZipFile.ExtractToDirectory(RDLevelFile, tempDirectory.FullName)
-				Return tempDirectory.GetFiles.Single(Function(i) i.Extension = ".rdlevel")
-			Catch ex As InvalidOperationException
-				Throw New RhythmBaseException("Found more than one rdlevel file.", ex)
-			Catch ex As Exception
-				Throw New RhythmBaseException("Cannot extract the file.", ex)
-			End Try
-		End Function
 		''' <summary>
 		''' Read from file as level.
 		''' Use default input settings.
@@ -1967,8 +1954,8 @@ Namespace Components
 		''' <exception cref="ConvertingException"></exception>
 		''' <exception cref="RhythmBaseException">File not supported.</exception>
 		''' <returns>An instance of a level that reads from a file.</returns>
-		Public Shared Function LoadFile(filepath As String) As RDLevel
-			Return LoadFile(filepath, New LevelReadOrWriteSettings)
+		Public Shared Function Read(filepath As String) As RDLevel
+			Return Read(filepath, New LevelReadOrWriteSettings)
 		End Function
 		''' <summary>
 		''' Read from file as level.
@@ -1980,37 +1967,52 @@ Namespace Components
 		''' <exception cref="ConvertingException"></exception>
 		''' <exception cref="RhythmBaseException">File not supported.</exception>
 		''' <returns>An instance of a level that reads from a file.</returns>
-		Public Shared Function LoadFile(filepath As String, settings As LevelReadOrWriteSettings) As RDLevel
+		Public Shared Function Read(filepath As String, settings As LevelReadOrWriteSettings) As RDLevel
 			Dim LevelSerializer = New JsonSerializer()
 			LevelSerializer.Converters.Add(New RDLevelConverter(filepath, settings))
-			'Dim json As String
 			Select Case IO.Path.GetExtension(filepath)
 				Case ".rdzip", ".zip"
-					Return LevelSerializer.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(LoadZip(filepath).FullName)))
+					Return ReadFromZip(filepath, settings)
 				Case ".rdlevel"
 					Return LevelSerializer.Deserialize(Of RDLevel)(New JsonTextReader(File.OpenText(filepath)))
 				Case Else
 					Throw New RhythmBaseException("File not supported.")
 			End Select
 		End Function
+		Public Shared Function ReadFromZip(filepath As String) As RDLevel
+			Return ReadFromZip(filepath, New LevelReadOrWriteSettings)
+		End Function
+		Public Shared Function ReadFromZip(filepath As String, settings As LevelReadOrWriteSettings) As RDLevel
+			Return ReadFromZip(File.OpenRead(filepath), settings)
+		End Function
+		Public Shared Function ReadFromZip(stream As Stream) As RDLevel
+			Return ReadFromZip(stream, New LevelReadOrWriteSettings)
+		End Function
+		Public Shared Function ReadFromZip(stream As Stream, settings As LevelReadOrWriteSettings) As RDLevel
+			Dim tempDirectory = New DirectoryInfo(IO.Path.Combine(IO.Path.GetTempPath, IO.Path.GetRandomFileName))
+			tempDirectory.Create()
+			Try
+				ZipFile.ExtractToDirectory(stream, tempDirectory.FullName)
+				Return Read(tempDirectory.GetFiles.Single(Function(i) i.Extension = ".rdlevel").FullName, settings)
+			Catch ex As InvalidOperationException
+				Throw New RhythmBaseException("Found more than one rdlevel file.", ex)
+			Catch ex As Exception
+				Throw New RhythmBaseException("Cannot extract the file.", ex)
+			End Try
+		End Function
 		Private Function Serializer(settings As LevelReadOrWriteSettings) As JsonSerializer
 			Dim LevelSerializerSettings = New JsonSerializer()
-			LevelSerializerSettings.Converters.Add(New Converters.RDLevelConverter(_path, settings))
+			LevelSerializerSettings.Converters.Add(New RDLevelConverter(_path, settings))
 			Return LevelSerializerSettings
 		End Function
-		Private Sub WriteStream(fileStream As TextWriter, settings As LevelReadOrWriteSettings)
-			Using writer As New JsonTextWriter(fileStream)
-				Serializer(settings).Serialize(writer, Me)
-			End Using
-		End Sub
 		''' <summary>
 		''' Save the level.
 		''' Use default output settings.
 		''' </summary>
 		''' <param name="filepath">File path.</param>
 		''' <exception cref="OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
-		Public Sub SaveFile(filepath As String)
-			SaveFile(filepath, New LevelReadOrWriteSettings)
+		Public Sub Write(filepath As String)
+			Write(filepath, New LevelReadOrWriteSettings)
 		End Sub
 		''' <summary>
 		''' Save the level.
@@ -2018,13 +2020,27 @@ Namespace Components
 		''' <param name="filepath">File path.</param>
 		''' <param name="settings">Output settings.</param>
 		''' <exception cref="OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
-		Public Sub SaveFile(filepath As String, settings As LevelReadOrWriteSettings)
+		Public Sub Write(filepath As String, settings As LevelReadOrWriteSettings)
 			If Not _path.IsNullOrEmpty AndAlso IO.Path.GetFullPath(_path) = IO.Path.GetFullPath(filepath) Then
 				Throw New OverwriteNotAllowedException(_path, GetType(LevelReadOrWriteSettings))
 			End If
 			Using file = IO.File.CreateText(filepath)
-				WriteStream(file, settings)
+				Write(file, settings)
 			End Using
+		End Sub
+		Public Sub Write(stream As TextWriter)
+			Write(stream, New LevelReadOrWriteSettings)
+		End Sub
+		Public Sub Write(stream As TextWriter, settings As LevelReadOrWriteSettings)
+			Using writer As New JsonTextWriter(stream)
+				Serializer(settings).Serialize(writer, Me)
+			End Using
+		End Sub
+		Public Sub Write(stream As Stream)
+			Write(New StreamWriter(stream), New LevelReadOrWriteSettings)
+		End Sub
+		Public Sub Write(stream As Stream, settings As LevelReadOrWriteSettings)
+			Write(New StreamWriter(stream), settings)
 		End Sub
 		''' <summary>
 		''' Convert to JObject type.
@@ -2057,7 +2073,7 @@ Namespace Components
 		''' <returns>Level string.</returns>
 		Public Function ToRDLevelJson(settings As LevelReadOrWriteSettings) As String
 			Dim file = New IO.StringWriter()
-			WriteStream(file, settings)
+			Write(file, settings)
 			file.Close()
 			Return file.ToString
 		End Function
@@ -2245,6 +2261,7 @@ Namespace Components
 		End Sub
 		Protected Friend Function RemoveBaseBeatsPerMinute(item As BaseBeatsPerMinute) As Boolean
 			Dim result = MyBase.Remove(item)
+			Calculator.Refresh()
 			RefreshBPMs(item.Beat)
 			item._beat._calculator = Nothing
 			Return result

@@ -120,11 +120,12 @@ Namespace Events
 		Classic
 		Oneshot
 	End Enum
+	<JsonConverter(GetType(TabsConverter))>
 	Public Enum Tabs
-		Song
+		Sounds
 		Rows
 		Actions
-		Sprites
+		Decorations
 		Rooms
 		Unknown
 	End Enum
@@ -160,7 +161,7 @@ Namespace Events
 		''' <summary>
 		''' Event type.
 		''' </summary>
-		<JsonProperty(NameOf(Type))> Public MustOverride ReadOnly Property Type As EventType
+		<JsonIgnore> Public MustOverride ReadOnly Property Type As EventType
 		''' <summary>
 		''' Column to which the event belongs.
 		''' </summary>
@@ -232,9 +233,6 @@ Namespace Events
 		End Function
 		Public Overrides Function ToString() As String
 			Return $"{Beat} {Type}"
-		End Function
-		Friend Function ShouldSerializeActive() As Boolean
-			Return Not Active
 		End Function
 	End Class
 	Public MustInherit Class BaseBeatsPerMinute
@@ -428,7 +426,7 @@ Namespace Events
 				Return Data(NameOf(Type).ToLowerCamelCase).ToString
 			End Get
 		End Property
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
 		Public Sub New()
 			Data = New Linq.JObject
 		End Sub
@@ -511,7 +509,7 @@ Namespace Events
 		End Property
 		Public Property [Loop] As Boolean
 		Public Overrides ReadOnly Property Type As EventType = EventType.PlaySong
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" BPM:{BeatsPerMinute}, Song:{Song.Filename}"
 		End Function
@@ -519,7 +517,7 @@ Namespace Events
 	Public Class SetBeatsPerMinute
 		Inherits BaseBeatsPerMinute
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetBeatsPerMinute
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" BPM:{BeatsPerMinute}"
 		End Function
@@ -530,7 +528,7 @@ Namespace Events
 		Private _visualBeatMultiplier As Single = 0
 		Protected Friend _crotchetsPerBar As UInteger = 7
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetCrotchetsPerBar
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 		Public Property VisualBeatMultiplier As Single
 			Get
 				Return _visualBeatMultiplier + 1
@@ -570,7 +568,7 @@ Namespace Events
 		Public Property CustomSoundType As CustomSoundTypes
 		Public Property Sound As Audio
 		Public Overrides ReadOnly Property Type As EventType = EventType.PlaySound
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {If(IsCustom, Sound.ToString, CustomSoundType.ToString)}"
 		End Function
@@ -582,14 +580,14 @@ Namespace Events
 		Public Property CpuSound As Audio
 		Public Property RowType As RowType
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetClapSounds
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 	End Class
 	Public Class SetHeartExplodeVolume
 		Inherits BaseEvent
 		Implements IBarBeginningEvent
 		Public Property Volume As UInteger
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetHeartExplodeVolume
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 	End Class
 	Public Class SetHeartExplodeInterval
 		Inherits BaseEvent
@@ -602,7 +600,7 @@ Namespace Events
 		Public Property IntervalType As IntervalTypes
 		Public Property Interval As Integer
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetHeartExplodeInterval
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 	End Class
 	Public Class SayReadyGetSetGo
 		Inherits BaseEvent
@@ -648,7 +646,7 @@ Namespace Events
 		Public Property Tick As Single
 		Public Property Volume As UInteger
 		Public Overrides ReadOnly Property Type As EventType = EventType.SayReadyGetSetGo
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 		<JsonIgnore> Public ReadOnly Property Splitable As Boolean
 			Get
 				Return PhraseToSay = Words.SayReaDyGetSetGoNew OrElse
@@ -721,7 +719,7 @@ PhraseToSay = Words.SayReadyGetSetGo
 		End Property
 		Public Property SoundSubtypes As List(Of SoundSubType)
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetGameSound
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 		Private Function ShouldSerialize() As Boolean
 			Return Not (
 SoundType = SoundTypes.ClapSoundHold Or
@@ -751,7 +749,7 @@ SoundType = SoundTypes.BurnshotSound)
 		Inherits BaseRowAction
 		Public Property Sound As New Audio
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetBeatSound
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 	End Class
 	Public Class SetCountingSound
 		Inherits BaseRowAction
@@ -789,7 +787,7 @@ SoundType = SoundTypes.BurnshotSound)
 		Public Property Volume As Integer = 100
 		Public Property Sounds As New LimitedList(Of Audio)(7, New Audio)
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetCountingSound
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Song
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sounds
 		Public Function ShouldSerializeSounds() As Boolean
 			Return VoiceSource = VoiceSources.Custom
 		End Function
@@ -1523,7 +1521,7 @@ Presets.Dots
 		Public Property Color As New PaletteColor(False) With {.Color = New SKColor(242, 230, 68)}
 		Public Overrides ReadOnly Property Type As EventType = EventType.Comment
 		Public Function ShouldSerializeTarget() As Boolean
-			Return Tab = Tabs.Sprites
+			Return Tab = Tabs.Decorations
 		End Function
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {Text}"
@@ -1717,7 +1715,7 @@ Presets.Dots
 	Public Class PlayAnimation
 		Inherits BaseDecorationAction
 		Public Overrides ReadOnly Property Type As EventType = EventType.PlayAnimation
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Populate)>
 		Public Property Expression As String
 		Public Overrides Function ToString() As String
@@ -1735,7 +1733,7 @@ Presets.Dots
 		Public Property TintColor As New PaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Overrides ReadOnly Property Type As EventType = EventType.Tint
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
 		Friend Function ShouldSerializeDuration() As Boolean
 			Return Duration <> 0
 		End Function
@@ -1754,7 +1752,7 @@ Presets.Dots
 			Pulse
 		End Enum
 		Public Overrides ReadOnly Property Type As EventType = EventType.Tile
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
 		Public Property Position As RDPoint?
 		Public Property Tiling As RDPoint?
 		Public Property Speed As RDPoint?
@@ -1780,7 +1778,7 @@ Presets.Dots
 		Inherits BaseDecorationAction
 		Implements IEaseEvent
 		Public Overrides ReadOnly Property Type As EventType = EventType.Move
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
 		Public Property Position As PointE?
 		Public Property Scale As PointE?
 		Public Property Angle As Expression?
@@ -1801,7 +1799,7 @@ Presets.Dots
 	Public Class SetVisible
 		Inherits BaseDecorationAction
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetVisible
-		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Sprites
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
 		Public Property Visible As Boolean
 		Public Overrides Function ToString() As String
 			Return MyBase.ToString() + $" {_Visible}"
@@ -1816,7 +1814,7 @@ Presets.Dots
 		Public Property Tick As Single = 1
 		Public Property Swing As Single
 		Public Property Hold As Single
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Populate)> Public Property SetXs As ClassicBeatPatterns?
+		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property SetXs As ClassicBeatPatterns?
 		Public Overrides ReadOnly Property Type As EventType = EventType.AddClassicBeat
 		Public Overrides Function ToString() As String
 			Return $"{MyBase.ToString()} {Utils.GetPatternString(RowXs)} {If(_Swing = 0.5 Or _Swing = 0, "", " Swing")}"

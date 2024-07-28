@@ -2,6 +2,7 @@
 Imports System.Runtime.CompilerServices
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
+Imports System.Collections.ObjectModel
 '' <summary>
 '' 工具类
 '' </summary>
@@ -195,6 +196,57 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 		Public ReadOnly DecorationTypes As ObjectModel.ReadOnlyCollection(Of EventType) =
 			ConvertToEnums(Of BaseDecorationAction)().AsReadOnly
 		Public ReadOnly RDScreenSize As New RDSizeNI(352, 198)
+		Public ReadOnly EventTypeEnumsForGameplay As New ReadOnlyCollection(Of EventType)({
+			EventType.HideRow,
+			EventType.ChangePlayersRows,
+			EventType.FinishLevel,
+			EventType.ShowHands,
+			EventType.SetHandOwner,
+			EventType.SetPlayStyle
+		})
+		Public ReadOnly EventTypeEnumsForEnvironment As New ReadOnlyCollection(Of EventType)({
+			EventType.SetTheme,
+			EventType.SetBackgroundColor,
+			EventType.SetForeground,
+			EventType.SetSpeed,
+			EventType.Flash,
+			EventType.CustomFlash
+		})
+		Public ReadOnly EventTypeEnumsForRowFX As New ReadOnlyCollection(Of EventType)({
+			EventType.HideRow,
+			EventType.MoveRow,
+			EventType.PlayExpression,
+			EventType.TintRows
+		})
+		Public ReadOnly EventTypeEnumsForCameraFX As New ReadOnlyCollection(Of EventType)({
+			EventType.MoveCamera,
+			EventType.ShakeScreen,
+			EventType.FlipScreen,
+			EventType.PulseCamera
+		})
+		Public ReadOnly EventTypeEnumsForVisualFX As New ReadOnlyCollection(Of EventType)({
+			EventType.SetVFXPreset,
+			EventType.SetSpeed,
+			EventType.Flash,
+			EventType.CustomFlash,
+			EventType.BassDrop,
+			EventType.InvertColors,
+			EventType.Stutter,
+			EventType.PaintHands,
+			EventType.NewWindowDance
+		})
+		Public ReadOnly EventTypeEnumsForText As New ReadOnlyCollection(Of EventType)({
+			EventType.TextExplosion,
+			EventType.ShowDialogue,
+			EventType.ShowStatusSign,
+			EventType.FloatingText,
+			EventType.AdvanceText
+		})
+		Public ReadOnly EventTypeEnumsForUtility As New ReadOnlyCollection(Of EventType)({
+			EventType.Comment,
+			EventType.TagAction,
+			EventType.CallCustomMethod
+		})
 		''' <summary>
 		''' Converts percentage point to pixel point with default screen size (352 * 198).
 		''' </summary>
@@ -333,6 +385,7 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 				.Add(New BaseRowActionConverter(Of BaseRowAction)(rdlevel, settings))
 				.Add(New BaseDecorationActionConverter(Of BaseDecorationAction)(rdlevel, settings))
 				.Add(New BaseEventConverter(Of BaseEvent)(rdlevel, settings))
+				.Add(New BookmarkConverter(rdlevel.Calculator))
 				.Add(New Newtonsoft.Json.Converters.StringEnumConverter)
 			End With
 			Return EventsSerializer

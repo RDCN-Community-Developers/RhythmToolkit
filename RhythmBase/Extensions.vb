@@ -36,14 +36,6 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="e">one item.</param>
 		''' <param name="obj">another item.</param>
-		''' <returns></returns>
-		<Extension> Public Function NullableEquals(e As Single?, obj As Single?) As Boolean
-			Return (e.HasValue And obj.HasValue AndAlso e.Value = obj.Value) OrElse (Not e.HasValue AndAlso Not obj.HasValue)
-		End Function
-		''' <summary>
-		''' 
-		''' </summary>
-		''' <param name="e"></param>
 		''' <returns>
 		''' <list type="table">
 		''' <item>When neither item is empty,<br/>Returns true only if both are equal</item>
@@ -51,6 +43,13 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' <item>when both are empty,<br/>Returns false.</item>
 		''' </list>
 		''' </returns>
+		<Extension> Public Function NullableEquals(e As Single?, obj As Single?) As Boolean
+			Return (e.HasValue And obj.HasValue AndAlso e.Value = obj.Value) OrElse (Not e.HasValue AndAlso Not obj.HasValue)
+		End Function
+		''' <summary>
+		''' 
+		''' </summary>
+		''' <param name="e"></param>
 		<Extension> Public Function IsNullOrEmpty(e As String) As Boolean
 			Return e Is Nothing OrElse e.Length = 0
 		End Function
@@ -187,6 +186,22 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' <returns></returns>
 		<Extension> Public Function FixFraction(number As Single, splitBase As UInteger) As Single
 			Return Math.Round(number * splitBase) / splitBase
+		End Function
+		''' <summary>
+		''' Converting enumeration constants to in-game colors。
+		''' </summary>
+		''' <returns>The in-game color.</returns>
+		<Extension> Public Function ToColor(e As Bookmark.BookmarkColors) As SkiaSharp.SKColor
+			Select Case e
+				Case Bookmark.BookmarkColors.Blue
+					Return New SkiaSharp.SKColor(11, 125, 206)
+				Case Bookmark.BookmarkColors.Red
+					Return New SkiaSharp.SKColor(219,41,41)
+				Case Bookmark.BookmarkColors.Yellow
+					Return New SkiaSharp.SKColor(212, 212, 51)
+				Case Bookmark.BookmarkColors.Green
+					Return New SkiaSharp.SKColor(54, 215, 54)
+			End Select
 		End Function
 #Region "RD"
 		''' <summary>

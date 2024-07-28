@@ -759,12 +759,12 @@ Namespace Assets
 		''' Audio Offset.
 		''' </summary>
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <JsonConverter(GetType(TimeConverter))> Public Property Offset As TimeSpan = TimeSpan.Zero
-		Public ReadOnly Property FilePath As String
+		<JsonIgnore> Public ReadOnly Property FilePath As String
 			Get
 				Return _file
 			End Get
 		End Property
-		Public ReadOnly Property IsFile As Boolean
+		<JsonIgnore> Public ReadOnly Property IsFile As Boolean
 			Get
 				IsFile = {".mp3", ".wav", ".ogg", ".aif", ".aiff"}.Contains(Path.GetExtension(Filename))
 			End Get

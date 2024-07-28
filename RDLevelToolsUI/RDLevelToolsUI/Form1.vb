@@ -24,7 +24,7 @@ Public Class Form1
 		If OpenFileDialog1.ShowDialog <> DialogResult.OK Then
 			Return
 		End If
-		processingLevel = RDLevel.LoadFile(OpenFileDialog1.FileName, New LevelReadOrWriteSettings)
+		processingLevel = RDLevel.Read(OpenFileDialog1.FileName, New LevelReadOrWriteSettings)
 		Dim file = New IO.FileInfo(OpenFileDialog1.FileName)
 		Text = file.Directory.Name + "\" + file.Name
 		LevelHandler = New LevelHandler(processingLevel)
@@ -39,7 +39,7 @@ Public Class Form1
 		End If
 		SaveFileDialog1.Filter = "节奏医生游戏关卡文件|*.rdlevel"
 		If SaveFileDialog1.ShowDialog = DialogResult.OK Then
-			processingLevel.SaveFile(SaveFileDialog1.FileName)
+			processingLevel.Write(SaveFileDialog1.FileName)
 		End If
 		MsgBox("完成")
 	End Sub

@@ -14,6 +14,10 @@ Namespace Converters
 			fileLocation = location
 			Me.settings = settings
 		End Sub
+		Public Sub New(settings As LevelReadOrWriteSettings)
+			Me.settings = settings
+			Me.settings.PreloadAssets = False
+		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDLevel, serializer As JsonSerializer)
 
 			Dim AllInOneSerializer = value.GetSerializer(settings)
@@ -178,11 +182,7 @@ Namespace Converters
 					Parent.Children.Add(AdvancePair.event)
 					AdvancePair.event.Parent = Parent
 				Next
-				Dim BookmarksSerializer As New JsonSerializer
-				With BookmarksSerializer.Converters
-					.Add(New BookmarkConverter(New BeatCalculator(outLevel)))
-				End With
-				outLevel.Bookmarks.AddRange(JBookmarks.ToObject(Of List(Of Bookmark))(BookmarksSerializer))
+				outLevel.Bookmarks.AddRange(JBookmarks.ToObject(Of List(Of Bookmark))(AllInOneSerializer))
 				Return outLevel
 			Catch ex As Exception
 				If outLevel.Settings.Version < 55 Then
@@ -507,6 +507,7 @@ Namespace Converters
 			Dim J = JArray.Load(reader).ToObject(Of Byte())
 			Select Case objectType
 				Case GetType(Room)
+					existingValue = New Room(existingValue Is Nothing OrElse CType(existingValue, Room).EnableTop)
 					For Each item In J
 						existingValue(item) = True
 					Next
@@ -805,6 +806,21 @@ Namespace Converters
 			Return SKColor.Parse(Reg.Groups(1).Value + Reg.Groups(2).Value)
 		End Function
 	End Class
+	Friend Class TabsConverter
+		Inherits JsonConverter(Of Tabs)
+		Private Shared TabNames() As String = {"Song", "Rows", "Actions", "Sprites", "Rooms"}
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As Tabs, serializer As JsonSerializer)
+			writer.WriteValue(TabNames(value))
+		End Sub
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Tabs, hasExistingValue As Boolean, serializer As JsonSerializer) As Tabs
+			Dim value = JToken.Load(reader).ToObject(Of String)
+			Dim t = TabNames.ToList.IndexOf(value)
+			If t >= 0 Then
+				Return t
+			End If
+			Return Tabs.Unknown
+		End Function
+	End Class
 	Friend Class TimeConverter
 		Inherits JsonConverter(Of TimeSpan)
 		Public Enum TimeType
@@ -876,6 +892,14 @@ Namespace Converters
 						Case NameOf(RowEventCollection.RowToMimic).ToLowerCamelCase
 							f = Function(i) CType(i, RowEventCollection).RowToMimic >= 0
 						Case Else
+
+					End Select
+				Case GetType(BaseEvent)
+					Select Case p.PropertyName
+						Case NameOf(BaseEvent.Active).ToLowerCamelCase
+							f = Function(i) Not CType(i, BaseEvent).Active
+						Case Else
+
 					End Select
 				Case Else
 			End Select
