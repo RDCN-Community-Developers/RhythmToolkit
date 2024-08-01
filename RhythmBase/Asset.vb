@@ -742,7 +742,11 @@ Namespace Assets
 		''' <summary>
 		''' File name.
 		''' </summary>
-		Public Property Filename As String
+		Public ReadOnly Property Filename As String
+			Get
+				Return IO.Path.GetFileName(_file)
+			End Get
+		End Property
 		''' <summary>
 		''' Audio volume.
 		''' </summary>
