@@ -87,6 +87,9 @@ Namespace Events
 		Tile
 		Tint
 		TintRows
+#If DEBUG Then
+		WindowResize
+#End If
 	End Enum
 	Public Enum PlayerType
 		P1
@@ -930,11 +933,11 @@ SoundType = SoundTypes.BurnshotSound)
 		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
 		Public Property Preset As Presets
 		Public Property Enable As Boolean
-		Public Property Threshold As Single
-		Public Property Intensity As Single
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)> Public Property Color As New PaletteColor(False)
-		Public Property FloatX As Single
-		Public Property FloatY As Single
+		<EaseProperty> Public Property Threshold As Single
+		<EaseProperty> Public Property Intensity As Single
+		<EaseProperty> <JsonProperty(DefaultValueHandling:=DefaultValueHandling.Include)> Public Property Color As New PaletteColor(False)
+		<EaseProperty> Public Property FloatX As Single
+		<EaseProperty> Public Property FloatY As Single
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetVFXPreset
@@ -1008,14 +1011,14 @@ Presets.Dots
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property ContentMode As ContentModes
 		Public Property Filter As FilterModes '?
-		Public Property Color As New PaletteColor(True)
+		<EaseProperty> Public Property Color As New PaletteColor(True)
 		Public Property Interval As Single
 		Public Property BackgroundType As BackgroundTypes
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Fps As Integer
 		Public Property Image As List(Of Sprite)
-		Public Property ScrollX As Integer
-		Public Property ScrollY As Integer
+		<EaseProperty> Public Property ScrollX As Integer
+		<EaseProperty> Public Property ScrollY As Integer
 		Public Property TilingType As TilingTypes
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetBackgroundColor
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
@@ -1030,11 +1033,11 @@ Presets.Dots
 		Public Property Rooms As New Room(False, 0) Implements IRoomEvent.Rooms
 		Public Property ContentMode As ContentModes
 		Public Property TilingType As TilingTypes
-		Public Property Color As New PaletteColor(True)
+		<EaseProperty> Public Property Color As New PaletteColor(True)
 		Public Property Image As List(Of Sprite)
 		Public Property Fps As Single
-		Public Property ScrollX As Single
-		Public Property ScrollY As Single
+		<EaseProperty> Public Property ScrollX As Single
+		<EaseProperty> Public Property ScrollY As Single
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Interval As Single
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
@@ -1048,7 +1051,7 @@ Presets.Dots
 		Inherits BaseEvent
 		Implements IEaseEvent
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property Speed As Single
+		<EaseProperty> Public Property Speed As Single
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetSpeed
 		<JsonIgnore> Public Property Rooms As Room = Room.Default
@@ -1080,10 +1083,10 @@ Presets.Dots
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property StartColor As New PaletteColor(False)
 		Public Property Background As Boolean
-		Public Property EndColor As New PaletteColor(False)
+		<EaseProperty> Public Property EndColor As New PaletteColor(False)
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property StartOpacity As Integer
-		Public Property EndOpacity As Integer
+		<EaseProperty> Public Property EndOpacity As Integer
 		Public Overrides ReadOnly Property Type As EventType = EventType.CustomFlash
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
 		Public Overrides Function ToString() As String
@@ -1095,9 +1098,9 @@ Presets.Dots
 		Implements IEaseEvent
 		Implements IRoomEvent
 		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
-		Public Property CameraPosition As PointE?
-		Public Property Zoom As Integer?
-		Public Property Angle As Expression?
+		<EaseProperty> Public Property CameraPosition As PointE?
+		<EaseProperty> Public Property Zoom As Integer?
+		<EaseProperty> Public Property Angle As Expression?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.MoveCamera
@@ -1131,10 +1134,10 @@ Presets.Dots
 		End Enum
 		Public Property CustomPosition As Boolean
 		Public Property Target As Targets
-		Public Property RowPosition As PointE?
-		Public Property Scale As PointE?
-		Public Property Angle As Expression?
-		Public Property Pivot As Single?
+		<EaseProperty> Public Property RowPosition As PointE?
+		<EaseProperty> Public Property Scale As PointE?
+		<EaseProperty> Public Property Angle As Expression?
+		<EaseProperty> Public Property Pivot As Single?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.MoveRow
@@ -1179,8 +1182,8 @@ Presets.Dots
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property TintColor As New PaletteColor(True)
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Border As Borders
-		Public Property BorderColor As New PaletteColor(True)
-		Public Property Opacity As Integer
+		<EaseProperty> Public Property BorderColor As New PaletteColor(True)
+		<EaseProperty> Public Property Opacity As Integer
 		Public Property Tint As Boolean
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Effect As RowEffect
@@ -1573,11 +1576,11 @@ Presets.Dots
 			Outline
 			Glow
 		End Enum
-		Public Property TintColor As New PaletteColor(True)
+		<EaseProperty> Public Property TintColor As New PaletteColor(True)
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Border As Borders
-		Public Property BorderColor As New PaletteColor(True)
-		Public Property Opacity As Integer
+		<EaseProperty> Public Property BorderColor As New PaletteColor(True)
+		<EaseProperty> Public Property Opacity As Integer
 		Public Property Tint As Boolean
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Rooms As New Room(True, 0) Implements IRoomEvent.Rooms
@@ -1696,15 +1699,15 @@ Presets.Dots
 		End Enum
 		Public Property Preset As String
 		Public Property SamePresetBehavior As String
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As PointE
+		<EaseProperty> <JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property Position As PointE
 		Public Property Reference As References
 		Public Property UseCircle As Boolean
-		Public Property Speed As Single
-		Public Property Amplitude As New Single
-		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property AmplitudeVector As PointE
-		Public Property Angle As Expression?
-		Public Property Frequency As Single
-		Public Property Period As Single
+		<EaseProperty> Public Property Speed As Single
+		<EaseProperty> Public Property Amplitude As New Single
+		<EaseProperty> <JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property AmplitudeVector As PointE
+		<EaseProperty> Public Property Angle As Expression?
+		<EaseProperty> Public Property Frequency As Single
+		<EaseProperty> Public Property Period As Single
 		Public Property EaseType As EaseTypes
 		Public Property SubEase As EaseType
 		Public Property EasingDuration As Single Implements IEaseEvent.Duration
@@ -1727,10 +1730,10 @@ Presets.Dots
 		Implements IEaseEvent
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Property Border As Borders
-		Public Property BorderColor As New PaletteColor(True)
-		Public Property Opacity As Integer
+		<EaseProperty> Public Property BorderColor As New PaletteColor(True)
+		<EaseProperty> Public Property Opacity As Integer
 		Public Property Tint As Boolean
-		Public Property TintColor As New PaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
+		<EaseProperty> Public Property TintColor As New PaletteColor(True) With {.Color = New SKColor(&HFF, &HFF, &HFF, &HFF)}
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Overrides ReadOnly Property Type As EventType = EventType.Tint
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
@@ -1753,9 +1756,9 @@ Presets.Dots
 		End Enum
 		Public Overrides ReadOnly Property Type As EventType = EventType.Tile
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
-		Public Property Position As RDPoint?
-		Public Property Tiling As RDPoint?
-		Public Property Speed As RDPoint?
+		<EaseProperty> Public Property Position As RDPoint?
+		<EaseProperty> Public Property Tiling As RDPoint?
+		<EaseProperty> Public Property Speed As RDPoint?
 		Public Property TilingType As TilingTypes
 		Public Property Interval As Single
 		<JsonIgnore> Public Overrides Property Y As Integer
@@ -1779,10 +1782,10 @@ Presets.Dots
 		Implements IEaseEvent
 		Public Overrides ReadOnly Property Type As EventType = EventType.Move
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Decorations
-		Public Property Position As PointE?
-		Public Property Scale As PointE?
-		Public Property Angle As Expression?
-		Public Property Pivot As PointE?
+		<EaseProperty> Public Property Position As PointE?
+		<EaseProperty> Public Property Scale As PointE?
+		<EaseProperty> Public Property Angle As Expression?
+		<EaseProperty> Public Property Pivot As PointE?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		<JsonIgnore> Public Overrides Property Y As Integer
@@ -1955,10 +1958,10 @@ Presets.Dots
 	<JsonObject(ItemNullValueHandling:=NullValueHandling.Ignore)> Public Class MoveRoom
 		Inherits BaseEvent
 		Implements IEaseEvent
-		Public Property RoomPosition As PointE?
-		Public Property Scale As RDSizeE?
-		Public Property Angle As Expression?
-		Public Property Pivot As PointE?
+		<EaseProperty> Public Property RoomPosition As PointE?
+		<EaseProperty> Public Property Scale As RDSizeE?
+		<EaseProperty> Public Property Angle As Expression?
+		<EaseProperty> Public Property Pivot As PointE?
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.MoveRoom
@@ -2027,7 +2030,7 @@ Presets.Dots
 		Inherits BaseEvent
 		Implements IEaseEvent
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
-		Public Property Opacity As UInteger
+		<EaseProperty> Public Property Opacity As UInteger
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Overrides ReadOnly Property Type As EventType = EventType.FadeRoom
 		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Rooms
@@ -2040,7 +2043,7 @@ Presets.Dots
 	Public Class SetRoomPerspective
 		Inherits BaseEvent
 		Implements IEaseEvent
-		Public Property CornerPositions As New List(Of PointE?)(4)
+		<EaseProperty> Public Property CornerPositions As New List(Of PointE?)(4)
 		Public Property Duration As Single Implements IEaseEvent.Duration
 		Public Property Ease As EaseType Implements IEaseEvent.Ease
 		Public Overrides ReadOnly Property Type As EventType = EventType.SetRoomPerspective
@@ -2051,4 +2054,22 @@ Presets.Dots
 			End Get
 		End Property
 	End Class
+#If DEBUG Then
+	Public Class WindowResize
+		Inherits BaseEvent
+		Implements IEaseEvent
+		<JsonIgnore>
+		Public ReadOnly Property Room As SingleRoom
+			Get
+				Return New SingleRoom(Y)
+			End Get
+		End Property
+		Public Overrides ReadOnly Property Type As EventType = EventType.WindowResize
+		Public Overrides ReadOnly Property Tab As Tabs = Tabs.Actions
+		<EaseProperty> Public Property Scale As PointE?
+		<EaseProperty> Public Property Pivot As PointE?
+		Public Property Duration As Single Implements IEaseEvent.Duration
+		Public Property Ease As EaseType Implements IEaseEvent.Ease
+	End Class
+#End If
 End Namespace

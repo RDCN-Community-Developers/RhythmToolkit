@@ -283,4 +283,8 @@ Namespace Components
             Return Type.Calculate(x) * ([to] - from) + from
         End Function
     End Module
+    <AttributeUsage(AttributeTargets.Property OrElse AttributeTargets.Field)>
+    Public Class EasePropertyAttribute
+        Inherits Attribute
+    End Class
 End Namespace

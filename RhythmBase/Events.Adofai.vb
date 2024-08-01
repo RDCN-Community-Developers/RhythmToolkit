@@ -283,7 +283,7 @@ Namespace Adofai
 			Public Overrides ReadOnly Property Type As ADEventType = ADEventType.ScalePlanets
 			Public Property Duration As Single Implements IEaseEvent.Duration
 			Public Property TargetPlanet As TargetPlanets
-			Public Property Scale As Integer
+			<EaseProperty> Public Property Scale As Integer
 			Public Property Ease As EaseType Implements IEaseEvent.Ease
 		End Class
 		Public Class ADColorTrack
