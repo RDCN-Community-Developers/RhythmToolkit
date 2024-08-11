@@ -138,7 +138,7 @@ Namespace Tools
         ''' <summary>
         ''' [未完成] 拆分轨道为精灵图
         ''' </summary>
-        Public Sub SplitRow(Character As Sprite, ClassicBeat As Sprite, Heart As Sprite, beatSettings As SplitRowSettings, rows As IEnumerable(Of RowEventCollection), startBeat As Beat, endBeat As Beat, ShowRow As Boolean)
+        Public Sub SplitRow(Character As SpriteFile, ClassicBeat As SpriteFile, Heart As SpriteFile, beatSettings As SplitRowSettings, rows As IEnumerable(Of RowEventCollection), startBeat As Beat, endBeat As Beat, ShowRow As Boolean)
 
             '对于每个七拍轨道
             For Each row In rows.Where(Function(i) i.RowType = RowType.Classic)
@@ -323,7 +323,7 @@ Namespace Tools
         ''' <param name="count">个数</param>
         ''' <param name="depth">精灵深度</param>
         ''' <param name="visible">精灵的初始可见性</param>
-        Public Sub AddLotsOfDecos(room As SingleRoom, sprite As Sprite, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
+        Public Sub AddLotsOfDecos(room As SingleRoom, sprite As SpriteFile, count As UInteger, Optional depth As Integer = 0, Optional visible As Boolean = True)
             For i As UInteger = 0 To count
                 Dim s = Level.CreateDecoration(room)
                 With s

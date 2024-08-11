@@ -197,16 +197,16 @@ Namespace Adofai
 				Return HashCode.Combine(Me.BeatOnly, Me.baseLevel)
 			End Function
 		End Structure
-		Public Class ADTypedList(Of T As ADBaseEvent)
-			Implements IEnumerable(Of T)
+		Public Class ADTypedList(Of TEvent As ADBaseEvent)
+			Implements IEnumerable(Of TEvent)
 
-			Private ReadOnly list As New List(Of T)
+			Private ReadOnly list As New List(Of TEvent)
 			Protected Friend _types As New HashSet(Of ADEventType)
-			Public Overloads Sub Add(item As T)
+			Public Overloads Sub Add(item As TEvent)
 				list.Add(item)
 				_types.Add(item.Type)
 			End Sub
-			Public Overloads Function Remove(item As T)
+			Public Overloads Function Remove(item As TEvent)
 				_types.Remove(item.Type)
 				Return list.Remove(item)
 			End Function
@@ -216,7 +216,7 @@ Namespace Adofai
 				'	"CPB, ", ""))}Count = {list.Count}"
 				Return $"Count = {list.Count}"
 			End Function
-			Public Function GetEnumerator() As IEnumerator(Of T) Implements IEnumerable(Of T).GetEnumerator
+			Public Function GetEnumerator() As IEnumerator(Of TEvent) Implements IEnumerable(Of TEvent).GetEnumerator
 				Return list.GetEnumerator
 			End Function
 			Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator

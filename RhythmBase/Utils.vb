@@ -326,17 +326,17 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 		''' <summary>
 		''' Conversion between types and enumerations.
 		''' </summary>
-		Public Function ConvertToEnum(Of T As {BaseEvent, New})() As EventType
-			Return ConvertToEnum(GetType(T))
+		Public Function ConvertToEnum(Of TEvent As {BaseEvent, New})() As EventType
+			Return ConvertToEnum(GetType(TEvent))
 		End Function
 		''' <summary>
 		''' Conversion between types and enumerations.
 		''' </summary>
-		Public Function ConvertToEnums(Of T As BaseEvent)() As EventType()
+		Public Function ConvertToEnums(Of TEvent As BaseEvent)() As EventType()
 			Try
-				Return EventTypeToEnums(GetType(T))
+				Return EventTypeToEnums(GetType(TEvent))
 			Catch ex As Exception
-				Throw New IllegalEventTypeException(GetType(T), "This exception is not expected. Please contact the developer to handle this exception.", ex)
+				Throw New IllegalEventTypeException(GetType(TEvent), "This exception is not expected. Please contact the developer to handle this exception.", ex)
 			End Try
 		End Function
 		''' <summary>
@@ -372,11 +372,11 @@ timeSpan - BeatOnlyToTimeSpan(fore.BeatOnly, BPMCollection)
 						.ContractResolver = New RDContractResolver
 					}
 			With EventsSerializer.Converters
+				.Add(New AssetConverter(Of SpriteFile)(rdlevel))
 				.Add(New PanelColorConverter(rdlevel.ColorPalette))
 				.Add(New ColorConverter)
 				.Add(New ConditionalConverter)
-				.Add(New CharacterConverter(rdlevel.Path, rdlevel.Assets))
-				.Add(New AssetConverter(rdlevel.Path, rdlevel.Assets, settings))
+				.Add(New CharacterConverter(rdlevel, rdlevel.Assets))
 				.Add(New ConditionConverter(rdlevel.Conditionals))
 				.Add(New TagActionConverter(rdlevel, settings))
 				.Add(New CustomDecorationEventConverter(rdlevel, settings))

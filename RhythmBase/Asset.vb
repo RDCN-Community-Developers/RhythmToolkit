@@ -4,69 +4,137 @@ Imports System.Runtime.CompilerServices
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports NAudio
+Imports NAudio.Wave
+Imports NAudio.Vorbis
 Imports RhythmBase.Extensions.Extensions
 Imports SkiaSharp
 Imports System.ComponentModel
+Imports System.Diagnostics.CodeAnalysis
+Imports RhythmBase.Events.ShowDialogue
+Imports System.Drawing
+Imports System.Runtime.InteropServices.JavaScript.JSType
+Imports System.Security
 Namespace Assets
+	Public Class AssetManager
+		Private baseLevel As RDLevel
+		Private data As Dictionary(Of TypeNameIndex, IAssetFile)
+		Private Structure TypeNameIndex
+			Implements IEquatable(Of TypeNameIndex)
+			Public Type As Type
+			Public Name As String
+			Public Sub New(type As Type, name As String)
+				Me.Type = type
+				Me.Name = name
+			End Sub
+			Public Overrides Function Equals(<NotNullWhen(True)> obj As Object) As Boolean
+				Return obj.GetType = GetType(TypeNameIndex) Or Equals(CType(obj, TypeNameIndex))
+			End Function
+			Public Overloads Function Equals(other As TypeNameIndex) As Boolean Implements IEquatable(Of TypeNameIndex).Equals
+				Return Name = other.Name AndAlso Name = other.Name
+			End Function
+			Public Overrides Function GetHashCode() As Integer
+				Return HashCode.Combine(Type, Name)
+			End Function
+		End Structure
+		Default Public Property Item(type As Type, name As String)
+			Get
+				Return data(New TypeNameIndex(type, name))
+			End Get
+			Set(value)
+				data(New TypeNameIndex(type, name)) = value
+			End Set
+		End Property
+		Default Public Property Item(index As Asset(Of IAssetFile))
+			Get
+				Return Item(index.Type, index.Name)
+			End Get
+			Set(value)
+				Item(index.Type, index.Name) = value
+			End Set
+		End Property
+		Public Function Create(Of TAsset As IAssetFile)(name As String)
+			Return New Asset(Of TAsset)(Me) With {.Name = name}
+		End Function
+		Public Function Create(Of TAsset As IAssetFile)(name As String, asset As IAssetFile)
+			Return New Asset(Of TAsset)(Me) With {.Name = name, .Value = asset}
+		End Function
+		Public Sub New(level As RDLevel)
+			baseLevel = level
+		End Sub
+	End Class
+	Public Interface IAssetFile
+		ReadOnly Property Name As String
+		Sub Load(directory As String)
+	End Interface
+	Public Interface ISpriteFile
+		Inherits IAssetFile
+		ReadOnly Property Size As RDSizeNI
+	End Interface
+	Public Class Asset(Of TAssetFile As IAssetFile)
+		Private cache As TAssetFile
+		Private _name As String
+		Private _connected As Boolean
+		Public ReadOnly Property Type
+			Get
+				Return GetType(TAssetFile)
+			End Get
+		End Property
+		Public Property Name As String
+			Get
+				Return _name
+			End Get
+			Set(value As String)
+				If _name <> value Then
+					cache = Nothing
+				End If
+				_name = value
+			End Set
+		End Property
+		Public Property Value As TAssetFile
+			Get
+				If Manager IsNot Nothing Then
+					cache = Manager(Type, Name)
+				End If
+				Return cache
+			End Get
+			Set(value As TAssetFile)
+				If Manager IsNot Nothing Then
+					Manager(Type, Name) = value
+				Else
+					cache = value
+				End If
+			End Set
+		End Property
+
+		Private Property Manager As AssetManager
+
+		Friend Sub New(manager As AssetManager)
+			Me.Manager = manager
+			Me._connected = True
+		End Sub
+		Friend Sub New()
+		End Sub
+	End Class
 	''' <summary>
 	''' A reference to an asset file.
 	''' </summary>
-	Public Class Sprite
-		Private _file As String
-		Private _isLoaded As Boolean
-		Private _isModified As Boolean
+	Public Class SpriteFile
+		Implements ISpriteFile
 		Private _imageSize As RDSizeNI
-		Private _image_Base As SKBitmap
-		Private _image_Glow As SKBitmap
-		Private _image_Outline As SKBitmap
-		Private _image_Freeze As SKBitmap
-		Private _name As String
-		Private _voice As String
-		Private _size As RDSizeNI
-		Private _clips As New HashSet(Of Expression)
-		Private _rowPreviewOffset As RDSizeN?
-		Private _rowPreviewFrame As UInteger?
-		Private _pivotOffset As RDPointN?
-		Private _portraitOffset As RDSizeN?
-		Private _PortraitSize As RDSizeN?
-		Private _portraitScale As Single?
-		''' <summary>
-		''' The path of the file.
-		''' </summary>
-		<JsonIgnore> Public Property FilePath As String
-			Get
-				Return _file
-			End Get
-			Friend Set(value As String)
-				_file = value
-			End Set
-		End Property
 		''' <summary>
 		''' The expression names of the sprite file.
 		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Expressions As IEnumerable(Of String)
 			Get
-				If Not _isLoaded Then
-					Reload()
-					_isLoaded = True
-				End If
 				Return Clips.Select(Function(i) i.Name)
 			End Get
 		End Property
 		''' <summary>
 		''' The name of the file.
 		''' </summary>
-		<JsonIgnore> Public ReadOnly Property FileName As String
-			Get
-				If IsSprite Then
-					Return IO.Path.GetFileNameWithoutExtension(_file)
-				Else
-					Return IO.Path.GetFileName(_file)
-				End If
-			End Get
-		End Property
+		<JsonIgnore> Public ReadOnly Property FileName As String Implements IAssetFile.Name
 		''' <summary>
-		''' The area where the sprite/image is previewed.
+		''' The area where the sprite is previewed.
 		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Preview As SKRect?
 			Get
@@ -78,7 +146,6 @@ Namespace Assets
 		''' </summary>
 		<JsonIgnore> Public ReadOnly Property ImageSize As RDSizeNI
 			Get
-				Load()
 				Return _imageSize
 			End Get
 		End Property
@@ -86,330 +153,101 @@ Namespace Assets
 		''' Base layer
 		''' </summary>
 		<JsonIgnore> Public Property ImageBase As SKBitmap
-			Get
-				Load()
-				Return _image_Base
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_image_Base = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Glow layer
 		''' </summary>
 		<JsonIgnore> Public Property ImageGlow As SKBitmap
-			Get
-				Load()
-				Return _image_Glow
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_image_Glow = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Outline layer
 		''' </summary>
 		<JsonIgnore> Public Property ImageOutline As SKBitmap
-			Get
-				Load()
-				Return _image_Outline
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_image_Outline = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Freeze layer
 		''' </summary>
 		<JsonIgnore> Public Property ImageFreeze As SKBitmap
-			Get
-				Load()
-				Return _image_Freeze
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_image_Freeze = Value
-			End Set
-		End Property
 		''' <summary>
 		''' The name of the sprite.
 		''' </summary>
 		Public Property Name As String
-			Get
-				Load()
-				Return _name
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_name = Value
-			End Set
-		End Property
 #If DEBUG Then
 		''' <summary>
 		''' [Unknown] The voice of the sprite.
 		''' </summary>
 		Public Property Voice As String
-			Get
-				Load()
-				Return _voice
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_voice = Value
-			End Set
-		End Property
 #End If
 		''' <summary>
 		''' The size of each expression.
 		''' </summary>
-		Public Property Size As RDSizeNI
-			Get
-				Load()
-				Return _size
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_size = Value
-			End Set
-		End Property
+		Public Property Size As RDSizeNI Implements ISpriteFile.Size
 		''' <summary>
 		''' Information of expressions.
 		''' </summary>
 		Public Property Clips As HashSet(Of Expression)
-			Get
-				Load()
-				Return _clips
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_clips = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Image offset when the row is previewed.
 		''' </summary>
 		Public Property RowPreviewOffset As RDSizeN?
-			Get
-				Load()
-				Return _rowPreviewOffset
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_rowPreviewOffset = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Row preview frame.
 		''' </summary>
 		Public Property RowPreviewFrame As UInteger?
-			Get
-				Load()
-				Return _rowPreviewFrame
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_rowPreviewFrame = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Pivot point offset.
 		''' </summary>
 		Public Property PivotOffset As RDPointN?
-			Get
-				Load()
-				Return _pivotOffset
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_pivotOffset = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Image offset in dialog box.
 		''' </summary>
 		Public Property PortraitOffset As RDSizeN?
-			Get
-				Load()
-				Return _portraitOffset
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_portraitOffset = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Image clipping in the dialog box.
 		''' </summary>
 		Public Property PortraitSize As RDSizeN?
-			Get
-				Load()
-				Return _PortraitSize
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_PortraitSize = Value
-			End Set
-		End Property
 		''' <summary>
 		''' Image scale in the dialog box.
 		''' </summary>
 		Public Property PortraitScale As Single?
-			Get
-				Load()
-				Return _portraitScale
-			End Get
-			Set
-				Load()
-				_isModified = True
-				_portraitScale = Value
-			End Set
-		End Property
-		''' <summary>
-		''' Indicates whether the reference is a picture file or sprite.
-		''' </summary>
-		<JsonIgnore> Public ReadOnly Property IsSprite As Boolean
-			Get
-				Return Path.GetExtension(_file) = String.Empty
-			End Get
-		End Property
 		''' <summary>
 		''' An expression.
 		''' </summary>
 		Public Class Expression
-			Friend parent As Sprite
-			Private _name As String
-			Private _frames As List(Of UInteger)
-			Private _loopStart As Integer?
-			Private _loop As LoopOption
-			Private _fps As Single
-			Private _pivotOffset As RDPointN?
-			Private _portraitOffset As RDSizeN?
-			Private _portraitScale As Single?
-			Private _portraitSize As RDSizeN?
+			Friend parent As SpriteFile
 			''' <summary>
 			''' Expression name.
 			''' </summary>
 			Public Property Name As String
-				Get
-					Return _name
-				End Get
-				Set
-					parent._isModified = True
-					_name = Value
-				End Set
-			End Property
 			''' <summary>
 			''' The list of frame indexes for expression.
 			''' </summary>
 			Public Property Frames As List(Of UInteger) 'nullable
-				Get
-					Return _frames
-				End Get
-				Set
-					parent._isModified = True
-					_frames = Value
-				End Set
-			End Property
 			''' <summary>
 			''' The start frame of the cycle for the expression.
 			''' </summary>
 			Public Property LoopStart As Integer? 'nullable
-				Get
-					Return _loopStart
-				End Get
-				Set
-					parent._isModified = True
-					_loopStart = Value
-				End Set
-			End Property
 			''' <summary>
 			''' The way the expression loops.
 			''' </summary>
 			<JsonConverter(GetType(Newtonsoft.Json.Converters.StringEnumConverter))> Public Property [Loop] As LoopOption
-				Get
-					Return _loop
-				End Get
-				Set
-					parent._isModified = True
-					_loop = Value
-				End Set
-			End Property
 			''' <summary>
 			''' The frame rate of the emoticon when <c>loop == yes</c>.
 			''' </summary>
 			Public Property Fps As Single
-				Get
-					Return _fps
-				End Get
-				Set
-					parent._isModified = True
-					_fps = Value
-				End Set
-			End Property
 			''' <summary>
 			''' Pivot point offset.
 			''' </summary>
 			Public Property PivotOffset As RDPointN? 'nullable
-				Get
-					Return _pivotOffset
-				End Get
-				Set
-					parent._isModified = True
-					_pivotOffset = Value
-				End Set
-			End Property
 			''' <summary>
 			''' Image offset in dialog box.
 			''' </summary>
 			Public Property PortraitOffset As RDSizeN? 'nullable
-				Get
-					Return _portraitOffset
-				End Get
-				Set
-					parent._isModified = True
-					_portraitOffset = Value
-				End Set
-			End Property
 			''' <summary>
 			''' Image scale in the dialog box.
 			''' </summary>
 			Public Property PortraitScale As Single? 'nullable
-				Get
-					Return _portraitScale
-				End Get
-				Set
-					parent._isModified = True
-					_portraitScale = Value
-				End Set
-			End Property
 			''' <summary>
 			''' Image clipping in the dialog box.
 			''' </summary>
 			Public Property PortraitSize As RDSizeN? 'nullable
-				Get
-					Return _portraitSize
-				End Get
-				Set
-					parent._isModified = True
-					_portraitSize = Value
-				End Set
-			End Property
 			''' <summary>
 			''' Get the cropped area on the image for each frame of this expression.
 			''' </summary>
@@ -431,81 +269,62 @@ Namespace Assets
 			If filename.IsNullOrEmpty Then
 				Throw New ArgumentException("Filename cannot be null.", NameOf(filename))
 			End If
-			_file = filename
-		End Sub
-		Private Sub Load()
-			If Not _isLoaded AndAlso Not _file.IsNullOrEmpty Then
-				Reload()
-			End If
+			Me.FileName = filename
 		End Sub
 		''' <summary>
 		''' Load the file contents into memory.
 		''' </summary>
-		Public Sub Reload()
-			If IsSprite Then
+		Public Sub Load(directory As String) Implements IAssetFile.Load
+			Dim _file = Path.Combine(directory, FileName)
 
-				Dim setting As New JsonSerializer
+			Dim setting As New JsonSerializer
 
-				Dim json As String
-				Dim obj As Linq.JObject
+			Dim json As String
+			Dim obj As Linq.JObject
 
-				If File.Exists($"{_file}.json") Then
-					json = $"{_file}"
-				ElseIf File.Exists($"{_file}\{Path.GetFileName(_file)}.json") Then
-					json = $"{_file}\{Path.GetFileName(_file)}"
-				Else
-					Throw New FileNotFoundException($"Cannot find the json file", _file + "")
-				End If
-
-				obj = setting.Deserialize(Of JObject)(New JsonTextReader(File.OpenText($"{json}.json")))
-
-				Dim imageBaseFile = $"{json}.png"
-				Dim imageGlowFile = $"{json}_glow.png"
-				Dim imageOutlineFile = $"{json}_outline.png"
-				Dim imageFreezeFile = $"{json}_freeze.png"
-
-				If File.Exists(imageBaseFile) Then
-					_image_Base = SKBitmap.Decode(imageBaseFile)
-				Else
-					Throw New FileNotFoundException($"Cannot find the image file", _file + ".png")
-				End If
-				If File.Exists(imageGlowFile) Then
-					_image_Glow = SKBitmap.Decode(imageGlowFile)
-				End If
-				If File.Exists(imageOutlineFile) Then
-					_image_Outline = SKBitmap.Decode(imageOutlineFile)
-				End If
-				If File.Exists(imageFreezeFile) Then
-					_image_Freeze = SKBitmap.Decode(imageFreezeFile)
-				End If
-				_name = obj(NameOf(Name).ToLowerCamelCase)?.ToObject(Of String)
-#If DEBUG Then
-				_voice = obj(NameOf(Voice).ToLowerCamelCase)?.ToObject(Of String)
-#End If
-				_size = obj(NameOf(Size).ToLowerCamelCase).ToObject(Of RDSizeNI)
-				_rowPreviewOffset = obj(NameOf(RowPreviewOffset).ToLowerCamelCase)?.ToObject(Of RDSizeN)
-				_rowPreviewFrame = obj(NameOf(RowPreviewFrame).ToLowerCamelCase)?.ToObject(Of UInteger)
-				_pivotOffset = obj(NameOf(PivotOffset).ToLowerCamelCase)?.ToObject(Of RDPointN)
-				_portraitOffset = obj(NameOf(PortraitOffset).ToLowerCamelCase)?.ToObject(Of RDSizeN)
-				_PortraitSize = obj(NameOf(PortraitSize).ToLowerCamelCase)?.ToObject(Of RDSizeN)
-				_portraitScale = obj(NameOf(PortraitScale).ToLowerCamelCase)?.ToObject(Of Single)
-				For Each clip In obj(NameOf(Clips).ToLowerCamelCase)
-					_clips.Add(clip.ToObject(Of Expression))
-				Next
+			If File.Exists($"{_file}.json") Then
+				json = $"{_file}"
+			ElseIf File.Exists($"{_file}\{Path.GetFileName(_file)}.json") Then
+				json = $"{_file}\{Path.GetFileName(_file)}"
 			Else
-				If File.Exists(_file) Then
-					Dim imgFile As SKBitmap
-					Try
-						imgFile = SKBitmap.Decode(_file)
-						_image_Base = imgFile
-					Catch ex As Exception
-					End Try
-				Else
-					Throw New FileNotFoundException($"Cannot find the image file", _file)
-				End If
+				Throw New FileNotFoundException($"Cannot find the json file", _file + "")
 			End If
-			_isLoaded = True
-			_isModified = False
+
+			obj = setting.Deserialize(Of JObject)(New JsonTextReader(File.OpenText($"{json}.json")))
+
+			Dim imageBaseFile = $"{json}.png"
+			Dim imageGlowFile = $"{json}_glow.png"
+			Dim imageOutlineFile = $"{json}_outline.png"
+			Dim imageFreezeFile = $"{json}_freeze.png"
+
+			If File.Exists(imageBaseFile) Then
+				_ImageBase = SKBitmap.Decode(imageBaseFile)
+			Else
+				Throw New FileNotFoundException($"Cannot find the image file", _file + ".png")
+			End If
+			If File.Exists(imageGlowFile) Then
+				_ImageGlow = SKBitmap.Decode(imageGlowFile)
+			End If
+			If File.Exists(imageOutlineFile) Then
+				_ImageOutline = SKBitmap.Decode(imageOutlineFile)
+			End If
+			If File.Exists(imageFreezeFile) Then
+				_ImageFreeze = SKBitmap.Decode(imageFreezeFile)
+			End If
+			_Name = obj(NameOf(Name).ToLowerCamelCase)?.ToObject(Of String)
+#If DEBUG Then
+			_Voice = obj(NameOf(Voice).ToLowerCamelCase)?.ToObject(Of String)
+#End If
+			_Size = obj(NameOf(Size).ToLowerCamelCase).ToObject(Of RDSizeNI)
+			_RowPreviewOffset = obj(NameOf(RowPreviewOffset).ToLowerCamelCase)?.ToObject(Of RDSizeN)
+			_RowPreviewFrame = obj(NameOf(RowPreviewFrame).ToLowerCamelCase)?.ToObject(Of UInteger)
+			_PivotOffset = obj(NameOf(PivotOffset).ToLowerCamelCase)?.ToObject(Of RDPointN)
+			_PortraitOffset = obj(NameOf(PortraitOffset).ToLowerCamelCase)?.ToObject(Of RDSizeN)
+			_PortraitSize = obj(NameOf(PortraitSize).ToLowerCamelCase)?.ToObject(Of RDSizeN)
+			_PortraitScale = obj(NameOf(PortraitScale).ToLowerCamelCase)?.ToObject(Of Single)
+			For Each clip In obj(NameOf(Clips).ToLowerCamelCase)
+				_Clips.Add(clip.ToObject(Of Expression))
+			Next
 		End Sub
 		''' <summary>
 		''' Write JSON data to the text stream.
@@ -526,15 +345,15 @@ Namespace Assets
 				.Formatting = Formatting.None
 				}
 			Dim writer = New JsonTextWriter(textWriter) With {.Formatting = If(setting.Indented, Formatting.Indented, Formatting.None)}
-			Dim meObj = Linq.JObject.FromObject(Me)
+			Dim meObj = JObject.FromObject(Me)
 			meObj.ToLowerCamelCase
-			Dim clipArray As Linq.JArray = meObj(NameOf(Clips).ToLowerCamelCase)
+			Dim clipArray As JArray = meObj(NameOf(Clips).ToLowerCamelCase)
 
 			Dim PropertyNameLength As New Dictionary(Of String, Integer)
 
 			Dim propertyValues As New Dictionary(Of String, List(Of String))
 
-			For Each clip As Linq.JObject In clipArray
+			For Each clip As JObject In clipArray
 				clip.ToLowerCamelCase
 				For Each pair In clip
 					Dim stringedValue = If(pair.Value.Type = Linq.JTokenType.Null, String.Empty, JsonConvert.SerializeObject(pair.Value, Formatting.None, jsonS))
@@ -691,13 +510,44 @@ Namespace Assets
 
 		End Sub
 		Public Overrides Function ToString() As String
-			Return $"{ If(IsSprite, ".json", Path.GetExtension(FilePath))}, {If(Name.IsNullOrEmpty, FileName, Name)}"
+			Return $"{If(Name.IsNullOrEmpty, FileName, Name)}"
 		End Function
+	End Class
+	Public Class ImageFile
+		Implements ISpriteFile
+		Private ReadOnly _filename As String
+		Public Property Image As SKBitmap
+		Public ReadOnly Property Size As RDSizeNI Implements ISpriteFile.Size
+		Public ReadOnly Property Name As String Implements IAssetFile.Name
+			Get
+				Return _filename
+			End Get
+		End Property
+		Public Sub New(filename As String)
+			_filename = filename
+		End Sub
+		''' <summary>
+		''' Load the file contents into memory.
+		''' </summary>
+		Public Sub Load(directory As String) Implements IAssetFile.Load
+			Dim path = IO.Path.Combine(directory, Name)
+			If IO.Path.Exists(path) Then
+				Dim imgFile As SKBitmap
+				Try
+					imgFile = SKBitmap.Decode(path)
+					Image = imgFile
+				Catch ex As Exception
+				End Try
+			Else
+				Throw New FileNotFoundException($"Cannot find the image file", path)
+			End If
+		End Sub
 	End Class
 	''' <summary>
 	''' A Character.
 	''' </summary>
-	Public Structure RDCharacter
+	Public Class RDCharacter
+
 		''' <summary>
 		''' Whether  in-game character or customized character(sprite).
 		''' </summary>
@@ -713,12 +563,12 @@ Namespace Assets
 		''' <br/>
 		''' If using an in-game character, this value will be empty
 		''' </summary>
-		Public ReadOnly Property CustomCharacter As Sprite
+		Public ReadOnly Property CustomCharacter As Asset(Of SpriteFile)
 		''' <summary>
 		''' Construct an in-game character.
 		''' </summary>
 		''' <param name="character">Character type.</param>
-		Public Sub New(character As Characters)
+		Public Sub New(level As RDLevel, character As Characters)
 			IsCustom = False
 			Me.Character = character
 		End Sub
@@ -726,26 +576,73 @@ Namespace Assets
 		''' Construct a customized character.
 		''' </summary>
 		''' <param name="character">A sprite.</param>
-		Public Sub New(character As Sprite)
+		Public Sub New(level As RDLevel, character As String)
 			IsCustom = True
-			CustomCharacter = character
+			CustomCharacter = New Asset(Of SpriteFile)(level.Manager) With {.Name = character}
 		End Sub
 		Public Overrides Function ToString() As String
-			Return If(IsCustom, CustomCharacter.FileName, Character)
+			Return If(IsCustom, CustomCharacter.Name, Character)
 		End Function
-	End Structure
+	End Class
+	Public Class AudioFile
+		Implements IAssetFile
+		Private ReadOnly _file As String
+		Private _stream As WaveStream
+		Public ReadOnly Property Name As String Implements IAssetFile.Name
+		Public Sub New(name As String)
+			_file = name
+		End Sub
+		Public Sub Load(directory As String) Implements IAssetFile.Load
+			Dim path = IO.Path.Combine(directory, Name)
+			If IO.Path.Exists(path) Then
+				Select Case IO.Path.GetExtension(Name)
+					Case ".ogg"
+						_stream = New VorbisWaveReader(path)
+					Case ".mp3"
+						_stream = New Mp3FileReader(path)
+					Case ".wav", ".wave"
+						_stream = New WaveFileReader(path)
+					Case ".aiff", ".aif"
+						_stream = New AiffFileReader(path)
+					Case Else
+						_stream = Stream.Null
+				End Select
+			End If
+		End Sub
+		Public Overrides Function ToString() As String
+			Return Name
+		End Function
+	End Class
+	Public Class BuiltInAudio
+		Implements IAssetFile
+		Private _name As String
+		Public ReadOnly Property Name As String Implements IAssetFile.Name
+			Get
+				Return _name
+			End Get
+		End Property
+		Public Sub Load(directory As String) Implements IAssetFile.Load
+			Return
+		End Sub
+		Public Sub New(name As String)
+			_name = name
+		End Sub
+	End Class
 	''' <summary>
 	''' Audio.
 	''' </summary>
 	Public Class Audio
-		Private ReadOnly _file As String
+		<JsonIgnore> Public Property AudioFile As New Asset(Of AudioFile)
 		''' <summary>
 		''' File name.
 		''' </summary>
-		Public ReadOnly Property Filename As String
+		<JsonProperty("filename")> Public Property Name As String
 			Get
-				Return IO.Path.GetFileName(_file)
+				Return AudioFile?.Name
 			End Get
+			Set(value As String)
+				AudioFile.Name = value
+			End Set
 		End Property
 		''' <summary>
 		''' Audio volume.
@@ -763,23 +660,13 @@ Namespace Assets
 		''' Audio Offset.
 		''' </summary>
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.IgnoreAndPopulate)> <JsonConverter(GetType(TimeConverter))> Public Property Offset As TimeSpan = TimeSpan.Zero
-		<JsonIgnore> Public ReadOnly Property FilePath As String
-			Get
-				Return _file
-			End Get
-		End Property
 		<JsonIgnore> Public ReadOnly Property IsFile As Boolean
 			Get
-				IsFile = {".mp3", ".wav", ".ogg", ".aif", ".aiff"}.Contains(Path.GetExtension(Filename))
+				IsFile = {".mp3", ".wav", ".ogg", ".aif", ".aiff"}.Contains(Path.GetExtension(Name))
 			End Get
 		End Property
-		Public Sub New()
-		End Sub
-		Public Sub New(name As String)
-			_file = name
-		End Sub
 		Public Overrides Function ToString() As String
-			Return Filename
+			Return Name
 		End Function
 	End Class
 	Public Enum LoopOption
@@ -822,12 +709,12 @@ Namespace Extensions
 #If DEBUG Then
 		<Extension> Public Function OutLine(image As SKBitmap) As SKBitmap
 			Dim img = image.Copy
-			For x = 0 To img.Width - 1
-				For y = 0 To img.Height - 1
+			For x As Integer = 0 To img.Width - 1
+				For y As Integer = 0 To img.Height - 1
 					If image.GetPixel(x, y).Alpha = 0 AndAlso
-						(image.GetPixel(Math.Max(0, x - 1), y).Alpha = 255 OrElse
-						image.GetPixel(Math.Min(x + 1, img.Width - 1), y).Alpha = 255 OrElse
-						image.GetPixel(x, Math.Max(0, y - 1)).Alpha = 255 OrElse
+(image.GetPixel(Math.Max(0, x - 1), y).Alpha = 255 OrElse
+image.GetPixel(Math.Min(x + 1, img.Width - 1), y).Alpha = 255 OrElse
+image.GetPixel(x, Math.Max(0, y - 1)).Alpha = 255 OrElse
 						image.GetPixel(x, Math.Min(y + 1, img.Width - 1)).Alpha = 255) Then
 						img.SetPixel(x, y, New SKColor(&HFF, &HFF, &HFF, &HFF))
 					Else

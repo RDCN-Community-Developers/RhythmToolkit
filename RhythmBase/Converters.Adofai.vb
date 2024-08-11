@@ -102,8 +102,8 @@ Namespace Adofai
 				Return New ADTile() With {.Angle = JValue.Load(reader).ToObject(Of Single), .Parent = level}
 			End Function
 		End Class
-		Friend Class ADBaseEventConverter(Of T As ADBaseEvent)
-			Inherits JsonConverter(Of T)
+		Friend Class ADBaseEventConverter(Of TEvent As ADBaseEvent)
+			Inherits JsonConverter(Of TEvent)
 			Protected ReadOnly level As ADLevel
 			Protected ReadOnly settings As LevelReadOrWriteSettings
 			Protected _canread As Boolean = True
@@ -122,14 +122,14 @@ Namespace Adofai
 				Me.level = level
 				Me.settings = inputSettings
 			End Sub
-			Public Overrides Sub WriteJson(writer As JsonWriter, value As T, serializer As JsonSerializer)
+			Public Overrides Sub WriteJson(writer As JsonWriter, value As TEvent, serializer As JsonSerializer)
 				Throw New NotImplementedException()
 			End Sub
 
-			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+			Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As TEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As TEvent
 				Return GetDeserializedObject(JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer)
 			End Function
-			Public Overridable Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+			Public Overridable Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As TEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As TEvent
 
 				Dim SubClassType As Type = ADConvertToType(jobj("eventType").ToObject(Of String))
 
@@ -141,7 +141,7 @@ Namespace Adofai
 
 				Return existingValue
 			End Function
-			Public Overridable Function SetSerializedObject(value As T, serializer As JsonSerializer) As JObject
+			Public Overridable Function SetSerializedObject(value As TEvent, serializer As JsonSerializer) As JObject
 				_canwrite = False
 				Dim JObj = JObject.FromObject(value, serializer)
 				_canwrite = True
@@ -153,12 +153,12 @@ Namespace Adofai
 				Return JObj
 			End Function
 		End Class
-		Friend Class ADBaseTileEventConverter(Of T As ADBaseTileEvent)
-			Inherits ADBaseEventConverter(Of T)
+		Friend Class ADBaseTileEventConverter(Of TEvent As ADBaseTileEvent)
+			Inherits ADBaseEventConverter(Of TEvent)
 			Public Sub New(level As ADLevel, inputSettings As LevelReadOrWriteSettings)
 				MyBase.New(level, inputSettings)
 			End Sub
-			Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+			Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As TEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As TEvent
 				Dim parentIndex = jobj("floor")?.ToObject(Of Integer)
 
 				_canread = False
@@ -176,7 +176,7 @@ Namespace Adofai
 				End If
 				Return existingValue
 			End Function
-			Public Overrides Function SetSerializedObject(value As T, serializer As JsonSerializer) As JObject
+			Public Overrides Function SetSerializedObject(value As TEvent, serializer As JsonSerializer) As JObject
 				Dim jobj = MyBase.SetSerializedObject(value, serializer)
 
 				Dim s = jobj.First

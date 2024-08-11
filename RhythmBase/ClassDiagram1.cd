@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RhythmBase.Assets.AssetManager" Collapsed="true">
+    <Position X="9.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAMAAAAAEAAAAAQAAAAAAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RhythmBase.Assets.Asset(Of TAssetFile)" Collapsed="true">
+    <Position X="9.25" Y="1.5" Width="1.5" />
+    <AssociationLine Name="Manager" Type="RhythmBase.Assets.AssetManager">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.023" Y="0.089" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>ACAAIAAAAAAAAAAAAAAAgAQAAAAABAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Manager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RhythmBase.Assets.SpriteFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.5" Y="4.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="RhythmBase.Assets.SpriteFile.Expression" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Asset.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AIAAkIAAAAQAggEEAAUiAAWAAAQQACQAAkQAAgBAAAg=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RhythmBase.Assets.ImageFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAgAQAAAAAAAQAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RhythmBase.Assets.RDCharacter" Collapsed="true">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <AssociationLine Name="CustomCharacter" Type="RhythmBase.Assets.Asset(Of TAssetFile)">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.348" Y="0.07" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Character" Type="RhythmBase.Components.Characters">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.138" Y="0.141" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAQAAAAAAAAAAAAAAAAAQAAACAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Character" />
+      <Property Name="CustomCharacter" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RhythmBase.Assets.AudioFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAEAAAAAAQAAAAAAAAAAAAAAAAAEBA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RhythmBase.Assets.Audio" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <AssociationLine Name="AudioFile" Type="RhythmBase.Assets.Asset(Of TAssetFile)">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.64" Y="0.102" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAEAAAAAAQAAACIAAAAAAJAAAAAgAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="AudioFile" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RhythmBase.Assets.BuiltInAudio" Collapsed="true">
+    <Position X="6.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAoAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="RhythmBase.Assets.IAssetFile" Collapsed="true">
+    <Position X="3.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RhythmBase.Assets.ISpriteFile" Collapsed="true">
+    <Position X="3.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="RhythmBase.Assets.LoopOption" Collapsed="true">
+    <Position X="11" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAEAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="RhythmBase.Components.Characters" Collapsed="true">
+    <Position X="6.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>HhIgMJC1MUBFARAAAQCogBAg9SOBHACAEHQIRQkCCAI=</HashCode>
+      <FileName>Components.vb</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Module Name="RhythmBase.Extensions.ImageExtension" Collapsed="true">
+    <Position X="11" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAABAAAAAAAAAAAAAgBAAAAEAAAAAQAAAAA=</HashCode>
+      <FileName>Asset.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

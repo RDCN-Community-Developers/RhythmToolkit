@@ -1086,22 +1086,22 @@ Namespace Components
 	''' <summary>
 	''' A list that limits the capacity of the list and uses the default value to fill the free capacity.
 	''' </summary>
-	Public Class LimitedList(Of T)
+	Public Class LimitedList(Of TEvent)
 		Inherits LimitedList
-		Implements ICollection(Of T)
+		Implements ICollection(Of TEvent)
 		''' <summary>
 		''' Default value
 		''' </summary>
 		<JsonIgnore>
-		Public Overloads Property DefaultValue As T
+		Public Overloads Property DefaultValue As TEvent
 			Get
 				Return MyBase.DefaultValue
 			End Get
-			Set(value As T)
+			Set(value As TEvent)
 				MyBase.DefaultValue = value
 			End Set
 		End Property
-		Default Public Property Item(index As Integer) As T
+		Default Public Property Item(index As Integer) As TEvent
 			Get
 				If index >= list.Count Then
 					Throw New IndexOutOfRangeException
@@ -1113,29 +1113,29 @@ Namespace Components
 				End If
 				Return list(index).value
 			End Get
-			Set(value As T)
+			Set(value As TEvent)
 				If index >= list.Count Then
 					Throw New IndexOutOfRangeException
 				End If
 				list(index) = (value, False)
 			End Set
 		End Property
-		Public Overloads ReadOnly Property Count As Integer Implements ICollection(Of T).Count
+		Public Overloads ReadOnly Property Count As Integer Implements ICollection(Of TEvent).Count
 			Get
 				Return MyBase.Count
 			End Get
 		End Property
-		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of T).IsReadOnly
+		Public ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of TEvent).IsReadOnly
 		''' <param name="count">Capacity limit.</param>
 		''' <param name="defaultValue">Default value.</param>
-		Public Sub New(count As UInteger, defaultValue As T)
+		Public Sub New(count As UInteger, defaultValue As TEvent)
 			MyBase.New(count, defaultValue)
 		End Sub
 		''' <param name="count">Capacity limit.</param>
 		Public Sub New(count As UInteger)
 			Me.New(count, Nothing)
 		End Sub
-		Public Overloads Iterator Function GetEnumerator() As IEnumerator(Of T) Implements IEnumerable(Of T).GetEnumerator
+		Public Overloads Iterator Function GetEnumerator() As IEnumerator(Of TEvent) Implements IEnumerable(Of TEvent).GetEnumerator
 			For Each i In list
 				Yield If(i.Equals(GetDefaultValue()), DefaultValue, i.value)
 			Next
@@ -1143,35 +1143,35 @@ Namespace Components
 		Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
 			Return MyBase.GetEnumerator
 		End Function
-		Public Overloads Sub Add(item As T) Implements ICollection(Of T).Add
+		Public Overloads Sub Add(item As TEvent) Implements ICollection(Of TEvent).Add
 			MyBase.Add(item)
 		End Sub
-		Public Overloads Sub Clear() Implements ICollection(Of T).Clear
+		Public Overloads Sub Clear() Implements ICollection(Of TEvent).Clear
 			MyBase.Clear()
 		End Sub
-		Public Function Contains(item As T) As Boolean Implements ICollection(Of T).Contains
+		Public Function Contains(item As TEvent) As Boolean Implements ICollection(Of TEvent).Contains
 			Return list.Contains((item, True))
 		End Function
-		Public Overloads Sub CopyTo(array() As T, arrayIndex As Integer) Implements ICollection(Of T).CopyTo
+		Public Overloads Sub CopyTo(array() As TEvent, arrayIndex As Integer) Implements ICollection(Of TEvent).CopyTo
 			MyBase.CopyTo(array, arrayIndex)
 		End Sub
-		Public Overloads Function Remove(item As T) As Boolean Implements ICollection(Of T).Remove
+		Public Overloads Function Remove(item As TEvent) As Boolean Implements ICollection(Of TEvent).Remove
 			Return MyBase.SyncRoot(item)
 		End Function
 		Public Overrides Function ToString() As String
 			Return $"Count = {Count}"
 		End Function
 	End Class
-	Friend Class TypedEventCollection(Of T As BaseEvent)
-		Implements IEnumerable(Of T)
+	Friend Class TypedEventCollection(Of TEvent As BaseEvent)
+		Implements IEnumerable(Of TEvent)
 
-		Private ReadOnly list As New List(Of T)
+		Private ReadOnly list As New List(Of TEvent)
 		Protected Friend _types As New HashSet(Of EventType)
-		Public Overloads Sub Add(item As T)
+		Public Overloads Sub Add(item As TEvent)
 			list.Add(item)
 			_types.Add(item.Type)
 		End Sub
-		Public Overloads Function Remove(item As T)
+		Public Overloads Function Remove(item As TEvent)
 			_types.Remove(item.Type)
 			Return list.Remove(item)
 		End Function
@@ -1183,7 +1183,7 @@ Namespace Components
 							"BPM, ", If(_types.Contains(EventType.SetCrotchetsPerBar),
 							"CPB, ", ""))}Count={list.Count}"
 		End Function
-		Public Function GetEnumerator() As IEnumerator(Of T) Implements IEnumerable(Of T).GetEnumerator
+		Public Function GetEnumerator() As IEnumerator(Of TEvent) Implements IEnumerable(Of TEvent).GetEnumerator
 			Return list.GetEnumerator
 		End Function
 		Private Function IEnumerable_GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
@@ -1237,9 +1237,6 @@ Namespace Components
 			eventsBeatOrder.Clear()
 		End Sub
 		Public Overridable Function Contains(item As BaseEvent) As Boolean Implements ICollection(Of BaseEvent).Contains
-			'            Return EventsTypeOrder.ContainsKey(item.Type) AndAlso
-			'EventsTypeOrder(item.Type).ContainsKey(item.Beat.BeatOnly) AndAlso
-			'EventsTypeOrder(item.Type)(item.Beat.BeatOnly).Contains(item)
 			Return eventsBeatOrder.ContainsKey(item.Beat) AndAlso eventsBeatOrder(item.Beat).Contains(item)
 		End Function
 		Public Sub CopyTo(array() As BaseEvent, arrayIndex As Integer) Implements ICollection(Of BaseEvent).CopyTo
@@ -1273,19 +1270,19 @@ Namespace Components
 			Return $"Count = {Count}"
 		End Function
 	End Class
-	Public Class OrderedEventCollection(Of T As BaseEvent)
+	Public Class OrderedEventCollection(Of TEvent As BaseEvent)
 		Inherits OrderedEventCollection
 		Public Sub New()
 		End Sub
-		Public Sub New(items As IEnumerable(Of T))
+		Public Sub New(items As IEnumerable(Of TEvent))
 			For Each item In items
 				Me.Add(item)
 			Next
 		End Sub
-		Public Overridable Overloads Sub Add(item As T)
+		Public Overridable Overloads Sub Add(item As TEvent)
 			MyBase.Add(item)
 		End Sub
-		Public Overridable Overloads Function Remove(item As T) As Boolean
+		Public Overridable Overloads Function Remove(item As TEvent) As Boolean
 			Return MyBase.Remove(item)
 		End Function
 		Public Overrides Function ToString() As String
@@ -1316,21 +1313,18 @@ Namespace Components
 		''' <summary>
 		''' Referenced audio.
 		''' </summary>
-		Private Property Audio As New Audio
+		Public Property Audio As New Audio
 		''' <summary>
 		''' Sound effect name.
 		''' </summary>
 		Public Property GroupSubtype As GroupSubtypes
 		Public Property Used As Boolean
-		Public Property Filename As String
+		<JsonProperty> Private ReadOnly Property Filename As String
 			Get
-				Return Audio.Filename
+				Return Audio.Name
 			End Get
-			Set(value As String)
-				Audio.Filename = value
-			End Set
 		End Property
-		Public Property Volume As Integer
+		<JsonProperty> Public Property Volume As Integer
 			Get
 				Return Audio.Volume
 			End Get
@@ -1338,7 +1332,7 @@ Namespace Components
 				Audio.Volume = value
 			End Set
 		End Property
-		Public Property Pitch As Integer
+		<JsonProperty> Public Property Pitch As Integer
 			Get
 				Return Audio.Pitch
 			End Get
@@ -1346,7 +1340,7 @@ Namespace Components
 				Audio.Pitch = value
 			End Set
 		End Property
-		Public Property Pan As Integer
+		<JsonProperty> Public Property Pan As Integer
 			Get
 				Return Audio.Pan
 			End Get
@@ -1423,7 +1417,7 @@ Namespace Components
 		Inherits OrderedEventCollection(Of BaseDecorationAction)
 		Private _id As String
 		<JsonIgnore> Friend Parent As RDLevel
-		Private _file As Sprite
+		Friend _file As Asset(Of ISpriteFile)
 		''' <summary>
 		''' Decorated ID.
 		''' </summary>
@@ -1440,17 +1434,17 @@ Namespace Components
 		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Size As SKSizeI
 			Get
-				Return If(File?.Size, New SKSizeI(32, 31))
+				Return If(_file?.Value.Size, New SKSizeI(32, 31))
 			End Get
 		End Property
-		''' <summary>
-		''' Decoration expression name list. Empty list if it is an image file.
-		''' </summary>
-		<JsonIgnore> Public ReadOnly Property Expressions As IEnumerable(Of String)
-			Get
-				Return If(File?.Expressions, New List(Of String))
-			End Get
-		End Property
+		'''' <summary>
+		'''' Decoration expression name list. Empty list if it is an image file.
+		'''' </summary>
+		'<JsonIgnore> Public ReadOnly Property Expressions As IEnumerable(Of String)
+		'	Get
+		'		Return If(_file?.Value.Expressions, New List(Of String))
+		'	End Get
+		'End Property
 		''' <summary>
 		''' Decoration index.
 		''' </summary>
@@ -1463,14 +1457,10 @@ Namespace Components
 		''' <summary>
 		''' The file reference used by the decoration.
 		''' </summary>
-		<JsonProperty("filename")> Public Property File As Sprite
+		<JsonProperty("filename")> Public ReadOnly Property File As String
 			Get
-				Return _file
+				Return _file.Name
 			End Get
-			Set(value As Sprite)
-				_file = value
-				Parent?.Assets.Add(value)
-			End Set
 		End Property
 		''' <summary>
 		''' Decoration depth.
@@ -1513,7 +1503,7 @@ Namespace Components
 			Return MyBase.Remove(item)
 		End Function
 		Public Overrides Function ToString() As String
-			Return $"{_id}, {Index}, {_Room}, {File.FileName}"
+			Return $"{_id}, {Index}, {_Room}, {File}"
 		End Function
 		Friend Function Clone() As DecorationEventCollection
 			Return Me.MemberwiseClone
@@ -1566,51 +1556,36 @@ Namespace Components
 		''' <summary>
 		''' Initial beat sound for this row.
 		''' </summary>
-		<JsonIgnore> Public Property Sound As New Audio
+		<JsonIgnore> Public ReadOnly Property Sound As New Audio
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property MuteBeats As Boolean
 		''' <summary>
 		''' Mirroring of the row.
 		''' </summary>
 		<JsonProperty(DefaultValueHandling:=DefaultValueHandling.Ignore)> Public Property RowToMimic As SByte = -1
-		Public Property PulseSound As String
+		Public ReadOnly Property PulseSound As String
 			Get
-				Return Sound.Filename
+				Return Sound.Name
 			End Get
-			Set(value As String)
-				Sound.Filename = value
-			End Set
 		End Property
-		Public Property PulseSoundVolume As Integer
+		Public ReadOnly Property PulseSoundVolume As Integer
 			Get
 				Return Sound.Volume
 			End Get
-			Set(value As Integer)
-				Sound.Volume = value
-			End Set
 		End Property
-		Public Property PulseSoundPitch As Integer
+		Public ReadOnly Property PulseSoundPitch As Integer
 			Get
 				Return Sound.Pitch
 			End Get
-			Set(value As Integer)
-				Sound.Pitch = value
-			End Set
 		End Property
-		Public Property PulseSoundPan As Integer
+		Public ReadOnly Property PulseSoundPan As Integer
 			Get
 				Return Sound.Pan
 			End Get
-			Set(value As Integer)
-				Sound.Pan = value
-			End Set
 		End Property
-		<JsonConverter(GetType(TimeConverter))> Public Property PulseSoundOffset As TimeSpan
+		<JsonConverter(GetType(TimeConverter))> Public ReadOnly Property PulseSoundOffset As TimeSpan
 			Get
 				Return Sound.Offset
 			End Get
-			Set(value As TimeSpan)
-				Sound.Offset = value
-			End Set
 		End Property
 		Friend Sub New()
 		End Sub
@@ -1794,7 +1769,7 @@ Namespace Components
 		''' <summary>
 		''' Asset collection.
 		''' </summary>
-		<JsonIgnore> Public ReadOnly Property Assets As New HashSet(Of Sprite)
+		<JsonIgnore> Public ReadOnly Property Assets As New HashSet(Of SpriteFile)
 		''' <summary>
 		''' Variables.
 		''' </summary>
@@ -1803,6 +1778,10 @@ Namespace Components
 		''' The calculator that comes with the level.
 		''' </summary>
 		<JsonIgnore> Public ReadOnly Property Calculator As New BeatCalculator(Me)
+		''' <summary>
+		''' The asset manager that comes with the level.
+		''' </summary>
+		<JsonIgnore> Public ReadOnly Property Manager As New AssetManager(Me)
 		''' <summary>
 		''' Level Settings.
 		''' </summary>
@@ -1874,16 +1853,19 @@ Namespace Components
 		''' </summary>
 		Public Shared ReadOnly Property [Default] As RDLevel
 			Get
-				Dim rdlevel As New RDLevel From {
-							New PlaySong With {
-								.Song = New Audio With {.Filename = "sndOrientalTechno"}},
-							New SetTheme With {
-								.Preset = SetTheme.Theme.OrientalTechno}
-						}
+				Dim rdlevel As New RDLevel
+				Dim playsong As New PlaySong
+				Dim settheme As New SetTheme
+				playsong.Song = rdlevel.Manager.Create(Of AudioFile)("sndOrientalTechno")
+				settheme.Preset = SetTheme.Theme.OrientalTechno
+				rdlevel.AddRange({
+					playsong,
+					settheme
+				})
 				Dim samurai = rdlevel.CreateRow(
-							New SingleRoom(0), New RDCharacter(Characters.Samurai)
+							New SingleRoom(0), New RDCharacter(rdlevel, Characters.Samurai)
 							)
-				samurai.PulseSound = "Shaker"
+				samurai.Sound.Name = "Shaker"
 				samurai.Add(New AddClassicBeat)
 				Return rdlevel
 			End Get
@@ -1894,8 +1876,8 @@ Namespace Components
 		''' <param name="room">The room where this decoration is in.</param>
 		''' <param name="sprite">The sprite referenced by this decoration.</param>
 		''' <returns>Decoration that created and added to the level.</returns>
-		Public Function CreateDecoration(room As SingleRoom, Optional sprite As Sprite = Nothing) As DecorationEventCollection
-			Dim temp As New DecorationEventCollection(room) With {.Parent = Me, .File = sprite}
+		Public Function CreateDecoration(room As SingleRoom, Optional sprite As SpriteFile = Nothing) As DecorationEventCollection
+			Dim temp As New DecorationEventCollection(room) With {.Parent = Me, ._file = Manager.Create(Of SpriteFile)(sprite.Name, sprite)}
 			_Decorations.Add(temp)
 			Return temp
 		End Function

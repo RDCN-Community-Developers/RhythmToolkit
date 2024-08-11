@@ -208,7 +208,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' Add a range of events.
 		''' </summary>
 		''' <param name="items"></param>
-		<Extension> Public Sub AddRange(Of T As BaseEvent)(e As OrderedEventCollection(Of T), items As IEnumerable(Of T))
+		<Extension> Public Sub AddRange(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), items As IEnumerable(Of TEvent))
 			For Each item In items
 				e.Add(item)
 			Next
@@ -217,14 +217,14 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' Filters a sequence of events based on a predicate.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean)) As IEnumerable(Of TEvent)
 			Return e.eventsBeatOrder.SelectMany(Function(i) i.Value).Where(predicate)
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a time.
 		''' </summary>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As Beat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), beat As Beat) As IEnumerable(Of TEvent)
 			Dim value As TypedEventCollection(Of BaseEvent) = Nothing
 			If e.eventsBeatOrder.TryGetValue(beat, value) Then
 				Return value
@@ -236,29 +236,29 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="startBeat">Specified start beat.</param>
 		''' <param name="endBeat">Specified end beat.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), startBeat As Beat, endBeat As Beat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), startBeat As Beat, endBeat As Beat) As IEnumerable(Of TEvent)
 			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key < endBeat) _
 .SkipWhile(Function(i) i.Key < startBeat) _
-.SelectMany(Function(i) i.Value.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of TEvent))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a bar.
 		''' </summary>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), bar As Index) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), bar As Index) As IEnumerable(Of TEvent)
 			Dim rg = GetRange(e, bar)
 			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
 .SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-.SelectMany(Function(i) i.Value.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of TEvent))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a range of beat.
 		''' </summary>
 		''' <param name="range">Specified beat range.</param>
 		''' <returns></returns>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As RDRange) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), range As RDRange) As IEnumerable(Of TEvent)
 			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) If(i.Key < range.End, True)) _
 .SkipWhile(Function(i) If(i.Key < range.Start, False)) _
@@ -268,19 +268,19 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' Filters a sequence of events located at a range of bar.
 		''' </summary>
 		''' <param name="bars">Specified bar range.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), bars As Range) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), bars As Range) As IEnumerable(Of TEvent)
 			Dim rg = GetRange(e, bars)
 			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
 .SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-.SelectMany(Function(i) i.Value.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of TEvent))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate in specified beat.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Beat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), beat As Beat) As IEnumerable(Of TEvent)
 			Return e.Where(beat).Where(predicate)
 		End Function
 		''' <summary>
@@ -289,7 +289,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="startBeat">Specified start beat.</param>
 		''' <param name="endBeat">Specified end beat.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As Beat, endBeat As Beat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), startBeat As Beat, endBeat As Beat) As IEnumerable(Of TEvent)
 			Return e.Where(startBeat, endBeat).Where(predicate)
 		End Function
 		''' <summary>
@@ -297,7 +297,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="range">Specified beat range.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), range As RDRange) As IEnumerable(Of TEvent)
 			Return e.Where(range).Where(predicate)
 		End Function
 		''' <summary>
@@ -305,7 +305,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), bar As Index) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), bar As Index) As IEnumerable(Of TEvent)
 			Return e.Where(bar).Where(predicate)
 		End Function
 		''' <summary>
@@ -313,184 +313,184 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bars">Specified bar range.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), bars As Range) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), bars As Range) As IEnumerable(Of TEvent)
 			Return e.Where(bars).Where(predicate)
 		End Function
 		''' <summary>
 		''' Filters a sequence of events in specified event type.
 		''' </summary>
-		''' <typeparam name="T"></typeparam>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection) As IEnumerable(Of T)
-			Dim enums = ConvertToEnums(Of T)()
+		''' <typeparam name="TEvent"></typeparam>
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection) As IEnumerable(Of TEvent)
+			Dim enums = ConvertToEnums(Of TEvent)()
 			Return e.eventsBeatOrder _
 .Where(Function(i) i.Value._types _
 .Any(Function(j) enums.Contains(j))) _
-.SelectMany(Function(i) i.Value).OfType(Of T)
+.SelectMany(Function(i) i.Value).OfType(Of TEvent)
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, beat As Beat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, beat As Beat) As IEnumerable(Of TEvent)
 			Dim value As TypedEventCollection(Of BaseEvent) = Nothing
 			If e.eventsBeatOrder.TryGetValue(beat, value) Then
-				Return value.OfType(Of T)
+				Return value.OfType(Of TEvent)
 			End If
 			Return value
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a range of beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="startBeat">Specified start beat.</param>
 		''' <param name="endBeat">Specified end beat.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As Beat, endBeat As Beat) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, startBeat As Beat, endBeat As Beat) As IEnumerable(Of TEvent)
 			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key < endBeat) _
 .SkipWhile(Function(i) i.Key < startBeat) _
-.SelectMany(Function(i) i.Value.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of TEvent))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, bar As Index) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, bar As Index) As IEnumerable(Of TEvent)
 			Dim rg = GetRange(e, bar)
 			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
 .SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-.SelectMany(Function(i) i.Value.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of TEvent))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a range of beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="range">Specified beat range.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, range As RDRange) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, range As RDRange) As IEnumerable(Of TEvent)
 			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) If(i.Key < range.End, True)) _
 .SkipWhile(Function(i) If(i.Key < range.Start, False)) _
-.SelectMany(Function(i) i.Value.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of TEvent))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a range of bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="bars">Specified bar range.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, bars As Range) As IEnumerable(Of T)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, bars As Range) As IEnumerable(Of TEvent)
 			Dim rg = GetRange(e, bars)
 			Return e.eventsBeatOrder _
 .TakeWhile(Function(i) i.Key.BeatOnly < rg.end) _
 .SkipWhile(Function(i) i.Key.BeatOnly < rg.start) _
-.SelectMany(Function(i) i.Value.OfType(Of T))
+.SelectMany(Function(i) i.Value.OfType(Of TEvent))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate located at a range of bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			Return e.Where(Of T)().Where(predicate)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean)) As IEnumerable(Of TEvent)
+			Return e.Where(Of TEvent)().Where(predicate)
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate located at a beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Beat) As IEnumerable(Of T)
-			Return e.Where(Of T)(beat).Where(predicate)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), beat As Beat) As IEnumerable(Of TEvent)
+			Return e.Where(Of TEvent)(beat).Where(predicate)
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate located at a range of beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="startBeat">Specified start beat.</param>
 		''' <param name="endBeat">Specified end beat.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As Beat, endBeat As Beat) As IEnumerable(Of T)
-			Return e.Where(Of T)(startBeat, endBeat).Where(predicate)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), startBeat As Beat, endBeat As Beat) As IEnumerable(Of TEvent)
+			Return e.Where(Of TEvent)(startBeat, endBeat).Where(predicate)
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate located at a range of beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="range">Specified beat range.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As RDRange) As IEnumerable(Of T)
-			Return e.Where(Of T)(range).Where(predicate)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), range As RDRange) As IEnumerable(Of TEvent)
+			Return e.Where(Of TEvent)(range).Where(predicate)
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate located at a bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), bar As Index) As IEnumerable(Of T)
-			Return e.Where(Of T)(bar).Where(predicate)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), bar As Index) As IEnumerable(Of TEvent)
+			Return e.Where(Of TEvent)(bar).Where(predicate)
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate located at a range of bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bars">Specified bar range.</param>
-		<Extension> Public Function Where(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), bars As Range) As IEnumerable(Of T)
-			Return e.Where(Of T)(bars).Where(predicate)
+		<Extension> Public Function Where(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), bars As Range) As IEnumerable(Of TEvent)
+			Return e.Where(Of TEvent)(bars).Where(predicate)
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean)) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a time.
 		''' </summary>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As Beat) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(beat)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), beat As Beat) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(beat)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a range of time.
 		''' </summary>
 		''' <param name="startBeat">Specified start beat.</param>
 		''' <param name="endBeat">Specified end beat.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), startBeat As Beat, endBeat As Beat) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(startBeat, endBeat)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), startBeat As Beat, endBeat As Beat) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(startBeat, endBeat)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a bar.
 		''' </summary>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), bar As Index) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(bar)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), bar As Index) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(bar)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a range of beat.
 		''' </summary>
 		''' <param name="range">Specified beat range.</param>
 		''' <returns></returns>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), range As RDRange) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(range)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), range As RDRange) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(range)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a range of bar.
 		''' </summary>
 		''' <param name="bars">Specified bar range.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), bars As Range) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(bars)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), bars As Range) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(bars)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate in specified beat.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Beat) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, beat)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), beat As Beat) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, beat)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate in specified range of beat.
@@ -498,176 +498,176 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="startBeat">Specified start beat.</param>
 		''' <param name="endBeat">Specified end beat.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), startBeat As Beat, endBeat As Beat) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, startBeat, endBeat)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), startBeat As Beat, endBeat As Beat) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, startBeat, endBeat)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate in specified range of beat.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="range">Specified beat range.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), range As RDRange) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, range)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), range As RDRange) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, range)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate in specified bar.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), bar As Index) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, bar)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), bar As Index) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, bar)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate in specified range of bar.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bars">Specified bar range.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), bars As Range) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, bars)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), bars As Range) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, bars)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events in specified event type.
 		''' </summary>
-		''' <typeparam name="T"></typeparam>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)()))
+		''' <typeparam name="TEvent"></typeparam>
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)()))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, beat As Beat) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(beat)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, beat As Beat) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(beat)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a range of beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="startBeat">Specified start beat.</param>
 		''' <param name="endBeat">Specified end beat.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, startBeat As Beat, endBeat As Beat) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(startBeat, endBeat)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, startBeat As Beat, endBeat As Beat) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(startBeat, endBeat)))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events located at a range of beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="range">Specified beat range.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, range As RDRange) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(range)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, range As RDRange) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(range)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, bar As Index) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(bar)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, bar As Index) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(bar)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events located at a range of bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="bars">Specified bar range.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, bars As Range) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(bars)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, bars As Range) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(bars)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate located at a range of bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean)) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate located at a beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Beat) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, beat)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), beat As Beat) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, beat)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate located at a range of beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="startBeat">Specified start beat.</param>
 		''' <param name="endBeat">Specified end beat.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), startBeat As Beat, endBeat As Beat) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, startBeat, endBeat)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), startBeat As Beat, endBeat As Beat) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, startBeat, endBeat)))
 		End Function
 		''' <summary>
 		''' Remove a sequence of events based on a predicate located at a range of beat in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="range">Specified beat range.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), range As RDRange) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, range)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), range As RDRange) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, range)))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate located at a bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), bar As Index) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, bar)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), bar As Index) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, bar)))
 		End Function
 		''' <summary>
 		''' Filters a sequence of events based on a predicate located at a range of bar in specified event type.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bars">Specified bar range.</param>
-		<Extension> Public Function RemoveAll(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), bars As Range) As Integer
-			Return e.RemoveRange(New List(Of T)(e.Where(Of T)(predicate, bars)))
+		<Extension> Public Function RemoveAll(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), bars As Range) As Integer
+			Return e.RemoveRange(New List(Of TEvent)(e.Where(Of TEvent)(predicate, bars)))
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection.
 		''' </summary>
-		<Extension> Public Function First(Of T As BaseEvent)(e As OrderedEventCollection(Of T)) As T
+		<Extension> Public Function First(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent)) As TEvent
 			Return e.eventsBeatOrder.First.Value.First
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection that satisfies a specified condition.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function First(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function First(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean)) As TEvent
 			Return e.ConcatAll.First(predicate)
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection in specified event type.
 		''' </summary>
-		<Extension> Public Function First(Of T As BaseEvent)(e As OrderedEventCollection) As T
-			Return e.Where(Of T).First
+		<Extension> Public Function First(Of TEvent As BaseEvent)(e As OrderedEventCollection) As TEvent
+			Return e.Where(Of TEvent).First
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection that satisfies a specified condition in specified event type.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function First(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As T
-			Return e.Where(Of T).First(predicate)
+		<Extension> Public Function First(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean)) As TEvent
+			Return e.Where(Of TEvent).First(predicate)
 		End Function
-		<Extension> Public Function FirstOrDefault(Of T As BaseEvent)(e As OrderedEventCollection(Of T)) As T
+		<Extension> Public Function FirstOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent)) As TEvent
 			Return e.eventsBeatOrder.FirstOrDefault.Value?.FirstOrDefault
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection, or <paramref name="defaultValue"/> if collection contains no elements.
 		''' </summary>
 		''' <param name="defaultValue">The default value to return if contains no elements.</param>
-		<Extension> Public Function FirstOrDefault(Of T As BaseEvent)(e As OrderedEventCollection(Of T), defaultValue As T) As T
+		<Extension> Public Function FirstOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), defaultValue As TEvent) As TEvent
 			Return e.ConcatAll.FirstOrDefault(defaultValue)
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection that satisfies a specified condition, or <see langword="null"/> if matches no elements.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function FirstOrDefault(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function FirstOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean)) As TEvent
 			Return e.ConcatAll.FirstOrDefault(predicate)
 		End Function
 		''' <summary>
@@ -675,85 +675,85 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="defaultValue">The default value to return if matches no elements.</param>
-		<Extension> Public Function FirstOrDefault(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), defaultValue As T) As T
+		<Extension> Public Function FirstOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), defaultValue As TEvent) As TEvent
 			Return e.ConcatAll.FirstOrDefault(predicate, defaultValue)
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection in specified event type, or <see langword="null"/> if matches no elements.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
-		<Extension> Public Function FirstOrDefault(Of T As BaseEvent)(e As OrderedEventCollection) As T
-			Return e.Where(Of T).FirstOrDefault()
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
+		<Extension> Public Function FirstOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection) As TEvent
+			Return e.Where(Of TEvent).FirstOrDefault()
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection in specified event type, or <paramref name="defaultValue"/> if matches no elements.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="defaultValue">The default value to return if matches no elements.</param>
-		<Extension> Public Function FirstOrDefault(Of T As BaseEvent)(e As OrderedEventCollection, defaultValue As T) As T
-			Return e.Where(Of T).FirstOrDefault(defaultValue)
+		<Extension> Public Function FirstOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection, defaultValue As TEvent) As TEvent
+			Return e.Where(Of TEvent).FirstOrDefault(defaultValue)
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection that satisfies a specified condition in specified event type, or <see langword="null"/> if matches no elements.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function FirstOrDefault(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As T
-			Return e.Where(Of T).FirstOrDefault(predicate)
+		<Extension> Public Function FirstOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean)) As TEvent
+			Return e.Where(Of TEvent).FirstOrDefault(predicate)
 		End Function
 		''' <summary>
 		''' Returns the first element of the collection that satisfies a specified condition in specified event type, or <paramref name="defaultValue"/> if matches no elements.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="defaultValue">The default value to return if matches no elements.</param>
-		<Extension> Public Function FirstOrDefault(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), defaultValue As T) As T
-			Return e.Where(Of T).FirstOrDefault(predicate, defaultValue)
+		<Extension> Public Function FirstOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), defaultValue As TEvent) As TEvent
+			Return e.Where(Of TEvent).FirstOrDefault(predicate, defaultValue)
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection.
 		''' </summary>
-		<Extension> Public Function Last(Of T As BaseEvent)(e As OrderedEventCollection(Of T)) As T
+		<Extension> Public Function Last(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent)) As TEvent
 			Return e.eventsBeatOrder.Last.Value.Last
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection that satisfies a specified condition.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function Last(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function Last(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean)) As TEvent
 			Return e.ConcatAll.Last(predicate)
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection in specified event type.
 		''' </summary>
-		<Extension> Public Function Last(Of T As BaseEvent)(e As OrderedEventCollection) As T
-			Return e.Where(Of T).Last
+		<Extension> Public Function Last(Of TEvent As BaseEvent)(e As OrderedEventCollection) As TEvent
+			Return e.Where(Of TEvent).Last
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection that satisfies a specified condition in specified event type.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function Last(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As T
-			Return e.Where(Of T).Last(predicate)
+		<Extension> Public Function Last(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean)) As TEvent
+			Return e.Where(Of TEvent).Last(predicate)
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection, or <see langword="null"/> if collection contains no elements.
 		''' </summary>
-		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection(Of T)) As T
+		<Extension> Public Function LastOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent)) As TEvent
 			Return e.eventsBeatOrder.LastOrDefault.Value?.LastOrDefault()
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection, or <paramref name="defaultValue"/> if collection contains no elements.
 		''' </summary>
 		''' <param name="defaultValue">The default value to return if contains no elements.</param>
-		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection(Of T), defaultValue As T) As T
+		<Extension> Public Function LastOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), defaultValue As TEvent) As TEvent
 			Return e.ConcatAll.LastOrDefault(defaultValue)
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection that satisfies a specified condition, or <see langword="null"/> if matches no elements.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As T
+		<Extension> Public Function LastOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean)) As TEvent
 			Return e.ConcatAll.LastOrDefault(predicate)
 		End Function
 		''' <summary>
@@ -761,46 +761,46 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="defaultValue">The default value to return if matches no elements.</param>
-		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), defaultValue As T) As T
+		<Extension> Public Function LastOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), defaultValue As TEvent) As TEvent
 			Return e.ConcatAll.LastOrDefault(predicate, defaultValue)
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection in specified event type, or <see langword="null"/> if matches no elements.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
-		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection) As T
-			Return e.Where(Of T).LastOrDefault()
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
+		<Extension> Public Function LastOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection) As TEvent
+			Return e.Where(Of TEvent).LastOrDefault()
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection in specified event type, or <paramref name="defaultValue"/> if matches no elements.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="defaultValue">The default value to return if matches no elements.</param>
-		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection, defaultValue As T) As T
-			Return e.Where(Of T).LastOrDefault(defaultValue)
+		<Extension> Public Function LastOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection, defaultValue As TEvent) As TEvent
+			Return e.Where(Of TEvent).LastOrDefault(defaultValue)
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection that satisfies a specified condition in specified event type, or <see langword="null"/> if matches no elements.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As T
-			Return e.Where(Of T).LastOrDefault(predicate)
+		<Extension> Public Function LastOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean)) As TEvent
+			Return e.Where(Of TEvent).LastOrDefault(predicate)
 		End Function
 		''' <summary>
 		''' Returns the last element of the collection that satisfies a specified condition in specified event type, or <paramref name="defaultValue"/> if matches no elements.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="defaultValue">The default value to return if matches no elements.</param>
-		<Extension> Public Function LastOrDefault(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), defaultValue As T) As T
-			Return e.Where(Of T).LastOrDefault(predicate, defaultValue)
+		<Extension> Public Function LastOrDefault(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), defaultValue As TEvent) As TEvent
+			Return e.Where(Of TEvent).LastOrDefault(predicate, defaultValue)
 		End Function
 		''' <summary>
 		''' Returns events from a collection as long as it less than or equal to <paramref name="beat"/>.
 		''' </summary>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), beat As Beat) As IEnumerable(Of T)
+		<Extension> Public Iterator Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), beat As Beat) As IEnumerable(Of TEvent)
 			For Each item In e
 				If item.Beat <= beat Then
 					Yield item
@@ -813,7 +813,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' Returns events from a collection as long as it less than or equal to <paramref name="bar"/>.
 		''' </summary>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), bar As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), bar As Index) As IEnumerable(Of TEvent)
 			Dim firstEvent = e.First
 			Dim lastEvent = e.Last
 			Return e.TakeWhile(
@@ -825,7 +825,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' Returns events from a collection as long as a specified condition is true.
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
-		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean)) As IEnumerable(Of TEvent)
 			Return e.eventsBeatOrder.SelectMany(Function(i) i.Value).TakeWhile(predicate)
 		End Function
 		''' <summary>
@@ -833,7 +833,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), beat As Beat) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), beat As Beat) As IEnumerable(Of TEvent)
 			Return e.TakeWhile(beat).TakeWhile(predicate)
 		End Function
 		''' <summary>
@@ -841,16 +841,16 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="predicate">A function to test each event for a condition.</param>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection(Of T), predicate As Func(Of T, Boolean), bar As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), predicate As Func(Of TEvent, Boolean), bar As Index) As IEnumerable(Of TEvent)
 			Return e.TakeWhile(bar).TakeWhile(predicate)
 		End Function
 		''' <summary>
 		''' Returns events from a collection in specified event type as long as it less than or equal to <paramref name="beat"/>.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Iterator Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, beat As Beat) As IEnumerable(Of T)
-			For Each item In e.Where(Of T)
+		<Extension> Public Iterator Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection, beat As Beat) As IEnumerable(Of TEvent)
+			For Each item In e.Where(Of TEvent)
 				If item.Beat <= beat Then
 					Yield item
 				Else
@@ -861,12 +861,12 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' <summary>
 		''' Returns events from a collection in specified event type as long as it less than or in <paramref name="bar"/>.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="bar">Specified bar.</param>
-		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, bar As Index) As IEnumerable(Of T)
+		<Extension> Public Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection, bar As Index) As IEnumerable(Of TEvent)
 			Dim firstEvent = e.First
 			Dim lastEvent = e.Last
-			Return e.TakeWhile(Of T)(
+			Return e.TakeWhile(Of TEvent)(
 				If(bar.IsFromEnd,
 				lastEvent.Beat._calculator.BeatOf(lastEvent.Beat.BarBeat.bar - bar.Value + 1, 1),
 				firstEvent.Beat._calculator.BeatOf(bar.Value + 1, 1)))
@@ -874,35 +874,35 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' <summary>
 		''' Returns events from a collection in specified event type as long as a specified condition is true.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">Specified condition.</param>
-		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean)) As IEnumerable(Of T)
-			Return e.Where(Of T).TakeWhile(predicate)
+		<Extension> Public Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean)) As IEnumerable(Of TEvent)
+			Return e.Where(Of TEvent).TakeWhile(predicate)
 		End Function
 		''' <summary>
 		''' Returns events from a collection in specified event type as long as a specified condition is true and its beat less than or equal to <paramref name="beat"/>.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">Specified condition.</param>
 		''' <param name="beat">Specified beat.</param>
-		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), beat As Beat) As IEnumerable(Of T)
-			Return e.TakeWhile(Of T)(beat).TakeWhile(predicate)
+		<Extension> Public Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), beat As Beat) As IEnumerable(Of TEvent)
+			Return e.TakeWhile(Of TEvent)(beat).TakeWhile(predicate)
 		End Function
 		''' <summary>
 		''' Returns events from a collection in specified event type as long as a specified condition is true and its beat less than or equal to <paramref name="bar"/>.
 		''' </summary>
-		''' <typeparam name="T">Specified event type.</typeparam>
+		''' <typeparam name="TEvent">Specified event type.</typeparam>
 		''' <param name="predicate">Specified condition.</param>
 		''' <param name="bar">Specified beat.</param>
-		<Extension> Public Function TakeWhile(Of T As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of T, Boolean), bar As Index) As IEnumerable(Of T)
-			Return e.TakeWhile(Of T)(bar).TakeWhile(predicate)
+		<Extension> Public Function TakeWhile(Of TEvent As BaseEvent)(e As OrderedEventCollection, predicate As Func(Of TEvent, Boolean), bar As Index) As IEnumerable(Of TEvent)
+			Return e.TakeWhile(Of TEvent)(bar).TakeWhile(predicate)
 		End Function
 		''' <summary>
 		''' Remove a range of events.
 		''' </summary>
 		''' <param name="items">A range of events.</param>
 		''' <returns>The number of events successfully removed.</returns>
-		<Extension> Public Function RemoveRange(Of T As BaseEvent)(e As OrderedEventCollection, items As IEnumerable(Of T)) As Integer
+		<Extension> Public Function RemoveRange(Of TEvent As BaseEvent)(e As OrderedEventCollection, items As IEnumerable(Of TEvent)) As Integer
 			Dim count As Integer = 0
 			For Each item In items
 				count += e.Remove(item)
@@ -914,7 +914,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <param name="items">A range of events.</param>
 		''' <returns>The number of events successfully removed.</returns>
-		<Extension> Public Function RemoveRange(Of T As BaseEvent)(e As OrderedEventCollection(Of T), items As IEnumerable(Of T)) As Integer
+		<Extension> Public Function RemoveRange(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), items As IEnumerable(Of TEvent)) As Integer
 			Dim count As Integer = 0
 			For Each item In items
 				count += e.Remove(item)
@@ -970,7 +970,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' If <see langword="true"/>, determine If it contains the specified tag.
 		''' If <see langword="false"/>, determine If it Is equal to the specified tag.</param>
 		''' <returns>An <see cref="IGrouping"/>, categorized by tag name.</returns>
-		<Extension> Public Function GetTaggedEvents(Of T As BaseEvent)(e As OrderedEventCollection(Of T), name As String, strict As Boolean) As IEnumerable(Of IGrouping(Of String, T))
+		<Extension> Public Function GetTaggedEvents(Of TEvent As BaseEvent)(e As OrderedEventCollection(Of TEvent), name As String, strict As Boolean) As IEnumerable(Of IGrouping(Of String, TEvent))
 			If name Is Nothing Then
 				Return Nothing
 			End If
@@ -1094,8 +1094,8 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		<Extension> Public Function EventsWhere(e As ADTileCollection, predicate As Func(Of ADBaseEvent, Boolean)) As IEnumerable(Of ADBaseEvent)
 			Return e.Events.Where(predicate)
 		End Function
-		<Extension> Public Function EventsWhere(Of T As ADBaseEvent)(e As ADTileCollection) As IEnumerable(Of T)
-			Return e.Events.OfType(Of T)
+		<Extension> Public Function EventsWhere(Of TEvent As ADBaseEvent)(e As ADTileCollection) As IEnumerable(Of TEvent)
+			Return e.Events.OfType(Of TEvent)
 		End Function
 #End Region
 		Public Enum Wavetype
@@ -1177,74 +1177,74 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' <summary>
 		''' Returns all previous events of the same type, including events of the same beat but executed before itself.
 		''' </summary>
-		<Extension> Public Function Before(Of T As BaseEvent)(e As T) As IEnumerable(Of T)
-			Return e.Beat.baseLevel.Where(Of T)(e.Beat.baseLevel.DefaultBeat, e.Beat)
+		<Extension> Public Function Before(Of TEvent As BaseEvent)(e As TEvent) As IEnumerable(Of TEvent)
+			Return e.Beat.baseLevel.Where(Of TEvent)(e.Beat.baseLevel.DefaultBeat, e.Beat)
 		End Function
 		''' <summary>
 		''' Returns all previous events of the specified type, including events of the same beat but executed before itself.
 		''' </summary>
-		<Extension> Public Function Before(Of T As BaseEvent)(e As BaseEvent) As IEnumerable(Of T)
-			Return e.Beat.baseLevel.Where(Of T)(e.Beat.baseLevel.DefaultBeat, e.Beat)
+		<Extension> Public Function Before(Of TEvent As BaseEvent)(e As BaseEvent) As IEnumerable(Of TEvent)
+			Return e.Beat.baseLevel.Where(Of TEvent)(e.Beat.baseLevel.DefaultBeat, e.Beat)
 		End Function
 		''' <summary>
 		''' Returns all events of the same type that follow, including events of the same beat but executed after itself.
 		''' </summary>
-		<Extension> Public Function After(Of T As BaseEvent)(e As T) As IEnumerable(Of T)
-			Return e.Beat.baseLevel.Where(Of T)(Function(i) i.Beat > e.Beat)
+		<Extension> Public Function After(Of TEvent As BaseEvent)(e As TEvent) As IEnumerable(Of TEvent)
+			Return e.Beat.baseLevel.Where(Of TEvent)(Function(i) i.Beat > e.Beat)
 		End Function
 		''' <summary>
 		''' Returns all events of the specified type that follow, including events of the same beat but executed after itself.
 		''' </summary>
-		<Extension> Public Function After(Of T As BaseEvent)(e As BaseEvent) As IEnumerable(Of T)
-			Return e.Beat.baseLevel.Where(Of T)(Function(i) i.Beat > e.Beat)
+		<Extension> Public Function After(Of TEvent As BaseEvent)(e As BaseEvent) As IEnumerable(Of TEvent)
+			Return e.Beat.baseLevel.Where(Of TEvent)(Function(i) i.Beat > e.Beat)
 		End Function
 		''' <summary>
 		''' Returns the previous event of the same type, including events of the same beat but executed before itself.
 		''' </summary>
-		<Extension> Public Function Front(Of T As BaseEvent)(e As T) As T
+		<Extension> Public Function Front(Of TEvent As BaseEvent)(e As TEvent) As TEvent
 			Return e.Before.Last
 		End Function
 		''' <summary>
 		''' Returns the previous event of the specified type, including events of the same beat but executed before itself.
 		''' </summary>
-		<Extension> Public Function Front(Of T As BaseEvent)(e As BaseEvent) As T
-			Return e.Before(Of T).Last
+		<Extension> Public Function Front(Of TEvent As BaseEvent)(e As BaseEvent) As TEvent
+			Return e.Before(Of TEvent).Last
 		End Function
 		''' <summary>
 		''' Returns the previous event of the same type, including events of the same beat but executed before itself. Returns <see langword="null"/> if it does not exist.
 		''' </summary>
-		<Extension> Public Function FrontOrDefault(Of T As BaseEvent)(e As T) As T
+		<Extension> Public Function FrontOrDefault(Of TEvent As BaseEvent)(e As TEvent) As TEvent
 			Return e.Before.LastOrDefault
 		End Function
 		''' <summary>
 		''' Returns the previous event of the specified type, including events of the same beat but executed before itself. Returns <see langword="null"/> if it does not exist.
 		''' </summary>
-		<Extension> Public Function FrontOrDefault(Of T As BaseEvent)(e As BaseEvent) As T
-			Return e.Before(Of T).LastOrDefault
+		<Extension> Public Function FrontOrDefault(Of TEvent As BaseEvent)(e As BaseEvent) As TEvent
+			Return e.Before(Of TEvent).LastOrDefault
 		End Function
 		''' <summary>
 		''' Returns the next event of the same type, including events of the same beat but executed after itself.
 		''' </summary>
-		<Extension> Public Function [Next](Of T As BaseEvent)(e As T) As T
+		<Extension> Public Function [Next](Of TEvent As BaseEvent)(e As TEvent) As TEvent
 			Return e.After().First
 		End Function
 		''' <summary>
 		''' Returns the next event of the specified type, including events of the same beat but executed after itself.
 		''' </summary>
-		<Extension> Public Function [Next](Of T As BaseEvent)(e As BaseEvent) As T
-			Return e.After(Of T).First
+		<Extension> Public Function [Next](Of TEvent As BaseEvent)(e As BaseEvent) As TEvent
+			Return e.After(Of TEvent).First
 		End Function
 		''' <summary>
 		''' Returns the next event of the same type, including events of the same beat but executed after itself. Returns <see langword="null"/> if it does not exist.
 		''' </summary>
-		<Extension> Public Function NextOrDefault(Of T As BaseEvent)(e As T) As T
+		<Extension> Public Function NextOrDefault(Of TEvent As BaseEvent)(e As TEvent) As TEvent
 			Return e.After().FirstOrDefault
 		End Function
 		''' <summary>
 		''' Returns the next event of the specified type, including events of the same beat but executed after itself. Returns <see langword="null"/> if it does not exist.
 		''' </summary>
-		<Extension> Public Function NextOrDefault(Of T As BaseEvent)(e As BaseEvent) As T
-			Return e.After(Of T).FirstOrDefault
+		<Extension> Public Function NextOrDefault(Of TEvent As BaseEvent)(e As BaseEvent) As TEvent
+			Return e.After(Of TEvent).FirstOrDefault
 		End Function
 
 
@@ -1475,11 +1475,11 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' <summary>
 		''' Shallow copy.
 		''' </summary>
-		<Extension> Public Function MemberwiseClone(Of T As BaseEvent)(e As T) As T
+		<Extension> Public Function MemberwiseClone(Of TEvent As BaseEvent)(e As TEvent) As TEvent
 			If e Is Nothing Then
 				Return Nothing
 			End If
-			Dim type As Type = GetType(T)
+			Dim type As Type = GetType(TEvent)
 			Dim copy = Activator.CreateInstance(type)
 			Dim properties() As PropertyInfo = type.GetProperties(BindingFlags.Public Or BindingFlags.NonPublic Or BindingFlags.Instance)
 			For Each p In properties
@@ -1527,7 +1527,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </summary>
 		''' <returns>The sound effect of row beat event.</returns>
 		<Extension> Public Function HitSound(e As BaseBeat) As Audio
-			Dim DefaultAudio = New Audio With {.Filename = "sndClapHit", .Offset = TimeSpan.Zero, .Pan = 100, .Pitch = 100, .Volume = 100}
+			Dim DefaultAudio = New Audio With {.AudioFile = e.Beat.baseLevel.Manager.Create(Of AudioFile)("sndClapHit"), .Offset = TimeSpan.Zero, .Pan = 100, .Pitch = 100, .Volume = 100}
 			Select Case e.Player
 				Case PlayerType.P1
 					Return If(

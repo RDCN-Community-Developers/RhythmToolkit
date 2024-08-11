@@ -76,7 +76,7 @@ Namespace Converters
 
 		End Sub
 		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As RDLevel, hasExistingValue As Boolean, serializer As JsonSerializer) As RDLevel
-			Dim assetsCollection As New HashSet(Of Sprite)
+			Dim assetsCollection As New HashSet(Of SpriteFile)
 			Dim outLevel As New RDLevel With {._path = fileLocation}
 			Dim AllInOneSerializer = JsonSerializer.Create(outLevel.GetSerializer(settings))
 			Dim JEvents As JArray
@@ -223,15 +223,15 @@ Namespace Converters
 	End Class
 	Friend Class CharacterConverter
 		Inherits JsonConverter(Of RDCharacter)
-		Private ReadOnly fileLocation As String
-		Private ReadOnly assets As HashSet(Of Sprite)
-		Public Sub New(location As String, assets As HashSet(Of Sprite))
-			fileLocation = location
+		Private level As RDLevel
+		Private ReadOnly assets As HashSet(Of SpriteFile)
+		Public Sub New(level As RDLevel, assets As HashSet(Of SpriteFile))
+			Me.level = level
 			Me.assets = assets
 		End Sub
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As RDCharacter, serializer As JsonSerializer)
 			If value.IsCustom Then
-				writer.WriteValue($"custom:{value.CustomCharacter.FileName}")
+				writer.WriteValue($"custom:{value.CustomCharacter.Name}")
 			Else
 				writer.WriteValue(value.Character.ToString)
 			End If
@@ -240,9 +240,9 @@ Namespace Converters
 			Dim value = JToken.ReadFrom(reader).ToObject(Of String)
 			If value.StartsWith("custom:") Then
 				Dim name = value.Substring(7)
-				Return New RDCharacter(If(assets.SingleOrDefault(Function(i) i.FileName = name), New Sprite($"{IO.Path.GetDirectoryName(fileLocation)}\{name}")))
+				Return New RDCharacter(level, name)
 			Else
-				Return New RDCharacter([Enum].Parse(Of Characters)(value))
+				Return New RDCharacter(level, [Enum].Parse(Of Characters)(value))
 			End If
 		End Function
 	End Class
@@ -282,8 +282,8 @@ Namespace Converters
 			Return result
 		End Function
 	End Class
-	Friend Class BaseEventConverter(Of T As BaseEvent)
-		Inherits JsonConverter(Of T)
+	Friend Class BaseEventConverter(Of TEvent As BaseEvent)
+		Inherits JsonConverter(Of TEvent)
 		Protected ReadOnly level As RDLevel
 		Protected ReadOnly settings As LevelReadOrWriteSettings
 		Private _canread As Boolean = True
@@ -302,17 +302,17 @@ Namespace Converters
 			Me.level = level
 			Me.settings = inputSettings
 		End Sub
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As T, serializer As JsonSerializer)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As TEvent, serializer As JsonSerializer)
 			serializer.Formatting = Formatting.None
 			With writer
 				.WriteRawValue(JsonConvert.SerializeObject(SetSerializedObject(value, serializer)))
 			End With
 			serializer.Formatting = Formatting.Indented
 		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As TEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As TEvent
 			Return GetDeserializedObject(JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer)
 		End Function
-		Public Overridable Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+		Public Overridable Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As TEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As TEvent
 
 			Dim SubClassType As Type = ConvertToType(jobj("type").ToObject(Of String))
 
@@ -331,7 +331,7 @@ Namespace Converters
 			existingValue._beat = level.Calculator.BeatOf(UInteger.Parse(jobj("bar")), Single.Parse(If(jobj("beat"), 1)))
 			Return existingValue
 		End Function
-		Public Overridable Function SetSerializedObject(value As T, serializer As JsonSerializer) As JObject
+		Public Overridable Function SetSerializedObject(value As TEvent, serializer As JsonSerializer) As JObject
 			_canwrite = False
 			Dim JObj = JObject.FromObject(value, serializer)
 			_canwrite = True
@@ -403,18 +403,18 @@ Namespace Converters
 			Return data
 		End Function
 	End Class
-	Friend Class BaseRowActionConverter(Of T As BaseRowAction)
-		Inherits BaseEventConverter(Of T)
+	Friend Class BaseRowActionConverter(Of TEvent As BaseRowAction)
+		Inherits BaseEventConverter(Of TEvent)
 		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
-		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As TEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As TEvent
 			Dim obj = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
 			Try
 				Dim rowId = jobj("row").ToObject(Of Short)
 				If rowId = -1 Then
 					If obj.Type <> EventType.TintRows Then
-						Select Case settings.UnreadableEventHandling
+						Select Case settings.UnreadableEventsHandling
 							Case UnreadableEventHandling.Store
 								settings.UnreadableEvents.Add(jobj)
 								Return Nothing
@@ -434,19 +434,19 @@ Namespace Converters
 			Return obj
 		End Function
 	End Class
-	Friend Class BaseDecorationActionConverter(Of T As BaseDecorationAction)
-		Inherits BaseEventConverter(Of T)
+	Friend Class BaseDecorationActionConverter(Of TEvent As BaseDecorationAction)
+		Inherits BaseEventConverter(Of TEvent)
 		Public Sub New(level As RDLevel, inputSettings As LevelReadOrWriteSettings)
 			MyBase.New(level, inputSettings)
 		End Sub
-		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As T, hasExistingValue As Boolean, serializer As JsonSerializer) As T
+		Public Overrides Function GetDeserializedObject(jobj As JObject, objectType As Type, existingValue As TEvent, hasExistingValue As Boolean, serializer As JsonSerializer) As TEvent
 			Dim obj = MyBase.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer)
 
 			Dim decoId As String = jobj("target")?.ToObject(Of String)
 			Dim Parent = level._Decorations.FirstOrDefault(Function(i) i.Id = decoId)
 			obj._parent = Parent
 			If Parent Is Nothing AndAlso obj.Type <> EventType.Comment Then
-				Select Case settings.UnreadableEventHandling
+				Select Case settings.UnreadableEventsHandling
 					Case UnreadableEventHandling.Store
 						settings.UnreadableEvents.Add(jobj)
 						Return Nothing
@@ -459,36 +459,49 @@ Namespace Converters
 			Return obj
 		End Function
 	End Class
-	Friend Class AssetConverter
-		Inherits JsonConverter(Of Sprite)
-		Private ReadOnly fileLocation As String
-		Private ReadOnly assets As HashSet(Of Sprite)
-		Private ReadOnly settings As LevelReadOrWriteSettings
-		Public Sub New(location As String, assets As HashSet(Of Sprite), settings As LevelReadOrWriteSettings)
-			fileLocation = location
-			Me.assets = assets
-			Me.settings = settings
+	'Friend Class AssetConverter
+	'	Inherits JsonConverter(Of Sprite)
+	'	Private ReadOnly fileLocation As String
+	'	Private ReadOnly assets As HashSet(Of Sprite)
+	'	Private ReadOnly settings As LevelReadOrWriteSettings
+	'	Public Sub New(location As String, assets As HashSet(Of Sprite), settings As LevelReadOrWriteSettings)
+	'		fileLocation = location
+	'		Me.assets = assets
+	'		Me.settings = settings
+	'	End Sub
+	'	Public Overrides Sub WriteJson(writer As JsonWriter, value As Sprite, serializer As JsonSerializer)
+	'		writer.WriteValue(value.FileName)
+	'	End Sub
+	'	Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Sprite, hasExistingValue As Boolean, serializer As JsonSerializer) As Sprite
+	'		Dim Json = JToken.ReadFrom(reader).ToObject(Of String)
+	'		Dim assetName = Json
+	'		Dim result As Sprite
+	'		If assets.Any(Function(i) i.FileName = assetName) Then
+	'			result = assets.Single(Function(i) i.FileName = assetName)
+	'		ElseIf Json = String.Empty Then
+	'			Return Nothing
+	'		Else
+	'			Dim file = IO.Path.GetDirectoryName(fileLocation) + "\" + Json
+	'			result = New Sprite(file)
+	'			If Me.settings.PreloadAssets Then
+	'				result.Read()
+	'			End If
+	'			assets.Add(result)
+	'		End If
+	'		Return result
+	'	End Function
+	'End Class
+	Friend Class AssetConverter(Of TAsset As IAssetFile)
+		Inherits JsonConverter(Of Asset(Of TAsset))
+		Private ReadOnly level As RDLevel
+		Public Sub New(level As RDLevel)
+			Me.level = level
 		End Sub
-		Public Overrides Sub WriteJson(writer As JsonWriter, value As Sprite, serializer As JsonSerializer)
-			writer.WriteValue(value.FileName)
+		Public Overrides Sub WriteJson(writer As JsonWriter, value As Asset(Of TAsset), serializer As JsonSerializer)
+			writer.WriteValue(value.Name)
 		End Sub
-		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Sprite, hasExistingValue As Boolean, serializer As JsonSerializer) As Sprite
-			Dim Json = JToken.ReadFrom(reader).ToObject(Of String)
-			Dim assetName = Json
-			Dim result As Sprite
-			If assets.Any(Function(i) i.FileName = assetName) Then
-				result = assets.Single(Function(i) i.FileName = assetName)
-			ElseIf Json = String.Empty Then
-				Return Nothing
-			Else
-				Dim file = IO.Path.GetDirectoryName(fileLocation) + "\" + Json
-				result = New Sprite(file)
-				If Me.settings.PreloadAssets Then
-					result.Reload()
-				End If
-				assets.Add(result)
-			End If
-			Return result
+		Public Overrides Function ReadJson(reader As JsonReader, objectType As Type, existingValue As Asset(Of TAsset), hasExistingValue As Boolean, serializer As JsonSerializer) As Asset(Of TAsset)
+			Return New Asset(Of TAsset)(level.Manager) With {.Name = JToken.Load(reader).ToObject(Of String)}
 		End Function
 	End Class
 	Friend Class RoomConverter
@@ -496,9 +509,9 @@ Namespace Converters
 		Public Overrides Sub WriteJson(writer As JsonWriter, value As Object, serializer As JsonSerializer)
 			Select Case value.GetType
 				Case GetType(Room)
-					writer.WriteRawValue($"[{String.Join(",", CType(value, Room).Rooms)}]")
+					writer.WriteValue(CType(value, Room).Rooms)
 				Case GetType(SingleRoom)
-					writer.WriteRawValue($"[{ CType(value, SingleRoom).Value}]")
+					writer.WriteValue({CType(value, SingleRoom).Value})
 				Case Else
 					Throw New NotImplementedException
 			End Select
