@@ -1,0 +1,99 @@
+﻿using System;
+
+namespace RhythmBase.Adofai.Events
+{
+
+	public enum ADEventType
+	{
+
+		AddDecoration,
+
+		AddObject,
+
+		AddText,
+
+		AnimateTrack,
+
+		AutoPlayTiles,
+
+		Bloom,
+
+		Bookmark,
+
+		Checkpoint,
+
+		ColorTrack,
+
+		CustomBackground,
+
+		CustomEvent,
+
+		CustomTileEvent,
+
+		EditorComment,
+
+		Flash,
+
+		FreeRoam,
+
+		FreeRoamRemove,
+
+		FreeRoamTwirl,
+
+		HallOfMirrors,
+
+		Hide,
+
+		Hold,
+
+		MoveCamera,
+
+		MoveDecorations,
+
+		MoveTrack,
+
+		MultiPlanet,
+
+		Pause,
+
+		PlaySound,
+
+		PositionTrack,
+
+		RecolorTrack,
+
+		RepeatEvents,
+
+		ScaleMargin,
+
+		ScalePlanets,
+
+		ScaleRadius,
+
+		ScreenScroll,
+
+		ScreenTile,
+
+		SetConditionalEvents,
+
+		SetDefaultText,
+
+		SetFilter,
+
+		SetHitsound,
+
+		SetHoldSound,
+
+		SetObject,
+
+		SetPlanetRotation,
+
+		SetSpeed,
+
+		SetText,
+
+		ShakeScreen,
+
+		Twirl
+	}
+}

@@ -11,7 +11,9 @@ Namespace Adofai
 			Friend _calculator As ADBeatCalculator
 			Private _isBeatLoaded As Boolean
 			Private _isTimeSpanLoaded As Boolean
+#Disable Warning IDE0052
 			Private _isBpmLoaded As Boolean
+#Enable Warning
 			Private _beat As Single
 			Private _timeSpan As TimeSpan
 			Private _bpm As Single
@@ -406,7 +408,7 @@ Namespace Adofai
 		Public Class ADSettings
 			Public Property Version As Integer '13
 			Public Property Artist As String
-			Public Property SpecialArtistType As RTSpecialArtistTypes
+			Public Property SpecialArtistType As SpecialArtistTypes
 			Public Property ArtistPermission As String
 			Public Property Song As String
 			Public Property Author As String

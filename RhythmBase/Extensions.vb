@@ -181,11 +181,17 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		''' </code>
 		''' </example>
 		''' </summary>
-		''' <param name="number">The float number.</param>
+		''' <param name="beat">The float number.</param>
 		''' <param name="splitBase">Indicate what fraction this is.</param>
 		''' <returns></returns>
-		<Extension> Public Function FixFraction(number As Single, splitBase As UInteger) As Single
-			Return Math.Round(number * splitBase) / splitBase
+		<Extension> Public Function FixFraction(beat As Single, splitBase As UInteger) As Single
+			Return Math.Round(beat * splitBase) / splitBase
+		End Function
+		''' <summary>
+		''' Calculate the fraction of <paramref name="splitBase"/> equal to the nearest floating point number.
+		''' </summary>
+		<Extension> Public Function FixFraction(beat As Beat, splitBase As UInteger) As Beat
+			Return New Beat(beat.BeatOnly.FixFraction(splitBase))
 		End Function
 		''' <summary>
 		''' Converting enumeration constants to in-game colors。
@@ -975,9 +981,11 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 				Return Nothing
 			End If
 			If strict Then
-				Return e.Where(Function(i) i.Tag = name).GroupBy(Function(i) i.Tag)
+				Return e.Where(Function(i) i.Tag = name) _
+					.GroupBy(Function(i) i.Tag)
 			Else
-				Return e.Where(Function(i) If(i.Tag?.Contains(name), False)).GroupBy(Function(i) i.Tag)
+				Return e.Where(Function(i) If(i.Tag?.Contains(name), False)) _
+					.GroupBy(Function(i) i.Tag)
 			End If
 		End Function
 		''' <summary>
@@ -1606,7 +1614,7 @@ firstEvent.Beat._calculator.BarBeatToBeatOnly(range.End.Value + 1, 1)))
 		<Extension> Public Function IsHitable(e As PulseFreeTimeBeat) As Boolean
 			Dim PulseIndexMin = 6
 			Dim PulseIndexMax = 6
-			For Each item In e.Parent.Where(Of BaseBeat)(Function(i) e.IsBehind(i)).Reverse
+			For Each item In e.Parent.Where(Of BaseBeat)(Function(i) e.IsBehind(i), New RDRange(e.Beat, Nothing)).Reverse
 				Select Case item.Type
 					Case EventType.AddFreeTimeBeat
 						Dim Temp = CType(item, AddFreeTimeBeat)

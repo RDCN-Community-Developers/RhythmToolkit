@@ -3,8 +3,6 @@ Imports System.IO.Compression
 Imports System.Text.RegularExpressions
 Imports Newtonsoft.Json
 Imports SkiaSharp
-Imports System.ComponentModel
-Imports System.Formats
 #Disable Warning CA1507
 #Disable Warning IDE1006
 #Disable Warning CA1812
@@ -14,7 +12,7 @@ Namespace Components
 	''' <summary>
 	''' Special artist types.
 	''' </summary>
-	Public Enum RTSpecialArtistTypes
+	Public Enum SpecialArtistTypes
 		None
 		AuthorIsArtist
 		PublicLicense
@@ -2206,7 +2204,7 @@ Namespace Components
 																			   i.Type <> EventType.SetCrotchetsPerBar AndAlso
 																			   i._beat < nxt._beat)
 				Dim cpb = item.CrotchetsPerBar
-				Dim interval = If(nxtE?._beat.BeatOnly, nxt._beat.BeatOnly) - item._beat.BeatOnly
+				Dim interval = If(nxtE, nxt)._beat.BeatOnly - item._beat.BeatOnly
 				Dim c = interval Mod If(frt?.CrotchetsPerBar, 8)
 				If c > 0 Then
 					c = If(c < 2, c + item.CrotchetsPerBar, c)
@@ -2322,7 +2320,7 @@ Namespace Components
 		''' <summary>
 		''' Special artlist type
 		''' </summary>
-		Public Property SpecialArtistType As RTSpecialArtistTypes = RTSpecialArtistTypes.None 'Enum
+		Public Property SpecialArtistType As SpecialArtistTypes = SpecialArtistTypes.None 'Enum
 		''' <summary>
 		''' File path for proof of artist's permission.
 		''' </summary>
