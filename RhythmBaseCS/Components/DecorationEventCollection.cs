@@ -37,13 +37,13 @@ namespace RhythmBase.Components
 		/// </summary>
 
 		[JsonIgnore]
-		public SKSizeI Size
+		public RDSizeI Size
 		{
 			get
 			{
 				Asset<ISpriteFile> file = _file;
-				object obj = (file != null) ? file.Value.Size : new SKSizeI(32, 31);
-				return (obj != null) ? ((SKSizeI)obj) : default;
+				RDSizeI obj = (file != null) ? file.Value.Size : new RDSizeI(32, 31);
+				return obj;
 			}
 		}
 
@@ -75,7 +75,15 @@ namespace RhythmBase.Components
 			{
 				return _file.Name;
 			}
+			set
+			{
+				_file ??= new();
+				_file.Name = value;
+			}
 		}
+
+		[JsonIgnore]
+		public Asset<ISpriteFile> Sprite { get => _file; set => _file = value; }
 
 		/// <summary>
 		/// Decoration depth.
@@ -120,8 +128,6 @@ namespace RhythmBase.Components
 			item._parent = this;
 			Parent.Add(item);
 		}
-
-
 		internal void AddSafely(BaseDecorationAction item) => base.Add(item);
 
 		/// <summary>
@@ -130,11 +136,7 @@ namespace RhythmBase.Components
 		/// <param name="item">A decoration event.</param>
 
 		public override bool Remove(BaseDecorationAction item) => Parent.Remove(item);
-
-
 		internal bool RemoveSafely(BaseDecorationAction item) => base.Remove(item);
-
-
 		public override string ToString() => string.Format("{0}, {1}, {2}, {3}", new object[]
 			{
 				_id,
@@ -142,18 +144,10 @@ namespace RhythmBase.Components
 				this.Room,
 				File
 			});
-
-
 		internal DecorationEventCollection Clone() => (DecorationEventCollection)MemberwiseClone();
-
-
 		private string _id;
-
-
 		[JsonIgnore]
 		internal RDLevel Parent;
-
-
 		internal Asset<ISpriteFile> _file;
 	}
 }

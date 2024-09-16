@@ -1191,7 +1191,7 @@ namespace RhythmBase.Extensions
 		{
 			Audio DefaultAudio = new()
 			{
-				AudioFile = (Asset<AudioFile>)e.Beat.BaseLevel.Manager.Create<AudioFile>("sndClapHit"),
+				AudioFile = e.Beat.BaseLevel.Manager.Create<IAudioFile>("sndClapHit"),
 				Offset = TimeSpan.Zero,
 				Pan = 100,
 				Pitch = 100,

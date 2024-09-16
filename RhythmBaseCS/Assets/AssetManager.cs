@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualBasic.CompilerServices;
 using RhythmBase.Components;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace RhythmBase.Assets
 {
@@ -9,13 +8,26 @@ namespace RhythmBase.Assets
 	{
 		public IAssetFile this[Type type, string name]
 		{
-			get => data[new TypeNameIndex(type, name)];
-			set => data[new TypeNameIndex(type, name)] = (IAssetFile)value;
+			get
+			{
+				var key = new TypeNameIndex(type, name);
+				if (!data.ContainsKey(key))
+					data[key] = IAssetFile.Load(type, Path.Combine(baseLevel.Directory, name));
+				return data[key];
+			}
+			set => data[new TypeNameIndex(type, name)] = value;
 		}
 		public IAssetFile this[Asset<IAssetFile> index]
 		{
-			get => this[(Type)index.Type, index.Name];
-			set => this[(Type)index.Type, index.Name] = value;
+			get
+			{
+				var key = new TypeNameIndex(index.Type, index.Name);
+				if (!data.ContainsKey(key))
+					data[key] = IAssetFile.Load(index.Type, Path.Combine( baseLevel.Directory,index.Name));
+				return data[key];
+			}
+
+			set => this[index.Type, index.Name] = value;
 		}
 		public Asset<TAsset> Create<TAsset>(string name) where TAsset : IAssetFile => new(this) { Name = name };
 		public Asset<TAsset> Create<TAsset>(string name, IAssetFile asset) where TAsset : IAssetFile => new(this)

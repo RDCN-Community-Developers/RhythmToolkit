@@ -204,6 +204,10 @@ namespace RhythmBase.Utils
 			};
 			IList<JsonConverter> converters = EventsSerializer.Converters;
 			converters.Add(new AssetConverter<SpriteFile>(rdlevel));
+			converters.Add(new AssetConverter<ImageFile>(rdlevel));
+			converters.Add(new AssetConverter<AudioFile>(rdlevel));
+			converters.Add(new AssetConverter<BuiltInAudio>(rdlevel));
+			converters.Add(new AudioConverter(rdlevel.Manager));
 			converters.Add(new PanelColorConverter(rdlevel.ColorPalette));
 			converters.Add(new ColorConverter());
 			converters.Add(new ConditionalConverter());

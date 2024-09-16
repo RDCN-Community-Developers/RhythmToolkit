@@ -12,14 +12,13 @@ namespace RhythmBase.Assets
 	{
 		public Audio()
 		{
-			AudioFile = new Asset<AudioFile>();
+			AudioFile = new Asset<IAudioFile>();
 			Volume = 100;
 			Pitch = 100;
 			Pan = 0;
 			Offset = TimeSpan.Zero;
 		}
-		[JsonIgnore]
-		public Asset<AudioFile> AudioFile { get; set; }
+		public Asset<IAudioFile> AudioFile { get; set; }
 		/// <summary>
 		/// File name.
 		/// </summary>

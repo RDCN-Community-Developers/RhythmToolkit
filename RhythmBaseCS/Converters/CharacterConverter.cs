@@ -15,7 +15,7 @@ namespace RhythmBase.Converters
 			bool isCustom = value.IsCustom;
 			if (isCustom)
 			{
-				writer.WriteValue(string.Format("custom:{0}", value.CustomCharacter.Name));
+				writer.WriteValue(value.CustomCharacter==null ?"[Null]": $"custom:{value.CustomCharacter?.Name}" );
 			}
 			else
 			{
@@ -27,11 +27,10 @@ namespace RhythmBase.Converters
 		public override RDCharacter ReadJson(JsonReader reader, Type objectType, RDCharacter existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			string value = JToken.ReadFrom(reader).ToObject<string>();
-			bool flag = value.StartsWith("custom:");
 			RDCharacter ReadJson;
-			if (flag)
+			if (value.StartsWith("custom:"))
 			{
-				string name = value.Substring(7);
+				string name = value[7..];
 				ReadJson = new RDCharacter(level, name);
 			}
 			else

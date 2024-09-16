@@ -1,63 +1,35 @@
-﻿using System;
-using System.IO;
-using Microsoft.VisualBasic.CompilerServices;
-using NAudio.Vorbis;
+﻿using NAudio.Vorbis;
 using NAudio.Wave;
 
 namespace RhythmBase.Assets
 {
-
-	public class AudioFile(string name) : IAssetFile
+	public class AudioFile : IAudioFile
 	{
-
-		public string Name { get; }
-
-		public void Load(string directory)
+		public string FilePath { get; private set; }
+		internal AudioFile() { }
+		public static IAssetFile? Load(string path)
 		{
-			string path = Path.Combine(directory, Name);
-			bool flag = Path.Exists(path);
-			if (flag)
+			AudioFile audio = new();
+			if (Path.Exists(path))
 			{
-				string extension = Path.GetExtension(Name);
-				if (Operators.CompareString(extension, ".ogg", false) != 0)
+				audio.FilePath = path;
+				string extension = Path.GetExtension(path);
+				audio._stream = extension switch
 				{
-					if (Operators.CompareString(extension, ".mp3", false) != 0)
-					{
-						if (Operators.CompareString(extension, ".wav", false) != 0 && Operators.CompareString(extension, ".wave", false) != 0)
-						{
-							if (Operators.CompareString(extension, ".aiff", false) != 0 && Operators.CompareString(extension, ".aif", false) != 0)
-							{
-								_stream = (WaveStream)Stream.Null;
-							}
-							else
-							{
-								_stream = new AiffFileReader(path);
-							}
-						}
-						else
-						{
-							_stream = new WaveFileReader(path);
-						}
-					}
-					else
-					{
-						_stream = new Mp3FileReader(path);
-					}
-				}
-				else
-				{
-					_stream = new VorbisWaveReader(path);
-				}
+					".ogg" => new VorbisWaveReader(path),
+					".mp3" => new Mp3FileReader(path),
+					".wav" or ".wave" => new WaveFileReader(path),
+					".aiff" or ".aif" => new AiffFileReader(path),
+					_ => (WaveStream)Stream.Null,
+				};
 			}
+			return audio;
 		}
-
-
-		public override string ToString() => Name;
-
-
-		private readonly string _file = name;
-
-
+		public void Save()
+		{
+			throw new NotImplementedException();
+		}
 		private WaveStream _stream;
+		public override string ToString() => Path.GetFileName(FilePath);
 	}
 }

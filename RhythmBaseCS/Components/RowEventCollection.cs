@@ -22,14 +22,10 @@ namespace RhythmBase.Components
 
 		public RowType RowType
 		{
-			get
-			{
-				return _rowType;
-			}
+			get => _rowType;
 			set
 			{
-				bool flag = value != _rowType;
-				if (flag)
+				if (value != _rowType)
 				{
 					Clear();
 					_rowType = value;
@@ -42,13 +38,7 @@ namespace RhythmBase.Components
 		/// </summary>
 
 		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
-		public sbyte Index
-		{
-			get
-			{
-				return checked((sbyte)Parent._rows.IndexOf(this));
-			}
-		}
+		public sbyte Index => (sbyte)Parent._rows.IndexOf(this);
 
 
 		public SingleRoom Rooms { get; set; }
@@ -84,47 +74,37 @@ namespace RhythmBase.Components
 
 		public string PulseSound
 		{
-			get
-			{
-				return Sound.Name;
-			}
+			get => Sound.Name;
+			set => Sound.Name = value;
 		}
 
 
 		public int PulseSoundVolume
 		{
-			get
-			{
-				return Sound.Volume;
-			}
+			get => Sound.Volume;
+			set => Sound.Volume = value;
 		}
 
 
 		public int PulseSoundPitch
 		{
-			get
-			{
-				return Sound.Pitch;
-			}
+			get => Sound.Pitch;
+			set => Sound.Pitch = value;
 		}
 
 
 		public int PulseSoundPan
 		{
-			get
-			{
-				return Sound.Pan;
-			}
+			get => Sound.Pan;
+			set => Sound.Pan = value;
 		}
 
 
 		[JsonConverter(typeof(TimeConverter))]
 		public TimeSpan PulseSoundOffset
 		{
-			get
-			{
-				return Sound.Offset;
-			}
+			get => Sound.Offset;
+			set => Sound.Offset = value;
 		}
 
 

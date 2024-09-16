@@ -29,14 +29,10 @@ namespace RhythmBase.Components
 		[IndexerName("Room")]
 		public bool this[byte Index]
 		{
-			get
-			{
-				return _data.HasFlag(Enum.Parse<RoomIndex>(Conversions.ToString(1 << (int)Index)));
-			}
+			get => _data.HasFlag(Enum.Parse<RoomIndex>(Conversions.ToString(1 << Index)));
 			set
 			{
-				bool flag = Index >= 4 & !EnableTop;
-				if (!flag)
+				if (!(Index >= 4 && !EnableTop))
 				{
 					_data = value ? (_data | (RoomIndex)(1 << (int)Index)) : (_data & (RoomIndex)(1 << (int)Index));
 				}

@@ -105,7 +105,7 @@ namespace RhythmBase.Components
 				RDLevel rdlevel = [];
 				PlaySong playsong = new();
 				SetTheme settheme = new();
-				playsong.Song = new Audio() { AudioFile = rdlevel.Manager.Create<AudioFile>("sndOrientalTechno") };
+				playsong.Song = new Audio() { AudioFile = rdlevel.Manager.Create<IAudioFile>("sndOrientalTechno") };
 				settheme.Preset = SetTheme.Theme.OrientalTechno;
 				rdlevel.AddRange([playsong, settheme]);
 				RowEventCollection samurai = rdlevel.CreateRow(new SingleRoom(0), new RDCharacter(rdlevel, Characters.Samurai));

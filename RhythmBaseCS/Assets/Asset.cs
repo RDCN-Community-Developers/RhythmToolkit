@@ -2,7 +2,8 @@
 {
 	public class Asset<TAssetFile> where TAssetFile : IAssetFile
 	{
-		public object Type => typeof(TAssetFile);
+		public Type Type => typeof(TAssetFile);
+		public bool IsRead { get; private set; } = false;
 		public string Name
 		{
 			get => _name;
@@ -18,18 +19,24 @@
 			get
 			{
 				if (Manager != null)
+				{
 					cache = (TAssetFile)Manager[(Type)Type, Name];
+					IsRead = true;
+				}
 				return cache;
 			}
 			set
 			{
 				if (Manager != null)
+				{
 					Manager[(Type)Type, Name] = value;
+					IsRead = true;
+				}
 				else
 					cache = value;
 			}
 		}
-		private AssetManager Manager { get; set; }
+		internal AssetManager Manager { get; set; }
 		internal Asset(AssetManager manager)
 		{
 			Manager = manager;

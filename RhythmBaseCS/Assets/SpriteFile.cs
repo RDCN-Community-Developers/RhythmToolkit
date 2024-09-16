@@ -16,18 +16,14 @@ namespace RhythmBase.Assets
 
 	public class SpriteFile : ISpriteFile
 	{
+		[JsonIgnore]
+		public string FilePath { get; }
 		/// <summary>
 		/// The expression names of the sprite file.
 		/// </summary>
 
 		[JsonIgnore]
-		public IEnumerable<string> Expressions
-		{
-			get
-			{
-				return Clips.Select((i) => i.Name);
-			}
-		}
+		public IEnumerable<string> Expressions => Clips.Select((i) => i.Name);
 
 		/// <summary>
 		/// The name of the file.
@@ -41,27 +37,14 @@ namespace RhythmBase.Assets
 		/// </summary>
 
 		[JsonIgnore]
-		public SKRect? Preview
-		{
-			get
-			{
-				SKRect? Preview = new SKRect?((RowPreviewFrame == null) ? default(SKRect) : GetFrame(checked((int)RowPreviewFrame.Value)));
-				return Preview;
-			}
-		}
+		public SKRect? Preview => new SKRect?((RowPreviewFrame == null) ? default(SKRect) : GetFrame(checked((int)RowPreviewFrame.Value)));
 
 		/// <summary>
 		/// The size of the sprite/image
 		/// </summary>
 
 		[JsonIgnore]
-		public RDSizeNI ImageSize
-		{
-			get
-			{
-				return _imageSize;
-			}
-		}
+		public RDSizeNI ImageSize => _imageSize;
 
 		/// <summary>
 		/// Base layer
@@ -113,7 +96,7 @@ namespace RhythmBase.Assets
 		/// Information of expressions.
 		/// </summary>
 
-		public HashSet<Expression> Clips { get; set; }
+		public HashSet<Expression> Clips { get; set; } = [];
 
 		/// <summary>
 		/// Image offset when the row is previewed.
@@ -166,7 +149,7 @@ namespace RhythmBase.Assets
 			bool flag = filename.IsNullOrEmpty();
 			if (flag)
 			{
-				throw new ArgumentException("Filename cannot be null.", "filename");
+				throw new ArgumentException("Filename cannot be null.", nameof(filename));
 			}
 			//this._FileName = filename;
 		}
@@ -175,9 +158,10 @@ namespace RhythmBase.Assets
 		/// Load the file contents into memory.
 		/// </summary>
 
-		public void Load(string directory)
+		public static IAssetFile? Load(string path)
 		{
-			string _file = Path.Combine(directory, FileName);
+			SpriteFile sprite = new();
+			string _file = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
 			JsonSerializer setting = new();
 			bool flag = File.Exists(string.Format("{0}.json", _file));
 			string json;
@@ -199,47 +183,45 @@ namespace RhythmBase.Assets
 			string imageGlowFile = string.Format("{0}_glow.png", json);
 			string imageOutlineFile = string.Format("{0}_outline.png", json);
 			string imageFreezeFile = string.Format("{0}_freeze.png", json);
-			bool flag3 = File.Exists(imageBaseFile);
-			if (flag3)
+			if (File.Exists(imageBaseFile))
 			{
-				ImageBase = SKBitmap.Decode(imageBaseFile);
-				bool flag4 = File.Exists(imageGlowFile);
-				if (flag4)
+				sprite.ImageBase = SKBitmap.Decode(imageBaseFile);
+				if (File.Exists(imageGlowFile))
 				{
-					ImageGlow = SKBitmap.Decode(imageGlowFile);
+					sprite.ImageGlow = SKBitmap.Decode(imageGlowFile);
 				}
-				bool flag5 = File.Exists(imageOutlineFile);
-				if (flag5)
+				if (File.Exists(imageOutlineFile))
 				{
-					ImageOutline = SKBitmap.Decode(imageOutlineFile);
+					sprite.ImageOutline = SKBitmap.Decode(imageOutlineFile);
 				}
-				bool flag6 = File.Exists(imageFreezeFile);
-				if (flag6)
+				if (File.Exists(imageFreezeFile))
 				{
-					ImageFreeze = SKBitmap.Decode(imageFreezeFile);
+					sprite.ImageFreeze = SKBitmap.Decode(imageFreezeFile);
 				}
 				JToken? jtoken = obj["Name".ToLowerCamelCase()];
-				Name = (jtoken != null) ? jtoken.ToObject<string>() : null;
+				sprite.Name = jtoken?.ToObject<string>();
 				JToken? jtoken2 = obj["Voice".ToLowerCamelCase()];
-				Voice = (jtoken2 != null) ? jtoken2.ToObject<string>() : null;
-				Size = obj["Size".ToLowerCamelCase()].ToObject<RDSizeNI>();
+				sprite.Voice = jtoken2?.ToObject<string>();
+				sprite.Size = obj["Size".ToLowerCamelCase()].ToObject<RDSizeNI>();
 				JToken? jtoken3 = obj["RowPreviewOffset".ToLowerCamelCase()];
-				RowPreviewOffset = (jtoken3 != null) ? new RDSizeN?(jtoken3.ToObject<RDSizeN>()) : null;
+				sprite.RowPreviewOffset = (jtoken3 != null) ? new RDSizeN?(jtoken3.ToObject<RDSizeN>()) : null;
 				JToken? jtoken4 = obj["RowPreviewFrame".ToLowerCamelCase()];
-				RowPreviewFrame = (jtoken4 != null) ? new uint?(jtoken4.ToObject<uint>()) : null;
+				sprite.RowPreviewFrame = (jtoken4 != null) ? new uint?(jtoken4.ToObject<uint>()) : null;
 				JToken? jtoken5 = obj["PivotOffset".ToLowerCamelCase()];
-				PivotOffset = (jtoken5 != null) ? new RDPointN?(jtoken5.ToObject<RDPointN>()) : null;
+				sprite.PivotOffset = (jtoken5 != null) ? new RDPointN?(jtoken5.ToObject<RDPointN>()) : null;
 				JToken? jtoken6 = obj["PortraitOffset".ToLowerCamelCase()];
-				PortraitOffset = (jtoken6 != null) ? new RDSizeN?(jtoken6.ToObject<RDSizeN>()) : null;
+				sprite.PortraitOffset = (jtoken6 != null) ? new RDSizeN?(jtoken6.ToObject<RDSizeN>()) : null;
 				JToken? jtoken7 = obj["PortraitSize".ToLowerCamelCase()];
-				PortraitSize = (jtoken7 != null) ? new RDSizeN?(jtoken7.ToObject<RDSizeN>()) : null;
+				sprite.PortraitSize = (jtoken7 != null) ? new RDSizeN?(jtoken7.ToObject<RDSizeN>()) : null;
 				JToken? jtoken8 = obj["PortraitScale".ToLowerCamelCase()];
-				PortraitScale = (jtoken8 != null) ? new float?(jtoken8.ToObject<float>()) : null;
+				sprite.PortraitScale = (jtoken8 != null) ? new float?(jtoken8.ToObject<float>()) : null;
 				foreach (var clip in obj[nameof(Clips).ToLowerCamelCase()])
-					Clips.Add(clip.ToObject<Expression>());
+					sprite.Clips.Add(clip.ToObject<Expression>());
+				return sprite;
 			}
 			throw new FileNotFoundException("Cannot find the image file", _file + ".png");
 		}
+		public void Save() { throw new NotImplementedException(); }
 
 		/// <summary>
 		/// Write JSON data to the text stream.
@@ -475,7 +457,7 @@ namespace RhythmBase.Assets
 		}
 
 
-		public override string ToString() => string.Format("{0}", Name.IsNullOrEmpty() ? FileName : Name);
+		public override string ToString() => Name.IsNullOrEmpty() ? FileName : Name;
 
 
 		private RDSizeNI _imageSize;

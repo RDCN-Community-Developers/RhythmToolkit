@@ -1,24 +1,13 @@
-﻿using System;
-
-namespace RhythmBase.Assets
+﻿namespace RhythmBase.Assets
 {
 
-	public class BuiltInAudio(string name) : IAssetFile
+	public class BuiltInAudio(string name) : IAudioFile
 	{
-
-		public string Name
-		{
-			get
-			{
-				return _name;
-			}
-		}
-
-
-		public void Load(string directory)
-		{
-		}
-
-		private readonly string _name = name;
+		public string Name => _name;
+		public string FilePath => "";
+		internal static IAssetFile? Load(string name) => new BuiltInAudio(name);
+		public void Save() { throw new NotImplementedException(); }
+		private string _name = name;
+		public override string ToString() => _name;
 	}
 }

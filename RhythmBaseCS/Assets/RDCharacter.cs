@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.VisualBasic.CompilerServices;
-using RhythmBase.Components;
+﻿using RhythmBase.Components;
 
 namespace RhythmBase.Assets
 {
@@ -30,7 +28,7 @@ namespace RhythmBase.Assets
 		/// If using an in-game character, this value will be empty
 		/// </summary>
 
-		public Asset<SpriteFile> CustomCharacter { get; }
+		public Asset<SpriteFile>? CustomCharacter { get; }
 
 		/// <summary>
 		/// Construct an in-game character.
@@ -58,6 +56,6 @@ namespace RhythmBase.Assets
 		}
 
 
-		public override string ToString() => Conversions.ToString(IsCustom ? CustomCharacter.Name : Character);
+		public override string ToString() => IsCustom ? CustomCharacter?.Name ?? "[Null]" : Character.ToString();
 	}
 }

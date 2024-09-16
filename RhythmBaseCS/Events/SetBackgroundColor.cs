@@ -25,7 +25,7 @@ namespace RhythmBase.Events
 		public BackgroundTypes BackgroundType { get; set; }
 		public float Duration { get; set; }
 		public int Fps { get; set; }
-		public List<string> Image { get; set; }
+		public List<Asset<ImageFile>> Image { get; set; }
 		[EaseProperty]
 		public int ScrollX { get; set; }
 		[EaseProperty]
@@ -35,7 +35,7 @@ namespace RhythmBase.Events
 		public override Tabs Tab { get; }
 		public override string ToString() => BackgroundType == BackgroundTypes.Color
 		? base.ToString() + string.Format(" {0}", Color.ToString())
-		: base.ToString() + string.Format(" {0}", string.Join(',', Image.Select(i => i.ToString())));
+		: base.ToString() + string.Format(" {0}", string.Join(',', Image.Select(i => i.Name)));
 		public enum BackgroundTypes
 		{
 			Color,
