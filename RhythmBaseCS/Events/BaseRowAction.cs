@@ -44,7 +44,17 @@ namespace RhythmBase.Events
 				return Room;
 			}
 		}
-
+		/// <inheritdoc/>
+		[JsonIgnore]
+		public Beat Beat
+		{
+			get => _beat;
+			set
+			{
+				if (_beat.BaseLevel == null)
+					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
+			}
+		}
 		[JsonIgnore]
 		[Obsolete("This function is obsolete and may be removed in the next release. Use Index instead.")]
 		public int Row { get; }

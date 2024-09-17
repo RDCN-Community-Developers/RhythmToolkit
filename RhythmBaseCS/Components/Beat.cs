@@ -181,7 +181,7 @@ namespace RhythmBase.Components
 			this = default;
 			if (beat._isBeatLoaded)
 			{
-				if (beat._beat < 1f)
+				if (beat._beat < 0f)
 					throw new OverflowException(string.Format("The beat must not be less than 1, but {0} is given", beat._beat));
 				_beat = beat._beat;
 				_isBeatLoaded = true;

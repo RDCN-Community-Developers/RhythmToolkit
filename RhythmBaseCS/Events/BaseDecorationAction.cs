@@ -10,6 +10,17 @@ namespace RhythmBase.Events
 		[JsonIgnore]
 		public override int Y { get => base.Y; set => base.Y = value; }
 		public virtual string Target => (Parent == null) ? "" : Parent.Id;
+		/// <inheritdoc/>
+		[JsonIgnore]
+		public Beat Beat
+		{
+			get => _beat;
+			set
+			{
+				if (_beat.BaseLevel == null)
+					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
+			}
+		}
 		/// <summary>
 		/// Clone this event and its basic properties. Clone will be added to the level.
 		/// </summary>
