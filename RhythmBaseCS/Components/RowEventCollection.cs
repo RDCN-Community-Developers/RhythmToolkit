@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Assets;
 using RhythmBase.Converters;
 using RhythmBase.Events;
@@ -120,9 +119,9 @@ namespace RhythmBase.Components
 		/// </summary>
 		public enum PlayerMode
 		{
-			P1,
-			P2,
-			CPU
+			P1 = PlayerType.P1,
+			P2 = PlayerType.P2,
+			CPU = PlayerType.CPU,
 		}
 	}
 }

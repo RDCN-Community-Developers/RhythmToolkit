@@ -61,8 +61,7 @@ namespace RhythmBase.Adofai.Components
 		public ADBeat(ADBeatCalculator calculator, TimeSpan timeSpan)
 		{
 			this = default;
-			bool flag = timeSpan < TimeSpan.Zero;
-			if (flag)
+			if (timeSpan < TimeSpan.Zero)
 			{
 				throw new OverflowException(string.Format("The time must not be less than zero, but {0} is given", timeSpan));
 			}
@@ -139,8 +138,7 @@ namespace RhythmBase.Adofai.Components
 
 		private void IfNullThrowException()
 		{
-			bool isEmpty = IsEmpty;
-			if (isEmpty)
+			if (IsEmpty)
 			{
 				throw new InvalidRDBeatException();
 			}

@@ -47,8 +47,7 @@ namespace RhythmBase.Components
 				TimeSpan TimeInterval;
 				if (flag)
 				{
-					bool flag2 = Start.Value.BeatOnly == End.Value.BeatOnly;
-					if (flag2)
+					if (Start.Value.BeatOnly == End.Value.BeatOnly)
 					{
 						TimeInterval = TimeSpan.Zero;
 					}
@@ -69,13 +68,11 @@ namespace RhythmBase.Components
 		public RDRange(Beat? start, Beat? end)
 		{
 			this = default;
-			bool flag = start != null && end != null && !start.Value._calculator.Equals(end.Value._calculator);
-			if (flag)
+			if (start != null && end != null && !start.Value._calculator.Equals(end.Value._calculator))
 			{
 				throw new RhythmBaseException("RDIndexes must come from the same RDLevel.");
 			}
-			bool flag2 = start != null && end != null && start.Value.BeatOnly > end.Value.BeatOnly;
-			if (flag2)
+			if (start != null && end != null && start.Value.BeatOnly > end.Value.BeatOnly)
 			{
 				this.Start = end;
 				this.End = start;

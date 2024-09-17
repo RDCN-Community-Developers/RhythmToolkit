@@ -10,10 +10,9 @@ namespace RhythmBase.Converters
 	{
 		public override void WriteJson(JsonWriter writer, RDCharacter value, JsonSerializer serializer)
 		{
-			bool isCustom = value.IsCustom;
-			if (isCustom)
+			if (value.IsCustom)
 			{
-				writer.WriteValue(value.CustomCharacter==null ?"[Null]": $"custom:{value.CustomCharacter?.Name}" );
+				writer.WriteValue(value.CustomCharacter == null ? "[Null]" : $"custom:{value.CustomCharacter?.Name}");
 			}
 			else
 			{

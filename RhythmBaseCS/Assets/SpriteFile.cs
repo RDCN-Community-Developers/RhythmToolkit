@@ -114,8 +114,7 @@ namespace RhythmBase.Assets
 		/// <param name="filename">File path.</param>
 		public SpriteFile(string filename)
 		{
-			bool flag = filename.IsNullOrEmpty();
-			if (flag)
+			if (filename.IsNullOrEmpty())
 			{
 				throw new ArgumentException("Filename cannot be null.", nameof(filename));
 			}
@@ -137,8 +136,7 @@ namespace RhythmBase.Assets
 			}
 			else
 			{
-				bool flag2 = File.Exists(string.Format("{0}\\{1}.json", _file, Path.GetFileName(_file)));
-				if (!flag2)
+				if (!(File.Exists(string.Format("{0}\\{1}.json", _file, Path.GetFileName(_file)))))
 				{
 					throw new FileNotFoundException("Cannot find the json file", _file ?? "");
 				}
@@ -237,8 +235,7 @@ namespace RhythmBase.Assets
 			jsonTextWriter.WriteStartObject();
 			foreach (KeyValuePair<string, JToken> pair3 in meObj)
 			{
-				bool flag5 = pair3.Value.Type != JTokenType.Null;
-				if (flag5)
+				if (pair3.Value.Type != JTokenType.Null)
 				{
 					jsonTextWriter.WritePropertyName(pair3.Key);
 					jsonTextWriter.WriteRawValue(JsonConvert.SerializeObject(pair3.Value, Formatting.None, jsonS));
@@ -255,17 +252,13 @@ namespace RhythmBase.Assets
 					writer.Formatting = Formatting.None;
 					foreach (KeyValuePair<string, List<string>> pair4 in propertyValues)
 					{
-						bool flag6 = PropertyNameLength[pair4.Key] > 0;
-						if (flag6)
+						if (PropertyNameLength[pair4.Key] > 0)
 						{
-							bool ignoreNullValue = setting.IgnoreNullValue;
-							if (ignoreNullValue)
+							if (setting.IgnoreNullValue)
 							{
-								bool flag7 = pair4.Value[j].IsNullOrEmpty();
-								if (flag7)
+								if (pair4.Value[j].IsNullOrEmpty())
 								{
-									bool indented = setting.Indented;
-									if (indented)
+									if (setting.Indented)
 									{
 										jsonTextWriter.WriteWhitespace(string.Empty.PadRight(pair4.Key.Length + PropertyNameLength[pair4.Key] + 4));
 									}
@@ -279,8 +272,7 @@ namespace RhythmBase.Assets
 							else
 							{
 								jsonTextWriter.WritePropertyName(pair4.Key);
-								bool flag8 = pair4.Value[j].IsNullOrEmpty();
-								if (flag8)
+								if (pair4.Value[j].IsNullOrEmpty())
 								{
 									jsonTextWriter.WriteRawValue(JsonConvert.Null.PadRight(setting.Indented ? PropertyNameLength[pair4.Key] : 0));
 								}
@@ -307,8 +299,7 @@ namespace RhythmBase.Assets
 		/// <returns>A rectangular area that indicates the cropping area.</returns>
 		public SKRectI GetFrame(int index)
 		{
-			bool flag = index < 0;
-			if (flag)
+			if (index < 0)
 			{
 				throw new OverflowException();
 			}
@@ -365,13 +356,11 @@ namespace RhythmBase.Assets
 		{
 			FileInfo file = new(path);
 			string WithoutExtension = Path.Combine(file.Directory.FullName, Path.GetFileNameWithoutExtension(file.Name));
-			bool flag = (File.Exists(WithoutExtension + ".json") || (settings.WithImage && File.Exists(WithoutExtension + ".png"))) & !settings.OverWrite;
-			if (flag)
+			if ((File.Exists(WithoutExtension + ".json") || (settings.WithImage && File.Exists(WithoutExtension + ".png"))) & !settings.OverWrite)
 			{
 				throw new OverwriteNotAllowedException(path, typeof(LevelReadOrWriteSettings));
 			}
-			bool withImage = settings.WithImage;
-			if (withImage)
+			if (settings.WithImage)
 			{
 				ImageBase.Save(WithoutExtension + ".png");
 				SKBitmap imageGlow = ImageGlow;

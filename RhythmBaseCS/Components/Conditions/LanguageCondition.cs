@@ -15,8 +15,11 @@ namespace RhythmBase.Components.Conditions
 		/// Game Language.
 		/// </summary>
 		[JsonProperty(nameof(Language))]
-		public Languages Language { get; 
-			set; }
+		public Languages Language
+		{
+			get;
+			set;
+		}
 		public override ConditionType Type { get; }
 		/// <summary>
 		/// Game Language.

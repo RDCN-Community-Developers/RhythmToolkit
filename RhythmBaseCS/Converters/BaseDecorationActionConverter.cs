@@ -25,7 +25,7 @@ namespace RhythmBase.Converters
 					case UnreadableEventHandling.ThrowException:
 						throw new ConvertingException(string.Format("Cannot find the decoration \"{0}\" at {1}", jobj["target"], obj));
 				}
-						obj._parent = Parent!;
+			obj._parent = Parent!;
 			return obj;
 		}
 	}

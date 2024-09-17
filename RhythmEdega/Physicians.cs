@@ -169,11 +169,9 @@
 //        {
 //            var now = DateTime.Now;
 //            Calculator = new(level);
-
 //            //读取结束
 //            Console.WriteLine($"Loading successful.");
 //            Console.WriteLine($"{level.Count} events loaded.");
-
 //            //获取所有节拍事件，初始化标记为空
 //            foreach (RDBaseBeat item in level.Where<RDBaseBeat>())
 //            {
@@ -192,9 +190,7 @@
 //            //获取结束
 //            Console.WriteLine($"{LegalList.Count} beats event loaded.");
 //            Console.ForegroundColor = ConsoleColor.Blue;
-
 //            now = DateTime.Now;
-
 //            //同声共奏检测
 //            name = "Shakeritis";
 //            Console.WriteLine($"Detecting {name}...");

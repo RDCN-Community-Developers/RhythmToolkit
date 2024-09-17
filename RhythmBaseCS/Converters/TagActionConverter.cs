@@ -11,8 +11,7 @@ namespace RhythmBase.Converters
 		public override JObject SetSerializedObject(TagAction value, JsonSerializer serializer)
 		{
 			JObject jobj = base.SetSerializedObject(value, serializer);
-			bool flag = value.Tag == null;
-			if (flag)
+			if (value.Tag == null)
 			{
 				jobj.Remove("tag");
 			}

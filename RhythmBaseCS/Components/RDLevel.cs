@@ -90,7 +90,7 @@ namespace RhythmBase.Components
 		}
 		public RDLevel(IEnumerable<IBaseEvent> items) : this()
 		{
-			foreach (BaseEvent item in items)
+			foreach (IBaseEvent item in items)
 				Add(item);
 		}
 		/// <summary>
@@ -469,7 +469,7 @@ namespace RhythmBase.Components
 					base.Add(new SetCrotchetsPerBar
 					{
 						_beat = nxtE._beat,
-						_crotchetsPerBar = Conversions.ToUInteger(Operators.SubtractObject((frt != null) ? frt.CrotchetsPerBar : 8, 1))
+						_crotchetsPerBar = ((frt != null) ? frt.CrotchetsPerBar : 8u- 1u)
 					});
 				Calculator.Refresh();
 			}

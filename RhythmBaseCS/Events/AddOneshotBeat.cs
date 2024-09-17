@@ -36,11 +36,9 @@ namespace RhythmBase.Events
 			{
 				FreezeBurn? freezeBurnMode = this.FreezeBurnMode;
 				int? num = (freezeBurnMode != null) ? new int?((int)freezeBurnMode.GetValueOrDefault()) : null;
-				bool valueOrDefault = ((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault();
-				if (valueOrDefault)
+				if (((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault())
 				{
-					bool flag = value <= 0f;
-					if (flag)
+					if (value <= 0f)
 					{
 						_delay = 0.5f;
 					}

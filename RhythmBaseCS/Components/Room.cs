@@ -46,8 +46,7 @@ namespace RhythmBase.Components
 				{
 					do
 					{
-						bool flag = _data.HasFlag(Enum.Parse<RoomIndex>(Conversions.ToString(1 << i)));
-						if (flag)
+						if (_data.HasFlag(Enum.Parse<RoomIndex>(Conversions.ToString(1 << i))))
 						{
 							L.Add((byte)i);
 						}
@@ -119,8 +118,7 @@ namespace RhythmBase.Components
 					int i = 0;
 					for (; ; )
 					{
-						bool flag2 = this[(byte)i] != rooms[(byte)i];
-						if (flag2)
+						if (this[(byte)i] != rooms[(byte)i])
 						{
 							break;
 						}

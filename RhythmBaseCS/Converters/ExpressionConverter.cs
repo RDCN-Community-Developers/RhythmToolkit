@@ -10,15 +10,13 @@ namespace RhythmBase.Converters
 	{
 		public override void WriteJson(JsonWriter writer, Expression value, JsonSerializer serializer)
 		{
-			bool isNumeric = value.IsNumeric;
-			if (isNumeric)
+			if (value.IsNumeric)
 			{
 				writer.WriteRawValue(Conversions.ToString(value.NumericValue));
 			}
 			else
 			{
-				bool flag = value.ExpressionValue.IsNullOrEmpty();
-				if (flag)
+				if (value.ExpressionValue.IsNullOrEmpty())
 				{
 					writer.WriteNull();
 				}

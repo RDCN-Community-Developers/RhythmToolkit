@@ -175,8 +175,7 @@ namespace RhythmBase.Expressions
 				foreach (KeyValuePair<TokenType, Regex> pair in Ops)
 				{
 					Match match = pair.Value.Match(exp);
-					bool success = match.Success;
-					if (success)
+					if (match.Success)
 					{
 						L.Add(new Token(match.Groups["value"].Value, pair.Key));
 						exp = pair.Value.Replace(exp, "");
@@ -199,16 +198,13 @@ namespace RhythmBase.Expressions
 			System.Linq.Expressions.Expression subVariableParameter = variableParameter;
 			foreach (Token item in l)
 			{
-				bool flag = item.type.IsOperator();
-				if (flag)
+				if (item.type.IsOperator())
 				{
-					bool flag2 = OperatorStack.Any() && (OperatorStack.Peek().type.Level() > item.type.Level() | OperatorStack.Peek().type.IsRightHalf() | OperatorStack.Peek().type == TokenType.Comma);
-					if (flag2)
+					if (OperatorStack.Any() && (OperatorStack.Peek().type.Level() > item.type.Level() | OperatorStack.Peek().type.IsRightHalf() | OperatorStack.Peek().type == TokenType.Comma))
 					{
 						GroupNode(ValueStack, OperatorStack, variableParameter, ref subVariableParameter);
 					}
-					bool flag3 = item.type != TokenType.Dot;
-					if (flag3)
+					if (item.type != TokenType.Dot)
 					{
 						subVariableParameter = variableParameter;
 					}
@@ -221,8 +217,7 @@ namespace RhythmBase.Expressions
 			}
 			while (OperatorStack.Any())
 			{
-				bool flag4 = OperatorStack.Peek().type != TokenType.Dot;
-				if (flag4)
+				if (OperatorStack.Peek().type != TokenType.Dot)
 				{
 					subVariableParameter = variableParameter;
 				}
@@ -243,8 +238,7 @@ namespace RhythmBase.Expressions
 				case TokenType.Variable:
 					{
 						string name = token.value;
-						bool flag = operatorStack.Peek().type == TokenType.Dot;
-						if (flag)
+						if (operatorStack.Peek().type == TokenType.Dot)
 						{
 							operatorStack.Pop();
 							valueStack.Pop();
@@ -266,8 +260,7 @@ namespace RhythmBase.Expressions
 						[
 					System.Linq.Expressions.Expression.Constant(arrayIndex, typeof(int))
 						]);
-						bool flag2 = token.value.StartsWith('-');
-						if (flag2)
+						if (token.value.StartsWith('-'))
 						{
 							Value3 = System.Linq.Expressions.Expression.Negate(Value3);
 						}
@@ -281,8 +274,7 @@ namespace RhythmBase.Expressions
 						[
 					System.Linq.Expressions.Expression.Constant(arrayIndex2, typeof(int))
 						]);
-						bool flag3 = token.value.StartsWith('-');
-						if (flag3)
+						if (token.value.StartsWith('-'))
 						{
 							Value4 = System.Linq.Expressions.Expression.Negate(Value4);
 						}
@@ -296,8 +288,7 @@ namespace RhythmBase.Expressions
 						[
 					System.Linq.Expressions.Expression.Constant(arrayIndex3, typeof(int))
 						]);
-						bool flag4 = token.value.StartsWith('-');
-						if (flag4)
+						if (token.value.StartsWith('-'))
 						{
 							Value5 = System.Linq.Expressions.Expression.Negate(Value5);
 						}

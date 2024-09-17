@@ -53,8 +53,7 @@ namespace RhythmBase.Converters
 			{
 				result |= FloatingText.AnchorStyle.Left;
 			}
-			bool flag = center && middle;
-			if (flag)
+			if (center && middle)
 			{
 				result = FloatingText.AnchorStyle.Center;
 			}

@@ -66,8 +66,7 @@ namespace RhythmBase.Events
 
 		public static explicit operator CustomRowEvent(CustomEvent e)
 		{
-			bool flag = e.Data["row"] != null;
-			if (flag)
+			if (e.Data["row"] != null)
 			{
 				return new CustomRowEvent(e.Data);
 			}

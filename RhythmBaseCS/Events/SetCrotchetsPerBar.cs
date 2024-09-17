@@ -23,8 +23,7 @@ namespace RhythmBase.Events
 			}
 			set
 			{
-				bool flag = value < 1f;
-				if (flag)
+				if (value < 1f)
 				{
 					throw new OverflowException("VisualBeatMultiplier must greater than 1.");
 				}
@@ -41,8 +40,7 @@ namespace RhythmBase.Events
 			set
 			{
 				_crotchetsPerBar = checked((uint)(unchecked((ulong)value) - 1UL));
-				bool flag = _beat._calculator != null;
-				if (flag)
+				if (_beat._calculator != null)
 				{
 					Beat += 0f;
 				}

@@ -40,8 +40,7 @@ namespace RhythmBase.Components
 				{
 					for (; ; )
 					{
-						bool flag = _data == Enum.Parse<RoomIndex>(Conversions.ToString(1 << i));
-						if (flag)
+						if (_data == Enum.Parse<RoomIndex>(Conversions.ToString(1 << i)))
 						{
 							break;
 						}

@@ -34,12 +34,12 @@ namespace RhythmBase.Components
 		public List<IBaseEvent> ConcatAll() => eventsBeatOrder.SelectMany(i => i.Value).ToList();
 		public void Add(IBaseEvent item)
 		{
-			TypedEventCollection<IBaseEvent> list=[];
+			TypedEventCollection<IBaseEvent> list = [];
 			if (eventsBeatOrder.TryGetValue(item.Beat, out TypedEventCollection<IBaseEvent>? value))
 			{
 				list = value;
 			}
-				else
+			else
 			{
 				eventsBeatOrder.Add(item.Beat, list);
 			}

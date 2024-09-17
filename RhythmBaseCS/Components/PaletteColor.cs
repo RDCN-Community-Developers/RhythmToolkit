@@ -20,8 +20,7 @@ namespace RhythmBase.Components
 			set
 			{
 				_panel = -1;
-				bool enableAlpha = EnableAlpha;
-				if (enableAlpha)
+				if (EnableAlpha)
 				{
 					_color = value;
 				}
@@ -42,8 +41,7 @@ namespace RhythmBase.Components
 			}
 			set
 			{
-				bool flag = value >= 0;
-				if (flag)
+				if (value >= 0)
 				{
 					_color = null;
 					_panel = value;

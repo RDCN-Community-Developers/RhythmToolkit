@@ -19,15 +19,12 @@ namespace RhythmBase.Adofai.Utils
 		/// </summary>
 		public static ADEventType ADConvertToEnum(Type type)
 		{
-			bool flag = ADETypesToEnum == null;
-			if (flag)
+			if (ADETypesToEnum == null)
 			{
-				bool flag2 = type.Name.StartsWith("AD");
-				if (flag2)
+				if (type.Name.StartsWith("AD"))
 				{
 					string name = type.Name[2..];
-					bool flag3 = Enum.TryParse(name, out ADEventType result);
-					if (flag3)
+					if (Enum.TryParse(name, out ADEventType result))
 						return result;
 				}
 				throw new IllegalEventTypeException(type, "Unable to find a matching EventType.");

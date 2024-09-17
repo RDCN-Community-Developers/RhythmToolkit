@@ -14,8 +14,7 @@ namespace RhythmBase.Utils
 		public TranaslationManager(FileInfo filepath)
 		{
 			jsonpath = filepath;
-			bool exists = jsonpath.Exists;
-			if (!exists)
+			if (!(jsonpath.Exists))
 			{
 				jsonpath.Directory.Create();
 				using (StreamWriter stream = new(jsonpath.Create()))
@@ -39,8 +38,7 @@ namespace RhythmBase.Utils
 				for (int i = 0; i <= num; i++)
 				{
 					JToken j = null;
-					bool flag = !current.TryGetValue(keys[i], out j);
-					if (flag)
+					if (!current.TryGetValue(keys[i], out j))
 					{
 						current[keys[i]] = new JObject();
 						current = (JObject)current[keys[i]];

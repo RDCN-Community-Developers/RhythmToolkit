@@ -15,11 +15,9 @@ namespace RhythmBase.Converters
 			try
 			{
 				short rowId = jobj["row"].ToObject<short>();
-				bool flag = rowId == -1;
-				if (flag)
+				if (rowId == -1)
 				{
-					bool flag2 = obj.Type != EventType.TintRows;
-					if (flag2)
+					if (obj.Type != EventType.TintRows)
 					{
 						UnreadableEventHandling unreadableEventsHandling = settings.UnreadableEventsHandling;
 						if (unreadableEventsHandling == UnreadableEventHandling.Store)

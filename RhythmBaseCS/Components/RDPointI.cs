@@ -20,9 +20,9 @@ namespace RhythmBase.Components
 		public RDPointI(RDSizeN sz)
 		{
 			this = default;
-				X = new int?((int)Math.Round((double)sz.Width));
-				Y = new int?((int)Math.Round((double)sz.Height));
-					}
+			X = new int?((int)Math.Round((double)sz.Width));
+			Y = new int?((int)Math.Round((double)sz.Height));
+		}
 		public RDPointI(int? x, int? y)
 		{
 			this = default;
@@ -34,13 +34,13 @@ namespace RhythmBase.Components
 		public int? Y { get; set; }
 		public void Offset(RDPointI p)
 		{
-				X += p.X;
-				Y += p.Y;
-			}
+			X += p.X;
+			Y += p.Y;
+		}
 		public void Offset(int? dx, int? dy)
 		{
-				X += dx;
-				Y += dy;
+			X += dx;
+			Y += dy;
 		}
 		public static RDPointI Ceiling(RDPoint value)
 		{
@@ -69,8 +69,7 @@ namespace RhythmBase.Components
 		}
 		public RDPoint MultipyByMatrix(float[,] matrix)
 		{
-			bool flag = matrix.Rank == 2 && matrix.Length == 4;
-			if (flag)
+			if (matrix.Rank == 2 && matrix.Length == 4)
 			{
 				int? num = X;
 				float? num2 = ((num != null) ? new float?((float)num.GetValueOrDefault()) : null) * matrix[0, 0];
@@ -101,9 +100,9 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="pivot">Giver pivot.</param>
 		/// <returns></returns>
-				public RDPoint Rotate(RDPointN pivot, float angle) => ((RDPoint)this - new RDSizeN(pivot)).Rotate(angle) + new RDSizeN(pivot);
-				public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDPointI) && Equals((obj != null) ? ((RDPointI)obj) : default);
-				public override int GetHashCode()
+		public RDPoint Rotate(RDPointN pivot, float angle) => ((RDPoint)this - new RDSizeN(pivot)).Rotate(angle) + new RDSizeN(pivot);
+		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDPointI) && Equals((obj != null) ? ((RDPointI)obj) : default);
+		public override int GetHashCode()
 		{
 			HashCode h = default;
 			h.Add(X);
@@ -142,10 +141,10 @@ namespace RhythmBase.Components
 			return flag3.Value;
 		}
 		public static RDPointI operator +(RDPointI pt, RDSizeI sz) => Add(pt, sz);
-				public static RDPointI operator -(RDPointI pt, RDSizeI sz) => Subtract(pt, sz);
-				public static bool operator ==(RDPointI left, RDPointI right) => left.Equals(right);
-				public static bool operator !=(RDPointI left, RDPointI right) => !left.Equals(right);
-				public static implicit operator RDPoint(RDPointI p)
+		public static RDPointI operator -(RDPointI pt, RDSizeI sz) => Subtract(pt, sz);
+		public static bool operator ==(RDPointI left, RDPointI right) => left.Equals(right);
+		public static bool operator !=(RDPointI left, RDPointI right) => !left.Equals(right);
+		public static implicit operator RDPoint(RDPointI p)
 		{
 			int? num = p.X;
 			float? x = (num != null) ? new float?((float)num.GetValueOrDefault()) : null;

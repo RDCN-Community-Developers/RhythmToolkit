@@ -1,7 +1,7 @@
 ﻿using System;
 namespace RhythmBase.Events
 {
-	public abstract class BaseRowAnimation : BaseRowAction,IBaseEvent
+	public abstract class BaseRowAnimation : BaseRowAction, IBaseEvent
 	{
 	}
 }

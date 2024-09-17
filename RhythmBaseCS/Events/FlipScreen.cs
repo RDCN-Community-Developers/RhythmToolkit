@@ -27,8 +27,7 @@ namespace RhythmBase.Events
 			string result;
 			if (flipX)
 			{
-				bool flipY = FlipY;
-				if (flipY)
+				if (FlipY)
 				{
 					result = "X";
 				}
@@ -39,8 +38,7 @@ namespace RhythmBase.Events
 			}
 			else
 			{
-				bool flipY2 = FlipY;
-				if (flipY2)
+				if (FlipY)
 				{
 					result = "<>";
 				}

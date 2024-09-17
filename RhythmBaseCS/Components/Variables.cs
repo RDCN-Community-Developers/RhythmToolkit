@@ -28,8 +28,7 @@ namespace RhythmBase.Components
 			get
 			{
 				Match match = Regex.Match(variableName, "^([ifb])(\\d{2})$");
-				bool success = match.Success;
-				if (success)
+				if (match.Success)
 				{
 					string value = match.Groups[1].Value;
 					if (Operators.CompareString(value, "i", false) == 0)
@@ -50,8 +49,7 @@ namespace RhythmBase.Components
 			set
 			{
 				Match match = Regex.Match(variableName, "^([ifb])(\\d{2})$");
-				bool success = match.Success;
-				if (success)
+				if (match.Success)
 				{
 					string value2 = match.Groups[1].Value;
 					if (Operators.CompareString(value2, "i", false) != 0)

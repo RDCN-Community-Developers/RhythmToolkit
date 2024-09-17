@@ -73,8 +73,7 @@ namespace RhythmBase.Components
 		{
 			this = default;
 			this.X = x;
-			bool flag = y != null && y.Length != 0;
-			if (flag)
+			if (y != null && y.Length != 0)
 			{
 				this.Y = new Expression?(y);
 			}
@@ -232,8 +231,7 @@ namespace RhythmBase.Components
 
 		public PointE MultipyByMatrix(Expression[,] matrix)
 		{
-			bool flag = matrix.Rank == 2 && matrix.Length == 4;
-			if (flag)
+			if (matrix.Rank == 2 && matrix.Length == 4)
 			{
 				PointE MultipyByMatrix = new(X * matrix[0, 0] + Y * matrix[1, 0], X * matrix[0, 1] + Y * matrix[1, 1]);
 				return MultipyByMatrix;

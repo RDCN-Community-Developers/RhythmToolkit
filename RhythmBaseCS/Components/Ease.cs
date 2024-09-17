@@ -247,15 +247,13 @@ namespace RhythmBase.Components
 				}
 				else
 				{
-					bool flag2 = (double)x < 0.7272727272727273;
-					if (flag2)
+					if ((double)x < 0.7272727272727273)
 					{
 						OutBounce = 7.5625 * Math.Pow((double)x - 0.5454545454545454, 2.0) + 0.75;
 					}
 					else
 					{
-						bool flag3 = (double)x < 0.9090909090909091;
-						if (flag3)
+						if ((double)x < 0.9090909090909091)
 						{
 							OutBounce = 7.5625 * Math.Pow((double)x - 0.8181818181818182, 2.0) + 0.9375;
 						}

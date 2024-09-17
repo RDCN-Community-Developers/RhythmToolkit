@@ -13,8 +13,7 @@ namespace RhythmBase.Converters
 		{
 			writer.WriteStartArray();
 			Type type = value!.GetType();
-			bool flag = type == typeof(RDPointNI) || type == typeof(RDPointNI?) || type == typeof(RDPointN) || type == typeof(RDPointN?) || type == typeof(RDPointI) || type == typeof(RDPointI?) || type == typeof(RDPoint) || type == typeof(RDPoint?);
-			if (flag)
+			if (type == typeof(RDPointNI) || type == typeof(RDPointNI?) || type == typeof(RDPointN) || type == typeof(RDPointN?) || type == typeof(RDPointI) || type == typeof(RDPointI?) || type == typeof(RDPoint) || type == typeof(RDPoint?))
 			{
 				writer.WriteValue(RuntimeHelpers.GetObjectValue(NewLateBinding.LateGet(value, null, "X", [], null, null, null)));
 				writer.WriteValue(RuntimeHelpers.GetObjectValue(NewLateBinding.LateGet(value, null, "Y", [], null, null, null)));

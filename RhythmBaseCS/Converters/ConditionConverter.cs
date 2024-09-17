@@ -15,7 +15,7 @@ namespace RhythmBase.Converters
 			string J = JToken.Load(reader).ToObject<string>()!;
 			Condition Value = new();
 			MatchCollection ConditionIds = ConditionsRegex().Matches(J);
-			foreach(Match match in ConditionIds) 
+			foreach (Match match in ConditionIds)
 			{
 				double vs = Conversion.Val("~2");
 				BaseConditional Parent = (from i in conditionals

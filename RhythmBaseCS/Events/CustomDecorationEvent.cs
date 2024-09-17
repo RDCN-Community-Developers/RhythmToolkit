@@ -66,8 +66,7 @@ namespace RhythmBase.Events
 
 		public static explicit operator CustomDecorationEvent(CustomEvent e)
 		{
-			bool flag = e.Data["row"] != null;
-			if (flag)
+			if (e.Data["row"] != null)
 			{
 				return new CustomDecorationEvent(e.Data);
 			}

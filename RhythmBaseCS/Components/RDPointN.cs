@@ -66,8 +66,7 @@ namespace RhythmBase.Components
 
 		public RDPointN MultipyByMatrix(float[,] matrix)
 		{
-			bool flag = matrix.Rank == 2 && matrix.Length == 4;
-			if (flag)
+			if (matrix.Rank == 2 && matrix.Length == 4)
 			{
 				RDPointN MultipyByMatrix = new(X * matrix[0, 0] + Y * matrix[1, 0], X * matrix[0, 1] + Y * matrix[1, 1]);
 				return MultipyByMatrix;

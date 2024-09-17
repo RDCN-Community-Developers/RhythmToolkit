@@ -14,8 +14,7 @@ namespace RhythmBase.Events
 			}
 			internal set
 			{
-				bool flag = _parent != null;
-				if (flag)
+				if (_parent != null)
 				{
 					_parent.Remove(this);
 					if (value != null)

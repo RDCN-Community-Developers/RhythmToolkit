@@ -1,7 +1,7 @@
 ﻿using System;
 namespace RhythmBase.Events
 {
-	public interface IBarBeginningEvent:IBaseEvent
+	public interface IBarBeginningEvent : IBaseEvent
 	{
 	}
 }

@@ -3,13 +3,15 @@ using Newtonsoft.Json;
 using RhythmBase.Components;
 using RhythmBase.Events;
 namespace RhythmBase.Adofai.Events
-{	public class ADFreeRoam : ADBaseTileEvent, IEaseEvent
-	{		public ADFreeRoam()
+{
+	public class ADFreeRoam : ADBaseTileEvent, IEaseEvent
+	{
+		public ADFreeRoam()
 		{
 			Type = ADEventType.FreeRoam;
 		}
 		public override ADEventType Type { get; }
-				public float Duration { get; set; }
+		public float Duration { get; set; }
 		public int Size { get; set; }
 		public int PositionOffset { get; set; }
 		public int OutTime { get; set; }

@@ -16,8 +16,7 @@ namespace RhythmBase.Converters
 
 		public override void WriteJson(JsonWriter writer, PaletteColor value, JsonSerializer serializer)
 		{
-			bool enablePanel = value.EnablePanel;
-			if (enablePanel)
+			if (value.EnablePanel)
 			{
 				writer.WriteValue(string.Format("pal{0}", value.PaletteIndex));
 			}
@@ -26,8 +25,7 @@ namespace RhythmBase.Converters
 				string s = value.Value.ToString().Replace("#", "");
 				string alpha = s.Substring(0, 2);
 				string rgb = s.Substring(2);
-				bool enableAlpha = value.EnableAlpha;
-				if (enableAlpha)
+				if (value.EnableAlpha)
 				{
 					writer.WriteValue(rgb + alpha);
 				}
@@ -43,8 +41,7 @@ namespace RhythmBase.Converters
 			string JString = JToken.Load(reader).Value<string>();
 			Match reg = Regex.Match(JString, "pal(\\d+)");
 			existingValue.parent = parent;
-			bool success = reg.Success;
-			if (success)
+			if (reg.Success)
 			{
 				existingValue.PaletteIndex = Conversions.ToInteger(reg.Groups[1].Value);
 			}
@@ -52,14 +49,12 @@ namespace RhythmBase.Converters
 			{
 				string s = JString.Replace("#", "");
 				string alpha = "";
-				bool flag = s.Length > 6;
-				if (flag)
+				if (s.Length > 6)
 				{
 					alpha = s.Substring(6);
 				}
 				string rgb = s.Substring(0, 6);
-				bool flag2 = s.Length > 6;
-				if (flag2)
+				if (s.Length > 6)
 				{
 					existingValue.Color = new SKColor?(SKColor.Parse(alpha + rgb));
 				}

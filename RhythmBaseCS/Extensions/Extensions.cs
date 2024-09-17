@@ -28,13 +28,12 @@ namespace RhythmBase.Extensions
 							: (firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)index.Value, 1f),
 						firstEvent.Beat._calculator.BarBeatToBeatOnly((uint)(index.Value + 1), 1f));
 			}
-			catch (Exception ex)
+			catch
 			{
 				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 			return GetRange;
 		}
-
 		private static (float start, float end) GetRange(OrderedEventCollection e, Range range)
 		{
 			(float start, float end) GetRange;
@@ -49,7 +48,7 @@ namespace RhythmBase.Extensions
 							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(((ulong)lastEvent.Beat.BarBeat.bar) - (ulong)((long)range.End.Value) + 1UL), 1f)
 							: firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(range.End.Value + 1), 1f)));
 			}
-			catch (Exception ex)
+			catch
 			{
 				throw new ArgumentOutOfRangeException(nameof(range));
 			}
@@ -80,7 +79,7 @@ namespace RhythmBase.Extensions
 		public static string ToUpperCamelCase(this string e)
 		{
 			char[] S = [.. e];
-			S[0] = Conversions.ToChar(S[0].ToString().ToUpper());
+			S[0] = (S[0].ToString().ToUpper()[0]);
 			return string.Join("", [new string(S)]);
 		}
 		/// <summary>
@@ -106,8 +105,8 @@ namespace RhythmBase.Extensions
 		/// <returns>The result.</returns>
 		public static string ToLowerCamelCase(this string e)
 		{
-			char[] S = e.ToArray();
-			S[0] = Conversions.ToChar(S[0].ToString().ToLower());
+			char[] S = [.. e];
+			S[0] = (S[0].ToString().ToLower()[0]);
 			return string.Join("", [new string(S)]);
 		}
 		/// <summary>
@@ -226,9 +225,8 @@ namespace RhythmBase.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Beat beat) where TEvent : IBaseEvent
 		{
-			TypedEventCollection<IBaseEvent> value = [];
 			IEnumerable<TEvent> Where = [];
-			if (e.eventsBeatOrder.TryGetValue(beat, out value))
+			if (e.eventsBeatOrder.TryGetValue(beat, out TypedEventCollection<IBaseEvent> value))
 				Where = (IEnumerable<TEvent>)value;
 			return Where;
 		}
@@ -326,7 +324,7 @@ namespace RhythmBase.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Beat beat) where TEvent : IBaseEvent
 		{
-			TypedEventCollection<IBaseEvent> value = [];
+			TypedEventCollection<IBaseEvent> value;
 			return (e.eventsBeatOrder.TryGetValue(beat, out value!) ? value.OfType<TEvent>() : []) ?? [];
 		}
 		/// <summary>
@@ -368,10 +366,10 @@ namespace RhythmBase.Extensions
 		/// <param name="bars">Specified bar range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Range bars) where TEvent : IBaseEvent
 		{
-			(float start, float end) rg = GetRange(e, bars);
+			(float start, float end) = GetRange(e, bars);
 			return e.eventsBeatOrder
-							.TakeWhile(i => i.Key.BeatOnly < rg.end)
-							.SkipWhile(i => i.Key.BeatOnly < rg.start)
+							.TakeWhile(i => i.Key.BeatOnly < end)
+							.SkipWhile(i => i.Key.BeatOnly < start)
 							.SelectMany(i => i.Value.OfType<TEvent>());
 		}
 		/// <summary>
@@ -813,8 +811,7 @@ namespace RhythmBase.Extensions
 		/// </list></returns>
 		public static bool IsBehind(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2)
 		{
-			bool s = item1.Beat.Equals(item2.Beat);
-			return Conversions.ToBoolean(item1.Beat > item2.Beat || (item1.Beat.BeatOnly == item2.Beat.BeatOnly && (e.eventsBeatOrder[item1.Beat].BeforeThan(item2, item1))));
+			return (item1.Beat > item2.Beat || (item1.Beat.BeatOnly == item2.Beat.BeatOnly && (e.eventsBeatOrder[item1.Beat].BeforeThan(item2, item1))));
 		}
 		/// <summary>
 		/// Get all the hit of the level.
@@ -1118,7 +1115,7 @@ namespace RhythmBase.Extensions
 				if (p.GetValue(treeProperties) != null)
 				{
 					CallCustomMethod T = e.Clone<CallCustomMethod>();
-					T.EditTree(room, p.Name, Conversions.ToSingle(p.GetValue(treeProperties)), beats, ease);
+					T.EditTree(room, p.Name, ((float)p.GetValue(treeProperties)), beats, ease);
 					L.Add(T);
 				}
 			return L;
@@ -1146,8 +1143,7 @@ namespace RhythmBase.Extensions
 				PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 				foreach (PropertyInfo p in properties)
 				{
-					bool canWrite = p.CanWrite;
-					if (canWrite)
+					if (p.CanWrite)
 					{
 						p.SetValue(copy, p.GetValue(e));
 					}
@@ -1164,7 +1160,7 @@ namespace RhythmBase.Extensions
 		public static PlayerType Player(this BaseBeat e)
 		{
 			ChangePlayersRows? changePlayersRows = e.Beat.BaseLevel.LastOrDefault((ChangePlayersRows i) => i.Active && i.Players[e.Index] != PlayerType.NoChange);
-			return (PlayerType)Conversions.ToInteger((changePlayersRows != null) ? changePlayersRows.Players[e.Index] : e.Parent.Player);
+			return (PlayerType)((changePlayersRows != null) ? changePlayersRows.Players[e.Index] : (PlayerType)e.Parent.Player);
 		}
 		/// <summary>
 		/// Get the pulse sound effect of row beat event.
@@ -1246,8 +1242,7 @@ namespace RhythmBase.Extensions
 				LimitedList<Patterns> T = new(6U, Patterns.None);
 				AddClassicBeat.ClassicBeatPatterns? setXs = e.SetXs;
 				int? num = (setXs != null) ? new int?((int)setXs.GetValueOrDefault()) : null;
-				bool valueOrDefault = ((num != null) ? new bool?(num.GetValueOrDefault() == 0) : null).GetValueOrDefault();
-				if (valueOrDefault)
+				if (((num != null) ? new bool?(num.GetValueOrDefault() == 0) : null).GetValueOrDefault())
 				{
 					T[1] = Patterns.X;
 					T[2] = Patterns.X;
@@ -1257,8 +1252,7 @@ namespace RhythmBase.Extensions
 				else
 				{
 					num = (setXs != null) ? new int?((int)setXs.GetValueOrDefault()) : null;
-					valueOrDefault = ((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault();
-					if (!valueOrDefault)
+					if (!(((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault()))
 					{
 						throw new RhythmBaseException("How?");
 					}
@@ -1631,13 +1625,13 @@ namespace RhythmBase.Extensions
 			{
 				PointE previousPosition = e.Position.Value;
 				PointE? pointE = e.Pivot;
-				Expression? expression = (pointE != null) ? pointE.GetValueOrDefault().X : null;
+				Expression? expression = pointE?.X;
 				pointE = e.Scale;
-				Expression? x = expression * ((pointE != null) ? pointE.GetValueOrDefault().X : null) * (float)e.Parent.Size.Width / 100f;
+				Expression? x = expression * (pointE?.X) * (float)e.Parent.Size.Width / 100f;
 				pointE = e.Pivot;
-				Expression? expression2 = (pointE != null) ? pointE.GetValueOrDefault().Y : null;
+				Expression? expression2 = pointE?.Y;
 				pointE = e.Scale;
-				PointE previousPivot = new(x, expression2 * ((pointE != null) ? pointE.GetValueOrDefault().Y : null) * (float)e.Parent.Size.Height / 100f);
+				PointE previousPivot = new(x, expression2 * (pointE?.Y) * (float)e.Parent.Size.Height / 100f);
 				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
 			}
 			return VisualPosition;
@@ -1652,13 +1646,13 @@ namespace RhythmBase.Extensions
 			{
 				PointE previousPosition = e.RoomPosition.Value;
 				PointE? pivot = e.Pivot;
-				Expression? expression = (pivot != null) ? pivot.GetValueOrDefault().X : null;
+				Expression? expression = pivot?.X;
 				RDSizeE? scale = e.Scale;
-				Expression? x = expression * ((scale != null) ? scale.GetValueOrDefault().Width : null);
+				Expression? x = expression * (scale?.Width);
 				pivot = e.Pivot;
-				Expression? expression2 = (pivot != null) ? pivot.GetValueOrDefault().Y : null;
+				Expression? expression2 = pivot?.Y;
 				scale = e.Scale;
-				PointE previousPivot = new(x, expression2 * ((scale != null) ? scale.GetValueOrDefault().Height : null));
+				PointE previousPivot = new(x, expression2 * (scale?.Height));
 				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
 			}
 			return VisualPosition;
