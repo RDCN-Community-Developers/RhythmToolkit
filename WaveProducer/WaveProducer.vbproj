@@ -9,6 +9,7 @@
     <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RhythmBaseCS\RhythmBase.csproj" />
     <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
   </ItemGroup>
 </Project>

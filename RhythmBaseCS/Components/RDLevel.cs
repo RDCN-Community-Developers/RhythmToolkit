@@ -9,6 +9,7 @@ using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using RhythmBase.Utils;
 using SkiaSharp;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 namespace RhythmBase.Components
 {
@@ -118,13 +119,13 @@ namespace RhythmBase.Components
 		/// <param name="room">The room where this decoration is in.</param>
 		/// <param name="sprite">The sprite referenced by this decoration.</param>
 		/// <returns>Decoration that created and added to the level.</returns>
-		public DecorationEventCollection CreateDecoration(SingleRoom room, SpriteFile sprite = null)
+		public DecorationEventCollection CreateDecoration(SingleRoom room,[NotNull] string sprite)
 		{
 			DecorationEventCollection temp = new(room)
 			{
 				Parent = this,
-				_file = (Asset<ISpriteFile>)(object)Manager.Create<SpriteFile>(sprite.Name, sprite)
 			};
+			temp.Sprite.Name = sprite;
 			_decorations.Add(temp);
 			return temp;
 		}

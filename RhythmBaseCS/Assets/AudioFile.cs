@@ -22,13 +22,13 @@ namespace RhythmBase.Assets
 			{
 				audio.FilePath = path;
 				string extension = Path.GetExtension(path);
-				audio._stream = extension switch
+				audio.Stream = extension switch
 				{
 					".ogg" => new VorbisWaveReader(path),
 					".mp3" => new Mp3FileReader(path),
 					".wav" or ".wave" => new WaveFileReader(path),
 					".aiff" or ".aif" => new AiffFileReader(path),
-					_ => (WaveStream)Stream.Null,
+					_ => (WaveStream)System.IO.Stream.Null,
 				};
 			}
 			return audio;
@@ -37,7 +37,7 @@ namespace RhythmBase.Assets
 		{
 			throw new NotImplementedException();
 		}
-		private WaveStream _stream;
+		public WaveStream Stream { get; private set; }
 		public override string ToString() => Path.GetFileName(FilePath);
 	}
 }

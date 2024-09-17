@@ -3,7 +3,6 @@ Imports NAudio.Dsp
 Imports NAudio.Wave
 Imports MathNet.Numerics
 Imports RhythmBase.Components
-Imports RhythmBase.Components
 Imports RhythmBase.Events
 Imports RhythmBase.Utils
 Imports MathNet.Numerics.IntegralTransforms

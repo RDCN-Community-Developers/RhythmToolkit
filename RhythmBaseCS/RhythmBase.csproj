@@ -6,20 +6,28 @@
     <RootNamespace>RhythmBase</RootNamespace>
     <AssemblyName>RhythmBase</AssemblyName>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>RhythmToolkit</Title>
+    <Version>1.0.6-beta5</Version>
+    <Authors>obugs</Authors>
+    <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels.</Description>
+    <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RadiationTherapy</PackageProjectUrl>
+    <PackageIcon>RhythmToolkit.png</PackageIcon>
+    <RepositoryUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit.git</RepositoryUrl>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="C:\Users\30698\.nuget\packages\naudio.vorbis\1.5.0\contentFiles\any\netstandard2.0\README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="E:\Desktop\RadiationTherapy.png" Link="RadiationTherapy.png">
-      <PackagePath>\</PackagePath>
-      <Pack>True</Pack>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SkiaSharp" Version="2.88.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="RhythmToolkit.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>
