@@ -18,6 +18,7 @@ namespace RhythmBase.Assets
 			Pan = 0;
 			Offset = TimeSpan.Zero;
 		}
+		[JsonIgnore]
 		public Asset<IAudioFile> AudioFile { get; set; }
 		/// <summary>
 		/// File name.

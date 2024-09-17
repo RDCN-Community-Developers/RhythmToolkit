@@ -23,7 +23,7 @@ namespace RhythmBase.Events
 		public PaletteColor BorderColor { get; set; }
 		[EaseProperty]
 		public int Opacity { get; set; }
-		[JsonProperty("Tint")]
+		[JsonProperty("tint")]
 		public bool IsTint { get; set; }
 		[EaseProperty]
 		public PaletteColor TintColor { get; set; }

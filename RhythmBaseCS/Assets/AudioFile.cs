@@ -5,6 +5,16 @@ namespace RhythmBase.Assets
 {
 	public class AudioFile : IAudioFile
 	{
+		public bool IsModified
+		{
+			get => false;
+			private set
+			{
+
+			}
+		}
+		/// <inheritdoc/>
+		public bool IsBuiltIn => false;
 		public string FilePath { get; private set; }
 		internal AudioFile() { }
 		public static IAssetFile? Load(string path)

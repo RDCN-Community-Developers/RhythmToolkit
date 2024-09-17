@@ -35,23 +35,11 @@ namespace RhythmBase.Events
 		[JsonIgnore]
 		public virtual Beat Beat
 		{
-			get
-			{
-				return _beat;
-			}
+			get => _beat;
 			set
 			{
 				if (_beat.BaseLevel == null)
-				{
-					if (value.BaseLevel == null)
-					{
-						_beat = value;
-					}
-					else
-					{
-						_beat = value.WithoutBinding();
-					}
-				}
+					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
 				else
 				{
 					value = new Beat(_beat.BaseLevel.Calculator, value);
@@ -63,7 +51,7 @@ namespace RhythmBase.Events
 		}
 
 		/// <summary>
-		/// The number of rows this event is on
+		/// The number of rows this event is on.
 		/// </summary>
 
 		public virtual int Y { get; set; }
@@ -81,8 +69,6 @@ namespace RhythmBase.Events
 
 		[JsonProperty("if", DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public Condition Condition { get; set; }
-
-
 		public bool Active { get; set; }
 
 		/// <summary>

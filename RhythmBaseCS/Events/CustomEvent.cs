@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Extensions;
@@ -10,11 +9,14 @@ namespace RhythmBase.Events
 {
 	public class CustomEvent : BaseEvent
 	{
+		/// <inheritdoc/>
 		[JsonIgnore]
-		public override EventType Type { get; }
+		public override EventType Type => EventType.CustomEvent;
 		[JsonIgnore]
 		public string ActureType => Data["Type".ToLowerCamelCase()].ToString();
+		/// <inheritdoc/>
 		public override Tabs Tab { get; }
+		/// <inheritdoc/>
 		public override int Y
 		{
 			get => (int)(Data["Y".ToLowerCamelCase()] ?? 0);
@@ -23,14 +25,11 @@ namespace RhythmBase.Events
 		public CustomEvent()
 		{
 			Data = [];
-			Type = EventType.CustomEvent;
 			Tab = Tabs.Unknown;
-			Data = [];
 		}
 		public CustomEvent(JObject data)
 		{
 			Data = [];
-			Type = EventType.CustomEvent;
 			Tab = Tabs.Unknown;
 			Data = data;
 			uint bar = data["bar"].ToObject<uint>();
@@ -52,34 +51,23 @@ namespace RhythmBase.Events
 			JToken jtoken4 = data["active"];
 			Active = jtoken4 == null || jtoken4.ToObject<bool>();
 		}
+		/// <inheritdoc/>
 		public override string ToString() => string.Format("{0} *{1}", Beat, ActureType);
 		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
 		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type, LevelReadOrWriteSettings settings)
 		{
 			JsonSerializer serializer = JsonSerializer.Create(_beat.BaseLevel.GetSerializer(settings));
-			Type eventType = Utils.Utils.ConvertToType((string)Data["type"]);
-			bool flag = eventType == null;
+			Type eventType = Utils.Utils.ConvertToType(Data["type"]?.ToObject<string>() ?? "");
 			bool TryConvert;
-			if (flag)
+			if (eventType == null)
 			{
-				bool flag2 = Data["target"] != null;
 				BaseEvent TempEvent;
-				if (flag2)
-				{
+				if (Data["target"] != null)
 					TempEvent = Data.ToObject<CustomDecorationEvent>(serializer);
-				}
+				else if (Data["row"] != null)
+					TempEvent = Data.ToObject<CustomRowEvent>(serializer);
 				else
-				{
-					bool flag3 = Data["row"] != null;
-					if (flag3)
-					{
-						TempEvent = Data.ToObject<CustomRowEvent>(serializer);
-					}
-					else
-					{
-						TempEvent = Data.ToObject<CustomEvent>(serializer);
-					}
-				}
+					TempEvent = Data.ToObject<CustomEvent>(serializer);
 				value = TempEvent;
 				type = null;
 				TryConvert = false;
@@ -96,6 +84,6 @@ namespace RhythmBase.Events
 
 
 		[JsonIgnore]
-		public JObject Data;
+		public JObject Data { get; set; }
 	}
 }

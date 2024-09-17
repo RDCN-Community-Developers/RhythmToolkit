@@ -16,134 +16,104 @@ namespace RhythmBase.Assets
 
 	public class SpriteFile : ISpriteFile
 	{
+		private bool _isModified = false;
+		/// <inheritdoc/>
+		[JsonIgnore]
+		public bool IsModified
+		{
+			get => _isModified;
+			private set => _isModified = value;
+		}
+		/// <inheritdoc/>
 		[JsonIgnore]
 		public string FilePath { get; }
 		/// <summary>
 		/// The expression names of the sprite file.
 		/// </summary>
-
 		[JsonIgnore]
 		public IEnumerable<string> Expressions => Clips.Select((i) => i.Name);
-
 		/// <summary>
 		/// The name of the file.
 		/// </summary>
-
 		[JsonIgnore]
 		public string FileName { get; }
-
 		/// <summary>
 		/// The area where the sprite is previewed.
 		/// </summary>
-
 		[JsonIgnore]
 		public SKRect? Preview => new SKRect?((RowPreviewFrame == null) ? default(SKRect) : GetFrame(checked((int)RowPreviewFrame.Value)));
-
 		/// <summary>
 		/// The size of the sprite/image
 		/// </summary>
-
 		[JsonIgnore]
 		public RDSizeNI ImageSize => _imageSize;
-
 		/// <summary>
 		/// Base layer
 		/// </summary>
-
 		[JsonIgnore]
 		public SKBitmap ImageBase { get; set; }
-
 		/// <summary>
 		/// Glow layer
 		/// </summary>
-
 		[JsonIgnore]
 		public SKBitmap ImageGlow { get; set; }
-
 		/// <summary>
 		/// Outline layer
 		/// </summary>
-
 		[JsonIgnore]
 		public SKBitmap ImageOutline { get; set; }
-
 		/// <summary>
 		/// Freeze layer
 		/// </summary>
-
 		[JsonIgnore]
 		public SKBitmap ImageFreeze { get; set; }
-
 		/// <summary>
 		/// The name of the sprite.
 		/// </summary>
-
 		public string Name { get; set; }
-
 		/// <summary>
 		/// [Unknown] The voice of the sprite.
 		/// </summary>
-
-		public string Voice { get; set; }
-
+		public string? Voice { get; set; }
 		/// <summary>
 		/// The size of each expression.
 		/// </summary>
-
 		public RDSizeNI Size { get; set; }
-
 		/// <summary>
 		/// Information of expressions.
 		/// </summary>
-
 		public HashSet<Expression> Clips { get; set; } = [];
-
 		/// <summary>
 		/// Image offset when the row is previewed.
 		/// </summary>
-
 		public RDSizeN? RowPreviewOffset { get; set; }
-
 		/// <summary>
 		/// Row preview frame.
 		/// </summary>
-
 		public uint? RowPreviewFrame { get; set; }
-
 		/// <summary>
 		/// Pivot point offset.
 		/// </summary>
-
 		public RDPointN? PivotOffset { get; set; }
-
 		/// <summary>
 		/// Image offset in dialog box.
 		/// </summary>
-
 		public RDSizeN? PortraitOffset { get; set; }
-
 		/// <summary>
 		/// Image clipping in the dialog box.
 		/// </summary>
-
 		public RDSizeN? PortraitSize { get; set; }
-
 		/// <summary>
 		/// Image scale in the dialog box.
 		/// </summary>
-
 		public float? PortraitScale { get; set; }
-
-
 		public SpriteFile()
 		{
 		}
-
 		/// <summary>
 		/// Create a reference to the file. The contents of the file are not read.
 		/// </summary>
 		/// <param name="filename">File path.</param>
-
 		public SpriteFile(string filename)
 		{
 			bool flag = filename.IsNullOrEmpty();
@@ -153,11 +123,9 @@ namespace RhythmBase.Assets
 			}
 			//this._FileName = filename;
 		}
-
 		/// <summary>
 		/// Load the file contents into memory.
 		/// </summary>
-
 		public static IAssetFile? Load(string path)
 		{
 			SpriteFile sprite = new();
@@ -178,7 +146,7 @@ namespace RhythmBase.Assets
 				}
 				json = string.Format("{0}\\{1}", _file, Path.GetFileName(_file));
 			}
-			JObject obj = setting.Deserialize<JObject>(new JsonTextReader(File.OpenText(string.Format("{0}.json", json))));
+			JObject obj = setting.Deserialize<JObject>(new JsonTextReader(File.OpenText(string.Format("{0}.json", json))))!;
 			string imageBaseFile = string.Format("{0}.png", json);
 			string imageGlowFile = string.Format("{0}_glow.png", json);
 			string imageOutlineFile = string.Format("{0}_outline.png", json);
@@ -187,22 +155,16 @@ namespace RhythmBase.Assets
 			{
 				sprite.ImageBase = SKBitmap.Decode(imageBaseFile);
 				if (File.Exists(imageGlowFile))
-				{
 					sprite.ImageGlow = SKBitmap.Decode(imageGlowFile);
-				}
 				if (File.Exists(imageOutlineFile))
-				{
 					sprite.ImageOutline = SKBitmap.Decode(imageOutlineFile);
-				}
 				if (File.Exists(imageFreezeFile))
-				{
 					sprite.ImageFreeze = SKBitmap.Decode(imageFreezeFile);
-				}
 				JToken? jtoken = obj["Name".ToLowerCamelCase()];
-				sprite.Name = jtoken?.ToObject<string>();
+				sprite.Name = jtoken?.ToObject<string>()!;
 				JToken? jtoken2 = obj["Voice".ToLowerCamelCase()];
 				sprite.Voice = jtoken2?.ToObject<string>();
-				sprite.Size = obj["Size".ToLowerCamelCase()].ToObject<RDSizeNI>();
+				sprite.Size = obj[nameof(Size).ToLowerCamelCase()]!.ToObject<RDSizeNI>();
 				JToken? jtoken3 = obj["RowPreviewOffset".ToLowerCamelCase()];
 				sprite.RowPreviewOffset = (jtoken3 != null) ? new RDSizeN?(jtoken3.ToObject<RDSizeN>()) : null;
 				JToken? jtoken4 = obj["RowPreviewFrame".ToLowerCamelCase()];
@@ -215,27 +177,23 @@ namespace RhythmBase.Assets
 				sprite.PortraitSize = (jtoken7 != null) ? new RDSizeN?(jtoken7.ToObject<RDSizeN>()) : null;
 				JToken? jtoken8 = obj["PortraitScale".ToLowerCamelCase()];
 				sprite.PortraitScale = (jtoken8 != null) ? new float?(jtoken8.ToObject<float>()) : null;
-				foreach (var clip in obj[nameof(Clips).ToLowerCamelCase()])
-					sprite.Clips.Add(clip.ToObject<Expression>());
+				foreach (JToken clip in obj[nameof(Clips).ToLowerCamelCase()] ?? new JObject())
+					sprite.Clips.Add(clip.ToObject<Expression>()!);
 				return sprite;
 			}
 			throw new FileNotFoundException("Cannot find the image file", _file + ".png");
 		}
 		public void Save() { throw new NotImplementedException(); }
-
 		/// <summary>
 		/// Write JSON data to the text stream.
 		/// </summary>
 		/// <param name="textWriter">Text writer stream.</param>
-
 		public void WriteJson(TextWriter textWriter) => WriteJson(textWriter, new SpriteReadOrWriteSettings());
-
 		/// <summary>
 		/// Write JSON data to the text stream.
 		/// </summary>
 		/// <param name="textWriter">Text writer stream.</param>
 		/// <param name="setting">Write settings.</param>
-
 		public void WriteJson(TextWriter textWriter, SpriteReadOrWriteSettings setting)
 		{
 			JsonSerializerSettings jsonS = new()
@@ -345,13 +303,11 @@ namespace RhythmBase.Assets
 				textWriter.Flush();
 			}
 		}
-
 		/// <summary>
 		/// Gets the frame crop area.
 		/// </summary>
 		/// <param name="index">Frame index.</param>
 		/// <returns>A rectangular area that indicates the cropping area.</returns>
-
 		public SKRectI GetFrame(int index)
 		{
 			bool flag = index < 0;
@@ -361,8 +317,6 @@ namespace RhythmBase.Assets
 			}
 			return GetFrameRect(checked((uint)index), ImageSize.ToSKSizeI(), Size.ToSKSizeI());
 		}
-
-
 		private static SKRectI GetFrameRect(uint index, SKSizeI source, SKSizeI size)
 		{
 			int column = source.Width / size.Width;
@@ -374,13 +328,11 @@ namespace RhythmBase.Assets
 					   leftTop.X + size.Width,
 					   leftTop.Y + size.Height);
 		}
-
 		/// <summary>
 		/// Add a blank expression.
 		/// </summary>
 		/// <param name="name">Expression name.</param>
 		/// <returns>Added expression. Further changes can be made on top of this.</returns>
-
 		public Expression AddBlankExpression(string name)
 		{
 			Expression C = Clips.FirstOrDefault(new Expression
@@ -390,40 +342,28 @@ namespace RhythmBase.Assets
 			Clips.Add(C);
 			return C;
 		}
-
 		/// <summary>
 		/// Add a blank emoticon to the creation of character assets.
 		/// </summary>
 		/// <returns>Added expressions. Further changes can be made on top of these.</returns>
-
 		public IEnumerable<Expression> AddBlankExpressionsForCharacter() => from n in characterExpressionNames select AddBlankExpression(n);
-
 		/// <summary>
 		/// Add a blank emoticon to the creation of sprite assets.
 		/// </summary>
 		/// <returns>Added expression. Further changes can be made on top of this.</returns>
-
-		public IEnumerable<Expression> AddBlankExpressionForDecoration() => from n in new string[]
-																					 {
-				"neutral"
-																					 }
-																			select AddBlankExpression(n);
-
+		public IEnumerable<Expression> AddBlankExpressionForDecoration() => [AddBlankExpression("neutral")];
 		/// <summary>
 		/// Save the file.
 		/// </summary>
 		/// <param name="path">the file path.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">The save path is the same as the reference path.</exception>
-
 		public void Save(string path) => Save(path, new SpriteReadOrWriteSettings());
-
 		/// <summary>
 		/// Save the file.
 		/// </summary>
 		/// <param name="path">the file path.</param>
 		/// <param name="settings">save settings.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">The save path is the same as the reference path.</exception>
-
 		public void Save(string path, SpriteReadOrWriteSettings settings)
 		{
 			FileInfo file = new(path);
@@ -455,11 +395,7 @@ namespace RhythmBase.Assets
 			}
 			WriteJson(new FileInfo(WithoutExtension + ".json").CreateText(), settings);
 		}
-
-
 		public override string ToString() => Name.IsNullOrEmpty() ? FileName : Name;
-
-
 		private RDSizeNI _imageSize;
 		private static readonly string[] characterExpressionNames =
 			[
@@ -468,80 +404,55 @@ namespace RhythmBase.Assets
 				"barely",
 				"missed"
 			];
-
 		/// <summary>
 		/// An expression.
 		/// </summary>
-
 		public class Expression
 		{
 			/// <summary>
 			/// Expression name.
 			/// </summary>
-
 			public string Name { get; set; }
-
 			/// <summary>
 			/// The list of frame indexes for expression.
 			/// </summary>
-
 			public List<uint> Frames { get; set; }
-
 			/// <summary>
 			/// The start frame of the cycle for the expression.
 			/// </summary>
-
 			public int? LoopStart { get; set; }
-
 			/// <summary>
 			/// The way the expression loops.
 			/// </summary>
-
 			[JsonConverter(typeof(StringEnumConverter))]
 			public LoopOption Loop { get; set; }
-
 			/// <summary>
 			/// The frame rate of the emoticon when <c>loop == yes</c>.
 			/// </summary>
-
 			public float Fps { get; set; }
-
 			/// <summary>
 			/// Pivot point offset.
 			/// </summary>
-
 			public RDPointN? PivotOffset { get; set; }
-
 			/// <summary>
 			/// Image offset in dialog box.
 			/// </summary>
-
 			public RDSizeN? PortraitOffset { get; set; }
-
 			/// <summary>
 			/// Image scale in the dialog box.
 			/// </summary>
-
 			public float? PortraitScale { get; set; }
-
 			/// <summary>
 			/// Image clipping in the dialog box.
 			/// </summary>
-
 			public RDSizeN? PortraitSize { get; set; }
-
 			/// <summary>
 			/// Get the cropped area on the image for each frame of this expression.
 			/// </summary>
 			/// <returns>An array of rectangles indicating each crop area.</returns>
-
 			public SKRectI[] GetFrameRects() => (from i in Frames
 												 select parent.GetFrame(checked((int)i))).ToArray();
-
-
 			public override string ToString() => Name;
-
-
 			internal SpriteFile parent;
 		}
 	}

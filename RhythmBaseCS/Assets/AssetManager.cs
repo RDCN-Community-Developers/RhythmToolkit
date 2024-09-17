@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using RhythmBase.Components;
+﻿using RhythmBase.Components;
 using System.Diagnostics.CodeAnalysis;
 
 namespace RhythmBase.Assets
@@ -10,9 +9,10 @@ namespace RhythmBase.Assets
 		{
 			get
 			{
-				var key = new TypeNameIndex(type, name);
-				if (!data.ContainsKey(key))
-					data[key] = IAssetFile.Load(type, Path.Combine(baseLevel.Directory, name));
+				TypeNameIndex key = new(type, name);
+				IAssetFile? value = IAssetFile.Load(type, Path.Combine(baseLevel.Directory, name));
+				if (!data.ContainsKey(key) && value != null)
+					data[key] = value;
 				return data[key];
 			}
 			set => data[new TypeNameIndex(type, name)] = value;
@@ -21,19 +21,19 @@ namespace RhythmBase.Assets
 		{
 			get
 			{
-				var key = new TypeNameIndex(index.Type, index.Name);
-				if (!data.ContainsKey(key))
-					data[key] = IAssetFile.Load(index.Type, Path.Combine( baseLevel.Directory,index.Name));
+				TypeNameIndex key = new(index.Type, index.Name);
+				IAssetFile? value = IAssetFile.Load(index.Type, Path.Combine(baseLevel.Directory, index.Name));
+				if (!data.ContainsKey(key) && value != null)
+					data[key] = value;
 				return data[key];
 			}
-
 			set => this[index.Type, index.Name] = value;
 		}
 		public Asset<TAsset> Create<TAsset>(string name) where TAsset : IAssetFile => new(this) { Name = name };
 		public Asset<TAsset> Create<TAsset>(string name, IAssetFile asset) where TAsset : IAssetFile => new(this)
 		{
 			Name = name,
-			Value = (TAsset)(object)asset
+			Value = (TAsset)(object)asset,
 		};
 		private readonly RDLevel baseLevel = level;
 		private readonly Dictionary<TypeNameIndex, IAssetFile> data = [];
@@ -45,9 +45,9 @@ namespace RhythmBase.Assets
 				Type = type;
 				Name = name;
 			}
-			public override bool Equals([NotNullWhen(true)] object? obj) => obj!.GetType() == typeof(TypeNameIndex) | Equals((obj != null) ? ((TypeNameIndex)obj) : default);
-			public bool Equals(TypeNameIndex other) => Operators.CompareString(Name, other.Name, false) == 0 && Operators.CompareString(Name, other.Name, false) == 0;
-			public override int GetHashCode() => HashCode.Combine(Type, Name);
+			public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj!.GetType() == typeof(TypeNameIndex) | Equals((obj != null) ? ((TypeNameIndex)obj) : default);
+			public readonly bool Equals(TypeNameIndex other) => Name == other.Name && Type == other.Type;
+			public override readonly int GetHashCode() => HashCode.Combine(Type, Name);
 			public Type Type;
 			public string Name;
 		}

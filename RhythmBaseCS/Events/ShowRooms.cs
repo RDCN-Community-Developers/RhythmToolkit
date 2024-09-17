@@ -16,7 +16,7 @@ namespace RhythmBase.Events
 		public Room Rooms { get; set; }
 		public Ease.EaseType Ease { get; set; }
 		public List<int> Heights { get; set; }
-		[JsonProperty("TransitionTime")]
+		[JsonProperty("transitionTime")]
 		public float Duration { get; set; }
 		public override EventType Type { get; }
 		public override Tabs Tab { get; }

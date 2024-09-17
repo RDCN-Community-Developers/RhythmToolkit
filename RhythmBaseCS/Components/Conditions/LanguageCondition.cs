@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace RhythmBase.Components.Conditions
 {
@@ -15,7 +16,9 @@ namespace RhythmBase.Components.Conditions
 		/// <summary>
 		/// Game Language.
 		/// </summary>
-		public Languages Language { get; set; }
+		[JsonProperty(nameof(Language))]
+		public Languages Language { get; 
+			set; }
 		public override ConditionType Type { get; }
 		/// <summary>
 		/// Game Language.

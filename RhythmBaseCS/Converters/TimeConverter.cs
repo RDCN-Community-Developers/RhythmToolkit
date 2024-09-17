@@ -21,43 +21,25 @@ namespace RhythmBase.Converters
 
 		public override void WriteJson(JsonWriter writer, TimeSpan value, JsonSerializer serializer)
 		{
-			object timeType = _timeType;
-			bool flag = _timeType == TimeType.Hour;
-			if (flag)
+			switch (_timeType)
 			{
-				writer.WriteValue(value.TotalHours);
-			}
-			else
-			{
-				flag = _timeType == TimeType.Minute;
-				if (flag)
-				{
+				case TimeType.Hour:
+					writer.WriteValue(value.TotalHours);
+					break;
+				case TimeType.Minute:
 					writer.WriteValue(value.TotalMinutes);
-				}
-				else
-				{
-					flag = _timeType == TimeType.Second;
-					if (flag)
-					{
-						writer.WriteValue(value.TotalSeconds);
-					}
-					else
-					{
-						flag = _timeType == TimeType.MiliSecond;
-						if (flag)
-						{
-							writer.WriteValue(value.TotalMilliseconds);
-						}
-						else
-						{
-							flag = _timeType == TimeType.Microsecond;
-							if (flag)
-							{
-								writer.WriteValue(value.TotalMicroseconds);
-							}
-						}
-					}
-				}
+					break;
+				case TimeType.Second:
+					writer.WriteValue(value.TotalSeconds);
+					break;
+				case TimeType.MiliSecond:
+					writer.WriteValue(value.TotalMilliseconds);
+					break;
+				case TimeType.Microsecond:
+					writer.WriteValue(value.TotalMicroseconds);
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -67,7 +49,7 @@ namespace RhythmBase.Converters
 			float value = JToken.ReadFrom(reader).ToObject<float>();
 			return _timeType switch
 			{
-				TimeType.Hour =>  TimeSpan.FromHours((double)value),
+				TimeType.Hour => TimeSpan.FromHours((double)value),
 				TimeType.Minute => TimeSpan.FromMinutes((double)value),
 				TimeType.Second => TimeSpan.FromSeconds((double)value),
 				TimeType.MiliSecond => TimeSpan.FromMilliseconds((double)value),
