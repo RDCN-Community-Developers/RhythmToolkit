@@ -124,6 +124,6 @@ namespace RhythmBase.Components
 		private string _id;
 		[JsonIgnore]
 		internal RDLevel Parent;
-		internal Asset<ISpriteFile> _file;
+		internal Asset<ISpriteFile> _file = new();
 	}
 }
