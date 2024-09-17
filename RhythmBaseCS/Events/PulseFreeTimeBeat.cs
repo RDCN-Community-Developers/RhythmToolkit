@@ -1,29 +1,21 @@
 ﻿using System;
 using Microsoft.VisualBasic.CompilerServices;
-
 namespace RhythmBase.Events
 {
-
 	public class PulseFreeTimeBeat : BaseBeat
 	{
-
 		public PulseFreeTimeBeat()
 		{
 			Type = EventType.PulseFreeTimeBeat;
 		}
 
-
 		public float Hold { get; set; }
-
 
 		public ActionType Action { get; set; }
 
-
 		public uint CustomPulse { get; set; }
 
-
 		public override EventType Type { get; }
-
 
 		public override string ToString()
 		{
@@ -46,16 +38,11 @@ namespace RhythmBase.Events
 			return base.ToString() + string.Format(" {0}", Out);
 		}
 
-
 		public enum ActionType
 		{
-
 			Increment,
-
 			Decrement,
-
 			Custom,
-
 			Remove
 		}
 	}

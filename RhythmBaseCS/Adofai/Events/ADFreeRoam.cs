@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using RhythmBase.Components;
 using RhythmBase.Events;
-
 namespace RhythmBase.Adofai.Events
 {	public class ADFreeRoam : ADBaseTileEvent, IEaseEvent
 	{		public ADFreeRoam()

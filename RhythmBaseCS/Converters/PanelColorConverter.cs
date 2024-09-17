@@ -5,18 +5,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using SkiaSharp;
-
 namespace RhythmBase.Converters
 {
-
 	internal class PanelColorConverter : JsonConverter<PaletteColor>
 	{
-
 		internal PanelColorConverter(LimitedList<SKColor> list)
 		{
 			parent = list;
 		}
-
 
 		public override void WriteJson(JsonWriter writer, PaletteColor value, JsonSerializer serializer)
 		{
@@ -41,7 +37,6 @@ namespace RhythmBase.Converters
 				}
 			}
 		}
-
 
 		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
@@ -75,7 +70,6 @@ namespace RhythmBase.Converters
 			}
 			return existingValue;
 		}
-
 
 		private readonly LimitedList<SKColor> parent;
 	}

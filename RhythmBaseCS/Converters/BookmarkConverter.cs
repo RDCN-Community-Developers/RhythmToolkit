@@ -3,10 +3,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Utils;
-
 namespace RhythmBase.Converters
 {
-
 	internal class BookmarkConverter(BeatCalculator calculator) : JsonConverter<Bookmark>
 	{
 		public override void WriteJson(JsonWriter writer, Bookmark value, JsonSerializer serializer)
@@ -22,7 +20,6 @@ namespace RhythmBase.Converters
 			writer.WriteEndObject();
 		}
 
-
 		public override Bookmark ReadJson(JsonReader reader, Type objectType, Bookmark existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken jobj = JToken.ReadFrom(reader);
@@ -32,7 +29,6 @@ namespace RhythmBase.Converters
 				Color = Enum.Parse<Bookmark.BookmarkColors>((string)jobj["color"])
 			};
 		}
-
 
 		private readonly BeatCalculator calculator = calculator;
 	}

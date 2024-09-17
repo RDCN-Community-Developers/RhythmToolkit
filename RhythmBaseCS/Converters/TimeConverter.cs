@@ -1,23 +1,18 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 namespace RhythmBase.Converters
 {
-
 	internal class TimeConverter : JsonConverter<TimeSpan>
 	{
-
 		public TimeConverter()
 		{
 			_timeType = TimeType.MiliSecond;
 		}
 
-
 		public TimeConverter(TimeType type)
 		{
 			_timeType = type;
 		}
-
 
 		public override void WriteJson(JsonWriter writer, TimeSpan value, JsonSerializer serializer)
 		{
@@ -43,7 +38,6 @@ namespace RhythmBase.Converters
 			}
 		}
 
-
 		public override TimeSpan ReadJson(JsonReader reader, Type objectType, TimeSpan existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			float value = JToken.ReadFrom(reader).ToObject<float>();
@@ -58,9 +52,7 @@ namespace RhythmBase.Converters
 			};
 		}
 
-
 		private readonly TimeType _timeType;
-
 
 		public enum TimeType
 		{

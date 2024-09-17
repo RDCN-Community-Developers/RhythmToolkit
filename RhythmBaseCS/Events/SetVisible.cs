@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-
 namespace RhythmBase.Events
 {
-
 	public class SetVisible : BaseDecorationAction
 	{
 		public SetVisible()

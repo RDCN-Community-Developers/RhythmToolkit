@@ -1,6 +1,5 @@
 ﻿using RhythmBase.Components;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Assets
 {
 	public class AssetManager(RDLevel level)

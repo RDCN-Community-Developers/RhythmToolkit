@@ -7,16 +7,12 @@ using System.Text.RegularExpressions;
 using Microsoft.VisualBasic.CompilerServices;
 using RhythmBase.Components;
 using RhythmBase.Exceptions;
-
 namespace RhythmBase.Expressions
 {
-
 	[StandardModule]
 	public static class ExpressionTree
 	{
-
 		private static bool IsOperator(this TokenType e) => e >= TokenType.Function;
-
 
 		private static int Level(this TokenType e)
 		{
@@ -128,7 +124,6 @@ namespace RhythmBase.Expressions
 			return Level;
 		}
 
-
 		private static bool IsBinary(this TokenType e) => new TokenType[]
 			{
 				TokenType.Add,
@@ -147,14 +142,12 @@ namespace RhythmBase.Expressions
 				TokenType.Or
 			}.Contains(e);
 
-
 		private static bool IsRightHalf(this TokenType e) => new TokenType[]
 			{
 				TokenType.RightParenthese,
 				TokenType.RightBracket,
 				TokenType.RightBrace
 			}.Contains(e);
-
 
 		internal static Func<Variables, TResult> GetFunctionalExpression<TResult>(string exp)
 		{
@@ -167,13 +160,11 @@ namespace RhythmBase.Expressions
 			return lambda.Compile();
 		}
 
-
 		public static System.Linq.Expressions.Expression GetExpression(string exp, ParameterExpression param)
 		{
 			IEnumerable<Token> Tokens = ReadExpressionString(exp);
 			return ReadTree(Tokens, param);
 		}
-
 
 		private static IEnumerable<Token> ReadExpressionString(string exp)
 		{
@@ -201,13 +192,11 @@ namespace RhythmBase.Expressions
 			return L.AsEnumerable();
 		}
 
-
 		private static System.Linq.Expressions.Expression ReadTree(IEnumerable<Token> l, ParameterExpression variableParameter)
 		{
 			Stack<Token> OperatorStack = new();
 			Stack<System.Linq.Expressions.Expression> ValueStack = new();
 			System.Linq.Expressions.Expression subVariableParameter = variableParameter;
-
 			foreach (Token item in l)
 			{
 				bool flag = item.type.IsOperator();
@@ -245,7 +234,6 @@ namespace RhythmBase.Expressions
 			}
 			return ValueStack.Single();
 		}
-
 
 		private static System.Linq.Expressions.Expression ReadValueNode(Token token, Stack<System.Linq.Expressions.Expression> valueStack, Stack<Token> operatorStack, ParameterExpression VariableParameter, ref System.Linq.Expressions.Expression subVariableParameter)
 		{
@@ -333,7 +321,6 @@ namespace RhythmBase.Expressions
 			}
 			return ReadValueNode;
 		}
-
 
 		private static void GroupNode(Stack<System.Linq.Expressions.Expression> ValueStack, Stack<Token> OperatorStack, ParameterExpression variableParameter, ref System.Linq.Expressions.Expression subVariableParameter)
 		{
@@ -543,7 +530,6 @@ namespace RhythmBase.Expressions
 			}
 		}
 
-
 		private static readonly Dictionary<TokenType, Regex> Ops = new()
 		{
 			{
@@ -680,81 +666,45 @@ namespace RhythmBase.Expressions
 			}
 		};
 
-
 		private enum TokenType
 		{
-
 			Function,
-
 			ArrayIndex,
-
 			Boolean = -1,
-
 			String = -2,
-
 			IntegerValue = -3,
-
 			FloatValue = -4,
-
 			BooleanValue = -5,
-
 			Constant = -6,
-
 			Variable = -7,
-
 			Increment = 2,
-
 			Decrement,
-
 			Add,
-
 			Subtract,
-
 			Multipy,
-
 			Divide,
-
 			Equal,
-
 			NotEqual,
-
 			LessThanOrEqual,
-
 			GreaterThanOrEqual,
-
 			Assign,
-
 			GreaterThan,
-
 			LessThan,
-
 			LeftParenthese,
-
 			RightParenthese,
-
 			LeftBracket,
-
 			RightBracket,
-
 			LeftBrace,
-
 			RightBrace,
-
 			Dot,
-
 			Comma,
-
 			And,
-
 			Or,
-
 			Not
 		}
 
-
 		private struct Token
 		{
-
 			public Token(string value, TokenType token)
 			{
 				this = default;
@@ -762,12 +712,9 @@ namespace RhythmBase.Expressions
 				type = token;
 			}
 
-
 			public override string ToString() => string.Format("{0}, {1}", value, type);
 
-
 			public string value;
-
 
 			public TokenType type;
 		}

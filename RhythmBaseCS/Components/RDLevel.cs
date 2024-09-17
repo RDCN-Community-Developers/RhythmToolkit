@@ -10,14 +10,12 @@ using RhythmBase.Settings;
 using RhythmBase.Utils;
 using SkiaSharp;
 using System.IO.Compression;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Rhythm Doctor level.
 	/// </summary>
-
-	public class RDLevel : OrderedEventCollection<BaseEvent>
+	public class RDLevel : OrderedEventCollection<IBaseEvent>
 	{
 		/// <summary>
 		/// Asset collection.
@@ -90,7 +88,7 @@ namespace RhythmBase.Components
 			Bookmarks = [];
 			ColorPalette = new LimitedList<SKColor>(21U, new SKColor(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue));
 		}
-		public RDLevel(IEnumerable<BaseEvent> items) : this()
+		public RDLevel(IEnumerable<IBaseEvent> items) : this()
 		{
 			foreach (BaseEvent item in items)
 				Add(item);
@@ -309,28 +307,23 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="item">Event to be added.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException"></exception>
-		public override void Add(BaseEvent item)
+		public override void Add(IBaseEvent item)
 		{
 			//添加默认节拍
-			if (item._beat.IsEmpty)
-				item._beat._calculator = Calculator;
-
+			if (((BaseEvent)item)._beat.IsEmpty)
+				((BaseEvent)item)._beat._calculator = Calculator;
 			//部分事件只能在小节的开头
-			if (item is IBarBeginningEvent @event && item._beat.BarBeat.beat != 1f)
+			if (item is IBarBeginningEvent @event && ((BaseEvent)item)._beat.BarBeat.beat != 1f)
 				throw new IllegalBeatException(@event);
-
 			//更改节拍的关联关卡
-			item._beat._calculator = Calculator;
-			item._beat.ResetCache();
-
+			((BaseEvent)item)._beat._calculator = Calculator;
+			((BaseEvent)item)._beat.ResetCache();
 			if (item.Type == EventType.Comment && ((Comment)item).Parent == null)
 				//注释事件可能在精灵板块，也可能不在
 				base.Add(item);
-
 			else if (item.Type == EventType.TintRows && ((TintRows)item).Parent == null)
 				//轨道染色事件可能是为所有轨道染色
 				base.Add(item);
-
 			else if (Utils.Utils.RowTypes.Contains(item.Type))
 			{
 				BaseRowAction rowAction = (BaseRowAction)item;
@@ -340,7 +333,6 @@ namespace RhythmBase.Components
 				rowAction.Parent.AddSafely((BaseRowAction)item);
 				base.Add(item);
 			}
-
 			else if (Utils.Utils.DecorationTypes.Contains(item.Type))
 			{
 				BaseDecorationAction decoAction = (BaseDecorationAction)item;
@@ -350,48 +342,42 @@ namespace RhythmBase.Components
 				decoAction.Parent.AddSafely((BaseDecorationAction)item);
 				base.Add(item);
 			}
-
 			//BPM 和 CPB
 			else if (item.Type == EventType.SetCrotchetsPerBar)
 				AddSetCrotchetsPerBar((SetCrotchetsPerBar)item);
 			else if (Utils.Utils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 				AddBaseBeatsPerMinute((BaseBeatsPerMinute)item);
-
 			// 其他
 			else
 				base.Add(item);
 		}
-
 		/// <summary>
 		/// Determine if the level contains this event.
 		/// </summary>
 		/// <param name="item">Event.</param>
 		/// <returns></returns>
-
-		public override bool Contains(BaseEvent item) => (Utils.Utils.RowTypes.Contains(item.Type)
+		public override bool Contains(IBaseEvent item) => (Utils.Utils.RowTypes.Contains(item.Type)
 			&& Rows.Any((RowEventCollection i) => i.Contains(item))) || (Utils.Utils.DecorationTypes.Contains(item.Type) && Decorations.Any((DecorationEventCollection i) => i.Contains(item))) || base.Contains(item);
-
 		/// <summary>
 		/// Remove event from the level.
 		/// </summary>
 		/// <param name="item">Event to be removed.</param>
 		/// <returns></returns>
-
-		public override bool Remove(BaseEvent item)
+		public override bool Remove(IBaseEvent item)
 		{
 			bool Remove;
 			if (Utils.Utils.RowTypes.Contains(item.Type)
 				&& Rows.Any((RowEventCollection i) => i.RemoveSafely((BaseRowAction)item)))
 			{
 				base.Remove(item);
-				item._beat._calculator = null;
+				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
 			else if (Utils.Utils.DecorationTypes.Contains(item.Type)
 					&& Decorations.Any((DecorationEventCollection i) => i.RemoveSafely((BaseDecorationAction)item)))
 			{
 				base.Remove(item);
-				item._beat._calculator = null;
+				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
 			else if (Contains(item))
@@ -403,7 +389,7 @@ namespace RhythmBase.Components
 				else
 				{
 					bool result = base.Remove(item);
-					item._beat._calculator = null;
+					((BaseEvent)item)._beat._calculator = null;
 					Remove = result;
 				}
 			}
@@ -415,15 +401,12 @@ namespace RhythmBase.Components
 		{
 			SetCrotchetsPerBar? frt = item.FrontOrDefault();
 			SetCrotchetsPerBar? nxt = item.NextOrDefault();
-
 			//更新拍号
 			RefreshCPBs(item._beat);
 			//添加事件
 			base.Add(item);
-
 			//更新计算器
 			Calculator.Refresh();
-
 			if (nxt != null)
 			{
 				BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((BaseEvent i) => i is IBarBeginningEvent &&
@@ -449,12 +432,9 @@ namespace RhythmBase.Components
 						_crotchetsPerBar = frt?.CrotchetsPerBar ?? 8 - 1
 					});
 			}
-
 			// 更新计算器
 			Calculator.Refresh();
 		}
-
-
 		protected internal bool RemoveSetCrotchetsPerBar(SetCrotchetsPerBar item)
 		{
 			SetCrotchetsPerBar? frt = item.FrontOrDefault();
@@ -493,10 +473,8 @@ namespace RhythmBase.Components
 					});
 				Calculator.Refresh();
 			}
-
 			//更新计算器
 			Calculator.Refresh();
-
 			bool result = base.Remove(item);
 			RefreshCPBs(item.Beat);
 			item._beat._calculator = null;

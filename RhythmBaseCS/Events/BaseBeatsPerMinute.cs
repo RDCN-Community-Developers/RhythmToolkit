@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using RhythmBase.Components;
 using RhythmBase.Extensions;
-
 namespace RhythmBase.Events
 {
-
 	public abstract class BaseBeatsPerMinute : BaseEvent
 	{
-
 		protected BaseBeatsPerMinute()
 		{
 			_bpm = 100f;
 		}
-
 
 		public override Beat Beat
 		{
@@ -28,7 +24,6 @@ namespace RhythmBase.Events
 				ResetTimeLine();
 			}
 		}
-
 
 		[JsonProperty("bpm")]
 		public float BeatsPerMinute
@@ -44,7 +39,6 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		private void ResetTimeLine()
 		{
 			if (Beat.BaseLevel != null)
@@ -57,7 +51,6 @@ namespace RhythmBase.Events
 				}
 			}
 		}
-
 
 		private float _bpm;
 	}

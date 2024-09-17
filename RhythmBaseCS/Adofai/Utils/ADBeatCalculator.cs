@@ -1,13 +1,11 @@
 ﻿using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Extensions;
-
 namespace RhythmBase.Adofai.Utils
 {
 	/// <summary>
 	/// Beat Calculator.
 	/// </summary>
-
 	public class ADBeatCalculator
 	{
 		internal ADBeatCalculator(ADLevel level)

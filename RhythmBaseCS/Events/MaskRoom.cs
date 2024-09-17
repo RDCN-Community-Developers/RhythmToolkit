@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Assets;
 using RhythmBase.Components;
-
 namespace RhythmBase.Events
 {
 	public class MaskRoom : BaseEvent

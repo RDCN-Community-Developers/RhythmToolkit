@@ -2,17 +2,14 @@
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="T:RhythmBase.Components.Expression" />
 	/// </summary>
-
 	[JsonConverter(typeof(RDPointsConverter))]
 	public struct PointE : IEquatable<PointE>
 	{
-
 		public PointE(RDSize sz)
 		{
 			this = default;
@@ -23,14 +20,12 @@ namespace RhythmBase.Components
 			Y = (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null;
 		}
 
-
 		public PointE(float x, float y)
 		{
 			this = default;
 			this.X = new Expression?(x);
 			this.Y = new Expression?(y);
 		}
-
 
 		public PointE(Expression? x, float y)
 		{
@@ -39,14 +34,12 @@ namespace RhythmBase.Components
 			this.Y = new Expression?(y);
 		}
 
-
 		public PointE(float x, Expression? y)
 		{
 			this = default;
 			this.X = new Expression?(x);
 			this.Y = y;
 		}
-
 
 		public PointE(Expression? x, Expression? y)
 		{
@@ -55,14 +48,12 @@ namespace RhythmBase.Components
 			this.Y = y;
 		}
 
-
 		public PointE(string x, float y)
 		{
 			this = default;
 			this.X = Expression.Nullable(x);
 			this.Y = new Expression?(y);
 		}
-
 
 		public PointE(float x, string y)
 		{
@@ -71,14 +62,12 @@ namespace RhythmBase.Components
 			this.Y = Expression.Nullable(y);
 		}
 
-
 		public PointE(string x, Expression? y)
 		{
 			this = default;
 			this.X = Expression.Nullable(x);
 			this.Y = y;
 		}
-
 
 		public PointE(Expression? x, string y)
 		{
@@ -91,14 +80,12 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public PointE(string x, string y)
 		{
 			this = default;
 			this.X = Expression.Nullable(x);
 			this.Y = Expression.Nullable(y);
 		}
-
 
 		public PointE(RDPointI p)
 		{
@@ -110,7 +97,6 @@ namespace RhythmBase.Components
 			this.Y = (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null;
 		}
 
-
 		public PointE(RDPoint p)
 		{
 			this = default;
@@ -121,7 +107,6 @@ namespace RhythmBase.Components
 			this.Y = (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null;
 		}
 
-
 		public bool IsEmpty
 		{
 			get
@@ -130,12 +115,9 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public Expression? X { get; set; }
 
-
 		public Expression? Y { get; set; }
-
 
 		public void Offset(RDPoint p)
 		{
@@ -143,13 +125,11 @@ namespace RhythmBase.Components
 			Y += p.Y;
 		}
 
-
 		public void Offset(float? dx, float? dy)
 		{
 			X += dx;
 			Y += dy;
 		}
-
 
 		public static PointE Add(PointE pt, RDSizeI sz)
 		{
@@ -173,20 +153,17 @@ namespace RhythmBase.Components
 			return Add;
 		}
 
-
 		public static PointE Add(PointE pt, RDSize sz)
 		{
 			PointE Add = new(pt.X + sz.Width, pt.Y + sz.Height);
 			return Add;
 		}
 
-
 		public static PointE Add(PointE pt, RDSizeE sz)
 		{
 			PointE Add = new(pt.X + sz.Width, pt.Y + sz.Height);
 			return Add;
 		}
-
 
 		public static PointE Subtract(PointE pt, RDSizeI sz)
 		{
@@ -199,13 +176,11 @@ namespace RhythmBase.Components
 			return Subtract;
 		}
 
-
 		public static PointE Subtract(PointE pt, RDSize sz)
 		{
 			PointE Subtract = new(pt.X - sz.Width, pt.Y - sz.Height);
 			return Subtract;
 		}
-
 
 		public static PointE Subtract(PointE pt, RDSizeE sz)
 		{
@@ -213,9 +188,7 @@ namespace RhythmBase.Components
 			return Subtract;
 		}
 
-
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDPoint) && Equals((obj != null) ? ((RDPoint)obj) : default);
-
 
 		public override int GetHashCode()
 		{
@@ -225,7 +198,6 @@ namespace RhythmBase.Components
 			return h.ToHashCode();
 		}
 
-
 		public override string ToString()
 		{
 			string format = "[{0}, {1}]";
@@ -234,7 +206,6 @@ namespace RhythmBase.Components
 			expression = Y;
 			return string.Format(format, arg, ((expression != null) ? expression.GetValueOrDefault().ExpressionValue : null) ?? "null");
 		}
-
 
 		bool IEquatable<PointE>.Equals(PointE other)
 		{
@@ -259,7 +230,6 @@ namespace RhythmBase.Components
 			return flag3.Value;
 		}
 
-
 		public PointE MultipyByMatrix(Expression[,] matrix)
 		{
 			bool flag = matrix.Rank == 2 && matrix.Length == 4;
@@ -270,11 +240,9 @@ namespace RhythmBase.Components
 			}
 			throw new Exception("Matrix not match, 2*2 matrix expected.");
 		}
-
 		/// <summary>
 		/// Rotate.
 		/// </summary>
-
 		public PointE Rotate(float angle)
 		{
 			Expression[,] array = new Expression[2, 2];
@@ -284,39 +252,28 @@ namespace RhythmBase.Components
 			array[1, 1] = (float)Math.Cos((double)angle);
 			return MultipyByMatrix(array);
 		}
-
 		/// <summary>
 		/// Rotate at a given pivot.
 		/// </summary>
 		/// <param name="pivot">Giver pivot.</param>
 		/// <returns></returns>
-
 		public PointE Rotate(PointE pivot, float angle) => (this - new RDSizeE(pivot)).Rotate(angle) + new RDSizeE(pivot);
-
 
 		public static PointE operator +(PointE pt, RDSizeI sz) => Add(pt, sz);
 
-
 		public static PointE operator +(PointE pt, RDSize sz) => Add(pt, sz);
-
 
 		public static PointE operator +(PointE pt, RDSizeE sz) => Add(pt, sz);
 
-
 		public static PointE operator -(PointE pt, RDSizeI sz) => Subtract(pt, sz);
-
 
 		public static PointE operator -(PointE pt, RDSize sz) => Subtract(pt, sz);
 
-
 		public static PointE operator -(PointE pt, RDSizeE sz) => Subtract(pt, sz);
-
 
 		public static bool operator ==(PointE left, PointE right) => left.Equals(right);
 
-
 		public static bool operator !=(PointE left, PointE right) => !left.Equals(right);
-
 
 		public static explicit operator RDSizeE(PointE v)
 		{

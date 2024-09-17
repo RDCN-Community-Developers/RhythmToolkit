@@ -2,13 +2,10 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
-
 namespace RhythmBase.Converters
 {
-
 	internal class RoomConverter : JsonConverter
 	{
-
 		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
 		{
 			Type type = value!.GetType();
@@ -67,7 +64,6 @@ namespace RhythmBase.Converters
 			}
 			return ReadJson;
 		}
-
 
 		public override bool CanConvert(Type objectType) => objectType == typeof(Room) || objectType == typeof(SingleRoom);
 	}

@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Components
 {
-
 	public struct RDRectE : IEquatable<RDRectE>
 	{
-
 		public Expression? Left { get; set; }
-
 
 		public Expression? Right { get; set; }
 
-
 		public Expression? Top { get; set; }
 
-
 		public Expression? Bottom { get; set; }
-
 
 		public Expression? Width
 		{
@@ -27,7 +20,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public Expression? Height
 		{
 			get
@@ -35,7 +27,6 @@ namespace RhythmBase.Components
 				return Top - Bottom;
 			}
 		}
-
 
 		public RDRectE(Expression? left, Expression? top, Expression? right, Expression? bottom)
 		{
@@ -46,24 +37,20 @@ namespace RhythmBase.Components
 			Bottom = bottom;
 		}
 
-
 		public RDRectE(PointE location, RDSizeE size)
 		{
 			this = new RDRectE(location.X, location.Y + size.Height, location.X + size.Width, location.Y);
 		}
-
 
 		public RDRectE(RDSizeE size)
 		{
 			this = new RDRectE(new Expression?(0f), size.Height, size.Width, new Expression?(0f));
 		}
 
-
 		public RDRectE(Expression? width, Expression? height)
 		{
 			this = new RDRectE(new Expression?(0f), height, width, new Expression?(0f));
 		}
-
 
 		public PointE Location
 		{
@@ -74,7 +61,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public RDSizeE Size
 		{
 			get
@@ -84,14 +70,12 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static RDRectE Inflate(RDRectE rect, RDSizeE size)
 		{
 			RDRectE result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(size);
 			return result;
 		}
-
 
 		public static RDRectE Inflate(RDRectE rect, Expression? x, Expression? y)
 		{
@@ -100,13 +84,11 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static RDRectE Truncate(RDRectE rect)
 		{
 			RDRectE Truncate = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			return Truncate;
 		}
-
 
 		public void Offset(Expression? x, Expression? y)
 		{
@@ -116,9 +98,7 @@ namespace RhythmBase.Components
 			Bottom += y;
 		}
 
-
 		public void Offset(PointE p) => Offset(p.X, p.Y);
-
 
 		public void Inflate(RDSizeE size)
 		{
@@ -128,7 +108,6 @@ namespace RhythmBase.Components
 			Bottom -= size.Height;
 		}
 
-
 		public void Inflate(Expression? width, Expression? height)
 		{
 			Left -= width;
@@ -137,18 +116,13 @@ namespace RhythmBase.Components
 			Bottom -= height;
 		}
 
-
 		public static bool operator ==(RDRectE rect1, RDRectE rect2) => rect1.Equals(rect2);
-
 
 		public static bool operator !=(RDRectE rect1, RDRectE rect2) => !rect1.Equals(rect2);
 
-
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDRectE) && Equals((obj != null) ? ((RDRectE)obj) : default);
 
-
 		public override int GetHashCode() => HashCode.Combine(Left, Top, Right, Bottom);
-
 
 		public override string ToString() => string.Format("{{Location=[{0},{1}],Size=[{2},{3}]}}",
 			[
@@ -157,7 +131,6 @@ namespace RhythmBase.Components
 				Width,
 				Height
 			]);
-
 
 		public bool Equals(RDRectE other)
 		{

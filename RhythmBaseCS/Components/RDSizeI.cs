@@ -3,17 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="integer" />
 	/// </summary>
-
 	[JsonConverter(typeof(RDPointsConverter))]
 	public struct RDSizeI : IEquatable<RDSizeI>
 	{
-
 		public RDSizeI(RDPointI pt)
 		{
 			this = default;
@@ -21,14 +18,12 @@ namespace RhythmBase.Components
 			Height = pt.Y;
 		}
 
-
 		public RDSizeI(int? width, int? height)
 		{
 			this = default;
 			this.Width = width;
 			this.Height = height;
 		}
-
 
 		public bool IsEmpty
 		{
@@ -38,12 +33,9 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public int? Width { get; set; }
 
-
 		public int? Height { get; set; }
-
 
 		public int? Area
 		{
@@ -53,13 +45,11 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static RDSizeI Add(RDSizeI sz1, RDSizeI sz2)
 		{
 			RDSizeI Add = checked(new RDSizeI(sz1.Width + sz2.Width, sz1.Height + sz2.Height));
 			return Add;
 		}
-
 
 		public static RDSizeI Truncate(RDSize value)
 		{
@@ -67,13 +57,11 @@ namespace RhythmBase.Components
 			return Truncate;
 		}
 
-
 		public static RDSizeI Subtract(RDSizeI sz1, RDSizeI sz2)
 		{
 			RDSizeI Subtract = checked(new RDSizeI(sz1.Width - sz2.Width, sz1.Height - sz2.Height));
 			return Subtract;
 		}
-
 
 		public static RDSizeI Ceiling(RDSize value)
 		{
@@ -81,16 +69,13 @@ namespace RhythmBase.Components
 			return Ceiling;
 		}
 
-
 		public static RDSizeI Round(RDSize value)
 		{
 			RDSizeI Round = checked(new RDSizeI(new int?((int)Math.Round((value.Width == null) ? 0.0 : Math.Round((double)value.Width.Value))), new int?((int)Math.Round((value.Height == null) ? 0.0 : Math.Round((double)value.Height.Value)))));
 			return Round;
 		}
 
-
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDSizeI) && Equals((obj != null) ? ((RDSizeI)obj) : default);
-
 
 		public override int GetHashCode()
 		{
@@ -99,7 +84,6 @@ namespace RhythmBase.Components
 			h.Add(Height);
 			return h.ToHashCode();
 		}
-
 
 		public override string ToString()
 		{
@@ -110,7 +94,6 @@ namespace RhythmBase.Components
 			num = num2 = Height;
 			return string.Format(format, objectValue, RuntimeHelpers.GetObjectValue((num2 != null) ? num.GetValueOrDefault() : "null"));
 		}
-
 
 		public bool Equals(RDSizeI other)
 		{
@@ -135,12 +118,9 @@ namespace RhythmBase.Components
 			return flag3.Value;
 		}
 
-
 		public static RDSizeI operator +(RDSizeI sz1, RDSizeI sz2) => Add(sz1, sz2);
 
-
 		public static RDSizeI operator -(RDSizeI sz1, RDSizeI sz2) => Subtract(sz1, sz2);
-
 
 		public static RDSize operator *(float left, RDSizeI right)
 		{
@@ -151,7 +131,6 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static RDSize operator *(RDSizeI left, float right)
 		{
 			int? num = left.Width;
@@ -161,20 +140,17 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static RDSizeI operator *(int left, RDSizeI right)
 		{
 			RDSizeI result = checked(new RDSizeI(left * right.Width, left * right.Height));
 			return result;
 		}
 
-
 		public static RDSizeI operator *(RDSizeI left, int right)
 		{
 			RDSizeI result = checked(new RDSizeI(left.Width * right, left.Height * right));
 			return result;
 		}
-
 
 		public static RDSize operator /(RDSizeI left, float right)
 		{
@@ -184,7 +160,6 @@ namespace RhythmBase.Components
 			RDSize result = new(width, ((num != null) ? new float?((float)num.GetValueOrDefault()) : null) / right);
 			return result;
 		}
-
 
 		public static RDSizeI operator /(RDSizeI left, int right)
 		{
@@ -200,12 +175,9 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static bool operator ==(RDSizeI sz1, RDSizeI sz2) => sz1.Equals(sz2);
 
-
 		public static bool operator !=(RDSizeI sz1, RDSizeI sz2) => !sz1.Equals(sz2);
-
 
 		public static implicit operator RDSize(RDSizeI p)
 		{
@@ -216,7 +188,6 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static implicit operator RDSizeE(RDSizeI p)
 		{
 			int? num2;
@@ -226,7 +197,6 @@ namespace RhythmBase.Components
 			RDSizeE result = new(width, (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null);
 			return result;
 		}
-
 
 		public static explicit operator RDPointI(RDSizeI size)
 		{

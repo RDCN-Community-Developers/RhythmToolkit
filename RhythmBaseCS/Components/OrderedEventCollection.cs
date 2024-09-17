@@ -2,13 +2,12 @@
 using RhythmBase.Events;
 using System.Collections;
 using System.ComponentModel.Design;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A collection of events that maintains the sequence of events.
 	/// </summary>
-	public abstract class OrderedEventCollection : ICollection<BaseEvent>
+	public abstract class OrderedEventCollection : ICollection<IBaseEvent>
 	{
 		[JsonIgnore]
 		public virtual int Count => eventsBeatOrder.Sum((i) => i.Value.Count());
@@ -25,32 +24,31 @@ namespace RhythmBase.Components
 			eventsBeatOrder = [];
 			IsReadOnly = false;
 		}
-		public OrderedEventCollection(IEnumerable<BaseEvent> items)
+		public OrderedEventCollection(IEnumerable<IBaseEvent> items)
 		{
 			eventsBeatOrder = [];
 			IsReadOnly = false;
-			foreach (BaseEvent item in items)
+			foreach (IBaseEvent item in items)
 				Add(item);
 		}
-		public List<BaseEvent> ConcatAll() => eventsBeatOrder.SelectMany(i => i.Value).ToList();
-		public void Add(BaseEvent item)
+		public List<IBaseEvent> ConcatAll() => eventsBeatOrder.SelectMany(i => i.Value).ToList();
+		public void Add(IBaseEvent item)
 		{
-			TypedEventCollection<BaseEvent> list=[];
-			if (eventsBeatOrder.TryGetValue(item.Beat, out TypedEventCollection<BaseEvent>? value))
+			TypedEventCollection<IBaseEvent> list=[];
+			if (eventsBeatOrder.TryGetValue(item.Beat, out TypedEventCollection<IBaseEvent>? value))
 			{
 				list = value;
 			}
 				else
 			{
 				eventsBeatOrder.Add(item.Beat, list);
-
 			}
 			list.Add(item);
 		}
 		public void Clear() => eventsBeatOrder.Clear();
-		public virtual bool Contains(BaseEvent item) => eventsBeatOrder.ContainsKey(item.Beat) && eventsBeatOrder[item.Beat].Contains(item);
-		public void CopyTo(BaseEvent[] array, int arrayIndex) => ConcatAll().CopyTo(array, arrayIndex);
-		internal bool Remove(BaseEvent item)
+		public virtual bool Contains(IBaseEvent item) => eventsBeatOrder.ContainsKey(item.Beat) && eventsBeatOrder[item.Beat].Contains(item);
+		public void CopyTo(IBaseEvent[] array, int arrayIndex) => ConcatAll().CopyTo(array, arrayIndex);
+		internal bool Remove(IBaseEvent item)
 		{
 			bool Remove;
 			if (Contains(item))
@@ -64,20 +62,20 @@ namespace RhythmBase.Components
 				Remove = false;
 			return Remove;
 		}
-		public IEnumerator<BaseEvent> GetEnumerator()
+		public IEnumerator<IBaseEvent> GetEnumerator()
 		{
-			foreach (KeyValuePair<Beat, TypedEventCollection<BaseEvent>> pair in eventsBeatOrder)
-				foreach (BaseEvent item in pair.Value)
+			foreach (KeyValuePair<Beat, TypedEventCollection<IBaseEvent>> pair in eventsBeatOrder)
+				foreach (IBaseEvent item in pair.Value)
 					yield return item;
 		}
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			foreach (KeyValuePair<Beat, TypedEventCollection<BaseEvent>> pair in eventsBeatOrder)
-				foreach (BaseEvent item in pair.Value)
+			foreach (KeyValuePair<Beat, TypedEventCollection<IBaseEvent>> pair in eventsBeatOrder)
+				foreach (IBaseEvent item in pair.Value)
 					yield return item;
 		}
 		public override string ToString() => string.Format("Count = {0}", Count);
-		bool ICollection<BaseEvent>.Remove(BaseEvent item) => throw new NotImplementedException();
-		internal SortedDictionary<Beat, TypedEventCollection<BaseEvent>> eventsBeatOrder;
+		bool ICollection<IBaseEvent>.Remove(IBaseEvent item) => throw new NotImplementedException();
+		internal SortedDictionary<Beat, TypedEventCollection<IBaseEvent>> eventsBeatOrder;
 	}
 }

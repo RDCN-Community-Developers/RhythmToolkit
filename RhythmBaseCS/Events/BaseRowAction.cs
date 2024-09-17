@@ -1,13 +1,10 @@
 ﻿using System;
 using Newtonsoft.Json;
 using RhythmBase.Components;
-
 namespace RhythmBase.Events
 {
-
 	public abstract class BaseRowAction : BaseEvent
 	{
-
 		[JsonIgnore]
 		public RowEventCollection Parent
 		{
@@ -30,7 +27,6 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		[JsonIgnore]
 		public SingleRoom Room
 		{
@@ -50,11 +46,9 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		[JsonIgnore]
 		[Obsolete("This function is obsolete and may be removed in the next release. Use Index instead.")]
 		public int Row { get; }
-
 
 		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
 		public int Index
@@ -65,13 +59,11 @@ namespace RhythmBase.Events
 				return (int)((parent != null) ? parent.Index : -1);
 			}
 		}
-
 		/// <summary>
 		/// Clone this event and its basic properties. Clone will be added to the level.
 		/// </summary>
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
 		/// <returns></returns>
-
 		public new TEvent Clone<TEvent>() where TEvent : BaseRowAction, new()
 		{
 			TEvent Temp = base.Clone<TEvent>();
@@ -79,14 +71,12 @@ namespace RhythmBase.Events
 			return Temp;
 		}
 
-
 		internal TEvent Clone<TEvent>(RowEventCollection row) where TEvent : BaseRowAction, new()
 		{
 			TEvent Temp = base.Clone<TEvent>(row.Parent);
 			Temp.Parent = row;
 			return Temp;
 		}
-
 
 		internal RowEventCollection _parent;
 	}

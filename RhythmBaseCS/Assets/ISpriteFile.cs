@@ -1,5 +1,4 @@
 ﻿using RhythmBase.Components;
-
 namespace RhythmBase.Assets
 {
 	public interface ISpriteFile : IAssetFile

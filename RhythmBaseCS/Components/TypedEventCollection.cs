@@ -1,10 +1,8 @@
 ﻿using RhythmBase.Events;
 using System.Collections;
-
 namespace RhythmBase.Components
 {
-
-	internal class TypedEventCollection<TEvent> : IEnumerable<TEvent> where TEvent : BaseEvent
+	internal class TypedEventCollection<TEvent> : IEnumerable<TEvent> where TEvent : IBaseEvent
 	{
 		public TypedEventCollection()
 		{
@@ -21,7 +19,7 @@ namespace RhythmBase.Components
 			_types.Remove(item.Type);
 			return list.Remove(item);
 		}
-		public object BeforeThan(BaseEvent item1, BaseEvent item2) =>
+		public bool BeforeThan(IBaseEvent item1, IBaseEvent item2) =>
 			list.IndexOf((TEvent)(object)item1) < list.IndexOf((TEvent)(object)item2);
 		public override string ToString() =>
 			string.Format("{0}Count={1}", (_types.Contains(EventType.SetBeatsPerMinute) || _types.Contains(EventType.PlaySong)) ? "BPM, " : (_types.Contains(EventType.SetCrotchetsPerBar) ? "CPB, " : ""), list.Count);

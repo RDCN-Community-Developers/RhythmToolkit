@@ -1,10 +1,8 @@
 ﻿using RhythmBase.Exceptions;
 using RhythmBase.Utils;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Components
 {
-
 	public struct Beat : IComparable<Beat>, IEquatable<Beat>
 	{
 		internal readonly RDLevel BaseLevel => _calculator?.Collection ?? [];
@@ -26,7 +24,6 @@ namespace RhythmBase.Components
 						_beat = _calculator!.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
 					else if (_isTimeSpanLoaded)
 						_beat = _calculator!.TimeSpanToBeatOnly(_TimeSpan) - 1f;
-
 					_isBeatLoaded = true;
 				}
 				return _beat + 1f;
@@ -304,7 +301,6 @@ namespace RhythmBase.Components
 		/// <summary>
 		///
 		/// </summary>
-
 		internal void ResetBPM()
 		{
 			if (!_isBeatLoaded)

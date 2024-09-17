@@ -2,13 +2,10 @@
 using Newtonsoft.Json;
 using RhythmBase.Components;
 using SkiaSharp;
-
 namespace RhythmBase.Events
 {
-
 	public class Comment : BaseDecorationAction
 	{
-
 		public Comment()
 		{
 			Text = "";
@@ -19,10 +16,8 @@ namespace RhythmBase.Events
 			Type = EventType.Comment;
 		}
 
-
 		[JsonProperty("tab")]
 		public Tabs CustomTab { get; set; }
-
 
 		[JsonIgnore]
 		public override Tabs Tab
@@ -33,12 +28,9 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		public bool Show { get; set; }
 
-
 		public string Text { get; set; }
-
 
 		public override string Target
 		{
@@ -48,15 +40,11 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		public PaletteColor Color { get; set; }
-
 
 		public override EventType Type { get; }
 
-
 		public bool ShouldSerializeTarget() => Tab == Tabs.Decorations;
-
 
 		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
 	}

@@ -2,21 +2,16 @@
 using System.Runtime.CompilerServices;
 using RhythmBase.Components;
 using RhythmBase.Events;
-
 namespace RhythmBase.Adofai.Events
 {
-
 	public class ADMoveTrack : ADBaseTaggedTileAction, IEaseEvent
 	{
-
 		public ADMoveTrack()
 		{
 			Type = ADEventType.MoveTrack;
 		}
 
-
 		public override ADEventType Type { get; }
-
 
 		public object StartTile
 		{
@@ -32,7 +27,6 @@ namespace RhythmBase.Adofai.Events
 			}
 		}
 
-
 		public object EndTile
 		{
 			[CompilerGenerated]
@@ -47,18 +41,13 @@ namespace RhythmBase.Adofai.Events
 			}
 		}
 
-
 		public int GapLength { get; set; }
-
 
 		public float Duration { get; set; }
 
-
 		public RDPoint PositionOffset { get; set; }
 
-
 		public Ease.EaseType Ease { get; set; }
-
 
 		public bool MaxVfxOnly { get; set; }
 	}

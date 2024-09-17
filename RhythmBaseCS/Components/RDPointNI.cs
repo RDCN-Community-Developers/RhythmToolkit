@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A point whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="integer" />
 	/// </summary>
-
 	[JsonConverter(typeof(RDPointsConverter))]
 	public struct RDPointNI : IEquatable<RDPointNI>
 	{

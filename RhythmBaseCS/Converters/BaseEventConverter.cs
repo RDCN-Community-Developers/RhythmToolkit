@@ -3,10 +3,9 @@ using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Settings;
-
 namespace RhythmBase.Converters
 {
-	internal class BaseEventConverter<TEvent>(RDLevel level, LevelReadOrWriteSettings inputSettings) : JsonConverter<TEvent> where TEvent : BaseEvent
+	internal class BaseEventConverter<TEvent>(RDLevel level, LevelReadOrWriteSettings inputSettings) : JsonConverter<TEvent> where TEvent : IBaseEvent
 	{
 		public override bool CanRead => _canread;
 		public override bool CanWrite => _canwrite;
@@ -30,7 +29,7 @@ namespace RhythmBase.Converters
 			_canread = false;
 			existingValue = (TEvent)jobj.ToObject(SubClassType, serializer);
 			_canread = true;
-			existingValue._beat = level.Calculator.BeatOf(uint.Parse((string)jobj["bar"]), float.Parse((string)(jobj["beat"] ?? 1)));
+			((BaseEvent)(object)existingValue)._beat = level.Calculator.BeatOf(uint.Parse((string)jobj["bar"]), float.Parse((string)(jobj["beat"] ?? 1)));
 			return existingValue;
 		}
 		public virtual JObject SetSerializedObject(TEvent value, JsonSerializer serializer)

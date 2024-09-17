@@ -4,17 +4,14 @@ using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using RhythmBase.Converters;
 using RhythmBase.Extensions;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float" />
 	/// </summary>
-
 	[JsonConverter(typeof(RDPointsConverter))]
 	public struct RDPoint : IEquatable<RDPoint>
 	{
-
 		public RDPoint(RDSize sz)
 		{
 			this = default;
@@ -22,14 +19,12 @@ namespace RhythmBase.Components
 			Y = sz.Height;
 		}
 
-
 		public RDPoint(float? x, float? y)
 		{
 			this = default;
 			this.X = x;
 			this.Y = y;
 		}
-
 
 		public bool IsEmpty
 		{
@@ -39,12 +34,9 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public float? X { get; set; }
 
-
 		public float? Y { get; set; }
-
 
 		public void Offset(RDPoint p)
 		{
@@ -52,13 +44,11 @@ namespace RhythmBase.Components
 			Y += p.Y;
 		}
 
-
 		public void Offset(float? dx, float? dy)
 		{
 			X += dx;
 			Y += dy;
 		}
-
 
 		public static RDPoint Add(RDPoint pt, RDSizeI sz)
 		{
@@ -71,13 +61,11 @@ namespace RhythmBase.Components
 			return Add;
 		}
 
-
 		public static RDPoint Add(RDPoint pt, RDSize sz)
 		{
 			RDPoint Add = new(pt.X + sz.Width, pt.Y + sz.Height);
 			return Add;
 		}
-
 
 		public static RDPoint Subtract(RDPoint pt, RDSizeI sz)
 		{
@@ -90,13 +78,11 @@ namespace RhythmBase.Components
 			return Subtract;
 		}
 
-
 		public static RDPoint Subtract(RDPoint pt, RDSize sz)
 		{
 			RDPoint Subtract = new(pt.X - sz.Width, pt.Y - sz.Height);
 			return Subtract;
 		}
-
 
 		public RDPoint MultipyByMatrix(float[,] matrix)
 		{
@@ -108,11 +94,9 @@ namespace RhythmBase.Components
 			}
 			throw new Exception("Matrix not match, 2*2 matrix expected.");
 		}
-
 		/// <summary>
 		/// Rotate.
 		/// </summary>
-
 		public RDPoint Rotate(float angle)
 		{
 			float[,] array = new float[2, 2];
@@ -122,18 +106,14 @@ namespace RhythmBase.Components
 			array[1, 1] = (float)Math.Cos((double)angle);
 			return MultipyByMatrix(array);
 		}
-
 		/// <summary>
 		/// Rotate at a given pivot.
 		/// </summary>
 		/// <param name="pivot">Giver pivot.</param>
 		/// <returns></returns>
-
 		public RDPoint Rotate(RDPointN pivot, float angle) => (this - new RDSizeN(pivot)).Rotate(angle) + new RDSizeN(pivot);
 
-
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDPoint) && Equals((obj != null) ? ((RDPoint)obj) : default);
-
 
 		public override int GetHashCode()
 		{
@@ -142,7 +122,6 @@ namespace RhythmBase.Components
 			h.Add(Y);
 			return h.ToHashCode();
 		}
-
 
 		public override string ToString()
 		{
@@ -154,27 +133,19 @@ namespace RhythmBase.Components
 			return string.Format(format, objectValue, RuntimeHelpers.GetObjectValue((num2 != null) ? num.GetValueOrDefault() : "null"));
 		}
 
-
 		bool IEquatable<RDPoint>.Equals(RDPoint other) => other.X.NullableEquals(X) && other.Y.NullableEquals(Y);
-
 
 		public static RDPoint operator +(RDPoint pt, RDSizeI sz) => Add(pt, sz);
 
-
 		public static RDPoint operator +(RDPoint pt, RDSize sz) => Add(pt, sz);
-
 
 		public static RDPoint operator -(RDPoint pt, RDSizeI sz) => Subtract(pt, sz);
 
-
 		public static RDPoint operator -(RDPoint pt, RDSize sz) => Subtract(pt, sz);
-
 
 		public static bool operator ==(RDPoint left, RDPoint right) => left.Equals(right);
 
-
 		public static bool operator !=(RDPoint left, RDPoint right) => !left.Equals(right);
-
 
 		public static implicit operator PointE(RDPoint p)
 		{

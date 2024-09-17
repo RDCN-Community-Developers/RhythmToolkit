@@ -4,16 +4,13 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 namespace RhythmBase.Utils
 {
 	/// <summary>
 	/// Provides methods for creating and reading property names.
 	/// </summary>
-
 	public class TranaslationManager
 	{
-
 		public TranaslationManager(FileInfo filepath)
 		{
 			jsonpath = filepath;
@@ -31,7 +28,6 @@ namespace RhythmBase.Utils
 				values = (JObject)JsonConvert.DeserializeObject(Stream.ReadToEnd());
 			}
 		}
-
 
 		public string GetValue(MemberInfo p, string value)
 		{
@@ -70,9 +66,7 @@ namespace RhythmBase.Utils
 			}
 		}
 
-
 		public object GetValue(MemberInfo p) => GetValue(p, GetPath(p).Last());
-
 
 		private static string[] GetPath(MemberInfo p) =>
 			[
@@ -80,7 +74,6 @@ namespace RhythmBase.Utils
 				p.DeclaringType.Name,
 				p.Name
 			];
-
 
 		private void Save()
 		{
@@ -90,9 +83,7 @@ namespace RhythmBase.Utils
 			}
 		}
 
-
 		private readonly FileInfo jsonpath;
-
 
 		private readonly JObject values;
 	}

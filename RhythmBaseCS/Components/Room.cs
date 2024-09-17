@@ -5,27 +5,22 @@ using System.Runtime.CompilerServices;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Indicates that can be applied to multiple rooms.
 	/// </summary>
-
 	[JsonConverter(typeof(RoomConverter))]
 	public struct Room
 	{
 		/// <summary>
 		/// Can be applied to top room.
 		/// </summary>
-
 		public bool EnableTop { get; }
-
 		/// <summary>
 		/// Whether the specified room is enabled.
 		/// </summary>
 		/// <param name="Index"></param>
-
 		[IndexerName("Room")]
 		public bool this[byte Index]
 		{
@@ -38,11 +33,9 @@ namespace RhythmBase.Components
 				}
 			}
 		}
-
 		/// <summary>
 		/// List of enabled rooms.
 		/// </summary>
-
 		public List<byte> Rooms
 		{
 			get
@@ -66,26 +59,21 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public override string ToString() => string.Format("[{0}]", string.Join(",", Rooms));
-
 		/// <summary>
 		/// Returns an instance with only room 1 enabled.
 		/// </summary>
 		/// <returns>An instance with only room 1 enabled.</returns>
-
 		public static Room Default() => new(false, Array.Empty<byte>())
 		{
 			_data = RoomIndex.Room1
 		};
-
 
 		public Room(bool enableTop)
 		{
 			this = default;
 			this.EnableTop = enableTop;
 		}
-
 
 		public Room(bool enableTop, params byte[] rooms)
 		{
@@ -111,13 +99,11 @@ namespace RhythmBase.Components
 				_data = RoomIndex.RoomNotAvaliable;
 			}
 		}
-
 		/// <summary>
 		/// Check if the room is included.
 		/// </summary>
 		/// <param name="rooms">Rooms inspected.</param>
 		/// <returns></returns>
-
 		public bool Contains(Room rooms)
 		{
 			bool flag = _data == RoomIndex.RoomNotAvaliable;
@@ -152,12 +138,9 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static bool operator ==(Room R1, Room R2) => R1._data == R2._data;
 
-
 		public static bool operator !=(Room R1, Room R2) => !(R1 == R2);
-
 
 		public static implicit operator Room(SingleRoom room)
 		{
@@ -169,7 +152,6 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static explicit operator SingleRoom(Room room)
 		{
 			SingleRoom result = default;
@@ -180,12 +162,9 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public override bool Equals(object obj) => this == ((obj != null) ? ((Room)obj) : default);
 
-
 		public override int GetHashCode() => HashCode.Combine(_data);
-
 
 		private RoomIndex _data;
 	}

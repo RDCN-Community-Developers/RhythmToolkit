@@ -2,7 +2,6 @@
 using RhythmBase.Extensions;
 using SkiaSharp;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Assets
 {
 	public class ImageFile : ISpriteFile
@@ -13,7 +12,6 @@ namespace RhythmBase.Assets
 		{
 			get => false; private set
 			{
-
 			}
 		}
 		public SKBitmap Image

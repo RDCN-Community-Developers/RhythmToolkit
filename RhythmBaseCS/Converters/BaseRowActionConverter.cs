@@ -5,10 +5,8 @@ using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Settings;
-
 namespace RhythmBase.Converters
 {
-
 	internal class BaseRowActionConverter<TEvent>(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<TEvent>(level, inputSettings) where TEvent : BaseRowAction
 	{
 		public override TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)

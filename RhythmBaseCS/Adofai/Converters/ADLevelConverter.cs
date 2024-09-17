@@ -8,7 +8,6 @@ using RhythmBase.Adofai.Utils;
 using RhythmBase.Converters;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
-
 namespace RhythmBase.Adofai.Converters
 {
 	internal class ADLevelConverter(string location, LevelReadOrWriteSettings settings) : JsonConverter<ADLevel>

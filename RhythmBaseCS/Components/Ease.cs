@@ -2,13 +2,11 @@
 using System.Runtime.CompilerServices;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Ease Calculate module.
 	/// </summary>
-
 	[StandardModule]
 	public static class Ease
 	{
@@ -18,7 +16,6 @@ namespace RhythmBase.Components
 		/// <param name="Type">Ease type.</param>
 		/// <param name="x">A floating-point number in the range of 0 to 1.</param>
 		/// <returns>Easing result.</returns>
-
 		public static float Calculate(this EaseType Type, float x)
 		{
 			float Calculate;
@@ -129,7 +126,6 @@ namespace RhythmBase.Components
 			}
 			return Calculate;
 		}
-
 		/// <summary>
 		/// Calculates the value with the specified ease type.
 		/// </summary>
@@ -138,176 +134,108 @@ namespace RhythmBase.Components
 		/// <param name="from">The starting value of the easing result.</param>
 		/// <param name="to">The endding value of the easing result</param>
 		/// <returns>Easing result.</returns>
-
 		public static float Calculate(this EaseType Type, float x, float from, float to) => Type.Calculate(x) * (to - from) + from;
-
 		/// <summary>
 		/// Ease types.
 		/// </summary>
-
 		public enum EaseType
 		{
-
 			Unset = -1,
-
 			Linear,
-
 			InSine,
-
 			OutSine,
-
 			InOutSine,
-
 			InQuad,
-
 			OutQuad,
-
 			InOutQuad,
-
 			InCubic,
-
 			OutCubic,
-
 			InOutCubic,
-
 			InQuart,
-
 			OutQuart,
-
 			InOutQuart,
-
 			InQuint,
-
 			OutQuint,
-
 			InOutQuint,
-
 			InExpo,
-
 			OutExpo,
-
 			InOutExpo,
-
 			InCirc,
-
 			OutCirc,
-
 			InOutCirc,
-
 			InElastic,
-
 			OutElastic,
-
 			InOutElastic,
-
 			InBack,
-
 			OutBack,
-
 			InOutBack,
-
 			InBounce,
-
 			OutBounce,
-
 			InOutBounce,
-
 			SmoothStep
 		}
 
-
 		private class EaseFunction
 		{
-
 			public static object None(float x) => x - x;
-
 
 			public static object Linear(float x) => x;
 
-
 			public static object InSine(float x) => 1.0 - Math.Cos((double)x * 3.141592653589793 / 2.0);
-
 
 			public static object OutSine(float x) => Math.Sin((double)x * 3.141592653589793 / 2.0);
 
-
 			public static object InOutSine(float x) => -(Math.Cos((double)x * 3.141592653589793) - 1.0) / 2.0;
-
 
 			public static object InQuad(float x) => Math.Pow((double)x, 2.0);
 
-
 			public static object OutQuad(float x) => 1.0 - Math.Pow((double)(1f - x), 2.0);
-
 
 			public static object InOutQuad(float x) => Interaction.IIf((double)x < 0.5, 2.0 * Math.Pow((double)x, 2.0), 1.0 - Math.Pow((double)(-2f * x + 2f), 2.0) / 2.0);
 
-
 			public static object InCubic(float x) => Math.Pow((double)x, 3.0);
-
 
 			public static object OutCubic(float x) => 1.0 - Math.Pow((double)(1f - x), 3.0);
 
-
 			public static object InOutCubic(float x) => Interaction.IIf((double)x < 0.5, 4.0 * Math.Pow((double)x, 3.0), 1.0 - Math.Pow((double)(-2f * x + 2f), 3.0) / 2.0);
-
 
 			public static object InQuart(float x) => Math.Pow((double)x, 4.0);
 
-
 			public static object OutQuart(float x) => 1.0 - Math.Pow((double)(1f - x), 4.0);
-
 
 			public static object InOutQuart(float x) => Interaction.IIf((double)x < 0.5, 8.0 * Math.Pow((double)x, 4.0), 1.0 - Math.Pow((double)(-2f * x + 2f), 4.0) / 2.0);
 
-
 			public static object InQuint(float x) => Math.Pow((double)x, 5.0);
-
 
 			public static object OutQuint(float x) => 1.0 - Math.Pow((double)(1f - x), 5.0);
 
-
 			public static object InOutQuint(float x) => Interaction.IIf((double)x < 0.5, 16.0 * Math.Pow((double)x, 5.0), 1.0 - Math.Pow((double)(-2f * x + 2f), 5.0) / 2.0);
-
 
 			public static object InExpo(float x) => Interaction.IIf(x == 0f, 0, Math.Pow(2.0, (double)(10f * x - 10f)));
 
-
 			public static object OutExpo(float x) => Interaction.IIf(x == 1f, 1, 1.0 - Math.Pow(2.0, (double)(-10f * x)));
-
 
 			public static object InOutExpo(float x) => Interaction.IIf(x == 0f, 0, RuntimeHelpers.GetObjectValue(Interaction.IIf(x == 1f, 1, RuntimeHelpers.GetObjectValue(Interaction.IIf((double)x < 0.5, Math.Pow(2.0, (double)(20f * x - 10f)) / 2.0, (2.0 - Math.Pow(2.0, (double)(-20f * x + 10f))) / 2.0)))));
 
-
 			public static object InCirc(float x) => 1.0 - Math.Sqrt(1.0 - Math.Pow((double)x, 2.0));
-
 
 			public static object OutCirc(float x) => Math.Sqrt(1.0 - Math.Pow((double)(x - 1f), 2.0));
 
-
 			public static object InOutCirc(float x) => Interaction.IIf((double)x < 0.5, (1.0 - Math.Sqrt(1.0 - Math.Pow((double)(2f * x), 2.0))) / 2.0, (Math.Sqrt(1.0 - Math.Pow((double)(-2f * x + 2f), 2.0)) + 1.0) / 2.0);
-
 
 			public static object InElastic(float x) => Interaction.IIf(x == 0f, 0, RuntimeHelpers.GetObjectValue(Interaction.IIf(x == 1f, 1, -Math.Pow(2.0, (double)(10f * x - 10f)) * Math.Sin(((double)(x * 10f) - 10.75) * 2.0943951023931953))));
 
-
 			public static object OutElastic(float x) => Interaction.IIf(x == 0f, 0, RuntimeHelpers.GetObjectValue(Interaction.IIf(x == 1f, 1, Math.Pow(2.0, (double)(-10f * x)) * Math.Sin(((double)(x * 10f) - 0.75) * 2.0943951023931953) + 1.0)));
-
 
 			public static object InOutElastic(float x) => Interaction.IIf(x == 0f, 0, RuntimeHelpers.GetObjectValue(Interaction.IIf(x == 1f, 1, RuntimeHelpers.GetObjectValue(Interaction.IIf((double)x < 0.5, -(Math.Pow(2.0, (double)(20f * x - 10f)) * Math.Sin(((double)(20f * x) - 11.125) * 1.3962634015954636)) / 2.0, Math.Pow(2.0, (double)(-20f * x + 10f)) * Math.Sin(((double)(20f * x) - 11.125) * 1.3962634015954636) / 2.0 + 1.0)))));
 
-
 			public static object InBack(float x) => 2.70158 * Math.Pow((double)x, 3.0) - 1.70158 * Math.Pow((double)x, 2.0);
-
 
 			public static object OutBack(float x) => 1.0 + 2.70158 * Math.Pow((double)(x - 1f), 3.0) + 1.70158 * Math.Pow((double)(x - 1f), 2.0);
 
-
 			public static object InOutBack(float x) => Interaction.IIf((double)x < 0.5, Math.Pow((double)(2f * x), 2.0) * (7.189819 * (double)x - 2.5949095) / 2.0, (Math.Pow((double)(2f * x - 2f), 2.0) * (3.5949095 * (double)(x * 2f - 2f) + 2.5949095) + 2.0) / 2.0);
 
-
 			public static object InBounce(float x) => Operators.SubtractObject(1, OutBounce(1f - x));
-
 
 			public static object OutBounce(float x)
 			{
@@ -340,9 +268,7 @@ namespace RhythmBase.Components
 				return OutBounce;
 			}
 
-
 			public static object InOutBounce(float x) => Interaction.IIf((double)x < 0.5, Operators.DivideObject(Operators.SubtractObject(1, OutBounce(1f - 2f * x)), 2), Operators.DivideObject(Operators.AddObject(1, OutBounce(2f * x - 1f)), 2));
-
 
 			public static object SmoothStep(float x) => (double)(3f - 2f * x) * Math.Pow((double)x, 2.0);
 		}

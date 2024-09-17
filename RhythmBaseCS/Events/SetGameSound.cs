@@ -2,7 +2,6 @@
 using RhythmBase.Assets;
 using RhythmBase.Components;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Events
 {
 	public class SetGameSound : BaseEvent

@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Components
 {
-
 	public struct RDRectI : IEquatable<RDRectI>
 	{
-
 		public int? Left { get; set; }
-
 
 		public int? Right { get; set; }
 
-
 		public int? Top { get; set; }
 
-
 		public int? Bottom { get; set; }
-
 
 		public int? Width
 		{
@@ -27,7 +20,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public int? Height
 		{
 			get
@@ -35,7 +27,6 @@ namespace RhythmBase.Components
 				return checked(Top - Bottom);
 			}
 		}
-
 
 		public RDRectI(int? left, int? top, int? right, int? bottom)
 		{
@@ -46,24 +37,20 @@ namespace RhythmBase.Components
 			Bottom = bottom;
 		}
 
-
 		public RDRectI(RDPointI location, RDSizeI size)
 		{
 			this = checked(new RDRectI(location.X, location.Y + size.Height, location.X + size.Width, location.Y));
 		}
-
 
 		public RDRectI(RDSizeI size)
 		{
 			this = new RDRectI(new int?(0), size.Height, size.Width, new int?(0));
 		}
 
-
 		public RDRectI(int? width, int? height)
 		{
 			this = new RDRectI(new int?(0), height, width, new int?(0));
 		}
-
 
 		public RDPointI Location
 		{
@@ -74,7 +61,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public RDSizeI Size
 		{
 			get
@@ -84,14 +70,12 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static RDRectI Inflate(RDRectI rect, RDSizeI size)
 		{
 			RDRectI result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(size);
 			return result;
 		}
-
 
 		public static RDRectI Inflate(RDRectI rect, int? x, int? y)
 		{
@@ -100,9 +84,7 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static RDRectI Ceiling(RDRect rect) => Ceiling(rect, false);
-
 
 		public static RDRectI Ceiling(RDRect rect, bool outwards)
 		{
@@ -192,9 +174,7 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static RDRectI Floor(RDRect rect) => Ceiling(rect, false);
-
 
 		public static RDRectI Floor(RDRect rect, bool inwards)
 		{
@@ -284,13 +264,11 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static RDRectI Round(RDRect rect)
 		{
 			RDRectI Round = checked(new RDRectI(new int?((int)Math.Round((rect.Left == null) ? 0.0 : Math.Round((double)rect.Left.Value))), new int?((int)Math.Round((rect.Top == null) ? 0.0 : Math.Round((double)rect.Top.Value))), new int?((int)Math.Round((rect.Right == null) ? 0.0 : Math.Round((double)rect.Right.Value))), new int?((int)Math.Round((rect.Bottom == null) ? 0.0 : Math.Round((double)rect.Bottom.Value)))));
 			return Round;
 		}
-
 
 		public static RDRectI Union(RDRectI rect1, RDRectI rect2)
 		{
@@ -298,9 +276,7 @@ namespace RhythmBase.Components
 			return Union;
 		}
 
-
 		public static RDRectI Intersect(RDRectI rect1, RDRectI rect2) => rect1.IntersectsWithInclusive(rect2) ? new RDRectI(new int?((rect1.Left == null || rect2.Left == null) ? 0 : Math.Max(rect1.Left.Value, rect2.Left.Value)), new int?((rect1.Top == null || rect2.Top == null) ? 0 : Math.Max(rect1.Top.Value, rect2.Top.Value)), new int?((rect1.Right == null || rect2.Right == null) ? 0 : Math.Min(rect1.Right.Value, rect2.Right.Value)), new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))) : default;
-
 
 		public static RDRectI Truncate(RDRect rect)
 		{
@@ -318,7 +294,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public void Offset(int? x, int? y)
 		{
 			checked
@@ -330,9 +305,7 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public void Offset(RDPointI p) => Offset(p.X, p.Y);
-
 
 		public void Inflate(RDSizeI size)
 		{
@@ -345,7 +318,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public void Inflate(int? width, int? height)
 		{
 			checked
@@ -357,9 +329,7 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public RDRectI Union(RDRectI rect) => Union(this, rect);
-
 
 		public bool IntersectsWithInclusive(RDRectI rect)
 		{
@@ -412,18 +382,13 @@ namespace RhythmBase.Components
 			return flag9.Value;
 		}
 
-
 		public static bool operator ==(RDRectI rect1, RDRectI rect2) => rect1.Equals(rect2);
-
 
 		public static bool operator !=(RDRectI rect1, RDRectI rect2) => !rect1.Equals(rect2);
 
-
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDRectI) && Equals((obj != null) ? ((RDRectI)obj) : default);
 
-
 		public override int GetHashCode() => HashCode.Combine(Left, Top, Right, Bottom);
-
 
 		public override string ToString() => string.Format("{{Location=[{0},{1}],Size=[{2},{3}]}}",
 			[
@@ -432,7 +397,6 @@ namespace RhythmBase.Components
 				Width,
 				Height
 			]);
-
 
 		public bool Equals(RDRectI other)
 		{
@@ -485,7 +449,6 @@ namespace RhythmBase.Components
 			return flag9.Value;
 		}
 
-
 		public static implicit operator RDRect(RDRectI rect)
 		{
 			int? num = rect.Left;
@@ -498,7 +461,6 @@ namespace RhythmBase.Components
 			RDRect result = new(left, top, right, (num != null) ? new float?((float)num.GetValueOrDefault()) : null);
 			return result;
 		}
-
 
 		public static implicit operator RDRectE(RDRectI rect)
 		{

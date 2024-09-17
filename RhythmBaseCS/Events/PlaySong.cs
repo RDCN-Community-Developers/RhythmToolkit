@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Assets;
-
 namespace RhythmBase.Events
 {
 	public class PlaySong : BaseBeatsPerMinute, IBarBeginningEvent

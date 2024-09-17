@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Runtime.CompilerServices;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -46,7 +45,6 @@ namespace RhythmBase.Components
 			}
 		}
 		public bool IsReadOnly { get; } = false;
-
 		/// <param name="count">Capacity limit.</param>
 		public LimitedList(uint count) : this(count, default)
 		{

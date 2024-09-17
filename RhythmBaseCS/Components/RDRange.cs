@@ -1,30 +1,23 @@
 ﻿using System;
 using RhythmBase.Exceptions;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Beat range.
 	/// </summary>
-
 	public struct RDRange
 	{
 		/// <summary>
 		/// Start beat.
 		/// </summary>
-
 		public Beat? Start { get; }
-
 		/// <summary>
 		/// End beat.
 		/// </summary>
-
 		public Beat? End { get; }
-
 		/// <summary>
 		/// Beat interval.
 		/// </summary>
-
 		public float BeatInterval
 		{
 			get
@@ -42,12 +35,10 @@ namespace RhythmBase.Components
 				return BeatInterval;
 			}
 		}
-
 		/// <summary>
 		/// Time interval.
 		/// </summary>
 		/// <returns></returns>
-
 		public TimeSpan TimeInterval
 		{
 			get
@@ -73,10 +64,8 @@ namespace RhythmBase.Components
 				return TimeInterval;
 			}
 		}
-
 		/// <param name="start">Start beat.</param>
 		/// <param name="[end]">End beat.</param>
-
 		public RDRange(Beat? start, Beat? end)
 		{
 			this = default;

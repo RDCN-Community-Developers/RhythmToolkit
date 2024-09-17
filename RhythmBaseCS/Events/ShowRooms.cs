@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components;
-
 namespace RhythmBase.Events
 {
 	public class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent

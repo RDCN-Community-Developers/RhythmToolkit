@@ -4,10 +4,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Assets;
 using RhythmBase.Components;
-
 namespace RhythmBase.Converters
 {
-
 	internal class CharacterConverter(RDLevel level, HashSet<SpriteFile> assets) : JsonConverter<RDCharacter>
 	{
 		public override void WriteJson(JsonWriter writer, RDCharacter value, JsonSerializer serializer)
@@ -22,7 +20,6 @@ namespace RhythmBase.Converters
 				writer.WriteValue(value.Character.ToString());
 			}
 		}
-
 
 		public override RDCharacter ReadJson(JsonReader reader, Type objectType, RDCharacter existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
@@ -40,9 +37,7 @@ namespace RhythmBase.Converters
 			return ReadJson;
 		}
 
-
 		private readonly RDLevel level = level;
-
 
 		private readonly HashSet<SpriteFile> assets = assets;
 	}

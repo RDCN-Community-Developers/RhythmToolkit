@@ -2,13 +2,11 @@
 using RhythmBase.Exceptions;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// The conditions of the event.
 	/// </summary>
-
 	public class Condition
 	{
 		/// <summary>

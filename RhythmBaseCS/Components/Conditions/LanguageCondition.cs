@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
-
 namespace RhythmBase.Components.Conditions
 {
 	/// <summary>
 	/// Game Language.
 	/// </summary>
-
 	public class LanguageCondition : BaseConditional
 	{
 		public LanguageCondition()

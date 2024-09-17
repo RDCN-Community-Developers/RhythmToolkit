@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components;
 using SkiaSharp;
-
 namespace RhythmBase.Events
 {
-
 	public class Tint : BaseDecorationAction, IEaseEvent
 	{
 		public Tint()

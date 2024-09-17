@@ -2,26 +2,21 @@
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Can only be applied to one room.
 	/// </summary>
-
 	[JsonConverter(typeof(RoomConverter))]
 	public struct SingleRoom
 	{
 		/// <summary>
 		/// Whether it can be used in the top room.
 		/// </summary>
-
 		public bool EnableTop { get; }
-
 		/// <summary>
 		/// Applied rooms.
 		/// </summary>
-
 		public RoomIndex Room
 		{
 			get
@@ -33,11 +28,9 @@ namespace RhythmBase.Components
 				_data = value;
 			}
 		}
-
 		/// <summary>
 		/// Applied room indexes.
 		/// </summary>
-
 		public byte Value
 		{
 			get
@@ -69,13 +62,10 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public override string ToString() => string.Format("[{0}]", _data);
-
 		/// <summary>
 		/// Represents room 0.
 		/// </summary>
-
 		public static SingleRoom Default
 		{
 			get
@@ -87,25 +77,19 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public SingleRoom(byte room)
 		{
 			this = default;
 			_data = (RoomIndex)(1 << (int)room);
 		}
 
-
 		public static bool operator ==(SingleRoom R1, SingleRoom R2) => R1._data == R2._data;
-
 
 		public static bool operator !=(SingleRoom R1, SingleRoom R2) => !(R1 == R2);
 
-
 		public override bool Equals(object obj) => this == ((obj != null) ? ((SingleRoom)obj) : default);
 
-
 		public override int GetHashCode() => HashCode.Combine(_data);
-
 
 		private RoomIndex _data;
 	}

@@ -1,11 +1,9 @@
 ﻿using System;
 using RhythmBase.Events;
-
 namespace RhythmBase.Exceptions
 {
-
-	public class UnreadableEventException(string message, BaseEvent item) : RhythmBaseException(message)
+	public class UnreadableEventException(string message, IBaseEvent item) : RhythmBaseException(message)
 	{
-		public BaseEvent Item = item;
+		public IBaseEvent Item = item;
 	}
 }

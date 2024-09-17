@@ -2,13 +2,10 @@
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using System.Runtime.CompilerServices;
-
 namespace RhythmBase.Converters
 {
-
 	internal class LimitedListConverter : JsonConverter<LimitedList>
 	{
-
 		public override void WriteJson(JsonWriter writer, LimitedList? value, JsonSerializer serializer)
 		{
 			writer.WriteStartArray();
@@ -19,7 +16,6 @@ namespace RhythmBase.Converters
 			}
 			writer.WriteEndArray();
 		}
-
 
 		public override LimitedList ReadJson(JsonReader reader, Type objectType, LimitedList? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{

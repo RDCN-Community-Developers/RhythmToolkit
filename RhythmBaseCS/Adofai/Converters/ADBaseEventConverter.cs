@@ -6,13 +6,10 @@ using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
 using RhythmBase.Settings;
-
 namespace RhythmBase.Adofai.Converters
 {
-
 	internal class ADBaseEventConverter<TEvent>(ADLevel level, LevelReadOrWriteSettings inputSettings) : JsonConverter<TEvent> where TEvent : ADBaseEvent
 	{
-
 		public override bool CanRead
 		{
 			get
@@ -21,7 +18,6 @@ namespace RhythmBase.Adofai.Converters
 			}
 		}
 
-
 		public override bool CanWrite
 		{
 			get
@@ -29,12 +25,9 @@ namespace RhythmBase.Adofai.Converters
 				return _canwrite;
 			}
 		}
-
 		public override void WriteJson(JsonWriter writer, TEvent value, JsonSerializer serializer) => throw new NotImplementedException();
 
-
 		public override TEvent ReadJson(JsonReader reader, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer) => GetDeserializedObject((JObject)JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer);
-
 
 		public virtual TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
@@ -44,7 +37,6 @@ namespace RhythmBase.Adofai.Converters
 			_canread = true;
 			return existingValue;
 		}
-
 
 		public virtual JObject SetSerializedObject(TEvent value, JsonSerializer serializer)
 		{
@@ -57,15 +49,11 @@ namespace RhythmBase.Adofai.Converters
 			return JObj;
 		}
 
-
 		protected readonly ADLevel level = level;
-
 
 		protected readonly LevelReadOrWriteSettings settings = inputSettings;
 
-
 		protected bool _canread = true;
-
 
 		protected bool _canwrite = true;
 	}

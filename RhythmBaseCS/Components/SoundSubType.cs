@@ -2,36 +2,27 @@
 using Newtonsoft.Json;
 using RhythmBase.Assets;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Subtypes of sound effects.
 	/// </summary>
-
 	public class SoundSubType
 	{
-
 		public SoundSubType()
 		{
 			Audio = new Audio();
 		}
-
 		/// <summary>
 		/// Referenced audio.
 		/// </summary>
-
 		public Audio Audio { get; set; }
-
 		/// <summary>
 		/// Sound effect name.
 		/// </summary>
-
 		public GroupSubtypes GroupSubtype { get; set; }
 
-
 		public bool Used { get; set; }
-
 
 		[JsonProperty]
 		private string Filename
@@ -41,7 +32,6 @@ namespace RhythmBase.Components
 				return Audio.Name;
 			}
 		}
-
 
 		[JsonProperty]
 		public int Volume
@@ -56,7 +46,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		[JsonProperty]
 		public int Pitch
 		{
@@ -69,7 +58,6 @@ namespace RhythmBase.Components
 				Audio.Pitch = value;
 			}
 		}
-
 
 		[JsonProperty]
 		public int Pan
@@ -84,7 +72,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		[JsonConverter(typeof(TimeConverter))]
 		public TimeSpan Offset
 		{
@@ -98,53 +85,33 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		private bool ShouldSerialize() => Used;
-
 
 		internal bool ShouldSerializeFilename() => ShouldSerialize();
 
-
 		internal bool ShouldSerializeVolume() => ShouldSerialize() && Volume != 100;
-
 
 		internal bool ShouldSerializePitch() => ShouldSerialize() && Pitch != 100;
 
-
 		internal bool ShouldSerializePan() => ShouldSerialize();
 
-
 		internal bool ShouldSerializeOffset() => ShouldSerialize();
-
 		/// <summary>
 		/// Types of sound effects.
 		/// </summary>
-
 		public enum GroupSubtypes
 		{
-
 			ClapSoundHoldLongEnd,
-
 			ClapSoundHoldLongStart,
-
 			ClapSoundHoldShortEnd,
-
 			ClapSoundHoldShortStart,
-
 			FreezeshotSoundCueLow,
-
 			FreezeshotSoundCueHigh,
-
 			FreezeshotSoundRiser,
-
 			FreezeshotSoundCymbal,
-
 			BurnshotSoundCueLow,
-
 			BurnshotSoundCueHigh,
-
 			BurnshotSoundRiser,
-
 			BurnshotSoundCymbal
 		}
 	}

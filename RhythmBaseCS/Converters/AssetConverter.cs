@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using RhythmBase.Assets;
 using RhythmBase.Components;
-
 namespace RhythmBase.Converters
 {
 	internal class AssetConverter<TAsset>(RDLevel level) : JsonConverter<Asset<TAsset>> where TAsset : IAssetFile

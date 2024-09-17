@@ -16,6 +16,5 @@ Namespace Extensions
 		Public Function GetAnimation(e As MoveRow) As EaseValueGroup(Of MoveRow)
 			Return New EaseValueGroup(Of MoveRow)(e, e.Ease, e.Duration, NameOf(e.RowPosition), NameOf(e.Scale), NameOf(e.Pivot), NameOf(e.Angle))
 		End Function
-
 	End Module
 End Namespace

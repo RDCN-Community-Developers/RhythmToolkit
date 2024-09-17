@@ -1,13 +1,11 @@
 ﻿using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Extensions;
-
 namespace RhythmBase.Utils
 {
 	/// <summary>
 	/// Beat calculator.
 	/// </summary>
-
 	public class BeatCalculator
 	{
 		internal BeatCalculator(RDLevel level)

@@ -3,17 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float" />
 	/// </summary>
-
 	[JsonConverter(typeof(RDPointsConverter))]
 	public struct RDSize : IEquatable<RDSize>
 	{
-
 		public RDSize(RDPoint pt)
 		{
 			this = default;
@@ -21,14 +18,12 @@ namespace RhythmBase.Components
 			Height = pt.Y;
 		}
 
-
 		public RDSize(float? width, float? height)
 		{
 			this = default;
 			this.Width = width;
 			this.Height = height;
 		}
-
 
 		public bool IsEmpty
 		{
@@ -38,12 +33,9 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public float? Width { get; set; }
 
-
 		public float? Height { get; set; }
-
 
 		public float? Area
 		{
@@ -53,20 +45,17 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static RDSize Add(RDSize sz1, RDSize sz2)
 		{
 			RDSize Add = new(sz1.Width + sz2.Width, sz1.Height + sz2.Height);
 			return Add;
 		}
 
-
 		public static RDSize Subtract(RDSize sz1, RDSize sz2)
 		{
 			RDSize Subtract = new(sz1.Width - sz2.Width, sz1.Height - sz2.Height);
 			return Subtract;
 		}
-
 
 		public override int GetHashCode()
 		{
@@ -75,7 +64,6 @@ namespace RhythmBase.Components
 			h.Add(Height);
 			return h.ToHashCode();
 		}
-
 
 		public override string ToString()
 		{
@@ -86,7 +74,6 @@ namespace RhythmBase.Components
 			num = num2 = Height;
 			return string.Format(format, objectValue, RuntimeHelpers.GetObjectValue((num2 != null) ? num.GetValueOrDefault() : "null"));
 		}
-
 
 		public bool Equals(RDSize other)
 		{
@@ -111,7 +98,6 @@ namespace RhythmBase.Components
 			return flag3.Value;
 		}
 
-
 		public RDSizeI ToSize()
 		{
 			float? num = Width;
@@ -124,22 +110,17 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public RDPoint ToPointF()
 		{
 			RDPoint ToPointF = new(Width, Height);
 			return ToPointF;
 		}
 
-
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDSize) && Equals((obj != null) ? ((RDSize)obj) : default);
-
 
 		public static RDSize operator +(RDSize sz1, RDSize sz2) => Add(sz1, sz2);
 
-
 		public static RDSize operator -(RDSize sz1, RDSize sz2) => Subtract(sz1, sz2);
-
 
 		public static RDSize operator *(float left, RDSize right)
 		{
@@ -147,13 +128,11 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static RDSize operator *(RDSize left, float right)
 		{
 			RDSize result = new(left.Width * right, left.Height * right);
 			return result;
 		}
-
 
 		public static RDSize operator /(RDSize left, float right)
 		{
@@ -161,12 +140,9 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static bool operator ==(RDSize sz1, RDSize sz2) => sz1.Equals(sz2);
 
-
 		public static bool operator !=(RDSize sz1, RDSize sz2) => !sz1.Equals(sz2);
-
 
 		public static implicit operator RDSizeE(RDSize size)
 		{
@@ -177,7 +153,6 @@ namespace RhythmBase.Components
 			RDSizeE result = new(width, (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null);
 			return result;
 		}
-
 
 		public static explicit operator RDPoint(RDSize size)
 		{

@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using System.Collections;
 using System.Text.RegularExpressions;
-
 namespace RhythmBase.Converters
 {
 	internal partial class ConditionConverter(List<BaseConditional> Conditionals) : JsonConverter<Condition>
@@ -16,7 +15,6 @@ namespace RhythmBase.Converters
 			string J = JToken.Load(reader).ToObject<string>()!;
 			Condition Value = new();
 			MatchCollection ConditionIds = ConditionsRegex().Matches(J);
-
 			foreach(Match match in ConditionIds) 
 			{
 				double vs = Conversion.Val("~2");

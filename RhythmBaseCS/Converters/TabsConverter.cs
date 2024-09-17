@@ -3,15 +3,11 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Events;
-
 namespace RhythmBase.Converters
 {
-
 	internal class TabsConverter : JsonConverter<Tabs>
 	{
-
 		public override void WriteJson(JsonWriter writer, Tabs value, JsonSerializer serializer) => writer.WriteValue(TabNames[(int)value]);
-
 
 		public override Tabs ReadJson(JsonReader reader, Type objectType, Tabs existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
@@ -29,7 +25,6 @@ namespace RhythmBase.Converters
 			}
 			return ReadJson;
 		}
-
 
 		private static readonly string[] TabNames =
 		[

@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Assets;
-
 namespace RhythmBase.Converters
 {
 	internal class AudioConverter(AssetManager manager) : JsonConverter<Audio>

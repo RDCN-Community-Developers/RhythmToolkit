@@ -4,13 +4,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Extensions;
-
 namespace RhythmBase.Converters
 {
-
 	internal class ExpressionConverter : JsonConverter<Expression>
 	{
-
 		public override void WriteJson(JsonWriter writer, Expression value, JsonSerializer serializer)
 		{
 			bool isNumeric = value.IsNumeric;
@@ -31,7 +28,6 @@ namespace RhythmBase.Converters
 				}
 			}
 		}
-
 
 		public override Expression ReadJson(JsonReader reader, Type objectType, Expression existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{

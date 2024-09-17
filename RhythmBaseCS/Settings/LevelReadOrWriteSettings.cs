@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using RhythmBase.Events;
-
 namespace RhythmBase.Settings
 {
 	/// <summary>

@@ -1,11 +1,8 @@
 ﻿using System;
-
 namespace RhythmBase.Events
 {
-
 	public class AddOneshotBeat : BaseBeat
 	{
-
 		public AddOneshotBeat()
 		{
 			_delay = 0f;
@@ -13,30 +10,21 @@ namespace RhythmBase.Events
 			Type = EventType.AddOneshotBeat;
 		}
 
-
 		public Pulse PulseType { get; set; }
-
 
 		public byte Subdivisions { get; set; }
 
-
 		public bool SubdivSound { get; set; }
-
 
 		public float Tick { get; set; }
 
-
 		public uint Loops { get; set; }
-
 
 		public float Interval { get; set; }
 
-
 		public bool Skipshot { get; set; }
 
-
 		public FreezeBurn? FreezeBurnMode { get; set; }
-
 
 		public float Delay
 		{
@@ -68,42 +56,28 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		public override EventType Type { get; }
-
 
 		internal bool ShouldSerializeSkipshot() => Skipshot;
 
-
 		public bool ShouldSerializeFreezeBurnMode() => FreezeBurnMode != null;
-
 
 		public override string ToString() => base.ToString() + string.Format(" {0} {1}", this.FreezeBurnMode, this.PulseType);
 
-
 		private float _delay;
-
 
 		public enum Pulse
 		{
-
 			Wave,
-
 			Square,
-
 			Triangle,
-
 			Heart
 		}
 
-
 		public enum FreezeBurn
 		{
-
 			Wave,
-
 			Freezeshot,
-
 			Burnshot
 		}
 	}

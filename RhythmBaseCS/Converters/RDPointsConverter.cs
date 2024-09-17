@@ -5,13 +5,10 @@ using RhythmBase.Components;
 using RhythmBase.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-
 namespace RhythmBase.Converters
 {
-
 	internal class RDPointsConverter : JsonConverter
 	{
-
 		public override void WriteJson(JsonWriter writer, [NotNull] object? value, JsonSerializer serializer)
 		{
 			writer.WriteStartArray();
@@ -76,7 +73,6 @@ namespace RhythmBase.Converters
 		: ja[0]!.ToObject<Expression>()), new Expression?(ja[1]!.ToString().IsNullOrEmpty()
 			? default
 			: ja[1]!.ToObject<Expression>()));
-
 			else if (objectType == typeof(RDSizeNI) || objectType == typeof(RDSizeNI?))
 				ReadJson = new RDSizeNI(ja[0]!.ToObject<int>(), ja[1]!.ToObject<int>());
 			else if (objectType == typeof(RDSizeN) || objectType == typeof(RDSizeN?))

@@ -1,37 +1,28 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components;
 using static RhythmBase.Utils.Utils;
-
 namespace RhythmBase.Events
 {
-
-	public abstract class BaseEvent
+	public abstract class BaseEvent : IBaseEvent
 	{
-
 		protected BaseEvent()
 		{
 			_beat = new Beat(1f);
 			Active = true;
 		}
-
 		/// <summary>
 		/// Event type.
 		/// </summary>
-
 		[JsonIgnore]
 		public abstract EventType Type { get; }
-
 		/// <summary>
 		/// Column to which the event belongs.
 		/// </summary>
-
 		[JsonIgnore]
 		public abstract Tabs Tab { get; }
-
 		/// <summary>
 		/// The beat of the event.
 		/// </summary>
-
 		[JsonIgnore]
 		public virtual Beat Beat
 		{
@@ -49,41 +40,33 @@ namespace RhythmBase.Events
 				}
 			}
 		}
-
 		/// <summary>
 		/// The number of rows this event is on.
 		/// </summary>
-
 		public virtual int Y { get; set; }
-
 		/// <summary>
 		/// Event tag.
 		/// </summary>
-
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public string Tag { get; set; }
-
 		/// <summary>
 		/// Event conditions.
 		/// </summary>
-
 		[JsonProperty("if", DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public Condition Condition { get; set; }
 		public bool Active { get; set; }
-
 		/// <summary>
 		/// Clone this event and its basic properties.
 		/// If it is of the same type as the source event, then it will be cloned.
 		/// </summary>
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
 		/// <returns></returns>
-
-		public virtual TEvent Clone<TEvent>() where TEvent : BaseEvent, new()
+		public virtual TEvent Clone<TEvent>() where TEvent : IBaseEvent, new()
 		{
 			if (ConvertToEnum<TEvent>() == Type)
 			{
 				TEvent e = (TEvent)MemberwiseClone();
-				e._beat = Beat.WithoutBinding();
+				((BaseEvent)(object)e)._beat = Beat.WithoutBinding();
 				return e;
 			}
 			TEvent temp = new()
@@ -99,7 +82,7 @@ namespace RhythmBase.Events
 					temp.Condition.ConditionLists.Add(item);
 			return temp;
 		}
-		internal virtual TEvent Clone<TEvent>(RDLevel level) where TEvent : BaseEvent, new()
+		internal virtual TEvent Clone<TEvent>(RDLevel level) where TEvent : IBaseEvent, new()
 		{
 			TEvent temp = new()
 			{

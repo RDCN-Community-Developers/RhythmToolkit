@@ -1,6 +1,5 @@
 ﻿using NAudio.Vorbis;
 using NAudio.Wave;
-
 namespace RhythmBase.Assets
 {
 	public class AudioFile : IAudioFile
@@ -10,7 +9,6 @@ namespace RhythmBase.Assets
 			get => false;
 			private set
 			{
-
 			}
 		}
 		/// <inheritdoc/>

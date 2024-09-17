@@ -4,7 +4,6 @@ using RhythmBase.Components;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using RhythmBase.Utils;
-
 namespace RhythmBase.Events
 {
 	public class CustomEvent : BaseEvent
@@ -81,7 +80,6 @@ namespace RhythmBase.Events
 			}
 			return TryConvert;
 		}
-
 
 		[JsonIgnore]
 		public JObject Data { get; set; }

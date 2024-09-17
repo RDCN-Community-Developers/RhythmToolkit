@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -88,7 +87,6 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Rotate.
 		/// </summary>
-
 		public RDPoint Rotate(float angle)
 		{
 			float[,] array = new float[2, 2];

@@ -5,10 +5,8 @@ using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
 using RhythmBase.Settings;
-
 namespace RhythmBase.Adofai.Converters
 {
-
 	internal class ADBaseTileEventConverter<TEvent>(ADLevel level, LevelReadOrWriteSettings inputSettings) : ADBaseEventConverter<TEvent>(level, inputSettings) where TEvent : ADBaseTileEvent
 	{
 		public override TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
@@ -35,7 +33,6 @@ namespace RhythmBase.Adofai.Converters
 			}
 			return existingValue;
 		}
-
 
 		public override JObject SetSerializedObject(TEvent value, JsonSerializer serializer)
 		{

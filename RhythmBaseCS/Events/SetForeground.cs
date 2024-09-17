@@ -1,7 +1,6 @@
 ﻿using RhythmBase.Assets;
 using RhythmBase.Components;
 using System.Linq;
-
 namespace RhythmBase.Events
 {
 	public class SetForeground : BaseEvent, IEaseEvent, IRoomEvent

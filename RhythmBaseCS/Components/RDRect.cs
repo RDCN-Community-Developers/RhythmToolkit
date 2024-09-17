@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Components
 {
-
 	public struct RDRect : IEquatable<RDRect>
 	{
-
 		public float? Left { get; set; }
-
 
 		public float? Right { get; set; }
 
-
 		public float? Top { get; set; }
 
-
 		public float? Bottom { get; set; }
-
 
 		public float? Width
 		{
@@ -27,7 +20,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public float? Height
 		{
 			get
@@ -35,7 +27,6 @@ namespace RhythmBase.Components
 				return Top - Bottom;
 			}
 		}
-
 
 		public RDRect(float? left, float? top, float? right, float? bottom)
 		{
@@ -46,24 +37,20 @@ namespace RhythmBase.Components
 			Bottom = bottom;
 		}
 
-
 		public RDRect(RDPoint location, RDSize size)
 		{
 			this = new RDRect(location.X, location.Y + size.Height, location.X + size.Width, location.Y);
 		}
-
 
 		public RDRect(RDSize size)
 		{
 			this = new RDRect(new float?(0f), size.Height, size.Width, new float?(0f));
 		}
 
-
 		public RDRect(float? width, float? height)
 		{
 			this = new RDRect(new float?(0f), height, width, new float?(0f));
 		}
-
 
 		public RDPoint Location
 		{
@@ -74,7 +61,6 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public RDSize Size
 		{
 			get
@@ -84,14 +70,12 @@ namespace RhythmBase.Components
 			}
 		}
 
-
 		public static RDRect Inflate(RDRect rect, RDSize size)
 		{
 			RDRect result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(size);
 			return result;
 		}
-
 
 		public static RDRect Inflate(RDRect rect, float? x, float? y)
 		{
@@ -100,23 +84,19 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
 		public static RDRect Union(RDRect rect1, RDRect rect2)
 		{
 			RDRect Union = new(new float?((rect1.Left == null || rect2.Left == null) ? 0f : Math.Min(rect1.Left.Value, rect2.Left.Value)), new float?((rect1.Top == null || rect2.Top == null) ? 0f : Math.Min(rect1.Top.Value, rect2.Top.Value)), new float?((rect1.Right == null || rect2.Right == null) ? 0f : Math.Min(rect1.Right.Value, rect2.Right.Value)), new float?((rect1.Bottom == null || rect2.Bottom == null) ? 0f : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value)));
 			return Union;
 		}
 
-
 		public static RDRect Intersect(RDRect rect1, RDRect rect2) => rect1.IntersectsWithInclusive(rect2) ? new RDRect(new float?((rect1.Left == null || rect2.Left == null) ? 0f : Math.Max(rect1.Left.Value, rect2.Left.Value)), new float?((rect1.Top == null || rect2.Top == null) ? 0f : Math.Max(rect1.Top.Value, rect2.Top.Value)), new float?((rect1.Right == null || rect2.Right == null) ? 0f : Math.Min(rect1.Right.Value, rect2.Right.Value)), new float?((rect1.Bottom == null || rect2.Bottom == null) ? 0f : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))) : default;
-
 
 		public static RDRect Truncate(RDRect rect)
 		{
 			RDRect Truncate = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			return Truncate;
 		}
-
 
 		public void Offset(float? x, float? y)
 		{
@@ -126,9 +106,7 @@ namespace RhythmBase.Components
 			Bottom += y;
 		}
 
-
 		public void Offset(RDPoint p) => Offset(p.X, p.Y);
-
 
 		public void Inflate(RDSize size)
 		{
@@ -138,7 +116,6 @@ namespace RhythmBase.Components
 			Bottom -= size.Height;
 		}
 
-
 		public void Inflate(float? width, float? height)
 		{
 			Left -= width;
@@ -146,7 +123,6 @@ namespace RhythmBase.Components
 			Right += width;
 			Bottom -= height;
 		}
-
 
 		public bool Contains(float? x, float? y)
 		{
@@ -196,7 +172,6 @@ namespace RhythmBase.Components
 			flag9 = flag10;
 			return flag9.Value;
 		}
-
 
 		public bool Contains(RDPoint p)
 		{
@@ -249,7 +224,6 @@ namespace RhythmBase.Components
 			return flag9.Value;
 		}
 
-
 		public bool Contains(RDRect rect)
 		{
 			float? num = Left;
@@ -301,12 +275,9 @@ namespace RhythmBase.Components
 			return flag9.Value;
 		}
 
-
 		public RDRect Union(RDRect rect) => Union(this, rect);
 
-
 		public object Intersect(RDRect rect) => Intersect(this, rect);
-
 
 		public bool IntersectsWith(RDRect rect)
 		{
@@ -359,7 +330,6 @@ namespace RhythmBase.Components
 			return flag9.Value;
 		}
 
-
 		public bool IntersectsWithInclusive(RDRect rect)
 		{
 			float? num = Left;
@@ -411,18 +381,13 @@ namespace RhythmBase.Components
 			return flag9.Value;
 		}
 
-
 		public static bool operator ==(RDRect rect1, RDRect rect2) => rect1.Equals(rect2);
-
 
 		public static bool operator !=(RDRect rect1, RDRect rect2) => !rect1.Equals(rect2);
 
-
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDRect) && Equals((obj != null) ? ((RDRect)obj) : default);
 
-
 		public override int GetHashCode() => HashCode.Combine(Left, Top, Right, Bottom);
-
 
 		public override string ToString() => string.Format("{{Location=[{0},{1}],Size=[{2},{3}]}}",
 			[
@@ -431,7 +396,6 @@ namespace RhythmBase.Components
 				Width,
 				Height
 			]);
-
 
 		public bool Equals(RDRect other)
 		{
@@ -483,7 +447,6 @@ namespace RhythmBase.Components
 			flag9 = flag10;
 			return flag9.Value;
 		}
-
 
 		public static implicit operator RDRectE(RDRect rect)
 		{

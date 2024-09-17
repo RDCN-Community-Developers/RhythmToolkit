@@ -4,13 +4,10 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using RhythmBase.Components;
-
 namespace RhythmBase.Converters
 {
-
 	internal class ConditionalConverter : JsonConverter<BaseConditional>
 	{
-
 		public override void WriteJson(JsonWriter writer, BaseConditional value, JsonSerializer serializer) => writer.WriteRawValue(JsonConvert.SerializeObject(value, new JsonSerializerSettings
 		{
 			Converters =
@@ -19,7 +16,6 @@ namespace RhythmBase.Converters
 				},
 			ContractResolver = new CamelCasePropertyNamesContractResolver()
 		}));
-
 
 		public override BaseConditional ReadJson(JsonReader reader, Type objectType, BaseConditional existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{

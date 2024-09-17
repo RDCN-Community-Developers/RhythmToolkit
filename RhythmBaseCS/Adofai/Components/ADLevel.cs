@@ -5,13 +5,11 @@ using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
 using RhythmBase.Exceptions;
 using RhythmBase.Settings;
-
 namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Adofal level.
 	/// </summary>
-
 	public class ADLevel : ADTileCollection
 	{
 		/// <summary>

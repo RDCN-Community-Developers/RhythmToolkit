@@ -2,13 +2,11 @@
 using Newtonsoft.Json;
 using RhythmBase.Converters;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// An Expression
 	/// </summary>
-
 	[JsonConverter(typeof(ExpressionConverter))]
 	public struct Expression : IEquatable<Expression>
 	{
@@ -29,7 +27,6 @@ namespace RhythmBase.Components
 			IsNumeric = true;
 			this.NumericValue = value;
 		}
-
 
 		public Expression(string value)
 		{

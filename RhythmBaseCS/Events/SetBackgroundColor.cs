@@ -2,10 +2,8 @@
 using RhythmBase.Components;
 using RhythmBase.Converters;
 using System.Text.Json.Serialization;
-
 namespace RhythmBase.Events
 {
-
 	public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent
 	{
 		public SetBackgroundColor()

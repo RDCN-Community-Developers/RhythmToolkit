@@ -1,12 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
-
 namespace RhythmBase.Events
 {
-
 	public class ShowStatusSign : BaseEvent
 	{
-
 		public ShowStatusSign()
 		{
 			UseBeats = true;
@@ -15,18 +12,13 @@ namespace RhythmBase.Events
 			Tab = Tabs.Actions;
 		}
 
-
 		public bool UseBeats { get; set; }
-
 
 		public bool Narrate { get; set; }
 
-
 		public string Text { get; set; }
 
-
 		public float Duration { get; set; }
-
 
 		[JsonIgnore]
 		public TimeSpan TimeDuration
@@ -52,12 +44,9 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		public override EventType Type { get; }
 
-
 		public override Tabs Tab { get; }
-
 
 		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
 	}

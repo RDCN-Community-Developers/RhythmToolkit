@@ -8,10 +8,8 @@ using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using RhythmBase.Utils;
 using SkiaSharp;
-
 namespace RhythmBase.Converters
 {
-
 	internal class RDLevelConverter : JsonConverter<RDLevel>
 	{
 		public RDLevelConverter(string location, LevelReadOrWriteSettings settings)
@@ -43,7 +41,7 @@ namespace RhythmBase.Converters
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
 			writer.WriteStartArray();
-			foreach (BaseEvent item3 in ((settings.InactiveEventsHandling == InactiveEventsHandling.Retain) ? value.Where(i => i.Active) : value))
+			foreach (IBaseEvent item3 in ((settings.InactiveEventsHandling == InactiveEventsHandling.Retain) ? value.Where(i => i.Active) : value.AsEnumerable()))
 				writer.WriteRawValue(JsonConvert.SerializeObject(item3, Formatting.None, AllInOneSerializer));
 			writer.WriteEndArray();
 			writer.WritePropertyName("conditionals");

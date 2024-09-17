@@ -1,13 +1,10 @@
 ﻿using System;
 using Newtonsoft.Json;
 using RhythmBase.Components;
-
 namespace RhythmBase.Events
 {
-
 	public abstract class BaseDecorationAction : BaseEvent
 	{
-
 		[JsonIgnore]
 		public DecorationEventCollection Parent => _parent;
 		[JsonIgnore]

@@ -5,15 +5,11 @@ using RhythmBase.Components;
 using RhythmBase.Exceptions;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
-
 namespace RhythmBase.Events
 {
-
 	public class CustomRowEvent : BaseRowAction
 	{
-
 		public override EventType Type { get; }
-
 
 		[JsonIgnore]
 		public string ActureType
@@ -24,9 +20,7 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		public override Tabs Tab { get; }
-
 
 		public CustomRowEvent()
 		{
@@ -35,7 +29,6 @@ namespace RhythmBase.Events
 			Tab = Tabs.Rows;
 			Data = [];
 		}
-
 
 		public CustomRowEvent(JObject data)
 		{
@@ -63,18 +56,13 @@ namespace RhythmBase.Events
 			Active = jtoken4 == null || jtoken4.ToObject<bool>();
 		}
 
-
 		public override string ToString() => string.Format("{0} *{1}", Beat, ActureType);
-
 
 		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
 
-
 		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type, LevelReadOrWriteSettings settings) => TryConvert(ref value, ref type, settings);
 
-
 		public static implicit operator CustomEvent(CustomRowEvent e) => new CustomEvent(e.Data);
-
 
 		public static explicit operator CustomRowEvent(CustomEvent e)
 		{
@@ -85,7 +73,6 @@ namespace RhythmBase.Events
 			}
 			throw new RhythmBaseException("The row field is missing from the field contained in this object.");
 		}
-
 
 		public JObject Data;
 	}

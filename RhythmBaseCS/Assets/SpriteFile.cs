@@ -7,13 +7,11 @@ using RhythmBase.Exceptions;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using SkiaSharp;
-
 namespace RhythmBase.Assets
 {
 	/// <summary>
 	/// A reference to an asset file.
 	/// </summary>
-
 	public class SpriteFile : ISpriteFile
 	{
 		private bool _isModified = false;
@@ -234,7 +232,6 @@ namespace RhythmBase.Assets
 					if (pair2.Value.Contains(string.Empty) &&
 						pair2.Value.Any(i => i != string.Empty))
 						PropertyNameLength[pair2.Key] = Math.Max(PropertyNameLength[pair2.Key], 4);
-
 			meObj.Remove("Clips".ToLowerCamelCase());
 			JsonTextWriter jsonTextWriter = writer;
 			jsonTextWriter.WriteStartObject();

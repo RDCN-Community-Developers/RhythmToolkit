@@ -1,11 +1,8 @@
 ﻿using System;
-
 namespace RhythmBase.Events
 {
-
 	public class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 	{
-
 		public SetCrotchetsPerBar()
 		{
 			_visualBeatMultiplier = 0f;
@@ -14,12 +11,9 @@ namespace RhythmBase.Events
 			Tab = Tabs.Sounds;
 		}
 
-
 		public override EventType Type { get; }
 
-
 		public override Tabs Tab { get; }
-
 
 		public float VisualBeatMultiplier
 		{
@@ -38,7 +32,6 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		public uint CrotchetsPerBar
 		{
 			get
@@ -56,12 +49,9 @@ namespace RhythmBase.Events
 			}
 		}
 
-
 		public override string ToString() => base.ToString() + string.Format(" CPB:{0}", (long)checked(unchecked((ulong)_crotchetsPerBar) + 1UL));
 
-
 		private float _visualBeatMultiplier;
-
 
 		protected internal uint _crotchetsPerBar;
 	}

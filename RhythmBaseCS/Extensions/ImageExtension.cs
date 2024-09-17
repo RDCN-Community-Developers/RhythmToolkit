@@ -1,13 +1,10 @@
 ﻿using Microsoft.VisualBasic.CompilerServices;
 using SkiaSharp;
-
 namespace RhythmBase.Extensions
 {
-
 	[StandardModule]
 	public static class ImageExtension
 	{
-
 		public static SKBitmap FromFile(string path)
 		{
 			SKBitmap FromFile;

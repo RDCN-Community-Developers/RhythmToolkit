@@ -9,7 +9,6 @@ using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Settings;
 using System.Collections.ObjectModel;
-
 namespace RhythmBase.Adofai.Utils
 {
 	[StandardModule]

@@ -1,5 +1,4 @@
 ﻿using RhythmBase.Assets;
-
 namespace RhythmBase.Events
 {
 	public class PlaySound : BaseEvent

@@ -1,18 +1,15 @@
 ﻿using System;
 using SkiaSharp;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Palette color
 	/// </summary>
-
 	public class PaletteColor
 	{
 		/// <summary>
 		/// Get or set a custom color.
 		/// </summary>
-
 		public SKColor? Color
 		{
 			get
@@ -34,11 +31,9 @@ namespace RhythmBase.Components
 				}
 			}
 		}
-
 		/// <summary>
 		/// Go back to or set the palette color index.
 		/// </summary>
-
 		public int PaletteIndex
 		{
 			get
@@ -55,18 +50,14 @@ namespace RhythmBase.Components
 				}
 			}
 		}
-
 		/// <summary>
 		/// Specifies whether this object supports alpha channel.
 		/// </summary>
 		/// <returns></returns>
-
 		public bool EnableAlpha { get; }
-
 		/// <summary>
 		/// Specifies whether this object is used for this color.
 		/// </summary>
-
 		public bool EnablePanel
 		{
 			get
@@ -74,13 +65,11 @@ namespace RhythmBase.Components
 				return PaletteIndex >= 0;
 			}
 		}
-
 		/// <summary>
 		/// The actual color of this object.<br />
 		/// If comes from a palette, it's a palette color.
 		/// If not, it's a custom color.
 		/// </summary>
-
 		public SKColor Value
 		{
 			get
@@ -88,23 +77,17 @@ namespace RhythmBase.Components
 				return (EnablePanel ? new SKColor?(parent[_panel]) : _color).Value;
 			}
 		}
-
 		/// <param name="enableAlpha">Specifies whether this object supports alpha channel.</param>
-
 		public PaletteColor(bool enableAlpha)
 		{
 			this.EnableAlpha = enableAlpha;
 		}
 
-
 		public override string ToString() => EnablePanel ? string.Format("{0}: {1}", _panel, Value) : Value.ToString();
-
 
 		private int _panel;
 
-
 		private SKColor? _color;
-
 
 		internal LimitedList<SKColor> parent;
 	}

@@ -4,10 +4,8 @@ using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Extensions;
 using System.Reflection;
-
 namespace RhythmBase.Converters
 {
-
 	internal class RDContractResolver : DefaultContractResolver
 	{
 		// Note: this type is marked as 'beforefieldinit'.
