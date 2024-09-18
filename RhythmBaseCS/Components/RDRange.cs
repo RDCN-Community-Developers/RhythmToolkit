@@ -1,5 +1,4 @@
-﻿using System;
-using RhythmBase.Exceptions;
+﻿using RhythmBase.Exceptions;
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -64,11 +63,11 @@ namespace RhythmBase.Components
 			}
 		}
 		/// <param name="start">Start beat.</param>
-		/// <param name="[end]">End beat.</param>
+		/// <param name="end">End beat.</param>
 		public RDRange(Beat? start, Beat? end)
 		{
 			this = default;
-			if (start != null && end != null && !start.Value._calculator.Equals(end.Value._calculator))
+			if (start != null && end != null && !start.Value._calculator!.Equals(end.Value._calculator))
 			{
 				throw new RhythmBaseException("RDIndexes must come from the same RDLevel.");
 			}
@@ -83,5 +82,6 @@ namespace RhythmBase.Components
 				this.End = end;
 			}
 		}
+		public readonly bool Contains(Beat b) => (Start == null || Start < b) && (End == null || b < End);
 	}
 }
