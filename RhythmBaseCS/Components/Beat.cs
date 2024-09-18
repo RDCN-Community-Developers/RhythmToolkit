@@ -5,7 +5,7 @@ namespace RhythmBase.Components
 {
 	public struct Beat : IComparable<Beat>, IEquatable<Beat>
 	{
-		internal readonly RDLevel BaseLevel => _calculator?.Collection ?? [];
+		internal readonly RDLevel? BaseLevel => _calculator?.Collection;
 		/// <summary>
 		/// Whether this beat cannot be calculated.
 		/// </summary>
@@ -228,7 +228,7 @@ namespace RhythmBase.Components
 		public static bool FromSameLevel(Beat a, Beat b, bool @throw = false)
 		{
 			bool FromSameLevel;
-			if (a.BaseLevel.Equals(b.BaseLevel))
+			if (a.BaseLevel?.Equals(b.BaseLevel)??true)
 				FromSameLevel = true;
 			else
 			{
