@@ -67,11 +67,11 @@ namespace RhythmBase.Components
 		public RDRange(Beat? start, Beat? end)
 		{
 			this = default;
-			if (start != null && end != null && !start.Value._calculator!.Equals(end.Value._calculator))
+			if (start != null && end != null && !((Beat)start).FromSameLevelOrNull((Beat)end))
 			{
 				throw new RhythmBaseException("RDIndexes must come from the same RDLevel.");
 			}
-			if (start != null && end != null && start.Value.BeatOnly > end.Value.BeatOnly)
+			if (start != null && end != null && start > end)
 			{
 				this.Start = end;
 				this.End = start;
