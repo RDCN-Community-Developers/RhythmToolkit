@@ -17,10 +17,10 @@ namespace RhythmBase.Events
 		public Targets Target { get; set; }
 
 		[EaseProperty]
-		public PointE? RowPosition { get; set; }
+		public RDPointE? RowPosition { get; set; }
 
 		[EaseProperty]
-		public PointE? Scale { get; set; }
+		public RDPointE? Scale { get; set; }
 
 		[EaseProperty]
 		public Expression? Angle { get; set; }

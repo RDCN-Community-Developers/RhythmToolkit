@@ -124,9 +124,9 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-		public static implicit operator PointE(RDPointN p)
+		public static implicit operator RDPointE(RDPointN p)
 		{
-			PointE result = new(p.X, p.Y);
+			RDPointE result = new(p.X, p.Y);
 			return result;
 		}
 

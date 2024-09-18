@@ -8,13 +8,13 @@ namespace RhythmBase.Events
 	{
 		public SetRoomPerspective()
 		{
-			CornerPositions = new List<PointE?>(4);
+			CornerPositions = new List<RDPointE?>(4);
 			Type = EventType.SetRoomPerspective;
 			Tab = Tabs.Rooms;
 		}
 
 		[EaseProperty]
-		public List<PointE?> CornerPositions { get; set; }
+		public List<RDPointE?> CornerPositions { get; set; }
 
 		public float Duration { get; set; }
 

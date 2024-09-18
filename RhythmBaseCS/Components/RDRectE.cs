@@ -37,7 +37,7 @@ namespace RhythmBase.Components
 			Bottom = bottom;
 		}
 
-		public RDRectE(PointE location, RDSizeE size)
+		public RDRectE(RDPointE location, RDSizeE size)
 		{
 			this = new RDRectE(location.X, location.Y + size.Height, location.X + size.Width, location.Y);
 		}
@@ -52,11 +52,11 @@ namespace RhythmBase.Components
 			this = new RDRectE(new Expression?(0f), height, width, new Expression?(0f));
 		}
 
-		public PointE Location
+		public RDPointE Location
 		{
 			get
 			{
-				PointE Location = new(Left, Bottom);
+				RDPointE Location = new(Left, Bottom);
 				return Location;
 			}
 		}
@@ -98,7 +98,7 @@ namespace RhythmBase.Components
 			Bottom += y;
 		}
 
-		public void Offset(PointE p) => Offset(p.X, p.Y);
+		public void Offset(RDPointE p) => Offset(p.X, p.Y);
 
 		public void Inflate(RDSizeE size)
 		{

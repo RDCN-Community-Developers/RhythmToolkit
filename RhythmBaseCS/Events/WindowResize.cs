@@ -26,10 +26,10 @@ namespace RhythmBase.Events
 		public override Tabs Tab { get; }
 
 		[EaseProperty]
-		public PointE? Scale { get; set; }
+		public RDPointE? Scale { get; set; }
 
 		[EaseProperty]
-		public PointE? Pivot { get; set; }
+		public RDPointE? Pivot { get; set; }
 
 		public float Duration { get; set; }
 

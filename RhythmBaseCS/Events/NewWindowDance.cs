@@ -14,7 +14,7 @@ namespace RhythmBase.Events
 		public string SamePresetBehavior { get; set; }
 		[EaseProperty]
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public PointE Position { get; set; }
+		public RDPointE Position { get; set; }
 		public References Reference { get; set; }
 		public bool UseCircle { get; set; }
 		[EaseProperty]
@@ -23,7 +23,7 @@ namespace RhythmBase.Events
 		public float Amplitude { get; set; }
 		[EaseProperty]
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public PointE AmplitudeVector { get; set; }
+		public RDPointE AmplitudeVector { get; set; }
 		[EaseProperty]
 		public Expression? Angle { get; set; }
 		[EaseProperty]

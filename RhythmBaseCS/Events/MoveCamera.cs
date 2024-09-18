@@ -16,7 +16,7 @@ namespace RhythmBase.Events
 		public Room Rooms { get; set; }
 
 		[EaseProperty]
-		public PointE? CameraPosition { get; set; }
+		public RDPointE? CameraPosition { get; set; }
 
 		[EaseProperty]
 		public int? Zoom { get; set; }

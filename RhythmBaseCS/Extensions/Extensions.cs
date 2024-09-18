@@ -1595,12 +1595,12 @@ namespace RhythmBase.Extensions
 		/// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
 		/// </summary>
 		/// <param name="target">Specified position. </param>
-		public static void MovePositionMaintainVisual(this Move e, PointE target)
+		public static void MovePositionMaintainVisual(this Move e, RDPointE target)
 		{
 			if (e.Position != null && e.Pivot != null && e.Angle != null && e.Angle.Value.IsNumeric)
 			{
-				e.Position = new PointE?(target);
-				e.Pivot = new PointE?((e.VisualPosition() - new RDSizeE(target)).Rotate(e.Angle.Value.NumericValue));
+				e.Position = new RDPointE?(target);
+				e.Pivot = new RDPointE?((e.VisualPosition() - new RDSizeE(target)).Rotate(e.Angle.Value.NumericValue));
 			}
 		}
 		/// <summary>
@@ -1611,27 +1611,27 @@ namespace RhythmBase.Extensions
 		{
 			if (e.RoomPosition != null && e.Pivot != null && e.Angle != null && e.Angle.Value.IsNumeric)
 			{
-				e.RoomPosition = new PointE?((PointE)target);
-				e.Pivot = new PointE?((e.VisualPosition() - new RDSizeE((PointE)target)).Rotate(e.Angle.Value.NumericValue));
+				e.RoomPosition = new RDPointE?((RDPointE)target);
+				e.Pivot = new RDPointE?((e.VisualPosition() - new RDSizeE((RDPointE)target)).Rotate(e.Angle.Value.NumericValue));
 			}
 		}
 		/// <summary>
 		/// The visual position of the lower left corner of the image.
 		/// </summary>
-		public static PointE VisualPosition(this Move e)
+		public static RDPointE VisualPosition(this Move e)
 		{
-			PointE VisualPosition = default;
+			RDPointE VisualPosition = default;
 			if (e.Position != null && e.Pivot != null && e.Angle != null && e.Angle.Value.IsNumeric && e.Scale != null)
 			{
-				PointE previousPosition = e.Position.Value;
-				PointE? pointE = e.Pivot;
+				RDPointE previousPosition = e.Position.Value;
+				RDPointE? pointE = e.Pivot;
 				Expression? expression = pointE?.X;
 				pointE = e.Scale;
 				Expression? x = expression * (pointE?.X) * (float)e.Parent.Size.Width / 100f;
 				pointE = e.Pivot;
 				Expression? expression2 = pointE?.Y;
 				pointE = e.Scale;
-				PointE previousPivot = new(x, expression2 * (pointE?.Y) * (float)e.Parent.Size.Height / 100f);
+				RDPointE previousPivot = new(x, expression2 * (pointE?.Y) * (float)e.Parent.Size.Height / 100f);
 				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
 			}
 			return VisualPosition;
@@ -1639,20 +1639,20 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// The visual position of the lower left corner of the image.
 		/// </summary>
-		public static PointE VisualPosition(this MoveRoom e)
+		public static RDPointE VisualPosition(this MoveRoom e)
 		{
-			PointE VisualPosition = default;
+			RDPointE VisualPosition = default;
 			if (e.RoomPosition != null && e.Pivot != null && e.Angle != null)
 			{
-				PointE previousPosition = e.RoomPosition.Value;
-				PointE? pivot = e.Pivot;
+				RDPointE previousPosition = e.RoomPosition.Value;
+				RDPointE? pivot = e.Pivot;
 				Expression? expression = pivot?.X;
 				RDSizeE? scale = e.Scale;
 				Expression? x = expression * (scale?.Width);
 				pivot = e.Pivot;
 				Expression? expression2 = pivot?.Y;
 				scale = e.Scale;
-				PointE previousPivot = new(x, expression2 * (scale?.Height));
+				RDPointE previousPivot = new(x, expression2 * (scale?.Height));
 				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
 			}
 			return VisualPosition;

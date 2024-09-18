@@ -53,6 +53,7 @@ namespace RhythmBase.Events
 			{
 				if (_beat.BaseLevel == null)
 					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
+				else _beat = new(_beat.BaseLevel.Calculator, value);
 			}
 		}
 		[JsonIgnore]

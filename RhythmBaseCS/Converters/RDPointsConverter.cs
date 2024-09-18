@@ -20,9 +20,9 @@ namespace RhythmBase.Converters
 			}
 			else
 			{
-				if (type == typeof(PointE) || type == typeof(PointE?))
+				if (type == typeof(RDPointE) || type == typeof(RDPointE?))
 				{
-					PointE temp = (value != null) ? ((PointE)value) : default;
+					RDPointE temp = (value != null) ? ((RDPointE)value) : default;
 					if (temp.X != null)
 						writer.WriteValue(RuntimeHelpers.GetObjectValue(temp.X.Value.IsNumeric ? temp.X.Value.NumericValue : temp.X.Value.ExpressionValue));
 					else
@@ -66,8 +66,8 @@ namespace RhythmBase.Converters
 				ReadJson = new RDPointI(ja[0]?.ToObject<int?>(), ja[1]?.ToObject<int?>());
 			else if (objectType == typeof(RDPoint) || objectType == typeof(RDPoint?))
 				ReadJson = new RDPoint(ja[0]?.ToObject<float?>(), ja[1]?.ToObject<float?>());
-			else if (objectType == typeof(PointE) || objectType == typeof(PointE?))
-				ReadJson = new PointE(new Expression?(ja[0]!.ToString().IsNullOrEmpty()
+			else if (objectType == typeof(RDPointE) || objectType == typeof(RDPointE?))
+				ReadJson = new RDPointE(new Expression?(ja[0]!.ToString().IsNullOrEmpty()
 		? default
 		: ja[0]!.ToObject<Expression>()), new Expression?(ja[1]!.ToString().IsNullOrEmpty()
 			? default

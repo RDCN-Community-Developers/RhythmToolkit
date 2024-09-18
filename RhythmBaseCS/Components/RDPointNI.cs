@@ -109,9 +109,9 @@ namespace RhythmBase.Components
 			RDPointI result = new(new int?(p.X), new int?(p.Y));
 			return result;
 		}
-		public static implicit operator PointE(RDPointNI p)
+		public static implicit operator RDPointE(RDPointNI p)
 		{
-			PointE result = new((float)p.X, (float)p.Y);
+			RDPointE result = new((float)p.X, (float)p.Y);
 			return result;
 		}
 		public static explicit operator RDSizeNI(RDPointNI p)

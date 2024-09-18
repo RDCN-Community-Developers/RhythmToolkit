@@ -152,13 +152,13 @@ namespace RhythmBase.Components
 			RDPoint result = new(x, (num != null) ? new float?((float)num.GetValueOrDefault()) : null);
 			return result;
 		}
-		public static implicit operator PointE(RDPointI p)
+		public static implicit operator RDPointE(RDPointI p)
 		{
 			int? num2;
 			int? num = num2 = p.X;
 			Expression? x = (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null;
 			num = num2 = p.Y;
-			PointE result = new(x, (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null);
+			RDPointE result = new(x, (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null);
 			return result;
 		}
 		public static explicit operator RDSizeI(RDPointI p)

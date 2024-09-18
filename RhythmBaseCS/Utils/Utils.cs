@@ -16,14 +16,14 @@ namespace RhythmBase.Utils
 		/// <summary>
 		/// Converts percentage point to pixel point with default screen size (352 * 198).
 		/// </summary>
-		public static PointE PercentToPixel(PointE point) => PercentToPixel(point, RDScreenSize);
+		public static RDPointE PercentToPixel(RDPointE point) => PercentToPixel(point, RDSizeNI.Screen);
 		/// <summary>
 		/// Converts percentage point to pixel point with specified size.
 		/// </summary>
 		/// <param name="size">Specified size.</param>
-		public static PointE PercentToPixel(PointE point, RDSizeE size)
+		public static RDPointE PercentToPixel(RDPointE point, RDSizeE size)
 		{
-			PointE PercentToPixel = new(point.X * size.Width / 100f, point.Y * size.Height / 100f);
+			RDPointE PercentToPixel = new(point.X * size.Width / 100f, point.Y * size.Height / 100f);
 			return PercentToPixel;
 		}
 		/// <summary>
@@ -227,8 +227,6 @@ namespace RhythmBase.Utils
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseDecorationAction" />
 		/// </summary>
 		public static readonly ReadOnlyCollection<EventType> DecorationTypes = ConvertToEnums<BaseDecorationAction>().AsReadOnly();
-
-		public static readonly RDSizeNI RDScreenSize = new(352, 198);
 
 		public static readonly ReadOnlyCollection<EventType> EventTypeEnumsForGameplay = new(
 		[

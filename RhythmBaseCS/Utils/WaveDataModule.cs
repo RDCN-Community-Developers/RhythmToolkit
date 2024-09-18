@@ -4,7 +4,7 @@ using NAudio.Wave;
 
 namespace RhythmBase.Utils
 {
-    internal static class WaveDataModule
+    public static class WaveDataModule
     {
         /// <summary>
         /// 获取音频文件流
@@ -71,7 +71,7 @@ namespace RhythmBase.Utils
                     .ToArray())
                 .ToArray();
 
-            float[] averageSamples = Enumerable
+            float[] averageSamples = Enumerable//取平均
                 .Range(0, data.Length / channelCount)
                 .Select(index => Enumerable
                     .Range(0, channelCount)

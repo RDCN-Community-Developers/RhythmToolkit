@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
@@ -19,6 +18,7 @@ namespace RhythmBase.Events
 			{
 				if (_beat.BaseLevel == null)
 					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
+				else _beat = new(_beat.BaseLevel.Calculator, value);
 			}
 		}
 		/// <summary>

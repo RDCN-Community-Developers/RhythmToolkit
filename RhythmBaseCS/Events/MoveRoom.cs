@@ -13,7 +13,7 @@ namespace RhythmBase.Events
 		}
 
 		[EaseProperty]
-		public PointE? RoomPosition { get; set; }
+		public RDPointE? RoomPosition { get; set; }
 
 		[EaseProperty]
 		public RDSizeE? Scale { get; set; }
@@ -22,7 +22,7 @@ namespace RhythmBase.Events
 		public Expression? Angle { get; set; }
 
 		[EaseProperty]
-		public PointE? Pivot { get; set; }
+		public RDPointE? Pivot { get; set; }
 
 		public float Duration { get; set; }
 

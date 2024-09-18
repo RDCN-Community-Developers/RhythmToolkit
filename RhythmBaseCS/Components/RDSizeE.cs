@@ -113,7 +113,7 @@ namespace RhythmBase.Components
 			this.Height = (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null;
 		}
 
-		public RDSizeE(PointE p)
+		public RDSizeE(RDPointE p)
 		{
 			this = default;
 			this.Width = p.X;
@@ -204,9 +204,9 @@ namespace RhythmBase.Components
 			return flag3.Value;
 		}
 
-		public PointE ToRDPointE()
+		public RDPointE ToRDPointE()
 		{
-			PointE ToRDPointE = new(Width, Height);
+			RDPointE ToRDPointE = new(Width, Height);
 			return ToRDPointE;
 		}
 
@@ -276,9 +276,9 @@ namespace RhythmBase.Components
 
 		public static bool operator !=(RDSizeE sz1, RDSizeE sz2) => !sz1.Equals(sz2);
 
-		public static explicit operator PointE(RDSizeE size)
+		public static explicit operator RDPointE(RDSizeE size)
 		{
-			PointE result = new(size.Width, size.Height);
+			RDPointE result = new(size.Width, size.Height);
 			return result;
 		}
 	}

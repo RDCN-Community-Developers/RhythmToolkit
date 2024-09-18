@@ -34,7 +34,7 @@ namespace RhythmBase.Components
 				return checked(Width * Height);
 			}
 		}
-
+		public static RDSizeNI Screen { get => new(352, 198); }
 		public static RDSizeNI Add(RDSizeNI sz1, RDSizeNI sz2)
 		{
 			RDSizeNI Add = checked(new RDSizeNI(sz1.Width + sz2.Width, sz1.Height + sz2.Height));

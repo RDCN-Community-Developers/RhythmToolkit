@@ -146,13 +146,13 @@ namespace RhythmBase.Components
 
 		public static bool operator !=(RDPoint left, RDPoint right) => !left.Equals(right);
 
-		public static implicit operator PointE(RDPoint p)
+		public static implicit operator RDPointE(RDPoint p)
 		{
 			float? num2;
 			float? num = num2 = p.X;
 			Expression? x = (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null;
 			num = num2 = p.Y;
-			PointE result = new(x, (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null);
+			RDPointE result = new(x, (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null);
 			return result;
 		}
 	}
