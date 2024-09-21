@@ -117,7 +117,7 @@ namespace RhythmBase.Components
 			{
 				_id,
 				Index,
-				this.Room,
+				Room,
 				File
 			});
 		internal DecorationEventCollection Clone() => (DecorationEventCollection)MemberwiseClone();

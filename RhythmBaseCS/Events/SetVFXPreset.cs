@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
@@ -32,16 +29,16 @@ namespace RhythmBase.Events
 		public float Duration { get; set; }
 		public override EventType Type { get; }
 		public override Tabs Tab { get; }
-		public override string ToString() => base.ToString() + string.Format(" {0}", Preset);
+		public override string ToString() => $"{base.ToString()} {Preset}";
 		public bool ShouldSerializeEnable() => Preset != Presets.DisableAll;
 		public bool ShouldSerializeThreshold() => Enable && Preset == Presets.Bloom;
-		public bool ShouldSerializeIntensity() => Conversions.ToBoolean(Operators.AndObject(Operators.AndObject(Enable && Conversions.ToBoolean(PropertyHasDuration()), Preset != Presets.TileN), Preset != Presets.CustomScreenScroll));
-		public bool ShouldSerializeColor() => Enable && Preset == Presets.Bloom;
-		public bool ShouldSerializeFloatX() => (Enable && Preset == Presets.TileN) | Preset == Presets.CustomScreenScroll;
-		public bool ShouldSerializeFloatY() => (Enable && Preset == Presets.TileN) | Preset == Presets.CustomScreenScroll;
-		public bool ShouldSerializeEase() => Conversions.ToBoolean(Enable && Conversions.ToBoolean(PropertyHasDuration()));
-		public bool ShouldSerializeDuration() => Conversions.ToBoolean(Enable && Conversions.ToBoolean(PropertyHasDuration()));
-		private object PropertyHasDuration() => new Presets[]
+		public bool ShouldSerializeIntensity() => Enable && PropertyHasDuration() && Preset is not (Presets.TileN or Presets.CustomScreenScroll);
+		public bool ShouldSerializeColor() => Enable && (Preset is Presets.Bloom or Presets.Tutorial);
+		public bool ShouldSerializeFloatX() => Enable && (Preset is Presets.TileN or Presets.CustomScreenScroll);
+		public bool ShouldSerializeFloatY() => ShouldSerializeFloatX();
+		public bool ShouldSerializeEase() => Enable && PropertyHasDuration();
+		public bool ShouldSerializeDuration() => Enable && PropertyHasDuration();
+		private bool PropertyHasDuration() => new Presets[]
 			{
 				Presets.HueShift,
 				Presets.Brightness,
@@ -60,7 +57,8 @@ namespace RhythmBase.Events
 				Presets.Aberration,
 				Presets.Blur,
 				Presets.RadialBlur,
-				Presets.Dots
+				Presets.Dots,
+				Presets.Tutorial,
 			}.Contains(Preset);
 		public enum Presets
 		{
@@ -110,6 +108,8 @@ namespace RhythmBase.Events
 			DisableAll,
 			Diamonds,
 			Tutorial,
+
+			//旧版特效
 			BlackAndWhite,
 			Blackout,
 			ScreenScrollX,

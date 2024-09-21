@@ -17,7 +17,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Beat interval.
 		/// </summary>
-		public float BeatInterval
+		public readonly float BeatInterval
 		{
 			get
 			{
@@ -38,7 +38,7 @@ namespace RhythmBase.Components
 		/// Time interval.
 		/// </summary>
 		/// <returns></returns>
-		public TimeSpan TimeInterval
+		public readonly TimeSpan TimeInterval
 		{
 			get
 			{
@@ -73,13 +73,13 @@ namespace RhythmBase.Components
 			}
 			if (start != null && end != null && start > end)
 			{
-				this.Start = end;
-				this.End = start;
+				Start = end;
+				End = start;
 			}
 			else
 			{
-				this.Start = start;
-				this.End = end;
+				Start = start;
+				End = end;
 			}
 		}
 		public readonly bool Contains(Beat b) => (Start == null || Start < b) && (End == null || b < End);

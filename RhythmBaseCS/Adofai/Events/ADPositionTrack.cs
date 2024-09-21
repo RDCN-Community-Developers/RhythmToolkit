@@ -20,12 +20,12 @@ namespace RhythmBase.Adofai.Events
 			[CompilerGenerated]
 			get
 			{
-				return this.RelativeTo;
+				return RelativeTo;
 			}
 			[CompilerGenerated]
 			set
 			{
-				this.RelativeTo = RuntimeHelpers.GetObjectValue(value);
+				RelativeTo = RuntimeHelpers.GetObjectValue(value);
 			}
 		}
 

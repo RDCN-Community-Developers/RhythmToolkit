@@ -28,8 +28,8 @@ namespace RhythmBase.Assets
 		/// <param name="character">Character type.</param>
 		public RDCharacter(RDLevel level, Characters character)
 		{
-			this.IsCustom = false;
-			this.Character = new Characters?(character);
+			IsCustom = false;
+			Character = new Characters?(character);
 		}
 		/// <summary>
 		/// Construct a customized character.
@@ -37,8 +37,8 @@ namespace RhythmBase.Assets
 		/// <param name="character">A sprite.</param>
 		public RDCharacter(RDLevel level, string character)
 		{
-			this.IsCustom = true;
-			this.CustomCharacter = new Asset<SpriteFile>(level.Manager)
+			IsCustom = true;
+			CustomCharacter = new Asset<SpriteFile>(level.Manager)
 			{
 				Name = character
 			};

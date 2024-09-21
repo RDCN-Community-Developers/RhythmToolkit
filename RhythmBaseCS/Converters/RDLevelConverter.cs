@@ -74,7 +74,7 @@ namespace RhythmBase.Converters
 			JArray JBookmarks = [];
 			while (reader.Read())
 			{
-				object name = reader.Value!;
+				string name = (string)reader.Value!;
 				reader.Read();
 				switch (name)
 				{
@@ -135,7 +135,7 @@ namespace RhythmBase.Converters
 				{
 					if (!(settings.InactiveEventsHandling > InactiveEventsHandling.Retain && (item["active"]?.Value<bool>() ?? false)))
 					{
-						Type eventType = Utils.Utils.ConvertToType((string)item["type"]!);
+						Type eventType = Utils.EventTypeUtils.ConvertToType((string)item["type"]!);
 						if (eventType == null)
 						{
 							BaseEvent TempEvent;

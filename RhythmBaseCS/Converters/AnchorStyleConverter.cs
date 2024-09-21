@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
+﻿using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Events;
+using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
 	internal class AnchorStyleConverter : JsonConverter<FloatingText.AnchorStyle>
@@ -22,25 +21,21 @@ namespace RhythmBase.Converters
 			bool center = false;
 			FloatingText.AnchorStyle result = FloatingText.AnchorStyle.Center;
 			string value = match.Groups[1].Value;
-			if (Operators.CompareString(value, "Upper", false) != 0)
+			if (value != "Upper")
 			{
-				if (Operators.CompareString(value, "Lower", false) != 0)
-				{
+				if (value != "Lower")
 					middle = true;
-				}
 				else
-				{
 					result |= FloatingText.AnchorStyle.Lower;
-				}
 			}
 			else
 			{
 				result |= FloatingText.AnchorStyle.Upper;
 			}
 			string value2 = match.Groups[2].Value;
-			if (Operators.CompareString(value2, "Left", false) != 0)
+			if (value2 != "Left")
 			{
-				if (Operators.CompareString(value2, "Right", false) != 0)
+				if (value2 != "Right")
 				{
 					center = true;
 				}

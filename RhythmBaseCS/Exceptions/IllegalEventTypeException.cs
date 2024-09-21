@@ -26,26 +26,26 @@ namespace RhythmBase.Exceptions
 
 		public IllegalEventTypeException(Type type, string extraMessage)
 		{
-			this.IllegalTypeName = type.Name;
-			this.ExtraMessage = extraMessage;
+			IllegalTypeName = type.Name;
+			ExtraMessage = extraMessage;
 		}
 
 		public IllegalEventTypeException(string type, string extraMessage)
 		{
-			this.IllegalTypeName = type;
-			this.ExtraMessage = extraMessage;
+			IllegalTypeName = type;
+			ExtraMessage = extraMessage;
 		}
 
 		public IllegalEventTypeException(Type type, string extraMessage, Exception innerException) : base("", innerException)
 		{
-			this.IllegalTypeName = type.Name;
-			this.ExtraMessage = extraMessage;
+			IllegalTypeName = type.Name;
+			ExtraMessage = extraMessage;
 		}
 
 		public IllegalEventTypeException(string type, string extraMessage, Exception innerException) : base("", innerException)
 		{
-			this.IllegalTypeName = type;
-			this.ExtraMessage = extraMessage;
+			IllegalTypeName = type;
+			ExtraMessage = extraMessage;
 		}
 	}
 }

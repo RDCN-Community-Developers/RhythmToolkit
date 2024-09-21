@@ -4,7 +4,7 @@ using NAudio.Wave;
 
 namespace RhythmBase.Utils
 {
-	public static class WaveDataModule
+	public static class WaveDataUtils
 	{
 		/// <summary>
 		/// Get wave stream of the audio file.

@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.CompilerServices;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -29,21 +28,13 @@ namespace RhythmBase.Components
 			{
 				Match match = Regex.Match(variableName, "^([ifb])(\\d{2})$");
 				if (match.Success)
-				{
-					string value = match.Groups[1].Value;
-					if (Operators.CompareString(value, "i", false) == 0)
+					return match.Groups[1].Value switch
 					{
-						return i[Conversions.ToInteger(match.Groups[2].Value)];
-					}
-					if (Operators.CompareString(value, "f", false) == 0)
-					{
-						return f[Conversions.ToInteger(match.Groups[2].Value)];
-					}
-					if (Operators.CompareString(value, "b", false) == 0)
-					{
-						return b[Conversions.ToInteger(match.Groups[2].Value)];
-					}
-				}
+						"i" => i[Conversions.ToInteger(match.Groups[2].Value)],
+						"f" => f[Conversions.ToInteger(match.Groups[2].Value)],
+						"b" => b[Conversions.ToInteger(match.Groups[2].Value)],
+						_ => throw new NotImplementedException(),
+					};
 				return GetType().GetField(variableName)?.GetValue(this)!;
 			}
 			set
@@ -52,11 +43,11 @@ namespace RhythmBase.Components
 				if (match.Success)
 				{
 					string value2 = match.Groups[1].Value;
-					if (Operators.CompareString(value2, "i", false) != 0)
+					if (value2 != "i")
 					{
-						if (Operators.CompareString(value2, "f", false) != 0)
+						if (value2 != "f")
 						{
-							if (Operators.CompareString(value2, "b", false) == 0)
+							if (value2 == "b")
 							{
 								b[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToBoolean(value);
 							}

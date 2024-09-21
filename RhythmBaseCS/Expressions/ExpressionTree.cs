@@ -703,7 +703,7 @@ namespace RhythmBase.Expressions
 				type = token;
 			}
 
-			public override string ToString() => string.Format("{0}, {1}", value, type);
+			public override readonly string ToString() => string.Format("{0}, {1}", value, type);
 
 			public string value;
 

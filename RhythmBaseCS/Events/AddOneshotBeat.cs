@@ -34,7 +34,7 @@ namespace RhythmBase.Events
 			}
 			set
 			{
-				FreezeBurn? freezeBurnMode = this.FreezeBurnMode;
+				FreezeBurn? freezeBurnMode = FreezeBurnMode;
 				int? num = (freezeBurnMode != null) ? new int?((int)freezeBurnMode.GetValueOrDefault()) : null;
 				if (((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault())
 				{
@@ -60,7 +60,7 @@ namespace RhythmBase.Events
 
 		public bool ShouldSerializeFreezeBurnMode() => FreezeBurnMode != null;
 
-		public override string ToString() => base.ToString() + string.Format(" {0} {1}", this.FreezeBurnMode, this.PulseType);
+		public override string ToString() => base.ToString() + string.Format(" {0} {1}", FreezeBurnMode, PulseType);
 
 		private float _delay;
 

@@ -22,7 +22,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Indicates whether this hit needs to be held down continuously.
 		/// </summary>
-		public bool Holdable
+		public readonly bool Holdable
 		{
 			get
 			{
@@ -38,11 +38,11 @@ namespace RhythmBase.Components
 		public Hit(BaseBeat parent, Beat beat, float hold = 0f)
 		{
 			this = default;
-			this.Parent = parent;
-			this.Beat = beat;
-			this.Hold = hold;
+			Parent = parent;
+			Beat = beat;
+			Hold = hold;
 		}
 
-		public override string ToString() => string.Format("{{{0}, {1}}}", Beat, Parent);
+		public override readonly string ToString() => string.Format("{{{0}, {1}}}", Beat, Parent);
 	}
 }

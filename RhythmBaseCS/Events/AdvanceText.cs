@@ -43,6 +43,6 @@ namespace RhythmBase.Events
 			}
 		}
 
-		public override string ToString() => base.ToString() + string.Format(" Index:{0}", this.Parent.Children.IndexOf(this));
+		public override string ToString() => base.ToString() + string.Format(" Index:{0}", Parent.Children.IndexOf(this));
 	}
 }

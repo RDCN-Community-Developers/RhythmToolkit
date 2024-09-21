@@ -20,7 +20,7 @@ namespace RhythmBase.Events
 		public override string ToString()
 		{
 			string Out = "";
-			switch (this.Action)
+			switch (Action)
 			{
 				case ActionType.Increment:
 					Out = ">";
@@ -29,7 +29,7 @@ namespace RhythmBase.Events
 					Out = "<";
 					break;
 				case ActionType.Custom:
-					Out = Conversions.ToString((long)checked(unchecked((ulong)this.CustomPulse) + 1UL));
+					Out = Conversions.ToString((long)checked(unchecked((ulong)CustomPulse) + 1UL));
 					break;
 				case ActionType.Remove:
 					Out = "X";

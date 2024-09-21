@@ -1,90 +1,43 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
 using RhythmBase.Extensions;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float" />
 	/// </summary>
 	[JsonConverter(typeof(RDPointsConverter))]
-	public struct RDPoint : IEquatable<RDPoint>
+	public struct RDPoint(float? x, float? y) : IEquatable<RDPoint>
 	{
-		public RDPoint(RDSize sz)
-		{
-			this = default;
-			X = sz.Width;
-			Y = sz.Height;
-		}
-
-		public RDPoint(float? x, float? y)
-		{
-			this = default;
-			this.X = x;
-			this.Y = y;
-		}
-
-		public bool IsEmpty
-		{
-			get
-			{
-				return X == null && Y == null;
-			}
-		}
-
-		public float? X { get; set; }
-
-		public float? Y { get; set; }
-
+		public RDPoint(RDSize sz) : this(sz.Width, sz.Height) { }
+		public readonly bool IsEmpty => X == null && Y == null;
+		public float? X { get; set; } = x;
+		public float? Y { get; set; } = y;
 		public void Offset(RDPoint p)
 		{
 			X += p.X;
 			Y += p.Y;
 		}
-
 		public void Offset(float? dx, float? dy)
 		{
 			X += dx;
 			Y += dy;
 		}
-
-		public static RDPoint Add(RDPoint pt, RDSizeI sz)
-		{
-			float? x = pt.X;
-			int? num = sz.Width;
-			float? x2 = x + ((num != null) ? new float?((float)num.GetValueOrDefault()) : null);
-			float? y = pt.Y;
-			num = sz.Height;
-			RDPoint Add = new(x2, y + ((num != null) ? new float?((float)num.GetValueOrDefault()) : null));
-			return Add;
-		}
-
-		public static RDPoint Add(RDPoint pt, RDSize sz)
-		{
-			RDPoint Add = new(pt.X + sz.Width, pt.Y + sz.Height);
-			return Add;
-		}
-
-		public static RDPoint Subtract(RDPoint pt, RDSizeI sz)
-		{
-			float? x = pt.X;
-			int? num = sz.Width;
-			float? x2 = x - ((num != null) ? new float?((float)num.GetValueOrDefault()) : null);
-			float? y = pt.Y;
-			num = sz.Height;
-			RDPoint Subtract = new(x2, y - ((num != null) ? new float?((float)num.GetValueOrDefault()) : null));
-			return Subtract;
-		}
-
-		public static RDPoint Subtract(RDPoint pt, RDSize sz)
-		{
-			RDPoint Subtract = new(pt.X - sz.Width, pt.Y - sz.Height);
-			return Subtract;
-		}
-
-		public RDPoint MultipyByMatrix(float[,] matrix)
+		public static RDPoint Add(RDPoint pt, RDSizeI sz) => new(
+			pt.X + sz.Width, pt.Y + sz.Height
+			);
+		public static RDPoint Add(RDPoint pt, RDSize sz) => new(
+			pt.X + sz.Width, pt.Y + sz.Height
+			);
+		public static RDPoint Subtract(RDPoint pt, RDSizeI sz) => new(
+			pt.X - sz.Width, pt.Y - sz.Height
+			);
+		public static RDPoint Subtract(RDPoint pt, RDSize sz) => new(
+			pt.X - sz.Width, pt.Y - sz.Height
+			);
+		public readonly RDPoint MultipyByMatrix(float[,] matrix)
 		{
 			if (matrix.Rank == 2 && matrix.Length == 4)
 			{
@@ -110,19 +63,16 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="pivot">Giver pivot.</param>
 		/// <returns></returns>
-		public RDPoint Rotate(RDPointN pivot, float angle) => (this - new RDSizeN(pivot)).Rotate(angle) + new RDSizeN(pivot);
-
-		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDPoint) && Equals((obj != null) ? ((RDPoint)obj) : default);
-
-		public override int GetHashCode()
+		public readonly RDPoint Rotate(RDPointN pivot, float angle) => (this - new RDSizeN(pivot)).Rotate(angle) + new RDSizeN(pivot);
+		public override readonly bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDPoint) && Equals((obj != null) ? ((RDPoint)obj) : default);
+		public override readonly int GetHashCode()
 		{
 			HashCode h = default;
 			h.Add(X);
 			h.Add(Y);
 			return h.ToHashCode();
 		}
-
-		public override string ToString()
+		public override readonly string ToString()
 		{
 			string format = "[{0}, {1}]";
 			float? num2;
@@ -131,29 +81,13 @@ namespace RhythmBase.Components
 			num = num2 = Y;
 			return string.Format(format, objectValue, RuntimeHelpers.GetObjectValue((num2 != null) ? num.GetValueOrDefault() : "null"));
 		}
-
-		bool IEquatable<RDPoint>.Equals(RDPoint other) => other.X.NullableEquals(X) && other.Y.NullableEquals(Y);
-
+		readonly bool IEquatable<RDPoint>.Equals(RDPoint other) => other.X.NullableEquals(X) && other.Y.NullableEquals(Y);
 		public static RDPoint operator +(RDPoint pt, RDSizeI sz) => Add(pt, sz);
-
 		public static RDPoint operator +(RDPoint pt, RDSize sz) => Add(pt, sz);
-
 		public static RDPoint operator -(RDPoint pt, RDSizeI sz) => Subtract(pt, sz);
-
 		public static RDPoint operator -(RDPoint pt, RDSize sz) => Subtract(pt, sz);
-
 		public static bool operator ==(RDPoint left, RDPoint right) => left.Equals(right);
-
 		public static bool operator !=(RDPoint left, RDPoint right) => !left.Equals(right);
-
-		public static implicit operator RDPointE(RDPoint p)
-		{
-			float? num2;
-			float? num = num2 = p.X;
-			Expression? x = (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null;
-			num = num2 = p.Y;
-			RDPointE result = new(x, (num2 != null) ? new Expression?(num.GetValueOrDefault()) : null);
-			return result;
-		}
+		public static implicit operator RDPointE(RDPoint p) => new RDPointE(p.X, p.Y);
 	}
 }

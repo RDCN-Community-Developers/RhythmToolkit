@@ -23,7 +23,7 @@ namespace RhythmBase.Events
 
 		public override EventType Type { get; }
 
-		public override string ToString() => string.Format("{0} {1} {2}", base.ToString(), Utils.Utils.GetPatternString(this.RowXs()), ((double)this.Swing == 0.5 | this.Swing == 0f) ? "" : " Swing");
+		public override string ToString() => string.Format("{0} {1} {2}", base.ToString(), Utils.Utils.GetPatternString(this.RowXs()), ((double)Swing == 0.5 | Swing == 0f) ? "" : " Swing");
 
 		public enum ClassicBeatPatterns
 		{

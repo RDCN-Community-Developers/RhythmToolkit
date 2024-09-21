@@ -19,7 +19,7 @@ namespace RhythmBase.Components
 		/// </summary>
 		public RoomIndex Room
 		{
-			get
+			readonly get
 			{
 				return _data;
 			}
@@ -33,7 +33,7 @@ namespace RhythmBase.Components
 		/// </summary>
 		public byte Value
 		{
-			get
+			readonly get
 			{
 				int i = 0;
 				checked
@@ -61,7 +61,7 @@ namespace RhythmBase.Components
 			}
 		}
 
-		public override string ToString() => string.Format("[{0}]", _data);
+		public override readonly string ToString() => string.Format("[{0}]", _data);
 		/// <summary>
 		/// Represents room 0.
 		/// </summary>
@@ -86,9 +86,9 @@ namespace RhythmBase.Components
 
 		public static bool operator !=(SingleRoom R1, SingleRoom R2) => !(R1 == R2);
 
-		public override bool Equals(object obj) => this == ((obj != null) ? ((SingleRoom)obj) : default);
+		public override readonly bool Equals(object obj) => this == ((obj != null) ? ((SingleRoom)obj) : default);
 
-		public override int GetHashCode() => HashCode.Combine(_data);
+		public override readonly int GetHashCode() => HashCode.Combine(_data);
 
 		private RoomIndex _data;
 	}

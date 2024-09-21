@@ -86,7 +86,7 @@ namespace RhythmBase.Adofai.Components
 			JsonSerializer LevelSerializer = new();
 			LevelSerializer.Converters.Add(new ADLevelConverter(filepath, settings));
 			string extension = System.IO.Path.GetExtension(filepath);
-			if (Operators.CompareString(extension, ".adofai", false) != 0)
+			if (extension != ".adofai")
 			{
 				throw new RhythmBaseException("File not supported.");
 			}

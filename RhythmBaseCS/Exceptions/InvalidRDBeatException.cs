@@ -5,7 +5,7 @@ namespace RhythmBase.Exceptions
 	{
 		public InvalidRDBeatException()
 		{
-			this.Message = "The beat is invalid, possibly because the beat is not associated with the RDLevel.";
+			Message = "The beat is invalid, possibly because the beat is not associated with the RDLevel.";
 		}
 
 		public override string Message { get; }

@@ -19,12 +19,12 @@ namespace RhythmBase.Adofai.Events
 			[CompilerGenerated]
 			get
 			{
-				return this.StartTile;
+				return StartTile;
 			}
 			[CompilerGenerated]
 			set
 			{
-				this.StartTile = RuntimeHelpers.GetObjectValue(value);
+				StartTile = RuntimeHelpers.GetObjectValue(value);
 			}
 		}
 
@@ -33,12 +33,12 @@ namespace RhythmBase.Adofai.Events
 			[CompilerGenerated]
 			get
 			{
-				return this.EndTile;
+				return EndTile;
 			}
 			[CompilerGenerated]
 			set
 			{
-				this.EndTile = RuntimeHelpers.GetObjectValue(value);
+				EndTile = RuntimeHelpers.GetObjectValue(value);
 			}
 		}
 

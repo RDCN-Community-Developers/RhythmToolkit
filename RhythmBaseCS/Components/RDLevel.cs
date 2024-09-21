@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Assets;
 using RhythmBase.Converters;
@@ -119,7 +118,7 @@ namespace RhythmBase.Components
 		/// <param name="room">The room where this decoration is in.</param>
 		/// <param name="sprite">The sprite referenced by this decoration.</param>
 		/// <returns>Decoration that created and added to the level.</returns>
-		public DecorationEventCollection CreateDecoration(SingleRoom room,[NotNull] string sprite)
+		public DecorationEventCollection CreateDecoration(SingleRoom room, [NotNull] string sprite)
 		{
 			DecorationEventCollection temp = new(room)
 			{
@@ -201,20 +200,20 @@ namespace RhythmBase.Components
 		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">File not supported.</exception>
 		/// <returns>An instance of a level that reads from a file.</returns>
 		public static RDLevel Read(string filepath, LevelReadOrWriteSettings settings)
+	{
+		JsonSerializer LevelSerializer = new();
+		LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
+		string extension = System.IO.Path.GetExtension(filepath);
+		RDLevel Read;
+		if ((extension != ".rdzip") && (extension != ".zip"))
 		{
-			JsonSerializer LevelSerializer = new();
-			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
-			string extension = System.IO.Path.GetExtension(filepath);
-			RDLevel Read;
-			if (Operators.CompareString(extension, ".rdzip", false) != 0 && Operators.CompareString(extension, ".zip", false) != 0)
-			{
-				if (Operators.CompareString(extension, ".rdlevel", false) != 0)
-					throw new RhythmBaseException("File not supported.");
-				Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(File.OpenText(filepath)));
-			}
-			else
-				Read = ReadFromZip(filepath, settings);
-			return Read;
+			if (extension != ".rdlevel")
+				throw new RhythmBaseException("File not supported.");
+			Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(File.OpenText(filepath)));
+		}
+		else
+			Read = ReadFromZip(filepath, settings);
+		return Read;
 		}
 		public static RDLevel ReadFromZip(string filepath) => ReadFromZip(filepath, new LevelReadOrWriteSettings());
 		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings) => ReadFromZip(File.OpenRead(filepath), settings);
@@ -325,7 +324,7 @@ namespace RhythmBase.Components
 			else if (item.Type == EventType.TintRows && ((TintRows)item).Parent == null)
 				//轨道染色事件可能是为所有轨道染色
 				base.Add(item);
-			else if (Utils.Utils.RowTypes.Contains(item.Type))
+			else if (Utils.EventTypeUtils.RowTypes.Contains(item.Type))
 			{
 				BaseRowAction rowAction = (BaseRowAction)item;
 				if (rowAction.Parent == null)
@@ -334,7 +333,7 @@ namespace RhythmBase.Components
 				rowAction.Parent.AddSafely((BaseRowAction)item);
 				base.Add(item);
 			}
-			else if (Utils.Utils.DecorationTypes.Contains(item.Type))
+			else if (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type))
 			{
 				BaseDecorationAction decoAction = (BaseDecorationAction)item;
 				if (decoAction.Parent == null)
@@ -346,7 +345,7 @@ namespace RhythmBase.Components
 			//BPM 和 CPB
 			else if (item.Type == EventType.SetCrotchetsPerBar)
 				AddSetCrotchetsPerBar((SetCrotchetsPerBar)item);
-			else if (Utils.Utils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
+			else if (Utils.EventTypeUtils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 				AddBaseBeatsPerMinute((BaseBeatsPerMinute)item);
 			// 其他
 			else
@@ -357,8 +356,8 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="item">Event.</param>
 		/// <returns></returns>
-		public override bool Contains(IBaseEvent item) => (Utils.Utils.RowTypes.Contains(item.Type)
-			&& Rows.Any((RowEventCollection i) => i.Contains(item))) || (Utils.Utils.DecorationTypes.Contains(item.Type) && Decorations.Any((DecorationEventCollection i) => i.Contains(item))) || base.Contains(item);
+		public override bool Contains(IBaseEvent item) => (Utils.EventTypeUtils.RowTypes.Contains(item.Type)
+			&& Rows.Any((RowEventCollection i) => i.Contains(item))) || (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((DecorationEventCollection i) => i.Contains(item))) || base.Contains(item);
 		/// <summary>
 		/// Remove event from the level.
 		/// </summary>
@@ -367,14 +366,14 @@ namespace RhythmBase.Components
 		public override bool Remove(IBaseEvent item)
 		{
 			bool Remove;
-			if (Utils.Utils.RowTypes.Contains(item.Type)
+			if (Utils.EventTypeUtils.RowTypes.Contains(item.Type)
 				&& Rows.Any((RowEventCollection i) => i.RemoveSafely((BaseRowAction)item)))
 			{
 				base.Remove(item);
 				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
-			else if (Utils.Utils.DecorationTypes.Contains(item.Type)
+			else if (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type)
 					&& Decorations.Any((DecorationEventCollection i) => i.RemoveSafely((BaseDecorationAction)item)))
 			{
 				base.Remove(item);
@@ -385,7 +384,7 @@ namespace RhythmBase.Components
 			{
 				if (item.Type == EventType.SetCrotchetsPerBar)
 					Remove = RemoveSetCrotchetsPerBar((SetCrotchetsPerBar)item);
-				else if (Utils.Utils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
+				else if (Utils.EventTypeUtils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 					Remove = RemoveBaseBeatsPerMinute((BaseBeatsPerMinute)item);
 				else
 				{
@@ -470,7 +469,7 @@ namespace RhythmBase.Components
 					base.Add(new SetCrotchetsPerBar
 					{
 						_beat = nxtE._beat,
-						_crotchetsPerBar = ((frt != null) ? frt.CrotchetsPerBar : 8u- 1u)
+						_crotchetsPerBar = ((frt != null) ? frt.CrotchetsPerBar : 8u - 1u)
 					});
 				Calculator.Refresh();
 			}

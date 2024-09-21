@@ -248,7 +248,7 @@ namespace RhythmBase.Components
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
 		public static bool FromSameLevelOrNull(Beat a, Beat b, bool @throw = false) => a.BaseLevel == null || b.BaseLevel == null || FromSameLevel(a, b, @throw);
-		public bool FromSameLevel(Beat b, bool @throw = false) => FromSameLevel(this, b, @throw);
+		public readonly bool FromSameLevel(Beat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.
 		/// <br />
@@ -262,7 +262,7 @@ namespace RhythmBase.Components
 		/// Returns a new instance of unbinding the level.
 		/// </summary>
 		/// <returns>A new instance of unbinding the level.</returns>
-		public Beat WithoutBinding()
+		public readonly Beat WithoutBinding()
 		{
 			Beat result = this;
 			if (result._calculator != null)
@@ -385,7 +385,7 @@ namespace RhythmBase.Components
 			return ToString;
 		}
 		public override bool Equals([NotNull] object obj) => obj.GetType() == typeof(Beat) && Equals((obj != null) ? ((Beat)obj) : default);
-		public bool Equals(Beat other) => this == other;
+		public readonly bool Equals(Beat other) => this == other;
 		public override int GetHashCode() => HashCode.Combine(BeatOnly, BaseLevel);
 		public int CompareTo(Beat other)
 		{

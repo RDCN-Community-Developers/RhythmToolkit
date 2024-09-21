@@ -88,7 +88,7 @@ namespace RhythmBase.Components
 		internal RowEventCollection()
 		{
 			Rooms = new SingleRoom(0);
-			this.Sound = new Audio();
+			Sound = new Audio();
 			RowToMimic = -1;
 		}
 		/// <summary>

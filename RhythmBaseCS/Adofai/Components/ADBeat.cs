@@ -6,31 +6,21 @@ namespace RhythmBase.Adofai.Components
 {
 	public struct ADBeat : IComparable<ADBeat>, IEquatable<ADBeat>
 	{
-		internal ADLevel baseLevel
-		{
-			get
-			{
-				return _calculator.Collection;
-			}
-		}
+		internal readonly ADLevel baseLevel => _calculator.Collection;
 
-		public float BeatOnly
+		public readonly float BeatOnly
 		{
-			get
-			{
-				return _beat + 1f;
-			}
+			get => _beat + 1f;
+
 			set
 			{
 			}
 		}
 
-		public TimeSpan TimeSpan
+		public readonly TimeSpan TimeSpan
 		{
-			get
-			{
-				return _timeSpan;
-			}
+			get => _timeSpan;
+
 			set
 			{
 			}
@@ -115,7 +105,7 @@ namespace RhythmBase.Adofai.Components
 		/// <returns></returns>
 		public static bool FromSameLevelOrNull(ADBeat a, ADBeat b, bool @throw = false) => a.baseLevel == null || b.baseLevel == null || FromSameLevel(a, b, @throw);
 
-		public bool FromSameLevel(ADBeat b, bool @throw = false) => FromSameLevel(this, b, @throw);
+		public readonly bool FromSameLevel(ADBeat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.
 		/// <br />
@@ -129,14 +119,14 @@ namespace RhythmBase.Adofai.Components
 		/// Returns a new instance of unbinding the level.
 		/// </summary>
 		/// <returns>A new instance of unbinding the level.</returns>
-		public ADBeat WithoutBinding()
+		public readonly ADBeat WithoutBinding()
 		{
 			ADBeat result = this;
 			result._calculator = null;
 			return result;
 		}
 
-		private void IfNullThrowException()
+		private readonly void IfNullThrowException()
 		{
 			if (IsEmpty)
 			{
@@ -161,7 +151,7 @@ namespace RhythmBase.Adofai.Components
 
 		internal void ResetCPB() => _isBeatLoaded = true;
 
-		public bool IsEmpty
+		public readonly bool IsEmpty
 		{
 			get
 			{
@@ -205,13 +195,13 @@ namespace RhythmBase.Adofai.Components
 
 		public static bool operator !=(ADBeat a, ADBeat b) => !(a == b);
 
-		public int CompareTo(ADBeat other) => checked((int)Math.Round((double)unchecked(_beat - other._beat)));
+		public readonly int CompareTo(ADBeat other) => checked((int)Math.Round((double)unchecked(_beat - other._beat)));
 
 		public override string ToString() => string.Format("[{0}]", BeatOnly);
 
 		public override bool Equals([NotNull] object obj) => obj.GetType() == typeof(ADBeat) && Equals((obj != null) ? ((ADBeat)obj) : default);
 
-		public bool Equals(ADBeat other) => this == other;
+		public readonly bool Equals(ADBeat other) => this == other;
 
 		public override int GetHashCode() => HashCode.Combine(BeatOnly, baseLevel);
 

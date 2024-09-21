@@ -14,6 +14,6 @@ namespace RhythmBase.Events
 
 		public override EventType Type { get; }
 
-		public override string ToString() => base.ToString() + string.Format(" {0}", (int)checked(this.Pulse + 1));
+		public override string ToString() => base.ToString() + string.Format(" {0}", (int)checked(Pulse + 1));
 	}
 }

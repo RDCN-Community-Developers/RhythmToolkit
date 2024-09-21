@@ -11,7 +11,7 @@ namespace RhythmBase.Components
 	public struct Expression : IEquatable<Expression>
 	{
 		public float NumericValue { get; }
-		public string ExpressionValue
+		public readonly string ExpressionValue
 		{
 			get
 			{
@@ -20,12 +20,12 @@ namespace RhythmBase.Components
 				return ExpressionValue;
 			}
 		}
-		public Func<Variables, float> ExpressionFunction => throw new NotImplementedException();
+		public readonly Func<Variables, float> ExpressionFunction => throw new NotImplementedException();
 		public Expression(float value)
 		{
 			this = default;
 			IsNumeric = true;
-			this.NumericValue = value;
+			NumericValue = value;
 		}
 
 		public Expression(string value)
@@ -35,7 +35,7 @@ namespace RhythmBase.Components
 			if (float.TryParse(value, out numeric))
 			{
 				IsNumeric = true;
-				this.NumericValue = numeric;
+				NumericValue = numeric;
 			}
 			else
 			{
@@ -44,7 +44,7 @@ namespace RhythmBase.Components
 			}
 		}
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(Expression) && Equals((obj != null) ? ((Expression)obj) : default);
-		public bool Equals(Expression other) => (IsNumeric == other.IsNumeric && NumericValue == other.NumericValue) || Operators.CompareString(_exp, other._exp, false) == 0;
+		public readonly bool Equals(Expression other) => (IsNumeric == other.IsNumeric && NumericValue == other.NumericValue) || _exp == other._exp;
 		public override int GetHashCode()
 		{
 			HashCode hash = default;

@@ -84,7 +84,7 @@ namespace RhythmBase.Events
 			_PrivateId = checked((uint)(unchecked((ulong)_PrivateId) + 1UL));
 		}
 
-		public override string ToString() => base.ToString() + string.Format(" {0}", this.Text);
+		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
 
 		private static uint _PrivateId = 0U;
 

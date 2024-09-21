@@ -78,7 +78,7 @@ namespace RhythmBase.Components
 		/// <param name="enableAlpha">Specifies whether this object supports alpha channel.</param>
 		public PaletteColor(bool enableAlpha)
 		{
-			this.EnableAlpha = enableAlpha;
+			EnableAlpha = enableAlpha;
 		}
 
 		public override string ToString() => EnablePanel ? string.Format("{0}: {1}", _panel, Value) : Value.ToString();
