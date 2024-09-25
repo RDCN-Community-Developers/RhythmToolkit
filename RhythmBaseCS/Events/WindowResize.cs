@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
+#if DEBUG
 	public class WindowResize : BaseEvent, IEaseEvent
 	{
 		public WindowResize()
@@ -31,8 +32,9 @@ namespace RhythmBase.Events
 		[EaseProperty]
 		public RDPointE? Pivot { get; set; }
 
-		public float Duration { get; set; }
+		public float Duration { get; set; } 
 
 		public Ease.EaseType Ease { get; set; }
 	}
+#endif
 }

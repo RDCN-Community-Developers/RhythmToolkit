@@ -21,6 +21,7 @@ namespace RhythmBase.Components
 		public RDSizeE(RDSize p):this((Expression?)p.Width, (Expression?)p.Height) { }
 		public RDSizeE(RDPointI p):this((Expression?)p.X, (Expression?)p.Y) { }
 		public RDSizeE(RDPoint p):this((Expression?)p.X,(Expression?)p.Y) { }
+		public RDSizeE(RDPointE p):this(p.X,p.Y) { }
 		public readonly bool IsEmpty => Width == null && Height == null;
 		public Expression? Width { get; set; } = width;
 		public Expression? Height { get; set; }=height;

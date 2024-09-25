@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components;
-using static RhythmBase.Utils.Utils;
+using RhythmBase.Utils;
 namespace RhythmBase.Events
 {
 	public abstract class BaseEvent : IBaseEvent
@@ -63,7 +63,7 @@ namespace RhythmBase.Events
 		/// <returns></returns>
 		public virtual TEvent Clone<TEvent>() where TEvent : IBaseEvent, new()
 		{
-			if (ConvertToEnum<TEvent>() == Type)
+			if (EventTypeUtils.ConvertToEnum<TEvent>() == Type)
 			{
 				TEvent e = (TEvent)MemberwiseClone();
 				((BaseEvent)(object)e)._beat = Beat.WithoutBinding();

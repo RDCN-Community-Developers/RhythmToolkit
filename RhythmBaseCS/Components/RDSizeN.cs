@@ -29,11 +29,8 @@ namespace RhythmBase.Components
 		public static RDSizeN operator /(RDSizeN left, float right) => new(left.Width / right, left.Height / right);
 		public static bool operator ==(RDSizeN sz1, RDSizeN sz2) => sz1.Equals(sz2);
 		public static bool operator !=(RDSizeN sz1, RDSizeN sz2) => !sz1.Equals(sz2);
-
 		public static implicit operator RDSize(RDSizeN size) => new(new float?(size.Width), new float?(size.Height));
-
 		public static implicit operator RDSizeE(RDSizeN size) => new(size.Width, size.Height);
-
 		public static explicit operator RDPointN(RDSizeN size) => new(size.Width, size.Height);
 	}
 }

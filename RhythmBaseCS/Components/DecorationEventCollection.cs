@@ -19,14 +19,8 @@ namespace RhythmBase.Components
 		[JsonProperty("id")]
 		public string Id
 		{
-			get
-			{
-				return _id;
-			}
-			set
-			{
-				_id = value;
-			}
+			get => _id;
+			set => _id = value;
 		}
 		/// <summary>
 		/// Decoration size.
@@ -45,13 +39,7 @@ namespace RhythmBase.Components
 		/// Decoration index.
 		/// </summary>
 		[JsonProperty("row")]
-		public ulong Index
-		{
-			get
-			{
-				return checked((ulong)Parent.Decorations.ToList().IndexOf(this));
-			}
-		}
+		public int Index => Parent.Decorations.ToList().IndexOf(this);
 
 		[JsonProperty("rooms")]
 		public SingleRoom Room { get; set; }
@@ -61,10 +49,7 @@ namespace RhythmBase.Components
 		[JsonProperty("filename")]
 		public string File
 		{
-			get
-			{
-				return _file.Name;
-			}
+			get => _file.Name;
 			set
 			{
 				_file ??= new();
@@ -88,12 +73,11 @@ namespace RhythmBase.Components
 
 		public DecorationEventCollection()
 		{
-			Room = new SingleRoom(0);
+			Room = new SingleRoom(RoomIndex.Room1);
 		}
 		/// <param name="room">Decoration room.</param>
 		internal DecorationEventCollection(SingleRoom room)
 		{
-			Room = new SingleRoom(0);
 			Room = room;
 			_id = Conversions.ToString(GetHashCode());
 		}
@@ -103,6 +87,7 @@ namespace RhythmBase.Components
 		/// <param name="item">Decoration event.</param>
 		public override void Add(BaseDecorationAction item)
 		{
+			item._parent?.Remove(item);
 			item._parent = this;
 			Parent.Add(item);
 		}

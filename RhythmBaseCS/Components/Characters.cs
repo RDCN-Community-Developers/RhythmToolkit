@@ -11,19 +11,25 @@ namespace RhythmBase.Components
 		AthletePhysio,
 		Barista,
 		Beat,
+#if DEBUG
 		BlankCPU,
+#endif
 		Bodybuilder,
 		Boy,
 		BoyRaya,
 		BoyTangzhuang,
 		Buro,
+#if DEBUG
 		Canary,
+#endif
 		Clef,
 		Cockatiel,
 		ColeGuitar,
 		ColeSynth,
 		Controller,
+#if DEBUG
 		Custom,
+#endif
 		DancingCouple,
 		Edega,
 		Farmer,
@@ -41,7 +47,9 @@ namespace RhythmBase.Components
 		LuckyBag,
 		LuckyBaseball,
 		LuckyIce,
+#if DEBUG
 		LuckyJersey,
+#endif
 		Marija,
 		Miner,
 		MrsStevendog,
@@ -53,7 +61,9 @@ namespace RhythmBase.Components
 		NicoleMints,
 		None,
 		Oriole,
+#if DEBUG
 		Otto,
+#endif
 		Owl,
 		Paige,
 		Parrot,
@@ -76,6 +86,8 @@ namespace RhythmBase.Components
 		Tentacle,
 		Treble,
 		Weeknd,
+#if DEBUG
 		Wren
+#endif
 	}
 }

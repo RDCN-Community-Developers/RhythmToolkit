@@ -4,7 +4,7 @@ using RhythmBase.Components;
 using SkiaSharp;
 namespace RhythmBase.Events
 {
-	public class Comment : BaseDecorationAction
+	public partial class Comment : BaseDecorationAction
 	{
 		public Comment()
 		{

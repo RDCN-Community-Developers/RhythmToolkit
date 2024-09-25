@@ -22,7 +22,7 @@ namespace RhythmBase.Utils
 					".mp3" => new Mp3FileReader(filepath),
 					".wav" or ".wave" => new WaveFileReader(filepath),
 					".aiff" or ".aif" => new AiffFileReader(filepath),
-					_ => (WaveStream)Stream.Null,
+					_ => throw new NotSupportedException(extension),
 				};
 			}
 			return (WaveStream)Stream.Null;
@@ -121,21 +121,21 @@ namespace RhythmBase.Utils
 		/// </summary>
 		/// <param name="waveFormat">Wave format information.</param>
 		/// <param name="timeDomainData">Audio sample.</param>
-		/// <param name="sampleWidth">The sample width.</param>
+		/// <param name="windowWidth">The sample width.</param>
 		/// <param name="maxFrequency">the Maximum of the frequency to be retained.</param>
 		/// <returns>An array with format [Channel][Frame][Frequency] data.</returns>
-		public static float[][][] GetFrequencyDomain(WaveFormat waveFormat, float[][] timeDomainData, int sampleWidth, int maxFrequency = 2500)
+		public static float[][][] GetFrequencyDomain(WaveFormat waveFormat, float[][] timeDomainData, int windowWidth, int maxFrequency = 2500)
 		{
 			List<List<float[]>> result = [];
 			int index = 0;
-			float[] buffer = new float[sampleWidth];
+			float[] buffer = new float[windowWidth];
 			for (int i = 0; i < waveFormat.Channels; i++)
 			{
 				result.Add([]);
-				while (index + sampleWidth < timeDomainData[i].Length)
+				while (index + windowWidth < timeDomainData[i].Length)
 				{
-					buffer = timeDomainData[i][index..(index + sampleWidth - 1)];
-					index += sampleWidth / 2;
+					buffer = timeDomainData[i][index..(index + windowWidth - 1)];
+					index += windowWidth / 2;
 					float[] outData = GetFrameFrequencyDomain(waveFormat, buffer, maxFrequency);
 					result[i].Add(outData);
 				}
@@ -143,24 +143,16 @@ namespace RhythmBase.Utils
 			}
 			return [.. result.Select(i => i.ToArray())];
 		}
-		/// <summary>
-		/// Get the frequency domain data of a range of sample which is compressed in average.
-		/// </summary>
-		/// <param name="waveFormat">Wave format information.</param>
-		/// <param name="averageTimeDomainData">Audio sample.</param>
-		/// <param name="sampleWidth">The sample width.</param>
-		/// <param name="maxFrequency">the Maximum of the frequency to be retained.</param>
-		/// <returns>An array with format [Channel][Frame][Frequency] data.</returns>
-		public static float[][] GetAverageFrequencyDomain(WaveFormat waveFormat, float[] averageTimeDomainData, int sampleWidth, int maxFrequency = 2500)
-		{
+		public static float[][] ToEnergy(WaveFormat waveFormat, float[][] timeDomainData, int windowWidth) {
 			List<float[]> result = [];
-			int index = 0;
-			float[] buffer = new float[sampleWidth];
-			while (index + sampleWidth < averageTimeDomainData.Length)
+			for(int channel = 0;channel < waveFormat.Channels; channel++)
 			{
-				buffer = averageTimeDomainData[index..(index + sampleWidth - 1)];
-				index += sampleWidth / 2;
-				result.Add(GetFrameFrequencyDomain(waveFormat, buffer, maxFrequency));
+				List<float> volume = [];
+				for(int j = 0; j < timeDomainData.Length - windowWidth; j+=windowWidth/2)
+				{
+					volume.Add ((float)Math.Sqrt(timeDomainData[channel][j..(j+windowWidth)].Select(i=>i*i).Average()));
+				}
+				result.Add([.. volume]);
 			}
 			return [.. result];
 		}

@@ -41,11 +41,11 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Level tile collection.
 		/// </summary>
-		public IReadOnlyCollection<RowEventCollection> Rows => _rows.AsReadOnly();
+		public IReadOnlyList<RowEventCollection> Rows => _rows.AsReadOnly();
 		/// <summary>
 		/// Level decoration collection.
 		/// </summary>
-		public IReadOnlyCollection<DecorationEventCollection> Decorations => _decorations.AsReadOnly();
+		public IReadOnlyList<DecorationEventCollection> Decorations => _decorations.AsReadOnly();
 		/// <summary>
 		/// Level condition collection.
 		/// </summary>
@@ -106,7 +106,7 @@ namespace RhythmBase.Components
 				playsong.Song = new Audio() { AudioFile = rdlevel.Manager.Create<IAudioFile>("sndOrientalTechno") };
 				settheme.Preset = SetTheme.Theme.OrientalTechno;
 				rdlevel.AddRange([playsong, settheme]);
-				RowEventCollection samurai = rdlevel.CreateRow(new SingleRoom(0), new RDCharacter(rdlevel, Characters.Samurai));
+				RowEventCollection samurai = rdlevel.CreateRow(new SingleRoom(RoomIndex.Room1), new RDCharacter(rdlevel, Characters.Samurai));
 				samurai.Sound.Name = "Shaker";
 				samurai.Add(new AddClassicBeat());
 				return rdlevel;

@@ -39,13 +39,9 @@ namespace RhythmBase.Components
 			(int)Math.Round(left.Height / (double)right));
 		public static bool operator ==(RDSizeNI sz1, RDSizeNI sz2) => sz1.Equals(sz2);
 		public static bool operator !=(RDSizeNI sz1, RDSizeNI sz2) => !sz1.Equals(sz2);
-
 		public static implicit operator RDSizeN(RDSizeNI p) => new(p.Width, p.Height);
-
 		public static implicit operator RDSizeI(RDSizeNI p) => new(p.Width, p.Height);
-
 		public static implicit operator RDSizeE(RDSizeNI p) => new(p.Width, p.Height);
-
 		public static explicit operator RDPointNI(RDSizeNI size) => new(size.Width, size.Height);
 	}
 }

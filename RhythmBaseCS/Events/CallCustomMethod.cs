@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
-	public class CallCustomMethod : BaseEvent
+	public partial class CallCustomMethod : BaseEvent
 	{
 		public CallCustomMethod()
 		{

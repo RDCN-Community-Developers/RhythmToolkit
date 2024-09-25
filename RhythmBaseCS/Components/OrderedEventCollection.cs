@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Events;
 using System.Collections;
-using System.ComponentModel.Design;
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -36,13 +35,9 @@ namespace RhythmBase.Components
 		{
 			TypedEventCollection<IBaseEvent> list = [];
 			if (eventsBeatOrder.TryGetValue(item.Beat, out TypedEventCollection<IBaseEvent>? value))
-			{
 				list = value;
-			}
 			else
-			{
 				eventsBeatOrder.Add(item.Beat, list);
-			}
 			list.Add(item);
 		}
 		public void Clear() => eventsBeatOrder.Clear();

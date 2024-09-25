@@ -2,7 +2,7 @@
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
-	public abstract class BaseDecorationAction : BaseEvent
+	public abstract class BaseDecorationAction : BaseEvent,IBaseEvent
 	{
 		[JsonIgnore]
 		public DecorationEventCollection Parent => _parent;

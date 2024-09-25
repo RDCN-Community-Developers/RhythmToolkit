@@ -56,7 +56,7 @@ namespace RhythmBase.Events
 		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type, LevelReadOrWriteSettings settings)
 		{
 			JsonSerializer serializer = JsonSerializer.Create(_beat.BaseLevel.GetSerializer(settings));
-			Type eventType = Utils.Utils.ConvertToType(Data["type"]?.ToObject<string>() ?? "");
+			Type eventType = Utils.EventTypeUtils.ConvertToType(Data["type"]?.ToObject<string>() ?? "");
 			bool TryConvert;
 			if (eventType == null)
 			{

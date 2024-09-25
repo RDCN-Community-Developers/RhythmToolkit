@@ -12,6 +12,6 @@
 		Room3 =            0b0000_0100,
 		Room4 =            0b0000_1000,
 		RoomTop =          0b0001_0000,
-		RoomNotAvaliable = 0b1111_1111
+		RoomNotAvaliable = byte.MaxValue,
 	}
 }

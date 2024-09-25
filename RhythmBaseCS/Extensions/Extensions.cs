@@ -6,7 +6,9 @@ using RhythmBase.Assets;
 using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
+using RhythmBase.Utils;
 using SkiaSharp;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using static RhythmBase.Utils.Utils;
@@ -311,7 +313,7 @@ namespace RhythmBase.Extensions
 		/// <typeparam name="TEvent"></typeparam>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
 		{
-			EventType[] enums = ConvertToEnums<TEvent>();
+			EventType[] enums = EventTypeUtils. ConvertToEnums<TEvent>();
 			return e.eventsBeatOrder
 							.Where(i => i.Value._types
 								.Any(enums.Contains))
@@ -971,21 +973,6 @@ namespace RhythmBase.Extensions
 		public static IEnumerable<ADTile> Where(this ADTileCollection e, Func<ADTile, bool> predicate) => e.AsEnumerable().Where(predicate);
 		public static IEnumerable<ADBaseEvent> EventsWhere(this ADTileCollection e, Func<ADBaseEvent, bool> predicate) => e.Events.Where(predicate);
 		public static IEnumerable<TEvent> EventsWhere<TEvent>(this ADTileCollection e) where TEvent : ADBaseEvent => e.Events.OfType<TEvent>();
-		private static string PropertyAssignment(string propertyName, bool value) => string.Format("{0} = {1}", propertyName.ToLowerCamelCase(), value);
-		private static string RoomPropertyAssignment(byte room, string propertyName, bool value) => string.Format("room[{0}].{1} = {2}", room, propertyName.ToLowerCamelCase(), value);
-		private static string FunctionCalling(string functionName, params object[] @params) => FunctionCalling(functionName, @params.AsEnumerable());
-		private static string FunctionCalling(string functionName, IEnumerable<object> @params)
-		{
-			List<string> paramStrings = [];
-			foreach (object param in @params)
-				if (param.GetType() == typeof(string) || param.GetType().IsEnum)
-					paramStrings.Add(string.Format("str:{0}", param));
-				else
-					paramStrings.Add(param.ToString() ?? "");
-			return string.Format("{0}({1})", functionName, string.Join(',', paramStrings));
-		}
-		private static string RoomFunctionCalling(byte room, string functionName, params object[] @params) => string.Format("room[{0}].{1}", room, FunctionCalling(functionName, @params.AsEnumerable()));
-		private static string VfxFunctionCalling(string functionName, params object[] @params) => string.Format("vfx.{0}", FunctionCalling(functionName, @params.AsEnumerable()));
 		/// <summary>
 		/// Check if another event is in front of itself, including events of the same beat but executed before itself.
 		/// </summary>
@@ -1041,86 +1028,7 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Returns the next event of the specified type, including events of the same beat but executed after itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().FirstOrDefault();
-		public static void SetScoreboardLights(this CallCustomMethod e, bool Mode, string Text) => e.MethodName = FunctionCalling("SetScoreboardLights", [Mode, Text]);
-		public static void InvisibleChars(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("InvisibleChars", value);
-		public static void InvisibleHeart(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("InvisibleHeart", value);
-		public static void NoHitFlashBorder(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("NoHitFlashBorder", value);
-		public static void NoHitStrips(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("NoHitStrips", value);
-		public static void SetOneshotType(this CallCustomMethod e, int rowID, ShockWaveType wavetype) => e.MethodName = FunctionCalling("SetOneshotType", [rowID, wavetype]);
-		public static void WobblyLines(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("WobblyLines", value);
-		//?
-		public static void TrueCameraMove(this Comment e, int RoomID, RDPoint p, float AnimationDuration, Ease.EaseType Ease) => e.Text = RoomFunctionCalling((byte)RoomID, "TrueCameraMove".ToLowerCamelCase(), p.X, p.Y, AnimationDuration, Ease);
-		public static void Create(this Comment e, Particle particleName, RDPoint p) => e.Text = string.Format("()=>{0}(CustomParticles/{1},{2},{3})", ["Create".ToLowerCamelCase(), particleName, p.X, p.Y]);
-		public static void ShockwaveSizeMultiplier(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("ShockwaveSizeMultiplier", value);
-		public static void ShockwaveDistortionMultiplier(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("ShockwaveDistortionMultiplier", value);
-		public static void ShockwaveDurationMultiplier(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("ShockwaveDurationMultiplier", value);
-		public static void Shockwave(this Comment e, ShockWaveType type, float value) => e.Text = string.Format("()=>{0}({1},{2})", "Shockwave".ToLowerCamelCase(), type, value);
-		public static void MistakeOrHeal(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHeal", [damageOrHeal]);
-		public static void MistakeOrHealP1(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealP1", [damageOrHeal]);
-		public static void MistakeOrHealP2(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealP2", [damageOrHeal]);
-		public static void MistakeOrHealSilent(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealSilent", [damageOrHeal]);
-		public static void MistakeOrHealP1Silent(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealP1Silent", [damageOrHeal]);
-		public static void MistakeOrHealP2Silent(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealP2Silent", [damageOrHeal]);
-		public static void SetMistakeWeight(this CallCustomMethod e, int rowID, float weight) => e.MethodName = FunctionCalling("SetMistakeWeight", [rowID, weight]);
-		public static void DamageHeart(this CallCustomMethod e, int rowID, float damage) => e.MethodName = FunctionCalling("DamageHeart", [rowID, damage]);
-		public static void HealHeart(this CallCustomMethod e, int rowID, float damage) => e.MethodName = FunctionCalling("HealHeart", [rowID, damage]);
-		public static void WavyRowsAmplitude(this CallCustomMethod e, byte roomID, float amplitude) => e.MethodName = RoomPropertyAssignment(roomID, "WavyRowsAmplitude", amplitude != 0f);
-		public static void WavyRowsAmplitude(this Comment e, byte roomID, float amplitude, float duration) => e.Text = string.Format("()=>{0}({1},{2},{3})", ["WavyRowsAmplitude".ToLowerCamelCase(), roomID, amplitude, duration]);
-		public static void WavyRowsFrequency(this CallCustomMethod e, byte roomID, float frequency) => e.MethodName = RoomPropertyAssignment(roomID, "WavyRowsFrequency", frequency != 0f);
-		public static void SetShakeIntensityOnHit(this CallCustomMethod e, byte roomID, int number, int strength) => e.MethodName = RoomFunctionCalling(roomID, "SetShakeIntensityOnHit", [number, strength]);
-		public static void ShowPlayerHand(this CallCustomMethod e, byte roomID, bool isPlayer1, bool isShortArm, bool isInstant) => e.MethodName = FunctionCalling("ShowPlayerHand", [roomID, isPlayer1, isShortArm, isInstant]);
-		public static void TintHandsWithInts(this CallCustomMethod e, byte roomID, float R, float G, float B, float A) => e.MethodName = FunctionCalling("TintHandsWithInts", [roomID, R, G, B, A]);
-		public static void SetHandsBorderColor(this CallCustomMethod e, byte roomID, float R, float G, float B, float A, int style) => e.MethodName = FunctionCalling("SetHandsBorderColor", [roomID, R, G, B, A, style]);
-		public static void SetAllHandsBorderColor(this CallCustomMethod e, float R, float G, float B, float A, int style) => e.MethodName = FunctionCalling("SetAllHandsBorderColor", [R, G, B, A, style]);
-		public static void SetHandToP1(this CallCustomMethod e, int room, bool rightHand) => e.MethodName = FunctionCalling("SetHandToP1", [room, rightHand]);
-		public static void SetHandToP2(this CallCustomMethod e, int room, bool rightHand) => e.MethodName = FunctionCalling("SetHandToP2", [room, rightHand]);
-		public static void SetHandToIan(this CallCustomMethod e, int room, bool rightHand) => e.MethodName = FunctionCalling("SetHandToIan", [room, rightHand]);
-		public static void SetHandToPaige(this CallCustomMethod e, int room, bool rightHand) => e.MethodName = FunctionCalling("SetHandToPaige", [room, rightHand]);
-		public static void SetShadowRow(this CallCustomMethod e, int mimickerRowID, int mimickedRowID) => e.MethodName = FunctionCalling("SetShadowRow", [mimickerRowID, mimickedRowID]);
-		public static void UnsetShadowRow(this CallCustomMethod e, int mimickerRowID, int mimickedRowID) => e.MethodName = FunctionCalling("UnsetShadowRow", [mimickerRowID, mimickedRowID]);
-		public static void ShakeCam(this CallCustomMethod e, int number, int strength, int roomID) => e.MethodName = VfxFunctionCalling("ShakeCam", [number, strength, roomID]);
-		public static void StopShakeCam(this CallCustomMethod e, int roomID) => e.MethodName = VfxFunctionCalling("StopShakeCam", [roomID]);
-		public static void ShakeCamSmooth(this CallCustomMethod e, int duration, int strength, int roomID) => e.MethodName = VfxFunctionCalling("ShakeCamSmooth", [duration, strength, roomID]);
-		public static void ShakeCamRotate(this CallCustomMethod e, int duration, int strength, int roomID) => e.MethodName = VfxFunctionCalling("ShakeCamRotate", [duration, strength, roomID]);
-		public static void SetKaleidoscopeColor(this CallCustomMethod e, int roomID, float R1, float G1, float B1, float R2, float G2, float B2) => e.MethodName = FunctionCalling("SetKaleidoscopeColor", [roomID, R1, G1, B1, R2, G2, B2]);
-		public static void SyncKaleidoscopes(this CallCustomMethod e, int targetRoomID, int otherRoomID) => e.MethodName = FunctionCalling("SyncKaleidoscopes", [targetRoomID, otherRoomID]);
-		public static void SetVignetteAlpha(this CallCustomMethod e, float alpha, int roomID) => e.MethodName = VfxFunctionCalling("SetVignetteAlpha", [alpha, roomID]);
-		public static void NoOneshotShadows(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("NoOneshotShadows", value);
-		public static void EnableRowReflections(this CallCustomMethod e, int roomID) => e.MethodName = FunctionCalling("EnableRowReflections", [roomID]);
-		public static void DisableRowReflections(this CallCustomMethod e, int roomID) => e.MethodName = FunctionCalling("DisableRowReflections", [roomID]);
-		public static void ChangeCharacter(this CallCustomMethod e, string Name, int roomID) => e.MethodName = FunctionCalling("ChangeCharacter", [Name, roomID]);
-		public static void ChangeCharacter(this CallCustomMethod e, Characters Name, int roomID) => e.MethodName = FunctionCalling("ChangeCharacter", [Name, roomID]);
-		public static void ChangeCharacterSmooth(this CallCustomMethod e, string Name, int roomID) => e.MethodName = FunctionCalling("ChangeCharacterSmooth", [Name, roomID]);
-		public static void ChangeCharacterSmooth(this CallCustomMethod e, Characters Name, int roomID) => e.MethodName = FunctionCalling("ChangeCharacterSmooth", [Name, roomID]);
-		public static void SmoothShake(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("SmoothShake", value);
-		public static void RotateShake(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("RotateShake", value);
-		public static void DisableRowChangeWarningFlashes(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("DisableRowChangeWarningFlashes", value);
-		public static void StatusSignWidth(this CallCustomMethod e, float value) => e.MethodName = PropertyAssignment("StatusSignWidth", value != 0f);
-		public static void SkippableRankScreen(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("SkippableRankScreen", value);
-		public static void MissesToCrackHeart(this CallCustomMethod e, int value) => e.MethodName = PropertyAssignment("MissesToCrackHeart", value != 0);
-		public static void SkipRankText(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("SkipRankText", value);
-		public static void AlternativeMatrix(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("AlternativeMatrix", value);
-		public static void ToggleSingleRowReflections(this CallCustomMethod e, byte room, byte row, bool value) => e.MethodName = FunctionCalling("ToggleSingleRowReflections", [room, row, value]);
-		public static void SetScrollSpeed(this CallCustomMethod e, byte roomID, float speed, float duration, Ease.EaseType ease) => e.MethodName = RoomFunctionCalling(roomID, "SetScrollSpeed", [speed, duration, ease]);
-		public static void SetScrollOffset(this CallCustomMethod e, byte roomID, float cameraOffset, float duration, Ease.EaseType ease) => e.MethodName = RoomFunctionCalling(roomID, "SetScrollOffset", [cameraOffset, duration, ease]);
-		public static void DarkenedRollerdisco(this CallCustomMethod e, byte roomID, float value) => e.MethodName = RoomFunctionCalling(roomID, "DarkenedRollerdisco", [value]);
-		public static void CurrentSongVol(this CallCustomMethod e, float targetVolume, float fadeTimeSeconds) => e.MethodName = FunctionCalling("CurrentSongVol", [targetVolume, fadeTimeSeconds]);
-		public static void PreviousSongVol(this CallCustomMethod e, float targetVolume, float fadeTimeSeconds) => e.MethodName = FunctionCalling("PreviousSongVol", [targetVolume, fadeTimeSeconds]);
-		public static void EditTree(this CallCustomMethod e, byte room, string property, float value, float beats, Ease.EaseType ease) => e.MethodName = RoomFunctionCalling(room, "EditTree", [property, value, beats, ease]);
-		public static IEnumerable<CallCustomMethod> EditTree(this CallCustomMethod e, byte room, ProceduralTree treeProperties, float beats, Ease.EaseType ease)
-		{
-			List<CallCustomMethod> L = [];
-			foreach (FieldInfo p in typeof(ProceduralTree).GetFields())
-				if (p.GetValue(treeProperties) != null)
-				{
-					CallCustomMethod T = e.Clone<CallCustomMethod>();
-					T.EditTree(room, p.Name, ((float)p.GetValue(treeProperties)), beats, ease);
-					L.Add(T);
-				}
-			return L;
-		}
-		public static void EditTreeColor(this CallCustomMethod e, byte room, bool location, string color, float beats, Ease.EaseType ease) => e.MethodName = RoomFunctionCalling(room, "EditTreeColor", [location, color, beats, ease]);
+		public static TEvent NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().FirstOrDefault();		//?
 		public static Beat DurationOffset(this Beat beat, float duration)
 		{
 			SetBeatsPerMinute setBPM = beat.BaseLevel.First((SetBeatsPerMinute i) => i.Beat > beat);
@@ -1366,7 +1274,7 @@ namespace RhythmBase.Extensions
 			{
 				sbyte b = (sbyte)(e.Subdivisions - 1);
 				for (sbyte j = 0; j <= b; j += 1)
-					L.Add(new Hit(e, new Beat(e._beat._calculator!, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + (float)j * (e.Tick / (float)e.Subdivisions)), 0f));
+					L.Add(new Hit(e, new Beat(e._beat._calculator, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + (float)j * (e.Tick / (float)e.Subdivisions)), 0f));
 			}
 			return L.AsEnumerable();
 		}
@@ -1522,7 +1430,7 @@ namespace RhythmBase.Extensions
 				AddOneshotBeat T = e.MemberwiseClone();
 				T.Loops = 0U;
 				T.Interval = 0f;
-				T.Beat = new Beat(e._beat._calculator!, unchecked(e.Beat.BeatOnly + i * e.Interval));
+				T.Beat = new Beat(e._beat._calculator, unchecked(e.Beat.BeatOnly + i * e.Interval));
 				L.Add(T);
 			}
 			return L.AsEnumerable();
@@ -1676,24 +1584,6 @@ namespace RhythmBase.Extensions
 		{
 			HitExplosion,
 			leveleventexplosion
-		}
-		public struct ProceduralTree
-		{
-			public float?
-				brachedPerlteration,
-				branchesPerDivision,
-				iterationsPerSecond,
-				thickness,
-				targetLength,
-				maxDeviation,
-				angle,
-				camAngle,
-				camDistance,
-				camDegreesPerSecond,
-				camSpeed,
-				pulseIntensity,
-				pulseRate,
-				pulseWavelength;
 		}
 	}
 }

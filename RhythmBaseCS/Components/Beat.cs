@@ -143,7 +143,7 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="calculator">Specified calculator.</param>
 		/// <param name="beatOnly">The total number of beats from this moment to the beginning of the level.</param>
-		public Beat(BeatCalculator calculator, float beatOnly)
+		public Beat(BeatCalculator? calculator, float beatOnly)
 		{
 			this = new Beat(beatOnly);
 			_calculator = calculator;
