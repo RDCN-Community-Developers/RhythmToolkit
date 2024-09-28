@@ -29,7 +29,7 @@ namespace RhythmBase.Utils
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
 		/// <returns>Total 1-based beats.</returns>
-		public float BarBeatToBeatOnly(uint bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
+		internal float BarBeatToBeatOnly(uint bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
@@ -42,19 +42,19 @@ namespace RhythmBase.Utils
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
-		public (uint bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
+		internal (uint bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>Total time span.</returns>
-		public TimeSpan BeatOnlyToTimeSpan(float beat) => BeatOnlyToTimeSpan(beat, _BPMList);
+		internal TimeSpan BeatOnlyToTimeSpan(float beat) => BeatOnlyToTimeSpan(beat, _BPMList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="timeSpan">Total time span.</param>
 		/// <returns>Total 1-based beats.</returns>
-		public float TimeSpanToBeatOnly(TimeSpan timeSpan) => TimeSpanToBeatOnly(timeSpan, _BPMList);
+		internal float TimeSpanToBeatOnly(TimeSpan timeSpan) => TimeSpanToBeatOnly(timeSpan, _BPMList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>

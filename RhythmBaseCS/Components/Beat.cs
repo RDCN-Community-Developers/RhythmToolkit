@@ -1,14 +1,16 @@
 ﻿using RhythmBase.Exceptions;
 using RhythmBase.Utils;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 namespace RhythmBase.Components
 {
-	public struct Beat : IComparable<Beat>, IEquatable<Beat>
+	public struct Beat : IComparable<Beat>, IEquatable<Beat>, IComparisonOperators<Beat, Beat, bool>
 	{
 		internal readonly RDLevel? BaseLevel => _calculator?.Collection;
 		/// <summary>
 		/// Whether this beat cannot be calculated.
 		/// </summary>
+		[MemberNotNullWhen(false, nameof(_calculator))]
 		public readonly bool IsEmpty => _calculator == null || (!_isBeatLoaded && !_isBarBeatLoaded && !_isTimeSpanLoaded);
 		/// <summary>
 		/// The total number of beats from this moment to the beginning of the level.
@@ -225,19 +227,9 @@ namespace RhythmBase.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
-		public static bool FromSameLevel(Beat a, Beat b, bool @throw = false)
-		{
-			bool FromSameLevel;
-			if (a.BaseLevel?.Equals(b.BaseLevel)??true)
-				FromSameLevel = true;
-			else
-			{
-				if (@throw)
-					throw new RhythmBaseException("Beats must come from the same RDLevel.");
-				FromSameLevel = false;
-			}
-			return FromSameLevel;
-		}
+		public static bool FromSameLevel(Beat a, Beat b, bool @throw = false) =>
+			(a._calculator?.Equals(b._calculator) ?? true)
+			|| (@throw ? throw new RhythmBaseException("Beats must come from the same RDLevel.") : false);
 		/// <summary>
 		/// Determine if two beats are from the same level.
 		/// <br />
@@ -247,7 +239,8 @@ namespace RhythmBase.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
-		public static bool FromSameLevelOrNull(Beat a, Beat b, bool @throw = false) => a.BaseLevel == null || b.BaseLevel == null || FromSameLevel(a, b, @throw);
+		public static bool FromSameLevelOrNull(Beat a, Beat b, bool @throw = false) => a._calculator == null || b._calculator == null || FromSameLevel(a, b, @throw);
+		[MemberNotNullWhen(true)]
 		public readonly bool FromSameLevel(Beat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.
@@ -257,7 +250,7 @@ namespace RhythmBase.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>	
-		public bool FromSameLevelOrNull(Beat b, bool @throw = false) => BaseLevel == null || b.BaseLevel == null || FromSameLevel(b, @throw);
+		public readonly bool FromSameLevelOrNull(Beat b, bool @throw = false) => BaseLevel == null || b.BaseLevel == null || FromSameLevel(b, @throw);
 		/// <summary>
 		/// Returns a new instance of unbinding the level.
 		/// </summary>
@@ -321,12 +314,12 @@ namespace RhythmBase.Components
 		{
 			Beat result;
 			if (!a.IsEmpty)
-				result = new Beat(a._calculator!, a.BeatOnly + b);
+				result = new Beat(a._calculator, a.BeatOnly + b);
 			else
 			{
 				if (!a._isBeatLoaded)
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculate.");
-				result = new Beat(a._calculator!, a._beat + b);
+				result = new Beat(a._beat + b);
 			}
 			return result;
 		}
@@ -334,12 +327,12 @@ namespace RhythmBase.Components
 		{
 			Beat result;
 			if (!a.IsEmpty)
-				result = new Beat(a._calculator!, a.TimeSpan + b);
+				result = new Beat(a._calculator, a.TimeSpan + b);
 			else
 			{
 				if (!a._isBeatLoaded)
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculate.");
-				result = new Beat(a._calculator!, a._TimeSpan + b);
+				result = new Beat(a._TimeSpan + b);
 			}
 			return result;
 		}
@@ -347,12 +340,12 @@ namespace RhythmBase.Components
 		{
 			Beat result;
 			if (!a.IsEmpty)
-				result = new Beat(a._calculator!, a.BeatOnly - b);
+				result = new Beat(a._calculator, a.BeatOnly - b);
 			else
 			{
 				if (!a._isBeatLoaded)
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculate.");
-				result = new Beat(a._calculator!, a._beat - b);
+				result = new Beat(a._beat - b);
 			}
 			return result;
 		}
@@ -360,20 +353,26 @@ namespace RhythmBase.Components
 		{
 			Beat result;
 			if (!a.IsEmpty)
-				result = new Beat(a._calculator!, a.TimeSpan - b);
+				result = new Beat(a._calculator, a.TimeSpan - b);
 			else
 			{
 				if (!a._isBeatLoaded)
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculate.");
-				result = new Beat(a._calculator!, a._TimeSpan - b);
+				result = new Beat(a._TimeSpan - b);
 			}
 			return result;
 		}
+		///  <inheritdoc/>
 		public static bool operator >(Beat a, Beat b) => FromSameLevel(a, b, true) && a.BeatOnly > b.BeatOnly;
+		///  <inheritdoc/>
 		public static bool operator <(Beat a, Beat b) => FromSameLevel(a, b, true) && a.BeatOnly < b.BeatOnly;
+		///  <inheritdoc/>
 		public static bool operator >=(Beat a, Beat b) => FromSameLevel(a, b, true) && a.BeatOnly >= b.BeatOnly;
+		///  <inheritdoc/>
 		public static bool operator <=(Beat a, Beat b) => FromSameLevel(a, b, true) && a.BeatOnly <= b.BeatOnly;
+		///  <inheritdoc/>
 		public static bool operator ==(Beat a, Beat b) => (FromSameLevel(a, b, true) && a._beat == b._beat) || (a._isBarBeatLoaded && b._isBarBeatLoaded && a._BarBeat.Bar == b._BarBeat.Bar && a._BarBeat.Beat == b._BarBeat.Beat) || (a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._TimeSpan == b._TimeSpan) || a.BeatOnly == b.BeatOnly;
+		///  <inheritdoc/>
 		public static bool operator !=(Beat a, Beat b) => !(a == b);
 		public override string ToString()
 		{
@@ -384,9 +383,13 @@ namespace RhythmBase.Components
 				ToString = string.Format("[{0},{1}]", BarBeat.bar, BarBeat.beat);
 			return ToString;
 		}
-		public override bool Equals([NotNull] object obj) => obj.GetType() == typeof(Beat) && Equals((obj != null) ? ((Beat)obj) : default);
+		///  <inheritdoc/>
+		public readonly override bool Equals([NotNull] object obj) => obj.GetType() == typeof(Beat) && Equals((Beat)obj);
+		///  <inheritdoc/>
 		public readonly bool Equals(Beat other) => this == other;
+		///  <inheritdoc/>
 		public override int GetHashCode() => HashCode.Combine(BeatOnly, BaseLevel);
+		///  <inheritdoc/>
 		public int CompareTo(Beat other)
 		{
 			float result = BeatOnly - other.BeatOnly;

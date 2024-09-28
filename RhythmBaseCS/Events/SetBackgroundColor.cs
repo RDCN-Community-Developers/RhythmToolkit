@@ -23,7 +23,7 @@ namespace RhythmBase.Events
 		public BackgroundTypes BackgroundType { get; set; }
 		public float Duration { get; set; }
 		public int Fps { get; set; }
-		public List<Asset<ImageFile>> Image { get; set; }
+		public List<Asset<ImageFile>> Image { get; set; } = [];
 		[EaseProperty]
 		public int ScrollX { get; set; }
 		[EaseProperty]

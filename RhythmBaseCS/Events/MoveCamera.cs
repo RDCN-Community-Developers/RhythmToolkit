@@ -22,7 +22,7 @@ namespace RhythmBase.Events
 		public int? Zoom { get; set; }
 
 		[EaseProperty]
-		public Expression? Angle { get; set; }
+		public RDExpression? Angle { get; set; }
 
 		public float Duration { get; set; }
 

@@ -12,7 +12,10 @@ namespace RhythmBase.Events
 		[JsonIgnore]
 		public override EventType Type => EventType.CustomEvent;
 		[JsonIgnore]
-		public string ActureType => Data["Type".ToLowerCamelCase()].ToString();
+		public string ActureType {
+			get => Data["Type".ToLowerCamelCase()]?.ToObject<string>()??"";
+			init => Data["Type".ToLowerCamelCase()] = value;
+		}
 		/// <inheritdoc/>
 		public override Tabs Tab { get; }
 		/// <inheritdoc/>
@@ -56,7 +59,7 @@ namespace RhythmBase.Events
 		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type, LevelReadOrWriteSettings settings)
 		{
 			JsonSerializer serializer = JsonSerializer.Create(_beat.BaseLevel.GetSerializer(settings));
-			Type eventType = Utils.EventTypeUtils.ConvertToType(Data["type"]?.ToObject<string>() ?? "");
+			Type eventType = Utils.EventTypeUtils.ToType(Data["type"]?.ToObject<string>() ?? "");
 			bool TryConvert;
 			if (eventType == null)
 			{

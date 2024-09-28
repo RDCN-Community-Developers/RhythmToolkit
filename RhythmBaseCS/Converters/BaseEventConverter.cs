@@ -18,7 +18,7 @@ namespace RhythmBase.Converters
 		public override TEvent ReadJson(JsonReader reader, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer) => GetDeserializedObject((JObject)JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer);
 		public virtual TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			Type SubClassType = Utils.EventTypeUtils.ConvertToType(jobj["type"].ToObject<string>());
+			Type SubClassType = Utils.EventTypeUtils.ToType(jobj["type"].ToObject<string>());
 			if (SubClassType == null)
 				if (jobj["target"] != null)
 					SubClassType = typeof(CustomDecorationEvent);

@@ -6,9 +6,9 @@ using RhythmBase.Components;
 using RhythmBase.Extensions;
 namespace RhythmBase.Converters
 {
-	internal class ExpressionConverter : JsonConverter<Expression>
+	internal class ExpressionConverter : JsonConverter<RDExpression>
 	{
-		public override void WriteJson(JsonWriter writer, Expression value, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, RDExpression value, JsonSerializer serializer)
 		{
 			if (value.IsNumeric)
 			{
@@ -27,10 +27,10 @@ namespace RhythmBase.Converters
 			}
 		}
 
-		public override Expression ReadJson(JsonReader reader, Type objectType, Expression existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override RDExpression ReadJson(JsonReader reader, Type objectType, RDExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			string js = JToken.ReadFrom(reader).ToObject<string>();
-			Expression ReadJson = new(js.TrimStart('{').TrimEnd('}'));
+			RDExpression ReadJson = new(js.TrimStart('{').TrimEnd('}'));
 			return ReadJson;
 		}
 	}

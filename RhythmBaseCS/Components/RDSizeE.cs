@@ -7,25 +7,25 @@ namespace RhythmBase.Components
 	/// A size whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="T:RhythmBase.Components.Expression" />
 	/// </summary>
 	[JsonConverter(typeof(RDPointsConverter))]
-	public struct RDSizeE(Expression? width, Expression? height) : IEquatable<RDSizeE>
+	public struct RDSizeE(RDExpression? width, RDExpression? height) : IEquatable<RDSizeE>
 	{
-		public RDSizeE(float width, float height) : this((Expression)width, (Expression)height) { }
-		public RDSizeE(Expression? width, float height) : this(width, (Expression)height) { }
-		public RDSizeE(float width, Expression? height) : this((Expression)width, height) { }
-		public RDSizeE(string width, float height) : this((Expression)width, (Expression)height) { }
-		public RDSizeE(float width, string height) : this((Expression)width, (Expression)height) { }
-		public RDSizeE(string width, string height) : this((Expression)width, (Expression)height) { }
-		public RDSizeE(string width, Expression? height) : this((Expression)width, height) { }
-		public RDSizeE(Expression? width, string height) : this(width, (Expression)height) { }
-		public RDSizeE(RDSizeI p) : this((Expression?)p.Width, (Expression?)p.Height) { }
-		public RDSizeE(RDSize p):this((Expression?)p.Width, (Expression?)p.Height) { }
-		public RDSizeE(RDPointI p):this((Expression?)p.X, (Expression?)p.Y) { }
-		public RDSizeE(RDPoint p):this((Expression?)p.X,(Expression?)p.Y) { }
+		public RDSizeE(float width, float height) : this((RDExpression)width, (RDExpression)height) { }
+		public RDSizeE(RDExpression? width, float height) : this(width, (RDExpression)height) { }
+		public RDSizeE(float width, RDExpression? height) : this((RDExpression)width, height) { }
+		public RDSizeE(string width, float height) : this((RDExpression)width, (RDExpression)height) { }
+		public RDSizeE(float width, string height) : this((RDExpression)width, (RDExpression)height) { }
+		public RDSizeE(string width, string height) : this((RDExpression)width, (RDExpression)height) { }
+		public RDSizeE(string width, RDExpression? height) : this((RDExpression)width, height) { }
+		public RDSizeE(RDExpression? width, string height) : this(width, (RDExpression)height) { }
+		public RDSizeE(RDSizeI p) : this((RDExpression?)p.Width, (RDExpression?)p.Height) { }
+		public RDSizeE(RDSize p):this((RDExpression?)p.Width, (RDExpression?)p.Height) { }
+		public RDSizeE(RDPointI p):this((RDExpression?)p.X, (RDExpression?)p.Y) { }
+		public RDSizeE(RDPoint p):this((RDExpression?)p.X,(RDExpression?)p.Y) { }
 		public RDSizeE(RDPointE p):this(p.X,p.Y) { }
 		public readonly bool IsEmpty => Width == null && Height == null;
-		public Expression? Width { get; set; } = width;
-		public Expression? Height { get; set; }=height;
-		public readonly Expression? Area => Width * Height;
+		public RDExpression? Width { get; set; } = width;
+		public RDExpression? Height { get; set; }=height;
+		public readonly RDExpression? Area => Width * Height;
 		public static RDSizeE Add(RDSizeE sz1, RDSize sz2) => new(sz1.Width + sz2.Width, sz1.Height + sz2.Height);
 		public static RDSizeE Add(RDSizeE sz1, RDSizeE sz2) => new(sz1.Width + sz2.Width, sz1.Height + sz2.Height);
 		public static RDSizeE Subtract(RDSizeE sz1, RDSize sz2) => new(sz1.Width - sz2.Width, sz1.Height - sz2.Height);
@@ -45,10 +45,10 @@ namespace RhythmBase.Components
 		public static RDSizeE operator *(RDSizeE left, int right) => new(left.Width * right, left.Height * right);
 		public static RDSizeE operator *(float left, RDSizeE right) => new(left * right.Width, left * right.Height);
 		public static RDSizeE operator *(RDSizeE left, float right) => new(left.Width * right, left.Height * right);
-		public static RDSizeE operator *(Expression left, RDSizeE right) => new(left * right.Width, left * right.Height);
-		public static RDSizeE operator *(RDSizeE left, Expression right) => new(left.Width * right, left.Height * right);
+		public static RDSizeE operator *(RDExpression left, RDSizeE right) => new(left * right.Width, left * right.Height);
+		public static RDSizeE operator *(RDSizeE left, RDExpression right) => new(left.Width * right, left.Height * right);
 		public static RDSizeE operator /(RDSizeE left, float right) => new(left.Width / right, left.Height / right);
-		public static RDSizeE operator /(RDSizeE left, Expression right) => new(left.Width / right, left.Height / right);
+		public static RDSizeE operator /(RDSizeE left, RDExpression right) => new(left.Width / right, left.Height / right);
 		public static bool operator ==(RDSizeE sz1, RDSizeE sz2) => sz1.Equals(sz2);
 		public static bool operator !=(RDSizeE sz1, RDSizeE sz2) => !sz1.Equals(sz2);
 

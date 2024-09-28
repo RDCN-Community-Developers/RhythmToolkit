@@ -135,7 +135,7 @@ namespace RhythmBase.Converters
 				{
 					if (!(settings.InactiveEventsHandling > InactiveEventsHandling.Retain && (item["active"]?.Value<bool>() ?? false)))
 					{
-						Type eventType = Utils.EventTypeUtils.ConvertToType((string)item["type"]!);
+						Type eventType = Utils.EventTypeUtils.ToType((string)item["type"]!);
 						if (eventType == null)
 						{
 							BaseEvent TempEvent;

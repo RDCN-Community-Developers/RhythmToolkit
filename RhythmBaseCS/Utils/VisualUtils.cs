@@ -2,7 +2,7 @@
 
 namespace RhythmBase.Utils
 {
-	public static class VisulaUtils
+	public static class VisualUtils
 	{       /// <summary>
 			/// Converts percentage point to pixel point with default screen size (352 * 198).
 			/// </summary>
@@ -44,10 +44,7 @@ namespace RhythmBase.Utils
 				new RDSizeN(p1p4.X * p.Y, p1p4.Y * p.Y);
 			return pr;
 		}
-
 		public static float DegreeToRadius(float degree) => 3.1415927f * degree / 180f;
-
 		public static float RadiusToDegree(float radius) => radius * 180f / 3.1415927f;
-
 	}
 }

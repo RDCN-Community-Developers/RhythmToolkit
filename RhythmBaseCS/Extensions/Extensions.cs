@@ -203,7 +203,8 @@ namespace RhythmBase.Extensions
 			Bookmark.BookmarkColors.Blue => new(11, 125, 206),
 			Bookmark.BookmarkColors.Red => new(219, 41, 41),
 			Bookmark.BookmarkColors.Yellow => new(212, 212, 51),
-			Bookmark.BookmarkColors.Green => new(54, 215, 54)
+			Bookmark.BookmarkColors.Green => new(54, 215, 54),
+			_=>throw new NotSupportedException(),
 		};
 		/// <summary>
 		/// Add a range of events.
@@ -313,7 +314,7 @@ namespace RhythmBase.Extensions
 		/// <typeparam name="TEvent"></typeparam>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
 		{
-			EventType[] enums = EventTypeUtils. ConvertToEnums<TEvent>();
+			EventType[] enums = EventTypeUtils. ToEnums<TEvent>();
 			return e.eventsBeatOrder
 							.Where(i => i.Value._types
 								.Any(enums.Contains))
@@ -1533,11 +1534,11 @@ namespace RhythmBase.Extensions
 			{
 				RDPointE previousPosition = e.Position.Value;
 				RDPointE? pointE = e.Pivot;
-				Expression? expression = pointE?.X;
+				RDExpression? expression = pointE?.X;
 				pointE = e.Scale;
-				Expression? x = expression * (pointE?.X) * (float)e.Parent.Size.Width / 100f;
+				RDExpression? x = expression * (pointE?.X) * (float)e.Parent.Size.Width / 100f;
 				pointE = e.Pivot;
-				Expression? expression2 = pointE?.Y;
+				RDExpression? expression2 = pointE?.Y;
 				pointE = e.Scale;
 				RDPointE previousPivot = new(x, expression2 * (pointE?.Y) * (float)e.Parent.Size.Height / 100f);
 				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
@@ -1554,11 +1555,11 @@ namespace RhythmBase.Extensions
 			{
 				RDPointE previousPosition = e.RoomPosition.Value;
 				RDPointE? pivot = e.Pivot;
-				Expression? expression = pivot?.X;
+				RDExpression? expression = pivot?.X;
 				RDSizeE? scale = e.Scale;
-				Expression? x = expression * (scale?.Width);
+				RDExpression? x = expression * (scale?.Width);
 				pivot = e.Pivot;
-				Expression? expression2 = pivot?.Y;
+				RDExpression? expression2 = pivot?.Y;
 				scale = e.Scale;
 				RDPointE previousPivot = new(x, expression2 * (scale?.Height));
 				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));

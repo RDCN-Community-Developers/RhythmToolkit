@@ -25,7 +25,7 @@ namespace RhythmBase.Events
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public RDPointE AmplitudeVector { get; set; }
 		[EaseProperty]
-		public Expression? Angle { get; set; }
+		public RDExpression? Angle { get; set; }
 		[EaseProperty]
 		public float Frequency { get; set; }
 		[EaseProperty]

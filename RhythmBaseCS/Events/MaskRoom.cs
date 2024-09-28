@@ -14,7 +14,7 @@ namespace RhythmBase.Events
 		public MaskTypes MaskType { get; set; }
 		public AlphaModes AlphaMode { get; set; }
 		public byte SourceRoom { get; set; }
-		public List<Asset<ImageFile>> Image { get; set; }
+		public List<Asset<ImageFile>> Image { get; set; } = [];
 		public uint Fps { get; set; }
 		public PaletteColor KeyColor { get; set; }
 		public float ColorCutoff { get; set; }

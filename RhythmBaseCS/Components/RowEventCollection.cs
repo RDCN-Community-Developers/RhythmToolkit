@@ -97,6 +97,7 @@ namespace RhythmBase.Components
 		/// <param name="item">Row event.</param>
 		public override void Add(BaseRowAction item)
 		{
+			item._parent?.Remove(item);
 			item._parent = this;
 			Parent.Add(item);
 		}

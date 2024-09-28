@@ -35,24 +35,26 @@ namespace RhythmBase.Utils
 		/// <exception cref="NotSupportedException">The encoding format was not supported yet.</exception>
 		public static float[][] GetTimeDomain(this WaveStream stream)
 		{
+			int c = stream.WaveFormat.Channels;
 			List<List<float>> result = [];
-			for (int channel = 0; channel < stream.WaveFormat.Channels; channel++)
+			for (int i = 0; i < c; i++)
 				result.Add([]);
-			int BytesPerSample = stream.WaveFormat.BitsPerSample;
-			byte[] sample = new byte[stream.Length];
-			stream.Read(sample, 0, sample.Length);
-			for (int i = 0; i < sample.Length; i += BytesPerSample)
-			{
-				float value = stream.WaveFormat.Encoding switch
-				{
-					WaveFormatEncoding.IeeeFloat => BitConverter.ToSingle(sample, i),
-					WaveFormatEncoding.Pcm => BitConverter.ToInt16(sample, i) / (float)short.MaxValue,
-					_ => throw new NotSupportedException(stream.WaveFormat.Encoding.ToString()),
-				};
-				result[(i / BytesPerSample) % stream.WaveFormat.Channels].Add(value);
-			}
-			stream.Position = 0;
+
+			ISampleProvider provider = stream.ToSampleProvider();
+			float[] floats = new float[c];
+			int read = 0;
+			while ((read = provider.Read(floats, 0, c)) > 0)
+				for (int i = 0; i < c; i++)
+					result[i].Add(floats[i]);
 			return [.. result.Select(i => i.ToArray())];
+		}
+		public static float[] Average(this float[][] timeDomain)
+		{
+			return Enumerable.Range(0, timeDomain[0].Length)
+				.Select(i => Enumerable.Range(0, timeDomain.Length)
+					.Select(c => timeDomain[c][i])
+					.Average())
+				.ToArray();
 		}
 		/// <summary>
 		/// Get the time domain data of the stream which is compressed in average.

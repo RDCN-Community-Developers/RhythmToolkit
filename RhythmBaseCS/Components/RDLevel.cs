@@ -328,7 +328,7 @@ namespace RhythmBase.Components
 			{
 				BaseRowAction rowAction = (BaseRowAction)item;
 				if (rowAction.Parent == null)
-					throw new UnreadableEventException("The Parent property of this event should not be null. Call RDRow.Add() instead.", item);
+					throw new UnreadableEventException("The Parent property of this event should not be null. Call RowEventCollection.Add() instead.", item);
 				//添加至对应轨道
 				rowAction.Parent.AddSafely((BaseRowAction)item);
 				base.Add(item);
@@ -337,7 +337,7 @@ namespace RhythmBase.Components
 			{
 				BaseDecorationAction decoAction = (BaseDecorationAction)item;
 				if (decoAction.Parent == null)
-					throw new UnreadableEventException("The Parent property of this event should not be null. Call RDDecoration.Add() instead.", item);
+					throw new UnreadableEventException("The Parent property of this event should not be null. Call DecorationEventCollection.Add() instead.", item);
 				//添加至对应精灵
 				decoAction.Parent.AddSafely((BaseDecorationAction)item);
 				base.Add(item);
@@ -345,7 +345,7 @@ namespace RhythmBase.Components
 			//BPM 和 CPB
 			else if (item.Type == EventType.SetCrotchetsPerBar)
 				AddSetCrotchetsPerBar((SetCrotchetsPerBar)item);
-			else if (Utils.EventTypeUtils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
+			else if (Utils.EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 				AddBaseBeatsPerMinute((BaseBeatsPerMinute)item);
 			// 其他
 			else
@@ -384,7 +384,7 @@ namespace RhythmBase.Components
 			{
 				if (item.Type == EventType.SetCrotchetsPerBar)
 					Remove = RemoveSetCrotchetsPerBar((SetCrotchetsPerBar)item);
-				else if (Utils.EventTypeUtils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
+				else if (Utils.EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 					Remove = RemoveBaseBeatsPerMinute((BaseBeatsPerMinute)item);
 				else
 				{

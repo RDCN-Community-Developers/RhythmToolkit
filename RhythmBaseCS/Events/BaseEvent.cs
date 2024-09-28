@@ -63,7 +63,7 @@ namespace RhythmBase.Events
 		/// <returns></returns>
 		public virtual TEvent Clone<TEvent>() where TEvent : IBaseEvent, new()
 		{
-			if (EventTypeUtils.ConvertToEnum<TEvent>() == Type)
+			if (EventTypeUtils.ToEnum<TEvent>() == Type)
 			{
 				TEvent e = (TEvent)MemberwiseClone();
 				((BaseEvent)(object)e)._beat = Beat.WithoutBinding();

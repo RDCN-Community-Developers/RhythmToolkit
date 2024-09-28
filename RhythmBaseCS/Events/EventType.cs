@@ -83,7 +83,6 @@ namespace RhythmBase.Events
 		Tint,
 		TintRows,
 #if DEBUG
-		WindowResize
 #endif
 	}
 }

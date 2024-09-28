@@ -7,22 +7,22 @@ namespace RhythmBase.Components
 	/// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="T:RhythmBase.Components.Expression" />
 	/// </summary>
 	[JsonConverter(typeof(RDPointsConverter))]
-	public struct RDPointE(Expression? x,Expression? y) : IEquatable<RDPointE>
+	public struct RDPointE(RDExpression? x,RDExpression? y) : IEquatable<RDPointE>
 	{
 		public RDPointE(RDSize sz):this(sz.Width,sz.Height) { }
-		public RDPointE(float x, float y):this( (Expression)x,(Expression)y) { }
-		public RDPointE(Expression? x, float y) : this(x, (Expression)y) { }
-		public RDPointE(float x, Expression? y) : this((Expression)x, y) { }
-		public RDPointE(string x, float y):this((Expression)x, (Expression)y) { }	
-		public RDPointE(float x, string y):this((Expression)x, (Expression)y) { }
-		public RDPointE(string x, Expression? y):this((Expression)x, (Expression)y) {  }
-		public RDPointE(Expression? x, string y):this(x, (Expression)y) { }
-		public RDPointE(string x, string y):this ((Expression)x, (Expression)y) { }
+		public RDPointE(float x, float y):this( (RDExpression)x,(RDExpression)y) { }
+		public RDPointE(RDExpression? x, float y) : this(x, (RDExpression)y) { }
+		public RDPointE(float x, RDExpression? y) : this((RDExpression)x, y) { }
+		public RDPointE(string x, float y):this((RDExpression)x, (RDExpression)y) { }	
+		public RDPointE(float x, string y):this((RDExpression)x, (RDExpression)y) { }
+		public RDPointE(string x, RDExpression? y):this((RDExpression)x, (RDExpression)y) {  }
+		public RDPointE(RDExpression? x, string y):this(x, (RDExpression)y) { }
+		public RDPointE(string x, string y):this ((RDExpression)x, (RDExpression)y) { }
 		public RDPointE(RDPointI p):this(p.X,p.Y) { }
 		public RDPointE(RDPoint p):this(p.X,p.Y) { }
 		public readonly bool IsEmpty => X == null && Y == null;
-		public Expression? X { get; set; } = x;
-		public Expression? Y { get; set; } = y;
+		public RDExpression? X { get; set; } = x;
+		public RDExpression? Y { get; set; } = y;
 		public void Offset(RDPoint p)
 		{
 			X += p.X;
@@ -56,7 +56,7 @@ namespace RhythmBase.Components
 		public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 		public override readonly string ToString() => $"[{(X?.ExpressionValue) ?? "null"},{(Y?.ExpressionValue) ?? "null"}]";
 		readonly bool IEquatable<RDPointE>.Equals(RDPointE other) => other.X == X && other.Y == Y;
-		public readonly RDPointE MultipyByMatrix(Expression[,] matrix)
+		public readonly RDPointE MultipyByMatrix(RDExpression[,] matrix)
 		{
 			if (matrix.Rank == 2 && matrix.Length == 4)
 			{
@@ -70,7 +70,7 @@ namespace RhythmBase.Components
 		/// </summary>
 		public RDPointE Rotate(float angle)
 		{
-			Expression[,] array = new Expression[2, 2];
+			RDExpression[,] array = new RDExpression[2, 2];
 			array[0, 0] = (float)Math.Cos((double)angle);
 			array[0, 1] = (float)Math.Sin((double)angle);
 			array[1, 0] = (float)-(float)Math.Sin((double)angle);

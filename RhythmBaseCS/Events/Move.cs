@@ -23,7 +23,7 @@ namespace RhythmBase.Events
 		public RDPointE? Scale { get; set; }
 
 		[EaseProperty]
-		public Expression? Angle { get; set; }
+		public RDExpression? Angle { get; set; }
 
 		[EaseProperty]
 		public RDPointE? Pivot { get; set; }
