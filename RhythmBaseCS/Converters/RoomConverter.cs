@@ -25,9 +25,13 @@ namespace RhythmBase.Converters
 			else
 				throw new NotImplementedException();
 		}
-		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+		public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
 		{
-			byte[] J = JArray.Load(reader).ToObject<byte[]>();
+			JToken token = JArray.Load(reader);
+			byte[]? J = token.ToObject<byte[]>();
+			if (J == null)
+				throw new Exceptions.ConvertingException(token, new Exception($"Unreadable room: \"{J}\". path \"{reader.Path}\""));
+
 			bool flag = objectType == typeof(Room);
 			object ReadJson;
 			if (flag)

@@ -69,9 +69,8 @@ namespace RhythmBase.Utils
 		/// </summary>
 		public static Type ToType(string type)
 		{
-			EventType result;
 			Type ConvertToType;
-			if (Enum.TryParse(type, out result))
+			if (Enum.TryParse(type, out EventType result))
 			{
 				ConvertToType = result.ToType();
 			}

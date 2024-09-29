@@ -20,13 +20,13 @@ namespace RhythmBase.Converters
 			writer.WriteEndObject();
 		}
 
-		public override Bookmark ReadJson(JsonReader reader, Type objectType, Bookmark existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override Bookmark ReadJson(JsonReader reader, Type objectType, Bookmark? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken jobj = JToken.ReadFrom(reader);
 			return new Bookmark
 			{
-				Beat = calculator.BeatOf(jobj["bar"].ToObject<uint>(), jobj["beat"].ToObject<float>()),
-				Color = Enum.Parse<Bookmark.BookmarkColors>((string)jobj["color"])
+				Beat = calculator.BeatOf(jobj["bar"]!.ToObject<uint>(), jobj["beat"]!.ToObject<float>()),
+				Color = Enum.Parse<Bookmark.BookmarkColors>((string)jobj["color"]!)
 			};
 		}
 

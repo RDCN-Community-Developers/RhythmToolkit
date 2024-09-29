@@ -38,7 +38,6 @@ namespace RhythmBase.Events
 				ResetTimeLine();
 			}
 		}
-
 		private void ResetTimeLine()
 		{
 			if (Beat.BaseLevel != null)

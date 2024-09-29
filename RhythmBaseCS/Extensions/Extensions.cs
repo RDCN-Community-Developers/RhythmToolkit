@@ -11,7 +11,6 @@ using SkiaSharp;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using static RhythmBase.Utils.Utils;
 namespace RhythmBase.Extensions
 {
 	[StandardModule]
@@ -73,7 +72,7 @@ namespace RhythmBase.Extensions
 		///
 		/// </summary>
 		/// <param name="e"></param>
-		public static bool IsNullOrEmpty(this string e) => e == null || e.Length == 0;
+		public static bool IsNullOrEmpty([NotNullWhen(false)]this string? e) => e == null || e.Length == 0;
 		/// <summary>
 		/// Make strings follow the Upper Camel Case.
 		/// </summary>
@@ -204,7 +203,7 @@ namespace RhythmBase.Extensions
 			Bookmark.BookmarkColors.Red => new(219, 41, 41),
 			Bookmark.BookmarkColors.Yellow => new(212, 212, 51),
 			Bookmark.BookmarkColors.Green => new(54, 215, 54),
-			_=>throw new NotSupportedException(),
+			_ => throw new NotSupportedException(),
 		};
 		/// <summary>
 		/// Add a range of events.
@@ -314,7 +313,7 @@ namespace RhythmBase.Extensions
 		/// <typeparam name="TEvent"></typeparam>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
 		{
-			EventType[] enums = EventTypeUtils. ToEnums<TEvent>();
+			EventType[] enums = EventTypeUtils.ToEnums<TEvent>();
 			return e.eventsBeatOrder
 							.Where(i => i.Value._types
 								.Any(enums.Contains))
@@ -1029,7 +1028,7 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Returns the next event of the specified type, including events of the same beat but executed after itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().FirstOrDefault();		//?
+		public static TEvent NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().FirstOrDefault();      //?
 		public static Beat DurationOffset(this Beat beat, float duration)
 		{
 			SetBeatsPerMinute setBPM = beat.BaseLevel.First((SetBeatsPerMinute i) => i.Beat > beat);

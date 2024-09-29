@@ -1,10 +1,11 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
+﻿using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
+using RhythmBase.Extensions;
 using SkiaSharp;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
 	internal class PanelColorConverter : JsonConverter<PaletteColor>
@@ -14,7 +15,7 @@ namespace RhythmBase.Converters
 			parent = list;
 		}
 
-		public override void WriteJson(JsonWriter writer, PaletteColor value, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, PaletteColor? value, JsonSerializer serializer)
 		{
 			if (value.EnablePanel)
 			{
@@ -36,10 +37,15 @@ namespace RhythmBase.Converters
 			}
 		}
 
-		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			string JString = JToken.Load(reader).Value<string>();
-			Match reg = Regex.Match(JString, "pal(\\d+)");
+			JToken token = JToken.Load(reader);
+			string? JString = token.Value<string>();
+			if (JString.IsNullOrEmpty())
+			{
+				throw new Exceptions.ConvertingException(token, new Exception($"Unreadable color: \"{token}\". path \"{reader.Path}\""));
+			}
+            Match reg = Regex.Match(JString, "pal(\\d+)");
 			existingValue.parent = parent;
 			if (reg.Success)
 			{

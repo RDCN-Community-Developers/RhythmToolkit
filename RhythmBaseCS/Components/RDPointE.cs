@@ -60,7 +60,9 @@ namespace RhythmBase.Components
 		{
 			if (matrix.Rank == 2 && matrix.Length == 4)
 			{
-				RDPointE MultipyByMatrix = new(X * matrix[0, 0] + Y * matrix[1, 0], X * matrix[0, 1] + Y * matrix[1, 1]);
+				RDPointE MultipyByMatrix = new(
+					X * matrix[0, 0] + Y * matrix[1, 0], 
+					X * matrix[0, 1] + Y * matrix[1, 1]);
 				return MultipyByMatrix;
 			}
 			throw new Exception("Matrix not match, 2*2 matrix expected.");
