@@ -513,6 +513,7 @@ namespace RhythmBase.Components
 			foreach (var item in Bookmarks)
 				item.Beat.ResetCPB();
 		}
+		/// <inheritdoc/>
 		public override string ToString() => string.Format("\"{0}\" Count = {1}", Settings.Song, Count);
 		internal string _path;
 		/// <summary>

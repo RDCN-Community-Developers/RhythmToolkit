@@ -9,6 +9,12 @@ namespace RhythmBase.Events
 			Type = EventType.PlaySong;
 			Tab = Tabs.Sounds;
 		}
+
+		[JsonProperty("bpm")]
+		public override float BeatsPerMinute {
+			get => base.BeatsPerMinute;
+			set => base.BeatsPerMinute = value;
+		}
 		[JsonIgnore]
 		public TimeSpan Offset
 		{

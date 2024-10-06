@@ -24,9 +24,7 @@ namespace RhythmBase.Events
 				ResetTimeLine();
 			}
 		}
-
-		[JsonProperty("bpm")]
-		public float BeatsPerMinute
+		public virtual float BeatsPerMinute
 		{
 			get
 			{

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
 namespace RhythmBase.Components
 {
@@ -139,6 +137,18 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Mods enabled for the level.
 		/// </summary>
+		/// oldBassDrop
+		/// startImmediately
+		/// classicHitParticles
+		/// adaptRowsToRoomHeight
+		/// noSmartJudgment
+		/// smoothShake
+		/// rotateShake
+		/// wobblyLines
+		/// bombBeats
+		/// noDoublePulse
+		/// invisibleCharacters
+		/// gentleBassDrop
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public List<string> Mods { get; set; }
 		/// <summary>

@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Events
+﻿namespace RhythmBase.Events
 {
 	public class SetBeatsPerMinute : BaseBeatsPerMinute
 	{
@@ -8,11 +7,11 @@ namespace RhythmBase.Events
 			Type = EventType.SetBeatsPerMinute;
 			Tab = Tabs.Sounds;
 		}
-
+		/// <inheritdoc/>
 		public override EventType Type { get; }
-
+		/// <inheritdoc/>
 		public override Tabs Tab { get; }
-
+		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + string.Format(" BPM:{0}", BeatsPerMinute);
 	}
 }
