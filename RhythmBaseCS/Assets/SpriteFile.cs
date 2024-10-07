@@ -202,15 +202,13 @@ namespace RhythmBase.Assets
 			{
 				Formatting = setting.Indented ? Formatting.Indented : Formatting.None
 			};
-			JObject meObj = JObject.FromObject(this);
-			meObj.ToLowerCamelCase();
+			JObject meObj = JObject.FromObject(this,JsonSerializer.Create(jsonS));
 			JArray? clipArray = (JArray?)meObj["Clips".ToLowerCamelCase()];
 			Dictionary<string, int> PropertyNameLength = [];
 			Dictionary<string, List<string>> propertyValues = [];
 			foreach (JToken jtoken in clipArray)
 			{
 				JObject clip = (JObject)jtoken;
-				clip.ToLowerCamelCase();
 				foreach (KeyValuePair<string, JToken> pair in clip)
 				{
 					string stringedValue = (pair.Value.Type == JTokenType.Null) ? string.Empty : JsonConvert.SerializeObject(pair.Value, Formatting.None, jsonS);
@@ -356,10 +354,10 @@ namespace RhythmBase.Assets
 		{
 			FileInfo file = new(path);
 			string WithoutExtension = Path.Combine(file.Directory.FullName, Path.GetFileNameWithoutExtension(file.Name));
-			if ((File.Exists(WithoutExtension + ".json") || (settings.WithImage && File.Exists(WithoutExtension + ".png"))) & !settings.OverWrite)
-			{
-				throw new OverwriteNotAllowedException(path, typeof(LevelReadOrWriteSettings));
-			}
+			//if ((File.Exists(WithoutExtension + ".json") || (settings.WithImage && File.Exists(WithoutExtension + ".png"))) & !settings.OverWrite)
+			//{
+			//	throw new OverwriteNotAllowedException(path, typeof(LevelReadOrWriteSettings));
+			//}
 			if (settings.WithImage)
 			{
 				ImageBase.Save(WithoutExtension + ".png");

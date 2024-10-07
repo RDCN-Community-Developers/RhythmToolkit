@@ -93,14 +93,6 @@ namespace RhythmBase.Extensions
 			e[key.ToUpperCamelCase()] = token;
 		}
 		/// <summary>
-		/// Make keys of JObject follow the Upper Camel Case.
-		/// </summary>
-		internal static void ToUpperCamelCase(this JObject e)
-		{
-			foreach (KeyValuePair<string, JToken?> pair in e)
-				e.ToUpperCamelCase(pair.Key);
-		}
-		/// <summary>
 		/// Make strings follow the Lower Camel Case.
 		/// </summary>
 		/// <returns>The result.</returns>
@@ -118,14 +110,6 @@ namespace RhythmBase.Extensions
 			JToken token = e[key];
 			e.Remove(key);
 			e[key.ToLowerCamelCase()] = token;
-		}
-		/// <summary>
-		/// Make keys of JObject follow the Lower Camel Case.
-		/// </summary>
-		internal static void ToLowerCamelCase(this JObject e)
-		{
-			foreach (KeyValuePair<string, JToken?> pair in e)
-				e.ToLowerCamelCase(pair.Key);
 		}
 		/// <summary>
 		/// Convert color format from RGBA to ARGB

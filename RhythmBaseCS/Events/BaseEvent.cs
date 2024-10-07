@@ -3,8 +3,16 @@ using RhythmBase.Components;
 using RhythmBase.Utils;
 namespace RhythmBase.Events
 {
+	/// <summary>
+	/// The base class of the event.
+	/// All event types inherit directly or indirectly from this.
+	/// </summary>
 	public abstract class BaseEvent : IBaseEvent
 	{
+		/// <summary>
+		/// The base class of the event.
+		/// All event types inherit directly or indirectly from this.
+		/// </summary>
 		protected BaseEvent()
 		{
 			_beat = new Beat(1f);
@@ -35,7 +43,7 @@ namespace RhythmBase.Events
 				{
 					value = new Beat(_beat.BaseLevel.Calculator, value);
 					_beat.BaseLevel.Remove(this);
-					value.BaseLevel.Add(this);
+					value.BaseLevel?.Add(this);
 					_beat = value;
 				}
 			}
@@ -48,19 +56,22 @@ namespace RhythmBase.Events
 		/// Event tag.
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public string Tag { get; set; }
+		public string Tag { get; set; } = "";
 		/// <summary>
 		/// Event conditions.
 		/// </summary>
 		[JsonProperty("if", DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public Condition Condition { get; set; }
+		public Condition Condition { get; set; } = new();
+		/// <summary>
+		/// Indicates whether this event is activated.
+		/// </summary>
 		public bool Active { get; set; }
 		/// <summary>
 		/// Clone this event and its basic properties.
 		/// If it is of the same type as the source event, then it will be cloned.
 		/// </summary>
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
-		/// <returns></returns>
+		/// <returns>A new instance with the same base properties as the source instance.</returns>
 		public virtual TEvent Clone<TEvent>() where TEvent : IBaseEvent, new()
 		{
 			if (EventTypeUtils.ToEnum<TEvent>() == Type)
@@ -97,6 +108,7 @@ namespace RhythmBase.Events
 					temp.Condition.ConditionLists.Add(item);
 			return temp;
 		}
+		/// <inheritdoc/>
 		public override string ToString() => string.Format("{0} {1}", Beat, Type);
 		internal Beat _beat;
 	}

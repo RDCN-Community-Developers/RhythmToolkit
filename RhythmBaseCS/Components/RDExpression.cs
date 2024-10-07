@@ -20,7 +20,6 @@ namespace RhythmBase.Components
 				return ExpressionValue;
 			}
 		}
-		public readonly Func<Variables, float> ExpressionFunction => throw new NotImplementedException();
 		public RDExpression(float value)
 		{
 			this = default;
@@ -43,14 +42,18 @@ namespace RhythmBase.Components
 				_exp = value;
 			}
 		}
+		/// <inheritdoc/>
 		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDExpression) && Equals((obj != null) ? ((RDExpression)obj) : default);
+		/// <inheritdoc/>
 		public readonly bool Equals(RDExpression other) => (IsNumeric == other.IsNumeric && NumericValue == other.NumericValue) || _exp == other._exp;
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			HashCode hash = default;
 			hash.Add(ExpressionValue);
 			return hash.ToHashCode();
 		}
+		/// <inheritdoc/>
 		public override string ToString() => ExpressionValue;
 		public static RDExpression? Nullable(string s) => s != null && s.Length != 0 ? new RDExpression?(new RDExpression(s)) : null;
 		public static RDExpression operator +(RDExpression left, float right) => left.IsNumeric

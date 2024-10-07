@@ -240,6 +240,12 @@ namespace RhythmBase.Components
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
 		public static bool FromSameLevelOrNull(Beat a, Beat b, bool @throw = false) => a._calculator == null || b._calculator == null || FromSameLevel(a, b, @throw);
+		/// <summary>
+		/// Determine if two beats are from the same level.
+		/// </summary>
+		/// <param name="b">Another beat.</param>
+		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
+		/// <returns></returns>
 		[MemberNotNullWhen(true)]
 		public readonly bool FromSameLevel(Beat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
@@ -310,6 +316,7 @@ namespace RhythmBase.Components
 			_isBarBeatLoaded = false;
 			_isCPBLoaded = false;
 		}
+		///  <inheritdoc/>
 		public static Beat operator +(Beat a, float b)
 		{
 			Beat result;
@@ -323,6 +330,7 @@ namespace RhythmBase.Components
 			}
 			return result;
 		}
+		///  <inheritdoc/>
 		public static Beat operator +(Beat a, TimeSpan b)
 		{
 			Beat result;
@@ -336,6 +344,7 @@ namespace RhythmBase.Components
 			}
 			return result;
 		}
+		///  <inheritdoc/>
 		public static Beat operator -(Beat a, float b)
 		{
 			Beat result;
@@ -349,6 +358,7 @@ namespace RhythmBase.Components
 			}
 			return result;
 		}
+		///  <inheritdoc/>
 		public static Beat operator -(Beat a, TimeSpan b)
 		{
 			Beat result;
