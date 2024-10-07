@@ -353,32 +353,25 @@ namespace RhythmBase.Assets
 		public void Save(string path, SpriteReadOrWriteSettings settings)
 		{
 			FileInfo file = new(path);
-			string WithoutExtension = Path.Combine(file.Directory.FullName, Path.GetFileNameWithoutExtension(file.Name));
-			//if ((File.Exists(WithoutExtension + ".json") || (settings.WithImage && File.Exists(WithoutExtension + ".png"))) & !settings.OverWrite)
-			//{
-			//	throw new OverwriteNotAllowedException(path, typeof(LevelReadOrWriteSettings));
-			//}
+			string WithoutExtension = Path.Combine(file.Directory?.FullName??"", Path.GetFileNameWithoutExtension(file.Name));
+			if ((File.Exists(WithoutExtension + ".json") || (settings.WithImage && File.Exists(WithoutExtension + ".png"))) & !settings.OverWrite)
+			{
+				throw new OverwriteNotAllowedException(path, typeof(LevelReadOrWriteSettings));
+			}
 			if (settings.WithImage)
 			{
 				ImageBase.Save(WithoutExtension + ".png");
 				SKBitmap imageGlow = ImageGlow;
-				if (imageGlow != null)
-				{
-					imageGlow.Save(WithoutExtension + "_glow.png");
-				}
+				imageGlow?.Save(WithoutExtension + "_glow.png");
 				SKBitmap imageOutline = ImageOutline;
-				if (imageOutline != null)
-				{
-					imageOutline.Save(WithoutExtension + "_outline.png");
-				}
+				imageOutline?.Save(WithoutExtension + "_outline.png");
 				SKBitmap imageFreeze = ImageFreeze;
-				if (imageFreeze != null)
-				{
-					imageFreeze.Save(WithoutExtension + "_freeze.png");
-				}
+				imageFreeze?.Save(WithoutExtension + "_freeze.png");
 			}
-			WriteJson(new FileInfo(WithoutExtension + ".json").CreateText(), settings);
+			using StreamWriter stream = new FileInfo(WithoutExtension + ".json").CreateText();
+			WriteJson(stream, settings);
 		}
+		/// <inheritdoc/>
 		public override string ToString() => Name.IsNullOrEmpty() ? FileName : Name;
 		private RDSizeNI _imageSize;
 		private static readonly string[] characterExpressionNames =
