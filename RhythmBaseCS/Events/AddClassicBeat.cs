@@ -19,7 +19,7 @@ namespace RhythmBase.Events
 		public float Hold { get; set; }
 
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public ClassicBeatPatterns? SetXs { get; set; }
+		public ClassicBeatPatterns SetXs { get; set; }
 
 		public override EventType Type { get; }
 
@@ -27,6 +27,7 @@ namespace RhythmBase.Events
 
 		public enum ClassicBeatPatterns
 		{
+			NoChange,
 			ThreeBeat,
 			FourBeat
 		}

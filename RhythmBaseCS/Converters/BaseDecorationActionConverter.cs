@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
@@ -23,7 +24,12 @@ namespace RhythmBase.Converters
 						settings.UnreadableEvents.Add(jobj);
 						return default;
 					case UnreadableEventHandling.ThrowException:
+#if DEBUG
+						Debugger.Log(2, "cate", "");
+						return default;
+#else
 						throw new ConvertingException(string.Format("Cannot find the decoration \"{0}\" at {1}", jobj["target"], obj));
+#endif
 				}
 			obj._parent = Parent!;
 			return obj;

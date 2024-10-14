@@ -50,6 +50,7 @@ namespace RhythmBase.Components
 #if DEBUG
 		LuckyJersey,
 #endif
+		Lune,
 		Marija,
 		Miner,
 		MrsStevendog,
@@ -73,6 +74,7 @@ namespace RhythmBase.Components
 		Quaver,
 		Rin,
 		Rodney,
+		Saturday,
 		Samurai,
 		SamuraiBaseball,
 		SamuraiBlue,

@@ -4,9 +4,9 @@ namespace RhythmBase.Components.Conditions
 	/// <summary>
 	/// Last hit.
 	/// </summary>
-	public class LastHitCOndition : BaseConditional
+	public class LastHitCondition : BaseConditional
 	{
-		public LastHitCOndition()
+		public LastHitCondition()
 		{
 			Type = ConditionType.LastHit;
 		}
