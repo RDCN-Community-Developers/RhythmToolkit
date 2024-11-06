@@ -179,7 +179,7 @@ namespace RhythmBase.Assets
 			}
 			throw new FileNotFoundException("Cannot find the image file", _file + ".png");
 		}
-		public void Save() { throw new NotImplementedException(); }
+		public void Save() => throw new NotImplementedException();
 		/// <summary>
 		/// Write JSON data to the text stream.
 		/// </summary>

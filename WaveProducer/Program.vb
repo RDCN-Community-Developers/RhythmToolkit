@@ -1,11 +1,7 @@
-Imports System
 Imports NAudio.Dsp
 Imports NAudio.Wave
-Imports MathNet.Numerics
 Imports RhythmBase.Components
 Imports RhythmBase.Events
-Imports RhythmBase.Utils
-Imports MathNet.Numerics.IntegralTransforms
 Module Program
 	Sub Main(args As String())
 		Dim rd = New Mp3FileReader("D:\download\Music\Vicki Vox - Pretty without You.mp3")
@@ -94,7 +90,6 @@ Module Program
 		'	'	Exit For
 		'	'End If
 		'Next
-
 
 		Dim Level As RDLevel = RDLevel.Read("C:\Users\30698\OneDrive\ÎÄµµ\rdlevels\test3\level.rdlevel")
 		Dim SpriteCollection As New List(Of DecorationEventCollection)

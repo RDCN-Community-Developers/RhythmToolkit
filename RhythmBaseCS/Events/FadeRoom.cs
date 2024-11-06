@@ -1,34 +1,47 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
+	/// <summary>
+	/// Represents an event that fades a room.
+	/// </summary>
 	public class FadeRoom : BaseEvent, IEaseEvent
 	{
-		public FadeRoom()
-		{
-			Type = EventType.FadeRoom;
-			Tab = Tabs.Rooms;
-		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FadeRoom"/> class.
+		/// </summary>
+		public FadeRoom() { }
 
+		/// <summary>
+		/// Gets or sets the easing type for the fade effect.
+		/// </summary>
 		public Ease.EaseType Ease { get; set; }
 
+		/// <summary>
+		/// Gets or sets the opacity level for the fade effect.
+		/// </summary>
 		[EaseProperty]
 		public uint Opacity { get; set; }
 
+		/// <summary>
+		/// Gets or sets the duration of the fade effect.
+		/// </summary>
 		public float Duration { get; set; }
 
-		public override EventType Type { get; }
+		/// <summary>
+		/// Gets the type of the event.
+		/// </summary>
+		public override EventType Type { get; } = EventType.FadeRoom;
 
-		public override Tabs Tab { get; }
+		/// <summary>
+		/// Gets the tab associated with the event.
+		/// </summary>
+		public override Tabs Tab { get; } = Tabs.Rooms;
 
+		/// <summary>
+		/// Gets the room associated with the event.
+		/// </summary>
 		[JsonIgnore]
-		public Room Room
-		{
-			get
-			{
-				return new SingleRoom(checked((byte)Y));
-			}
-		}
+		public Room Room => new SingleRoom((byte)Y);
 	}
 }

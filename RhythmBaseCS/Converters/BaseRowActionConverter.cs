@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Events;
@@ -9,35 +8,34 @@ namespace RhythmBase.Converters
 {
 	internal class BaseRowActionConverter<TEvent>(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<TEvent>(level, inputSettings) where TEvent : BaseRowAction
 	{
-		public override TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override TEvent? GetDeserializedObject(JObject jobj, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			TEvent obj = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
+			TEvent? obj = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
+			if (obj is null) return obj;
 			try
 			{
-				short rowId = jobj["row"].ToObject<short>();
+				short rowId = jobj["row"]?.ToObject<short>() ?? throw new ConvertingException("Cannot read the property row.");
 				if (rowId == -1)
 				{
 					if (obj.Type != EventType.TintRows)
 					{
-						UnreadableEventHandling unreadableEventsHandling = settings.UnreadableEventsHandling;
-						if (unreadableEventsHandling == UnreadableEventHandling.Store)
+						switch (settings.UnreadableEventsHandling)
 						{
-							settings.UnreadableEvents.Add(jobj);
-							return default;
-						}
-						if (unreadableEventsHandling == UnreadableEventHandling.ThrowException)
-						{
-							throw new ConvertingException(string.Format("Cannot find the row \"{0}\" at {1}", jobj["target"], obj));
+							case UnreadableEventHandling.Store:
+								settings.UnreadableEvents.Add(jobj);
+								return default;
+							case UnreadableEventHandling.ThrowException:
+								throw new ConvertingException(string.Format("Cannot find the row \"{0}\" at {1}", jobj["target"], obj));
 						}
 					}
 				}
 				else
 				{
-					RowEventCollection Parent = level._rows[(int)rowId];
+					RowEventCollection Parent = level.ModifiableRows[(int)rowId];
 					obj._parent = Parent;
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				throw new ConvertingException(string.Format("Cannot find the row {0} at {1}", jobj["row"], obj));
 			}

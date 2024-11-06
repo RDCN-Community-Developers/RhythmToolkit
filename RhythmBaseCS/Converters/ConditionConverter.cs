@@ -3,7 +3,6 @@ using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
-using System.Collections;
 using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {

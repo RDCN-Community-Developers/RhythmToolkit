@@ -9,11 +9,11 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Start beat.
 		/// </summary>
-		public Beat? Start { get; }
+		public RDBeat? Start { get; }
 		/// <summary>
 		/// End beat.
 		/// </summary>
-		public Beat? End { get; }
+		public RDBeat? End { get; }
 		/// <summary>
 		/// Beat interval.
 		/// </summary>
@@ -25,7 +25,7 @@ namespace RhythmBase.Components
 				float BeatInterval;
 				if (flag)
 				{
-					BeatInterval = End.Value.BeatOnly - Start.Value.BeatOnly;
+					BeatInterval = End!.Value.BeatOnly - Start!.Value.BeatOnly;
 				}
 				else
 				{
@@ -46,7 +46,7 @@ namespace RhythmBase.Components
 				TimeSpan TimeInterval;
 				if (flag)
 				{
-					if (Start.Value.BeatOnly == End.Value.BeatOnly)
+					if (Start!.Value.BeatOnly == End!.Value.BeatOnly)
 					{
 						TimeInterval = TimeSpan.Zero;
 					}
@@ -64,10 +64,10 @@ namespace RhythmBase.Components
 		}
 		/// <param name="start">Start beat.</param>
 		/// <param name="end">End beat.</param>
-		public RDRange(Beat? start, Beat? end)
+		public RDRange(RDBeat? start, RDBeat? end)
 		{
 			this = default;
-			if (start != null && end != null && !((Beat)start).FromSameLevelOrNull((Beat)end))
+			if (start != null && end != null && !((RDBeat)start).FromSameLevelOrNull((RDBeat)end))
 			{
 				throw new RhythmBaseException("RDIndexes must come from the same RDLevel.");
 			}
@@ -82,6 +82,11 @@ namespace RhythmBase.Components
 				End = end;
 			}
 		}
-		public readonly bool Contains(Beat b) => (Start == null || Start < b) && (End == null || b < End);
+		/// <summary>
+		/// Determines whether the specified beat is within the range.
+		/// </summary>
+		/// <param name="b">The beat to check.</param>
+		/// <returns>True if the beat is within the range; otherwise, false.</returns>
+		public readonly bool Contains(RDBeat b) => (Start == null || Start < b) && (End == null || b < End);
 	}
 }

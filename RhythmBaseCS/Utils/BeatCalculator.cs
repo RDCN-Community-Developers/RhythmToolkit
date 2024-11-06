@@ -110,23 +110,23 @@ namespace RhythmBase.Utils
 		/// <summary>
 		/// Creates a beat instance.
 		/// </summary>
-		public Beat BeatOf(float beatOnly) => new(this, beatOnly);
+		public RDBeat BeatOf(float beatOnly) => new(this, beatOnly);
 		/// <summary>
 		/// Creates a beat instance.
 		/// </summary>
-		public Beat BeatOf(uint bar, float beat) => new(this, bar, beat);
+		public RDBeat BeatOf(uint bar, float beat) => new(this, bar, beat);
 		/// <summary>
 		/// Creates a beat instance.
 		/// </summary>
-		public Beat BeatOf(TimeSpan timeSpan) => new(this, timeSpan);
+		public RDBeat BeatOf(TimeSpan timeSpan) => new(this, timeSpan);
 		/// <summary>
 		/// Calculate the BPM of the moment in which the beat is.
 		/// </summary>
-		public float BeatsPerMinuteOf(Beat beat) => _BPMList.LastOrDefault((BaseBeatsPerMinute i) => i.Beat < beat)?.BeatsPerMinute ?? 100f;
+		public float BeatsPerMinuteOf(RDBeat beat) => _BPMList.LastOrDefault((BaseBeatsPerMinute i) => i.Beat < beat)?.BeatsPerMinute ?? 100f;
 		/// <summary>
 		/// Calculate the CPB of the moment in which the beat is.
 		/// </summary>
-		public float CrotchetsPerBarOf(Beat beat) => _CPBList.LastOrDefault((SetCrotchetsPerBar i) => i.Beat < beat)?.CrotchetsPerBar ?? 8;
+		public float CrotchetsPerBarOf(RDBeat beat) => _CPBList.LastOrDefault((SetCrotchetsPerBar i) => i.Beat < beat)?.CrotchetsPerBar ?? 8;
 		internal readonly RDLevel Collection;
 		private List<BaseBeatsPerMinute> _BPMList = [];
 		private List<SetCrotchetsPerBar> _CPBList = [];

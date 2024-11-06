@@ -1,10 +1,14 @@
-﻿using RhythmBase.Assets;
-using RhythmBase.Components;
-using System.Linq;
+﻿using RhythmBase.Components;
 namespace RhythmBase.Events
 {
+	/// <summary>  
+	/// Represents an event to set the foreground in a room.  
+	/// </summary>  
 	public class SetForeground : BaseEvent, IEaseEvent, IRoomEvent
 	{
+		/// <summary>  
+		/// Initializes a new instance of the <see cref="SetForeground"/> class.  
+		/// </summary>  
 		public SetForeground()
 		{
 			Rooms = new Room(false, new byte[1]);
@@ -12,22 +16,79 @@ namespace RhythmBase.Events
 			Type = EventType.SetForeground;
 			Tab = Tabs.Actions;
 		}
+
+		/// <summary>  
+		/// Gets or sets the rooms associated with the event.  
+		/// </summary>  
 		public Room Rooms { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the content mode for the event.  
+		/// </summary>  
 		public ContentModes ContentMode { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the tiling type for the event.  
+		/// </summary>  
 		public TilingTypes TilingType { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the color for the foreground.  
+		/// </summary>  
 		[EaseProperty]
 		public PaletteColor Color { get; set; }
-		public List<string> Image { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the list of images for the foreground.  
+		/// </summary>  
+		public List<string> Image { get; set; } = [];
+
+		/// <summary>  
+		/// Gets or sets the frames per second for the foreground animation.  
+		/// </summary>  
 		public float Fps { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the horizontal scroll value.  
+		/// </summary>  
 		[EaseProperty]
 		public float ScrollX { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the vertical scroll value.  
+		/// </summary>  
 		[EaseProperty]
 		public float ScrollY { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the duration of the event.  
+		/// </summary>  
 		public float Duration { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the interval between frames.  
+		/// </summary>  
 		public float Interval { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the easing type for the event.  
+		/// </summary>  
 		public Ease.EaseType Ease { get; set; }
+
+		/// <summary>  
+		/// Gets the type of the event.  
+		/// </summary>  
 		public override EventType Type { get; }
+
+		/// <summary>  
+		/// Gets the tab associated with the event.  
+		/// </summary>  
 		public override Tabs Tab { get; }
+
+		/// <summary>  
+		/// Returns a string that represents the current object.  
+		/// </summary>  
+		/// <returns>A string that represents the current object.</returns>  
 		public override string ToString() => base.ToString() + $" {Color},{string.Join(',', Image.Select(i => i.ToString()))}";
 	}
 }

@@ -362,10 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /RDLevel.zip
-/FastTest/Program.cs
-/FastTest/CodeFile1.cs
-/TestProject1/TestProject1.csproj
-/FastTest/FastTest.csproj
 /TestProject1/UnitTest1.cs
 /TestProject1/CSTestProject.csproj
 /TestProject1/UnitTest1.cs
@@ -375,3 +371,9 @@ FodyWeavers.xsd
 /FastTest/Tests.cs
 /FastTest/autoplay.cs
 /FastTest/test.cs
+/FastTest/FastTest.csproj
+/FastTest/Timer.cs
+
+# 忽略 RhythmBase 文件夹
+/RhythmBase/
+/FastTest/

@@ -15,7 +15,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		protected BaseEvent()
 		{
-			_beat = new Beat(1f);
+			_beat = new RDBeat(1f);
 			Active = true;
 		}
 		/// <summary>
@@ -32,7 +32,7 @@ namespace RhythmBase.Events
 		/// The beat of the event.
 		/// </summary>
 		[JsonIgnore]
-		public virtual Beat Beat
+		public virtual RDBeat Beat
 		{
 			get => _beat;
 			set
@@ -41,7 +41,7 @@ namespace RhythmBase.Events
 					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
 				else
 				{
-					value = new Beat(_beat.BaseLevel.Calculator, value);
+					value = new RDBeat(_beat.BaseLevel.Calculator, value);
 					_beat.BaseLevel.Remove(this);
 					value.BaseLevel?.Add(this);
 					_beat = value;
@@ -61,7 +61,7 @@ namespace RhythmBase.Events
 		/// Event conditions.
 		/// </summary>
 		[JsonProperty("if", DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public Condition Condition { get; set; } = new();
+		public Condition? Condition { get; set; }
 		/// <summary>
 		/// Indicates whether this event is activated.
 		/// </summary>
@@ -89,8 +89,10 @@ namespace RhythmBase.Events
 				Active = Active
 			};
 			if (Condition != null)
-				foreach (var item in Condition.ConditionLists)
-					temp.Condition.ConditionLists.Add(item);
+				temp.Condition = new()
+				{
+					ConditionLists = [.. Condition.ConditionLists]
+				};
 			return temp;
 		}
 		internal virtual TEvent Clone<TEvent>(RDLevel level) where TEvent : IBaseEvent, new()
@@ -104,12 +106,14 @@ namespace RhythmBase.Events
 				Active = Active
 			};
 			if (Condition != null)
-				foreach (var item in Condition.ConditionLists)
-					temp.Condition.ConditionLists.Add(item);
+				temp.Condition = new()
+				{
+					ConditionLists = [.. Condition.ConditionLists]
+				};
 			return temp;
 		}
 		/// <inheritdoc/>
-		public override string ToString() => string.Format("{0} {1}", Beat, Type);
-		internal Beat _beat;
+		public override string ToString() => $"{Beat} {Type}";
+		internal RDBeat _beat;
 	}
 }

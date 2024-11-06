@@ -7,6 +7,9 @@ namespace RhythmBase.Settings
 	/// </summary>
 	public class LevelReadOrWriteSettings
 	{
+		/// <summary>
+		/// Initialize.
+		/// </summary>
 		public LevelReadOrWriteSettings() { }
 		/// <summary>
 		/// Enable resource preloading. This may grow read times. 

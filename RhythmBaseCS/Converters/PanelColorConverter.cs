@@ -3,29 +3,28 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Extensions;
-using SkiaSharp;
-using System.Diagnostics.CodeAnalysis;
+
 using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
-	internal class PanelColorConverter : JsonConverter<PaletteColor>
+	internal partial class PanelColorConverter : JsonConverter<PaletteColor>
 	{
-		internal PanelColorConverter(LimitedList<SKColor> list)
+		internal PanelColorConverter(RDColor[] list)
 		{
 			parent = list;
 		}
 
 		public override void WriteJson(JsonWriter writer, PaletteColor? value, JsonSerializer serializer)
 		{
-			if (value.EnablePanel)
+			if (value?.EnablePanel ?? throw new NotImplementedException())
 			{
 				writer.WriteValue(string.Format("pal{0}", value.PaletteIndex));
 			}
 			else
 			{
 				string s = value.Value.ToString().Replace("#", "");
-				string alpha = s.Substring(0, 2);
-				string rgb = s.Substring(2);
+				string alpha = s[..2];
+				string rgb = s[2..];
 				if (value.EnableAlpha)
 				{
 					writer.WriteValue(rgb + alpha);
@@ -45,8 +44,8 @@ namespace RhythmBase.Converters
 			{
 				throw new Exceptions.ConvertingException(token, new Exception($"Unreadable color: \"{token}\". path \"{reader.Path}\""));
 			}
-            Match reg = Regex.Match(JString, "pal(\\d+)");
-			existingValue.parent = parent;
+			Match reg = PaletteColorRegex().Match(JString);
+			existingValue!.parent = parent;
 			if (reg.Success)
 			{
 				existingValue.PaletteIndex = Conversions.ToInteger(reg.Groups[1].Value);
@@ -57,21 +56,24 @@ namespace RhythmBase.Converters
 				string alpha = "";
 				if (s.Length > 6)
 				{
-					alpha = s.Substring(6);
+					alpha = s[6..];
 				}
-				string rgb = s.Substring(0, 6);
+				string rgb = s[..6];
 				if (s.Length > 6)
 				{
-					existingValue.Color = new SKColor?(SKColor.Parse(alpha + rgb));
+					existingValue.Color = new RDColor?(RDColor.FromArgb(alpha + rgb));
 				}
 				else
 				{
-					existingValue.Color = new SKColor?(SKColor.Parse(rgb));
+					existingValue.Color = new RDColor?(RDColor.FromRgba(rgb));
 				}
 			}
 			return existingValue;
 		}
 
-		private readonly LimitedList<SKColor> parent;
+		private readonly RDColor[] parent;
+
+		[GeneratedRegex("pal(\\d+)")]
+		private static partial Regex PaletteColorRegex();
 	}
 }

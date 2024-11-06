@@ -1,45 +1,50 @@
-﻿using System;
-using Newtonsoft.Json;
-using RhythmBase.Components;
+﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
 using RhythmBase.Extensions;
 namespace RhythmBase.Events
 {
+	/// <inheritdoc />
 	public class SetRowXs : BaseBeat
 	{
-		public SetRowXs()
-		{
-			_pattern = new LimitedList<Patterns>(6U, Patterns.None);
-			Type = EventType.SetRowXs;
-			SyncoBeat = -1;
-			SyncoVolume = 100;
-		}
+		/// <inheritdoc />
+		public SetRowXs() { }
 
-		public override EventType Type { get; }
+		/// <inheritdoc />
+		public override EventType Type => EventType.SetRowXs;
 
+		/// <summary>
+		/// Gets or sets the pattern.
+		/// </summary>
 		[JsonConverter(typeof(PatternConverter))]
-		public LimitedList<Patterns> Pattern
+		public Patterns[] Pattern
 		{
-			get
-			{
-				return _pattern;
-			}
-			set
-			{
-				_pattern = value;
-			}
+			get => _pattern;
+			set => _pattern = value.Length == 6 ? value : throw new RhythmBase.Exceptions.RhythmBaseException();
 		}
 
-		public sbyte SyncoBeat { get; set; }
+		/// <summary>
+		/// Gets or sets the synco beat.
+		/// </summary>
+		public sbyte SyncoBeat { get; set; } = -1;
 
-		public float SyncoSwing { get; set; }
+		/// <summary>
+		/// Gets or sets the synco swing.
+		/// </summary>
+		public float SyncoSwing { get; set; } = 0;
 
+		/// <summary>
+		/// Gets or sets a value indicating whether to play the modifier sound.
+		/// </summary>
 		public bool SyncoPlayModifierSound { get; set; }
 
-		public int SyncoVolume { get; set; }
+		/// <summary>
+		/// Gets or sets the synco volume.
+		/// </summary>
+		public int SyncoVolume { get; set; } = 100;
 
+		/// <inheritdoc />
 		public override string ToString() => base.ToString() + string.Format(" {0}", this.GetPatternString());
 
-		private LimitedList<Patterns> _pattern;
+		private Patterns[] _pattern = new Patterns[6];
 	}
 }

@@ -1,11 +1,11 @@
-﻿using System;
-namespace RhythmBase.Components
+﻿namespace RhythmBase.Components
 {
 	/// <summary>
 	/// In-game character.
 	/// </summary>
 	public enum Characters
 	{
+#pragma warning disable CS1591
 		Adog,
 		Athlete,
 		AthletePhysio,

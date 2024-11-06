@@ -1,52 +1,41 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using RhythmBase.Assets;
 using RhythmBase.Components;
 using RhythmBase.Converters;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Settings;
-using System.Collections.ObjectModel;
 namespace RhythmBase.Utils
 {
+	/// <summary>
+	/// Static class providing utility methods.
+	/// </summary>
 	public static class Utils
 	{
 		/// <summary>
 		/// Converts Xs patterns to string form.
 		/// </summary>
-		/// <param name="list">String pattern.</param>
-		/// <returns></returns>
-		public static string GetPatternString(LimitedList<Patterns> list)
-		{
-			string @out = "";
-			foreach (Patterns item in list)
-			{
-				switch (item)
+		/// <param name="pattern">List of patterns.</param>
+		/// <returns>String representation of patterns.</returns>
+		public static string GetPatternString(Patterns[] pattern) => string.Join("",
+				pattern?.Select(p => p switch
 				{
-					case Patterns.None:
-						@out += "-";
-						break;
-					case Patterns.X:
-						@out += "x";
-						break;
-					case Patterns.Up:
-						@out += "u";
-						break;
-					case Patterns.Down:
-						@out += "d";
-						break;
-					case Patterns.Banana:
-						@out += "b";
-						break;
-					case Patterns.Return:
-						@out += "r";
-						break;
-				}
-			}
-			return @out;
-		}
+					Patterns.None => "-",
+					Patterns.X => "x",
+					Patterns.Up => "u",
+					Patterns.Down => "d",
+					Patterns.Banana => "b",
+					Patterns.Return => "r",
+					_ => throw new ConvertingException($"Invalid pattern: {p}")
 
+				}) ?? throw new ConvertingException($"Cannot write pattern."));
+
+		/// <summary>
+		/// Gets the JSON serializer settings for the specified level and settings.
+		/// </summary>
+		/// <param name="rdlevel">The level to serialize.</param>
+		/// <param name="settings">The settings for reading or writing the level.</param>
+		/// <returns>JSON serializer settings.</returns>
 		public static JsonSerializerSettings GetSerializer(this RDLevel rdlevel, LevelReadOrWriteSettings settings)
 		{
 			JsonSerializerSettings EventsSerializer = new()
@@ -54,15 +43,10 @@ namespace RhythmBase.Utils
 				ContractResolver = new RDContractResolver()
 			};
 			IList<JsonConverter> converters = EventsSerializer.Converters;
-			converters.Add(new AssetConverter<SpriteFile>(rdlevel));
-			converters.Add(new AssetConverter<ImageFile>(rdlevel));
-			converters.Add(new AssetConverter<AudioFile>(rdlevel));
-			converters.Add(new AssetConverter<BuiltInAudio>(rdlevel));
-			converters.Add(new AudioConverter(rdlevel.Manager));
 			converters.Add(new PanelColorConverter(rdlevel.ColorPalette));
 			converters.Add(new ColorConverter());
 			converters.Add(new ConditionalConverter());
-			converters.Add(new CharacterConverter(rdlevel, rdlevel.Assets));
+			converters.Add(new CharacterConverter());
 			converters.Add(new ConditionConverter(rdlevel.Conditionals));
 			converters.Add(new TagActionConverter(rdlevel, settings));
 			converters.Add(new CustomDecorationEventConverter(rdlevel, settings));
@@ -75,6 +59,5 @@ namespace RhythmBase.Utils
 			converters.Add(new StringEnumConverter());
 			return EventsSerializer;
 		}
-
 	}
 }

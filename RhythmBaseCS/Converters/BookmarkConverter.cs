@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Utils;
@@ -7,14 +6,14 @@ namespace RhythmBase.Converters
 {
 	internal class BookmarkConverter(BeatCalculator calculator) : JsonConverter<Bookmark>
 	{
-		public override void WriteJson(JsonWriter writer, Bookmark value, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, Bookmark? value, JsonSerializer serializer)
 		{
-			ValueTuple<uint, float> beat = value.Beat.BarBeat;
+			var beat = value?.Beat.BarBeat ??throw new RhythmBase.Exceptions.ConvertingException("Cannot write the bookmark.");
 			writer.WriteStartObject();
 			writer.WritePropertyName("bar");
-			writer.WriteValue(beat.Item1);
+			writer.WriteValue(beat.bar);
 			writer.WritePropertyName("beat");
-			writer.WriteValue(beat.Item2);
+			writer.WriteValue(beat.beat);
 			writer.WritePropertyName("color");
 			writer.WriteValue((int)value.Color);
 			writer.WriteEndObject();

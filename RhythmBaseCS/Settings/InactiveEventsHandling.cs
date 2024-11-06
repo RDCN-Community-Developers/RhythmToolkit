@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Settings
+﻿namespace RhythmBase.Settings
 {
 	/// <summary>
 	/// Actions performed on inactive items at read or write times.

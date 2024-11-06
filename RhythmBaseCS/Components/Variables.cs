@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualBasic.CompilerServices;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 namespace RhythmBase.Components
 {
@@ -9,18 +8,20 @@ namespace RhythmBase.Components
 	/// </summary>
 	public sealed class Variables
 	{
+#pragma warning disable CS1591
+#pragma warning disable SYSLIB1045
 		public Variables()
 		{
-			i = new LimitedList<int>(10U, 0);
-			f = new LimitedList<float>(10U, 0f);
-			b = new LimitedList<bool>(10U, false);
+			i = new int[10];
+			f = new float[10];
+			b = new bool[10];
 		}
 
-		public int Rand(int @int) => Random.Shared.Next(1, @int);
+		public static int Rand(int @int) => Random.Shared.Next(1, @int);
 
-		public bool atLeastRank(char @char) => throw new NotImplementedException();
+		public static bool atLeastRank(char @char) => throw new NotImplementedException();
 
-		public bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => false;
+		public static bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => false;
 
 		public object this[string variableName]
 		{
@@ -42,48 +43,38 @@ namespace RhythmBase.Components
 				Match match = Regex.Match(variableName, "^([ifb])(\\d{2})$");
 				if (match.Success)
 				{
-					string value2 = match.Groups[1].Value;
-					if (value2 != "i")
+					switch (match.Groups[1].Value)
 					{
-						if (value2 != "f")
-						{
-							if (value2 == "b")
-							{
-								b[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToBoolean(value);
-							}
-						}
-						else
-						{
+						case "i":
+							i[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToInteger(value);
+							break;
+						case "f":
 							f[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToSingle(value);
-						}
-					}
-					else
-					{
-						i[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToInteger(value);
+							break;
+						case "b":
+							b[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToBoolean(value);
+							break;
 					}
 				}
 				else
 				{
-					FieldInfo field = GetType().GetField(variableName);
-					if (field != null)
-					{
-						field.SetValue(this, RuntimeHelpers.GetObjectValue(value));
-					}
+					FieldInfo? field = GetType().GetField(variableName);
+					field?.SetValue(this, value);
 				}
 			}
 		}
 		/// <summary>
 		/// Integer variables.
 		/// </summary>
-		public readonly LimitedList<int> i;
+		public readonly int[] i;
 		/// <summary>
 		/// Float variables.
 		/// </summary>
-		public readonly LimitedList<float> f;
+		public readonly float[] f;
 		/// <summary>
 		/// Boolean variables.
 		/// </summary>
-		public readonly LimitedList<bool> b;
+		public readonly bool[] b;
 
 		public int barNumber;
 

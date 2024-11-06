@@ -6,8 +6,12 @@ namespace RhythmBase.Events
 {
 	public partial class CallCustomMethod
 	{
+		/// <summary>
+		/// Contains a series of default custom method implementations.
+		/// </summary>
 		public static class Shared
 		{
+#pragma warning disable CS1591
 			public static CallCustomMethod PropertyAssignment(string propertyName, bool value) => new() { MethodName = $"{propertyName.ToLowerCamelCase()} = {value}" };
 			public static CallCustomMethod RoomPropertyAssignment(byte room, string propertyName, bool value) => new() { MethodName = $"room[{room}].{propertyName.ToLowerCamelCase()} = {value}" };
 			public static CallCustomMethod FunctionCalling(string functionName, params object[] @params) => new() { MethodName = $"{functionName}({ArgumentCombining(@params)})" };

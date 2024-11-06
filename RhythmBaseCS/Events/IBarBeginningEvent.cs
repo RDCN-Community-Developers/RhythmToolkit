@@ -1,6 +1,8 @@
-﻿using System;
-namespace RhythmBase.Events
+﻿namespace RhythmBase.Events
 {
+	/// <summary>
+	/// Represents an event that occurs at the beginning of a bar.
+	/// </summary>
 	public interface IBarBeginningEvent : IBaseEvent
 	{
 	}

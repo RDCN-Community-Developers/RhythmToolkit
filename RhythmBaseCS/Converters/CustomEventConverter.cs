@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Events;
@@ -9,9 +7,10 @@ namespace RhythmBase.Converters
 {
 	internal class CustomEventConverter(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<CustomEvent>(level, inputSettings)
 	{
-		public override CustomEvent GetDeserializedObject(JObject jobj, Type objectType, CustomEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override CustomEvent? GetDeserializedObject(JObject jobj, Type objectType, CustomEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			CustomEvent result = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
+			CustomEvent? result = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
+			if(result == null) return null;
 			result.Data = jobj;
 			return result;
 		}

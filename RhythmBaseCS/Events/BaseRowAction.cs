@@ -1,79 +1,72 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
+	/// <summary>
+	/// Represents a base action for a row event.
+	/// </summary>
 	public abstract class BaseRowAction : BaseEvent
 	{
+		/// <summary>
+		/// Gets or sets the parent row event collection.
+		/// </summary>
 		[JsonIgnore]
-		public RowEventCollection Parent
+		public RowEventCollection? Parent
 		{
-			get
-			{
-				return _parent;
-			}
+			get => _parent;
 			internal set
 			{
 				if (_parent != null)
 				{
 					_parent.Remove(this);
-					if (value != null)
-					{
-						value.Add(this);
-					}
+					value?.Add(this);
 				}
 				_parent = value;
 			}
 		}
 
+		/// <summary>
+		/// Gets the room associated with this action.
+		/// </summary>
 		[JsonIgnore]
-		public SingleRoom Room
-		{
-			get
-			{
-				bool flag = _parent == null;
-				SingleRoom Room;
-				if (flag)
-				{
-					Room = SingleRoom.Default;
-				}
-				else
-				{
-					Room = Parent.Rooms;
-				}
-				return Room;
-			}
-		}
+		public SingleRoom Room => _parent?.Rooms ?? SingleRoom.Default;
+
 		/// <inheritdoc/>
+		/// <summary>
+		/// Gets or sets the beat associated with this action.
+		/// </summary>
 		[JsonIgnore]
-		public Beat Beat
+		public override RDBeat Beat
 		{
 			get => _beat;
 			set
 			{
-				if (_beat.BaseLevel == null)
-					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
-				else _beat = new(_beat.BaseLevel.Calculator, value);
+				_beat = _beat.BaseLevel == null
+					? value.BaseLevel == null
+						? value
+						: value.WithoutBinding()
+					: new(_beat.BaseLevel.Calculator, value);
 			}
 		}
+
+		/// <summary>
+		/// Gets the row index. This function is obsolete and may be removed in the next release. Use Index instead.
+		/// </summary>
 		[JsonIgnore]
 		[Obsolete("This function is obsolete and may be removed in the next release. Use Index instead.")]
 		public int Row { get; }
 
-		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
-		public int Index
-		{
-			get
-			{
-				RowEventCollection parent = Parent;
-				return (int)((parent != null) ? parent.Index : -1);
-			}
-		}
 		/// <summary>
-		/// Clone this event and its basic properties. Clone will be added to the level.
+		/// Gets the index of the row in the parent collection.
+		/// </summary>
+		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
+		public int Index => Parent?.Index ?? -1;
+
+		/// <summary>
+		/// Clones this event and its basic properties. Clone will be added to the level.
 		/// </summary>
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
-		/// <returns></returns>
+		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		public new TEvent Clone<TEvent>() where TEvent : BaseRowAction, new()
 		{
 			TEvent Temp = base.Clone<TEvent>();
@@ -81,13 +74,19 @@ namespace RhythmBase.Events
 			return Temp;
 		}
 
+		/// <summary>
+		/// Clones this event and assigns it to a specified row event collection.
+		/// </summary>
+		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
+		/// <param name="row">The row event collection to assign the clone to.</param>
+		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		internal TEvent Clone<TEvent>(RowEventCollection row) where TEvent : BaseRowAction, new()
 		{
-			TEvent Temp = base.Clone<TEvent>(row.Parent);
+			TEvent Temp = base.Clone<TEvent>(row.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
 			Temp.Parent = row;
 			return Temp;
 		}
 
-		internal RowEventCollection _parent;
+		internal RowEventCollection? _parent;
 	}
 }

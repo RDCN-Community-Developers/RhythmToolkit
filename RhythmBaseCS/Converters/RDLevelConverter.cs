@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Assets;
 using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using RhythmBase.Utils;
-using SkiaSharp;
+
 namespace RhythmBase.Converters
 {
 	internal class RDLevelConverter : JsonConverter<RDLevel>
@@ -56,7 +55,7 @@ namespace RhythmBase.Converters
 			writer.WriteEndArray();
 			writer.WritePropertyName("colorPalette");
 			writer.WriteStartArray();
-			foreach (SKColor item6 in value.ColorPalette)
+			foreach (RDColor item6 in value.ColorPalette)
 				writer.WriteRawValue(JsonConvert.SerializeObject(item6, Formatting.None, AllInOneSerializer));
 			writer.WriteEndArray();
 			writer.WriteEndObject();
@@ -64,7 +63,6 @@ namespace RhythmBase.Converters
 		}
 		public override RDLevel ReadJson(JsonReader reader, Type objectType, RDLevel? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			HashSet<SpriteFile> assetsCollection = [];
 			RDLevel outLevel = new()
 			{
 				_path = fileLocation
@@ -87,21 +85,18 @@ namespace RhythmBase.Converters
 						break;
 					case "rows":
 						JArray jarr1 = JArray.Load(reader);
-						outLevel._rows.AddRange(jarr1.ToObject<List<RowEventCollection>>(AllInOneSerializer)!);
-						foreach (RowEventCollection row in outLevel._rows)
+						outLevel.ModifiableRows.AddRange(jarr1.ToObject<List<RowEventCollection>>(AllInOneSerializer)!);
+						foreach (RowEventCollection row in outLevel.ModifiableRows)
 						{
 							row.Parent = outLevel;
-							if (row.Character.IsCustom)
-								row.Character.CustomCharacter!.Manager = outLevel.Manager;
 						}
 						break;
 					case "decorations":
 						JArray jarr2 = JArray.Load(reader);
-						outLevel._decorations.AddRange(jarr2.ToObject<List<DecorationEventCollection>>(AllInOneSerializer)!);
-						foreach (DecorationEventCollection deco in outLevel._decorations)
+						outLevel.ModifiableDecorations.AddRange(jarr2.ToObject<List<DecorationEventCollection>>(AllInOneSerializer)!);
+						foreach (DecorationEventCollection deco in outLevel.ModifiableDecorations)
 						{
 							deco.Parent = outLevel;
-							deco._file.Manager = outLevel.Manager;
 						}
 						break;
 					case "conditionals":
@@ -112,8 +107,10 @@ namespace RhythmBase.Converters
 						break;
 					case "colorPalette":
 						JArray jarr4 = JArray.Load(reader);
-						foreach (SKColor color in jarr4.ToObject<SKColor[]>(AllInOneSerializer)!)
-							outLevel.ColorPalette.Add(color);
+						RDColor[] array = jarr4.ToObject<RDColor[]>(AllInOneSerializer) ?? throw new ConvertingException("Cannot read the color palette.");
+						if (array.Length == 21)
+							for (int i = 0; i < array.Length; i++)
+								outLevel.ColorPalette[i] = array[i];
 						break;
 					case "events":
 						JEvents = JArray.Load(reader);
@@ -161,10 +158,10 @@ namespace RhythmBase.Converters
 									switch (type)
 									{
 										case EventType.FloatingText:
-											FloatingTextCollection.Add(new ValueTuple<FloatingText, int>((FloatingText)TempEvent2, (int)item["id"]!));
+											FloatingTextCollection.Add(((FloatingText)TempEvent2, (int)item["id"]!));
 											break;
 										case EventType.AdvanceText:
-											AdvanceTextCollection.Add(new ValueTuple<AdvanceText, int>((AdvanceText)TempEvent2, (int)item["id"]!));
+											AdvanceTextCollection.Add(((AdvanceText)TempEvent2, (int)item["id"]!));
 											break;
 									}
 								}
@@ -185,7 +182,6 @@ namespace RhythmBase.Converters
 				outLevel.Bookmarks.AddRange(JBookmarks.ToObject<List<Bookmark>>(AllInOneSerializer)!);
 				ReadJson = outLevel;
 			}
-#warning 没做完
 			catch (Exception ex)
 			{
 				if (outLevel.Settings.Version < 55)

@@ -1,115 +1,166 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Components;
 using RhythmBase.Converters;
-using SkiaSharp;
+
 namespace RhythmBase.Events
 {
+	/// <summary>
+	/// Represents a floating text event in a room.
+	/// </summary>
 	public class FloatingText : BaseEvent, IRoomEvent
 	{
-		public override EventType Type { get; }
+		/// <summary>
+		/// Gets the type of the event.
+		/// </summary>
+		public override EventType Type { get; } = EventType.FloatingText;
 
-		public override Tabs Tab { get; }
+		/// <summary>
+		/// Gets the tab associated with the event.
+		/// </summary>
+		public override Tabs Tab { get; } = Tabs.Actions;
 
+		/// <summary>
+		/// Gets the list of child advance texts.
+		/// </summary>
 		[JsonIgnore]
-		public List<AdvanceText> Children
-		{
-			get
-			{
-				return _children;
-			}
-		}
+		public List<AdvanceText> Children => _children;
 
-		public Room Rooms { get; set; }
+		/// <summary>
+		/// Gets or sets the room associated with the event.
+		/// </summary>
+		public Room Rooms { get; set; } = new Room(true, new byte[1]);
 
+		/// <summary>
+		/// Gets or sets the fade out rate of the text.
+		/// </summary>
 		public float FadeOutRate { get; set; }
 
-		public PaletteColor Color { get; set; }
+		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		public PaletteColor Color { get; set; } = new PaletteColor(true)
+		{
+			Color = RDColor.White,
+		};
 
+		/// <summary>
+		/// Gets or sets the angle of the text.
+		/// </summary>
 		public float Angle { get; set; }
 
+		/// <summary>
+		/// Gets or sets the size of the text.
+		/// </summary>
 		public uint Size { get; set; }
 
-		public PaletteColor OutlineColor { get; set; }
-
-		[JsonProperty]
-		internal int Id
+		/// <summary>
+		/// Gets or sets the outline color of the text.
+		/// </summary>
+		public PaletteColor OutlineColor { get; set; } = new PaletteColor(true)
 		{
-			get
-			{
-				return checked((int)GeneratedId);
-			}
-		}
+			Color = RDColor.Black,
+		};
 
-		public RDPoint TextPosition { get; set; }
+		/// <summary>
+		/// Gets the ID of the event.
+		/// </summary>
+		[JsonProperty]
+		internal int Id => (int)GeneratedId;
 
+		/// <summary>
+		/// Gets or sets the position of the text.
+		/// </summary>
+		public RDPoint TextPosition { get; set; } = new RDPoint(new float?(50f), new float?(50f));
+
+		/// <summary>
+		/// Gets or sets the anchor style of the text.
+		/// </summary>
 		public AnchorStyle Anchor { get; set; }
 
-		public OutMode Mode
+		/// <summary>
+		/// Specifies the anchor style of the text.
+		/// </summary>
+		[JsonConverter(typeof(AnchorStyleConverter))]
+		[Flags]
+		public enum AnchorStyle
 		{
-			get
-			{
-				return _mode;
-			}
-			set
-			{
-				_mode = value;
-			}
+			/// <summary>
+			/// The lower anchor style.
+			/// </summary>
+			Lower = 1,
+
+			/// <summary>
+			/// The upper anchor style.
+			/// </summary>
+			Upper = 2,
+
+			/// <summary>
+			/// The left anchor style.
+			/// </summary>
+			Left = 4,
+
+			/// <summary>
+			/// The right anchor style.
+			/// </summary>
+			Right = 8,
+
+			/// <summary>
+			/// The center anchor style.
+			/// </summary>
+			Center = 0
 		}
 
-		public bool ShowChildren { get; set; }
+		/// <summary>
+		/// Gets or sets the mode of the text.
+		/// </summary>
+		public OutMode Mode { get; set; } = OutMode.FadeOut;
 
-		public string Text { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether to show child texts.
+		/// </summary>
+		public bool ShowChildren { get; set; } = false;
 
+		/// <summary>
+		/// Gets or sets the text content.
+		/// </summary>
+		public string Text { get; set; } = "等呀等得好心慌……";
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FloatingText"/> class.
+		/// </summary>
 		public FloatingText()
 		{
-			_children = [];
-			_mode = OutMode.FadeOut;
-			Type = EventType.FloatingText;
-			Tab = Tabs.Actions;
-			Rooms = new Room(true, new byte[1]);
-			Color = new PaletteColor(true)
-			{
-				Color = new SKColor?(new SKColor(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue))
-			};
-			OutlineColor = new PaletteColor(true)
-			{
-				Color = new SKColor?(new SKColor(0, 0, 0, byte.MaxValue))
-			};
-			TextPosition = new RDPoint(new float?(50f), new float?(50f));
-			ShowChildren = false;
-			Text = "等呀等得好心慌……";
 			GeneratedId = _PrivateId;
 			_PrivateId = checked((uint)(unchecked((ulong)_PrivateId) + 1UL));
 		}
 
-		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
+		/// <summary>
+		/// Returns a string that represents the current object.
+		/// </summary>
+		/// <returns>A string that represents the current object.</returns>
+		public override string ToString() => base.ToString() + $" {Text}";
 
 		private static uint _PrivateId = 0U;
 
 		private readonly uint GeneratedId;
 
-		private readonly List<AdvanceText> _children;
+		private readonly List<AdvanceText> _children = [];
 
-		private OutMode _mode;
-
+		/// <summary>
+		/// Specifies the mode of the text.
+		/// </summary>
 		[Flags]
 		public enum OutMode
 		{
+			/// <summary>
+			/// The text will fade out gradually.
+			/// </summary>
 			FadeOut = 0,
-			HideAbruptly = 1
-		}
 
-		[JsonConverter(typeof(AnchorStyleConverter))]
-		[Flags]
-		public enum AnchorStyle
-		{
-			Lower = 1,
-			Upper = 2,
-			Left = 4,
-			Right = 8,
-			Center = 0
+			/// <summary>
+			/// The text will hide abruptly.
+			/// </summary>
+			HideAbruptly = 1
 		}
 	}
 }

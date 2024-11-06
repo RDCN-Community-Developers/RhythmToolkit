@@ -1,35 +1,54 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
+	/// <summary>
+	/// Represents an event that calls a custom method.
+	/// </summary>
 	public partial class CallCustomMethod : BaseEvent
 	{
-		public CallCustomMethod()
-		{
-			Type = EventType.CallCustomMethod;
-			Rooms = Room.Default();
-			Tab = Tabs.Actions;
-		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CallCustomMethod"/> class.
+		/// </summary>
+		public CallCustomMethod() { }
 
-		public string MethodName { get; set; }
+		/// <summary>
+		/// Gets or sets the name of the method to be called.
+		/// </summary>
+		public string MethodName { get; set; } = "";
 
+		/// <summary>
+		/// Gets or sets the execution time of the method.
+		/// </summary>
 		public ExecutionTimeOptions ExecutionTime { get; set; }
 
+		/// <summary>
+		/// Gets or sets the sort offset for the event.
+		/// </summary>
 		public int SortOffset { get; set; }
-
-		public override EventType Type { get; }
-
+		/// <inheritdoc/>
+		public override EventType Type { get; } = EventType.CallCustomMethod;
+		/// <inheritdoc/>
 		[JsonIgnore]
-		public Room Rooms { get; set; }
+		public Room Rooms { get; set; } = Room.Default();
+		/// <inheritdoc/>
+		public override Tabs Tab { get; } = Tabs.Actions;
+		/// <inheritdoc/>
+		public override string ToString() => base.ToString() + $" {MethodName}";
 
-		public override Tabs Tab { get; }
-
-		public override string ToString() => base.ToString() + string.Format(" {0}", MethodName);
-
+		/// <summary>
+		/// Specifies the execution time options for the method.
+		/// </summary>
 		public enum ExecutionTimeOptions
 		{
+			/// <summary>
+			/// Execute the method on prebar.
+			/// </summary>
 			OnPrebar,
+
+			/// <summary>
+			/// Execute the method on bar.
+			/// </summary>
 			OnBar
 		}
 	}

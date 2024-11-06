@@ -7,81 +7,63 @@ namespace RhythmBase.Converters
 {
 	internal class RDPointsConverter : JsonConverter
 	{
-		public override void WriteJson(JsonWriter writer, [NotNull] object? value, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
 		{
 			writer.WriteStartArray();
-			Type type = value!.GetType();
-			if (value is RDPointNI ||
-				value is RDPointNI?)
+			if (value is RDPointNI v1)
 			{
-				writer.WriteValue(((RDPointNI)value).X);
-				writer.WriteValue(((RDPointNI)value).Y);
+				writer.WriteValue(v1.X);
+				writer.WriteValue(v1.Y);
 			}
-			else if (
-				value is RDPointN ||
-				value is RDPointN?)
+			else if (value is RDPointN v2)
 			{
-				writer.WriteValue(((RDPointN)value).X);
-				writer.WriteValue(((RDPointN)value).Y);
+				writer.WriteValue(v2.X);
+				writer.WriteValue(v2.Y);
 			}
-			else if (
-				value is RDPointI ||
-				value is RDPointI?)
+			else if (value is RDPointI v3)
 			{
-				writer.WriteValue(((RDPointI)value).X);
-				writer.WriteValue(((RDPointI)value).Y);
+				writer.WriteValue(v3.X);
+				writer.WriteValue(v3.Y);
 			}
-			else if (
-				value is RDPoint ||
-				value is RDPoint?)
+			else if (value is RDPoint v4)
 			{
-				writer.WriteValue(((RDPoint)value).X);
-				writer.WriteValue(((RDPoint)value).Y);
+				writer.WriteValue(v4.X);
+				writer.WriteValue(v4.Y);
 			}
-			else if (value is RDPointE ||
-				value is RDPointE?)
+			else if (value is RDPointE v5)
 			{
-				RDPointE temp = (value != null) ? ((RDPointE)value) : default;
-				if (temp.X != null)
-					writer.WriteValue(temp.X.Value.IsNumeric ? temp.X.Value.NumericValue : temp.X.Value.ExpressionValue);
+				if (v5.X != null)
+					writer.WriteValue(v5.X.Value.IsNumeric ? v5.X.Value.NumericValue : v5.X.Value.ExpressionValue);
 				else
 					writer.WriteNull();
-				if (temp.Y != null)
-					writer.WriteValue(temp.Y.Value.IsNumeric ? temp.Y.Value.NumericValue : temp.Y.Value.ExpressionValue);
+				if (v5.Y != null)
+					writer.WriteValue(v5.Y.Value.IsNumeric ? v5.Y.Value.NumericValue : v5.Y.Value.ExpressionValue);
 				else
 					writer.WriteNull();
 			}
-			else if (value is RDSizeNI ||
-				value is RDSizeNI?)
+			else if (value is RDSizeNI v6)
 			{
-				writer.WriteValue(((RDSizeNI)value).Width);
-				writer.WriteValue(((RDSizeNI)value).Height);
+				writer.WriteValue(v6.Width);
+				writer.WriteValue(v6.Height);
 			}
-			else if (
-				value is RDSizeN ||
-				value is RDSizeN?)
+			else if (value is RDSizeN v7)
 			{
-				writer.WriteValue(((RDSizeN)value).Width);
-				writer.WriteValue(((RDSizeN)value).Height);
+				writer.WriteValue(v7.Width);
+				writer.WriteValue(v7.Height);
 			}
-			else if (
-				value is RDSizeI ||
-				value is RDSizeI?)
+			else if (value is RDSizeI v8)
 			{
-				writer.WriteValue(((RDSizeI)value).Width);
-				writer.WriteValue(((RDSizeI)value).Height);
+				writer.WriteValue(v8.Width);
+				writer.WriteValue(v8.Height);
 			}
-			else if (
-				value is RDSize ||
-				value is RDSize?)
+			else if (value is RDSize v9)
 			{
-				writer.WriteValue(((RDSize)value).Width);
-				writer.WriteValue(((RDSize)value).Height);
+				writer.WriteValue(v9.Width);
+				writer.WriteValue(v9.Height);
 			}
-			else if (!(value is RDSizeE ||
-				value is RDSizeE?))
+			else if (value is RDSizeE v10)
 			{
-				RDSizeE temp2 = (value != null) ? ((RDSizeE)value) : default;
+				RDSizeE temp2 = (value != null) ? v10 : default;
 				if (temp2.Width != null)
 					writer.WriteValue(temp2.Width.Value.IsNumeric ? temp2.Width.Value.NumericValue : temp2.Width.Value.ExpressionValue);
 				else
@@ -94,7 +76,6 @@ namespace RhythmBase.Converters
 			else
 				throw new NotImplementedException();
 			writer.WriteEndArray();
-
 		}
 		public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
 		{

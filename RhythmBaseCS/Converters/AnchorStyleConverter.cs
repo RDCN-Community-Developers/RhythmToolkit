@@ -9,48 +9,36 @@ namespace RhythmBase.Converters
 	{
 		public override void WriteJson(JsonWriter writer, FloatingText.AnchorStyle value, JsonSerializer serializer)
 		{
-			string text = ((value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)) > FloatingText.AnchorStyle.Center) ? "Middle" : Enum.Parse<FloatingText.AnchorStyle>(Conversions.ToString((int)(value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)))).ToString();
 			writer.WriteValue((((value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)) > FloatingText.AnchorStyle.Center) ? Enum.Parse<FloatingText.AnchorStyle>(Conversions.ToString((int)(value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)))).ToString() : "Middle") + Enum.Parse<FloatingText.AnchorStyle>(Conversions.ToString((int)(value & (FloatingText.AnchorStyle.Left | FloatingText.AnchorStyle.Right)))).ToString());
 		}
 
 		public override FloatingText.AnchorStyle ReadJson(JsonReader reader, Type objectType, FloatingText.AnchorStyle existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			string JString = JToken.ReadFrom(reader).ToObject<string>();
-			Match match = Regex.Match(JString, "([A-Z][a-z]+)([A-Z][a-z]+)");
-			bool middle = false;
-			bool center = false;
+			string JString = JToken.ReadFrom(reader).ToObject<string>() ?? throw new Exceptions.ConvertingException("Cannot read the anchor.");
+			Match match = Regex.Match(JString, "(Upper|Middle|Lower)(Left|Center|Right)");
+			if (!match.Success)
+				throw new Exceptions.ConvertingException($"Illegal Anchor: {JString}");
 			FloatingText.AnchorStyle result = FloatingText.AnchorStyle.Center;
 			string value = match.Groups[1].Value;
-			if (value != "Upper")
+			switch (value)
 			{
-				if (value != "Lower")
-					middle = true;
-				else
+				case "Upper":
+					result |= FloatingText.AnchorStyle.Upper;
+					break;
+				case "Lower":
 					result |= FloatingText.AnchorStyle.Lower;
+					break;
 			}
-			else
-			{
-				result |= FloatingText.AnchorStyle.Upper;
-			}
+
 			string value2 = match.Groups[2].Value;
-			if (value2 != "Left")
+			switch (value2)
 			{
-				if (value2 != "Right")
-				{
-					center = true;
-				}
-				else
-				{
+				case "Left":
+					result |= FloatingText.AnchorStyle.Left;
+					break;
+				case "Right":
 					result |= FloatingText.AnchorStyle.Right;
-				}
-			}
-			else
-			{
-				result |= FloatingText.AnchorStyle.Left;
-			}
-			if (center && middle)
-			{
-				result = FloatingText.AnchorStyle.Center;
+					break;
 			}
 			return result;
 		}

@@ -4,6 +4,9 @@ using NAudio.Wave;
 
 namespace RhythmBase.Utils
 {
+	/// <summary>
+	/// Wave data utils.
+	/// </summary>
 	public static class WaveDataUtils
 	{
 		/// <summary>
@@ -27,6 +30,7 @@ namespace RhythmBase.Utils
 			}
 			return (WaveStream)Stream.Null;
 		}
+
 		/// <summary>
 		/// Get the time domain data of the stream.
 		/// </summary>
@@ -46,16 +50,20 @@ namespace RhythmBase.Utils
 			while ((read = provider.Read(floats, 0, c)) > 0)
 				for (int i = 0; i < c; i++)
 					result[i].Add(floats[i]);
-			return [.. result.Select(i => i.ToArray())];
+			return result.Select(i => i.ToArray()).ToArray();
 		}
-		public static float[] Average(this float[][] timeDomain)
-		{
-			return Enumerable.Range(0, timeDomain[0].Length)
+
+		/// <summary>
+		/// Calculate the average of the time domain data.
+		/// </summary>
+		/// <param name="timeDomain">Time domain data.</param>
+		/// <returns>An array with the average values of each frame.</returns>
+		public static float[] Average(this float[][] timeDomain) => Enumerable.Range(0, timeDomain[0].Length)
 				.Select(i => Enumerable.Range(0, timeDomain.Length)
 					.Select(c => timeDomain[c][i])
 					.Average())
 				.ToArray();
-		}
+
 		/// <summary>
 		/// Get the time domain data of the stream which is compressed in average.
 		/// </summary>
@@ -65,7 +73,7 @@ namespace RhythmBase.Utils
 		public static float[] GetAverageTimeDomain(this WaveStream stream)
 		{
 			List<float> result = [];
-			int BytesPerSample = stream.WaveFormat.BitsPerSample;
+			int BytesPerSample = stream.WaveFormat.BitsPerSample / 8;
 			byte[] sample = new byte[stream.Length];
 			stream.Read(sample, 0, sample.Length);
 			for (int i = 0; i < sample.Length; i += BytesPerSample)
@@ -86,12 +94,13 @@ namespace RhythmBase.Utils
 			stream.Position = 0;
 			return [.. result];
 		}
+
 		/// <summary>
 		/// Get a frame of the frequency domain data of a range of sample.
 		/// </summary>
 		/// <param name="waveFormat">Wave format information.</param>
 		/// <param name="samples">Audio sample.</param>
-		/// <param name="maxFrequency">the Maximum of the frequency to be retained.</param>
+		/// <param name="maxFrequency">The maximum frequency to be retained.</param>
 		/// <returns>An array with format [Frequency] data.</returns>
 		public static float[] GetFrameFrequencyDomain(WaveFormat waveFormat, float[] samples, int maxFrequency = 2500)
 		{
@@ -118,13 +127,14 @@ namespace RhythmBase.Utils
 
 			return finalData;
 		}
+
 		/// <summary>
 		/// Get the frequency domain data of a range of sample.
 		/// </summary>
 		/// <param name="waveFormat">Wave format information.</param>
 		/// <param name="timeDomainData">Audio sample.</param>
 		/// <param name="windowWidth">The sample width.</param>
-		/// <param name="maxFrequency">the Maximum of the frequency to be retained.</param>
+		/// <param name="maxFrequency">The maximum frequency to be retained.</param>
 		/// <returns>An array with format [Channel][Frame][Frequency] data.</returns>
 		public static float[][][] GetFrequencyDomain(WaveFormat waveFormat, float[][] timeDomainData, int windowWidth, int maxFrequency = 2500)
 		{
@@ -143,16 +153,25 @@ namespace RhythmBase.Utils
 				}
 				index = 0;
 			}
-			return [.. result.Select(i => i.ToArray())];
+			return result.Select(i => i.ToArray()).ToArray();
 		}
-		public static float[][] ToEnergy(WaveFormat waveFormat, float[][] timeDomainData, int windowWidth) {
+
+		/// <summary>
+		/// Converts time domain data to energy.
+		/// </summary>
+		/// <param name="waveFormat">Wave format information.</param>
+		/// <param name="timeDomainData">Time domain data.</param>
+		/// <param name="windowWidth">The width of the window for energy calculation.</param>
+		/// <returns>A 2D array with format [Channel][Energy] data.</returns>
+		public static float[][] ToEnergy(WaveFormat waveFormat, float[][] timeDomainData, int windowWidth)
+		{
 			List<float[]> result = [];
-			for(int channel = 0;channel < waveFormat.Channels; channel++)
+			for (int channel = 0; channel < waveFormat.Channels; channel++)
 			{
 				List<float> volume = [];
-				for(int j = 0; j < timeDomainData.Length - windowWidth; j+=windowWidth/2)
+				for (int j = 0; j < timeDomainData.Length - windowWidth; j += windowWidth / 2)
 				{
-					volume.Add ((float)Math.Sqrt(timeDomainData[channel][j..(j+windowWidth)].Select(i=>i*i).Average()));
+					volume.Add((float)Math.Sqrt(timeDomainData[channel][j..(j + windowWidth)].Select(i => i * i).Average()));
 				}
 				result.Add([.. volume]);
 			}

@@ -2,44 +2,77 @@
 using RhythmBase.Components;
 namespace RhythmBase.Events
 {
-	public abstract class BaseDecorationAction : BaseEvent,IBaseEvent
+	/// <summary>
+	/// Represents the base class for decoration actions in the rhythm base.
+	/// </summary>
+	public abstract class BaseDecorationAction : BaseEvent, IBaseEvent
 	{
+		/// <summary>
+		/// Gets the parent decoration event collection.
+		/// </summary>
 		[JsonIgnore]
-		public DecorationEventCollection Parent => _parent;
+		public DecorationEventCollection? Parent => _parent;
+
+		/// <summary>
+		/// Gets or sets the Y coordinate.
+		/// </summary>
 		[JsonIgnore]
 		public override int Y { get => base.Y; set => base.Y = value; }
-		public virtual string Target => (Parent == null) ? "" : Parent.Id;
+
+		/// <summary>
+		/// Gets the target identifier.
+		/// </summary>
+		public virtual string Target => Parent?.Id ?? "";
+
+		/// <summary>
+		/// Gets or sets the beat associated with this action.
+		/// </summary>
 		/// <inheritdoc/>
 		[JsonIgnore]
-		public Beat Beat
+		public override RDBeat Beat
 		{
 			get => _beat;
-			set
-			{
-				if (_beat.BaseLevel == null)
-					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
-				else _beat = new(_beat.BaseLevel.Calculator, value);
-			}
+			set => _beat = _beat.BaseLevel == null ?
+							value.BaseLevel == null ?
+								value :
+								value.WithoutBinding() :
+							new(_beat.BaseLevel.Calculator, value);
 		}
+
 		/// <summary>
-		/// Clone this event and its basic properties. Clone will be added to the level.
+		/// Clones this event and its basic properties. The clone will be added to the level.
 		/// </summary>
-		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
-		/// <returns></returns>
+		/// <typeparam name="TEvent">The type of event that will be generated.</typeparam>
+		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		public new TEvent Clone<TEvent>() where TEvent : BaseDecorationAction, new()
 		{
 			TEvent Temp = base.Clone<TEvent>();
 			Temp._parent = Parent;
 			return Temp;
 		}
+
+		/// <summary>
+		/// Clones this event and its basic properties, associating it with a specific decoration event collection.
+		/// </summary>
+		/// <typeparam name="TEvent">The type of event that will be generated.</typeparam>
+		/// <param name="decoration">The decoration event collection to associate with the clone.</param>
+		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		internal TEvent Clone<TEvent>(DecorationEventCollection decoration) where TEvent : BaseDecorationAction, new()
 		{
-			TEvent Temp = base.Clone<TEvent>(decoration.Parent);
+			TEvent Temp = base.Clone<TEvent>(decoration.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
 			Temp._parent = decoration;
 			return Temp;
 		}
+
+		/// <summary>
+		/// Gets the room associated with this action.
+		/// </summary>
 		[JsonIgnore]
-		public SingleRoom Room => Parent == null ? SingleRoom.Default : Parent.Room;
-		internal DecorationEventCollection _parent;
+		public SingleRoom Room => Parent?.Room ?? SingleRoom.Default;
+
+		/// <summary>
+		/// The parent decoration event collection.
+		/// </summary>
+		internal DecorationEventCollection? _parent;
 	}
 }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.VisualBasic.CompilerServices;
+using RhythmBase.Components;
+using RhythmBase.Exceptions;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
-using RhythmBase.Components;
-using RhythmBase.Exceptions;
+#pragma warning disable
 namespace RhythmBase.Expressions
 {
 	[StandardModule]
@@ -16,111 +14,43 @@ namespace RhythmBase.Expressions
 
 		private static int Level(this TokenType e)
 		{
-			int Level;
-			switch (e)
+			var Level = e switch
 			{
-				case TokenType.Variable:
-					Level = 15;
-					break;
-				case TokenType.Constant:
-					Level = 15;
-					break;
-				case TokenType.BooleanValue:
-					Level = 15;
-					break;
-				case TokenType.FloatValue:
-					Level = 15;
-					break;
-				case TokenType.IntegerValue:
-					Level = 15;
-					break;
-				case TokenType.String:
-					Level = 15;
-					break;
-				case TokenType.Boolean:
-					Level = 16;
-					break;
-				case TokenType.Function:
-					Level = 16;
-					break;
-				case TokenType.ArrayIndex:
-					Level = 16;
-					break;
-				case TokenType.Increment:
-					Level = 16;
-					break;
-				case TokenType.Decrement:
-					Level = 16;
-					break;
-				case TokenType.Add:
-					Level = 11;
-					break;
-				case TokenType.Subtract:
-					Level = 11;
-					break;
-				case TokenType.Multipy:
-					Level = 12;
-					break;
-				case TokenType.Divide:
-					Level = 12;
-					break;
-				case TokenType.Equal:
-					Level = 8;
-					break;
-				case TokenType.NotEqual:
-					Level = 8;
-					break;
-				case TokenType.LessThanOrEqual:
-					Level = 9;
-					break;
-				case TokenType.GreaterThanOrEqual:
-					Level = 9;
-					break;
-				case TokenType.Assign:
-					Level = 0;
-					break;
-				case TokenType.GreaterThan:
-					Level = 9;
-					break;
-				case TokenType.LessThan:
-					Level = 9;
-					break;
-				case TokenType.LeftParenthese:
-					Level = 16;
-					break;
-				case TokenType.RightParenthese:
-					Level = 16;
-					break;
-				case TokenType.LeftBracket:
-					Level = 16;
-					break;
-				case TokenType.RightBracket:
-					Level = 16;
-					break;
-				case TokenType.LeftBrace:
-					Level = 16;
-					break;
-				case TokenType.RightBrace:
-					Level = 16;
-					break;
-				case TokenType.Dot:
-					Level = 16;
-					break;
-				case TokenType.Comma:
-					Level = -1;
-					break;
-				case TokenType.And:
-					Level = 4;
-					break;
-				case TokenType.Or:
-					Level = 3;
-					break;
-				case TokenType.Not:
-					Level = 16;
-					break;
-				default:
-					throw new Exception();
-			}
+				TokenType.Variable => 15,
+				TokenType.Constant => 15,
+				TokenType.BooleanValue => 15,
+				TokenType.FloatValue => 15,
+				TokenType.IntegerValue => 15,
+				TokenType.String => 15,
+				TokenType.Boolean => 16,
+				TokenType.Function => 16,
+				TokenType.ArrayIndex => 16,
+				TokenType.Increment => 16,
+				TokenType.Decrement => 16,
+				TokenType.Add => 11,
+				TokenType.Subtract => 11,
+				TokenType.Multipy => 12,
+				TokenType.Divide => 12,
+				TokenType.Equal => 8,
+				TokenType.NotEqual => 8,
+				TokenType.LessThanOrEqual => 9,
+				TokenType.GreaterThanOrEqual => 9,
+				TokenType.Assign => 0,
+				TokenType.GreaterThan => 9,
+				TokenType.LessThan => 9,
+				TokenType.LeftParenthese => 16,
+				TokenType.RightParenthese => 16,
+				TokenType.LeftBracket => 16,
+				TokenType.RightBracket => 16,
+				TokenType.LeftBrace => 16,
+				TokenType.RightBrace => 16,
+				TokenType.Dot => 16,
+				TokenType.Comma => -1,
+				TokenType.And => 4,
+				TokenType.Or => 3,
+				TokenType.Not => 16,
+				_ => throw new Exception(),
+			};
 			return Level;
 		}
 
@@ -200,7 +130,7 @@ namespace RhythmBase.Expressions
 			{
 				if (item.type.IsOperator())
 				{
-					if (OperatorStack.Any() && (OperatorStack.Peek().type.Level() > item.type.Level() | OperatorStack.Peek().type.IsRightHalf() | OperatorStack.Peek().type == TokenType.Comma))
+					if (OperatorStack.Count != 0 && (OperatorStack.Peek().type.Level() > item.type.Level() | OperatorStack.Peek().type.IsRightHalf() | OperatorStack.Peek().type == TokenType.Comma))
 					{
 						GroupNode(ValueStack, OperatorStack, variableParameter, ref subVariableParameter);
 					}
@@ -215,7 +145,7 @@ namespace RhythmBase.Expressions
 					ValueStack.Push(ReadValueNode(item, ValueStack, OperatorStack, variableParameter, ref subVariableParameter));
 				}
 			}
-			while (OperatorStack.Any())
+			while (OperatorStack.Count != 0)
 			{
 				if (OperatorStack.Peek().type != TokenType.Dot)
 				{
@@ -711,3 +641,4 @@ namespace RhythmBase.Expressions
 		}
 	}
 }
+#pragma warning enable

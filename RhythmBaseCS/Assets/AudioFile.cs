@@ -33,10 +33,7 @@ namespace RhythmBase.Assets
 			}
 			return audio;
 		}
-		public void Save()
-		{
-			throw new NotImplementedException();
-		}
+		public void Save() => throw new NotImplementedException();
 		public WaveStream Stream { get; private set; }
 		public override string ToString() => Path.GetFileName(FilePath);
 	}

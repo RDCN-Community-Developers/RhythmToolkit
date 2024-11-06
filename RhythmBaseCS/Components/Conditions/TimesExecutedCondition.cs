@@ -1,20 +1,26 @@
-﻿using System;
-namespace RhythmBase.Components.Conditions
+﻿namespace RhythmBase.Components.Conditions
 {
 	/// <summary>
-	/// Number of executions.
+	/// Represents a condition based on the number of times it has been executed.
 	/// </summary>
 	public class TimesExecutedCondition : BaseConditional
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TimesExecutedCondition"/> class.
+		/// </summary>
 		public TimesExecutedCondition()
 		{
 			Type = ConditionType.TimesExecuted;
 		}
+
 		/// <summary>
-		/// Maximum number of executions.
+		/// Gets or sets the maximum number of executions allowed.
 		/// </summary>
 		public int MaxTimes { get; set; }
 
+		/// <summary>
+		/// Gets the type of the condition.
+		/// </summary>
 		public override ConditionType Type { get; }
 	}
 }

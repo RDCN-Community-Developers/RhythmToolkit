@@ -7,12 +7,9 @@ namespace RhythmBase.Converters
 {
 	internal class ConditionalConverter : JsonConverter<BaseConditional>
 	{
-		public override void WriteJson(JsonWriter writer, BaseConditional value, JsonSerializer serializer) => writer.WriteRawValue(JsonConvert.SerializeObject(value, new JsonSerializerSettings
+		public override void WriteJson(JsonWriter writer, BaseConditional? value, JsonSerializer serializer) => writer.WriteRawValue(JsonConvert.SerializeObject(value, new JsonSerializerSettings
 		{
-			Converters =
-				{
-					new StringEnumConverter()
-				},
+			Converters = { new StringEnumConverter() },
 			ContractResolver = new CamelCasePropertyNamesContractResolver()
 		}));
 
@@ -20,9 +17,9 @@ namespace RhythmBase.Converters
 		{
 			JObject J = JObject.Load(reader);
 			Type? SubClassType = Type.GetType($"{typeof(BaseConditional).Namespace}.Conditions.{J["type"]}Condition");
-			if (SubClassType == null)
-				throw new Exceptions.ConvertingException(J,new Exception($"Unreadable condition: \"{J["type"]}\". path \"{reader.Path}\""));
-			return (BaseConditional)J.ToObject(SubClassType)!;
+			return SubClassType == null
+				? throw new Exceptions.ConvertingException(J, new Exception($"Unreadable condition: \"{J["type"]}\". path \"{reader.Path}\""))
+				: (BaseConditional)J.ToObject(SubClassType)!;
 		}
 	}
 }

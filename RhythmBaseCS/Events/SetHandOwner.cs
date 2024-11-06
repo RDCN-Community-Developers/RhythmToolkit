@@ -1,9 +1,14 @@
-﻿using System;
-using RhythmBase.Components;
+﻿using RhythmBase.Components;
 namespace RhythmBase.Events
 {
+	/// <summary>
+	/// Represents an event to set the owner of a hand in a room.
+	/// </summary>
 	public class SetHandOwner : BaseEvent, IRoomEvent
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SetHandOwner"/> class.
+		/// </summary>
 		public SetHandOwner()
 		{
 			Rooms = new Room(true, new byte[1]);
@@ -11,21 +16,54 @@ namespace RhythmBase.Events
 			Tab = Tabs.Actions;
 		}
 
+		/// <summary>
+		/// Gets or sets the room associated with the event.
+		/// </summary>
 		public Room Rooms { get; set; }
 
+		/// <summary>
+		/// Gets or sets the hand associated with the event.
+		/// </summary>
 		public PlayerHands Hand { get; set; }
 
-		public string Character { get; set; }
+		/// <summary>
+		/// Gets or sets the character associated with the event.
+		/// </summary>
+		public Characters Character { get; set; }
 
+		/// <summary>
+		/// Gets the type of the event.
+		/// </summary>
 		public override EventType Type { get; }
 
+		/// <summary>
+		/// Gets the tab associated with the event.
+		/// </summary>
 		public override Tabs Tab { get; }
 
+		/// <summary>
+		/// Represents the characters that can be associated with the event.
+		/// </summary>
 		public enum Characters
 		{
+			/// <summary>
+			/// Represents the players character.
+			/// </summary>
 			Players,
+
+			/// <summary>
+			/// Represents the Ian character.
+			/// </summary>
 			Ian,
+
+			/// <summary>
+			/// Represents the Paige character.
+			/// </summary>
 			Paige,
+
+			/// <summary>
+			/// Represents the Edega character.
+			/// </summary>
 			Edega
 		}
 	}

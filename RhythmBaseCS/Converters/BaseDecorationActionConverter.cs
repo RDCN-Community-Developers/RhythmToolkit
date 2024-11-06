@@ -1,22 +1,19 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Events;
-using RhythmBase.Exceptions;
 using RhythmBase.Settings;
+using System.Diagnostics;
 namespace RhythmBase.Converters
 {
 	internal class BaseDecorationActionConverter<TEvent>(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<TEvent>(level, inputSettings) where TEvent : BaseDecorationAction
 	{
-		public override TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override TEvent? GetDeserializedObject(JObject jobj, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			TEvent obj = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
+			TEvent? obj = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
+			if (obj is null) return obj;
 			string decoId = jobj["target"]?.ToObject<string>()!;
-			DecorationEventCollection? Parent = level._decorations.FirstOrDefault(i => i.Id == decoId);
+			DecorationEventCollection? Parent = level.ModifiableDecorations.FirstOrDefault(i => i.Id == decoId);
 			if (Parent == null && obj.Type != EventType.Comment)
 				switch (settings.UnreadableEventsHandling)
 				{

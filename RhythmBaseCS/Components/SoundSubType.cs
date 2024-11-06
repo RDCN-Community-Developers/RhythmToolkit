@@ -1,6 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
-using RhythmBase.Assets;
+﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
 namespace RhythmBase.Components
 {
@@ -9,30 +7,42 @@ namespace RhythmBase.Components
 	/// </summary>
 	public class SoundSubType
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SoundSubType"/> class.
+		/// </summary>
 		public SoundSubType()
 		{
-			Audio = new Audio();
+			Audio = new RDAudio();
 		}
+
 		/// <summary>
-		/// Referenced audio.
+		/// Gets or sets the referenced audio.
 		/// </summary>
-		public Audio Audio { get; set; }
+		public RDAudio Audio { get; set; }
+
 		/// <summary>
-		/// Sound effect name.
+		/// Gets or sets the sound effect name.
 		/// </summary>
 		public GroupSubtypes GroupSubtype { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="SoundSubType"/> is used.
+		/// </summary>
 		public bool Used { get; set; }
 
+		/// <summary>
+		/// Gets the filename of the audio.
+		/// </summary>
 		[JsonProperty]
-		private string Filename
+		public string Filename
 		{
-			get
-			{
-				return Audio.Name;
-			}
+			get => Audio.Filename;
+			set => Audio.Filename = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the volume of the audio.
+		/// </summary>
 		[JsonProperty]
 		public int Volume
 		{
@@ -46,6 +56,9 @@ namespace RhythmBase.Components
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the pitch of the audio.
+		/// </summary>
 		[JsonProperty]
 		public int Pitch
 		{
@@ -59,6 +72,9 @@ namespace RhythmBase.Components
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the pan of the audio.
+		/// </summary>
 		[JsonProperty]
 		public int Pan
 		{
@@ -72,6 +88,9 @@ namespace RhythmBase.Components
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the offset of the audio.
+		/// </summary>
 		[JsonConverter(typeof(TimeConverter))]
 		public TimeSpan Offset
 		{
@@ -85,33 +104,94 @@ namespace RhythmBase.Components
 			}
 		}
 
+		/// <summary>
+		/// Determines whether this instance should be serialized.
+		/// </summary>
+		/// <returns><c>true</c> if this instance should be serialized; otherwise, <c>false</c>.</returns>
 		private bool ShouldSerialize() => Used;
 
+		/// <summary>
+		/// Determines whether the filename should be serialized.
+		/// </summary>
+		/// <returns><c>true</c> if the filename should be serialized; otherwise, <c>false</c>.</returns>
 		internal bool ShouldSerializeFilename() => ShouldSerialize();
 
+		/// <summary>
+		/// Determines whether the volume should be serialized.
+		/// </summary>
+		/// <returns><c>true</c> if the volume should be serialized; otherwise, <c>false</c>.</returns>
 		internal bool ShouldSerializeVolume() => ShouldSerialize() && Volume != 100;
 
+		/// <summary>
+		/// Determines whether the pitch should be serialized.
+		/// </summary>
+		/// <returns><c>true</c> if the pitch should be serialized; otherwise, <c>false</c>.</returns>
 		internal bool ShouldSerializePitch() => ShouldSerialize() && Pitch != 100;
 
+		/// <summary>
+		/// Determines whether the pan should be serialized.
+		/// </summary>
+		/// <returns><c>true</c> if the pan should be serialized; otherwise, <c>false</c>.</returns>
 		internal bool ShouldSerializePan() => ShouldSerialize();
 
+		/// <summary>
+		/// Determines whether the offset should be serialized.
+		/// </summary>
+		/// <returns><c>true</c> if the offset should be serialized; otherwise, <c>false</c>.</returns>
 		internal bool ShouldSerializeOffset() => ShouldSerialize();
+
 		/// <summary>
 		/// Types of sound effects.
 		/// </summary>
 		public enum GroupSubtypes
 		{
+			/// <summary>
+			/// Clap sound hold long end.
+			/// </summary>
 			ClapSoundHoldLongEnd,
+			/// <summary>
+			/// Clap sound hold long start.
+			/// </summary>
 			ClapSoundHoldLongStart,
+			/// <summary>
+			/// Clap sound hold short end.
+			/// </summary>
 			ClapSoundHoldShortEnd,
+			/// <summary>
+			/// Clap sound hold short start.
+			/// </summary>
 			ClapSoundHoldShortStart,
+			/// <summary>
+			/// Freezeshot sound cue low.
+			/// </summary>
 			FreezeshotSoundCueLow,
+			/// <summary>
+			/// Freezeshot sound cue high.
+			/// </summary>
 			FreezeshotSoundCueHigh,
+			/// <summary>
+			/// Freezeshot sound riser.
+			/// </summary>
 			FreezeshotSoundRiser,
+			/// <summary>
+			/// Freezeshot sound cymbal.
+			/// </summary>
 			FreezeshotSoundCymbal,
+			/// <summary>
+			/// Burnshot sound cue low.
+			/// </summary>
 			BurnshotSoundCueLow,
+			/// <summary>
+			/// Burnshot sound cue high.
+			/// </summary>
 			BurnshotSoundCueHigh,
+			/// <summary>
+			/// Burnshot sound riser.
+			/// </summary>
 			BurnshotSoundRiser,
+			/// <summary>
+			/// Burnshot sound cymbal.
+			/// </summary>
 			BurnshotSoundCymbal
 		}
 	}

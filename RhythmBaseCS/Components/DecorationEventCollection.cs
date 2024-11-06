@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualBasic.CompilerServices;
+﻿using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
-using RhythmBase.Assets;
 using RhythmBase.Events;
-using SkiaSharp;
+using RhythmBase.Exceptions;
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -23,41 +20,21 @@ namespace RhythmBase.Components
 			set => _id = value;
 		}
 		/// <summary>
-		/// Decoration size.
-		/// </summary>
-		[JsonIgnore]
-		public RDSizeI Size
-		{
-			get
-			{
-				Asset<ISpriteFile> file = _file;
-				RDSizeI obj = (file != null) ? file.Value.Size : new RDSizeI(32, 31);
-				return obj;
-			}
-		}
-		/// <summary>
 		/// Decoration index.
 		/// </summary>
 		[JsonProperty("row")]
-		public int Index => Parent.Decorations.ToList().IndexOf(this);
+		public int Index => Parent?.Decorations.ToList().IndexOf(this) ?? throw new RhythmBaseException();
 
+		/// <summary>
+		/// Room.
+		/// </summary>
 		[JsonProperty("rooms")]
 		public SingleRoom Room { get; set; }
 		/// <summary>
 		/// The file reference used by the decoration.
 		/// </summary>
 		[JsonProperty("filename")]
-		public string File
-		{
-			get => _file.Name;
-			set
-			{
-				_file ??= new();
-				_file.Name = value;
-			}
-		}
-		[JsonIgnore]
-		public Asset<ISpriteFile> Sprite { get => _file; set => _file = value; }
+		public string Filename { get; set; } = "";
 		/// <summary>
 		/// Decoration depth.
 		/// </summary>
@@ -71,6 +48,9 @@ namespace RhythmBase.Components
 		/// </summary>
 		public bool Visible { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DecorationEventCollection"/> class.
+		/// </summary>
 		public DecorationEventCollection()
 		{
 			Room = new SingleRoom(RoomIndex.Room1);
@@ -89,26 +69,26 @@ namespace RhythmBase.Components
 		{
 			item._parent?.Remove(item);
 			item._parent = this;
-			Parent.Add(item);
+			Parent?.Add(item);
 		}
 		internal void AddSafely(BaseDecorationAction item) => base.Add(item);
 		/// <summary>
 		/// Remove an event from decoration.
 		/// </summary>
 		/// <param name="item">A decoration event.</param>
-		public override bool Remove(BaseDecorationAction item) => Parent.Remove(item);
+		public override bool Remove(BaseDecorationAction item) => Parent?.Remove(item) ?? throw new RhythmBaseException();
 		internal bool RemoveSafely(BaseDecorationAction item) => base.Remove(item);
-		public override string ToString() => string.Format("{0}, {1}, {2}, {3}", new object[]
-			{
+		/// <inheritdoc/>
+		public override string ToString() => string.Format("{0}, {1}, {2}, {3}",
+			[
 				_id,
 				Index,
 				Room,
-				File
-			});
+				Filename
+			]);
 		internal DecorationEventCollection Clone() => (DecorationEventCollection)MemberwiseClone();
-		private string _id;
+		private string _id = "";
 		[JsonIgnore]
-		internal RDLevel Parent;
-		internal Asset<ISpriteFile> _file = new();
+		internal RDLevel? Parent = null;
 	}
 }

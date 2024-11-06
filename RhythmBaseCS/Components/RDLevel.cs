@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Assets;
 using RhythmBase.Converters;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using RhythmBase.Utils;
-using SkiaSharp;
+
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 namespace RhythmBase.Components
@@ -18,34 +17,24 @@ namespace RhythmBase.Components
 	public class RDLevel : OrderedEventCollection<IBaseEvent>
 	{
 		/// <summary>
-		/// Asset collection.
-		/// </summary>
-		[JsonIgnore]
-		public HashSet<SpriteFile> Assets { get; }
-		/// <summary>
 		/// The calculator that comes with the level.
 		/// </summary>
 		[JsonIgnore]
 		public BeatCalculator Calculator { get; }
 		/// <summary>
-		/// The asset manager that comes with the level.
-		/// </summary>
-		[JsonIgnore]
-		public AssetManager Manager { get; }
-		/// <summary>
 		/// Level Settings.
 		/// </summary>
 		public Settings Settings { get; set; }
-		internal List<RowEventCollection> _rows { get; }
-		internal List<DecorationEventCollection> _decorations { get; }
+		internal List<RowEventCollection> ModifiableRows { get; } = new List<RowEventCollection>(16);
+		internal List<DecorationEventCollection> ModifiableDecorations { get; } = [];
 		/// <summary>
 		/// Level tile collection.
 		/// </summary>
-		public IReadOnlyList<RowEventCollection> Rows => _rows.AsReadOnly();
+		public IReadOnlyList<RowEventCollection> Rows => ModifiableRows.AsReadOnly();
 		/// <summary>
 		/// Level decoration collection.
 		/// </summary>
-		public IReadOnlyList<DecorationEventCollection> Decorations => _decorations.AsReadOnly();
+		public IReadOnlyList<DecorationEventCollection> Decorations => ModifiableDecorations.AsReadOnly();
 		/// <summary>
 		/// Level condition collection.
 		/// </summary>
@@ -57,7 +46,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Level colorPalette collection.
 		/// </summary>
-		public LimitedList<SKColor> ColorPalette { get; }
+		public RDColor[] ColorPalette { get; }
 		/// <summary>
 		/// Level file path.
 		/// </summary>
@@ -73,21 +62,25 @@ namespace RhythmBase.Components
 		/// The beat is 1.
 		/// </summary>
 		[JsonIgnore]
-		public Beat DefaultBeat => Calculator.BeatOf(1f);
+		public RDBeat DefaultBeat => Calculator.BeatOf(1f);
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDLevel"/> class.
+		/// </summary>
 		public RDLevel()
 		{
 			_path = "";
-			Assets = [];
 			Variables = new Variables();
 			Calculator = new BeatCalculator(this);
-			Manager = new AssetManager(this);
 			Settings = new Settings();
-			_rows = new List<RowEventCollection>(16);
-			_decorations = [];
 			Conditionals = [];
 			Bookmarks = [];
-			ColorPalette = new LimitedList<SKColor>(21U, new SKColor(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue));
+			ColorPalette = new RDColor[21];
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDLevel"/> class with the specified items.
+		/// </summary>
+		/// <param name="items">The items to add to the level.</param>
 		public RDLevel(IEnumerable<IBaseEvent> items) : this()
 		{
 			foreach (IBaseEvent item in items)
@@ -103,11 +96,11 @@ namespace RhythmBase.Components
 				RDLevel rdlevel = [];
 				PlaySong playsong = new();
 				SetTheme settheme = new();
-				playsong.Song = new Audio() { AudioFile = rdlevel.Manager.Create<IAudioFile>("sndOrientalTechno") };
+				playsong.Song = new RDAudio() { Filename = "sndOrientalTechno" };
 				settheme.Preset = SetTheme.Theme.OrientalTechno;
 				rdlevel.AddRange([playsong, settheme]);
-				RowEventCollection samurai = rdlevel.CreateRow(new SingleRoom(RoomIndex.Room1), new RDCharacter(rdlevel, Characters.Samurai));
-				samurai.Sound.Name = "Shaker";
+				RowEventCollection samurai = rdlevel.CreateRow(new SingleRoom(RoomIndex.Room1), Characters.Samurai);
+				samurai.Sound.Filename = "Shaker";
 				samurai.Add(new AddClassicBeat());
 				return rdlevel;
 			}
@@ -123,9 +116,9 @@ namespace RhythmBase.Components
 			DecorationEventCollection temp = new(room)
 			{
 				Parent = this,
+				Filename = sprite
 			};
-			temp.Sprite.Name = sprite;
-			_decorations.Add(temp);
+			ModifiableDecorations.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -136,7 +129,7 @@ namespace RhythmBase.Components
 		public DecorationEventCollection CloneDecoration(DecorationEventCollection decoration)
 		{
 			DecorationEventCollection temp = decoration.Clone();
-			_decorations.Add(temp);
+			ModifiableDecorations.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -149,7 +142,7 @@ namespace RhythmBase.Components
 			if (Decorations.Contains(decoration))
 			{
 				this.RemoveRange(decoration);
-				return _decorations.Remove(decoration);
+				return ModifiableDecorations.Remove(decoration);
 			}
 			else
 				return false;
@@ -169,7 +162,7 @@ namespace RhythmBase.Components
 				Parent = this
 			};
 			temp.Parent = this;
-			_rows.Add(temp);
+			ModifiableRows.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -177,7 +170,7 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="row">The row to be removed.</param>
 		/// <returns></returns>
-		public bool RemoveRow(RowEventCollection row) => Rows.Contains(row) && _rows.Remove(row);
+		public bool RemoveRow(RowEventCollection row) => Rows.Contains(row) && ModifiableRows.Remove(row);
 		/// <summary>
 		/// Read from file as level.
 		/// Use default input settings.
@@ -200,24 +193,48 @@ namespace RhythmBase.Components
 		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">File not supported.</exception>
 		/// <returns>An instance of a level that reads from a file.</returns>
 		public static RDLevel Read(string filepath, LevelReadOrWriteSettings settings)
-	{
-		JsonSerializer LevelSerializer = new();
-		LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
-		string extension = System.IO.Path.GetExtension(filepath);
-		RDLevel Read;
-		if ((extension != ".rdzip") && (extension != ".zip"))
 		{
-			if (extension != ".rdlevel")
-				throw new RhythmBaseException("File not supported.");
-			Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(File.OpenText(filepath)));
+			JsonSerializer LevelSerializer = new();
+			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
+			string extension = System.IO.Path.GetExtension(filepath);
+			RDLevel Read;
+			if ((extension != ".rdzip") && (extension != ".zip"))
+			{
+				if (extension != ".rdlevel")
+					throw new RhythmBaseException("File not supported.");
+				Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(File.OpenText(filepath))) ?? throw new RhythmBaseException("Cannot read the file.");
+			}
+			else
+				Read = ReadFromZip(filepath, settings);
+			return Read;
 		}
-		else
-			Read = ReadFromZip(filepath, settings);
-		return Read;
-		}
+		/// <summary>
+		/// Read from a zip file as a level.
+		/// </summary>
+		/// <param name="filepath">The path to the zip file.</param>
+		/// <returns>An instance of RDLevel that reads from a zip file.</returns>
 		public static RDLevel ReadFromZip(string filepath) => ReadFromZip(filepath, new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Read from a zip file as a level with specific settings.
+		/// </summary>
+		/// <param name="filepath">The path to the zip file.</param>
+		/// <param name="settings">The settings for reading the level.</param>
+		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
 		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings) => ReadFromZip(File.OpenRead(filepath), settings);
+		/// <summary>
+		/// Read from a zip file as a level.
+		/// </summary>
+		/// <param name="stream">The stream of the zip file.</param>
+		/// <returns>An instance of RDLevel that reads from a zip file.</returns>
 		public static RDLevel ReadFromZip(Stream stream) => ReadFromZip(stream, new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Read from a zip file as a level with specific settings.
+		/// </summary>
+		/// <param name="stream">The stream of the zip file.</param>
+		/// <param name="settings">The settings for reading the level.</param>
+		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
 		public static RDLevel ReadFromZip(Stream stream, LevelReadOrWriteSettings settings)
 		{
 			DirectoryInfo tempDirectory = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName()));
@@ -263,13 +280,36 @@ namespace RhythmBase.Components
 			using StreamWriter file = File.CreateText(filepath);
 			Write(file, settings);
 		}
+		/// <summary>
+		/// Save the level to a text writer.
+		/// Use default output settings.
+		/// </summary>
+		/// <param name="stream">The text writer to write the level to.</param>
 		public void Write(TextWriter stream) => Write(stream, new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Save the level to a text writer.
+		/// </summary>
+		/// <param name="stream">The text writer to write the level to.</param>
+		/// <param name="settings">The settings for writing the level.</param>
 		public void Write(TextWriter stream, LevelReadOrWriteSettings settings)
 		{
 			using JsonTextWriter writer = new(stream);
 			Serializer(settings).Serialize(writer, this);
 		}
+
+		/// <summary>
+		/// Save the level to a stream.
+		/// Use default output settings.
+		/// </summary>
+		/// <param name="stream">The stream to write the level to.</param>
 		public void Write(Stream stream) => Write(new StreamWriter(stream), new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Save the level to a stream.
+		/// </summary>
+		/// <param name="stream">The stream to write the level to.</param>
+		/// <param name="settings">The settings for writing the level.</param>
 		public void Write(Stream stream, LevelReadOrWriteSettings settings) => Write(new StreamWriter(stream), settings);
 		/// <summary>
 		/// Convert to JObject type.
@@ -397,7 +437,7 @@ namespace RhythmBase.Components
 				Remove = false;
 			return Remove;
 		}
-		protected internal void AddSetCrotchetsPerBar(SetCrotchetsPerBar item)
+		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item)
 		{
 			SetCrotchetsPerBar? frt = item.FrontOrDefault();
 			SetCrotchetsPerBar? nxt = item.NextOrDefault();
@@ -435,7 +475,7 @@ namespace RhythmBase.Components
 			// 更新计算器
 			Calculator.Refresh();
 		}
-		protected internal bool RemoveSetCrotchetsPerBar(SetCrotchetsPerBar item)
+		private bool RemoveSetCrotchetsPerBar(SetCrotchetsPerBar item)
 		{
 			SetCrotchetsPerBar? frt = item.FrontOrDefault();
 			SetCrotchetsPerBar? nxt = item.NextOrDefault();
@@ -481,13 +521,13 @@ namespace RhythmBase.Components
 			Calculator.Refresh();
 			return result;
 		}
-		protected internal void AddBaseBeatsPerMinute(BaseBeatsPerMinute item)
+		private void AddBaseBeatsPerMinute(BaseBeatsPerMinute item)
 		{
 			RefreshBPMs(item.Beat);
 			base.Add(item);
 			Calculator.Refresh();
 		}
-		protected internal bool RemoveBaseBeatsPerMinute(BaseBeatsPerMinute item)
+		private bool RemoveBaseBeatsPerMinute(BaseBeatsPerMinute item)
 		{
 			bool result = base.Remove(item);
 			Calculator.Refresh();
@@ -495,7 +535,7 @@ namespace RhythmBase.Components
 			item._beat._calculator = null;
 			return result;
 		}
-		private void RefreshBPMs(Beat start)
+		private void RefreshBPMs(RDBeat start)
 		{
 			foreach (var item in eventsBeatOrder.Keys)
 				item.ResetBPM();
@@ -504,7 +544,7 @@ namespace RhythmBase.Components
 			foreach (var item in Bookmarks)
 				item.Beat.ResetBPM();
 		}
-		private void RefreshCPBs(Beat start)
+		private void RefreshCPBs(RDBeat start)
 		{
 			foreach (var item in eventsBeatOrder.Keys)
 				item.ResetCPB();
