@@ -12,8 +12,7 @@ namespace RhythmBase.Components
 		IEqualityOperators<RDColor, RDColor, bool>, 
 		IEquatable<RDColor>, IFormattable
 	{
-		//argb
-		private uint color = hex;
+			private uint color = hex;
 		/// <summary>
 		/// Gets or sets the alpha component of the color.
 		/// </summary>
@@ -78,8 +77,7 @@ namespace RhythmBase.Components
 		/// <param name="l">The lightness component.</param>
 		public readonly void ToHsl(out float h, out float s, out float l)
 		{
-			// Implementation of the HSL conversion
-			float r = this.R / 255f;
+					float r = this.R / 255f;
 			float g = this.G / 255f;
 			float b = this.B / 255f;
 

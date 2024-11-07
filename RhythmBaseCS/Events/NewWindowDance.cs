@@ -177,7 +177,11 @@ namespace RhythmBase.Events
 			/// <summary>
 			/// Repeat ease type.
 			/// </summary>
-			Repeat
+			Repeat,
+			/// <summary>
+			/// Mirror ease type.
+			/// </summary>
+			Mirror,
 		}
 	}
 }

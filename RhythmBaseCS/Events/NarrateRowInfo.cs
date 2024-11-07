@@ -1,4 +1,6 @@
-﻿using RhythmBase.Components;
+﻿using Newtonsoft.Json;
+using RhythmBase.Components;
+using RhythmBase.Converters;
 namespace RhythmBase.Events
 {
 	/// <summary>
@@ -49,6 +51,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the custom pattern for the narration.
 		/// </summary>
+		[JsonConverter(typeof(PatternConverter))]
 		public Patterns[] CustomPattern { get; set; }
 
 		/// <summary>

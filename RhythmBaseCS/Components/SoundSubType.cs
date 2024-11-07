@@ -23,7 +23,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the sound effect name.
 		/// </summary>
-		public GroupSubtypes GroupSubtype { get; set; }
+		public SoundTypes GroupSubtype { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="SoundSubType"/> is used.
@@ -139,60 +139,5 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <returns><c>true</c> if the offset should be serialized; otherwise, <c>false</c>.</returns>
 		internal bool ShouldSerializeOffset() => ShouldSerialize();
-
-		/// <summary>
-		/// Types of sound effects.
-		/// </summary>
-		public enum GroupSubtypes
-		{
-			/// <summary>
-			/// Clap sound hold long end.
-			/// </summary>
-			ClapSoundHoldLongEnd,
-			/// <summary>
-			/// Clap sound hold long start.
-			/// </summary>
-			ClapSoundHoldLongStart,
-			/// <summary>
-			/// Clap sound hold short end.
-			/// </summary>
-			ClapSoundHoldShortEnd,
-			/// <summary>
-			/// Clap sound hold short start.
-			/// </summary>
-			ClapSoundHoldShortStart,
-			/// <summary>
-			/// Freezeshot sound cue low.
-			/// </summary>
-			FreezeshotSoundCueLow,
-			/// <summary>
-			/// Freezeshot sound cue high.
-			/// </summary>
-			FreezeshotSoundCueHigh,
-			/// <summary>
-			/// Freezeshot sound riser.
-			/// </summary>
-			FreezeshotSoundRiser,
-			/// <summary>
-			/// Freezeshot sound cymbal.
-			/// </summary>
-			FreezeshotSoundCymbal,
-			/// <summary>
-			/// Burnshot sound cue low.
-			/// </summary>
-			BurnshotSoundCueLow,
-			/// <summary>
-			/// Burnshot sound cue high.
-			/// </summary>
-			BurnshotSoundCueHigh,
-			/// <summary>
-			/// Burnshot sound riser.
-			/// </summary>
-			BurnshotSoundRiser,
-			/// <summary>
-			/// Burnshot sound cymbal.
-			/// </summary>
-			BurnshotSoundCymbal
-		}
 	}
 }

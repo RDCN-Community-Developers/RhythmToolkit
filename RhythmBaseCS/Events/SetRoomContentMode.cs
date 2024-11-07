@@ -48,15 +48,14 @@ namespace RhythmBase.Events
 		/// </summary>
 		public enum Modes
 		{
-			/// <summary>
-			/// Center mode.
-			/// </summary>
+#pragma warning disable CS1591
 			Center,
-
-			/// <summary>
-			/// Aspect fill mode.
-			/// </summary>
-			AspectFill
+			ScaleToFill,
+			AspectFit,
+			AspectFill,
+			Tiled,
+			Real
+#pragma warning restore CS1591
 		}
 	}
 }

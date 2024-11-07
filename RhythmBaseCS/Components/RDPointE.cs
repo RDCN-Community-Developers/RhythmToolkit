@@ -167,7 +167,7 @@ namespace RhythmBase.Components
 		public override readonly string ToString() => $"[{(X?.ExpressionValue) ?? "null"},{(Y?.ExpressionValue) ?? "null"}]";
 
 		/// <inheritdoc/>
-		readonly bool IEquatable<RDPointE>.Equals(RDPointE other) => other.X == X && other.Y == Y;
+		public readonly bool Equals(RDPointE other) => other.X == X && other.Y == Y;
 
 		/// <summary>
 		/// Multiplies the point by the specified matrix.

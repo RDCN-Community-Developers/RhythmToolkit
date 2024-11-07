@@ -7,7 +7,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents a floating text event in a room.
 	/// </summary>
-	public class FloatingText : BaseEvent, IRoomEvent
+	public class FloatingText : BaseEvent, IRoomEvent,IDurationEvent
 	{
 		/// <summary>
 		/// Gets the type of the event.
@@ -34,6 +34,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the fade out rate of the text.
 		/// </summary>
 		public float FadeOutRate { get; set; }
+		float IDurationEvent.Duration => FadeOutRate;
 
 		/// <summary>
 		/// Gets or sets the color of the text.

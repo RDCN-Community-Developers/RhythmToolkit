@@ -34,7 +34,7 @@ namespace RhythmBase.Settings
 		/// Stores unreadable event data when the <see cref="P:RhythmBase.Settings.LevelReadOrWriteSettings.UnreadableEventsHandling" /> is <see cref="F:RhythmBase.Settings.UnreadableEventHandling.Store" />.
 		/// </summary>
 		/// <returns></returns>
-		public List<JObject> UnreadableEvents { get; set; } = [];
+		public List<(JObject item, string reason)> UnreadableEvents { get; set; } = [];
 		/// <summary>
 		/// Use indentation. 
 		/// Defaults to <see langword="true" />.

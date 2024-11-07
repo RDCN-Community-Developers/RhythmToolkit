@@ -40,31 +40,5 @@ namespace RhythmBase.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }
-
-		/// <summary>
-		/// Represents the characters that can be associated with the event.
-		/// </summary>
-		public enum Characters
-		{
-			/// <summary>
-			/// Represents the players character.
-			/// </summary>
-			Players,
-
-			/// <summary>
-			/// Represents the Ian character.
-			/// </summary>
-			Ian,
-
-			/// <summary>
-			/// Represents the Paige character.
-			/// </summary>
-			Paige,
-
-			/// <summary>
-			/// Represents the Edega character.
-			/// </summary>
-			Edega
-		}
 	}
 }

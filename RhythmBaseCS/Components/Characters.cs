@@ -7,6 +7,7 @@
 	{
 #pragma warning disable CS1591
 		Adog,
+		Allison,
 		Athlete,
 		AthletePhysio,
 		Barista,

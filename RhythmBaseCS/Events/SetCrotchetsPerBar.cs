@@ -10,7 +10,6 @@
 		/// </summary>
 		public SetCrotchetsPerBar()
 		{
-			_visualBeatMultiplier = 0f;
 			_crotchetsPerBar = 7U;
 			Type = EventType.SetCrotchetsPerBar;
 			Tab = Tabs.Sounds;
@@ -30,26 +29,14 @@
 		/// Gets or sets the visual beat multiplier.
 		/// </summary>
 		/// <exception cref="OverflowException">Thrown when the value is less than 1.</exception>
-		public float VisualBeatMultiplier
-		{
-			get => _visualBeatMultiplier + 1f;
-			set
-			{
-				if (value < 1f)
-					throw new OverflowException("VisualBeatMultiplier must greater than 1.");
-				_visualBeatMultiplier = value - 1f;
-			}
-		}
+		public float VisualBeatMultiplier { get; set; } = 1;
 
 		/// <summary>
 		/// Gets or sets the number of crotchets per bar.
 		/// </summary>
 		public uint CrotchetsPerBar
 		{
-			get
-			{
-				return checked((uint)(unchecked((ulong)_crotchetsPerBar) + 1UL));
-			}
+			get => (uint)(_crotchetsPerBar + 1);
 			set
 			{
 				_crotchetsPerBar = checked((uint)(unchecked((ulong)value) - 1UL));
@@ -65,11 +52,6 @@
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + $" CPB:{_crotchetsPerBar + 1}";
-
-		/// <summary>
-		/// The visual beat multiplier.
-		/// </summary>
-		private float _visualBeatMultiplier;
 
 		/// <summary>
 		/// The number of crotchets per bar.

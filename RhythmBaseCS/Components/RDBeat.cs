@@ -141,8 +141,7 @@ namespace RhythmBase.Components
 			_BarBeat = new ValueTuple<uint, float>(bar, beat);
 			_isBarBeatLoaded = true;
 		}
-		// Existing constructor with added XML documentation
-		/// <summary>
+			/// <summary>
 		/// Constructs an instance of RDBeat with the specified time span.
 		/// </summary>
 		/// <param name="timeSpan">The total amount of time from the start of the level to the moment.</param>
@@ -311,8 +310,7 @@ namespace RhythmBase.Components
 		public void Cache()
 		{
 			IfNullThrowException();
-			//通过属性调用来更新值
-			object __ = BeatOnly;
+					object __ = BeatOnly;
 			__ = BarBeat;
 			__ = TimeSpan;
 		}

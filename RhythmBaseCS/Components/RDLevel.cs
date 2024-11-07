@@ -14,7 +14,7 @@ namespace RhythmBase.Components
 	/// <summary>
 	/// Rhythm Doctor level.
 	/// </summary>
-	public class RDLevel : OrderedEventCollection<IBaseEvent>
+	public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	{
 		/// <summary>
 		/// The calculator that comes with the level.
@@ -202,7 +202,8 @@ namespace RhythmBase.Components
 			{
 				if (extension != ".rdlevel")
 					throw new RhythmBaseException("File not supported.");
-				Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(File.OpenText(filepath))) ?? throw new RhythmBaseException("Cannot read the file.");
+				using TextReader reader = File.OpenText(filepath);
+				Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(reader)) ?? throw new RhythmBaseException("Cannot read the file.");
 			}
 			else
 				Read = ReadFromZip(filepath, settings);
@@ -237,20 +238,23 @@ namespace RhythmBase.Components
 		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
 		public static RDLevel ReadFromZip(Stream stream, LevelReadOrWriteSettings settings)
 		{
-			DirectoryInfo tempDirectory = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName()));
+			DirectoryInfo tempDirectory = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RhythmBaseTemp_" + System.IO.Path.GetRandomFileName()));
 			tempDirectory.Create();
 			RDLevel ReadFromZip;
 			try
 			{
 				ZipFile.ExtractToDirectory(stream, tempDirectory.FullName);
 				ReadFromZip = Read(tempDirectory.GetFiles().Single(i => i.Extension == ".rdlevel").FullName, settings);
+				ReadFromZip.isZip = true;
 			}
 			catch (InvalidOperationException ex)
 			{
-				throw new RhythmBaseException("Found more than one rdlevel file.", ex);
+				tempDirectory.Delete(true);
+				throw new RhythmBaseException("More than one RDLevel file has been found.", ex);
 			}
 			catch (Exception ex2)
 			{
+				tempDirectory.Delete(true);
 				throw new RhythmBaseException("Cannot extract the file.", ex2);
 			}
 			return ReadFromZip;
@@ -362,7 +366,6 @@ namespace RhythmBase.Components
 				//注释事件可能在精灵板块，也可能不在
 				base.Add(item);
 			else if (item.Type == EventType.TintRows && ((TintRows)item).Parent == null)
-				//轨道染色事件可能是为所有轨道染色
 				base.Add(item);
 			else if (Utils.EventTypeUtils.RowTypes.Contains(item.Type))
 			{
@@ -554,8 +557,18 @@ namespace RhythmBase.Components
 				item.Beat.ResetCPB();
 		}
 		/// <inheritdoc/>
+		public void Dispose()
+		{
+			if (isZip)
+			{
+				System.IO.Directory.Delete(Directory, true);
+			}
+			GC.SuppressFinalize(this);
+		}
+		/// <inheritdoc/>
 		public override string ToString() => string.Format("\"{0}\" Count = {1}", Settings.Song, Count);
 		internal string _path;
+		private bool isZip = false;
 		/// <summary>
 		/// Variables.
 		/// </summary>

@@ -957,13 +957,7 @@ namespace RhythmBase.Extensions
 								}
 								while (i <= 6);
 								break;
-							//case EventType.AddFreeTimeBeat:
-							//	break;
-							//case EventType.PulseFreeTimeBeat:
-							//	break;
-							//case EventType.SetRowXs:
-							//	break;
-							default:
+																																											default:
 								throw new NotImplementedException();
 						}
 					break;

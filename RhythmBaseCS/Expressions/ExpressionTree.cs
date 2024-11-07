@@ -379,10 +379,7 @@ namespace RhythmBase.Expressions
 								{
 									throw new RhythmBaseException(string.Format("Parameters count not match. need {0}", method.GetParameters().Length));
 								}
-								//System.Linq.Expressions.Expression member2 = System.Linq.Expressions.Expression.Call(subVariableParameter, method, Parameters.Zip(method.GetParameters(), (ExpressionTree._Closure$__.$I13-0 == null) ? (ExpressionTree._Closure$__.$I13-0 = (System.Linq.Expressions.Expression i, ParameterInfo j) => System.Linq.Expressions.Expression.Convert(i, j.ParameterType)) : ExpressionTree._Closure$__.$I13-0));
-								//ValueStack.Push(member2);
-								//subVariableParameter = member2;
-								packed = true;
+																													packed = true;
 							}
 						}
 						break;

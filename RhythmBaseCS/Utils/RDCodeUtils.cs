@@ -54,8 +54,7 @@
 		/// </summary>
 		public class Reader()
 		{
-			//public List<Token> Tokens = [];
-			private string code = "";
+			private string code;
 			private int position;
 
 			/// <summary>

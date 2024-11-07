@@ -217,9 +217,9 @@ namespace RhythmBase.Events
 			DisableAll,
 			Diamonds,
 			Tutorial,
+			Balloons,
 
-			//旧版特效
-			BlackAndWhite,
+					BlackAndWhite,
 			Blackout,
 			ScreenScrollX,
 			ScreenScroll,

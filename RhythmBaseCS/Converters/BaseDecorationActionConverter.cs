@@ -18,7 +18,7 @@ namespace RhythmBase.Converters
 				switch (settings.UnreadableEventsHandling)
 				{
 					case UnreadableEventHandling.Store:
-						settings.UnreadableEvents.Add(jobj);
+						settings.UnreadableEvents.Add((jobj,$"Cannot find the decoration with id {decoId}."));
 						return default;
 					case UnreadableEventHandling.ThrowException:
 #if DEBUG

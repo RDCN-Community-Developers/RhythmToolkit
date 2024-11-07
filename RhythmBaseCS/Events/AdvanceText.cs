@@ -7,7 +7,7 @@ namespace RhythmBase.Events
 	/// Represents an event that advances text in a room.
 	/// </summary>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public class AdvanceText : BaseEvent, IRoomEvent
+	public class AdvanceText : BaseEvent, IRoomEvent,IDurationEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AdvanceText"/> class.
@@ -36,7 +36,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public float FadeOutDuration { get; set; }
-
+		float IDurationEvent.Duration => FadeOutDuration;
 		/// <summary>
 		/// Gets the ID of the parent floating text.
 		/// </summary>

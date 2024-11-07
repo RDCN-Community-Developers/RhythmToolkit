@@ -6,7 +6,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents an event to set the game sound.
 	/// </summary>
-	public class SetGameSound : BaseEvent
+	public partial class SetGameSound : BaseEvent
 	{
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetGameSound"/> class.  
@@ -131,66 +131,5 @@ namespace RhythmBase.Events
 		/// </summary>  
 		/// <returns>A string that represents the current object.</returns>  
 		public override string ToString() => base.ToString() + string.Format(" {0}", SoundType);
-
-		/// <summary>  
-		/// Defines the types of sounds.  
-		/// </summary>  
-		public enum SoundTypes
-		{
-			/// <summary>  
-			/// Represents a small mistake sound.  
-			/// </summary>  
-			SmallMistake,
-
-			/// <summary>  
-			/// Represents a big mistake sound.  
-			/// </summary>  
-			BigMistake,
-
-			/// <summary>  
-			/// Represents a hand 1 pop sound.  
-			/// </summary>  
-			Hand1PopSound,
-
-			/// <summary>  
-			/// Represents a hand 2 pop sound.  
-			/// </summary>  
-			Hand2PopSound,
-
-			/// <summary>  
-			/// Represents a heart explosion sound.  
-			/// </summary>  
-			HeartExplosion,
-
-			/// <summary>  
-			/// Represents a heart explosion 2 sound.  
-			/// </summary>  
-			HeartExplosion2,
-
-			/// <summary>  
-			/// Represents a heart explosion 3 sound.  
-			/// </summary>  
-			HeartExplosion3,
-
-			/// <summary>  
-			/// Represents a skipshot sound.  
-			/// </summary>  
-			Skipshot,
-
-			/// <summary>  
-			/// Represents a clap sound hold.  
-			/// </summary>  
-			ClapSoundHold,
-
-			/// <summary>  
-			/// Represents a freezeshot sound.  
-			/// </summary>  
-			FreezeshotSound,
-
-			/// <summary>  
-			/// Represents a burnshot sound.  
-			/// </summary>  
-			BurnshotSound
-		}
 	}
 }

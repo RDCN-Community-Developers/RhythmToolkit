@@ -24,13 +24,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets the 1-based serial number of this condition in the parent collection.
 		/// </summary>
-		public int Id
-		{
-			get
-			{
-				return checked(ParentCollection.IndexOf(this) + 1);
-			}
-		}
+		public int Id => checked(ParentCollection.IndexOf(this) + 1);
 
 		/// <summary>
 		/// Returns the name of the condition.

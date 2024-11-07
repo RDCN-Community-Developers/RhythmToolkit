@@ -87,16 +87,14 @@ namespace RhythmBase.Components
 		/// <inheritdoc/>
 		public static bool operator !=(RDSize sz1, RDSize sz2) => !sz1.Equals(sz2);
 
-		// Implicit conversion from RDSize to RDSizeE
-		/// <summary>
+			/// <summary>
 		/// Performs an implicit conversion from <see cref="RDSize"/> to <see cref="RDSizeE"/>.
 		/// </summary>
 		/// <param name="size">The size to convert.</param>
 		/// <returns>An <see cref="RDSizeE"/> that represents the converted size.</returns>
 		public static implicit operator RDSizeE(RDSize size) => new(size.Width, size.Height);
 
-		// Explicit conversion from RDSize to RDPoint
-		/// <summary>
+			/// <summary>
 		/// Performs an explicit conversion from <see cref="RDSize"/> to <see cref="RDPoint"/>.
 		/// </summary>
 		/// <param name="size">The size to convert.</param>

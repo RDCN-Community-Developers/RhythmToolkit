@@ -12,32 +12,36 @@ namespace RhythmBase.Converters
 		{
 			TEvent? obj = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
 			if (obj is null) return obj;
-			try
+			short rowId = jobj["row"]?.ToObject<short>() ?? throw new ConvertingException("Cannot read the property row.");
+			if (rowId == -1)
 			{
-				short rowId = jobj["row"]?.ToObject<short>() ?? throw new ConvertingException("Cannot read the property row.");
-				if (rowId == -1)
+				if (obj.Type != EventType.TintRows)
 				{
-					if (obj.Type != EventType.TintRows)
+					switch (settings.UnreadableEventsHandling)
 					{
-						switch (settings.UnreadableEventsHandling)
-						{
-							case UnreadableEventHandling.Store:
-								settings.UnreadableEvents.Add(jobj);
-								return default;
-							case UnreadableEventHandling.ThrowException:
-								throw new ConvertingException(string.Format("Cannot find the row \"{0}\" at {1}", jobj["target"], obj));
-						}
+						case UnreadableEventHandling.Store:
+							settings.UnreadableEvents.Add((jobj, $"Cannot find the row with id {rowId}."));
+							return default;
+						case UnreadableEventHandling.ThrowException:
+							throw new ConvertingException($"Cannot find the row \"{jobj["target"]}\" at {obj}");
 					}
 				}
-				else
+			}
+			else if (rowId >= level.Rows.Count)
+			{
+				switch (settings.UnreadableEventsHandling)
 				{
-					RowEventCollection Parent = level.ModifiableRows[(int)rowId];
-					obj._parent = Parent;
+					case UnreadableEventHandling.Store:
+						settings.UnreadableEvents.Add((jobj, $"The row id {rowId} out of range."));
+						return default;
+					case UnreadableEventHandling.ThrowException:
+						throw new ConvertingException($"The row id {rowId} out of range.");
 				}
 			}
-			catch (Exception)
+			else
 			{
-				throw new ConvertingException(string.Format("Cannot find the row {0} at {1}", jobj["row"], obj));
+				RowEventCollection Parent = level.ModifiableRows[(int)rowId];
+				obj._parent = Parent;
 			}
 			return obj;
 		}
