@@ -8,11 +8,11 @@ namespace RhythmBase.Components
 	/// Represents a color with red, green, blue, and alpha components.
 	/// </summary>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public struct RDColor(uint hex) : 
-		IEqualityOperators<RDColor, RDColor, bool>, 
+	public struct RDColor(uint hex) :
+		IEqualityOperators<RDColor, RDColor, bool>,
 		IEquatable<RDColor>, IFormattable
 	{
-			private uint color = hex;
+		private uint color = hex;
 		/// <summary>
 		/// Gets or sets the alpha component of the color.
 		/// </summary>
@@ -77,7 +77,7 @@ namespace RhythmBase.Components
 		/// <param name="l">The lightness component.</param>
 		public readonly void ToHsl(out float h, out float s, out float l)
 		{
-					float r = this.R / 255f;
+			float r = this.R / 255f;
 			float g = this.G / 255f;
 			float b = this.B / 255f;
 
@@ -160,7 +160,7 @@ namespace RhythmBase.Components
 		/// <param name="b">Blue component</param>
 		/// <param name="a">Alpha component (default is 255)</param>
 		/// <returns>RDColor instance</returns>
-		public static RDColor FromRgba(byte r, byte g, byte b, byte a = 255) => new((uint)(a << 24 & r << 16 & g << 8 & b));
+		public static RDColor FromRgba(byte r, byte g, byte b, byte a = 255) => new((uint)(a << 24 | r << 16 | g << 8 | b));
 		/// <summary>
 		/// Creates an RDColor instance from a hexadecimal string.
 		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
@@ -211,7 +211,7 @@ namespace RhythmBase.Components
 		/// <param name="g">Green component</param>
 		/// <param name="b">Blue component</param>
 		/// <returns>RDColor instance</returns>
-		public static RDColor FromArgb(byte a, byte r, byte g, byte b) => new((uint)(a << 24 & r << 16 & g << 8 & b));
+		public static RDColor FromArgb(byte a, byte r, byte g, byte b) => new((uint)(a << 24 | r << 16 | g << 8 | b));
 		/// <summary>
 		/// Creates an RDColor instance from a hexadecimal string in ARGB format.
 		/// Supports hexadecimal strings of length 3, 4, 6, or 8.

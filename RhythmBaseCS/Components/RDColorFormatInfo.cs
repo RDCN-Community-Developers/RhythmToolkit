@@ -5,7 +5,7 @@ namespace RhythmBase.Components
 	/// <summary>
 	/// Provides a custom format provider for RDColor.
 	/// </summary>
-	public class RDColorFormatInfo : IFormatProvider
+	internal class RDColorFormatInfo : IFormatProvider
 	{
 		/// <inheritdoc/>
 		public object? GetFormat(Type? formatType) => formatType == typeof(ICustomFormatter) ? new RDColorFormatter() : (object?)null;
@@ -14,25 +14,34 @@ namespace RhythmBase.Components
 	/// <summary>
 	/// Custom formatter for RDColor.
 	/// </summary>
-	public class RDColorFormatter : ICustomFormatter, IFormatProvider
+	internal class RDColorFormatter : ICustomFormatter, IFormatProvider
 	{
 		/// <inheritdoc/>
 		public string Format(string? format, object? arg, IFormatProvider? formatProvider)
 		{
-			if (arg is RDColor color)
-			{
-				format ??= "";
-				format = ReplaceColorComponent(format, 'R', color.R);
-				format = ReplaceColorComponent(format, 'G', color.G);
-				format = ReplaceColorComponent(format, 'B', color.B);
-				format = ReplaceColorComponent(format, 'A', color.A);
-				format = ReplaceColorComponent(format, 'r', color.R);
-				format = ReplaceColorComponent(format, 'g', color.G);
-				format = ReplaceColorComponent(format, 'b', color.B);
-				format = ReplaceColorComponent(format, 'a', color.A);
-				return format;
-			}
-			return arg?.ToString() ?? string.Empty;
+			return arg is RDColor color
+				? format switch
+				{
+					"RRGGBB" => $"{color.R:X2}{color.G:X2}{color.B:X2}",
+					"RRGGBBAA" => $"{color.R:X2}{color.G:X2}{color.B:X2}{color.A:X2}",
+					"AARRGGBB" => $"{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}",
+					"#RRGGBB" => $"#{color.R:X2}{color.G:X2}{color.B:X2}",
+					"#RRGGBBAA" => $"#{color.R:X2}{color.G:X2}{color.B:X2}{color.A:X2}",
+					"#AARRGGBB" => $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}",
+					"R,G,B" or "r,g,b" => $"{color.R},{color.G},{color.B}",
+					"R,G,B,A" or "r,g,b,a" => $"{color.R},{color.G},{color.B},{color.A}",
+					"A,R,G,B" or "a,r,g,b" => $"{color.A},{color.R},{color.G},{color.B}",
+					"RR,GG,BB" => $"{color.R:X2},{color.G:X2},{color.B:X2}",
+					"RR,GG,BB,AA" => $"{color.R:X2},{color.G:X2},{color.B:X2},{color.A:X2}",
+					"AA,RR,GG,BB" => $"{color.A:X2},{color.R:X2},{color.G:X2},{color.B:X2}",
+					"#RR,GG,BB" => $"#{color.R:X2},{color.G:X2},{color.B:X2}",
+					"#RR,GG,BB,AA" => $"#{color.R:X2},{color.G:X2},{color.B:X2},{color.A:X2}",
+					"#AA,RR,GG,BB" => $"#{color.A:X2},{color.R:X2},{color.G:X2},{color.B:X2}",
+					"RGB" or "rgb" => $"R:{color.R},G:{color.G},B:{color.B}",
+					"RGBA" or "rgba" => $"R:{color.R},G:{color.G},B:{color.B},A:{color.A}",
+					"ARGB" or "argb" or _ => $"A:{color.A},R:{color.R},G:{color.G},B:{color.B}",
+				}
+				: arg?.ToString() ?? string.Empty;
 		}
 
 		private static string ReplaceColorComponent(string format, char component, int value)
