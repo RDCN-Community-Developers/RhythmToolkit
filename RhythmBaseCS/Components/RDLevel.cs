@@ -307,7 +307,7 @@ namespace RhythmBase.Components
 		/// Use default output settings.
 		/// </summary>
 		/// <param name="stream">The stream to write the level to.</param>
-		public void Write(Stream stream) => Write(new StreamWriter(stream), new LevelReadOrWriteSettings());
+		public void Write(Stream stream) => Write(new StreamWriter(stream,leaveOpen:true), new LevelReadOrWriteSettings());
 
 		/// <summary>
 		/// Save the level to a stream.
