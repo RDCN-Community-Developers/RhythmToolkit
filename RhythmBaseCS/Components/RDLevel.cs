@@ -107,7 +107,7 @@ namespace RhythmBase.Components
 					new(0xFF880015u),
 					new(0xFFB97A57u),
 					RDColor.Red,
-					
+
 					new(0xFFFFAEC9u),
 					new(0xFFFF7F27u),
 					new(0xFFFFC90Eu),
@@ -244,18 +244,44 @@ namespace RhythmBase.Components
 			JsonSerializer LevelSerializer = new();
 			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
 			string extension = System.IO.Path.GetExtension(filepath);
-			RDLevel Read;
-			if ((extension != ".rdzip") && (extension != ".zip"))
+			RDLevel rdlevel;
+			if (extension == ".rdzip" || extension == ".zip")
+				rdlevel = ReadFromZip(filepath, settings);
+			else
+				if (extension == ".rdlevel")
 			{
-				if (extension != ".rdlevel")
-					throw new RhythmBaseException("File not supported.");
 				using TextReader reader = File.OpenText(filepath);
-				Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(reader)) ?? throw new RhythmBaseException("Cannot read the file.");
+				rdlevel = Read(reader, filepath, settings);
 			}
 			else
-				Read = ReadFromZip(filepath, settings);
+				throw new RhythmBaseException("File not supported.");
+			return rdlevel;
+		}
+		/// <summary>
+		/// Reads an RDLevel from a TextReader with the specified filepath and settings.
+		/// </summary>
+		/// <param name="reader">The TextReader to read from.</param>
+		/// <param name="filepath">The filepath of the RDLevel.</param>
+		/// <param name="settings">The settings to use for reading the RDLevel.</param>
+		/// <returns>The deserialized RDLevel object.</returns>
+		/// <exception cref="RhythmBaseException">Thrown when the file cannot be read.</exception>
+		public static RDLevel Read(TextReader reader, string filepath, LevelReadOrWriteSettings settings)
+		{
+			JsonSerializer LevelSerializer = new();
+			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
+			RDLevel Read;
+			Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(reader)) ?? throw new RhythmBaseException("Cannot read the file.");
 			return Read;
 		}
+
+		/// <summary>
+		/// Reads an RDLevel from a TextReader with the specified settings.
+		/// </summary>
+		/// <param name="reader">The TextReader to read from.</param>
+		/// <param name="settings">The settings to use for reading the RDLevel.</param>
+		/// <returns>The deserialized RDLevel object.</returns>
+		/// <exception cref="RhythmBaseException">Thrown when the file cannot be read.</exception>
+		public static RDLevel Read(TextReader reader, LevelReadOrWriteSettings settings) => Read(reader, "", settings);
 		/// <summary>
 		/// Read from a zip file as a level.
 		/// </summary>
@@ -613,10 +639,10 @@ namespace RhythmBase.Components
 			GC.SuppressFinalize(this);
 		}
 		/// <inheritdoc/>
-		public override string ToString() => string.Format("\"{0}\" Count = {1}", Settings.Song, Count);
+		public override string ToString() => $"\"{Settings.Song}\" Count = {Count}";
 		internal string _path;
 		private bool isZip = false;
-		private RDColor[] colorPalette;
+		private RDColor[] colorPalette = new RDColor[21];
 
 		/// <summary>
 		/// Variables.
