@@ -15,14 +15,14 @@ namespace RhythmBase.Components
 		/// </summary>  
 		public Settings()
 		{
-			Version = 60;
+			Version = 61;
 			Artist = "";
 			Song = "";
 			SpecialArtistType = SpecialArtistTypes.None;
 			ArtistPermission = "";
 			ArtistLinks = "";
 			Author = "";
-			Difficulty = DifficultyLevel.Easy;
+			Difficulty = DifficultyLevel.Medium;
 			SeizureWarning = false;
 			PreviewImage = "";
 			SyringeIcon = "";

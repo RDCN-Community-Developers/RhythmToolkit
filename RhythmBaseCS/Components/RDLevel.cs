@@ -46,7 +46,11 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Level colorPalette collection.
 		/// </summary>
-		public RDColor[] ColorPalette { get; }
+		public RDColor[] ColorPalette
+		{
+			get => colorPalette;
+			set => colorPalette = value.Length == 21 ? value : throw new RhythmBaseException();
+		}
 		/// <summary>
 		/// Level file path.
 		/// </summary>
@@ -94,6 +98,49 @@ namespace RhythmBase.Components
 			get
 			{
 				RDLevel rdlevel = [];
+				rdlevel.ColorPalette =
+				[
+					RDColor.Black,
+					RDColor.White,
+					new(0xFF7F7F7Fu),
+					new(0xFFC3C3C3u),
+					new(0xFF880015u),
+					new(0xFFB97A57u),
+					RDColor.Red,
+					
+					new(0xFFFFAEC9u),
+					new(0xFFFF7F27u),
+					new(0xFFFFC90Eu),
+					new(0xFFFFF200u),
+					new(0xFFEFE4B0u),
+					new(0xFF22B14Cu),
+					new(0xFFB5E61Du),
+
+					new(0xFF00A2E8u),
+					new(0xFF99D9EAu),
+					new(0xFF3F48CCu),
+					new(0xFF7092BEu),
+					new(0xFFA349A4u),
+					new(0xFFC8BFE7u),
+					new(0x00000000u)
+				];
+
+				rdlevel.Settings.RankMaxMistakes = [
+					20,
+					15,
+					10,
+					5
+				];
+
+				rdlevel.Settings.RankDescription = [
+					"Better call 911, now!",
+					"Ugh, you can do better",
+					"Not bad I guess...",
+					"We make a good team!",
+					"You are really good!",
+					"Wow! That's awesome!!"
+				];
+
 				PlaySong playsong = new();
 				SetTheme settheme = new();
 				playsong.Song = new RDAudio() { Filename = "sndOrientalTechno" };
@@ -569,6 +616,8 @@ namespace RhythmBase.Components
 		public override string ToString() => string.Format("\"{0}\" Count = {1}", Settings.Song, Count);
 		internal string _path;
 		private bool isZip = false;
+		private RDColor[] colorPalette;
+
 		/// <summary>
 		/// Variables.
 		/// </summary>
