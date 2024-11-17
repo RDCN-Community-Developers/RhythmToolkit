@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.Components
+﻿using RhythmBase.Events;
+
+namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Record the status of RDLevel moment
@@ -13,7 +15,7 @@
 		/// <summary>
 		/// Gets the room status information.
 		/// </summary>
-		public RoomStatus[] RoomStatus { get; } = new RoomStatus[4];
+		public RoomStatus[] RoomStatus { get; internal init; }
 	}
 
 	/// <summary>
@@ -25,5 +27,10 @@
 		/// Gets the beat information.
 		/// </summary>
 		public RDBeat Beat { get; internal init; }
+
+		/// <summary>
+		/// Gets the running VFX presets.
+		/// </summary>
+		public IEnumerable<SetVFXPreset> RunningVFXs { get; internal init; }
 	}
 }

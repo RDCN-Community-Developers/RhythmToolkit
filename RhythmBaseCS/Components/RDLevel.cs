@@ -513,6 +513,40 @@ namespace RhythmBase.Components
 				Remove = false;
 			return Remove;
 		}
+		/// <summary>
+		/// Gets the status of the level at the specified beat.
+		/// </summary>
+		/// <param name="beat">The beat at which to get the status.</param>
+		/// <returns>A new instance of <see cref="RDStatus"/> representing the status at the specified beat.</returns>
+		internal RDStatus GetStatus(RDBeat beat)
+		{
+			return new()
+			{
+				Beat = beat,
+				RoomStatus = [
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.Room1)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					},
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.Room2)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					},
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.Room3)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					},
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.Room4)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					},
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.RoomTop)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					}
+				],
+			};
+		}
 		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item)
 		{
 			SetCrotchetsPerBar? frt = item.FrontOrDefault();

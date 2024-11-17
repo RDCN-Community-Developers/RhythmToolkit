@@ -107,6 +107,15 @@ namespace RhythmBase.Components
 				return false;
 			}
 		}
+		/// <summary>
+		/// Checks if the specified room is included.
+		/// </summary>
+		/// <param name="room">The room to check.</param>
+		/// <returns>True if the room is included; otherwise, false.</returns>
+		public readonly bool Contains(RoomIndex room)
+		{
+			return _data.HasFlag(room);
+		}
 
 		/// <inheritdoc/>
 		public static bool operator ==(Room R1, Room R2) => R1._data == R2._data;

@@ -37,7 +37,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the scale of the move event.
 		/// </summary>
 		[EaseProperty]
-		public RDPointE? Scale { get; set; }
+		public RDSizeE? Scale { get; set; }
 
 		/// <summary>
 		/// Gets or sets the angle of the move event.
