@@ -12,6 +12,9 @@ namespace RhythmBase.Components
 		IEqualityOperators<RDColor, RDColor, bool>,
 		IEquatable<RDColor>, IFormattable
 	{
+		/// <summary>
+		/// #AARRGGBB
+		/// </summary>
 		private uint color = hex;
 		/// <summary>
 		/// Gets or sets the alpha component of the color.
@@ -173,25 +176,17 @@ namespace RhythmBase.Components
 			hex = hex.Trim();
 			if (hex.StartsWith('#'))
 				hex = hex[1..];
-			if (hex.Length != 3 && hex.Length != 4 && hex.Length != 6 && hex.Length != 8)
-				throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
 
-			if (hex.Length == 3)
+			hex = hex.Length switch
 			{
-				hex = $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}";
-			}
-			else if (hex.Length == 4)
-			{
-				hex = $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}{hex[3]}{hex[3]}";
-			}
+				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
+				4 => $"{hex[3]}{hex[3]}{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
+				6 => $"FF{hex}",
+				8 => $"{hex[6..8]}{hex[0..6]}",
+				_ => throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long."),
+			};
 
-			return new(
-				(uint)(
-				((hex.Length == 8 ? Convert.ToByte(hex[6..8], 16) : 255) << 24) |
-				Convert.ToByte(hex[0..2], 16) << 16 |
-				Convert.ToByte(hex[2..4], 16) << 8 |
-				Convert.ToByte(hex[4..6], 16))
-			);
+			return new RDColor(Convert.ToUInt32(hex, 16));
 		}
 		/// <summary>
 		/// Creates an RDColor instance from a 32-bit RGBA value.
@@ -224,23 +219,17 @@ namespace RhythmBase.Components
 			hex = hex.Trim();
 			if (hex.StartsWith('#'))
 				hex = hex[1..];
-			if (hex.Length != 3 && hex.Length != 4 && hex.Length != 6 && hex.Length != 8)
-				throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
 
-			if (hex.Length == 3)
+			hex = hex.Length switch
 			{
-				hex = $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}";
-			}
-			else if (hex.Length == 4)
-			{
-				hex = $"{hex[1]}{hex[1]}{hex[2]}{hex[2]}{hex[3]}{hex[3]}{hex[0]}{hex[0]}";
-			}
-			else if (hex.Length == 8)
-			{
-				hex = $"{hex[2..4]}{hex[4..6]}{hex[6..8]}{hex[0..2]}";
-			}
+				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
+				4 => $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}{hex[3]}{hex[3]}",
+				6 => $"FF{hex}",
+				8 => hex,
+				_ => throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long."),
+			};
 
-			return FromRgba(hex);
+			return new RDColor(Convert.ToUInt32(hex, 16));
 		}
 		/// <summary>
 		/// Creates an <see cref="RDColor"/> instance from a 32-bit ARGB value.
@@ -325,7 +314,7 @@ namespace RhythmBase.Components
 		/// <inheritdoc/>
 		public static bool operator !=(RDColor left, RDColor right) => left.color != right.color;
 		/// <inheritdoc/>
-		public override readonly string ToString() => "#" + (color << 8 | color >> 24 & 0xFF).ToString("X8");
+		public override readonly string ToString() => ToString("#AARRGGBB");
 		private readonly string GetDebuggerDisplay() => ToString();
 		/// <inheritdoc/>
 		public readonly bool Equals(RDColor other) => color == other.color;

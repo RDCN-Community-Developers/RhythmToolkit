@@ -7,7 +7,7 @@ namespace RhythmBase.Converters
 {
 	internal class ColorConverter : JsonConverter<RDColor>
 	{
-		public override void WriteJson(JsonWriter writer, RDColor value, JsonSerializer serializer) => writer.WriteValue(value.ToString("RRGGBBAA"));
+		public override void WriteJson(JsonWriter writer, RDColor value, JsonSerializer serializer) => writer.WriteValue(value.ToString("rrggbbaa"));
 
 		public override RDColor ReadJson(JsonReader reader, Type objectType, RDColor existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
