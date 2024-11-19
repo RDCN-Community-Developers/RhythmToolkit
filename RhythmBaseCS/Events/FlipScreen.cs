@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public FlipScreen()
 		{
-			Rooms = new Room(true, new byte[1]);
+			Rooms = new RDRoom(true, new byte[1]);
 			Type = EventType.FlipScreen;
 			Tab = Tabs.Actions;
 		}
@@ -19,7 +19,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the rooms associated with this event.
 		/// </summary>
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the screen should be flipped horizontally.

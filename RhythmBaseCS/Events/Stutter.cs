@@ -6,12 +6,14 @@ namespace RhythmBase.Events
 	/// </summary>
 	public class Stutter : BaseEvent, IRoomEvent
 	{
+		private float sourceBeat = 1;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Stutter"/> class.
 		/// </summary>
 		public Stutter()
 		{
-			Rooms = new Room(false, new byte[1]);
+			Rooms = new RDRoom(false, new byte[1]);
 			Type = EventType.Stutter;
 			Tab = Tabs.Actions;
 		}
@@ -19,13 +21,16 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the room associated with the stutter event.
 		/// </summary>
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>
 		/// Gets or sets the source beat of the stutter event.
 		/// </summary>
-		public float SourceBeat { get; set; }
-
+		public float SourceBeat
+		{
+			get => sourceBeat;
+			set => sourceBeat = (value > 1 && value <= Beat.CPB + 1) ? value : throw new Exceptions.RhythmBaseException("SourceBeat must in CPB.");
+		}
 		/// <summary>
 		/// Gets or sets the length of the stutter event.
 		/// </summary>

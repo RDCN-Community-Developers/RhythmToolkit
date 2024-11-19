@@ -4,7 +4,7 @@ namespace RhythmBase.Components
 	/// <summary>
 	/// Represents the moment a beat is hit in the rhythm game.
 	/// </summary>
-	public struct Hit
+	public struct RDHit
 	{
 		/// <summary>
 		/// Gets the moment of pressing the beat.
@@ -29,12 +29,12 @@ namespace RhythmBase.Components
 			}
 		}
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Hit"/> struct.
+		/// Initializes a new instance of the <see cref="RDHit"/> struct.
 		/// </summary>
 		/// <param name="parent">The source event for this hit.</param>
 		/// <param name="beat">The moment of pressing the beat.</param>
 		/// <param name="hold">The length of time the player held the beat.</param>
-		public Hit(BaseBeat parent, RDBeat beat, float hold = 0f)
+		public RDHit(BaseBeat parent, RDBeat beat, float hold = 0f)
 		{
 			this = default;
 			Parent = parent;

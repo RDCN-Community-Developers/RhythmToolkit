@@ -38,7 +38,7 @@ namespace RhythmBase.Components
 			MatchCollection Matches = Regex.Matches(text, "(~?\\d+)(?=[&d])");
 			if (Matches.Count > 0)
 			{
-				@out.Duration = (float)Conversions.ToDouble(Regex.Match(text, "[\\d\\.]").Value);
+				@out.Duration = float.Parse(Regex.Match(text, "[\\d\\.]").Value);
 				return @out;
 			}
 			throw new RhythmBaseException(string.Format("Illegal condition: {0}.", text));

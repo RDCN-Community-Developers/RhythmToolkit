@@ -11,7 +11,7 @@ namespace RhythmBase.Converters
 		{
 			if (value.IsNumeric)
 			{
-				writer.WriteRawValue(Conversions.ToString(value.NumericValue));
+				writer.WriteRawValue(value.NumericValue.ToString());
 			}
 			else
 			{

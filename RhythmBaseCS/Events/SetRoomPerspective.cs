@@ -7,12 +7,18 @@ namespace RhythmBase.Events
 	/// </summary>  
 	public class SetRoomPerspective : BaseEvent, IEaseEvent
 	{
+		private RDPointE?[] cornerPositions= [ 
+			new(0,0),
+			new(100,0),
+			new(0,100),
+			new(100,100),
+		];
+
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetRoomPerspective"/> class.  
 		/// </summary>  
 		public SetRoomPerspective()
 		{
-			CornerPositions = new List<RDPointE?>(4);
 			Type = EventType.SetRoomPerspective;
 			Tab = Tabs.Rooms;
 		}
@@ -21,7 +27,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the corner positions of the room.  
 		/// </summary>  
 		[EaseProperty]
-		public List<RDPointE?> CornerPositions { get; set; }
+		public RDPointE?[] CornerPositions { get => cornerPositions; set =>  cornerPositions = value.Length == 4?value:throw new RhythmBase.Exceptions.RhythmBaseException(); }
 
 		/// <summary>  
 		/// Gets or sets the duration of the event.  
@@ -47,12 +53,6 @@ namespace RhythmBase.Events
 		/// Gets the room associated with the event.  
 		/// </summary>  
 		[JsonIgnore]
-		public Room Room
-		{
-			get
-			{
-				return new SingleRoom(checked((byte)Y));
-			}
-		}
+		public RDRoom Room => new RDSingleRoom(checked((byte)Y));
 	}
 }

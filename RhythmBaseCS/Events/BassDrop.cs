@@ -11,12 +11,12 @@ namespace RhythmBase.Events
 		/// </summary>  
 		public BassDrop()
 		{
-			Rooms = new Room(true, new byte[1]);
+			Rooms = new RDRoom(true, new byte[1]);
 			Type = EventType.BassDrop;
 			Tab = Tabs.Actions;
 		}
 		/// <inheritdoc/>
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>  
 		/// Gets or sets the strength of the BassDrop event.  

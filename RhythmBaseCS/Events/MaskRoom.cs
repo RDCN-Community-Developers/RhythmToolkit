@@ -50,12 +50,12 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the color cutoff value.
 		/// </summary>
-		public float ColorCutoff { get; set; }
+		public int ColorCutoff { get; set; }
 
 		/// <summary>
 		/// Gets or sets the color feathering value.
 		/// </summary>
-		public float ColorFeathering { get; set; }
+		public int ColorFeathering { get; set; }
 
 		/// <summary>
 		/// Gets or sets the content mode.
@@ -76,7 +76,7 @@ namespace RhythmBase.Events
 		/// Gets the room associated with the event.
 		/// </summary>
 		[JsonIgnore]
-		public Room Room => new SingleRoom(checked((byte)Y));
+		public RDRoom Room => new RDSingleRoom(checked((byte)Y));
 
 		/// <summary>
 		/// Defines the types of masks available.

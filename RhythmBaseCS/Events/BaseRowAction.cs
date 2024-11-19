@@ -29,7 +29,7 @@ namespace RhythmBase.Events
 		/// Gets the room associated with this action.
 		/// </summary>
 		[JsonIgnore]
-		public SingleRoom Room => _parent?.Rooms ?? SingleRoom.Default;
+		public RDSingleRoom Room => _parent?.Rooms ?? RDSingleRoom.Default;
 
 		/// <inheritdoc/>
 		/// <summary>

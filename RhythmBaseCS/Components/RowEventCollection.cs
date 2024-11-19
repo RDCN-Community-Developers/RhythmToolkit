@@ -40,7 +40,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the rooms associated with the row.
 		/// </summary>
-		public SingleRoom Rooms { get; set; }
+		public RDSingleRoom Rooms { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the row is hidden at the start.
@@ -110,7 +110,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the offset of the pulse sound.
 		/// </summary>
-		[JsonConverter(typeof(TimeConverter))]
+		[JsonConverter(typeof(MilliSecondConverter))]
 		public TimeSpan PulseSoundOffset
 		{
 			get => Sound.Offset;
@@ -122,7 +122,7 @@ namespace RhythmBase.Components
 		/// </summary>
 		internal RowEventCollection()
 		{
-			Rooms = new SingleRoom(RoomIndex.Room1);
+			Rooms = new RDSingleRoom(RDRoomIndex.Room1);
 			Sound = new RDAudio();
 			RowToMimic = -1;
 		}

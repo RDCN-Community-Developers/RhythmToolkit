@@ -13,7 +13,6 @@ namespace RhythmBase.Events
 		{
 			Type = EventType.ReadNarration;
 			Tab = Tabs.Actions;
-			Rooms = Room.Default();
 		}
 
 		/// <summary>
@@ -35,11 +34,6 @@ namespace RhythmBase.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }
-
-		/// <summary>
-		/// Gets or sets the rooms associated with the event.
-		/// </summary>
-		public Room Rooms { get; set; }
 
 		/// <summary>
 		/// Returns a string that represents the current object.

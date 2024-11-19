@@ -68,7 +68,7 @@ namespace RhythmBase.Events
 		/// <summary>  
 		/// Gets or sets the offset time of the audio.  
 		/// </summary>  
-		[JsonConverter(typeof(TimeConverter))]
+		[JsonConverter(typeof(MilliSecondConverter))]
 		public TimeSpan Offset
 		{
 			get => Audio.Offset;

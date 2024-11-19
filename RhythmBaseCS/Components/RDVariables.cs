@@ -1,16 +1,15 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.RegularExpressions;
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Variables.
 	/// </summary>
-	public sealed class Variables
+	public sealed class RDVariables
 	{
 #pragma warning disable CS1591
 #pragma warning disable SYSLIB1045
-		public Variables()
+		public RDVariables()
 		{
 			i = new int[10];
 			f = new float[10];
@@ -27,32 +26,34 @@ namespace RhythmBase.Components
 		{
 			get
 			{
-				Match match = Regex.Match(variableName, "^([ifb])(\\d{2})$");
+				Match match = Regex.Match(variableName, "^([ifb])(\\d)$");
+				int index = match.Groups[2].Value[0] - '0';
 				if (match.Success)
 					return match.Groups[1].Value switch
 					{
-						"i" => i[Conversions.ToInteger(match.Groups[2].Value)],
-						"f" => f[Conversions.ToInteger(match.Groups[2].Value)],
-						"b" => b[Conversions.ToInteger(match.Groups[2].Value)],
+						"i" => i[index],
+						"f" => f[index],
+						"b" => b[index],
 						_ => throw new NotImplementedException(),
 					};
 				return GetType().GetField(variableName)?.GetValue(this)!;
 			}
 			set
 			{
-				Match match = Regex.Match(variableName, "^([ifb])(\\d{2})$");
+				Match match = Regex.Match(variableName, "^([ifb])(\\d)$");
+				int index = match.Groups[2].Value[0] - '0';
 				if (match.Success)
 				{
 					switch (match.Groups[1].Value)
 					{
 						case "i":
-							i[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToInteger(value);
+							i[index] = value is int v1 ? v1 : throw new ArgumentException( "Value is not an integer.");
 							break;
 						case "f":
-							f[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToSingle(value);
+							f[index] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
 							break;
 						case "b":
-							b[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToBoolean(value);
+							b[index] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
 							break;
 					}
 				}

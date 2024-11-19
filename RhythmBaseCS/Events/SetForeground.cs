@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>  
 		public SetForeground()
 		{
-			Rooms = new Room(false, new byte[1]);
+			Rooms = new RDRoom(false, new byte[1]);
 			Color = new PaletteColor(true);
 			Type = EventType.SetForeground;
 			Tab = Tabs.Actions;
@@ -20,7 +20,7 @@ namespace RhythmBase.Events
 		/// <summary>  
 		/// Gets or sets the rooms associated with the event.  
 		/// </summary>  
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>  
 		/// Gets or sets the content mode for the event.  

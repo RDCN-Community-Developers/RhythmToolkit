@@ -79,11 +79,11 @@ namespace RhythmBase.Expressions
 				TokenType.RightBrace
 			}.Contains(e);
 
-		internal static Func<Variables, TResult> GetFunctionalExpression<TResult>(string exp)
+		internal static Func<RDVariables, TResult> GetFunctionalExpression<TResult>(string exp)
 		{
-			ParameterExpression param = System.Linq.Expressions.Expression.Parameter(typeof(Variables), "v");
+			ParameterExpression param = System.Linq.Expressions.Expression.Parameter(typeof(RDVariables), "v");
 			System.Linq.Expressions.Expression resultExp = GetExpression(exp, param);
-			Expression<Func<Variables, TResult>> lambda = System.Linq.Expressions.Expression.Lambda<Func<Variables, TResult>>(System.Linq.Expressions.Expression.Convert(resultExp, typeof(TResult)),
+			Expression<Func<RDVariables, TResult>> lambda = System.Linq.Expressions.Expression.Lambda<Func<RDVariables, TResult>>(System.Linq.Expressions.Expression.Convert(resultExp, typeof(TResult)),
 			[
 				param
 			]);

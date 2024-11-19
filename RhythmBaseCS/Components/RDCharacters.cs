@@ -3,7 +3,7 @@
 	/// <summary>
 	/// In-game character.
 	/// </summary>
-	public enum Characters
+	public enum RDCharacters
 	{
 #pragma warning disable CS1591
 		Adog,

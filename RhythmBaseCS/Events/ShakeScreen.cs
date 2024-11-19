@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public ShakeScreen()
 		{
-			Rooms = new Room(true, new byte[1]);
+			Rooms = new RDRoom(true, new byte[1]);
 			Type = EventType.ShakeScreen;
 			Tab = Tabs.Actions;
 		}
@@ -19,7 +19,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>
 		/// Gets or sets the shake level of the event.

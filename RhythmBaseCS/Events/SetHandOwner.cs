@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public SetHandOwner()
 		{
-			Rooms = new Room(true, new byte[1]);
+			Rooms = new RDRoom(true, new byte[1]);
 			Type = EventType.SetHandOwner;
 			Tab = Tabs.Actions;
 		}
@@ -19,7 +19,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the room associated with the event.
 		/// </summary>
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>
 		/// Gets or sets the hand associated with the event.
@@ -29,7 +29,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the character associated with the event.
 		/// </summary>
-		public Characters Character { get; set; }
+		public RDCharacters Character { get; set; }
 
 		/// <summary>
 		/// Gets the type of the event.

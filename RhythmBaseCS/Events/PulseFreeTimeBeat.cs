@@ -50,7 +50,7 @@ namespace RhythmBase.Events
 					Out = "<";
 					break;
 				case ActionType.Custom:
-					Out = Conversions.ToString(CustomPulse + 1);
+					Out = (CustomPulse + 1).ToString();
 					break;
 				case ActionType.Remove:
 					Out = "X";

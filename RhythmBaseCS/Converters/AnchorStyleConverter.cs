@@ -5,42 +5,47 @@ using RhythmBase.Events;
 using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
-	internal class AnchorStyleConverter : JsonConverter<FloatingText.AnchorStyle>
+	internal partial class AnchorStyleConverter : JsonConverter<FloatingText.AnchorStyle>
 	{
 		public override void WriteJson(JsonWriter writer, FloatingText.AnchorStyle value, JsonSerializer serializer)
 		{
-			writer.WriteValue((((value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)) > FloatingText.AnchorStyle.Center) ? Enum.Parse<FloatingText.AnchorStyle>(Conversions.ToString((int)(value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)))).ToString() : "Middle") + Enum.Parse<FloatingText.AnchorStyle>(Conversions.ToString((int)(value & (FloatingText.AnchorStyle.Left | FloatingText.AnchorStyle.Right)))).ToString());
+			var horizontal = value & (FloatingText.AnchorStyle.Left | FloatingText.AnchorStyle.Right);
+			var vertical = value & (FloatingText.AnchorStyle.Upper | FloatingText.AnchorStyle.Lower);
+			writer.WriteValue(
+				(vertical == 0 ?
+					"Middle" 
+					: vertical.ToString()) 
+				+ horizontal.ToString()
+			);
 		}
 
 		public override FloatingText.AnchorStyle ReadJson(JsonReader reader, Type objectType, FloatingText.AnchorStyle existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			string JString = JToken.ReadFrom(reader).ToObject<string>() ?? throw new Exceptions.ConvertingException("Cannot read the anchor.");
-			Match match = Regex.Match(JString, "(Upper|Middle|Lower)(Left|Center|Right)");
+			JToken token = JToken.ReadFrom(reader);
+			string JString = token.ToObject<string>() ?? throw new Exceptions.ConvertingException("Cannot read the anchor.");
+			Match match = AnchorStyleRegex().Match(JString);
 			if (!match.Success)
-				throw new Exceptions.ConvertingException($"Illegal Anchor: {JString}");
+				throw new Exceptions.ConvertingException(token, $"Illegal Anchor: {JString}");
 			FloatingText.AnchorStyle result = FloatingText.AnchorStyle.Center;
-			string value = match.Groups[1].Value;
-			switch (value)
-			{
-				case "Upper":
-					result |= FloatingText.AnchorStyle.Upper;
-					break;
-				case "Lower":
-					result |= FloatingText.AnchorStyle.Lower;
-					break;
-			}
 
-			string value2 = match.Groups[2].Value;
-			switch (value2)
+			result |= match.Groups[1].Value switch
 			{
-				case "Left":
-					result |= FloatingText.AnchorStyle.Left;
-					break;
-				case "Right":
-					result |= FloatingText.AnchorStyle.Right;
-					break;
-			}
+				"Upper" => FloatingText.AnchorStyle.Upper,
+				"Lower" => FloatingText.AnchorStyle.Lower,
+				_ => 0,
+			};
+
+			result |= match.Groups[2].Value switch
+			{
+				"Left" => FloatingText.AnchorStyle.Left,
+				"Right" => FloatingText.AnchorStyle.Right,
+				_ => 0,
+			};
+
 			return result;
 		}
+
+		[GeneratedRegex("(Upper|Middle|Lower)(Left|Center|Right)")]
+		private static partial Regex AnchorStyleRegex();
 	}
 }

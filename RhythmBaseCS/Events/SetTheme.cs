@@ -14,7 +14,7 @@ namespace RhythmBase.Events
 			Preset = Theme.None;
 			Type = EventType.SetTheme;
 			Tab = Tabs.Actions;
-			Rooms = new Room(false, new byte[1]);
+			Rooms = new RDRoom(false, new byte[1]);
 		}
 
 		/// <summary>  
@@ -40,7 +40,12 @@ namespace RhythmBase.Events
 		/// <summary>  
 		/// Gets or sets the rooms associated with the event.  
 		/// </summary>  
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to skip paint effects.
+		/// </summary>
+		public bool SkipPaintEffects { get; set; }
 
 		/// <summary>  
 		/// Returns a string that represents the current object.  

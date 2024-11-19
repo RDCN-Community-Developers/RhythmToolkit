@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public SetBackgroundColor()
 		{
-			Rooms = new Room(false, new byte[1]);
+			Rooms = new RDRoom(false, new byte[1]);
 			Color = new PaletteColor(true);
 			Type = EventType.SetBackgroundColor;
 			Tab = Tabs.Actions;
@@ -20,7 +20,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>
 		/// Gets or sets the easing type for the event.

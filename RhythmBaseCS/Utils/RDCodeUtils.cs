@@ -52,35 +52,28 @@
 		/// <summary>
 		/// Reader class to read and tokenize RDCode.
 		/// </summary>
-		public class Reader()
+		public static class Reader
 		{
-			private string code;
-			private int position;
-
-			/// <summary>
-			/// Gets or sets the RDCode to be read.
-			/// </summary>
-			public required string Code
-			{
-				get => code;
-				set
-				{
-					code = value;
-					position = 0;
-				}
-			}
+			private static string code;
+			private static int position;
+			private static readonly object slock = new();
 
 			/// <summary>
 			/// Reads tokens from the RDCode until the end is reached.
 			/// </summary>
 			/// <returns>An enumerable collection of tokens.</returns>
-			public IEnumerable<Token> ReadToEnd()
+			public static IEnumerable<Token> ReadToEnd(string code)
 			{
-				Token current;
-				while ((current = Read()).Type != TokenType.End)
-					yield return current;
+				lock (slock)
+				{
+					Reader.code = code;
+					position = 0;
+					Token current;
+					while ((current = Read()).Type != TokenType.End)
+						yield return current;
+				}
 			}
-			private Token Read()
+			private static Token Read()
 			{
 				ReadSpace();
 				if (!TryPeek(out char c))
@@ -186,7 +179,7 @@
 					};
 				}
 			}
-			private void ReadSpace()
+			private static void ReadSpace()
 			{
 				bool flag = true;
 				while (flag && position < code.Length)
@@ -198,7 +191,7 @@
 						flag = false;
 				}
 			}
-			private int ReadInt()
+			private static int ReadInt()
 			{
 				TryPeek(out char c);
 				int result = 0;
@@ -211,34 +204,34 @@
 				}
 				return result;
 			}
-			private bool TryPeek(out char c)
+			private static bool TryPeek(out char c)
 			{
 				bool flag = position < code.Length;
 				c = flag ? code[position] : '\0';
 				return flag;
 			}
-			private bool TryPeek(out string s, int length)
+			private static bool TryPeek(out string s, int length)
 			{
 				bool flag = position + length - 1 < code.Length;
 				s = flag ? code[(position)..(position + length)] : "";
 				return flag;
 			}
-			private bool PeekMatch(string s) => TryPeek(out string so, s.Length) && s == so;
-			private bool TryRead(out char c)
+			private static bool PeekMatch(string s) => TryPeek(out string so, s.Length) && s == so;
+			private static bool TryRead(out char c)
 			{
 				bool flag = position < code.Length;
 				c = flag ? code[position] : '\0';
 				if (flag) position++;
 				return flag;
 			}
-			private bool TryRead(out string s, int length)
+			private static bool TryRead(out string s, int length)
 			{
 				bool flag = position < code.Length;
 				s = flag ? code[position..(position + length)] : "";
 				if (flag) position += length;
 				return flag;
 			}
-			private bool ReadMatch(char c)
+			private static bool ReadMatch(char c)
 			{
 				if (position + 1 > code.Length) return false;
 				char get = code[position];
@@ -246,7 +239,7 @@
 				position += 1;
 				return true;
 			}
-			private bool ReadMatch(string s)
+			private static bool ReadMatch(string s)
 			{
 				if (position + s.Length > code.Length) return false;
 				string get = code[(position)..(position + s.Length)];

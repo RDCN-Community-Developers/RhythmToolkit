@@ -145,49 +145,49 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Get all hits.
 		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this AddClassicBeat e) =>
-			new List<Hit> { new(e, e.GetBeat(6), e.Hold) }
+		public static IEnumerable<RDHit> HitTimes(this AddClassicBeat e) =>
+			new List<RDHit> { new(e, e.GetBeat(6), e.Hold) }
 			.AsEnumerable();
 		/// <summary>
 		/// Get all hits.
 		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this AddOneshotBeat e)
+		public static IEnumerable<RDHit> HitTimes(this AddOneshotBeat e)
 		{
 			e._beat.IfNullThrowException();
-			List<Hit> L = [];
+			List<RDHit> L = [];
 			uint loops = e.Loops;
 			for (uint i = 0U; i <= loops; i += 1U)
 			{
 				sbyte b = (sbyte)(e.Subdivisions - 1);
 				for (sbyte j = 0; j <= b; j += 1)
-					L.Add(new Hit(e, new RDBeat(e._beat._calculator, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + (float)j * (e.Tick / (float)e.Subdivisions)), 0f));
+					L.Add(new RDHit(e, new RDBeat(e._beat._calculator, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + (float)j * (e.Tick / (float)e.Subdivisions)), 0f));
 			}
 			return L.AsEnumerable();
 		}
 		/// <summary>
 		/// Get all hits.
 		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this AddFreeTimeBeat e) =>
+		public static IEnumerable<RDHit> HitTimes(this AddFreeTimeBeat e) =>
 			e.Pulse == 6
 				? [new(e, e.Beat, e.Hold)]
 				: ([]);
 		/// <summary>
 		/// Get all hits.
 		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this PulseFreeTimeBeat e) =>
+		public static IEnumerable<RDHit> HitTimes(this PulseFreeTimeBeat e) =>
 e.IsHitable()
 				? [new(e, e.Beat, e.Hold)]
 				: ([]);
 		/// <summary>
 		/// Get all hits.
 		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this BaseBeat e) => e.Type switch
+		public static IEnumerable<RDHit> HitTimes(this BaseBeat e) => e.Type switch
 		{
 			EventType.AddClassicBeat => ((AddClassicBeat)e).HitTimes(),
 			EventType.AddFreeTimeBeat => ((AddFreeTimeBeat)e).HitTimes(),
 			EventType.AddOneshotBeat => ((AddOneshotBeat)e).HitTimes(),
 			_ => e.Type != EventType.PulseFreeTimeBeat
-				? Array.Empty<Hit>().AsEnumerable()
+				? Array.Empty<RDHit>().AsEnumerable()
 				: ((PulseFreeTimeBeat)e).HitTimes(),
 		};
 		/// <summary>

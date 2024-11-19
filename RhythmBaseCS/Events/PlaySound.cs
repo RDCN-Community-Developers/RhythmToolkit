@@ -1,4 +1,5 @@
-﻿using RhythmBase.Components;
+﻿using Newtonsoft.Json;
+using RhythmBase.Components;
 namespace RhythmBase.Events
 {
 	/// <summary>
@@ -28,6 +29,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the audio sound.
 		/// </summary>
+		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public RDAudio? Sound { get; set; }
 
 		/// <summary>

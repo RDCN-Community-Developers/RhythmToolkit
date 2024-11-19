@@ -831,9 +831,9 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Get all the hit of the level.
 		/// </summary>
-		public static IEnumerable<Hit> GetHitBeat(this RDLevel e)
+		public static IEnumerable<RDHit> GetHitBeat(this RDLevel e)
 		{
-			List<Hit> L = [];
+			List<RDHit> L = [];
 			foreach (RowEventCollection item in e.Rows)
 			{
 				L.AddRange(item.HitBeats());
@@ -875,10 +875,10 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Get all hits of all beats.
 		/// </summary>
-		public static IEnumerable<Hit> HitBeats(this RowEventCollection e)
+		public static IEnumerable<RDHit> HitBeats(this RowEventCollection e)
 		{
 			RowType rowType = e.RowType;
-			IEnumerable<Hit> HitBeats;
+			IEnumerable<RDHit> HitBeats;
 			if (rowType != RowType.Classic)
 			{
 				if (rowType != RowType.Oneshot)

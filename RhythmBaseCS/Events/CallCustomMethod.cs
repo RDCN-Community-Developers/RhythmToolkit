@@ -30,7 +30,7 @@ namespace RhythmBase.Events
 		public override EventType Type { get; } = EventType.CallCustomMethod;
 		/// <inheritdoc/>
 		[JsonIgnore]
-		public Room Rooms { get; set; } = Room.Default();
+		public RDRoom Rooms { get; set; } = RDRoom.Default();
 		/// <inheritdoc/>
 		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <inheritdoc/>

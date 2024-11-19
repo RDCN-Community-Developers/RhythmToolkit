@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Extensions;
@@ -48,7 +47,7 @@ namespace RhythmBase.Converters
 			existingValue!.parent = parent;
 			if (reg.Success)
 			{
-				existingValue.PaletteIndex = Conversions.ToInteger(reg.Groups[1].Value);
+				existingValue.PaletteIndex = int.Parse(reg.Groups[1].Value);
 			}
 			else
 			{

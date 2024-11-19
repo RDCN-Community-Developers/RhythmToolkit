@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 namespace RhythmBase.Converters
 {
-	internal class TimeConverter : JsonConverter<TimeSpan>
+	internal abstract class TimeConverter : JsonConverter<TimeSpan>
 	{
 		public TimeConverter()
 		{
@@ -28,10 +28,10 @@ namespace RhythmBase.Converters
 					writer.WriteValue(value.TotalSeconds);
 					break;
 				case TimeType.MiliSecond:
-					writer.WriteValue(value.TotalMilliseconds);
+					writer.WriteValue((int)value.TotalMilliseconds);
 					break;
 				case TimeType.Microsecond:
-					writer.WriteValue(value.TotalMicroseconds);
+					writer.WriteValue((int)value.TotalMicroseconds);
 					break;
 				default:
 					break;
@@ -46,8 +46,8 @@ namespace RhythmBase.Converters
 				TimeType.Hour => TimeSpan.FromHours((double)value),
 				TimeType.Minute => TimeSpan.FromMinutes((double)value),
 				TimeType.Second => TimeSpan.FromSeconds((double)value),
-				TimeType.MiliSecond => TimeSpan.FromMilliseconds((double)value),
-				TimeType.Microsecond => TimeSpan.FromMicroseconds((double)value),
+				TimeType.MiliSecond => TimeSpan.FromMilliseconds((int)value),
+				TimeType.Microsecond => TimeSpan.FromMicroseconds((int)value),
 				_ => throw new NotImplementedException()
 			};
 		}

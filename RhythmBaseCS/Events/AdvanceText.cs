@@ -17,7 +17,7 @@ namespace RhythmBase.Events
 		public override EventType Type { get; } = EventType.AdvanceText;
 		/// <inheritdoc/>
 		[JsonIgnore]
-		public Room Rooms
+		public RDRoom Rooms
 		{
 			get => Parent.Rooms;
 			set => Parent.Rooms = value;

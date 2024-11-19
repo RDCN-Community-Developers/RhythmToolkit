@@ -64,9 +64,9 @@ namespace RhythmBase.Events
 			public static CallCustomMethod EnableRowReflections(int roomID) => FunctionCalling(nameof(EnableRowReflections), roomID);
 			public static CallCustomMethod DisableRowReflections(int roomID) => FunctionCalling(nameof(DisableRowReflections), roomID);
 			public static CallCustomMethod ChangeCharacter(string Name, int roomID) => FunctionCalling(nameof(ChangeCharacter), Name, roomID);
-			public static CallCustomMethod ChangeCharacter(Characters Name, int roomID) => FunctionCalling(nameof(ChangeCharacter), Name, roomID);
+			public static CallCustomMethod ChangeCharacter(RDCharacters Name, int roomID) => FunctionCalling(nameof(ChangeCharacter), Name, roomID);
 			public static CallCustomMethod ChangeCharacterSmooth(string Name, int roomID) => FunctionCalling(nameof(ChangeCharacterSmooth), Name, roomID);
-			public static CallCustomMethod ChangeCharacterSmooth(Characters Name, int roomID) => FunctionCalling(nameof(ChangeCharacterSmooth), Name, roomID);
+			public static CallCustomMethod ChangeCharacterSmooth(RDCharacters Name, int roomID) => FunctionCalling(nameof(ChangeCharacterSmooth), Name, roomID);
 			public static CallCustomMethod SmoothShake(bool value) => PropertyAssignment(nameof(SmoothShake), value);
 			public static CallCustomMethod RotateShake(bool value) => PropertyAssignment(nameof(RotateShake), value);
 			public static CallCustomMethod DisableRowChangeWarningFlashes(bool value) => PropertyAssignment(nameof(DisableRowChangeWarningFlashes), value);

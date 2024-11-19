@@ -9,6 +9,6 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the room associated with the event.
 		/// </summary>
-		SingleRoom Room { get; set; }
+		RDSingleRoom Room { get; set; }
 	}
 }

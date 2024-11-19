@@ -91,7 +91,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the offset of the audio.
 		/// </summary>
-		[JsonConverter(typeof(TimeConverter))]
+		[JsonConverter(typeof(MilliSecondConverter))]
 		public TimeSpan Offset
 		{
 			get

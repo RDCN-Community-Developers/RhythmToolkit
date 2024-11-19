@@ -4,7 +4,7 @@
 	/// Represents the index of a room with various possible values.
 	/// </summary>
 	[Flags]
-	public enum RoomIndex : byte
+	public enum RDRoomIndex : byte
 	{
 		/// <summary>
 		/// No room selected.

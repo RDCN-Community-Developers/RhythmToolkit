@@ -151,11 +151,19 @@ namespace RhythmBase.Utils
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseDecorationAction" />.  
 		/// </summary>  
 		public static readonly ReadOnlyCollection<EventType> DecorationTypes = ToEnums<BaseDecorationAction>().AsReadOnly();
-
+		/// <summary>  
+		/// Custom event types.  
+		/// </summary>  
+		public static ReadOnlyCollection<EventType> CustomTypes => new(
+		[
+			EventType.CustomEvent,
+			EventType.CustomRowEvent,
+			EventType.CustomDecorationEvent,
+		]);
 		/// <summary>  
 		/// Event types for gameplay.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> EventTypeEnumsForGameplay = new(
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForGameplay => new(
 		[
 			EventType.HideRow,
 			EventType.ChangePlayersRows,
@@ -168,7 +176,7 @@ namespace RhythmBase.Utils
 		/// <summary>  
 		/// Event types for environment.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> EventTypeEnumsForEnvironment = new(
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForEnvironment => new(
 		[
 			EventType.SetTheme,
 			EventType.SetBackgroundColor,
@@ -181,7 +189,7 @@ namespace RhythmBase.Utils
 		/// <summary>  
 		/// Event types for row effects.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> EventTypeEnumsForRowFX = new(
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForRowFX => new(
 		[
 			EventType.HideRow,
 			EventType.MoveRow,
@@ -192,7 +200,7 @@ namespace RhythmBase.Utils
 		/// <summary>  
 		/// Event types for camera effects.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> EventTypeEnumsForCameraFX = new(
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForCameraFX => new(
 		[
 			EventType.MoveCamera,
 			EventType.ShakeScreen,
@@ -203,7 +211,7 @@ namespace RhythmBase.Utils
 		/// <summary>  
 		/// Event types for visual effects.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> EventTypeEnumsForVisualFX = new(
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForVisualFX => new(
 		[
 			EventType.SetVFXPreset,
 			EventType.SetSpeed,
@@ -219,7 +227,7 @@ namespace RhythmBase.Utils
 		/// <summary>  
 		/// Event types for text effects.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> EventTypeEnumsForText = new(
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForText => new(
 		[
 			EventType.TextExplosion,
 			EventType.ShowDialogue,
@@ -231,7 +239,7 @@ namespace RhythmBase.Utils
 		/// <summary>  
 		/// Event types for utility actions.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> EventTypeEnumsForUtility = new(
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForUtility => new(
 		[
 			EventType.Comment,
 			EventType.TagAction,

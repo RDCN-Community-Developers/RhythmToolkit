@@ -73,7 +73,7 @@ namespace RhythmBase.Components
 		public RDLevel()
 		{
 			_path = "";
-			Variables = new Variables();
+			Variables = new RDVariables();
 			Calculator = new BeatCalculator(this);
 			Settings = new Settings();
 			Conditionals = [];
@@ -146,7 +146,7 @@ namespace RhythmBase.Components
 				playsong.Song = new RDAudio() { Filename = "sndOrientalTechno" };
 				settheme.Preset = SetTheme.Theme.OrientalTechno;
 				rdlevel.AddRange([playsong, settheme]);
-				RowEventCollection samurai = rdlevel.CreateRow(new SingleRoom(RoomIndex.Room1), Characters.Samurai);
+				RowEventCollection samurai = rdlevel.CreateRow(new RDSingleRoom(RDRoomIndex.Room1), RDCharacters.Samurai);
 				samurai.Sound.Filename = "Shaker";
 				samurai.Add(new AddClassicBeat());
 				return rdlevel;
@@ -158,7 +158,7 @@ namespace RhythmBase.Components
 		/// <param name="room">The room where this decoration is in.</param>
 		/// <param name="sprite">The sprite referenced by this decoration.</param>
 		/// <returns>Decoration that created and added to the level.</returns>
-		public DecorationEventCollection CreateDecoration(SingleRoom room, [NotNull] string sprite)
+		public DecorationEventCollection CreateDecoration(RDSingleRoom room, [NotNull] string sprite)
 		{
 			DecorationEventCollection temp = new(room)
 			{
@@ -200,7 +200,7 @@ namespace RhythmBase.Components
 		/// <param name="room">The room where this row is in.</param>
 		/// <param name="character">The character used by this row.</param>
 		/// <returns>Row that created and added to the level.</returns>
-		public RowEventCollection CreateRow(SingleRoom room, RDCharacter character)
+		public RowEventCollection CreateRow(RDSingleRoom room, RDCharacter character)
 		{
 			RowEventCollection temp = new()
 			{
@@ -351,9 +351,6 @@ namespace RhythmBase.Components
 		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
 		public void Write(string filepath, LevelReadOrWriteSettings settings)
 		{
-			if (_path.IsNullOrEmpty() &&
-				System.IO.Path.GetFullPath(_path) == System.IO.Path.GetFullPath(filepath))
-				throw new OverwriteNotAllowedException(_path, typeof(LevelReadOrWriteSettings));
 			using StreamWriter file = File.CreateText(filepath);
 			Write(file, settings);
 		}
@@ -526,23 +523,23 @@ namespace RhythmBase.Components
 				RoomStatus = [
 					new(){
 						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.Room1)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room1)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
 					},
 					new(){
 						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.Room2)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room2)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
 					},
 					new(){
 						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.Room3)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room3)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
 					},
 					new(){
 						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.Room4)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room4)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
 					},
 					new(){
 						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RoomIndex.RoomTop)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.RoomTop)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
 					}
 				],
 			};
@@ -682,6 +679,6 @@ namespace RhythmBase.Components
 		/// Variables.
 		/// </summary>
 		[JsonIgnore]
-		public readonly Variables Variables;
+		public readonly RDVariables Variables;
 	}
 }

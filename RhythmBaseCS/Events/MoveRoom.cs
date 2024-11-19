@@ -65,6 +65,6 @@ namespace RhythmBase.Events
 		/// Gets the room associated with the event.
 		/// </summary>
 		[JsonIgnore]
-		public Room Rooms => new SingleRoom(checked((byte)Y));
+		public RDRoom Rooms => new RDSingleRoom(checked((byte)Y));
 	}
 }

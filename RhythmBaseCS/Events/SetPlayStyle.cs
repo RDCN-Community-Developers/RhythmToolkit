@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.Events
+﻿using Newtonsoft.Json;
+
+namespace RhythmBase.Events
 {
 	/// <summary>
 	/// Represents an event to set the play style.
@@ -17,16 +19,19 @@
 		/// <summary>
 		/// Gets or sets the play style.
 		/// </summary>
+		[JsonProperty(nameof(PlayStyle))]
 		public PlayStyles PlayStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the next bar.
 		/// </summary>
+		[JsonProperty(nameof(NextBar))]
 		public int NextBar { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the play style is relative.
 		/// </summary>
+		[JsonProperty(nameof(Relative))]
 		public bool Relative { get; set; }
 
 		/// <summary>

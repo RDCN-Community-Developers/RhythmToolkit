@@ -9,7 +9,7 @@ namespace RhythmBase.Components
 	/// Represents a room that can be applied to multiple rooms.
 	/// </summary>
 	[JsonConverter(typeof(RoomConverter))]
-	public struct Room : IEqualityOperators<Room, Room, bool>, IEquatable<Room>
+	public struct RDRoom : IEqualityOperators<RDRoom, RDRoom, bool>, IEquatable<RDRoom>
 	{
 		/// <summary>
 		/// Indicates if the top room can be applied.
@@ -24,11 +24,11 @@ namespace RhythmBase.Components
 		[IndexerName("Room")]
 		public bool this[byte Index]
 		{
-			readonly get => _data.HasFlag(Enum.Parse<RoomIndex>(Conversions.ToString(1 << Index)));
+			readonly get => _data.HasFlag((RDRoomIndex)(1 << Index));
 			set
 			{
 				if (!(Index >= 4 && !EnableTop))
-					_data = value ? (_data | (RoomIndex)(1 << (int)Index)) : (_data & (RoomIndex)(1 << (int)Index));
+					_data = value ? (_data | (RDRoomIndex)(1 << (int)Index)) : (_data & (RDRoomIndex)(1 << (int)Index));
 			}
 		}
 
@@ -39,10 +39,10 @@ namespace RhythmBase.Components
 		{
 			get
 			{
-				RoomIndex indexes = _data;
+				RDRoomIndex indexes = _data;
 				return Enumerable
 					.Range(0, 5)
-					.Where(x => indexes.HasFlag((RoomIndex)(1 << x)))
+					.Where(x => indexes.HasFlag((RDRoomIndex)(1 << x)))
 					.Select(x => (byte)x)
 					.ToList();
 			}
@@ -55,23 +55,23 @@ namespace RhythmBase.Components
 		/// Returns an instance with only room 1 enabled.
 		/// </summary>
 		/// <returns>An instance with only room 1 enabled.</returns>
-		public static Room Default() => new(false, [])
+		public static RDRoom Default() => new(false, [])
 		{
-			_data = RoomIndex.Room1
+			_data = RDRoomIndex.Room1
 		};
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Room"/> struct.
+		/// Initializes a new instance of the <see cref="RDRoom"/> struct.
 		/// </summary>
 		/// <param name="enableTop">Indicates if the top room can be applied.</param>
-		public Room(bool enableTop) => EnableTop = enableTop;
+		public RDRoom(bool enableTop) => EnableTop = enableTop;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Room"/> struct with specified rooms.
+		/// Initializes a new instance of the <see cref="RDRoom"/> struct with specified rooms.
 		/// </summary>
 		/// <param name="enableTop">Indicates if the top room can be applied.</param>
 		/// <param name="rooms">The rooms to be enabled.</param>
-		public Room(bool enableTop, params byte[] rooms)
+		public RDRoom(bool enableTop, params byte[] rooms)
 		{
 			this = default;
 			EnableTop = enableTop;
@@ -83,7 +83,7 @@ namespace RhythmBase.Components
 				else
 					this[rooms.Single()] = true;
 			else
-				_data = RoomIndex.RoomNotAvaliable;
+				_data = RDRoomIndex.RoomNotAvaliable;
 		}
 
 		/// <summary>
@@ -91,9 +91,9 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="rooms">The rooms to check.</param>
 		/// <returns>True if the rooms are included; otherwise, false.</returns>
-		public readonly bool Contains(Room rooms)
+		public readonly bool Contains(RDRoom rooms)
 		{
-			if (_data == RoomIndex.RoomNotAvaliable)
+			if (_data == RDRoomIndex.RoomNotAvaliable)
 				return false;
 			else
 			{
@@ -112,23 +112,23 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="room">The room to check.</param>
 		/// <returns>True if the room is included; otherwise, false.</returns>
-		public readonly bool Contains(RoomIndex room)
+		public readonly bool Contains(RDRoomIndex room)
 		{
 			return _data.HasFlag(room);
 		}
 
 		/// <inheritdoc/>
-		public static bool operator ==(Room R1, Room R2) => R1._data == R2._data;
+		public static bool operator ==(RDRoom R1, RDRoom R2) => R1._data == R2._data;
 
 		/// <inheritdoc/>
-		public static bool operator !=(Room R1, Room R2) => !(R1 == R2);
+		public static bool operator !=(RDRoom R1, RDRoom R2) => !(R1 == R2);
 
 		/// <summary>
 		/// Implicitly converts a SingleRoom to a Room.
 		/// </summary>
 		/// <param name="room">The SingleRoom instance to convert.</param>
 		/// <returns>A Room instance.</returns>
-		public static implicit operator Room(SingleRoom room) => new(room.EnableTop, [0, ((byte)room.Room)]);
+		public static implicit operator RDRoom(RDSingleRoom room) => new(room.EnableTop, [0, ((byte)room.Room)]);
 
 		/// <summary>
 		/// Explicitly converts a Room to a SingleRoom.
@@ -136,20 +136,20 @@ namespace RhythmBase.Components
 		/// <param name="room">The Room instance to convert.</param>
 		/// <returns>A SingleRoom instance.</returns>
 		/// <exception cref="Exceptions.RhythmBaseException">Thrown when the Room contains more than one room.</exception>
-		public static explicit operator SingleRoom(Room room) =>
+		public static explicit operator RDSingleRoom(RDRoom room) =>
 			room.Rooms.Count == 1
-				? new SingleRoom(room.Rooms.Single())
+				? new RDSingleRoom(room.Rooms.Single())
 				: throw new Exceptions.RhythmBaseException();
 
 		/// <inheritdoc/>
-		public override readonly bool Equals(object? obj) => obj is Room e && Equals(e);
+		public override readonly bool Equals(object? obj) => obj is RDRoom e && Equals(e);
 
 		/// <inheritdoc/>
 		public override readonly int GetHashCode() => HashCode.Combine(_data);
 
 		/// <inheritdoc/>
-		public readonly bool Equals(Room other) => this == other;
+		public readonly bool Equals(RDRoom other) => this == other;
 
-		private RoomIndex _data;
+		private RDRoomIndex _data;
 	}
 }

@@ -68,7 +68,7 @@ namespace RhythmBase.Events
 		/// Gets the room associated with this action.
 		/// </summary>
 		[JsonIgnore]
-		public SingleRoom Room => Parent?.Room ?? SingleRoom.Default;
+		public RDSingleRoom Room => Parent?.Room ?? RDSingleRoom.Default;
 
 		/// <summary>
 		/// The parent decoration event collection.

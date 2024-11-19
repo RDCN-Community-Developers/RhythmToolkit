@@ -13,7 +13,7 @@ namespace RhythmBase.Events
 		public SetSpeed()
 		{
 			Type = EventType.SetSpeed;
-			Rooms = Room.Default();
+			Rooms = RDRoom.Default();
 			Tab = Tabs.Actions;
 		}
 
@@ -42,7 +42,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
 		[JsonIgnore]
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>
 		/// Gets the tab associated with the event.

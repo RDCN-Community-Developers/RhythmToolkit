@@ -51,8 +51,11 @@ namespace RhythmBase.Converters
 			ValueTuple<uint, float> b = value.Beat.BarBeat;
 			JToken s = JObj.First ?? throw new ConvertingException($"Internal error: Missing properties. path \"{JObj.Path}\"");
 			s.AddBeforeSelf(new JProperty("bar", b.Item1));
-			s.AddBeforeSelf(new JProperty("beat", b.Item2));
+			if (value is not IBarBeginningEvent)
+				s.AddBeforeSelf(new JProperty("beat", b.Item2));
 			s.AddBeforeSelf(new JProperty("type", value.Type.ToString()));
+			if (JObj.Value<string>("tag") is string str && string.IsNullOrEmpty(str))
+				JObj.Property("tag")?.Remove();
 			return JObj;
 		}
 		protected readonly RDLevel level = level;

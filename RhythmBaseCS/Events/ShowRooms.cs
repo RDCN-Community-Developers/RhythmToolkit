@@ -12,7 +12,7 @@ namespace RhythmBase.Events
 		/// </summary>  
 		public ShowRooms()
 		{
-			Rooms = new Room(false, new byte[1]);
+			Rooms = new RDRoom(false, new byte[1]);
 			Heights = new List<int>(4);
 			Type = EventType.ShowRooms;
 			Tab = Tabs.Rooms;
@@ -22,7 +22,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the rooms associated with the event.  
 		/// </summary>  
 		[JsonProperty]
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>  
 		/// Gets or sets the ease type for the event.  

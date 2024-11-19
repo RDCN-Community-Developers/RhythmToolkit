@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public CustomFlash()
 		{
-			Rooms = new Room(true, new byte[1]);
+			Rooms = new RDRoom(true, new byte[1]);
 			StartColor = new PaletteColor(false);
 			EndColor = new PaletteColor(false);
 			Type = EventType.CustomFlash;
@@ -19,7 +19,7 @@ namespace RhythmBase.Events
 		}
 
 		/// <inheritdoc />
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <inheritdoc />
 		public Ease.EaseType Ease { get; set; }

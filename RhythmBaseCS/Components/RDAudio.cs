@@ -39,7 +39,7 @@ public class RDAudio
 	/// Gets or sets the offset of the audio.
 	/// </summary>
 	[JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-	[JsonConverter(typeof(TimeConverter))]
+	[JsonConverter(typeof(MilliSecondConverter))]
 	public TimeSpan Offset { get; set; }
 
 	/// <summary>

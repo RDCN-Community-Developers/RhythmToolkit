@@ -25,7 +25,7 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <returns>The beat of the last event.</returns>
 		[JsonIgnore]
-		public RDBeat Length => eventsBeatOrder.LastOrDefault().Value.First().Beat;
+		public RDBeat Length => eventsBeatOrder.LastOrDefault().Value.FirstOrDefault()?.Beat??new();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OrderedEventCollection"/> class.

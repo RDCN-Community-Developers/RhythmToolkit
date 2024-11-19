@@ -29,7 +29,7 @@ namespace RhythmBase.Components
 		/// Room.
 		/// </summary>
 		[JsonProperty("rooms")]
-		public SingleRoom Room { get; set; }
+		public RDSingleRoom Room { get; set; }
 		/// <summary>
 		/// The file reference used by the decoration.
 		/// </summary>
@@ -53,13 +53,13 @@ namespace RhythmBase.Components
 		/// </summary>
 		public DecorationEventCollection()
 		{
-			Room = new SingleRoom(RoomIndex.Room1);
+			Room = new RDSingleRoom(RDRoomIndex.Room1);
 		}
 		/// <param name="room">Decoration room.</param>
-		internal DecorationEventCollection(SingleRoom room)
+		internal DecorationEventCollection(RDSingleRoom room)
 		{
 			Room = room;
-			_id = Conversions.ToString(GetHashCode());
+			_id = GetHashCode().ToString();
 		}
 		/// <summary>
 		/// Add an event to decoration.

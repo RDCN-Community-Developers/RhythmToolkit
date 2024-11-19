@@ -59,16 +59,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the Y coordinate. Always returns 0.
 		/// </summary>
 		[JsonIgnore]
-		public override int Y
-		{
-			get
-			{
-				return 0;
-			}
-			set
-			{
-			}
-		}
+		public override int Y => 0;
 
 		/// <summary>
 		/// Gets or sets the easing type for the event.

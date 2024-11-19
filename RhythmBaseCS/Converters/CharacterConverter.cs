@@ -26,7 +26,7 @@ namespace RhythmBase.Converters
 			}
 			else
 			{
-				ReadJson = Enum.Parse<Characters>(value);
+				ReadJson = Enum.Parse<RDCharacters>(value);
 			}
 			return ReadJson;
 		}

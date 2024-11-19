@@ -13,7 +13,7 @@ namespace RhythmBase.Events
 		{
 			TintColor = new PaletteColor(true);
 			BorderColor = new PaletteColor(true);
-			Rooms = new Room(true, new byte[1]);
+			Rooms = new RDRoom(true, new byte[1]);
 			Type = EventType.PaintHands;
 			Tab = Tabs.Actions;
 		}
@@ -59,7 +59,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public Room Rooms { get; set; }
+		public RDRoom Rooms { get; set; }
 
 		/// <summary>
 		/// Gets or sets the player hands associated with the event.

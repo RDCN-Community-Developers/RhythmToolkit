@@ -15,7 +15,7 @@ public readonly struct RDCharacter
 	/// <br />
 	/// If using a customized character, this value will be empty
 	/// </summary>
-	public Characters? Character { get; }
+	public RDCharacters? Character { get; }
 	/// <summary>
 	/// Customized character(sprite).
 	/// <br />
@@ -26,7 +26,7 @@ public readonly struct RDCharacter
 	/// Construct an in-game character.
 	/// </summary>
 	/// <param name="character">Character type.</param>
-	public RDCharacter(Characters character)
+	public RDCharacter(RDCharacters character)
 	{
 		IsCustom = false;
 		Character = character;
@@ -41,7 +41,7 @@ public readonly struct RDCharacter
 		CustomCharacter = character;
 	}
 	/// <inheritdoc/>
-	public static implicit operator RDCharacter(Characters character) => new(character);
+	public static implicit operator RDCharacter(RDCharacters character) => new(character);
 	/// <inheritdoc/>
 	public static implicit operator RDCharacter(string character) => new(character);
 	/// <inheritdoc/>

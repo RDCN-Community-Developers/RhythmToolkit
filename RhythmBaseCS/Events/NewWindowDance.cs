@@ -67,7 +67,8 @@ namespace RhythmBase.Events
 		/// Gets or sets the angle.
 		/// </summary>
 		[EaseProperty]
-		public RDExpression? Angle { get; set; }
+		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+		public float? Angle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the frequency.
