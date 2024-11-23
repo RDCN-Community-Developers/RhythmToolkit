@@ -53,12 +53,6 @@ namespace RhythmBase.Events
 		public override Tabs Tab { get; }
 
 		/// <summary>
-		/// Determines whether the <see cref="Sounds"/> property should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if the <see cref="VoiceSource"/> is <see cref="VoiceSources.Custom"/>; otherwise, <c>false</c>.</returns>
-		public bool ShouldSerializeSounds() => VoiceSource == VoiceSources.Custom;
-
-		/// <summary>
 		/// Represents the different voice sources for the counting sound.
 		/// </summary>
 		public enum VoiceSources

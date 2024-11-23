@@ -91,42 +91,6 @@ namespace RhythmBase.Events
 		public override Tabs Tab { get; }
 
 		/// <summary>  
-		/// Determines whether the audio properties should be serialized.  
-		/// </summary>  
-		/// <returns>True if the audio properties should be serialized; otherwise, false.</returns>  
-		private bool ShouldSerialize() => !(SoundType == SoundTypes.ClapSoundHold | SoundType == SoundTypes.FreezeshotSound | SoundType == SoundTypes.BurnshotSound);
-
-		/// <summary>  
-		/// Determines whether the filename should be serialized.  
-		/// </summary>  
-		/// <returns>True if the filename should be serialized; otherwise, false.</returns>  
-		public bool ShouldSerializeFilename() => ShouldSerialize();
-
-		/// <summary>  
-		/// Determines whether the volume should be serialized.  
-		/// </summary>  
-		/// <returns>True if the volume should be serialized; otherwise, false.</returns>  
-		public bool ShouldSerializeVolume() => ShouldSerialize();
-
-		/// <summary>  
-		/// Determines whether the pitch should be serialized.  
-		/// </summary>  
-		/// <returns>True if the pitch should be serialized; otherwise, false.</returns>  
-		public bool ShouldSerializePitch() => ShouldSerialize();
-
-		/// <summary>  
-		/// Determines whether the pan should be serialized.  
-		/// </summary>  
-		/// <returns>True if the pan should be serialized; otherwise, false.</returns>  
-		public bool ShouldSerializePan() => ShouldSerialize();
-
-		/// <summary>  
-		/// Determines whether the offset should be serialized.  
-		/// </summary>  
-		/// <returns>True if the offset should be serialized; otherwise, false.</returns>  
-		public bool ShouldSerializeOffset() => ShouldSerialize();
-
-		/// <summary>  
 		/// Returns a string that represents the current object.  
 		/// </summary>  
 		/// <returns>A string that represents the current object.</returns>  

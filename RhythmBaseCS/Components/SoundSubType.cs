@@ -31,7 +31,7 @@ namespace RhythmBase.Components
 		public bool Used { get; set; }
 
 		/// <summary>
-		/// Gets the filename of the audio.
+		/// Gets or sets the filename of the audio.
 		/// </summary>
 		[JsonProperty]
 		public string Filename
@@ -103,41 +103,5 @@ namespace RhythmBase.Components
 				Audio.Offset = value;
 			}
 		}
-
-		/// <summary>
-		/// Determines whether this instance should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if this instance should be serialized; otherwise, <c>false</c>.</returns>
-		private bool ShouldSerialize() => Used;
-
-		/// <summary>
-		/// Determines whether the filename should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if the filename should be serialized; otherwise, <c>false</c>.</returns>
-		internal bool ShouldSerializeFilename() => ShouldSerialize();
-
-		/// <summary>
-		/// Determines whether the volume should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if the volume should be serialized; otherwise, <c>false</c>.</returns>
-		internal bool ShouldSerializeVolume() => ShouldSerialize() && Volume != 100;
-
-		/// <summary>
-		/// Determines whether the pitch should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if the pitch should be serialized; otherwise, <c>false</c>.</returns>
-		internal bool ShouldSerializePitch() => ShouldSerialize() && Pitch != 100;
-
-		/// <summary>
-		/// Determines whether the pan should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if the pan should be serialized; otherwise, <c>false</c>.</returns>
-		internal bool ShouldSerializePan() => ShouldSerialize();
-
-		/// <summary>
-		/// Determines whether the offset should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if the offset should be serialized; otherwise, <c>false</c>.</returns>
-		internal bool ShouldSerializeOffset() => ShouldSerialize();
 	}
 }

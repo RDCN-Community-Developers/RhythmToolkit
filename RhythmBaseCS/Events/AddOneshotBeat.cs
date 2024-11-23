@@ -66,18 +66,6 @@ namespace RhythmBase.Events
 		/// <inheritdoc/>
 		public override EventType Type { get; } = EventType.AddOneshotBeat;
 
-		/// <summary>
-		/// Determines whether the <see cref="Skipshot"/> property should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if <see cref="Skipshot"/> should be serialized; otherwise, <c>false</c>.</returns>
-		internal bool ShouldSerializeSkipshot() => Skipshot;
-
-		/// <summary>
-		/// Determines whether the <see cref="FreezeBurnMode"/> property should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if <see cref="FreezeBurnMode"/> should be serialized; otherwise, <c>false</c>.</returns>
-		public bool ShouldSerializeFreezeBurnMode() => FreezeBurnMode != null;
-
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {FreezeBurnMode} {PulseType}";
 

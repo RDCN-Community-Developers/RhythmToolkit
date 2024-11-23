@@ -84,18 +84,6 @@ namespace RhythmBase.Events
 		}
 
 		/// <summary>
-		/// Determines whether the <see cref="Duration"/> property should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if <see cref="Duration"/> is not zero; otherwise, <c>false</c>.</returns>
-		internal bool ShouldSerializeDuration() => Duration != 0f;
-
-		/// <summary>
-		/// Determines whether the <see cref="Ease"/> property should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if <see cref="Duration"/> is not zero; otherwise, <c>false</c>.</returns>
-		internal bool ShouldSerializeEase() => Duration != 0f;
-
-		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

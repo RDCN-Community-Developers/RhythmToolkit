@@ -51,12 +51,6 @@ namespace RhythmBase.Events
 		public override EventType Type { get; }
 
 		/// <summary>
-		/// Determines whether the target should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if the tab is Decorations; otherwise, <c>false</c>.</returns>
-		public bool ShouldSerializeTarget() => Tab == Tabs.Decorations;
-
-		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

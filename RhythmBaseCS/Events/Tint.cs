@@ -72,18 +72,6 @@ namespace RhythmBase.Events
 		public override Tabs Tab { get; }
 
 		/// <summary>
-		/// Determines whether the Duration property should be serialized.
-		/// </summary>
-		/// <returns>True if the duration is not zero; otherwise, false.</returns>
-		internal bool ShouldSerializeDuration() => Duration != 0f;
-
-		/// <summary>
-		/// Determines whether the Ease property should be serialized.
-		/// </summary>
-		/// <returns>True if the duration is not zero; otherwise, false.</returns>
-		internal bool ShouldSerializeEase() => Duration != 0f;
-
-		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

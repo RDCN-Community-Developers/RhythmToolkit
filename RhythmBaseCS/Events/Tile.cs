@@ -72,18 +72,6 @@ namespace RhythmBase.Events
 		public float Duration { get; set; }
 
 		/// <summary>
-		/// Determines whether the <see cref="TilingType"/> property should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if <see cref="Speed"/> is not null; otherwise, <c>false</c>.</returns>
-		public bool ShouldSerializeTilingType() => Speed != null;
-
-		/// <summary>
-		/// Determines whether the <see cref="Interval"/> property should be serialized.
-		/// </summary>
-		/// <returns><c>true</c> if <see cref="TilingType"/> is <see cref="TilingTypes.Pulse"/>; otherwise, <c>false</c>.</returns>
-		public bool ShouldSerializeInterval() => TilingType == TilingTypes.Pulse;
-
-		/// <summary>
 		/// Defines the types of tiling available.
 		/// </summary>
 		public enum TilingTypes
