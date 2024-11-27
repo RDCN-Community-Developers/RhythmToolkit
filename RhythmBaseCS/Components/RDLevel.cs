@@ -523,27 +523,34 @@ namespace RhythmBase.Components
 			{
 				Beat = beat,
 				RoomStatus = [
-					new(){
-						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room1)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
-					},
-					new(){
-						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room2)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
-					},
-					new(){
-						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room3)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
-					},
-					new(){
-						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room4)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
-					},
-					new(){
-						Beat = beat,
-						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.RoomTop)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
-					}
+					..new RDRoomIndex[] {
+						RDRoomIndex.Room1,
+						RDRoomIndex.Room2,
+						RDRoomIndex.Room3,
+						RDRoomIndex.Room4,
+						RDRoomIndex.RoomTop,
+					}.Select(room=>
+						new RoomStatus(){
+							Beat = beat,
+							RunningVFXs =[.. this.Where<SetVFXPreset>(vfx=>vfx.Rooms.Contains(room)&& vfx.VFXDuration().Contains(beat), new RDRange(null,beat))],
+							Background = this.Where<SetBackgroundColor>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+							BassDrop = this.Where<BassDrop>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+							Flash = this.Where<Flash>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+							Flip = this.Where<FlipScreen>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+							Foreground = this.Where<SetForeground>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+							Shake = this.Where<ShakeScreen>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+							Stutter = this.Where<Stutter>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+							Theme = this.Where<SetTheme>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault()?.Preset ?? SetTheme.Theme.None,
+						}
+					)
 				],
+				RowStatus = [..Rows.Select(i=>new RowStatus(){
+					Beat = beat,
+					ParentRow = i,
+					PlayerType = this.LastOrDefault<ChangePlayersRows>(j => j.Players[i.Index] != PlayerType.NoChange)?.Players[i.Index]??i.Player,
+					Sound = this.LastOrDefault<SetBeatSound>()?.Sound??i.Sound
+				})
+				]
 			};
 		}
 		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item)
