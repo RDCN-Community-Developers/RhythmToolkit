@@ -51,7 +51,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the initial player mode for the row.
 		/// </summary>
-		public PlayerMode Player { get; set; } = PlayerMode.P1;
+		public PlayerType Player { get; set; } = PlayerType.P1;
 
 		/// <summary>
 		/// Gets the initial beat sound for the row.
@@ -162,26 +162,5 @@ namespace RhythmBase.Components
 
 		[JsonIgnore]
 		internal RDLevel? Parent = null;
-
-		/// <summary>
-		/// Represents the player mode.
-		/// </summary>
-		public enum PlayerMode
-		{
-			/// <summary>
-			/// Player 1.
-			/// </summary>
-			P1 = PlayerType.P1,
-
-			/// <summary>
-			/// Player 2.
-			/// </summary>
-			P2 = PlayerType.P2,
-
-			/// <summary>
-			/// CPU player.
-			/// </summary>
-			CPU = PlayerType.CPU,
-		}
 	}
 }
