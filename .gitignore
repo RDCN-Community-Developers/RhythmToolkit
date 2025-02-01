@@ -377,3 +377,4 @@ FodyWeavers.xsd
 # 忽略 RhythmBase 文件夹
 /RhythmBase/
 /FastTest/
+docs/.vscode/

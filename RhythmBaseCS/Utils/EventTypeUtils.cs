@@ -1,6 +1,7 @@
 ﻿using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RhythmBase.Utils
 {
@@ -45,7 +46,7 @@ namespace RhythmBase.Utils
 		/// Converts a generic event type to its corresponding EventType enumeration.  
 		/// </summary>  
 		/// <typeparam name="TEvent">The generic event type to convert.</typeparam>  
-		/// <returns>The corresponding EventType enumeration.</returns>  
+		/// <returns>The corresponding EventType enumeration.</returns>
 		public static EventType ToEnum<TEvent>() where TEvent : IBaseEvent, new() => ToEnum(typeof(TEvent));
 
 		/// <summary>  
@@ -80,7 +81,7 @@ namespace RhythmBase.Utils
 		/// </summary>  
 		/// <param name="type">The string representation of the event type.</param>  
 		/// <returns>The corresponding Type.</returns>  
-		public static Type ToType(string type)
+		public static Type ToType([StringSyntax(StringSyntaxAttribute.EnumFormat)] string type)
 		{
 			Type ConvertToType;
 			if (Enum.TryParse(type, out EventType result))

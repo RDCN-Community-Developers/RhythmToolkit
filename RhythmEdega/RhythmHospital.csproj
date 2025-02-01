@@ -8,7 +8,7 @@
     <AssemblyName>RhythmHospital</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RhythmBaseCS\RhythmBase.csproj" />
     <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
-    <ProjectReference Include="..\RhythmTools\RhythmAddition.vbproj" />
   </ItemGroup>
 </Project>

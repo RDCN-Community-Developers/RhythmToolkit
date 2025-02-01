@@ -87,17 +87,13 @@ namespace RhythmBase.Converters
 						JArray jarr1 = JArray.Load(reader);
 						outLevel.ModifiableRows.AddRange(jarr1.ToObject<List<RowEventCollection>>(AllInOneSerializer)!);
 						foreach (RowEventCollection row in outLevel.ModifiableRows)
-						{
 							row.Parent = outLevel;
-						}
 						break;
 					case "decorations":
 						JArray jarr2 = JArray.Load(reader);
 						outLevel.ModifiableDecorations.AddRange(jarr2.ToObject<List<DecorationEventCollection>>(AllInOneSerializer)!);
 						foreach (DecorationEventCollection deco in outLevel.ModifiableDecorations)
-						{
 							deco.Parent = outLevel;
-						}
 						break;
 					case "conditionals":
 						JArray jarr3 = JArray.Load(reader);
