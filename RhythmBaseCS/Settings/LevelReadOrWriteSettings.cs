@@ -8,6 +8,22 @@ namespace RhythmBase.Settings
 	public class LevelReadOrWriteSettings
 	{
 		/// <summary>
+		/// Event triggered before reading.
+		/// </summary>
+		public event EventHandler BeforeReading;
+		/// <summary>
+		/// Event triggered after reading.
+		/// </summary>
+		public event EventHandler AfterReading;
+		/// <summary>
+		/// Event triggered before writing.
+		/// </summary>
+		public event EventHandler BeforeWriting;
+		/// <summary>
+		/// Event triggered after writing.
+		/// </summary>
+		public event EventHandler AfterWriting;
+		/// <summary>
 		/// Initialize.
 		/// </summary>
 		public LevelReadOrWriteSettings() { }
