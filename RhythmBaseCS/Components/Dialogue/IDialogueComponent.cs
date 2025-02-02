@@ -6,6 +6,10 @@
 	public interface IDialogueComponent
 	{
 		/// <summary>
+		/// Gets or sets the name of the component.
+		/// </summary>
+		public string Name { get; }
+		/// <summary>
 		/// Serializes the dialogue component to a string.
 		/// </summary>
 		/// <returns>A string representation of the dialogue component.</returns>
@@ -16,101 +20,158 @@
 		/// </summary>
 		/// <returns>A plain text representation of the dialogue component.</returns>
 		public string Plain() => "";
+		/// <summary>
+		/// Deserializes a string into a list of dialogue components.
+		/// </summary>
+		/// <param name="str"></param>
+		/// <returns></returns>
 		public static List<IDialogueComponent> Deserialize(string str)
 		{
-			int p = 0;
-			int labelContentEnd = 0;
-			Stack<(string, int)> labelnamestack = new();
-			Stack<List<IDialogueComponent>> componentstack = new();
-			Stack<int> labelContentStack = new();
-			componentstack.Push(new List<IDialogueComponent>());
-
-			while (p < str.Length)
+			List<IDialogueComponent> dialogues = [];
+			var stack = new Stack<ITextDialogueComponent>();
+			int index = 0;
+			void AddComponent(IDialogueComponent component)
 			{
-				if (str[p] == '<')
+				if (stack.Count > 0)
+					stack.Peek().Components.Add(component);
+				else
+					dialogues.Add(component);
+			}
+			while (index < str.Length)
+			{
+				Console.WriteLine(str[0..index] + ", " + index);
+				int tagEnd1 = str.IndexOf('>', index + 1);
+				int tagEnd2 = str.IndexOf(']', index + 1);
+				if (str[index] == '<')
+					//&& tagEnd1 > 0
+					//&& (str.IndexOf('<', index + 1) <= 0 || str.IndexOf('<', index + 1) > tagEnd1))
 				{
-					labelContentEnd = p;
-					p++;
-					string labelName = "";
-					string labelValue = "";
-					bool labelclose = false;
-					if (str[p] == '/')
+					// Check if it's a closing tag
+					bool isClosingTag = index + 1 < str.Length && str[index + 1] == '/';
+					if (isClosingTag)
 					{
-						p++;
-						labelclose = true;
-					}
-					while (str[p] != '>' && str[p] != '=')
-					{
-						labelName += str[p];
-						p++;
-					}
-					if (str[p++] == '=')
-					{
-						while (str[p] != '>')
+						// Handle closing tag
+						index += 2; // Skip '</'
+						if (tagEnd1 == -1) break; // Invalid tag, ignore
+
+						string tagName = str[index..tagEnd1];
+						index = tagEnd1 + 1; // Skip '>'
+
+						// Pop the stack if the tag matches
+						if (stack.Count > 0 && stack.Peek().Name == tagName)
+							stack.Pop();
+						else if (stack.Count > 0 && stack.FirstOrDefault(i => i.Name == tagName) is ITextDialogueComponent dialogueComponent)
 						{
-							p++;
-							labelValue += str[p];
-						}
-						labelContentStack.Push(p + 1);
-						p++;
-					}
-					if (closablelabels.Contains(labelName))
-					{
-						if (labelclose)
-						{
-							if (labelnamestack.TryPeek(out (string name, int start) top) && top.name == labelName)
+							Stack<ITextDialogueComponent> tempStack = [];
+							while (stack.Peek() != dialogueComponent)
+								tempStack.Push(stack.Pop());
+							stack.Pop();
+							while (tempStack.Count > 0)
 							{
-								labelnamestack.Pop();
-								componentstack.Peek().Add(GetClosableDialogueComponent(labelName, componentstack.Pop(), labelValue));
-								if (labelContentEnd < p)
+								ITextDialogueComponent component = tempStack.Pop().Clone([]);
+								if (stack.Count > 0)
 								{
-									componentstack.Peek().Add(new PlainTextComponent(str[labelContentStack.Pop()..labelContentEnd]));
+									stack.Peek().Components = [component];
+									stack.Push(component);
+								}
+								else
+								{
+									dialogues.Add(component);
+									stack.Push(component);
 								}
 							}
+							// Ignore unmatched closing tags
+						}
+						else
+							AddComponent(new PlainTextComponent($"</{tagName}>"));
+						// Ignore unmatched closing tags
+					}
+					else
+					{
+						index++;
+						if (tagEnd1 == -1)
+						{
+							// 如果标签未正确闭合（如 <bold过得），将其视为普通文本
+							string invalidTagText = str[(index - 1)..]; // 包括 '<'
+							AddComponent(new PlainTextComponent(invalidTagText));
+						}
+
+						string tag = str[index..tagEnd1];
+						index = tagEnd1 + 1; // Skip '>'
+
+						// Parse tag name and value (if any)
+						string tagName = tag;
+						string? tagValue = null;
+						int equalsIndex = tag.IndexOf('=');
+						if (equalsIndex != -1)
+						{
+							tagName = tag[..equalsIndex];
+							tagValue = tag[(equalsIndex + 1)..];
+						}
+
+						// Create the component based on the tag
+						IDialogueComponent? newComponent = GetClosableDialogueComponent(tagName, tagValue);
+						if (newComponent is ITextDialogueComponent newComponent2)
+						{
+							AddComponent(newComponent2);
+							stack.Push(newComponent2);
 						}
 						else
 						{
-							labelnamestack.Push((labelName, p + 1));
-							componentstack.Push([]);
+							newComponent = new PlainTextComponent($"<{tagName}>");
+							AddComponent(newComponent);
 						}
 					}
 				}
-				else if (str[p] == '[')
+				else if (str[index] == '[')
+					//&& tagEnd1 > 0
+					//&& (str.IndexOf('[', index + 1) <= 0 || str.IndexOf('[', index + 1) > tagEnd1))
 				{
-					p++;
-					string labelName = "";
-					while (str[p] != ']')
-					{
-						labelName += str[p];
-						p++;
-					}
-					if (float.TryParse(labelName, out float value))
-					{
-						componentstack.Peek().Add(new SpeedComponent(value));
-					}
-					else if (singlelabels.Contains(labelName))
-					{
-						componentstack.Peek().Add(GetSingleComponent(labelName));
-					}
+					// Handle bracket-style tags (e.g., [vfast])
+					int tagEnd = str.IndexOf(']', index);
+					if (tagEnd == -1) break; // Invalid tag, ignore
+
+					string tag = str[(index + 1).. (tagEnd - index - 1)]; // Skip '[' and ']'
+					index = tagEnd + 1; // Skip ']'
+
+					// Create the component based on the tag
+					IDialogueComponent? newComponent = GetSingleComponent(tag) ?? new PlainTextComponent($"[{tag}]");
+
+					// Add the new component to the current component
+					AddComponent(newComponent);
 				}
 				else
 				{
-					labelContentEnd = p;
+					// Handle plain text
+					int nextTagStart = str.IndexOfAny(['<', '['], index);
+					if (nextTagStart == -1) nextTagStart = str.Length;
+
+					string text = str[index..nextTagStart];
+					index = nextTagStart;
+
+					// Add the text to the current component
+					AddComponent(new PlainTextComponent(text));
 				}
-				p++;
 			}
 
-			while (labelnamestack.Count > 0)
+			// Close any unclosed tags
+			while (stack.Count > 0)
 			{
-				var (name, start) = labelnamestack.Pop();
-				componentstack.Peek().Add(new PlainTextComponent(str[start..]));
+				var component = stack.Pop();
 			}
 
-			return componentstack.Pop();
+			return dialogues;
 		}
-		private static IDialogueComponent GetClosableDialogueComponent(string name, List<IDialogueComponent> Content, string? arg = null)
+		private static ITextDialogueComponent? GetClosableDialogueComponent(string name, List<IDialogueComponent> Content, string? arg = null)
 		{
-			ITextDialogueComponent component = name switch
+			ITextDialogueComponent? textDialogueComponent = GetClosableDialogueComponent(name, arg);
+			if (textDialogueComponent is not null)
+				textDialogueComponent.Components = Content;
+			return textDialogueComponent;
+		}
+		private static ITextDialogueComponent? GetClosableDialogueComponent(string name, string? arg = null)
+		{
+			return name switch
 			{
 				"color" => arg is null ? new ColorComponent() : new(RDColor.FromRgba(arg)),
 				"speed" => arg is null ? new SpeedComponent() : new(float.Parse(arg)),
@@ -129,13 +190,11 @@
 				"loud" => new LoudComponent(),
 				"bold" => new BoldComponent(),
 				"whisper" => new WhisperComponent(),
-				_ => throw new ArgumentException("Invalid component name."),
+				_ => null,
 			};
-			component.Components = Content;
-			return component;
 		}
 
-		private static IDialogueComponent GetSingleComponent(string name)
+		private static IDialogueComponent? GetSingleComponent(string name)
 		{
 			return name switch
 			{
@@ -149,7 +208,7 @@
 				"vvvfast" => new VeryVeryFastSpeedComponent(),
 				"excited" => new ExcitedComponent(),
 				"shout" => new ShoutComponent(),
-				_ => throw new ArgumentException("Invalid component name."),
+				_ => null,
 			};
 		}
 

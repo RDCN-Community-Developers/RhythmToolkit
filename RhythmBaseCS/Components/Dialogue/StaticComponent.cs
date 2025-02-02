@@ -6,6 +6,8 @@
 	public struct StaticComponent : IDialogueComponent
 	{
 		/// <inheritdoc/>
+		public readonly string Name => "static";
+		/// <inheritdoc/>
 		public readonly string Serialize() => $"[static]";
 	}
 }

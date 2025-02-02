@@ -6,6 +6,8 @@
 	public struct FlashComponent : IDialogueComponent
 	{
 		/// <inheritdoc/>
+		public readonly string Name => "flash";
+		/// <inheritdoc/>
 		public readonly string Serialize() => $"[flash]";
 	}
 }

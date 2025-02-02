@@ -5,6 +5,8 @@
 	/// </summary>
 	public struct PauseComponent(TimeSpan duration) : IDialogueComponent
 	{
+		/// <inheritdoc/>
+		public readonly string Name => "pause";
 		/// <summary>
 		/// Gets or sets the duration of the pause.
 		/// </summary>

@@ -6,6 +6,8 @@
 	public struct VeryFastSpeedComponent : IDialogueComponent
 	{
 		/// <inheritdoc/>
+		public readonly string Name => "vfast";
+		/// <inheritdoc/>
 		public readonly string Serialize() => $"[vfast]";
 	}
 }

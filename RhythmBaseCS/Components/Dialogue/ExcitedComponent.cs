@@ -6,6 +6,8 @@
 	public struct ExcitedComponent : IDialogueComponent
 	{
 		/// <inheritdoc/>
+		public readonly string Name => "excited";
+		/// <inheritdoc/>
 		public readonly string Serialize() => $"[excited]";
 	}
 }

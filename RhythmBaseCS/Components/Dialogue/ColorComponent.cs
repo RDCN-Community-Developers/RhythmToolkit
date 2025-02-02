@@ -3,8 +3,10 @@
 	/// <summary>
 	/// Represents a color component in a dialogue.
 	/// </summary>
-	public struct ColorComponent(RDColor color) : ITextDialogueComponent
+	public struct ColorComponent(RDColor color) : ITextDialogueComponent<ColorComponent>
 	{
+		/// <inheritdoc/>
+		public readonly string Name => "color";
 		/// <inheritdoc/>
 		public List<IDialogueComponent> Components { get; set; } = [];
 		/// <summary>
@@ -12,12 +14,16 @@
 		/// </summary>
 		public RDColor Color { get; set; } = color;
 		/// <inheritdoc/>
-		public readonly string Serialize()
+		public ColorComponent Clone(List<IDialogueComponent> components)
 		{
-			if (Color.A == 255)
-				return ((ITextDialogueComponent)this).Serilaize("color", Color.ToString("#RRGGBB"));
-			else
-				return ((ITextDialogueComponent)this).Serilaize("color", Color.ToString("#RRGGBBAA"));
+			return new ColorComponent(Color)
+			{
+				Components = components,
+				Color = Color
+			};
 		}
+		ITextDialogueComponent ITextDialogueComponent.Clone(List<IDialogueComponent> components) => Clone(components);
+		/// <inheritdoc/>
+		public readonly string Serialize() => ((ITextDialogueComponent)this).Serilaize("color", Color.ToString(Color.A == 255 ? "#RRGGBB" : "#RRGGBBAA"));
 	}
 }

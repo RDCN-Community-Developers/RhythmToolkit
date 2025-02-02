@@ -6,6 +6,8 @@
 	public struct NormalSpeedComponent : IDialogueComponent
 	{
 		/// <inheritdoc/>
+		public readonly string Name => "normal";
+		/// <inheritdoc/>
 		public readonly string Serialize() => $"[normal]";
 	}
 }
