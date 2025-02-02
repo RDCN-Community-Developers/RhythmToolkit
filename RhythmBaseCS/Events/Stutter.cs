@@ -29,7 +29,7 @@ namespace RhythmBase.Events
 		public float SourceBeat
 		{
 			get => sourceBeat;
-			set => sourceBeat = value;//(value >= 1 && value <= Beat.CPB + 1) ? value : throw new Exceptions.RhythmBaseException("SourceBeat must in CPB.");
+			set => sourceBeat = (value > 1 && value <= Beat.CPB + 1) ? value : throw new Exceptions.RhythmBaseException("SourceBeat must in CPB.");
 		}
 		/// <summary>
 		/// Gets or sets the length of the stutter event.

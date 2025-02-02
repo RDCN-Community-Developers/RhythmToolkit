@@ -11,46 +11,43 @@
 		/// <param name="type">Ease type.</param>
 		/// <param name="x">A doubleing-point number in the range of 0 to 1.</param>
 		/// <returns>Easing result.</returns>
-		public static double Calculate(this EaseType type, double x) =>
-			x < 0 ? 0 :
-			x > 1 ? 1 :
-			type switch
-			{
-				EaseType.Unset => EaseFunction.None(x),
-				EaseType.Linear => EaseFunction.Linear(x),
-				EaseType.InSine => EaseFunction.InSine(x),
-				EaseType.OutSine => EaseFunction.OutSine(x),
-				EaseType.InOutSine => EaseFunction.InOutSine(x),
-				EaseType.InQuad => EaseFunction.InQuad(x),
-				EaseType.OutQuad => EaseFunction.OutQuad(x),
-				EaseType.InOutQuad => EaseFunction.InOutQuad(x),
-				EaseType.InCubic => EaseFunction.InCubic(x),
-				EaseType.OutCubic => EaseFunction.OutCubic(x),
-				EaseType.InOutCubic => EaseFunction.InOutCubic(x),
-				EaseType.InQuart => EaseFunction.InQuart(x),
-				EaseType.OutQuart => EaseFunction.OutQuart(x),
-				EaseType.InOutQuart => EaseFunction.InOutQuart(x),
-				EaseType.InQuint => EaseFunction.InQuint(x),
-				EaseType.OutQuint => EaseFunction.OutQuint(x),
-				EaseType.InOutQuint => EaseFunction.InOutQuint(x),
-				EaseType.InExpo => EaseFunction.InExpo(x),
-				EaseType.OutExpo => EaseFunction.OutExpo(x),
-				EaseType.InOutExpo => EaseFunction.InOutExpo(x),
-				EaseType.InCirc => EaseFunction.InCirc(x),
-				EaseType.OutCirc => EaseFunction.OutCirc(x),
-				EaseType.InOutCirc => EaseFunction.InOutCirc(x),
-				EaseType.InElastic => EaseFunction.InElastic(x),
-				EaseType.OutElastic => EaseFunction.OutElastic(x),
-				EaseType.InOutElastic => EaseFunction.InOutElastic(x),
-				EaseType.InBack => EaseFunction.InBack(x),
-				EaseType.OutBack => EaseFunction.OutBack(x),
-				EaseType.InOutBack => EaseFunction.InOutBack(x),
-				EaseType.InBounce => EaseFunction.InBounce(x),
-				EaseType.OutBounce => EaseFunction.OutBounce(x),
-				EaseType.InOutBounce => EaseFunction.InOutBounce(x),
-				EaseType.SmoothStep => EaseFunction.SmoothStep(x),
-				_ => 0,
-			};
+		public static double Calculate(this EaseType type, double x) => type switch
+		{
+			EaseType.Unset => EaseFunction.None(x),
+			EaseType.Linear => EaseFunction.Linear(x),
+			EaseType.InSine => EaseFunction.InSine(x),
+			EaseType.OutSine => EaseFunction.OutSine(x),
+			EaseType.InOutSine => EaseFunction.InOutSine(x),
+			EaseType.InQuad => EaseFunction.InQuad(x),
+			EaseType.OutQuad => EaseFunction.OutQuad(x),
+			EaseType.InOutQuad => EaseFunction.InOutQuad(x),
+			EaseType.InCubic => EaseFunction.InCubic(x),
+			EaseType.OutCubic => EaseFunction.OutCubic(x),
+			EaseType.InOutCubic => EaseFunction.InOutCubic(x),
+			EaseType.InQuart => EaseFunction.InQuart(x),
+			EaseType.OutQuart => EaseFunction.OutQuart(x),
+			EaseType.InOutQuart => EaseFunction.InOutQuart(x),
+			EaseType.InQuint => EaseFunction.InQuint(x),
+			EaseType.OutQuint => EaseFunction.OutQuint(x),
+			EaseType.InOutQuint => EaseFunction.InOutQuint(x),
+			EaseType.InExpo => EaseFunction.InExpo(x),
+			EaseType.OutExpo => EaseFunction.OutExpo(x),
+			EaseType.InOutExpo => EaseFunction.InOutExpo(x),
+			EaseType.InCirc => EaseFunction.InCirc(x),
+			EaseType.OutCirc => EaseFunction.OutCirc(x),
+			EaseType.InOutCirc => EaseFunction.InOutCirc(x),
+			EaseType.InElastic => EaseFunction.InElastic(x),
+			EaseType.OutElastic => EaseFunction.OutElastic(x),
+			EaseType.InOutElastic => EaseFunction.InOutElastic(x),
+			EaseType.InBack => EaseFunction.InBack(x),
+			EaseType.OutBack => EaseFunction.OutBack(x),
+			EaseType.InOutBack => EaseFunction.InOutBack(x),
+			EaseType.InBounce => EaseFunction.InBounce(x),
+			EaseType.OutBounce => EaseFunction.OutBounce(x),
+			EaseType.InOutBounce => EaseFunction.InOutBounce(x),
+			EaseType.SmoothStep => EaseFunction.SmoothStep(x),
+			_ => 0,
+		};
 		/// <summary>
 		/// Calculates the value with the specified ease type.
 		/// </summary>
