@@ -171,7 +171,7 @@ namespace RhythmBase.Components.Dialogue
 				string textpart = text[start..end];
 				line += DeserializeStringPart(textpart, tempStyle);
 				string[] keyvalue = text[(end + 1)..start2].Split('=', 2);
-				if (keyvalue[0][0] == '/' && style.RemoveProperty(keyvalue[0][1..]))
+				if (keyvalue[0].StartsWith('/') && style.RemoveProperty(keyvalue[0][1..]))
 					start = start2 + 1;
 				else if (style.SetProperty(keyvalue[0], keyvalue.Length == 2 ? keyvalue[1] : "true"))
 					start = start2 + 1;

@@ -64,7 +64,44 @@ namespace RhythmBase.Components.Dialogue
 				}
 				line.Character = character;
 			}
-			line.Content = RDRichTextLine.Deserialize(str[(str.IndexOf(':') + 1)..]);
+			line.Content = RDRichTextLine.Deserialize(str[(mi + 1)..]);
+			return line;
+		}
+		/// <summary>
+		/// Deserializes a string into a <see cref="RDDialogueLine"/> instance, using a lookup of valid expressions.
+		/// </summary>
+		/// <param name="str">The string to deserialize.</param>
+		/// <param name="expressions">A lookup of valid expressions for each character.</param>
+		/// <returns>A new <see cref="RDDialogueLine"/> containing the deserialized content.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the input string is null.</exception>
+		/// <exception cref="FormatException">Thrown when the input string has an invalid format.</exception>
+		public static RDDialogueLine Deserialize(string str, ILookup<string, string> expressions)
+		{
+			str = str.Trim();
+			RDDialogueLine line = new();
+			int mi = str.IndexOf(':');
+			if (mi != -1)
+			{
+				string character = str[..mi];
+				string expression = "";
+				if (character.Contains('_'))
+				{
+					string[] parts = character.Split('_', 2);
+					character = parts[0];
+					expression = parts[1];
+				}
+				else
+					character = str;
+				if (!expressions.Contains(character))
+				{
+					line.Content = RDRichTextLine.Deserialize(str);
+					return line;
+				}
+				line.Character = character;
+				if (expressions[character].Contains(expression))
+					line.Expression = expression;
+			}
+			line.Content = RDRichTextLine.Deserialize(str[(mi + 1)..]);
 			return line;
 		}
 		/// <inheritdoc/>
