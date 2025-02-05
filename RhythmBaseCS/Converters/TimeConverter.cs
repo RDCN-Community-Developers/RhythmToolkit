@@ -1,84 +1,58 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 namespace RhythmBase.Converters
 {
-
-	internal class TimeConverter : JsonConverter<TimeSpan>
+	internal abstract class TimeConverter : JsonConverter<TimeSpan>
 	{
-
 		public TimeConverter()
 		{
 			_timeType = TimeType.MiliSecond;
 		}
-
 
 		public TimeConverter(TimeType type)
 		{
 			_timeType = type;
 		}
 
-
 		public override void WriteJson(JsonWriter writer, TimeSpan value, JsonSerializer serializer)
 		{
-			object timeType = _timeType;
-			bool flag = _timeType == TimeType.Hour;
-			if (flag)
+			switch (_timeType)
 			{
-				writer.WriteValue(value.TotalHours);
-			}
-			else
-			{
-				flag = _timeType == TimeType.Minute;
-				if (flag)
-				{
+				case TimeType.Hour:
+					writer.WriteValue(value.TotalHours);
+					break;
+				case TimeType.Minute:
 					writer.WriteValue(value.TotalMinutes);
-				}
-				else
-				{
-					flag = _timeType == TimeType.Second;
-					if (flag)
-					{
-						writer.WriteValue(value.TotalSeconds);
-					}
-					else
-					{
-						flag = _timeType == TimeType.MiliSecond;
-						if (flag)
-						{
-							writer.WriteValue(value.TotalMilliseconds);
-						}
-						else
-						{
-							flag = _timeType == TimeType.Microsecond;
-							if (flag)
-							{
-								writer.WriteValue(value.TotalMicroseconds);
-							}
-						}
-					}
-				}
+					break;
+				case TimeType.Second:
+					writer.WriteValue(value.TotalSeconds);
+					break;
+				case TimeType.MiliSecond:
+					writer.WriteValue((int)value.TotalMilliseconds);
+					break;
+				case TimeType.Microsecond:
+					writer.WriteValue((int)value.TotalMicroseconds);
+					break;
+				default:
+					break;
 			}
 		}
-
 
 		public override TimeSpan ReadJson(JsonReader reader, Type objectType, TimeSpan existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			float value = JToken.ReadFrom(reader).ToObject<float>();
 			return _timeType switch
 			{
-				TimeType.Hour =>  TimeSpan.FromHours((double)value),
+				TimeType.Hour => TimeSpan.FromHours((double)value),
 				TimeType.Minute => TimeSpan.FromMinutes((double)value),
 				TimeType.Second => TimeSpan.FromSeconds((double)value),
-				TimeType.MiliSecond => TimeSpan.FromMilliseconds((double)value),
-				TimeType.Microsecond => TimeSpan.FromMicroseconds((double)value),
+				TimeType.MiliSecond => TimeSpan.FromMilliseconds((int)value),
+				TimeType.Microsecond => TimeSpan.FromMicroseconds((int)value),
 				_ => throw new NotImplementedException()
 			};
 		}
 
-
 		private readonly TimeType _timeType;
-
 
 		public enum TimeType
 		{

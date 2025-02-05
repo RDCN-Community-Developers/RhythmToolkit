@@ -1,13 +1,11 @@
 ﻿using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Extensions;
-
 namespace RhythmBase.Utils
 {
 	/// <summary>
 	/// Beat calculator.
 	/// </summary>
-
 	public class BeatCalculator
 	{
 		internal BeatCalculator(RDLevel level)
@@ -31,7 +29,7 @@ namespace RhythmBase.Utils
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
 		/// <returns>Total 1-based beats.</returns>
-		public float BarBeatToBeatOnly(uint bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
+		internal float BarBeatToBeatOnly(uint bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
@@ -44,19 +42,19 @@ namespace RhythmBase.Utils
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
-		public (uint bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
+		internal (uint bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>Total time span.</returns>
-		public TimeSpan BeatOnlyToTimeSpan(float beat) => BeatOnlyToTimeSpan(beat, _BPMList);
+		internal TimeSpan BeatOnlyToTimeSpan(float beat) => BeatOnlyToTimeSpan(beat, _BPMList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="timeSpan">Total time span.</param>
 		/// <returns>Total 1-based beats.</returns>
-		public float TimeSpanToBeatOnly(TimeSpan timeSpan) => TimeSpanToBeatOnly(timeSpan, _BPMList);
+		internal float TimeSpanToBeatOnly(TimeSpan timeSpan) => TimeSpanToBeatOnly(timeSpan, _BPMList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
@@ -112,23 +110,23 @@ namespace RhythmBase.Utils
 		/// <summary>
 		/// Creates a beat instance.
 		/// </summary>
-		public Beat BeatOf(float beatOnly) => new(this, beatOnly);
+		public RDBeat BeatOf(float beatOnly) => new(this, beatOnly);
 		/// <summary>
 		/// Creates a beat instance.
 		/// </summary>
-		public Beat BeatOf(uint bar, float beat) => new(this, bar, beat);
+		public RDBeat BeatOf(uint bar, float beat) => new(this, bar, beat);
 		/// <summary>
 		/// Creates a beat instance.
 		/// </summary>
-		public Beat BeatOf(TimeSpan timeSpan) => new(this, timeSpan);
+		public RDBeat BeatOf(TimeSpan timeSpan) => new(this, timeSpan);
 		/// <summary>
 		/// Calculate the BPM of the moment in which the beat is.
 		/// </summary>
-		public float BeatsPerMinuteOf(Beat beat) => _BPMList.LastOrDefault((BaseBeatsPerMinute i) => i.Beat < beat)?.BeatsPerMinute ?? 100f;
+		public float BeatsPerMinuteOf(RDBeat beat) => _BPMList.LastOrDefault((BaseBeatsPerMinute i) => i.Beat < beat)?.BeatsPerMinute ?? 100f;
 		/// <summary>
 		/// Calculate the CPB of the moment in which the beat is.
 		/// </summary>
-		public float CrotchetsPerBarOf(Beat beat) => _CPBList.LastOrDefault((SetCrotchetsPerBar i) => i.Beat < beat)?.CrotchetsPerBar ?? 8;
+		public float CrotchetsPerBarOf(RDBeat beat) => _CPBList.LastOrDefault((SetCrotchetsPerBar i) => i.Beat < beat)?.CrotchetsPerBar ?? 8;
 		internal readonly RDLevel Collection;
 		private List<BaseBeatsPerMinute> _BPMList = [];
 		private List<SetCrotchetsPerBar> _CPBList = [];

@@ -7,10 +7,8 @@
 '     重新生成代码，这些更改将会丢失。
 ' </auto-generated>
 '------------------------------------------------------------------------------
-
 Option Strict On
 Option Explicit On
-
 
 Namespace My
     

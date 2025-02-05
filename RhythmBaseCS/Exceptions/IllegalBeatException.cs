@@ -1,12 +1,14 @@
-﻿using System;
-using RhythmBase.Events;
-
+﻿using RhythmBase.Events;
 namespace RhythmBase.Exceptions
 {
-
+	/// <summary>
+	/// Exception thrown when a beat is placed in an illegal position.
+	/// </summary>
 	public class IllegalBeatException(IBarBeginningEvent item) : RhythmBaseException
 	{
-
+		/// <summary>
+		/// Gets the error message that explains the reason for the exception.
+		/// </summary>
 		public override string Message
 		{
 			get
@@ -15,6 +17,9 @@ namespace RhythmBase.Exceptions
 			}
 		}
 
+		/// <summary>
+		/// Gets the event that caused the exception.
+		/// </summary>
 		public IBarBeginningEvent Item = item;
 	}
 }

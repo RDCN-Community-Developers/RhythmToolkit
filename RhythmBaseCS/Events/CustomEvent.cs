@@ -1,101 +1,112 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using RhythmBase.Utils;
-
 namespace RhythmBase.Events
 {
+	/// <summary>
+	/// Represents a custom event in the rhythm base system.
+	/// </summary>
 	public class CustomEvent : BaseEvent
 	{
+		/// <inheritdoc/>
 		[JsonIgnore]
-		public override EventType Type { get; }
+		public override EventType Type => EventType.CustomEvent;
+
+		/// <summary>
+		/// Gets or sets the actual type of the custom event.
+		/// </summary>
 		[JsonIgnore]
-		public string ActureType => Data["Type".ToLowerCamelCase()].ToString();
+		public string ActureType
+		{
+			get => Data["Type".ToLowerCamelCase()]?.ToObject<string>() ?? "";
+			init => Data["Type".ToLowerCamelCase()] = value;
+		}
+
+		/// <inheritdoc/>
 		public override Tabs Tab { get; }
+
+		/// <inheritdoc/>
 		public override int Y
 		{
 			get => (int)(Data["Y".ToLowerCamelCase()] ?? 0);
 			set => Data["Y".ToLowerCamelCase()] = value;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CustomEvent"/> class.
+		/// </summary>
 		public CustomEvent()
 		{
 			Data = [];
-			Type = EventType.CustomEvent;
 			Tab = Tabs.Unknown;
-			Data = [];
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CustomEvent"/> class with the specified data.
+		/// </summary>
+		/// <param name="data">The data for the custom event.</param>
 		public CustomEvent(JObject data)
 		{
-			Data = [];
-			Type = EventType.CustomEvent;
+			Data = data ?? [];
 			Tab = Tabs.Unknown;
-			Data = data;
-			uint bar = data["bar"].ToObject<uint>();
-			JToken jtoken = data["beat"];
-			Beat = new Beat(bar, (jtoken != null) ? jtoken.ToObject<float>() : 1f);
-			JToken jtoken2 = data["tag"];
-			Tag = (jtoken2 != null) ? jtoken2.ToObject<string>() : null;
-			Condition condition;
-			if (data["condition"] != null)
-			{
-				JToken jtoken3 = data["condition"];
-				condition = Condition.Load((jtoken3 != null) ? jtoken3.ToObject<string>() : null);
-			}
-			else
-			{
-				condition = null;
-			}
-			Condition = condition;
-			JToken jtoken4 = data["active"];
-			Active = jtoken4 == null || jtoken4.ToObject<bool>();
+			Beat = new RDBeat(Data["bar"]?.ToObject<uint>() ?? 1, Data["beat"]?.ToObject<float>() ?? 1f);
+			Tag = Data["tag"]?.ToObject<string>() ?? "";
+			Condition = Data["condition"] == null
+				? null
+				: Condition.Load(Data["condition"]?.ToObject<string>() ?? "");
+			Active = Data["active"]?.ToObject<bool>() ?? true;
 		}
-		public override string ToString() => string.Format("{0} *{1}", Beat, ActureType);
-		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
-		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type, LevelReadOrWriteSettings settings)
+
+		/// <inheritdoc/>
+		public override string ToString() => $"{Beat} *{ActureType}";
+
+		/// <summary>
+		/// Tries to convert the current custom event to a base event.
+		/// </summary>
+		/// <param name="value">The base event to convert to.</param>
+		/// <param name="type">The type of the event.</param>
+		/// <returns>True if the conversion was successful; otherwise, false.</returns>
+		public virtual bool TryConvert(ref BaseEvent? value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Tries to convert the current custom event to a base event with the specified settings.
+		/// </summary>
+		/// <param name="value">The base event to convert to.</param>
+		/// <param name="type">The type of the event.</param>
+		/// <param name="settings">The settings for reading or writing the level.</param>
+		/// <returns>True if the conversion was successful; otherwise, false.</returns>
+		public virtual bool TryConvert(ref BaseEvent? value, ref EventType? type, LevelReadOrWriteSettings settings)
 		{
-			JsonSerializer serializer = JsonSerializer.Create(_beat.BaseLevel.GetSerializer(settings));
-			Type eventType = Utils.Utils.ConvertToType((string)Data["type"]);
-			bool flag = eventType == null;
+			JsonSerializer serializer = JsonSerializer.Create(_beat.BaseLevel?.GetSerializer(settings));
+			Type eventType = Utils.EventTypeUtils.ToType(Data["type"]?.ToObject<string>() ?? "");
 			bool TryConvert;
-			if (flag)
+			if (eventType == null)
 			{
-				bool flag2 = Data["target"] != null;
-				BaseEvent TempEvent;
-				if (flag2)
-				{
-					TempEvent = Data.ToObject<CustomDecorationEvent>(serializer);
-				}
+				if (Data["target"] != null)
+					value = Data.ToObject<CustomDecorationEvent>(serializer);
+				else if (Data["row"] != null)
+					value = Data.ToObject<CustomRowEvent>(serializer);
 				else
-				{
-					bool flag3 = Data["row"] != null;
-					if (flag3)
-					{
-						TempEvent = Data.ToObject<CustomRowEvent>(serializer);
-					}
-					else
-					{
-						TempEvent = Data.ToObject<CustomEvent>(serializer);
-					}
-				}
-				value = TempEvent;
+					value = Data.ToObject<CustomEvent>(serializer);
 				type = null;
-				TryConvert = false;
+				TryConvert = value is not null;
 			}
 			else
 			{
-				BaseEvent TempEvent2 = (BaseEvent)Data.ToObject(eventType, serializer);
-				value = TempEvent2;
-				type = new EventType?(Enum.Parse<EventType>((string)Data["type"]));
+				value = (BaseEvent?)Data.ToObject(eventType, serializer);
+				type = value?.Type;
 				TryConvert = true;
 			}
 			return TryConvert;
 		}
 
-
+		/// <summary>
+		/// Gets or sets the data for the custom event.
+		/// </summary>
 		[JsonIgnore]
-		public JObject Data;
+		public JObject Data { get; set; }
 	}
 }

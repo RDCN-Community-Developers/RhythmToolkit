@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "WaveProducer", "WaveProducer\WaveProducer.vbproj", "{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}"
-EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "RhythmToolsUI", "RDLevelToolsUI\RDLevelToolsUI\RhythmToolsUI.vbproj", "{2CFA9DBE-ECCC-4280-9201-E0822725E29B}"
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "RhythmAddition", "RhythmTools\RhythmAddition.vbproj", "{EEA70834-7EAE-465E-B90A-D1421A259B09}"
@@ -16,6 +14,11 @@ EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "RhythmAnimation", "RhythmAnimation\RhythmAnimation.vbproj", "{BB6E86E1-11EB-44C9-8561-2672DAF1918E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RhythmBase", "RhythmBaseCS\RhythmBase.csproj", "{B7F525A8-CB1F-456C-B5C8-C998435C6150}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32EF0F5F-6012-485E-B537-7F413AED21B1}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,22 +32,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Debug|arm64.Build.0 = Debug|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Debug|x64.Build.0 = Debug|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Debug|x86.Build.0 = Debug|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Release|arm64.ActiveCfg = Release|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Release|arm64.Build.0 = Release|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Release|x64.ActiveCfg = Release|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Release|x64.Build.0 = Release|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Release|x86.ActiveCfg = Release|Any CPU
-		{B7FF6CF9-EE63-4E86-BB3D-D895E960EBA8}.Release|x86.Build.0 = Release|Any CPU
 		{2CFA9DBE-ECCC-4280-9201-E0822725E29B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CFA9DBE-ECCC-4280-9201-E0822725E29B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CFA9DBE-ECCC-4280-9201-E0822725E29B}.Debug|arm64.ActiveCfg = Debug|Any CPU

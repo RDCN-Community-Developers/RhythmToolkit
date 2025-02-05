@@ -1,48 +1,48 @@
-﻿using System;
-using Newtonsoft.Json;
-using RhythmBase.Assets;
+﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Subtypes of sound effects.
 	/// </summary>
-
 	public class SoundSubType
 	{
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SoundSubType"/> class.
+		/// </summary>
 		public SoundSubType()
 		{
-			Audio = new Audio();
+			Audio = new RDAudio();
 		}
 
 		/// <summary>
-		/// Referenced audio.
+		/// Gets or sets the referenced audio.
 		/// </summary>
-
-		public Audio Audio { get; set; }
+		public RDAudio Audio { get; set; }
 
 		/// <summary>
-		/// Sound effect name.
+		/// Gets or sets the sound effect name.
 		/// </summary>
+		public SoundTypes GroupSubtype { get; set; }
 
-		public GroupSubtypes GroupSubtype { get; set; }
-
-
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="SoundSubType"/> is used.
+		/// </summary>
 		public bool Used { get; set; }
 
-
+		/// <summary>
+		/// Gets or sets the filename of the audio.
+		/// </summary>
 		[JsonProperty]
-		private string Filename
+		public string Filename
 		{
-			get
-			{
-				return Audio.Name;
-			}
+			get => Audio.Filename;
+			set => Audio.Filename = value;
 		}
 
-
+		/// <summary>
+		/// Gets or sets the volume of the audio.
+		/// </summary>
 		[JsonProperty]
 		public int Volume
 		{
@@ -56,7 +56,9 @@ namespace RhythmBase.Components
 			}
 		}
 
-
+		/// <summary>
+		/// Gets or sets the pitch of the audio.
+		/// </summary>
 		[JsonProperty]
 		public int Pitch
 		{
@@ -70,7 +72,9 @@ namespace RhythmBase.Components
 			}
 		}
 
-
+		/// <summary>
+		/// Gets or sets the pan of the audio.
+		/// </summary>
 		[JsonProperty]
 		public int Pan
 		{
@@ -84,8 +88,10 @@ namespace RhythmBase.Components
 			}
 		}
 
-
-		[JsonConverter(typeof(TimeConverter))]
+		/// <summary>
+		/// Gets or sets the offset of the audio.
+		/// </summary>
+		[JsonConverter(typeof(MilliSecondConverter))]
 		public TimeSpan Offset
 		{
 			get
@@ -96,56 +102,6 @@ namespace RhythmBase.Components
 			{
 				Audio.Offset = value;
 			}
-		}
-
-
-		private bool ShouldSerialize() => Used;
-
-
-		internal bool ShouldSerializeFilename() => ShouldSerialize();
-
-
-		internal bool ShouldSerializeVolume() => ShouldSerialize() && Volume != 100;
-
-
-		internal bool ShouldSerializePitch() => ShouldSerialize() && Pitch != 100;
-
-
-		internal bool ShouldSerializePan() => ShouldSerialize();
-
-
-		internal bool ShouldSerializeOffset() => ShouldSerialize();
-
-		/// <summary>
-		/// Types of sound effects.
-		/// </summary>
-
-		public enum GroupSubtypes
-		{
-
-			ClapSoundHoldLongEnd,
-
-			ClapSoundHoldLongStart,
-
-			ClapSoundHoldShortEnd,
-
-			ClapSoundHoldShortStart,
-
-			FreezeshotSoundCueLow,
-
-			FreezeshotSoundCueHigh,
-
-			FreezeshotSoundRiser,
-
-			FreezeshotSoundCymbal,
-
-			BurnshotSoundCueLow,
-
-			BurnshotSoundCueHigh,
-
-			BurnshotSoundRiser,
-
-			BurnshotSoundCymbal
 		}
 	}
 }

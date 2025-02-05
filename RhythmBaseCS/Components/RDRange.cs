@@ -1,31 +1,23 @@
-﻿using System;
-using RhythmBase.Exceptions;
-
+﻿using RhythmBase.Exceptions;
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Beat range.
 	/// </summary>
-
 	public struct RDRange
 	{
 		/// <summary>
 		/// Start beat.
 		/// </summary>
-
-		public Beat? Start { get; }
-
+		public RDBeat? Start { get; }
 		/// <summary>
 		/// End beat.
 		/// </summary>
-
-		public Beat? End { get; }
-
+		public RDBeat? End { get; }
 		/// <summary>
 		/// Beat interval.
 		/// </summary>
-
-		public float BeatInterval
+		public readonly float BeatInterval
 		{
 			get
 			{
@@ -33,7 +25,7 @@ namespace RhythmBase.Components
 				float BeatInterval;
 				if (flag)
 				{
-					BeatInterval = End.Value.BeatOnly - Start.Value.BeatOnly;
+					BeatInterval = End!.Value.BeatOnly - Start!.Value.BeatOnly;
 				}
 				else
 				{
@@ -42,13 +34,11 @@ namespace RhythmBase.Components
 				return BeatInterval;
 			}
 		}
-
 		/// <summary>
 		/// Time interval.
 		/// </summary>
 		/// <returns></returns>
-
-		public TimeSpan TimeInterval
+		public readonly TimeSpan TimeInterval
 		{
 			get
 			{
@@ -56,8 +46,7 @@ namespace RhythmBase.Components
 				TimeSpan TimeInterval;
 				if (flag)
 				{
-					bool flag2 = Start.Value.BeatOnly == End.Value.BeatOnly;
-					if (flag2)
+					if (Start!.Value.BeatOnly == End!.Value.BeatOnly)
 					{
 						TimeInterval = TimeSpan.Zero;
 					}
@@ -73,29 +62,31 @@ namespace RhythmBase.Components
 				return TimeInterval;
 			}
 		}
-
 		/// <param name="start">Start beat.</param>
-		/// <param name="[end]">End beat.</param>
-
-		public RDRange(Beat? start, Beat? end)
+		/// <param name="end">End beat.</param>
+		public RDRange(RDBeat? start, RDBeat? end)
 		{
 			this = default;
-			bool flag = start != null && end != null && !start.Value._calculator.Equals(end.Value._calculator);
-			if (flag)
+			if (start != null && end != null && !((RDBeat)start).FromSameLevelOrNull((RDBeat)end))
 			{
 				throw new RhythmBaseException("RDIndexes must come from the same RDLevel.");
 			}
-			bool flag2 = start != null && end != null && start.Value.BeatOnly > end.Value.BeatOnly;
-			if (flag2)
+			if (start != null && end != null && start > end)
 			{
-				this.Start = end;
-				this.End = start;
+				Start = end;
+				End = start;
 			}
 			else
 			{
-				this.Start = start;
-				this.End = end;
+				Start = start;
+				End = end;
 			}
 		}
+		/// <summary>
+		/// Determines whether the specified beat is within the range.
+		/// </summary>
+		/// <param name="b">The beat to check.</param>
+		/// <returns>True if the beat is within the range; otherwise, false.</returns>
+		public readonly bool Contains(RDBeat b) => (Start == null || Start < b) && (End == null || b < End);
 	}
 }

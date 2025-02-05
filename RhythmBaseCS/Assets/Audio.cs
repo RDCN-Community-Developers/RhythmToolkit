@@ -1,25 +1,23 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
 using System.ComponentModel;
-
 namespace RhythmBase.Assets
 {
 	/// <summary>
 	/// Audio.
 	/// </summary>
-
 	public class Audio
 	{
 		public Audio()
 		{
-			AudioFile = new Asset<AudioFile>();
+			AudioFile = new Asset<IAudioFile>();
 			Volume = 100;
 			Pitch = 100;
 			Pan = 0;
 			Offset = TimeSpan.Zero;
 		}
 		[JsonIgnore]
-		public Asset<AudioFile> AudioFile { get; set; }
+		public Asset<IAudioFile> AudioFile { get; set; }
 		/// <summary>
 		/// File name.
 		/// </summary>
@@ -54,7 +52,6 @@ namespace RhythmBase.Assets
 		public TimeSpan Offset { get; set; }
 		[JsonIgnore]
 		public bool IsFile => sourceArray.Contains(Path.GetExtension(Name));
-
 		private static readonly string[] sourceArray =
 				[
 					".mp3",

@@ -1,9 +1,9 @@
-﻿using System;
-
-namespace RhythmBase.Events
+﻿namespace RhythmBase.Events
 {
-
-	public abstract class BaseRowAnimation : BaseRowAction
+	/// <summary>
+	/// Represents the base class for row animations.
+	/// </summary>
+	public abstract class BaseRowAnimation : BaseRowAction, IBaseEvent
 	{
 	}
 }

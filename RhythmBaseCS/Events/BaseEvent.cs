@@ -1,103 +1,83 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components;
-using static RhythmBase.Utils.Utils;
-
+using RhythmBase.Utils;
 namespace RhythmBase.Events
 {
-
-	public abstract class BaseEvent
+	/// <summary>
+	/// The base class of the event.
+	/// All event types inherit directly or indirectly from this.
+	/// </summary>
+	public abstract class BaseEvent : IBaseEvent
 	{
-
+		/// <summary>
+		/// The base class of the event.
+		/// All event types inherit directly or indirectly from this.
+		/// </summary>
 		protected BaseEvent()
 		{
-			_beat = new Beat(1f);
+			_beat = new RDBeat(1f);
 			Active = true;
 		}
-
 		/// <summary>
 		/// Event type.
 		/// </summary>
-
 		[JsonIgnore]
 		public abstract EventType Type { get; }
-
 		/// <summary>
 		/// Column to which the event belongs.
 		/// </summary>
-
 		[JsonIgnore]
 		public abstract Tabs Tab { get; }
-
 		/// <summary>
 		/// The beat of the event.
 		/// </summary>
-
 		[JsonIgnore]
-		public virtual Beat Beat
+		public virtual RDBeat Beat
 		{
-			get
-			{
-				return _beat;
-			}
+			get => _beat;
 			set
 			{
 				if (_beat.BaseLevel == null)
-				{
-					if (value.BaseLevel == null)
-					{
-						_beat = value;
-					}
-					else
-					{
-						_beat = value.WithoutBinding();
-					}
-				}
+					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
 				else
 				{
-					value = new Beat(_beat.BaseLevel.Calculator, value);
+					value = new RDBeat(_beat.BaseLevel.Calculator, value);
 					_beat.BaseLevel.Remove(this);
-					value.BaseLevel.Add(this);
+					value.BaseLevel?.Add(this);
 					_beat = value;
 				}
 			}
 		}
-
 		/// <summary>
-		/// The number of rows this event is on
+		/// The number of rows this event is on.
 		/// </summary>
-
 		public virtual int Y { get; set; }
-
 		/// <summary>
 		/// Event tag.
 		/// </summary>
-
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public string Tag { get; set; }
-
+		public string Tag { get; set; } = "";
 		/// <summary>
 		/// Event conditions.
 		/// </summary>
-
 		[JsonProperty("if", DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public Condition Condition { get; set; }
-
-
+		public Condition? Condition { get; set; }
+		/// <summary>
+		/// Indicates whether this event is activated.
+		/// </summary>
 		public bool Active { get; set; }
-
 		/// <summary>
 		/// Clone this event and its basic properties.
 		/// If it is of the same type as the source event, then it will be cloned.
 		/// </summary>
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
-		/// <returns></returns>
-
-		public virtual TEvent Clone<TEvent>() where TEvent : BaseEvent, new()
+		/// <returns>A new instance with the same base properties as the source instance.</returns>
+		public virtual TEvent Clone<TEvent>() where TEvent : IBaseEvent, new()
 		{
-			if (ConvertToEnum<TEvent>() == Type)
+			if (EventTypeUtils.ToEnum<TEvent>() == Type)
 			{
 				TEvent e = (TEvent)MemberwiseClone();
-				e._beat = Beat.WithoutBinding();
+				((BaseEvent)(object)e)._beat = Beat.WithoutBinding();
 				return e;
 			}
 			TEvent temp = new()
@@ -109,11 +89,13 @@ namespace RhythmBase.Events
 				Active = Active
 			};
 			if (Condition != null)
-				foreach (var item in Condition.ConditionLists)
-					temp.Condition.ConditionLists.Add(item);
+				temp.Condition = new()
+				{
+					ConditionLists = [.. Condition.ConditionLists]
+				};
 			return temp;
 		}
-		internal virtual TEvent Clone<TEvent>(RDLevel level) where TEvent : BaseEvent, new()
+		internal virtual TEvent Clone<TEvent>(RDLevel level) where TEvent : IBaseEvent, new()
 		{
 			TEvent temp = new()
 			{
@@ -124,11 +106,14 @@ namespace RhythmBase.Events
 				Active = Active
 			};
 			if (Condition != null)
-				foreach (var item in Condition.ConditionLists)
-					temp.Condition.ConditionLists.Add(item);
+				temp.Condition = new()
+				{
+					ConditionLists = [.. Condition.ConditionLists]
+				};
 			return temp;
 		}
-		public override string ToString() => string.Format("{0} {1}", Beat, Type);
-		internal Beat _beat;
+		/// <inheritdoc/>
+		public override string ToString() => $"{Beat} {Type}";
+		internal RDBeat _beat;
 	}
 }

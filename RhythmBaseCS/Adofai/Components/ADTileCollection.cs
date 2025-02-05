@@ -1,9 +1,7 @@
 ﻿using RhythmBase.Adofai.Events;
 using System.Collections;
-
 namespace RhythmBase.Adofai.Components
 {
-
 	public abstract class ADTileCollection : ICollection<ADTile>
 	{
 		protected ADTileCollection()

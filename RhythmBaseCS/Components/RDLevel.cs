@@ -1,53 +1,40 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Assets;
 using RhythmBase.Converters;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using RhythmBase.Utils;
-using SkiaSharp;
-using System.IO.Compression;
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO.Compression;
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Rhythm Doctor level.
 	/// </summary>
-
-	public class RDLevel : OrderedEventCollection<BaseEvent>
+	public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	{
-		/// <summary>
-		/// Asset collection.
-		/// </summary>
-		[JsonIgnore]
-		public HashSet<SpriteFile> Assets { get; }
 		/// <summary>
 		/// The calculator that comes with the level.
 		/// </summary>
 		[JsonIgnore]
 		public BeatCalculator Calculator { get; }
 		/// <summary>
-		/// The asset manager that comes with the level.
-		/// </summary>
-		[JsonIgnore]
-		public AssetManager Manager { get; }
-		/// <summary>
 		/// Level Settings.
 		/// </summary>
 		public Settings Settings { get; set; }
-		internal List<RowEventCollection> _rows { get; }
-		internal List<DecorationEventCollection> _decorations { get; }
+		internal List<RowEventCollection> ModifiableRows { get; } = new List<RowEventCollection>(16);
+		internal List<DecorationEventCollection> ModifiableDecorations { get; } = [];
 		/// <summary>
 		/// Level tile collection.
 		/// </summary>
-		public IReadOnlyCollection<RowEventCollection> Rows => _rows.AsReadOnly();
+		public IReadOnlyList<RowEventCollection> Rows => ModifiableRows.AsReadOnly();
 		/// <summary>
 		/// Level decoration collection.
 		/// </summary>
-		public IReadOnlyCollection<DecorationEventCollection> Decorations => _decorations.AsReadOnly();
+		public IReadOnlyList<DecorationEventCollection> Decorations => ModifiableDecorations.AsReadOnly();
 		/// <summary>
 		/// Level condition collection.
 		/// </summary>
@@ -59,7 +46,11 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Level colorPalette collection.
 		/// </summary>
-		public LimitedList<SKColor> ColorPalette { get; }
+		public RDColor[] ColorPalette
+		{
+			get => colorPalette;
+			set => colorPalette = value.Length == 21 ? value : throw new RhythmBaseException();
+		}
 		/// <summary>
 		/// Level file path.
 		/// </summary>
@@ -75,24 +66,28 @@ namespace RhythmBase.Components
 		/// The beat is 1.
 		/// </summary>
 		[JsonIgnore]
-		public Beat DefaultBeat => Calculator.BeatOf(1f);
+		public RDBeat DefaultBeat => Calculator.BeatOf(1f);
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDLevel"/> class.
+		/// </summary>
 		public RDLevel()
 		{
 			_path = "";
-			Assets = [];
-			Variables = new Variables();
+			Variables = new RDVariables();
 			Calculator = new BeatCalculator(this);
-			Manager = new AssetManager(this);
 			Settings = new Settings();
-			_rows = new List<RowEventCollection>(16);
-			_decorations = [];
 			Conditionals = [];
 			Bookmarks = [];
-			ColorPalette = new LimitedList<SKColor>(21U, new SKColor(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue));
+			ColorPalette = new RDColor[21];
 		}
-		public RDLevel(IEnumerable<BaseEvent> items) : this()
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDLevel"/> class with the specified items.
+		/// </summary>
+		/// <param name="items">The items to add to the level.</param>
+		public RDLevel(IEnumerable<IBaseEvent> items) : this()
 		{
-			foreach (BaseEvent item in items)
+			foreach (IBaseEvent item in items)
 				Add(item);
 		}
 		/// <summary>
@@ -103,13 +98,56 @@ namespace RhythmBase.Components
 			get
 			{
 				RDLevel rdlevel = [];
+				rdlevel.ColorPalette =
+				[
+					RDColor.Black,
+					RDColor.White,
+					new(0xFF7F7F7Fu),
+					new(0xFFC3C3C3u),
+					new(0xFF880015u),
+					new(0xFFB97A57u),
+					RDColor.Red,
+
+					new(0xFFFFAEC9u),
+					new(0xFFFF7F27u),
+					new(0xFFFFC90Eu),
+					new(0xFFFFF200u),
+					new(0xFFEFE4B0u),
+					new(0xFF22B14Cu),
+					new(0xFFB5E61Du),
+
+					new(0xFF00A2E8u),
+					new(0xFF99D9EAu),
+					new(0xFF3F48CCu),
+					new(0xFF7092BEu),
+					new(0xFFA349A4u),
+					new(0xFFC8BFE7u),
+					new(0x00000000u)
+				];
+
+				rdlevel.Settings.RankMaxMistakes = [
+					20,
+					15,
+					10,
+					5
+				];
+
+				rdlevel.Settings.RankDescription = [
+					"Better call 911, now!",
+					"Ugh, you can do better",
+					"Not bad I guess...",
+					"We make a good team!",
+					"You are really good!",
+					"Wow! That's awesome!!"
+				];
+
 				PlaySong playsong = new();
 				SetTheme settheme = new();
-				playsong.Song = new Audio() { AudioFile = rdlevel.Manager.Create<AudioFile>("sndOrientalTechno") };
+				playsong.Song = new RDAudio() { Filename = "sndOrientalTechno" };
 				settheme.Preset = SetTheme.Theme.OrientalTechno;
 				rdlevel.AddRange([playsong, settheme]);
-				RowEventCollection samurai = rdlevel.CreateRow(new SingleRoom(0), new RDCharacter(rdlevel, Characters.Samurai));
-				samurai.Sound.Name = "Shaker";
+				RowEventCollection samurai = rdlevel.CreateRow(new RDSingleRoom(RDRoomIndex.Room1), RDCharacters.Samurai);
+				samurai.Sound.Filename = "Shaker";
 				samurai.Add(new AddClassicBeat());
 				return rdlevel;
 			}
@@ -120,14 +158,14 @@ namespace RhythmBase.Components
 		/// <param name="room">The room where this decoration is in.</param>
 		/// <param name="sprite">The sprite referenced by this decoration.</param>
 		/// <returns>Decoration that created and added to the level.</returns>
-		public DecorationEventCollection CreateDecoration(SingleRoom room, SpriteFile sprite = null)
+		public DecorationEventCollection CreateDecoration(RDSingleRoom room, [NotNull] string sprite)
 		{
 			DecorationEventCollection temp = new(room)
 			{
 				Parent = this,
-				_file = (Asset<ISpriteFile>)(object)Manager.Create<SpriteFile>(sprite.Name, sprite)
+				Filename = sprite
 			};
-			_decorations.Add(temp);
+			ModifiableDecorations.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -138,7 +176,7 @@ namespace RhythmBase.Components
 		public DecorationEventCollection CloneDecoration(DecorationEventCollection decoration)
 		{
 			DecorationEventCollection temp = decoration.Clone();
-			_decorations.Add(temp);
+			ModifiableDecorations.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -151,7 +189,7 @@ namespace RhythmBase.Components
 			if (Decorations.Contains(decoration))
 			{
 				this.RemoveRange(decoration);
-				return _decorations.Remove(decoration);
+				return ModifiableDecorations.Remove(decoration);
 			}
 			else
 				return false;
@@ -162,7 +200,7 @@ namespace RhythmBase.Components
 		/// <param name="room">The room where this row is in.</param>
 		/// <param name="character">The character used by this row.</param>
 		/// <returns>Row that created and added to the level.</returns>
-		public RowEventCollection CreateRow(SingleRoom room, RDCharacter character)
+		public RowEventCollection CreateRow(RDSingleRoom room, RDCharacter character)
 		{
 			RowEventCollection temp = new()
 			{
@@ -171,7 +209,7 @@ namespace RhythmBase.Components
 				Parent = this
 			};
 			temp.Parent = this;
-			_rows.Add(temp);
+			ModifiableRows.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -179,7 +217,7 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="row">The row to be removed.</param>
 		/// <returns></returns>
-		public bool RemoveRow(RowEventCollection row) => Rows.Contains(row) && _rows.Remove(row);
+		public bool RemoveRow(RowEventCollection row) => Rows.Contains(row) && ModifiableRows.Remove(row);
 		/// <summary>
 		/// Read from file as level.
 		/// Use default input settings.
@@ -216,28 +254,80 @@ namespace RhythmBase.Components
 				settings.OnAfterReading();
 			}
 			else
-				Read = ReadFromZip(filepath, settings);
-			return Read??[];
+				throw new RhythmBaseException("File not supported.");
+			return rdlevel;
 		}
+		/// <summary>
+		/// Reads an RDLevel from a TextReader with the specified filepath and settings.
+		/// </summary>
+		/// <param name="reader">The TextReader to read from.</param>
+		/// <param name="filepath">The filepath of the RDLevel.</param>
+		/// <param name="settings">The settings to use for reading the RDLevel.</param>
+		/// <returns>The deserialized RDLevel object.</returns>
+		/// <exception cref="RhythmBaseException">Thrown when the file cannot be read.</exception>
+		public static RDLevel Read(TextReader reader, string filepath, LevelReadOrWriteSettings settings)
+		{
+			JsonSerializer LevelSerializer = new();
+			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
+			RDLevel Read;
+			Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(reader)) ?? throw new RhythmBaseException("Cannot read the file.");
+			return Read;
+		}
+
+		/// <summary>
+		/// Reads an RDLevel from a TextReader with the specified settings.
+		/// </summary>
+		/// <param name="reader">The TextReader to read from.</param>
+		/// <param name="settings">The settings to use for reading the RDLevel.</param>
+		/// <returns>The deserialized RDLevel object.</returns>
+		/// <exception cref="RhythmBaseException">Thrown when the file cannot be read.</exception>
+		public static RDLevel Read(TextReader reader, LevelReadOrWriteSettings settings) => Read(reader, "", settings);
+		/// <summary>
+		/// Read from a zip file as a level.
+		/// </summary>
+		/// <param name="filepath">The path to the zip file.</param>
+		/// <returns>An instance of RDLevel that reads from a zip file.</returns>
 		public static RDLevel ReadFromZip(string filepath) => ReadFromZip(filepath, new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Read from a zip file as a level with specific settings.
+		/// </summary>
+		/// <param name="filepath">The path to the zip file.</param>
+		/// <param name="settings">The settings for reading the level.</param>
+		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
 		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings) => ReadFromZip(File.OpenRead(filepath), settings);
+		/// <summary>
+		/// Read from a zip file as a level.
+		/// </summary>
+		/// <param name="stream">The stream of the zip file.</param>
+		/// <returns>An instance of RDLevel that reads from a zip file.</returns>
 		public static RDLevel ReadFromZip(Stream stream) => ReadFromZip(stream, new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Read from a zip file as a level with specific settings.
+		/// </summary>
+		/// <param name="stream">The stream of the zip file.</param>
+		/// <param name="settings">The settings for reading the level.</param>
+		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
 		public static RDLevel ReadFromZip(Stream stream, LevelReadOrWriteSettings settings)
 		{
-			DirectoryInfo tempDirectory = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName()));
+			DirectoryInfo tempDirectory = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RhythmBaseTemp_" + System.IO.Path.GetRandomFileName()));
 			tempDirectory.Create();
 			RDLevel ReadFromZip;
 			try
 			{
 				ZipFile.ExtractToDirectory(stream, tempDirectory.FullName);
 				ReadFromZip = Read(tempDirectory.GetFiles().Single(i => i.Extension == ".rdlevel").FullName, settings);
+				ReadFromZip.isZip = true;
 			}
 			catch (InvalidOperationException ex)
 			{
-				throw new RhythmBaseException("Found more than one rdlevel file.", ex);
+				tempDirectory.Delete(true);
+				throw new RhythmBaseException("More than one RDLevel file has been found.", ex);
 			}
 			catch (Exception ex2)
 			{
+				tempDirectory.Delete(true);
 				throw new RhythmBaseException("Cannot extract the file.", ex2);
 			}
 			return ReadFromZip;
@@ -261,13 +351,21 @@ namespace RhythmBase.Components
 		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
 		public void Write(string filepath, LevelReadOrWriteSettings settings)
 		{
-			if (_path.IsNullOrEmpty() &&
-				System.IO.Path.GetFullPath(_path) == System.IO.Path.GetFullPath(filepath))
-				throw new OverwriteNotAllowedException(_path, typeof(LevelReadOrWriteSettings));
 			using StreamWriter file = File.CreateText(filepath);
 			Write(file, settings);
 		}
+		/// <summary>
+		/// Save the level to a text writer.
+		/// Use default output settings.
+		/// </summary>
+		/// <param name="stream">The text writer to write the level to.</param>
 		public void Write(TextWriter stream) => Write(stream, new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Save the level to a text writer.
+		/// </summary>
+		/// <param name="stream">The text writer to write the level to.</param>
+		/// <param name="settings">The settings for writing the level.</param>
 		public void Write(TextWriter stream, LevelReadOrWriteSettings settings)
 		{
 			using JsonTextWriter writer = new(stream);
@@ -275,7 +373,19 @@ namespace RhythmBase.Components
 			Serializer(settings).Serialize(writer, this);
 			settings.OnAfterWriting();
 		}
-		public void Write(Stream stream) => Write(new StreamWriter(stream), new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Save the level to a stream.
+		/// Use default output settings.
+		/// </summary>
+		/// <param name="stream">The stream to write the level to.</param>
+		public void Write(Stream stream) => Write(new StreamWriter(stream, leaveOpen: true), new LevelReadOrWriteSettings());
+
+		/// <summary>
+		/// Save the level to a stream.
+		/// </summary>
+		/// <param name="stream">The stream to write the level to.</param>
+		/// <param name="settings">The settings for writing the level.</param>
 		public void Write(Stream stream, LevelReadOrWriteSettings settings) => Write(new StreamWriter(stream), settings);
 		/// <summary>
 		/// Convert to JObject type.
@@ -313,101 +423,88 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="item">Event to be added.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException"></exception>
-		public override void Add(BaseEvent item)
+		public override void Add(IBaseEvent item)
 		{
 			//添加默认节拍
-			if (item._beat.IsEmpty)
-				item._beat._calculator = Calculator;
-
+			if (((BaseEvent)item)._beat.IsEmpty)
+				((BaseEvent)item)._beat._calculator = Calculator;
 			//部分事件只能在小节的开头
-			if (item is IBarBeginningEvent @event && item._beat.BarBeat.beat != 1f)
+			if (item is IBarBeginningEvent @event && ((BaseEvent)item)._beat.BarBeat.beat != 1f)
 				throw new IllegalBeatException(@event);
-
 			//更改节拍的关联关卡
-			item._beat._calculator = Calculator;
-			item._beat.ResetCache();
-
+			((BaseEvent)item)._beat._calculator = Calculator;
+			((BaseEvent)item)._beat.ResetCache();
 			if (item.Type == EventType.Comment && ((Comment)item).Parent == null)
 				//注释事件可能在精灵板块，也可能不在
 				base.Add(item);
-
 			else if (item.Type == EventType.TintRows && ((TintRows)item).Parent == null)
-				//轨道染色事件可能是为所有轨道染色
 				base.Add(item);
-
-			else if (Utils.Utils.RowTypes.Contains(item.Type))
+			else if (Utils.EventTypeUtils.RowTypes.Contains(item.Type))
 			{
 				BaseRowAction rowAction = (BaseRowAction)item;
 				if (rowAction.Parent == null)
-					throw new UnreadableEventException("The Parent property of this event should not be null. Call RDRow.Add() instead.", item);
+					throw new UnreadableEventException("The Parent property of this event should not be null. Call RowEventCollection.Add() instead.", item);
 				//添加至对应轨道
 				rowAction.Parent.AddSafely((BaseRowAction)item);
 				base.Add(item);
 			}
-
-			else if (Utils.Utils.DecorationTypes.Contains(item.Type))
+			else if (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type))
 			{
 				BaseDecorationAction decoAction = (BaseDecorationAction)item;
 				if (decoAction.Parent == null)
-					throw new UnreadableEventException("The Parent property of this event should not be null. Call RDDecoration.Add() instead.", item);
+					throw new UnreadableEventException("The Parent property of this event should not be null. Call DecorationEventCollection.Add() instead.", item);
 				//添加至对应精灵
 				decoAction.Parent.AddSafely((BaseDecorationAction)item);
 				base.Add(item);
 			}
-
 			//BPM 和 CPB
 			else if (item.Type == EventType.SetCrotchetsPerBar)
 				AddSetCrotchetsPerBar((SetCrotchetsPerBar)item);
-			else if (Utils.Utils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
+			else if (Utils.EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 				AddBaseBeatsPerMinute((BaseBeatsPerMinute)item);
-
 			// 其他
 			else
 				base.Add(item);
 		}
-
 		/// <summary>
 		/// Determine if the level contains this event.
 		/// </summary>
 		/// <param name="item">Event.</param>
 		/// <returns></returns>
-
-		public override bool Contains(BaseEvent item) => (Utils.Utils.RowTypes.Contains(item.Type)
-			&& Rows.Any((RowEventCollection i) => i.Contains(item))) || (Utils.Utils.DecorationTypes.Contains(item.Type) && Decorations.Any((DecorationEventCollection i) => i.Contains(item))) || base.Contains(item);
-
+		public override bool Contains(IBaseEvent item) => (Utils.EventTypeUtils.RowTypes.Contains(item.Type)
+			&& Rows.Any((RowEventCollection i) => i.Contains(item))) || (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((DecorationEventCollection i) => i.Contains(item))) || base.Contains(item);
 		/// <summary>
 		/// Remove event from the level.
 		/// </summary>
 		/// <param name="item">Event to be removed.</param>
 		/// <returns></returns>
-
-		public override bool Remove(BaseEvent item)
+		public override bool Remove(IBaseEvent item)
 		{
 			bool Remove;
-			if (Utils.Utils.RowTypes.Contains(item.Type)
+			if (Utils.EventTypeUtils.RowTypes.Contains(item.Type)
 				&& Rows.Any((RowEventCollection i) => i.RemoveSafely((BaseRowAction)item)))
 			{
 				base.Remove(item);
-				item._beat._calculator = null;
+				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
-			else if (Utils.Utils.DecorationTypes.Contains(item.Type)
+			else if (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type)
 					&& Decorations.Any((DecorationEventCollection i) => i.RemoveSafely((BaseDecorationAction)item)))
 			{
 				base.Remove(item);
-				item._beat._calculator = null;
+				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
 			else if (Contains(item))
 			{
 				if (item.Type == EventType.SetCrotchetsPerBar)
 					Remove = RemoveSetCrotchetsPerBar((SetCrotchetsPerBar)item);
-				else if (Utils.Utils.ConvertToEnums<BaseBeatsPerMinute>().Contains(item.Type))
+				else if (Utils.EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 					Remove = RemoveBaseBeatsPerMinute((BaseBeatsPerMinute)item);
 				else
 				{
 					bool result = base.Remove(item);
-					item._beat._calculator = null;
+					((BaseEvent)item)._beat._calculator = null;
 					Remove = result;
 				}
 			}
@@ -415,19 +512,50 @@ namespace RhythmBase.Components
 				Remove = false;
 			return Remove;
 		}
-		protected internal void AddSetCrotchetsPerBar(SetCrotchetsPerBar item)
+		/// <summary>
+		/// Gets the status of the level at the specified beat.
+		/// </summary>
+		/// <param name="beat">The beat at which to get the status.</param>
+		/// <returns>A new instance of <see cref="RDStatus"/> representing the status at the specified beat.</returns>
+		internal RDStatus GetStatus(RDBeat beat)
+		{
+			return new()
+			{
+				Beat = beat,
+				RoomStatus = [
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room1)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					},
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room2)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					},
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room3)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					},
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.Room4)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					},
+					new(){
+						Beat = beat,
+						RunningVFXs = this.Where<SetVFXPreset>(i=>i.Rooms.Contains(RDRoomIndex.RoomTop)&& i.VFXDuration().Contains(beat), new RDRange(null,beat))
+					}
+				],
+			};
+		}
+		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item)
 		{
 			SetCrotchetsPerBar? frt = item.FrontOrDefault();
 			SetCrotchetsPerBar? nxt = item.NextOrDefault();
-
 			//更新拍号
 			RefreshCPBs(item._beat);
 			//添加事件
 			base.Add(item);
-
 			//更新计算器
 			Calculator.Refresh();
-
 			if (nxt != null)
 			{
 				BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((BaseEvent i) => i is IBarBeginningEvent &&
@@ -453,13 +581,10 @@ namespace RhythmBase.Components
 						_crotchetsPerBar = frt?.CrotchetsPerBar ?? 8 - 1
 					});
 			}
-
 			// 更新计算器
 			Calculator.Refresh();
 		}
-
-
-		protected internal bool RemoveSetCrotchetsPerBar(SetCrotchetsPerBar item)
+		private bool RemoveSetCrotchetsPerBar(SetCrotchetsPerBar item)
 		{
 			SetCrotchetsPerBar? frt = item.FrontOrDefault();
 			SetCrotchetsPerBar? nxt = item.NextOrDefault();
@@ -493,27 +618,25 @@ namespace RhythmBase.Components
 					base.Add(new SetCrotchetsPerBar
 					{
 						_beat = nxtE._beat,
-						_crotchetsPerBar = Conversions.ToUInteger(Operators.SubtractObject((frt != null) ? frt.CrotchetsPerBar : 8, 1))
+						_crotchetsPerBar = ((frt != null) ? frt.CrotchetsPerBar : 8u - 1u)
 					});
 				Calculator.Refresh();
 			}
-
 			//更新计算器
 			Calculator.Refresh();
-
 			bool result = base.Remove(item);
 			RefreshCPBs(item.Beat);
 			item._beat._calculator = null;
 			Calculator.Refresh();
 			return result;
 		}
-		protected internal void AddBaseBeatsPerMinute(BaseBeatsPerMinute item)
+		private void AddBaseBeatsPerMinute(BaseBeatsPerMinute item)
 		{
 			RefreshBPMs(item.Beat);
 			base.Add(item);
 			Calculator.Refresh();
 		}
-		protected internal bool RemoveBaseBeatsPerMinute(BaseBeatsPerMinute item)
+		private bool RemoveBaseBeatsPerMinute(BaseBeatsPerMinute item)
 		{
 			bool result = base.Remove(item);
 			Calculator.Refresh();
@@ -521,7 +644,7 @@ namespace RhythmBase.Components
 			item._beat._calculator = null;
 			return result;
 		}
-		private void RefreshBPMs(Beat start)
+		private void RefreshBPMs(RDBeat start)
 		{
 			foreach (var item in eventsBeatOrder.Keys)
 				item.ResetBPM();
@@ -530,7 +653,7 @@ namespace RhythmBase.Components
 			foreach (var item in Bookmarks)
 				item.Beat.ResetBPM();
 		}
-		private void RefreshCPBs(Beat start)
+		private void RefreshCPBs(RDBeat start)
 		{
 			foreach (var item in eventsBeatOrder.Keys)
 				item.ResetCPB();
@@ -539,12 +662,25 @@ namespace RhythmBase.Components
 			foreach (var item in Bookmarks)
 				item.Beat.ResetCPB();
 		}
-		public override string ToString() => string.Format("\"{0}\" Count = {1}", Settings.Song, Count);
+		/// <inheritdoc/>
+		public void Dispose()
+		{
+			if (isZip)
+			{
+				System.IO.Directory.Delete(Directory, true);
+			}
+			GC.SuppressFinalize(this);
+		}
+		/// <inheritdoc/>
+		public override string ToString() => $"\"{Settings.Song}\" Count = {Count}";
 		internal string _path;
+		private bool isZip = false;
+		private RDColor[] colorPalette = new RDColor[21];
+
 		/// <summary>
 		/// Variables.
 		/// </summary>
 		[JsonIgnore]
-		public readonly Variables Variables;
+		public readonly RDVariables Variables;
 	}
 }

@@ -1,18 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>RhythmBase</RootNamespace>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>RhythmBase.Addition</AssemblyName>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="SkiaSharp" Version="3.0.0-preview.3.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\RhythmBase\RhythmBase.vbproj" />
   </ItemGroup>
-
 </Project>

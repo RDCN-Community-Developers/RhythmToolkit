@@ -32,7 +32,6 @@ Public Class Form1
 		able = True
 		viewIndex = -1
 	End Sub
-
 	Private Sub Button7_Click(sender As Object, e As EventArgs) Handles SaveFileButton.Click
 		If Not able Then
 			Return
@@ -43,7 +42,6 @@ Public Class Form1
 		End If
 		MsgBox("完成")
 	End Sub
-
 	Private Sub Button8_Click(sender As Object, e As EventArgs) Handles PageUpButton.Click
 		viewIndex += 1
 		If Not able OrElse viewIndex > processingLevel.Count Then
@@ -52,7 +50,6 @@ Public Class Form1
 		End If
 		ShowEvent(viewIndex)
 	End Sub
-
 	Private Sub Button9_Click(sender As Object, e As EventArgs) Handles PageDownButton.Click
 		viewIndex -= 1
 		If Not able OrElse viewIndex < 0 Then
@@ -69,9 +66,7 @@ Public Class Form1
 		End If
 		Dim processingEvent = processingLevel(viewIndex)
 		Dim T As Type = processingEvent.GetType
-
 		Dim enump = GetType(EventType).GetMember(processingEvent.Type.ToString).FirstOrDefault
-
 		Dim nameLabel As New Label With {
 			.Text = Manager.GetValue(enump),
 			.AccessibleName = Manager.GetValue(enump),
@@ -86,14 +81,11 @@ Public Class Form1
 		TableLayoutPanel1.Controls.Add(propertyLabel)
 		For Each p In T.GetProperties(BindingFlags.Public Or BindingFlags.Instance)
 			If p.CanRead AndAlso p.CanWrite Then
-
 				Dim pLabel As New Label With {
 					.Text = Manager.GetValue(p)
 					}
-
 				Dim editorControl As Control
 				Dim editorType = p.PropertyType
-
 				If editorType = GetType(String) Then
 					Dim pTextBox = New TextBox
 					pTextBox.DataBindings.Add("Text", processingEvent, p.Name)
@@ -166,9 +158,7 @@ Public Class Form1
 				TableLayoutPanel1.Controls.Add(editorControl)
 			End If
 		Next
-
 	End Sub
-
 	'Private Class EnumNamePair
 	'	Public ReadOnly Name As String
 	'	Public ReadOnly Value As Structure

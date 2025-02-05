@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Adofai.Components;
-
 namespace RhythmBase.Adofai.Events
 {
-
 	public class ADTile : ADTypedList<ADBaseTileEvent>
 	{
 		public float Angle

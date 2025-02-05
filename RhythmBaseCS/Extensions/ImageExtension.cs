@@ -1,13 +1,18 @@
 ﻿using Microsoft.VisualBasic.CompilerServices;
-using SkiaSharp;
 
 namespace RhythmBase.Extensions
 {
-
+	/// <summary>
+	/// Image extensions.
+	/// </summary>
 	[StandardModule]
 	public static class ImageExtension
 	{
-
+		/// <summary>
+		/// Loads an image from the specified file path.
+		/// </summary>
+		/// <param name="path">The file path to load the image from.</param>
+		/// <returns>The loaded <see cref="SKBitmap"/> image.</returns>
 		public static SKBitmap FromFile(string path)
 		{
 			SKBitmap FromFile;
@@ -15,16 +20,24 @@ namespace RhythmBase.Extensions
 				FromFile = SKBitmap.Decode(stream);
 			return FromFile;
 		}
+
 		/// <summary>
-		/// Save the image to a file path.
+		/// Saves the image to the specified file path.
 		/// </summary>
-		/// <param name="image"></param>
-		/// <param name="path"></param>
+		/// <param name="image">The <see cref="SKBitmap"/> image to save.</param>
+		/// <param name="path">The file path to save the image to.</param>
 		public static void Save(this SKBitmap image, string path)
 		{
 			using FileStream stream = new FileInfo(path).OpenWrite();
 			image.Encode(SKEncodedImageFormat.Png, 100).SaveTo(stream);
 		}
+
+		/// <summary>
+		/// Tries to decode an image from the specified file path.
+		/// </summary>
+		/// <param name="image">The <see cref="SKBitmap"/> image to decode into.</param>
+		/// <param name="path">The file path to decode the image from.</param>
+		/// <returns><c>true</c> if the image was successfully decoded; otherwise, <c>false</c>.</returns>
 		public static bool TryDecode(ref SKBitmap image, string path)
 		{
 			try
@@ -37,6 +50,13 @@ namespace RhythmBase.Extensions
 			}
 			return true;
 		}
+
+		/// <summary>
+		/// Copies a portion of the image defined by the specified rectangle.
+		/// </summary>
+		/// <param name="image">The <see cref="SKBitmap"/> image to copy from.</param>
+		/// <param name="rect">The rectangle defining the portion of the image to copy.</param>
+		/// <returns>A new <see cref="SKBitmap"/> containing the copied portion of the image.</returns>
 		public static SKBitmap Copy(this SKBitmap image, SKRectI rect)
 		{
 			SKBitmap result = new(rect.Width, rect.Height, false);
@@ -44,6 +64,12 @@ namespace RhythmBase.Extensions
 			canvas.DrawBitmap(image, rect, new SKRectI(0, 0, rect.Width, rect.Height), null);
 			return result;
 		}
+
+		/// <summary>
+		/// Creates an outline of the image.
+		/// </summary>
+		/// <param name="image">The <see cref="SKBitmap"/> image to outline.</param>
+		/// <returns>A new <see cref="SKBitmap"/> containing the outlined image.</returns>
 		public static SKBitmap OutLine(this SKBitmap image)
 		{
 			SKBitmap img = image.Copy();
@@ -60,7 +86,7 @@ namespace RhythmBase.Extensions
 							|| image.GetPixel(Math.Min(x + 1, img.Width - 1), y).Alpha == byte.MaxValue
 							|| image.GetPixel(x, Math.Max(0, y - 1)).Alpha == byte.MaxValue
 							|| image.GetPixel(x, Math.Min(y + 1, img.Width - 1)).Alpha == byte.MaxValue))
-							img.SetPixel(x, y, new SKColor(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue));
+							img.SetPixel(x, y, new RDColor(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue));
 						else
 							img.SetPixel(x, y, default);
 					}
@@ -68,9 +94,15 @@ namespace RhythmBase.Extensions
 				return img;
 			}
 		}
+
+		/// <summary>
+		/// Applies an outer glow effect to the image.
+		/// </summary>
+		/// <param name="image">The <see cref="SKBitmap"/> image to apply the glow effect to.</param>
+		/// <returns>A new <see cref="SKBitmap"/> containing the image with the glow effect.</returns>
 		public static SKBitmap OutGlow(this SKBitmap image)
 		{
-			SKImageFilter shadowFilter = SKImageFilter.CreateDropShadow(0f, 0f, 10f, 10f, SKColors.White);
+			SKImageFilter shadowFilter = SKImageFilter.CreateDropShadow(0f, 0f, 10f, 10f, RDColors.White);
 			SKPaint paint = new()
 			{
 				ImageFilter = shadowFilter

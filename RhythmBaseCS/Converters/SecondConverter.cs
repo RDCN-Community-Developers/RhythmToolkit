@@ -1,11 +1,7 @@
-﻿using System;
-
-namespace RhythmBase.Converters
+﻿namespace RhythmBase.Converters
 {
-
 	internal class SecondConverter : TimeConverter
 	{
-
 		public SecondConverter() : base(TimeType.Second)
 		{
 		}

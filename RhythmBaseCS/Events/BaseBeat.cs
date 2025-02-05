@@ -1,17 +1,18 @@
-﻿using System;
-
-namespace RhythmBase.Events
+﻿namespace RhythmBase.Events
 {
-
+	/// <summary>
+	/// Represents an abstract base class for beat actions in a rhythm-based application.
+	/// </summary>
 	public abstract class BaseBeat : BaseRowAction
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BaseBeat"/> class and sets the Tab property to Rows.
+		/// </summary>
+		protected BaseBeat() { }
 
-		protected BaseBeat()
-		{
-			Tab = Tabs.Rows;
-		}
-
-
-		public override Tabs Tab { get; }
+		/// <summary>
+		/// Gets the tab associated with the beat action, which is always set to Rows.
+		/// </summary>
+		public override Tabs Tab { get; } = Tabs.Rows;
 	}
 }

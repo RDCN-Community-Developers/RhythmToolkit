@@ -1,12 +1,14 @@
-﻿using System;
-using RhythmBase.Components;
-
+﻿using RhythmBase.Components;
 namespace RhythmBase.Events
 {
-
-	public interface ISingleRoomEvent
+	/// <summary>
+	/// Represents an event that occurs within a single room.
+	/// </summary>
+	public interface ISingleRoomEvent : IBaseEvent
 	{
-
-		SingleRoom Room { get; set; }
+		/// <summary>
+		/// Gets or sets the room associated with the event.
+		/// </summary>
+		RDSingleRoom Room { get; set; }
 	}
 }

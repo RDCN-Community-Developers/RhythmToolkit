@@ -1,37 +1,30 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
-using SkiaSharp;
+using RhythmBase.Extensions;
 
+using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
-
-	internal class PanelColorConverter : JsonConverter<PaletteColor>
+	internal partial class PanelColorConverter : JsonConverter<PaletteColor>
 	{
-
-		internal PanelColorConverter(LimitedList<SKColor> list)
+		internal PanelColorConverter(RDColor[] list)
 		{
 			parent = list;
 		}
 
-
-		public override void WriteJson(JsonWriter writer, PaletteColor value, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, PaletteColor? value, JsonSerializer serializer)
 		{
-			bool enablePanel = value.EnablePanel;
-			if (enablePanel)
+			if (value?.EnablePanel ?? throw new NotImplementedException())
 			{
 				writer.WriteValue(string.Format("pal{0}", value.PaletteIndex));
 			}
 			else
 			{
 				string s = value.Value.ToString().Replace("#", "");
-				string alpha = s.Substring(0, 2);
-				string rgb = s.Substring(2);
-				bool enableAlpha = value.EnableAlpha;
-				if (enableAlpha)
+				string alpha = s[..2];
+				string rgb = s[2..];
+				if (value.EnableAlpha)
 				{
 					writer.WriteValue(rgb + alpha);
 				}
@@ -42,41 +35,44 @@ namespace RhythmBase.Converters
 			}
 		}
 
-
-		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			string JString = JToken.Load(reader).Value<string>();
-			Match reg = Regex.Match(JString, "pal(\\d+)");
-			existingValue.parent = parent;
-			bool success = reg.Success;
-			if (success)
+			JToken token = JToken.Load(reader);
+			string? JString = token.Value<string>();
+			if (JString.IsNullOrEmpty())
 			{
-				existingValue.PaletteIndex = Conversions.ToInteger(reg.Groups[1].Value);
+				throw new Exceptions.ConvertingException(token, new Exception($"Unreadable color: \"{token}\". path \"{reader.Path}\""));
+			}
+			Match reg = PaletteColorRegex().Match(JString);
+			existingValue!.parent = parent;
+			if (reg.Success)
+			{
+				existingValue.PaletteIndex = int.Parse(reg.Groups[1].Value);
 			}
 			else
 			{
 				string s = JString.Replace("#", "");
 				string alpha = "";
-				bool flag = s.Length > 6;
-				if (flag)
+				if (s.Length > 6)
 				{
-					alpha = s.Substring(6);
+					alpha = s[6..];
 				}
-				string rgb = s.Substring(0, 6);
-				bool flag2 = s.Length > 6;
-				if (flag2)
+				string rgb = s[..6];
+				if (s.Length > 6)
 				{
-					existingValue.Color = new SKColor?(SKColor.Parse(alpha + rgb));
+					existingValue.Color = new RDColor?(RDColor.FromArgb(alpha + rgb));
 				}
 				else
 				{
-					existingValue.Color = new SKColor?(SKColor.Parse(rgb));
+					existingValue.Color = new RDColor?(RDColor.FromRgba(rgb));
 				}
 			}
 			return existingValue;
 		}
 
+		private readonly RDColor[] parent;
 
-		private readonly LimitedList<SKColor> parent;
+		[GeneratedRegex("pal(\\d+)")]
+		private static partial Regex PaletteColorRegex();
 	}
 }

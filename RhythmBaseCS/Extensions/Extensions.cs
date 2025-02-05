@@ -1,51 +1,47 @@
 ﻿using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Adofai.Components;
-using RhythmBase.Adofai.Events;
-using RhythmBase.Assets;
 using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
-using SkiaSharp;
+using RhythmBase.Utils;
+
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using static RhythmBase.Utils.Utils;
-
 namespace RhythmBase.Extensions
 {
-
+	/// <summary>
+	/// Extensions
+	/// </summary>
 	[StandardModule]
-	public static class Extensions
+	public static partial class Extensions
 	{
 		private static (float start, float end) GetRange(OrderedEventCollection e, Index index)
 		{
 			(float, float) GetRange;
 			try
 			{
-				BaseEvent firstEvent = e.First<BaseEvent>();
-				BaseEvent lastEvent = e.Last<BaseEvent>();
+				IBaseEvent firstEvent = e.First<IBaseEvent>();
+				IBaseEvent lastEvent = e.Last<IBaseEvent>();
 				GetRange = index.IsFromEnd
 							? (lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(lastEvent.Beat.BarBeat.bar - index.Value), 1f),
 						lastEvent.Beat._calculator.BarBeatToBeatOnly((uint)(lastEvent.Beat.BarBeat.bar - index.Value + 1), 1f))
 							: (firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)index.Value, 1f),
 						firstEvent.Beat._calculator.BarBeatToBeatOnly((uint)(index.Value + 1), 1f));
 			}
-			catch (Exception ex)
+			catch
 			{
 				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 			return GetRange;
 		}
-
-
-
 		private static (float start, float end) GetRange(OrderedEventCollection e, Range range)
 		{
 			(float start, float end) GetRange;
 			try
 			{
-				BaseEvent firstEvent = e.First<BaseEvent>();
-				BaseEvent lastEvent = e.Last<BaseEvent>();
+				IBaseEvent firstEvent = e.First<IBaseEvent>();
+				IBaseEvent lastEvent = e.Last<IBaseEvent>();
 				GetRange = ((range.Start.IsFromEnd
 							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(((ulong)lastEvent.Beat.BarBeat.bar) - (ulong)((long)range.Start.Value)), 1f)
 							: firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)Math.Max(range.Start.Value, 1), 1f),
@@ -53,7 +49,7 @@ namespace RhythmBase.Extensions
 							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(((ulong)lastEvent.Beat.BarBeat.bar) - (ulong)((long)range.End.Value) + 1UL), 1f)
 							: firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(range.End.Value + 1), 1f)));
 			}
-			catch (Exception ex)
+			catch
 			{
 				throw new ArgumentOutOfRangeException(nameof(range));
 			}
@@ -71,12 +67,12 @@ namespace RhythmBase.Extensions
 		/// <item>when both are empty,<br />Returns false.</item>
 		/// </list>
 		/// </returns>
-		public static bool NullableEquals(this float? e, float? obj) => ((e != null & obj != null) && e.Value == obj.Value) || (e == null && obj == null);
+		public static bool NullableEquals(this float? e, float? obj) => ((e != null && obj != null) && e.Value == obj.Value) || (e == null && obj == null);
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="e"></param>
-		public static bool IsNullOrEmpty(this string e) => e == null || e.Length == 0;
+		public static bool IsNullOrEmpty([NotNullWhen(false)] this string? e) => e == null || e.Length == 0;
 		/// <summary>
 		/// Make strings follow the Upper Camel Case.
 		/// </summary>
@@ -84,7 +80,7 @@ namespace RhythmBase.Extensions
 		public static string ToUpperCamelCase(this string e)
 		{
 			char[] S = [.. e];
-			S[0] = Conversions.ToChar(S[0].ToString().ToUpper());
+			S[0] = (S[0].ToString().ToUpper()[0]);
 			return string.Join("", [new string(S)]);
 		}
 		/// <summary>
@@ -92,17 +88,9 @@ namespace RhythmBase.Extensions
 		/// </summary>
 		internal static void ToUpperCamelCase(this JObject e, string key)
 		{
-			JToken token = e[key];
+			JToken token = e[key] ?? throw new NullReferenceException();
 			e.Remove(key);
 			e[key.ToUpperCamelCase()] = token;
-		}
-		/// <summary>
-		/// Make keys of JObject follow the Upper Camel Case.
-		/// </summary>
-		internal static void ToUpperCamelCase(this JObject e)
-		{
-			foreach (KeyValuePair<string, JToken?> pair in e)
-				e.ToUpperCamelCase(pair.Key);
 		}
 		/// <summary>
 		/// Make strings follow the Lower Camel Case.
@@ -110,8 +98,8 @@ namespace RhythmBase.Extensions
 		/// <returns>The result.</returns>
 		public static string ToLowerCamelCase(this string e)
 		{
-			char[] S = e.ToArray();
-			S[0] = Conversions.ToChar(S[0].ToString().ToLower());
+			char[] S = [.. e];
+			S[0] = (S[0].ToString().ToLower()[0]);
 			return string.Join("", [new string(S)]);
 		}
 		/// <summary>
@@ -119,17 +107,9 @@ namespace RhythmBase.Extensions
 		/// </summary>
 		internal static void ToLowerCamelCase(this JObject e, string key)
 		{
-			JToken token = e[key];
+			JToken token = e[key] ?? throw new NullReferenceException();
 			e.Remove(key);
 			e[key.ToLowerCamelCase()] = token;
-		}
-		/// <summary>
-		/// Make keys of JObject follow the Lower Camel Case.
-		/// </summary>
-		internal static void ToLowerCamelCase(this JObject e)
-		{
-			foreach (KeyValuePair<string, JToken?> pair in e)
-				e.ToLowerCamelCase(pair.Key);
 		}
 		/// <summary>
 		/// Convert color format from RGBA to ARGB
@@ -139,48 +119,6 @@ namespace RhythmBase.Extensions
 		/// Convert color format from ARGB to RGBA
 		/// </summary>
 		public static int ArgbToRgba(this int Argb) => (Argb >> 24 & 255) | (Argb << 8 & -256);
-
-		/// <summary>
-		/// Convert <see cref="T:SkiaSharp.SKPoint" /> to <see cref="T:RhythmBase.Components.RDPointN" />.
-		/// </summary>
-		/// <returns></returns>
-
-		public static RDPointN ToRDPoint(this SKPoint e) => new(e.X, e.Y);
-		/// <summary>
-		/// Convert <see cref="T:SkiaSharp.SKPointI" /> to <see cref="T:RhythmBase.Components.RDPointNI" />.
-		/// </summary>
-		/// <returns></returns>
-		public static RDPointNI ToRDPointI(this SKPointI e) => new(e.X, e.Y);
-		/// <summary>
-		/// Convert <see cref="T:SkiaSharp.SKSize" /> to <see cref="T:RhythmBase.Components.RDSize" />.
-		/// </summary>
-		/// <returns></returns>
-		public static RDSizeN ToRDSize(this SKSize e) => new(e.Width, e.Height);
-		/// <summary>
-		/// Convert <see cref="T:SkiaSharp.SKSizeI" /> to <see cref="T:RhythmBase.Components.RDSizeI" />.
-		/// </summary>
-		/// <returns></returns>
-		public static RDSizeNI ToRDSizeI(this SKSizeI e) => new(e.Width, e.Height);
-		/// <summary>
-		/// Convert <see cref="T:RhythmBase.Components.RDPoint" /> to <see cref="T:SkiaSharp.SKSizeI" />.
-		/// </summary>
-		/// <returns></returns>
-		public static SKPoint ToSKPoint(this RDPointN e) => new(e.X, e.Y);
-		/// <summary>
-		/// Convert <see cref="T:RhythmBase.Components.RDPointI" /> to <see cref="T:SkiaSharp.SKPointI" />.
-		/// </summary>
-		/// <returns></returns>
-		public static SKPointI ToSKPointI(this RDPointNI e) => new(e.X, e.Y);
-		/// <summary>
-		/// Convert <see cref="T:RhythmBase.Components.RDSize" /> to <see cref="T:SkiaSharp.SKSize" />.
-		/// </summary>
-		/// <returns></returns>
-		public static SKSize ToSKSize(this RDSizeN e) => new(e.Width, e.Height);
-		/// <summary>
-		/// Convert <see cref="T:RhythmBase.Components.RDSizeI" /> to <see cref="T:SkiaSharp.SKSizeI" />.
-		/// </summary>
-		/// <returns></returns>
-		public static SKSizeI ToSKSizeI(this RDSizeNI e) => new(e.Width, e.Height);
 		/// <summary>
 		/// Calculate the fraction of <paramref name="splitBase" /> equal to the nearest floating point number.
 		/// <example>
@@ -198,23 +136,26 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Calculate the fraction of <paramref name="splitBase" /> equal to the nearest floating point number.
 		/// </summary>
-		public static Beat FixFraction(this Beat beat, uint splitBase) => new(beat.BeatOnly.FixFraction(splitBase));
+		public static RDBeat FixFraction(this RDBeat beat, uint splitBase) => new(beat.BeatOnly.FixFraction(splitBase));
 		/// <summary>
 		/// Converting enumeration constants to in-game colors。
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <returns>The in-game color.</returns>
-		public static SKColor ToColor(this Bookmark.BookmarkColors e) => e switch
+		public static RDColor ToColor(this Bookmark.BookmarkColors e) => e switch
 		{
-			Bookmark.BookmarkColors.Blue => new(11, 125, 206),
-			Bookmark.BookmarkColors.Red => new(219, 41, 41),
-			Bookmark.BookmarkColors.Yellow => new(212, 212, 51),
-			Bookmark.BookmarkColors.Green => new(54, 215, 54)
+			Bookmark.BookmarkColors.Blue => RDColor.FromRgba(11, 125, 206),
+			Bookmark.BookmarkColors.Red => RDColor.FromRgba(219, 41, 41),
+			Bookmark.BookmarkColors.Yellow => RDColor.FromRgba(212, 212, 51),
+			Bookmark.BookmarkColors.Green => RDColor.FromRgba(54, 215, 54),
+			_ => throw new NotSupportedException(),
 		};
 		/// <summary>
 		/// Add a range of events.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="items"></param>
-		public static void AddRange<TEvent>(this OrderedEventCollection<TEvent> e, IEnumerable<TEvent> items) where TEvent : BaseEvent
+		public static void AddRange<TEvent>(this OrderedEventCollection<TEvent> e, IEnumerable<TEvent> items) where TEvent : IBaseEvent
 		{
 			foreach (TEvent item in items)
 				e.Add(item);
@@ -222,28 +163,30 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Filters a sequence of events based on a predicate.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : BaseEvent =>
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent =>
 			((IEnumerable<TEvent>)e.eventsBeatOrder
 			.SelectMany(i => i.Value)).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events located at a time.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Beat beat) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			TypedEventCollection<BaseEvent> value = [];
 			IEnumerable<TEvent> Where = [];
-			if (e.eventsBeatOrder.TryGetValue(beat, out value))
-				Where = (IEnumerable<TEvent>)value;
+			if (e.eventsBeatOrder.TryGetValue(beat, out TypedEventCollection<IBaseEvent>? value))
+				Where = value.Cast<TEvent>().AsEnumerable();
 			return Where;
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a range of time.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Beat startBeat, Beat endBeat) where TEvent : BaseEvent =>
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent =>
 			e.eventsBeatOrder
 			.TakeWhile(i => i.Key < endBeat)
 			.SkipWhile(i => i.Key < startBeat)
@@ -251,8 +194,9 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Filters a sequence of events located at a bar.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : IBaseEvent
 		{
 			var (start, end) = GetRange(e, bar);
 			return e.eventsBeatOrder
@@ -263,9 +207,10 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Filters a sequence of events located at a range of beat.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="range">Specified beat range.</param>
 		/// <returns></returns>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : BaseEvent =>
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : IBaseEvent =>
 			(IEnumerable<TEvent>)e.eventsBeatOrder
 			.TakeWhile(i => range.End == null || i.Key < range.End)
 			.SkipWhile(i => range.Start != null && i.Key < range.Start)
@@ -273,8 +218,9 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Filters a sequence of events located at a range of bar.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : IBaseEvent
 		{
 			var (start, end) = GetRange(e, bars);
 			return e.eventsBeatOrder
@@ -285,41 +231,47 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified beat.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Beat beat) where TEvent : BaseEvent => e.Where(beat).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.Where(beat).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified range of beat.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Beat startBeat, Beat endBeat) where TEvent : BaseEvent => e.Where(startBeat, endBeat).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.Where(startBeat, endBeat).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified range of beat.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : BaseEvent => e.Where(range).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.Where(range).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified bar.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bar">Specified bar.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : BaseEvent => e.Where(bar).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.Where(bar).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified range of bar.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : BaseEvent => e.Where(bars).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.Where(bars).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent"></typeparam>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e) where TEvent : BaseEvent
+		/// <param name="e">Collection</param>
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
 		{
-			EventType[] enums = ConvertToEnums<TEvent>();
+			EventType[] enums = EventTypeUtils.ToEnums<TEvent>();
 			return e.eventsBeatOrder
 							.Where(i => i.Value._types
 								.Any(enums.Contains))
@@ -329,19 +281,21 @@ namespace RhythmBase.Extensions
 		/// Filters a sequence of events located at a beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Beat beat) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			TypedEventCollection<BaseEvent> value = [];
+			TypedEventCollection<IBaseEvent> value;
 			return (e.eventsBeatOrder.TryGetValue(beat, out value!) ? value.OfType<TEvent>() : []) ?? [];
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a range of beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Beat startBeat, Beat endBeat) where TEvent : BaseEvent => e.eventsBeatOrder
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.eventsBeatOrder
 					.TakeWhile(i => i.Key < endBeat)
 					.SkipWhile(i => i.Key < startBeat)
 					.SelectMany(i => i.Value.OfType<TEvent>());
@@ -349,356 +303,414 @@ namespace RhythmBase.Extensions
 		/// Filters a sequence of events located at a bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : IBaseEvent
 		{
 			(float, float) rg = GetRange(e, bar);
 			return e.eventsBeatOrder
-				.TakeWhile((KeyValuePair<Beat, TypedEventCollection<BaseEvent>> i) => i.Key.BeatOnly < rg.Item2)
-				.SkipWhile((KeyValuePair<Beat, TypedEventCollection<BaseEvent>> i) => i.Key.BeatOnly < rg.Item1)
+				.TakeWhile((KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> i) => i.Key.BeatOnly < rg.Item2)
+				.SkipWhile((KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> i) => i.Key.BeatOnly < rg.Item1)
 				.SelectMany(i => i.Value.OfType<TEvent>());
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a range of beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="range">Specified beat range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDRange range) where TEvent : BaseEvent => e.eventsBeatOrder
-			.TakeWhile(i => range.End == null ? true : i.Key < range.End)
-			.SkipWhile(i => range.Start == null ? false : i.Key < range.Start)
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDRange range) where TEvent : IBaseEvent => e.eventsBeatOrder
+			.TakeWhile(i => range.End == null || i.Key < range.End)
+			.SkipWhile(i => range.Start != null && i.Key < range.Start)
 			.SelectMany(i => i.Value.OfType<TEvent>());
-
 		/// <summary>
 		/// Filters a sequence of events located at a range of bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Range bars) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Range bars) where TEvent : IBaseEvent
 		{
-			(float start, float end) rg = GetRange(e, bars);
+			(float start, float end) = GetRange(e, bars);
 			return e.eventsBeatOrder
-							.TakeWhile(i => i.Key.BeatOnly < rg.end)
-							.SkipWhile(i => i.Key.BeatOnly < rg.start)
+							.TakeWhile(i => i.Key.BeatOnly < end)
+							.SkipWhile(i => i.Key.BeatOnly < start)
 							.SelectMany(i => i.Value.OfType<TEvent>());
 		}
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a range of bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => e.Where<TEvent>().Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Beat beat) where TEvent : BaseEvent => e.Where<TEvent>(beat).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.Where<TEvent>(beat).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a range of beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Beat startBeat, Beat endBeat) where TEvent : BaseEvent => e.Where<TEvent>(startBeat, endBeat).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.Where<TEvent>(startBeat, endBeat).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a range of beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDRange range) where TEvent : BaseEvent => e.Where<TEvent>(range).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.Where<TEvent>(range).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bar">Specified bar.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : BaseEvent => e.Where<TEvent>(bar).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.Where<TEvent>(bar).Where(predicate);
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a range of bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Range bars) where TEvent : BaseEvent => e.Where<TEvent>(bars).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.Where<TEvent>(bars).Where(predicate);
 		/// <summary>
 		/// Remove a sequence of events based on a predicate.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate)));
 		/// <summary>
 		/// Remove a sequence of events located at a time.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Beat beat) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(beat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(beat)));
 		/// <summary>
 		/// Remove a sequence of events located at a range of time.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Beat startBeat, Beat endBeat) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(startBeat, endBeat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(startBeat, endBeat)));
 		/// <summary>
 		/// Remove a sequence of events located at a bar.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(bar)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(bar)));
 		/// <summary>
 		/// Remove a sequence of events located at a range of beat.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="range">Specified beat range.</param>
 		/// <returns></returns>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(range)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(range)));
 		/// <summary>
 		/// Remove a sequence of events located at a range of bar.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(bars)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(bars)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified beat.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="beat">Specified beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Beat beat) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, beat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, beat)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified range of beat.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Beat startBeat, Beat endBeat) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, startBeat, endBeat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, startBeat, endBeat)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified range of beat.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, range)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, range)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified bar.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bar">Specified bar.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bar)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bar)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified range of bar.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bars)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bars)));
 		/// <summary>
 		/// Remove a sequence of events in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent"></typeparam>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>()));
+		/// <param name="e">Collection</param>
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>()));
 		/// <summary>
 		/// Remove a sequence of events located at a beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Beat beat) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(beat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(beat)));
 		/// <summary>
 		/// Remove a sequence of events located at a range of beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Beat startBeat, Beat endBeat) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(startBeat, endBeat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(startBeat, endBeat)));
 		/// <summary>
 		/// Filters a sequence of events located at a range of beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="range">Specified beat range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, RDRange range) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(range)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(range)));
 		/// <summary>
 		/// Remove a sequence of events located at a bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(bar)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(bar)));
 		/// <summary>
 		/// Remove a sequence of events located at a range of bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Range bars) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(bars)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(bars)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate located at a range of bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate located at a beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="beat">Specified beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Beat beat) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, beat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, beat)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate located at a range of beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Beat startBeat, Beat endBeat) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, startBeat, endBeat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, startBeat, endBeat)));
 		/// <summary>
 		/// Remove a sequence of events based on a predicate located at a range of beat in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDRange range) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, range)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, range)));
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bar">Specified bar.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bar)));
+		/// <param name="e">Collection</param>
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bar)));
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a range of bar in specified event type.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Range bars) where TEvent : BaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bars)));
+		/// <param name="e">Collection</param>
+		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bars)));
 		/// <summary>
 		/// Returns the first element of the collection.
 		/// </summary>
-		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : BaseEvent => (TEvent)(object)e.eventsBeatOrder.First().Value.First();
+		/// <param name="e">Collection</param>
+		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent => (TEvent)e.eventsBeatOrder.First().Value.First();
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => (TEvent)(object)e.ConcatAll().First((Func<BaseEvent, bool>)predicate);
-
+		/// <param name="e">Collection</param>
+		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.ConcatAll().First(predicate);
 		/// <summary>
 		/// Returns the first element of the collection in specified event type.
 		/// </summary>
-		public static TEvent First<TEvent>(this OrderedEventCollection e) where TEvent : BaseEvent => e.Where<TEvent>().First();
+		/// <param name="e">Collection</param>
+		public static TEvent First<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.Where<TEvent>().First();
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent First<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => e.Where<TEvent>().First(predicate);
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : BaseEvent
+		/// <param name="e">Collection</param>
+		public static TEvent First<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().First(predicate);
+		/// <summary>
+		/// Returns the first event in the collection or the default value if the collection is empty.
+		/// </summary>
+		/// <typeparam name="TEvent">The type of event in the collection.</typeparam>
+		/// <param name="e">The ordered event collection.</param>
+		/// <returns>The first event in the collection or the default value if the collection is empty.</returns>
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent
 		{
-			TypedEventCollection<BaseEvent> value = e.eventsBeatOrder.FirstOrDefault().Value;
+			TypedEventCollection<IBaseEvent> value = e.eventsBeatOrder.FirstOrDefault().Value;
 			return (TEvent?)(value?.FirstOrDefault());
 		}
 		/// <summary>
 		/// Returns the first element of the collection, or <paramref name="defaultValue" /> if collection contains no elements.
 		/// </summary>
 		/// <param name="defaultValue">The default value to return if contains no elements.</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : BaseEvent => (TEvent)(object)e.ConcatAll().FirstOrDefault((BaseEvent)(object)defaultValue);
+		/// <param name="e">Collection</param>
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : IBaseEvent => e.ConcatAll().FirstOrDefault(defaultValue);
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => (TEvent)(object)e.ConcatAll().FirstOrDefault((Func<BaseEvent, bool>)predicate);
+		/// <param name="e">Collection</param>
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.ConcatAll().OfType<TEvent>().FirstOrDefault(predicate);
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : BaseEvent => (TEvent)(object)e.ConcatAll().FirstOrDefault((Func<BaseEvent, bool>)predicate, (BaseEvent)(object)defaultValue);
+		/// <param name="e">Collection</param>
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent => e.ConcatAll().FirstOrDefault(predicate, defaultValue);
 		/// <summary>
 		/// Returns the first element of the collection in specified event type, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : BaseEvent => e.Where<TEvent>().FirstOrDefault();
+		/// <param name="e">Collection</param>
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.Where<TEvent>().FirstOrDefault();
 		/// <summary>
 		/// Returns the first element of the collection in specified event type, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : BaseEvent => e.Where<TEvent>().FirstOrDefault(defaultValue);
+		/// <param name="e">Collection</param>
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : IBaseEvent => e.Where<TEvent>().FirstOrDefault(defaultValue);
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => e.Where<TEvent>().FirstOrDefault(predicate);
+		/// <param name="e">Collection</param>
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().FirstOrDefault(predicate);
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : BaseEvent => e.Where<TEvent>().FirstOrDefault(predicate, defaultValue);
+		/// <param name="e">Collection</param>
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent => e.Where<TEvent>().FirstOrDefault(predicate, defaultValue);
 		/// <summary>
 		/// Returns the last element of the collection.
 		/// </summary>
-		public static TEvent Last<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : BaseEvent => (TEvent)e.eventsBeatOrder.Last().Value.Last();
+		public static TEvent Last<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent => (TEvent)e.eventsBeatOrder.Last().Value.Last();
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent Last<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => (TEvent)(object)e.ConcatAll().Last((Func<BaseEvent, bool>)predicate);
+		/// <param name="e">Collection</param>
+		public static TEvent Last<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.ConcatAll().Last(predicate);
 		/// <summary>
 		/// Returns the last element of the collection in specified event type.
 		/// </summary>
-		public static TEvent Last<TEvent>(this OrderedEventCollection e) where TEvent : BaseEvent => e.Where<TEvent>().Last();
+		/// <param name="e">Collection</param>
+		public static TEvent Last<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.Where<TEvent>().Last();
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition in specified event type.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent Last<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => e.Where<TEvent>().Last(predicate);
+		/// <param name="e">Collection</param>
+		public static TEvent Last<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().Last(predicate);
 		/// <summary>
 		/// Returns the last element of the collection, or <see langword="null" /> if collection contains no elements.
 		/// </summary>
-		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : BaseEvent
+		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent
 		{
-			TypedEventCollection<BaseEvent> value = e.eventsBeatOrder.LastOrDefault().Value;
-			return (TEvent?)(((IEnumerable<TEvent>)value)?.LastOrDefault<BaseEvent>());
+			IEnumerable<IBaseEvent> value = e.eventsBeatOrder.LastOrDefault().Value.AsEnumerable();
+			return (TEvent?)(value?.LastOrDefault());
 		}
 		/// <summary>
 		/// Returns the last element of the collection, or <paramref name="defaultValue" /> if collection contains no elements.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="defaultValue">The default value to return if contains no elements.</param>
-		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : BaseEvent => (TEvent)(object)e.ConcatAll().LastOrDefault((BaseEvent)(object)defaultValue);
+		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : IBaseEvent => e.ConcatAll().LastOrDefault(defaultValue);
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition, or <see langword="null" /> if matches no elements.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => (TEvent?)(object?)e.ConcatAll().LastOrDefault((Func<BaseEvent, bool>)predicate);
+		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.ConcatAll().LastOrDefault(predicate);
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : BaseEvent => (TEvent)(object)e.ConcatAll().LastOrDefault((Func<BaseEvent, bool>)predicate, (BaseEvent)(object)defaultValue);
+		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent => e.ConcatAll().LastOrDefault(predicate, defaultValue);
 		/// <summary>
 		/// Returns the last element of the collection in specified event type, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : BaseEvent => e.Where<TEvent>().LastOrDefault();
+		/// <param name="e">Collection</param>
+		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.Where<TEvent>().LastOrDefault();
 		/// <summary>
 		/// Returns the last element of the collection in specified event type, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : BaseEvent => e.Where<TEvent>().LastOrDefault(defaultValue);
+		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : IBaseEvent => e.Where<TEvent>().LastOrDefault(defaultValue);
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition in specified event type, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => e.Where<TEvent>().LastOrDefault(predicate);
+		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().LastOrDefault(predicate);
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition in specified event type, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : BaseEvent => e.Where<TEvent>().LastOrDefault(predicate, defaultValue);
+		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent => e.Where<TEvent>().LastOrDefault(predicate, defaultValue);
 		/// <summary>
 		/// Returns events from a collection as long as it less than or equal to <paramref name="beat" />.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Beat beat) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent
 		{
 			foreach (TEvent item in e.Where<TEvent>())
 				if (item.Beat <= beat) yield return item;
@@ -707,8 +719,9 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Returns events from a collection as long as it less than or equal to <paramref name="bar" />.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : IBaseEvent
 		{
 			TEvent firstEvent = e.First();
 			TEvent lastEvent = e.Last();
@@ -719,29 +732,33 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Returns events from a collection as long as a specified condition is true.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : BaseEvent =>
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent =>
 			(IEnumerable<TEvent>)e.eventsBeatOrder
 			.SelectMany(i => i.Value)
-			.TakeWhile((Func<BaseEvent, bool>)predicate);
+			.TakeWhile((Func<IBaseEvent, bool>)(object)predicate);
 		/// <summary>
 		/// Returns events from a collection as long as a specified condition is true and also less than or equal to <paramref name="beat" />.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
+		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Beat beat) where TEvent : BaseEvent => e.TakeWhile(beat).TakeWhile(predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.TakeWhile(beat).TakeWhile(predicate);
 		/// <summary>
 		/// Returns events from a collection as long as a specified condition is true and also less than or equal to <paramref name="bar" />.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
+		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : BaseEvent => e.TakeWhile(bar).TakeWhile(predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.TakeWhile(bar).TakeWhile(predicate);
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as it less than or equal to <paramref name="beat" />.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Beat beat) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, RDBeat beat) where TEvent : IBaseEvent
 		{
 			foreach (TEvent item in e.Where<TEvent>())
 				if (item.Beat <= beat) yield return item;
@@ -751,11 +768,12 @@ namespace RhythmBase.Extensions
 		/// Returns events from a collection in specified event type as long as it less than or in <paramref name="bar" />.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : BaseEvent
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : IBaseEvent
 		{
-			BaseEvent firstEvent = e.First<BaseEvent>();
-			BaseEvent lastEvent = e.Last<BaseEvent>();
+			IBaseEvent firstEvent = e.First<IBaseEvent>();
+			IBaseEvent lastEvent = e.Last<IBaseEvent>();
 			return e.TakeWhile<TEvent>(checked(bar.IsFromEnd
 				? lastEvent.Beat._calculator!.BeatOf((uint)(lastEvent.Beat.BarBeat.bar - (ulong)bar.Value + 1U), 1f)
 				: firstEvent.Beat._calculator!.BeatOf((uint)(bar.Value + 1), 1f)));
@@ -764,28 +782,32 @@ namespace RhythmBase.Extensions
 		/// Returns events from a collection in specified event type as long as a specified condition is true.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">Specified condition.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : BaseEvent => e.Where<TEvent>().TakeWhile(predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().TakeWhile(predicate);
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as a specified condition is true and its beat less than or equal to <paramref name="beat" />.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">Specified condition.</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Beat beat) where TEvent : BaseEvent => e.TakeWhile<TEvent>(beat).TakeWhile(predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.TakeWhile<TEvent>(beat).TakeWhile(predicate);
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as a specified condition is true and its beat less than or equal to <paramref name="bar" />.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
+		/// <param name="e">Collection</param>
 		/// <param name="predicate">Specified condition.</param>
 		/// <param name="bar">Specified beat.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : BaseEvent => e.TakeWhile<TEvent>(bar).TakeWhile(predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.TakeWhile<TEvent>(bar).TakeWhile(predicate);
 		/// <summary>
 		/// Remove a range of events.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="items">A range of events.</param>
 		/// <returns>The number of events successfully removed.</returns>
-		public static int RemoveRange<TEvent>(this OrderedEventCollection e, IEnumerable<TEvent> items) where TEvent : BaseEvent
+		public static int RemoveRange<TEvent>(this OrderedEventCollection e, IEnumerable<TEvent> items) where TEvent : IBaseEvent
 		{
 			int count = 0;
 			foreach (var item in items)
@@ -795,41 +817,23 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Remove a range of events.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="items">A range of events.</param>
 		/// <returns>The number of events successfully removed.</returns>
-		public static int RemoveRange<TEvent>(this OrderedEventCollection<TEvent> e, IEnumerable<TEvent> items) where TEvent : BaseEvent
+		public static int RemoveRange<TEvent>(this OrderedEventCollection<TEvent> e, IEnumerable<TEvent> items) where TEvent : IBaseEvent
 		{
 			int count = 0;
 			foreach (var item in items)
 				count += e.Remove(item) ? 1 : 0;
 			return count;
 		}
-		/// <summary>
-		/// Determine if <paramref name="item1" /> is in front of <paramref name="item2" />
-		/// </summary>
-		/// <returns><list type="table">
-		/// <item>If <paramref name="item1" /> is in front of <paramref name="item2" />, <see langword="true" /></item>
-		/// <item>Else, <see langword="false" /></item>
-		/// </list></returns>
-		public static bool IsInFrontOf(this OrderedEventCollection e, BaseEvent item1, BaseEvent item2) => Conversions.ToBoolean(item1.Beat < item2.Beat || (item1.Beat.BeatOnly == item2.Beat.BeatOnly && Conversions.ToBoolean(e.eventsBeatOrder[item1.Beat].BeforeThan(item1, item2))));
-		/// <summary>
-		/// Determine if <paramref name="item1" /> is after <paramref name="item2" />
-		/// </summary>
-		/// <returns><list type="table">
-		/// <item>If <paramref name="item1" /> is after <paramref name="item2" />, <see langword="true" /></item>
-		/// <item>Else, <see langword="false" /></item>
-		/// </list></returns>
-		public static bool IsBehind(this OrderedEventCollection e, BaseEvent item1, BaseEvent item2)
-		{
-			bool s = item1.Beat.Equals(item2.Beat);
-			return Conversions.ToBoolean(item1.Beat > item2.Beat || (item1.Beat.BeatOnly == item2.Beat.BeatOnly && Conversions.ToBoolean(e.eventsBeatOrder[item1.Beat].BeforeThan(item2, item1))));
-		}
+
 		/// <summary>
 		/// Get all the hit of the level.
 		/// </summary>
-		public static IEnumerable<Hit> GetHitBeat(this RDLevel e)
+		public static IEnumerable<RDHit> GetHitBeat(this RDLevel e)
 		{
-			List<Hit> L = [];
+			List<RDHit> L = [];
 			foreach (RowEventCollection item in e.Rows)
 			{
 				L.AddRange(item.HitBeats());
@@ -843,12 +847,13 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Get all events with the specified tag.
 		/// </summary>
+		/// <param name="e">Collection</param>
 		/// <param name="name">Tag name.</param>
 		/// <param name="strict">Indicates whether the label is strictly matched.
 		/// If <see langword="true" />, determine If it contains the specified tag.
 		/// If <see langword="false" />, determine If it Is equal to the specified tag.</param>
 		/// <returns>An <see cref="T:System.Linq.IGrouping`2" />, categorized by tag name.</returns>
-		public static IEnumerable<IGrouping<string, TEvent>> GetTaggedEvents<TEvent>(this OrderedEventCollection<TEvent> e, string name, bool strict) where TEvent : BaseEvent
+		public static IEnumerable<IGrouping<string, TEvent>> GetTaggedEvents<TEvent>(this OrderedEventCollection<TEvent> e, string name, bool strict) where TEvent : IBaseEvent
 		{
 			if (name.IsNullOrEmpty())
 				return [];
@@ -870,10 +875,10 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Get all hits of all beats.
 		/// </summary>
-		public static IEnumerable<Hit> HitBeats(this RowEventCollection e)
+		public static IEnumerable<RDHit> HitBeats(this RowEventCollection e)
 		{
 			RowType rowType = e.RowType;
-			IEnumerable<Hit> HitBeats;
+			IEnumerable<RDHit> HitBeats;
 			if (rowType != RowType.Classic)
 			{
 				if (rowType != RowType.Oneshot)
@@ -887,19 +892,29 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Get an instance of the beat associated with the level.
 		/// </summary>
+		/// <param name="e">RDLevel</param>
 		/// <param name="beatOnly">Total number of 1-based beats.</param>
-		public static Beat BeatOf(this RDLevel e, float beatOnly) => e.Calculator.BeatOf(beatOnly);
+		public static RDBeat BeatOf(this RDLevel e, float beatOnly) => e.Calculator.BeatOf(beatOnly);
 		/// <summary>
 		/// Get an instance of the beat associated with the level.
 		/// </summary>
+		/// <param name="e">RDLevel</param>
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
-		public static Beat BeatOf(this RDLevel e, uint bar, float beat) => e.Calculator.BeatOf(bar, beat);
+		public static RDBeat BeatOf(this RDLevel e, uint bar, float beat) => e.Calculator.BeatOf(bar, beat);
 		/// <summary>
 		/// Get an instance of the beat associated with the level.
 		/// </summary>
+		/// <param name="e">RDLevel</param>
 		/// <param name="timeSpan">Total time span of the beat.</param>
-		public static Beat BeatOf(this RDLevel e, TimeSpan timeSpan) => e.Calculator.BeatOf(timeSpan);
+		public static RDBeat BeatOf(this RDLevel e, TimeSpan timeSpan) => e.Calculator.BeatOf(timeSpan);
+		/// <summary>
+		/// Get the row beat status
+		/// </summary>
+		/// <param name="e"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		/// <exception cref="RhythmBaseException"></exception>
 		public static SortedDictionary<float, int[]> GetRowBeatStatus(this RowEventCollection e)
 		{
 			SortedDictionary<float, int[]> L = [];
@@ -909,7 +924,7 @@ namespace RhythmBase.Extensions
 				case RowType.Classic:
 					int[] value = new int[7];
 					L.Add(0f, value);
-					foreach (BaseEvent beat in e)
+					foreach (IBaseEvent beat in e)
 						switch (beat.Type)
 						{
 							case EventType.AddClassicBeat:
@@ -927,13 +942,7 @@ namespace RhythmBase.Extensions
 								}
 								while (i <= 6);
 								break;
-							//case EventType.AddFreeTimeBeat:
-							//	break;
-							//case EventType.PulseFreeTimeBeat:
-							//	break;
-							//case EventType.SetRowXs:
-							//	break;
-							default:
+																																											default:
 								throw new NotImplementedException();
 						}
 					break;
@@ -961,190 +970,60 @@ namespace RhythmBase.Extensions
 				Beats = e.ClassicBeats();
 			return Beats;
 		}
-		/// <summary>
-		/// Add a range of events.
-		/// </summary>
-		public static void AddRange(this ADLevel e, IEnumerable<ADTile> items)
-		{
-			foreach (ADTile item in items)
-				e.Add(item);
-		}
-		/// <summary>
-		/// Add a range of events.
-		/// </summary>
-		public static void AddRange(this ADTile e, IEnumerable<ADBaseTileEvent> items)
-		{
-			foreach (ADBaseTileEvent item in items)
-			{
-				e.Add(item);
-			}
-		}
-		public static IEnumerable<ADTile> Where(this ADTileCollection e, Func<ADTile, bool> predicate) => e.AsEnumerable().Where(predicate);
-		public static IEnumerable<ADBaseEvent> EventsWhere(this ADTileCollection e, Func<ADBaseEvent, bool> predicate) => e.Events.Where(predicate);
-		public static IEnumerable<TEvent> EventsWhere<TEvent>(this ADTileCollection e) where TEvent : ADBaseEvent => e.Events.OfType<TEvent>();
-		private static string PropertyAssignment(string propertyName, bool value) => string.Format("{0} = {1}", propertyName.ToLowerCamelCase(), value);
-		private static string RoomPropertyAssignment(byte room, string propertyName, bool value) => string.Format("room[{0}].{1} = {2}", room, propertyName.ToLowerCamelCase(), value);
-		private static string FunctionCalling(string functionName, params object[] @params) => FunctionCalling(functionName, @params.AsEnumerable());
-		private static string FunctionCalling(string functionName, IEnumerable<object> @params)
-		{
-			List<string> paramStrings = [];
-			foreach (object param in @params)
-				if (param.GetType() == typeof(string) || param.GetType().IsEnum)
-					paramStrings.Add(string.Format("str:{0}", param));
-				else
-					paramStrings.Add(param.ToString() ?? "");
-			return string.Format("{0}({1})", functionName, string.Join(',', paramStrings));
-		}
-		private static string RoomFunctionCalling(byte room, string functionName, params object[] @params) => string.Format("room[{0}].{1}", room, FunctionCalling(functionName, @params.AsEnumerable()));
-		private static string VfxFunctionCalling(string functionName, params object[] @params) => string.Format("vfx.{0}", FunctionCalling(functionName, @params.AsEnumerable()));
-		/// <summary>
-		/// Check if another event is in front of itself, including events of the same beat but executed before itself.
-		/// </summary>
-		public static bool IsInFrontOf(this BaseEvent e, BaseEvent item) => e.Beat.BaseLevel.IsInFrontOf(e, item);
-		/// <summary>
-		/// Check if another event is after itself, including events of the same beat but executed after itself.
-		/// </summary>
-		public static bool IsBehind(this BaseEvent e, BaseEvent item) => e.Beat.BaseLevel.IsBehind(e, item);
+
 		/// <summary>
 		/// Returns all previous events of the same type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : BaseEvent => e.Beat.BaseLevel.Where<TEvent>(e.Beat.BaseLevel.DefaultBeat, e.Beat);
+		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.Where<TEvent>(e.Beat.BaseLevel.DefaultBeat, e.Beat) ?? [];
 		/// <summary>
 		/// Returns all previous events of the specified type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static IEnumerable<TEvent> Before<TEvent>(this BaseEvent e) where TEvent : BaseEvent => e.Beat.BaseLevel.Where<TEvent>(e.Beat.BaseLevel.DefaultBeat, e.Beat);
+		public static IEnumerable<TEvent> Before<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.Where<TEvent>(e.Beat.BaseLevel.DefaultBeat, e.Beat) ?? [];
 		/// <summary>
 		/// Returns all events of the same type that follow, including events of the same beat but executed after itself.
 		/// </summary>
-		public static IEnumerable<TEvent> After<TEvent>(this TEvent e) where TEvent : BaseEvent => e.Beat.BaseLevel.Where<TEvent>(i => i.Beat > e.Beat);
+		public static IEnumerable<TEvent> After<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.Where<TEvent>(i => i.Beat > e.Beat) ?? [];
 		/// <summary>
 		/// Returns all events of the specified type that follow, including events of the same beat but executed after itself.
 		/// </summary>
-		public static IEnumerable<TEvent> After<TEvent>(this BaseEvent e) where TEvent : BaseEvent => e.Beat.BaseLevel.Where<TEvent>(i => i.Beat > e.Beat);
+		public static IEnumerable<TEvent> After<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.Where<TEvent>(i => i.Beat > e.Beat) ?? [];
 		/// <summary>
 		/// Returns the previous event of the same type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static TEvent Front<TEvent>(this TEvent e) where TEvent : BaseEvent => e.Before().Last();
+		public static TEvent Front<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Before().Last();
 		/// <summary>
 		/// Returns the previous event of the specified type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static TEvent Front<TEvent>(this BaseEvent e) where TEvent : BaseEvent => e.Before<TEvent>().Last();
+		public static TEvent Front<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Before<TEvent>().Last();
 		/// <summary>
 		/// Returns the previous event of the same type, including events of the same beat but executed before itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent FrontOrDefault<TEvent>(this TEvent e) where TEvent : BaseEvent => e.Before().LastOrDefault();
+		public static TEvent? FrontOrDefault<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Before().LastOrDefault();
 		/// <summary>
 		/// Returns the previous event of the specified type, including events of the same beat but executed before itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent FrontOrDefault<TEvent>(this BaseEvent e) where TEvent : BaseEvent => e.Before<TEvent>().LastOrDefault();
+		public static TEvent? FrontOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Before<TEvent>().LastOrDefault();
 		/// <summary>
 		/// Returns the next event of the same type, including events of the same beat but executed after itself.
 		/// </summary>
-		public static TEvent Next<TEvent>(this TEvent e) where TEvent : BaseEvent => e.After().First();
+		public static TEvent Next<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.After().First();
 		/// <summary>
 		/// Returns the next event of the specified type, including events of the same beat but executed after itself.
 		/// </summary>
-		public static TEvent Next<TEvent>(this BaseEvent e) where TEvent : BaseEvent => e.After<TEvent>().First();
+		public static TEvent Next<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().First();
 		/// <summary>
 		/// Returns the next event of the same type, including events of the same beat but executed after itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent NextOrDefault<TEvent>(this TEvent e) where TEvent : BaseEvent => e.After().FirstOrDefault();
+		public static TEvent? NextOrDefault<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.After().FirstOrDefault();
 		/// <summary>
 		/// Returns the next event of the specified type, including events of the same beat but executed after itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent NextOrDefault<TEvent>(this BaseEvent e) where TEvent : BaseEvent => e.After<TEvent>().FirstOrDefault();
-		public static void SetScoreboardLights(this CallCustomMethod e, bool Mode, string Text) => e.MethodName = FunctionCalling("SetScoreboardLights", [Mode, Text]);
-		public static void InvisibleChars(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("InvisibleChars", value);
-		public static void InvisibleHeart(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("InvisibleHeart", value);
-		public static void NoHitFlashBorder(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("NoHitFlashBorder", value);
-		public static void NoHitStrips(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("NoHitStrips", value);
-		public static void SetOneshotType(this CallCustomMethod e, int rowID, ShockWaveType wavetype) => e.MethodName = FunctionCalling("SetOneshotType", [rowID, wavetype]);
-		public static void WobblyLines(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("WobblyLines", value);
-		//?
-		public static void TrueCameraMove(this Comment e, int RoomID, RDPoint p, float AnimationDuration, Ease.EaseType Ease) => e.Text = RoomFunctionCalling((byte)RoomID, "TrueCameraMove".ToLowerCamelCase(), p.X, p.Y, AnimationDuration, Ease);
-		public static void Create(this Comment e, Particle particleName, RDPoint p) => e.Text = string.Format("()=>{0}(CustomParticles/{1},{2},{3})", ["Create".ToLowerCamelCase(), particleName, p.X, p.Y]);
-		public static void ShockwaveSizeMultiplier(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("ShockwaveSizeMultiplier", value);
-		public static void ShockwaveDistortionMultiplier(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("ShockwaveDistortionMultiplier", value);
-		public static void ShockwaveDurationMultiplier(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("ShockwaveDurationMultiplier", value);
-		public static void Shockwave(this Comment e, ShockWaveType type, float value) => e.Text = string.Format("()=>{0}({1},{2})", "Shockwave".ToLowerCamelCase(), type, value);
-		public static void MistakeOrHeal(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHeal", [damageOrHeal]);
-		public static void MistakeOrHealP1(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealP1", [damageOrHeal]);
-		public static void MistakeOrHealP2(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealP2", [damageOrHeal]);
-		public static void MistakeOrHealSilent(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealSilent", [damageOrHeal]);
-		public static void MistakeOrHealP1Silent(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealP1Silent", [damageOrHeal]);
-		public static void MistakeOrHealP2Silent(this CallCustomMethod e, float damageOrHeal) => e.MethodName = FunctionCalling("MistakeOrHealP2Silent", [damageOrHeal]);
-		public static void SetMistakeWeight(this CallCustomMethod e, int rowID, float weight) => e.MethodName = FunctionCalling("SetMistakeWeight", [rowID, weight]);
-		public static void DamageHeart(this CallCustomMethod e, int rowID, float damage) => e.MethodName = FunctionCalling("DamageHeart", [rowID, damage]);
-		public static void HealHeart(this CallCustomMethod e, int rowID, float damage) => e.MethodName = FunctionCalling("HealHeart", [rowID, damage]);
-		public static void WavyRowsAmplitude(this CallCustomMethod e, byte roomID, float amplitude) => e.MethodName = RoomPropertyAssignment(roomID, "WavyRowsAmplitude", amplitude != 0f);
-		public static void WavyRowsAmplitude(this Comment e, byte roomID, float amplitude, float duration) => e.Text = string.Format("()=>{0}({1},{2},{3})", ["WavyRowsAmplitude".ToLowerCamelCase(), roomID, amplitude, duration]);
-		public static void WavyRowsFrequency(this CallCustomMethod e, byte roomID, float frequency) => e.MethodName = RoomPropertyAssignment(roomID, "WavyRowsFrequency", frequency != 0f);
-		public static void SetShakeIntensityOnHit(this CallCustomMethod e, byte roomID, int number, int strength) => e.MethodName = RoomFunctionCalling(roomID, "SetShakeIntensityOnHit", [number, strength]);
-		public static void ShowPlayerHand(this CallCustomMethod e, byte roomID, bool isPlayer1, bool isShortArm, bool isInstant) => e.MethodName = FunctionCalling("ShowPlayerHand", [roomID, isPlayer1, isShortArm, isInstant]);
-		public static void TintHandsWithInts(this CallCustomMethod e, byte roomID, float R, float G, float B, float A) => e.MethodName = FunctionCalling("TintHandsWithInts", [roomID, R, G, B, A]);
-		public static void SetHandsBorderColor(this CallCustomMethod e, byte roomID, float R, float G, float B, float A, int style) => e.MethodName = FunctionCalling("SetHandsBorderColor", [roomID, R, G, B, A, style]);
-		public static void SetAllHandsBorderColor(this CallCustomMethod e, float R, float G, float B, float A, int style) => e.MethodName = FunctionCalling("SetAllHandsBorderColor", [R, G, B, A, style]);
-		public static void SetHandToP1(this CallCustomMethod e, int room, bool rightHand) => e.MethodName = FunctionCalling("SetHandToP1", [room, rightHand]);
-		public static void SetHandToP2(this CallCustomMethod e, int room, bool rightHand) => e.MethodName = FunctionCalling("SetHandToP2", [room, rightHand]);
-		public static void SetHandToIan(this CallCustomMethod e, int room, bool rightHand) => e.MethodName = FunctionCalling("SetHandToIan", [room, rightHand]);
-		public static void SetHandToPaige(this CallCustomMethod e, int room, bool rightHand) => e.MethodName = FunctionCalling("SetHandToPaige", [room, rightHand]);
-		public static void SetShadowRow(this CallCustomMethod e, int mimickerRowID, int mimickedRowID) => e.MethodName = FunctionCalling("SetShadowRow", [mimickerRowID, mimickedRowID]);
-		public static void UnsetShadowRow(this CallCustomMethod e, int mimickerRowID, int mimickedRowID) => e.MethodName = FunctionCalling("UnsetShadowRow", [mimickerRowID, mimickedRowID]);
-		public static void ShakeCam(this CallCustomMethod e, int number, int strength, int roomID) => e.MethodName = VfxFunctionCalling("ShakeCam", [number, strength, roomID]);
-		public static void StopShakeCam(this CallCustomMethod e, int roomID) => e.MethodName = VfxFunctionCalling("StopShakeCam", [roomID]);
-		public static void ShakeCamSmooth(this CallCustomMethod e, int duration, int strength, int roomID) => e.MethodName = VfxFunctionCalling("ShakeCamSmooth", [duration, strength, roomID]);
-		public static void ShakeCamRotate(this CallCustomMethod e, int duration, int strength, int roomID) => e.MethodName = VfxFunctionCalling("ShakeCamRotate", [duration, strength, roomID]);
-		public static void SetKaleidoscopeColor(this CallCustomMethod e, int roomID, float R1, float G1, float B1, float R2, float G2, float B2) => e.MethodName = FunctionCalling("SetKaleidoscopeColor", [roomID, R1, G1, B1, R2, G2, B2]);
-		public static void SyncKaleidoscopes(this CallCustomMethod e, int targetRoomID, int otherRoomID) => e.MethodName = FunctionCalling("SyncKaleidoscopes", [targetRoomID, otherRoomID]);
-		public static void SetVignetteAlpha(this CallCustomMethod e, float alpha, int roomID) => e.MethodName = VfxFunctionCalling("SetVignetteAlpha", [alpha, roomID]);
-		public static void NoOneshotShadows(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("NoOneshotShadows", value);
-		public static void EnableRowReflections(this CallCustomMethod e, int roomID) => e.MethodName = FunctionCalling("EnableRowReflections", [roomID]);
-		public static void DisableRowReflections(this CallCustomMethod e, int roomID) => e.MethodName = FunctionCalling("DisableRowReflections", [roomID]);
-		public static void ChangeCharacter(this CallCustomMethod e, string Name, int roomID) => e.MethodName = FunctionCalling("ChangeCharacter", [Name, roomID]);
-		public static void ChangeCharacter(this CallCustomMethod e, Characters Name, int roomID) => e.MethodName = FunctionCalling("ChangeCharacter", [Name, roomID]);
-		public static void ChangeCharacterSmooth(this CallCustomMethod e, string Name, int roomID) => e.MethodName = FunctionCalling("ChangeCharacterSmooth", [Name, roomID]);
-		public static void ChangeCharacterSmooth(this CallCustomMethod e, Characters Name, int roomID) => e.MethodName = FunctionCalling("ChangeCharacterSmooth", [Name, roomID]);
-		public static void SmoothShake(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("SmoothShake", value);
-		public static void RotateShake(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("RotateShake", value);
-		public static void DisableRowChangeWarningFlashes(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("DisableRowChangeWarningFlashes", value);
-		public static void StatusSignWidth(this CallCustomMethod e, float value) => e.MethodName = PropertyAssignment("StatusSignWidth", value != 0f);
-		public static void SkippableRankScreen(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("SkippableRankScreen", value);
-		public static void MissesToCrackHeart(this CallCustomMethod e, int value) => e.MethodName = PropertyAssignment("MissesToCrackHeart", value != 0);
-		public static void SkipRankText(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("SkipRankText", value);
-		public static void AlternativeMatrix(this CallCustomMethod e, bool value) => e.MethodName = PropertyAssignment("AlternativeMatrix", value);
-		public static void ToggleSingleRowReflections(this CallCustomMethod e, byte room, byte row, bool value) => e.MethodName = FunctionCalling("ToggleSingleRowReflections", [room, row, value]);
-		public static void SetScrollSpeed(this CallCustomMethod e, byte roomID, float speed, float duration, Ease.EaseType ease) => e.MethodName = RoomFunctionCalling(roomID, "SetScrollSpeed", [speed, duration, ease]);
-		public static void SetScrollOffset(this CallCustomMethod e, byte roomID, float cameraOffset, float duration, Ease.EaseType ease) => e.MethodName = RoomFunctionCalling(roomID, "SetScrollOffset", [cameraOffset, duration, ease]);
-		public static void DarkenedRollerdisco(this CallCustomMethod e, byte roomID, float value) => e.MethodName = RoomFunctionCalling(roomID, "DarkenedRollerdisco", [value]);
-		public static void CurrentSongVol(this CallCustomMethod e, float targetVolume, float fadeTimeSeconds) => e.MethodName = FunctionCalling("CurrentSongVol", [targetVolume, fadeTimeSeconds]);
-		public static void PreviousSongVol(this CallCustomMethod e, float targetVolume, float fadeTimeSeconds) => e.MethodName = FunctionCalling("PreviousSongVol", [targetVolume, fadeTimeSeconds]);
-		public static void EditTree(this CallCustomMethod e, byte room, string property, float value, float beats, Ease.EaseType ease) => e.MethodName = RoomFunctionCalling(room, "EditTree", [property, value, beats, ease]);
-		public static IEnumerable<CallCustomMethod> EditTree(this CallCustomMethod e, byte room, ProceduralTree treeProperties, float beats, Ease.EaseType ease)
-		{
-			List<CallCustomMethod> L = [];
-			foreach (FieldInfo p in typeof(ProceduralTree).GetFields())
-				if (p.GetValue(treeProperties) != null)
-				{
-					CallCustomMethod T = e.Clone<CallCustomMethod>();
-					T.EditTree(room, p.Name, Conversions.ToSingle(p.GetValue(treeProperties)), beats, ease);
-					L.Add(T);
-				}
-			return L;
-		}
-		public static void EditTreeColor(this CallCustomMethod e, byte room, bool location, string color, float beats, Ease.EaseType ease) => e.MethodName = RoomFunctionCalling(room, "EditTreeColor", [location, color, beats, ease]);
-		public static Beat DurationOffset(this Beat beat, float duration)
-		{
-			SetBeatsPerMinute setBPM = beat.BaseLevel.First((SetBeatsPerMinute i) => i.Beat > beat);
-			Beat DurationOffset =
-				beat.BarBeat.bar == setBPM.Beat.BarBeat.bar
-				? beat + duration
-				: beat + TimeSpan.FromMinutes((double)(duration / beat.BPM));
-			return DurationOffset;
-		}
+		public static TEvent? NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().FirstOrDefault();      //?
+
 		/// <summary>
 		/// Shallow copy.
 		/// </summary>
-		public static TEvent MemberwiseClone<TEvent>(this TEvent e) where TEvent : BaseEvent, new() => (TEvent)e.MClone();
+		public static TEvent MemberwiseClone<TEvent>(this TEvent e) where TEvent : IBaseEvent, new() => (TEvent)e.MClone();
 		internal static object MClone(this object e)
 		{
 			if (e != null)
@@ -1154,8 +1033,7 @@ namespace RhythmBase.Extensions
 				PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 				foreach (PropertyInfo p in properties)
 				{
-					bool canWrite = p.CanWrite;
-					if (canWrite)
+					if (p.CanWrite)
 					{
 						p.SetValue(copy, p.GetValue(e));
 					}
@@ -1164,513 +1042,7 @@ namespace RhythmBase.Extensions
 			}
 			throw new NullReferenceException();
 		}
-		/// <summary>
-		/// Get current player of the beat event.
-		/// </summary>
-		/// <param name="e"></param>
-		/// <returns></returns>
-		public static PlayerType Player(this BaseBeat e)
-		{
-			ChangePlayersRows? changePlayersRows = e.Beat.BaseLevel.LastOrDefault((ChangePlayersRows i) => i.Active && i.Players[e.Index] != PlayerType.NoChange);
-			return (PlayerType)Conversions.ToInteger((changePlayersRows != null) ? changePlayersRows.Players[e.Index] : e.Parent.Player);
-		}
-		/// <summary>
-		/// Get the pulse sound effect of row beat event.
-		/// </summary>
-		/// <returns>The sound effect of row beat event.</returns>
-		public static Audio BeatSound(this BaseBeat e)
-		{
-			SetBeatSound? setBeatSound = e.Parent.LastOrDefault((SetBeatSound i) => i.Beat < e.Beat && i.Active);
-			return (setBeatSound?.Sound) ?? e.Parent.Sound;
-		}
-		/// <summary>
-		/// Get the hit sound effect of row beat event.
-		/// </summary>
-		/// <returns>The sound effect of row beat event.</returns>
-		public static Audio HitSound(this BaseBeat e)
-		{
-			Audio DefaultAudio = new()
-			{
-				AudioFile = (Asset<AudioFile>)e.Beat.BaseLevel.Manager.Create<AudioFile>("sndClapHit"),
-				Offset = TimeSpan.Zero,
-				Pan = 100,
-				Pitch = 100,
-				Volume = 100
-			};
-			Audio HitSound;
-			switch (e.Player())
-			{
-				case PlayerType.P1:
-					{
-						SetClapSounds? setClapSounds = e.Beat.BaseLevel.LastOrDefault((SetClapSounds i) => i.Active && i.P1Sound != null);
-						HitSound = (setClapSounds?.P1Sound) ?? DefaultAudio;
-						break;
-					}
-				case PlayerType.P2:
-					{
-						SetClapSounds? setClapSounds2 = e.Beat.BaseLevel.LastOrDefault((SetClapSounds i) => i.Active && i.P2Sound != null);
-						HitSound = (setClapSounds2?.P2Sound) ?? DefaultAudio;
-						break;
-					}
-				case PlayerType.CPU:
-					{
-						SetClapSounds? setClapSounds3 = e.Beat.BaseLevel.LastOrDefault((SetClapSounds i) => i.Active && i.CpuSound != null);
-						HitSound = (setClapSounds3?.CpuSound) ?? DefaultAudio;
-						break;
-					}
-				default:
-					HitSound = DefaultAudio;
-					break;
-			}
-			return HitSound;
-		}
-		/// <summary>
-		/// Get the special tag of the tag event.
-		/// </summary>
-		/// <returns>special tags.</returns>
-		public static TagAction.SpecialTag[] SpetialTags(this TagAction e) => (TagAction.SpecialTag[])(from i in Enum.GetValues<TagAction.SpecialTag>()
-																									   where e.ActionTag.Contains(string.Format("[{0}]", i))
-																									   select i);
-		/// <summary>
-		/// Convert beat pattern to string.
-		/// </summary>
-		/// <returns>The pattern string.</returns>
-		public static string Pattern(this AddClassicBeat e) => Utils.Utils.GetPatternString(e.RowXs());
-		/// <summary>
-		/// Get the actual beat pattern.
-		/// </summary>
-		/// <returns>The actual beat pattern.</returns>
-		public static LimitedList<Patterns> RowXs(this AddClassicBeat e)
-		{
-			bool flag = e.SetXs == null;
-			LimitedList<Patterns> RowXs;
-			if (flag)
-			{
-				SetRowXs X = e.Parent.LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i), new SetRowXs());
-				RowXs = X.Pattern;
-			}
-			else
-			{
-				LimitedList<Patterns> T = new(6U, Patterns.None);
-				AddClassicBeat.ClassicBeatPatterns? setXs = e.SetXs;
-				int? num = (setXs != null) ? new int?((int)setXs.GetValueOrDefault()) : null;
-				bool valueOrDefault = ((num != null) ? new bool?(num.GetValueOrDefault() == 0) : null).GetValueOrDefault();
-				if (valueOrDefault)
-				{
-					T[1] = Patterns.X;
-					T[2] = Patterns.X;
-					T[4] = Patterns.X;
-					T[5] = Patterns.X;
-				}
-				else
-				{
-					num = (setXs != null) ? new int?((int)setXs.GetValueOrDefault()) : null;
-					valueOrDefault = ((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault();
-					if (!valueOrDefault)
-					{
-						throw new RhythmBaseException("How?");
-					}
-					T[1] = Patterns.X;
-					T[3] = Patterns.X;
-					T[5] = Patterns.X;
-				}
-				RowXs = T;
-			}
-			return RowXs;
-		}
-		/// <summary>
-		/// Get the total length of the oneshot.
-		/// </summary>
-		/// <returns></returns>
-		public static float Length(this AddOneshotBeat e) => e.Tick * e.Loops + e.Interval * e.Loops - 1f;
-		/// <summary>
-		/// Get the total length of the classic beat.
-		/// </summary>
-		/// <returns></returns>
-		public static float Length(this AddClassicBeat e)
-		{
-			float SyncoSwing = e.Parent.LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i), new SetRowXs()).SyncoSwing;
-			return (float)((double)(e.Tick * 6f) - ((SyncoSwing == 0f) ? 0.5 : ((double)SyncoSwing)) * (double)e.Tick);
-		}
-		/// <summary>
-		/// Check if it can be hit by player.
-		/// </summary>
-		public static bool IsHitable(this PulseFreeTimeBeat e)
-		{
-			int PulseIndexMin = 6;
-			int PulseIndexMax = 6;
-			foreach (BaseBeat item in ((IEnumerable<BaseBeat>)e.Parent
-			.Where(e.IsBehind, new RDRange(e.Beat, null)))
-			.Reverse())
-			{
-				EventType type = item.Type;
-				switch (type)
-				{
-					case EventType.AddFreeTimeBeat:
-						{
-							AddFreeTimeBeat Temp2 = (AddFreeTimeBeat)item;
-							if (PulseIndexMin <= (int)Temp2.Pulse & (int)Temp2.Pulse <= PulseIndexMax)
-								return true;
-							break;
-						}
-					case EventType.PulseFreeTimeBeat:
-						{
-							PulseFreeTimeBeat Temp = (PulseFreeTimeBeat)item;
-							switch (Temp.Action)
-							{
-								case PulseFreeTimeBeat.ActionType.Increment:
-									if (PulseIndexMin > 0)
-										PulseIndexMin--;
-									if (!(PulseIndexMax > 0))
-										return false;
-									PulseIndexMax--;
-									break;
-								case PulseFreeTimeBeat.ActionType.Decrement:
-									if (PulseIndexMin > 0)
-										PulseIndexMin++;
-									if (!(PulseIndexMax < 6))
-										return false;
-									PulseIndexMax++;
-									break;
-								case PulseFreeTimeBeat.ActionType.Custom:
-									if (!(PulseIndexMin <= Temp.CustomPulse & Temp.CustomPulse <= PulseIndexMax))
-										return false;
-									PulseIndexMin = 0;
-									PulseIndexMax = 5;
-									break;
-								case PulseFreeTimeBeat.ActionType.Remove:
-									return false;
-							}
-							if (PulseIndexMin > PulseIndexMax)
-								return false;
-							break;
-						}
-				}
-			}
-			return false;
-		}
-		/// <summary>
-		/// Check if it can be hit by player.
-		/// </summary>
-		public static bool IsHitable(this AddFreeTimeBeat e) => e.Pulse == 6;
-		/// <summary>
-		/// Check if it can be hit by player.
-		/// </summary>
-		public static bool IsHitable(this BaseBeat e) => e.Type switch
-		{
-			EventType.AddClassicBeat or EventType.AddOneshotBeat => true,
-			EventType.AddFreeTimeBeat => ((AddFreeTimeBeat)e).IsHitable(),
-			_ => e.Type == EventType.PulseFreeTimeBeat && ((PulseFreeTimeBeat)e).IsHitable(),
-		};
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this AddClassicBeat e) =>
-			new List<Hit> { new(e, e.GetBeat(6), e.Hold) }
-			.AsEnumerable();
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this AddOneshotBeat e)
-		{
-			e._beat.IfNullThrowException();
-			List<Hit> L = [];
-			uint loops = e.Loops;
-			for (uint i = 0U; i <= loops; i += 1U)
-			{
-				sbyte b = (sbyte)(e.Subdivisions - 1);
-				for (sbyte j = 0; j <= b; j += 1)
-					L.Add(new Hit(e, new Beat(e._beat._calculator!, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + (float)j * (e.Tick / (float)e.Subdivisions)), 0f));
-			}
-			return L.AsEnumerable();
-		}
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this AddFreeTimeBeat e) =>
-			e.Pulse == 6
-				? [new(e, e.Beat, e.Hold)]
-				: ([]);
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this PulseFreeTimeBeat e) =>
-			e.IsHitable()
-				? [new(e, e.Beat, e.Hold)]
-				: ([]);
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<Hit> HitTimes(this BaseBeat e)
-		{
-			return e.Type switch
-			{
-				EventType.AddClassicBeat => ((AddClassicBeat)e).HitTimes(),
-				EventType.AddFreeTimeBeat => ((AddFreeTimeBeat)e).HitTimes(),
-				EventType.AddOneshotBeat => ((AddOneshotBeat)e).HitTimes(),
-				_ => e.Type != EventType.PulseFreeTimeBeat
-					? Array.Empty<Hit>().AsEnumerable()
-					: ((PulseFreeTimeBeat)e).HitTimes(),
-			};
-		}
-		/// <summary>
-		/// Returns the pulse beat of the specified 0-based index.
-		/// </summary>
-		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">THIS IS 7TH BEAT GAMES!</exception>
-		public static Beat GetBeat(this AddClassicBeat e, byte index)
-		{
-			SetRowXs x = e.Parent.LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i), new SetRowXs());
-			float Synco = 0 <= x.SyncoBeat && x.SyncoBeat < (sbyte)index ? (float)((x.SyncoSwing == 0f) ? 0.5 : ((double)x.SyncoSwing)) : 0f;
-			if (index >= 7)
-				throw new RhythmBaseException("THIS IS 7TH BEAT GAMES!");
-			return e.Beat.DurationOffset(e.Tick * ((float)index - Synco));
-		}
-		/// <summary>
-		/// Converts Xs patterns to string form.
-		/// </summary>
-		public static string GetPatternString(this SetRowXs e) => Utils.Utils.GetPatternString(e.Pattern);
-		/// <summary>
-		/// Creates a new <see cref="T:RhythmBase.Events.AdvanceText" /> subordinate to <see cref="T:RhythmBase.Events.FloatingText" /> at the specified beat. The new event created will be attempted to be added to the <see cref="T:RhythmBase.Events.FloatingText" />'s source level.
-		/// </summary>
-		/// <param name="beat">Specified beat.</param>
-		public static AdvanceText CreateAdvanceText(this FloatingText e, Beat beat)
-		{
-			AdvanceText A = new()
-			{
-				Parent = e,
-				Beat = beat.WithoutBinding()
-			};
-			e.Children.Add(A);
-			return A;
-		}
-		/// <summary>
-		/// Get the sequence of <see cref="T:RhythmBase.Events.PulseFreeTimeBeat" /> belonging to this <see cref="T:RhythmBase.Events.AddFreeTimeBeat" />, return all of the <see cref="T:RhythmBase.Events.PulseFreeTimeBeat" /> from the time the pulse was created to the time it was removed or hit.
-		/// </summary>
-		public static IEnumerable<PulseFreeTimeBeat> GetPulses(this AddFreeTimeBeat e)
-		{
-			List<PulseFreeTimeBeat> Result = [];
-			byte pulse = e.Pulse;
-			checked
-			{
-				foreach (PulseFreeTimeBeat item in e.Parent.Where<PulseFreeTimeBeat>(i => i.Active && e.IsInFrontOf(i)))
-				{
-					switch (item.Action)
-					{
-						case PulseFreeTimeBeat.ActionType.Increment:
-							pulse += 1;
-							Result.Add(item);
-							break;
-						case PulseFreeTimeBeat.ActionType.Decrement:
-							pulse = (byte)((pulse > 0b1) ? (pulse - 0b1) : 0b1);
-							Result.Add(item);
-							break;
-						case PulseFreeTimeBeat.ActionType.Custom:
-							pulse = (byte)item.CustomPulse;
-							Result.Add(item);
-							break;
-						case PulseFreeTimeBeat.ActionType.Remove:
-							Result.Add(item);
-							break;
-					}
-					if (pulse == 6)
-						break;
-				}
-			}
-			return Result;
-		}
-		private static SayReadyGetSetGo SplitCopy(this SayReadyGetSetGo e, float extraBeat, SayReadyGetSetGo.Words word)
-		{
-			SayReadyGetSetGo Temp = e.Clone<SayReadyGetSetGo>();
-			Temp.Beat += extraBeat;
-			Temp.PhraseToSay = word;
-			Temp.Volume = e.Volume;
-			return Temp;
-		}
-		/// <summary>
-		/// Generate split event instances.
-		/// </summary>
-		public static IEnumerable<SayReadyGetSetGo> Split(this SayReadyGetSetGo e) => e.PhraseToSay switch
-		{
-			SayReadyGetSetGo.Words.SayReaDyGetSetGoNew => [
-						e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayRea),
-						e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSayDy),
-						e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.JustSayGet),
-						e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.Words.JustSaySet),
-						e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
-								],
-			SayReadyGetSetGo.Words.SayGetSetGo => [
-						e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayGet),
-						e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSaySet),
-						e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.JustSayGo)
-								],
-			SayReadyGetSetGo.Words.SayReaDyGetSetOne => [
-						e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayRea),
-						e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSayDy),
-						e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.JustSayGet),
-						e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.Words.JustSaySet),
-						e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.Count1)
-								],
-			SayReadyGetSetGo.Words.SayGetSetOne => [
-						e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayGet),
-						e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSaySet),
-						e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.Count1)
-								],
-			SayReadyGetSetGo.Words.SayReadyGetSetGo => [
-						e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayReady),
-						e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.JustSayGet),
-						e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.Words.JustSaySet),
-						e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
-								],
-			_ => [e],
-		};
-		/// <summary>
-		/// Generate split event instances.
-		/// </summary>
-		public static IEnumerable<AddOneshotBeat> Split(this AddOneshotBeat e)
-		{
-			e._beat.IfNullThrowException();
-			List<AddOneshotBeat> L = [];
-			uint loops = e.Loops;
-			for (uint i = 0U; i <= loops; i += 1U)
-			{
-				AddOneshotBeat T = e.MemberwiseClone();
-				T.Loops = 0U;
-				T.Interval = 0f;
-				T.Beat = new Beat(e._beat._calculator!, unchecked(e.Beat.BeatOnly + i * e.Interval));
-				L.Add(T);
-			}
-			return L.AsEnumerable();
-		}
-		/// <summary>
-		/// Generate split event instances. Follow the most recently activated Xs.
-		/// </summary>
-		public static IEnumerable<BaseBeat> Split(this AddClassicBeat e)
-		{
-			SetRowXs x = e.Parent.LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i), new SetRowXs());
-			return e.Split(x);
-		}
-		/// <summary>
-		/// Generate split event instances.
-		/// </summary>
-		public static IEnumerable<BaseBeat> Split(this AddClassicBeat e, SetRowXs Xs)
-		{
-			List<BaseBeat> L = [];
-			AddFreeTimeBeat Head = e.Clone<AddFreeTimeBeat>();
-			Head.Pulse = 0;
-			Head.Hold = e.Hold;
-			L.Add(Head);
-			int i = 1;
-			do
-			{
-				if (!(i < 6 && Xs.Pattern[i] == Patterns.X))
-				{
-					PulseFreeTimeBeat Pulse = e.Clone<PulseFreeTimeBeat>();
-					PulseFreeTimeBeat pulseFreeTimeBeat;
-					(pulseFreeTimeBeat = Pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * (float)i;
-					if (i >= (int)Xs.SyncoBeat)
-						(pulseFreeTimeBeat = Pulse).Beat = pulseFreeTimeBeat.Beat - Xs.SyncoSwing;
-					if (i % 2 == 1)
-						(pulseFreeTimeBeat = Pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));
-					Pulse.Hold = e.Hold;
-					Pulse.Action = PulseFreeTimeBeat.ActionType.Increment;
-					L.Add(Pulse);
-				}
-				i++;
-			}
-			while (i <= 6);
-			return L.AsEnumerable();
-		}
-		/// <summary>
-		/// Getting controlled events.
-		/// </summary>
-		public static IEnumerable<IGrouping<string, BaseEvent>> ControllingEvents(this TagAction e) => e.Beat.BaseLevel.GetTaggedEvents(e.ActionTag, e.Action.HasFlag(TagAction.Actions.All));
-		/// <summary>
-		/// Remove auxiliary symbols.
-		/// </summary>
-		public static string TextOnly(this ShowDialogue e)
-		{
-			string result = e.Text;
-			foreach (string item in new string[]
-			{
-				"shake",
-				"shakeRadius=\\d+",
-				"wave",
-				"waveHeight=\\d+",
-				"waveSpeed=\\d+",
-				"swirl",
-				"swirlRadius=\\d+",
-				"swirlSpeed=\\d+",
-				"static"
-			})
-				result = Regex.Replace(result, string.Format("\\[{0}\\]", item), "");
-			return result;
-		}
-		/// <summary>
-		/// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
-		/// </summary>
-		/// <param name="target">Specified position. </param>
-		public static void MovePositionMaintainVisual(this Move e, PointE target)
-		{
-			if (e.Position != null && e.Pivot != null && e.Angle != null && e.Angle.Value.IsNumeric)
-			{
-				e.Position = new PointE?(target);
-				e.Pivot = new PointE?((e.VisualPosition() - new RDSizeE(target)).Rotate(e.Angle.Value.NumericValue));
-			}
-		}
-		/// <summary>
-		/// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
-		/// </summary>
-		/// <param name="target">Specified position. </param>
-		public static void MovePositionMaintainVisual(this MoveRoom e, RDSizeE target)
-		{
-			if (e.RoomPosition != null && e.Pivot != null && e.Angle != null && e.Angle.Value.IsNumeric)
-			{
-				e.RoomPosition = new PointE?((PointE)target);
-				e.Pivot = new PointE?((e.VisualPosition() - new RDSizeE((PointE)target)).Rotate(e.Angle.Value.NumericValue));
-			}
-		}
-		/// <summary>
-		/// The visual position of the lower left corner of the image.
-		/// </summary>
-		public static PointE VisualPosition(this Move e)
-		{
-			PointE VisualPosition = default;
-			if (e.Position != null && e.Pivot != null && e.Angle != null && e.Angle.Value.IsNumeric && e.Scale != null)
-			{
-				PointE previousPosition = e.Position.Value;
-				PointE? pointE = e.Pivot;
-				Expression? expression = (pointE != null) ? pointE.GetValueOrDefault().X : null;
-				pointE = e.Scale;
-				Expression? x = expression * ((pointE != null) ? pointE.GetValueOrDefault().X : null) * (float)e.Parent.Size.Width / 100f;
-				pointE = e.Pivot;
-				Expression? expression2 = (pointE != null) ? pointE.GetValueOrDefault().Y : null;
-				pointE = e.Scale;
-				PointE previousPivot = new(x, expression2 * ((pointE != null) ? pointE.GetValueOrDefault().Y : null) * (float)e.Parent.Size.Height / 100f);
-				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
-			}
-			return VisualPosition;
-		}
-		/// <summary>
-		/// The visual position of the lower left corner of the image.
-		/// </summary>
-		public static PointE VisualPosition(this MoveRoom e)
-		{
-			PointE VisualPosition = default;
-			if (e.RoomPosition != null && e.Pivot != null && e.Angle != null)
-			{
-				PointE previousPosition = e.RoomPosition.Value;
-				PointE? pivot = e.Pivot;
-				Expression? expression = (pivot != null) ? pivot.GetValueOrDefault().X : null;
-				RDSizeE? scale = e.Scale;
-				Expression? x = expression * ((scale != null) ? scale.GetValueOrDefault().Width : null);
-				pivot = e.Pivot;
-				Expression? expression2 = (pivot != null) ? pivot.GetValueOrDefault().Y : null;
-				scale = e.Scale;
-				PointE previousPivot = new(x, expression2 * ((scale != null) ? scale.GetValueOrDefault().Height : null));
-				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
-			}
-			return VisualPosition;
-		}
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 		public enum Wavetype
 		{
 			BoomAndRush,
@@ -1691,23 +1063,6 @@ namespace RhythmBase.Extensions
 			HitExplosion,
 			leveleventexplosion
 		}
-		public struct ProceduralTree
-		{
-			public float?
-				brachedPerlteration,
-				branchesPerDivision,
-				iterationsPerSecond,
-				thickness,
-				targetLength,
-				maxDeviation,
-				angle,
-				camAngle,
-				camDistance,
-				camDegreesPerSecond,
-				camSpeed,
-				pulseIntensity,
-				pulseRate,
-				pulseWavelength;
-		}
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 	}
 }

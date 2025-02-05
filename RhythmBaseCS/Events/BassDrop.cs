@@ -1,42 +1,51 @@
-﻿using System;
-using RhythmBase.Components;
-
+﻿using RhythmBase.Components;
 namespace RhythmBase.Events
 {
-
+	/// <summary>  
+	/// Represents a BassDrop event in the rhythm base.  
+	/// </summary>  
 	public class BassDrop : BaseEvent, IRoomEvent
 	{
-
+		/// <summary>  
+		/// Initializes a new instance of the <see cref="BassDrop"/> class.  
+		/// </summary>  
 		public BassDrop()
 		{
-			Rooms = new Room(true, new byte[1]);
+			Rooms = new RDRoom(true, new byte[1]);
 			Type = EventType.BassDrop;
 			Tab = Tabs.Actions;
 		}
+		/// <inheritdoc/>
+		public RDRoom Rooms { get; set; }
 
-
-		public Room Rooms { get; set; }
-
-
+		/// <summary>  
+		/// Gets or sets the strength of the BassDrop event.  
+		/// </summary>  
 		public StrengthType Strength { get; set; }
-
-
+		/// <inheritdoc/>
 		public override EventType Type { get; }
-
-
+		/// <inheritdoc/>
 		public override Tabs Tab { get; }
-
-
-		public override string ToString() => base.ToString() + string.Format(" {0}", Strength);
-
-
+		/// <inheritdoc/>
+		public override string ToString() => base.ToString() + $" {Strength}";
+		/// <summary>  
+		/// Defines the strength levels for the BassDrop event.  
+		/// </summary>  
 		public enum StrengthType
 		{
-
+			/// <summary>  
+			/// Low strength.  
+			/// </summary>  
 			Low,
 
+			/// <summary>  
+			/// Medium strength.  
+			/// </summary>  
 			Medium,
 
+			/// <summary>  
+			/// High strength.  
+			/// </summary>  
 			High
 		}
 	}

@@ -1,67 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
+﻿using Newtonsoft.Json;
 namespace RhythmBase.Components
 {
 	/// <summary>
-	/// Condition.
+	/// Represents a base class for different types of conditions.
 	/// </summary>
-
 	public abstract class BaseConditional
 	{
 		/// <summary>
-		/// Type of this condition
+		/// Gets the type of this condition.
 		/// </summary>
-
 		public abstract ConditionType Type { get; }
 
 		/// <summary>
-		/// Condition tag. Its role has not been clarified.
+		/// Gets or sets the condition tag. Its role has not been clarified.
 		/// </summary>
-
-		public string Tag { get; set; }
+		public string Tag { get; set; } = "";
 
 		/// <summary>
-		/// Condition name.
+		/// Gets or sets the condition name.
 		/// </summary>
-
-		public string Name { get; set; }
+		public string Name { get; set; } = "";
 
 		/// <summary>
-		/// 1-based serial number.
+		/// Gets the 1-based serial number of this condition in the parent collection.
 		/// </summary>
+		public int Id => checked(ParentCollection.IndexOf(this) + 1);
 
-		public int Id
-		{
-			get
-			{
-				return checked(ParentCollection.IndexOf(this) + 1);
-			}
-		}
-
-
+		/// <summary>
+		/// Returns the name of the condition.
+		/// </summary>
+		/// <returns>The name of the condition.</returns>
 		public override string ToString() => Name;
 
-
+		/// <summary>
+		/// Gets or sets the parent collection of conditions.
+		/// </summary>
 		[JsonIgnore]
-		internal List<BaseConditional> ParentCollection;
+		internal List<BaseConditional> ParentCollection = [];
 
 		/// <summary>
-		/// Type of condition
+		/// Specifies the type of condition.
 		/// </summary>
-
 		public enum ConditionType
 		{
-
+			/// <summary>
+			/// Condition based on the last hit.
+			/// </summary>
 			LastHit,
 
+			/// <summary>
+			/// Custom condition.
+			/// </summary>
 			Custom,
 
+			/// <summary>
+			/// Condition based on the number of times executed.
+			/// </summary>
 			TimesExecuted,
 
+			/// <summary>
+			/// Condition based on the language.
+			/// </summary>
 			Language,
 
+			/// <summary>
+			/// Condition based on the player mode.
+			/// </summary>
 			PlayerMode
 		}
 	}

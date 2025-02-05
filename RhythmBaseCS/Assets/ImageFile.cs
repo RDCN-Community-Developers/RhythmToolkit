@@ -1,52 +1,51 @@
-﻿using System;
-using System.IO;
-using RhythmBase.Components;
+﻿using RhythmBase.Components;
+using RhythmBase.Extensions;
 using SkiaSharp;
-
+using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Assets
 {
-
-	public class ImageFile(string filename) : ISpriteFile
+	public class ImageFile : ISpriteFile
 	{
-
-		public SKBitmap Image { get; set; }
-
-
-		public RDSizeNI Size { get; }
-
-
-		public string Name
+		private bool _isModified = false;
+		private SKBitmap _image;
+		public bool IsModified
 		{
-			get
+			get => false; private set
 			{
-				return _filename;
 			}
 		}
-
+		public SKBitmap Image
+		{
+			get => _image;
+			set
+			{
+				_isModified = true;
+				_image = value;
+			}
+		}
+		/// <inheritdoc/>
+		public RDSizeNI Size { get; private set; }
+		/// <inheritdoc/>
+		public string FilePath { get; private set; }
 		/// <summary>
 		/// Load the file contents into memory.
 		/// </summary>
-
-		public void Load(string directory)
+		public static IAssetFile? Load([NotNull] string path)
 		{
-			string path = Path.Combine(directory, Name);
-			bool flag = Path.Exists(path);
-			if (flag)
-			{
-				try
-				{
-					SKBitmap imgFile = SKBitmap.Decode(path);
-					Image = imgFile;
-				}
-				catch (Exception ex)
-				{
-				}
-				return;
-			}
-			throw new FileNotFoundException("Cannot find the image file", path);
+			ImageFile image = new();
+			if (!Path.Exists(path))
+				throw new FileNotFoundException("Cannot find the image file.", path);
+			image.FilePath = path;
+			SKBitmap imgFile = SKBitmap.Decode(path);
+			if (imgFile == null)
+				return null;//throw new FileNotFoundException("Illegal image file.", path);
+			image.Image = imgFile;
+			image.Size = new RDSizeNI(imgFile.Width, imgFile.Height);
+			return image;
 		}
-
-
-		private readonly string _filename = filename;
+		/// <inheritdoc/>
+		public void Save() => Image.Save(FilePath);
+		/// <inheritdoc/>
+		public override string ToString() => Path.GetFileName(FilePath);
 	}
 }

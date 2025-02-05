@@ -1,72 +1,57 @@
-﻿using System;
-using SkiaSharp;
-
-namespace RhythmBase.Components
+﻿namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Palette color
 	/// </summary>
-
-	public class PaletteColor
+	/// <remarks>
+	/// 
+	/// </remarks>
+	/// <param name="enableAlpha">Specifies whether this object supports alpha channel.</param>
+	public class PaletteColor(bool enableAlpha)
 	{
 		/// <summary>
 		/// Get or set a custom color.
 		/// </summary>
-
-		public SKColor? Color
+		public RDColor? Color
 		{
 			get
 			{
-				SKColor? Color = new SKColor?(EnablePanel ? parent[_panel] : default);
+				RDColor? Color = new RDColor?(EnablePanel ? parent[_panel] : default);
 				return Color;
 			}
 			set
 			{
 				_panel = -1;
-				bool enableAlpha = EnableAlpha;
-				if (enableAlpha)
-				{
-					_color = value;
-				}
-				else
-				{
-					_color = (value != null) ? new SKColor?(value.GetValueOrDefault().WithAlpha(byte.MaxValue)) : null;
-				}
+				_color = EnableAlpha
+					? value
+					: value == null
+					? null
+					: new RDColor?(value.GetValueOrDefault().WithAlpha(byte.MaxValue));
 			}
 		}
-
 		/// <summary>
 		/// Go back to or set the palette color index.
 		/// </summary>
-
 		public int PaletteIndex
 		{
-			get
-			{
-				return _panel;
-			}
+			get => _panel;
 			set
 			{
-				bool flag = value >= 0;
-				if (flag)
+				if (value >= 0)
 				{
 					_color = null;
 					_panel = value;
 				}
 			}
 		}
-
 		/// <summary>
 		/// Specifies whether this object supports alpha channel.
 		/// </summary>
 		/// <returns></returns>
-
-		public bool EnableAlpha { get; }
-
+		public bool EnableAlpha { get; } = enableAlpha;
 		/// <summary>
 		/// Specifies whether this object is used for this color.
 		/// </summary>
-
 		public bool EnablePanel
 		{
 			get
@@ -74,38 +59,26 @@ namespace RhythmBase.Components
 				return PaletteIndex >= 0;
 			}
 		}
-
 		/// <summary>
 		/// The actual color of this object.<br />
 		/// If comes from a palette, it's a palette color.
 		/// If not, it's a custom color.
 		/// </summary>
-
-		public SKColor Value
+		public RDColor Value
 		{
 			get
 			{
-				return (EnablePanel ? new SKColor?(parent[_panel]) : _color).Value;
+				return (EnablePanel ? (parent[_panel]) : _color ?? throw new RhythmBase.Exceptions.RhythmBaseException());
 			}
 		}
 
-		/// <param name="enableAlpha">Specifies whether this object supports alpha channel.</param>
-
-		public PaletteColor(bool enableAlpha)
-		{
-			this.EnableAlpha = enableAlpha;
-		}
-
-
+		/// <inheritdoc/>
 		public override string ToString() => EnablePanel ? string.Format("{0}: {1}", _panel, Value) : Value.ToString();
-
 
 		private int _panel;
 
+		private RDColor? _color;
 
-		private SKColor? _color;
-
-
-		internal LimitedList<SKColor> parent;
+		internal RDColor[] parent = [];
 	}
 }

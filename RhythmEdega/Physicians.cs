@@ -3,7 +3,6 @@
 //using RhythmBase.LevelElements;
 //using RhythmBase.Extensions;
 //using RhythmBase.Utils;
-
 //namespace Physicians
 //{
 //    public static class Edega
@@ -17,7 +16,6 @@
 //            public HashSet<(Warn, string)> warnInfo = new();
 //            public TimeSpan time;
 //        }
-
 //        class BeatAudio
 //        {
 //            public RDAudio? Audio;
@@ -38,7 +36,6 @@
 //            Warning = 0b11,
 //            Illegal = 0b111
 //        }
-
 //        static void DetectingShakeritis(string name)
 //        {
 //            foreach (LegalBeat item1 in LegalList)
@@ -67,7 +64,6 @@
 //                }
 //            }
 //        }
-
 //        static bool SimilarSoundEffect(string name1, string name2)
 //        {
 //            List<string[]> SimilarSoundEffectName = new()
@@ -80,7 +76,6 @@
 //            };
 //            return (name1 == name2) || (SimilarSoundEffectName.FirstOrDefault(i => i.Contains(name1))?.Contains(name2) ?? false);
 //        }
-
 //        //static void DetectingPseudos(string name)
 //        //{
 //        //    List<(LegalBeat beat, Hit hit)> pulseList = LegalList
@@ -110,7 +105,6 @@
 //        //    //    }
 //        //    //}
 //        //}
-
 //        static void DetectingHeckSwing(string name)
 //        {
 //            foreach (var item in LegalList.Where(i => i.beat.Type == RDEventType.AddClassicBeat))
@@ -121,7 +115,6 @@
 //                }
 //            }
 //        }
-
 //        //static void DetectingShortHold(string name)
 //        //{
 //        //    foreach (var item in LegalList.Where(i => i.beat.Type == EventType.AddClassicBeat ||
@@ -142,7 +135,6 @@
 //        //            case EventType.AddFreeTimeBeat:
 //        //                AddFreeTimeBeat temp2 = (AddFreeTimeBeat)item.beat;
 //        //                interval = Math.Abs(Calculator.IntervalTime(temp2.BeatOnly + temp2.Length, temp2.BeatOnly + temp2.Length + temp2.Hold).TotalMilliseconds);
-
 //        //                if (temp2.Hitable && temp2.Hold > 0 && interval < max)
 //        //                {
 //        //                    item.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
@@ -151,7 +143,6 @@
 //        //            case EventType.PulseFreeTimeBeat:
 //        //                var temp3 = (PulseFreeTimeBeat)item.beat;
 //        //                interval = Math.Abs(Calculator.IntervalTime(temp3.BeatOnly + temp3.Length, temp3.BeatOnly + temp3.Length + temp3.Hold).TotalMilliseconds);
-
 //        //                if (temp3.Hitable && temp3.Hold > 0 && interval < max)
 //        //                {
 //        //                    item.warnInfo.Add((Warn.Warning, $"{name}: {interval}ms"));
@@ -162,7 +153,6 @@
 //        //        }
 //        //    }
 //        //}
-
 //        static void DetectingBadRowXs(string name)
 //        {
 //            foreach (var item in LegalList.Where(i => i.beat!.Type == RDEventType.AddClassicBeat))  // 对于每一个七拍
@@ -175,18 +165,13 @@
 //                    item.warnInfo.Add((Warn.Illegal, $"{name}: {RDSetRowXs.GetPatternString(beat.RowXs)}"));
 //            }
 //        }
-
 //        public static void DetectingAll(RDLevel level)
 //        {
 //            var now = DateTime.Now;
 //            Calculator = new(level);
-
-
 //            //读取结束
 //            Console.WriteLine($"Loading successful.");
 //            Console.WriteLine($"{level.Count} events loaded.");
-
-
 //            //获取所有节拍事件，初始化标记为空
 //            foreach (RDBaseBeat item in level.Where<RDBaseBeat>())
 //            {
@@ -200,54 +185,42 @@
 //                    LegalList.Add(new LegalBeat { beat = item });
 //                }
 //            }
-
 //            Console.WriteLine($"Loaded. {(DateTime.Now - now).TotalMilliseconds}ms");
 //            now = DateTime.Now;
-
 //            //获取结束
 //            Console.WriteLine($"{LegalList.Count} beats event loaded.");
-
 //            Console.ForegroundColor = ConsoleColor.Blue;
-
-
 //            now = DateTime.Now;
-
-
 //            //同声共奏检测
 //            name = "Shakeritis";
 //            Console.WriteLine($"Detecting {name}...");
 //            DetectingShakeritis(name);
 //            Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
 //            now = DateTime.Now;
-
 //            ////伪双押检测
 //            //name = "Pseudos";
 //            //Console.WriteLine($"Detecting {name}...");
 //            //DetectingPseudos(name);
 //            //Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
 //            //now = DateTime.Now;
-
 //            //幽灵摇摆检测
 //            name = "Heck Swing";
 //            Console.WriteLine($"Detecting {name}...");
 //            DetectingHeckSwing(name);
 //            Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
 //            now = DateTime.Now;
-
 //            ////长按过短检测
 //            //name = "Short hold";
 //            //Console.WriteLine($"Detecting {name}...");
 //            //DetectingShortHold(name);
 //            //Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
 //            //now = DateTime.Now;
-
 //            //设置X型错误
 //            name = "Bad row Xs";
 //            Console.WriteLine($"Detecting {name}...");
 //            DetectingBadRowXs(name);
 //            Console.WriteLine($"Done. {(DateTime.Now - now).TotalMilliseconds}ms");
 //            now = DateTime.Now;
-
 //            Console.ResetColor();
 //            Console.WriteLine(name);
 //            //打印所有问题
@@ -278,10 +251,8 @@
 //            {
 //                Console.WriteLine("Nothing detected.");
 //            }
-
 //        }
 //    }
-
 //    public class Ian
 //    {
 //        private readonly RDLevel level;

@@ -5,13 +5,11 @@ using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
 using RhythmBase.Exceptions;
 using RhythmBase.Settings;
-
 namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Adofal level.
 	/// </summary>
-
 	public class ADLevel : ADTileCollection
 	{
 		/// <summary>
@@ -75,7 +73,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		/// <param name="filepath">File path.</param>
 		/// <returns>An instance of a level that reads from a file.</returns>
-		public static ADLevel LoadFile(string filepath) => LoadFile(filepath, new LevelReadOrWriteSettings());
+		public static ADLevel Read(string filepath) => Read(filepath, new LevelReadOrWriteSettings());
 		/// <summary>
 		/// Read from file as level.
 		/// Supports .rdlevel, .rdzip, .zip file extension.
@@ -83,12 +81,12 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="filepath">File path.</param>
 		/// <param name="settings">Input settings.</param>
 		/// <returns>An instance of a level that reads from a file.</returns>
-		public static ADLevel LoadFile(string filepath, LevelReadOrWriteSettings settings)
+		public static ADLevel Read(string filepath, LevelReadOrWriteSettings settings)
 		{
 			JsonSerializer LevelSerializer = new();
 			LevelSerializer.Converters.Add(new ADLevelConverter(filepath, settings));
 			string extension = System.IO.Path.GetExtension(filepath);
-			if (Operators.CompareString(extension, ".adofai", false) != 0)
+			if (extension != ".adofai")
 			{
 				throw new RhythmBaseException("File not supported.");
 			}

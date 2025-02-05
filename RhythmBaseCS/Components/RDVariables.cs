@@ -1,270 +1,185 @@
-﻿using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Reflection;
 using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Variables.
 	/// </summary>
-
-	public sealed class Variables
+	public sealed class RDVariables
 	{
-
-		public Variables()
+#pragma warning disable CS1591
+#pragma warning disable SYSLIB1045
+		public RDVariables()
 		{
-			i = new LimitedList<int>(10U, 0);
-			f = new LimitedList<float>(10U, 0f);
-			b = new LimitedList<bool>(10U, false);
+			i = new int[10];
+			f = new float[10];
+			b = new bool[10];
 		}
 
+		public static int Rand(int @int) => Random.Shared.Next(1, @int);
 
-		public int Rand(int @int) => Random.Shared.Next(1, @int);
+		public static bool atLeastRank(char @char) => throw new NotImplementedException();
 
-
-		public bool atLeastRank(char @char) => throw new NotImplementedException();
-
-
-		public bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => false;
-
+		public static bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => false;
 
 		public object this[string variableName]
 		{
 			get
 			{
-				Match match = Regex.Match(variableName, "^([ifb])(\\d{2})$");
-				bool success = match.Success;
-				if (success)
-				{
-					string value = match.Groups[1].Value;
-					if (Operators.CompareString(value, "i", false) == 0)
+				Match match = Regex.Match(variableName, "^([ifb])(\\d)$");
+				int index = match.Groups[2].Value[0] - '0';
+				if (match.Success)
+					return match.Groups[1].Value switch
 					{
-						return i[Conversions.ToInteger(match.Groups[2].Value)];
-					}
-					if (Operators.CompareString(value, "f", false) == 0)
-					{
-						return f[Conversions.ToInteger(match.Groups[2].Value)];
-					}
-					if (Operators.CompareString(value, "b", false) == 0)
-					{
-						return b[Conversions.ToInteger(match.Groups[2].Value)];
-					}
-				}
+						"i" => i[index],
+						"f" => f[index],
+						"b" => b[index],
+						_ => throw new NotImplementedException(),
+					};
 				return GetType().GetField(variableName)?.GetValue(this)!;
 			}
 			set
 			{
-				Match match = Regex.Match(variableName, "^([ifb])(\\d{2})$");
-				bool success = match.Success;
-				if (success)
+				Match match = Regex.Match(variableName, "^([ifb])(\\d)$");
+				int index = match.Groups[2].Value[0] - '0';
+				if (match.Success)
 				{
-					string value2 = match.Groups[1].Value;
-					if (Operators.CompareString(value2, "i", false) != 0)
+					switch (match.Groups[1].Value)
 					{
-						if (Operators.CompareString(value2, "f", false) != 0)
-						{
-							if (Operators.CompareString(value2, "b", false) == 0)
-							{
-								b[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToBoolean(value);
-							}
-						}
-						else
-						{
-							f[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToSingle(value);
-						}
-					}
-					else
-					{
-						i[Conversions.ToInteger(match.Groups[2].Value)] = Conversions.ToInteger(value);
+						case "i":
+							i[index] = value is int v1 ? v1 : throw new ArgumentException( "Value is not an integer.");
+							break;
+						case "f":
+							f[index] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
+							break;
+						case "b":
+							b[index] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
+							break;
 					}
 				}
 				else
 				{
-					FieldInfo field = GetType().GetField(variableName);
-					if (field != null)
-					{
-						field.SetValue(this, RuntimeHelpers.GetObjectValue(value));
-					}
+					FieldInfo? field = GetType().GetField(variableName);
+					field?.SetValue(this, value);
 				}
 			}
 		}
-
 		/// <summary>
 		/// Integer variables.
 		/// </summary>
-
-		public readonly LimitedList<int> i;
-
+		public readonly int[] i;
 		/// <summary>
 		/// Float variables.
 		/// </summary>
-
-		public readonly LimitedList<float> f;
-
+		public readonly float[] f;
 		/// <summary>
 		/// Boolean variables.
 		/// </summary>
-
-		public readonly LimitedList<bool> b;
-
+		public readonly bool[] b;
 
 		public int barNumber;
 
-
 		public int buttonPressCount;
-
 
 		public int missesToCrackHeart;
 
-
 		public int numEarlyHits;
-
 
 		public int numLateHits;
 
-
 		public int numMisses;
-
 
 		public int numPerfectHits;
 
-
 		public float bpm;
-
 
 		public float deltaTime;
 
-
 		public float levelSpeed;
-
 
 		public float numMistakes;
 
-
 		public float numMistakesP1;
-
 
 		public float numMistakesP2;
 
-
 		public float shockwaveDistortionMultiplier;
-
 
 		public float shockwaveDurationMultiplier;
 
-
 		public float shockwaveSizeMultiplier;
-
 
 		public float statusSignWidth;
 
-
 		public bool activeDialogues;
-
 
 		public bool activeDialoguesImmediately;
 
-
 		public bool alternativeMatrix;
-
 
 		public bool anyPlayerPress;
 
-
 		public bool autoplay;
-
 
 		public bool booleansDefaultToTrue;
 
-
 		public bool charsOnlyOnStart;
-
 
 		public bool cpuIsP2On2P;
 
-
 		public bool disableRowChangeWarningFlashes;
-
 
 		public bool downPress;
 
-
 		public bool hideHandsOnStart;
-
 
 		public bool invisibleChars;
 
-
 		public bool invisibleHeart;
-
 
 		public bool leftPress;
 
-
 		public bool noBananaBeats;
-
 
 		public bool noHands;
 
-
 		public bool noHitFlashBorder;
-
 
 		public bool noHitStrips;
 
-
 		public bool noOneshotShadows;
-
 
 		public bool noRowAnimsOnStart;
 
-
 		public bool noSmartJudgment;
-
 
 		public bool p1IsPressed;
 
-
 		public bool p1Press;
-
 
 		public bool p1Release;
 
-
 		public bool p2IsPressed;
-
 
 		public bool p2Press;
 
-
 		public bool p2Release;
-
 
 		public bool rightPress;
 
-
 		public bool rotateShake;
-
 
 		public bool rowReflectionsJumping;
 
-
 		public bool skippableRankScreen;
-
 
 		public bool skipRankText;
 
-
 		public bool smoothShake;
-
 
 		public bool upPress;
 
-
 		public bool useFlashFontForFloatingText;
-
 
 		public bool wobblyLines;
 	}

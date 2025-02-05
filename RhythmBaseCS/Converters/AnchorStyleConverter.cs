@@ -1,68 +1,51 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
+﻿using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Events;
-
+using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
-
-	internal class AnchorStyleConverter : JsonConverter<FloatingText.AnchorStyle>
+	internal partial class AnchorStyleConverter : JsonConverter<FloatingText.AnchorStyle>
 	{
-
 		public override void WriteJson(JsonWriter writer, FloatingText.AnchorStyle value, JsonSerializer serializer)
 		{
-			string text = ((value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)) > FloatingText.AnchorStyle.Center) ? "Middle" : Enum.Parse<FloatingText.AnchorStyle>(Conversions.ToString((int)(value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)))).ToString();
-			writer.WriteValue((((value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)) > FloatingText.AnchorStyle.Center) ? Enum.Parse<FloatingText.AnchorStyle>(Conversions.ToString((int)(value & (FloatingText.AnchorStyle.Lower | FloatingText.AnchorStyle.Upper)))).ToString() : "Middle") + Enum.Parse<FloatingText.AnchorStyle>(Conversions.ToString((int)(value & (FloatingText.AnchorStyle.Left | FloatingText.AnchorStyle.Right)))).ToString());
+			var horizontal = value & (FloatingText.AnchorStyle.Left | FloatingText.AnchorStyle.Right);
+			var vertical = value & (FloatingText.AnchorStyle.Upper | FloatingText.AnchorStyle.Lower);
+			writer.WriteValue(
+				(vertical == 0 ?
+					"Middle" 
+					: vertical.ToString()) 
+				+ horizontal.ToString()
+			);
 		}
-
 
 		public override FloatingText.AnchorStyle ReadJson(JsonReader reader, Type objectType, FloatingText.AnchorStyle existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			string JString = JToken.ReadFrom(reader).ToObject<string>();
-			Match match = Regex.Match(JString, "([A-Z][a-z]+)([A-Z][a-z]+)");
-			bool middle = false;
-			bool center = false;
+			JToken token = JToken.ReadFrom(reader);
+			string JString = token.ToObject<string>() ?? throw new Exceptions.ConvertingException("Cannot read the anchor.");
+			Match match = AnchorStyleRegex().Match(JString);
+			if (!match.Success)
+				throw new Exceptions.ConvertingException(token, $"Illegal Anchor: {JString}");
 			FloatingText.AnchorStyle result = FloatingText.AnchorStyle.Center;
-			string value = match.Groups[1].Value;
-			if (Operators.CompareString(value, "Upper", false) != 0)
+
+			result |= match.Groups[1].Value switch
 			{
-				if (Operators.CompareString(value, "Lower", false) != 0)
-				{
-					middle = true;
-				}
-				else
-				{
-					result |= FloatingText.AnchorStyle.Lower;
-				}
-			}
-			else
+				"Upper" => FloatingText.AnchorStyle.Upper,
+				"Lower" => FloatingText.AnchorStyle.Lower,
+				_ => 0,
+			};
+
+			result |= match.Groups[2].Value switch
 			{
-				result |= FloatingText.AnchorStyle.Upper;
-			}
-			string value2 = match.Groups[2].Value;
-			if (Operators.CompareString(value2, "Left", false) != 0)
-			{
-				if (Operators.CompareString(value2, "Right", false) != 0)
-				{
-					center = true;
-				}
-				else
-				{
-					result |= FloatingText.AnchorStyle.Right;
-				}
-			}
-			else
-			{
-				result |= FloatingText.AnchorStyle.Left;
-			}
-			bool flag = center && middle;
-			if (flag)
-			{
-				result = FloatingText.AnchorStyle.Center;
-			}
+				"Left" => FloatingText.AnchorStyle.Left,
+				"Right" => FloatingText.AnchorStyle.Right,
+				_ => 0,
+			};
+
 			return result;
 		}
+
+		[GeneratedRegex("(Upper|Middle|Lower)(Left|Center|Right)")]
+		private static partial Regex AnchorStyleRegex();
 	}
 }

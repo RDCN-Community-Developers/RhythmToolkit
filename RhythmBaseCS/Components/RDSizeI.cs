@@ -1,237 +1,130 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
-
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="integer" />
 	/// </summary>
-
 	[JsonConverter(typeof(RDPointsConverter))]
-	public struct RDSizeI : IEquatable<RDSizeI>
+	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+	public struct RDSizeI(int? width, int? height) : IRDVortex<RDSizeI, RDSizeI, int?>
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDSizeI"/> struct with the specified point.
+		/// </summary>
+		/// <param name="pt">The point to initialize the size with.</param>
+		public RDSizeI(RDPointI pt) : this(pt.X, pt.Y) { }
 
-		public RDSizeI(RDPointI pt)
-		{
-			this = default;
-			Width = pt.X;
-			Height = pt.Y;
-		}
+		/// <summary>
+		/// Gets a value indicating whether this size is empty (both width and height are null).
+		/// </summary>
+		public readonly bool IsEmpty => Width == null && Height == null;
 
+		/// <summary>
+		/// Gets or sets the width of the size.
+		/// </summary>
+		public int? Width { get; set; } = width;
 
-		public RDSizeI(int? width, int? height)
-		{
-			this = default;
-			this.Width = width;
-			this.Height = height;
-		}
+		/// <summary>
+		/// Gets or sets the height of the size.
+		/// </summary>
+		public int? Height { get; set; } = height;
 
+		/// <summary>
+		/// Gets the area of the size (width multiplied by height).
+		/// </summary>
+		public readonly int? Area => Width * Height;
 
-		public bool IsEmpty
-		{
-			get
-			{
-				return Width == null && Height == null;
-			}
-		}
+		/// <summary>
+		/// Adds two sizes together.
+		/// </summary>
+		/// <param name="sz1">The first size.</param>
+		/// <param name="sz2">The second size.</param>
+		/// <returns>The sum of the two sizes.</returns>
+		public static RDSizeI Add(RDSizeI sz1, RDSizeI sz2) => new(sz1.Width + sz2.Width, sz1.Height + sz2.Height);
 
+		/// <summary>
+		/// Truncates the specified size to the nearest integer values.
+		/// </summary>
+		/// <param name="value">The size to truncate.</param>
+		/// <returns>The truncated size.</returns>
+		public static RDSizeI Truncate(RDSize value) => new(
+			(int)Math.Round((value.Width == null) ? 0.0 : Math.Truncate((double)value.Width.Value)),
+			(int)Math.Round((value.Height == null) ? 0.0 : Math.Truncate((double)value.Height.Value)));
 
-		public int? Width { get; set; }
+		/// <summary>
+		/// Subtracts one size from another.
+		/// </summary>
+		/// <param name="sz1">The size to subtract from.</param>
+		/// <param name="sz2">The size to subtract.</param>
+		/// <returns>The difference between the two sizes.</returns>
+		public static RDSizeI Subtract(RDSizeI sz1, RDSizeI sz2) => new(sz1.Width - sz2.Width, sz1.Height - sz2.Height);
 
+		/// <summary>
+		/// Rounds the specified size up to the nearest integer values.
+		/// </summary>
+		/// <param name="value">The size to round up.</param>
+		/// <returns>The rounded size.</returns>
+		public static RDSizeI Ceiling(RDSize value) => new(
+			(int)Math.Round((value.Width == null) ? 0.0 : Math.Ceiling((double)value.Width.Value)),
+			(int)Math.Round((value.Height == null) ? 0.0 : Math.Ceiling((double)value.Height.Value)));
 
-		public int? Height { get; set; }
-
-
-		public int? Area
-		{
-			get
-			{
-				return checked(Width * Height);
-			}
-		}
-
-
-		public static RDSizeI Add(RDSizeI sz1, RDSizeI sz2)
-		{
-			RDSizeI Add = checked(new RDSizeI(sz1.Width + sz2.Width, sz1.Height + sz2.Height));
-			return Add;
-		}
-
-
-		public static RDSizeI Truncate(RDSize value)
-		{
-			RDSizeI Truncate = checked(new RDSizeI(new int?((int)Math.Round((value.Width == null) ? 0.0 : Math.Truncate((double)value.Width.Value))), new int?((int)Math.Round((value.Height == null) ? 0.0 : Math.Truncate((double)value.Height.Value)))));
-			return Truncate;
-		}
-
-
-		public static RDSizeI Subtract(RDSizeI sz1, RDSizeI sz2)
-		{
-			RDSizeI Subtract = checked(new RDSizeI(sz1.Width - sz2.Width, sz1.Height - sz2.Height));
-			return Subtract;
-		}
-
-
-		public static RDSizeI Ceiling(RDSize value)
-		{
-			RDSizeI Ceiling = checked(new RDSizeI(new int?((int)Math.Round((value.Width == null) ? 0.0 : Math.Ceiling((double)value.Width.Value))), new int?((int)Math.Round((value.Height == null) ? 0.0 : Math.Ceiling((double)value.Height.Value)))));
-			return Ceiling;
-		}
-
-
-		public static RDSizeI Round(RDSize value)
-		{
-			RDSizeI Round = checked(new RDSizeI(new int?((int)Math.Round((value.Width == null) ? 0.0 : Math.Round((double)value.Width.Value))), new int?((int)Math.Round((value.Height == null) ? 0.0 : Math.Round((double)value.Height.Value)))));
-			return Round;
-		}
-
-
-		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDSizeI) && Equals((obj != null) ? ((RDSizeI)obj) : default);
-
-
-		public override int GetHashCode()
-		{
-			HashCode h = default;
-			h.Add(Width);
-			h.Add(Height);
-			return h.ToHashCode();
-		}
-
-
-		public override string ToString()
-		{
-			string format = "[{0}, {1}]";
-			int? num2;
-			int? num = num2 = Width;
-			object objectValue = RuntimeHelpers.GetObjectValue((num2 != null) ? num.GetValueOrDefault() : "null");
-			num = num2 = Height;
-			return string.Format(format, objectValue, RuntimeHelpers.GetObjectValue((num2 != null) ? num.GetValueOrDefault() : "null"));
-		}
-
-
-		public bool Equals(RDSizeI other)
-		{
-			int? num = Width;
-			int? num2 = other.Width;
-			bool? flag2;
-			bool? flag = flag2 = (num != null & num2 != null) ? new bool?(num.GetValueOrDefault() == num2.GetValueOrDefault()) : null;
-			bool? flag3;
-			bool? flag4;
-			if (flag2 == null || flag.GetValueOrDefault())
-			{
-				num2 = Height;
-				num = other.Height;
-				flag3 = flag2 = (num2 != null & num != null) ? new bool?(num2.GetValueOrDefault() == num.GetValueOrDefault()) : null;
-				flag4 = (flag2 != null) ? (flag & flag3.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag4 = new bool?(false);
-			}
-			flag3 = flag4;
-			return flag3.Value;
-		}
-
-
+		/// <summary>
+		/// Rounds the specified size to the nearest integer values.
+		/// </summary>
+		/// <param name="value">The size to round.</param>
+		/// <returns>The rounded size.</returns>
+		public static RDSizeI Round(RDSize value) => new(
+				new int?((int)Math.Round((value.Width == null) ? 0.0 : Math.Round((double)value.Width.Value))),
+				new int?((int)Math.Round((value.Height == null) ? 0.0 : Math.Round((double)value.Height.Value))));
+		/// <inheritdoc/>
+		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDSizeI e && Equals(e);
+		/// <inheritdoc/>
+		public override readonly int GetHashCode() => HashCode.Combine(Width, Height);
+		/// <inheritdoc/>
+		public override readonly string ToString() => $"[{Width},{Height}]";
+		/// <inheritdoc/>
+		public readonly bool Equals(RDSizeI other) => Width == other.Width && Height == other.Height;
+		/// <inheritdoc/>
 		public static RDSizeI operator +(RDSizeI sz1, RDSizeI sz2) => Add(sz1, sz2);
-
-
+		/// <inheritdoc/>
 		public static RDSizeI operator -(RDSizeI sz1, RDSizeI sz2) => Subtract(sz1, sz2);
-
-
-		public static RDSize operator *(float left, RDSizeI right)
-		{
-			int? num = right.Width;
-			float? width = left * ((num != null) ? new float?((float)num.GetValueOrDefault()) : null);
-			num = right.Height;
-			RDSize result = new(width, left * ((num != null) ? new float?((float)num.GetValueOrDefault()) : null));
-			return result;
-		}
-
-
-		public static RDSize operator *(RDSizeI left, float right)
-		{
-			int? num = left.Width;
-			float? width = ((num != null) ? new float?((float)num.GetValueOrDefault()) : null) * right;
-			num = left.Height;
-			RDSize result = new(width, ((num != null) ? new float?((float)num.GetValueOrDefault()) : null) * right);
-			return result;
-		}
-
-
-		public static RDSizeI operator *(int left, RDSizeI right)
-		{
-			RDSizeI result = checked(new RDSizeI(left * right.Width, left * right.Height));
-			return result;
-		}
-
-
-		public static RDSizeI operator *(RDSizeI left, int right)
-		{
-			RDSizeI result = checked(new RDSizeI(left.Width * right, left.Height * right));
-			return result;
-		}
-
-
-		public static RDSize operator /(RDSizeI left, float right)
-		{
-			int? num = left.Width;
-			float? width = ((num != null) ? new float?((float)num.GetValueOrDefault()) : null) / right;
-			num = left.Height;
-			RDSize result = new(width, ((num != null) ? new float?((float)num.GetValueOrDefault()) : null) / right);
-			return result;
-		}
-
-
-		public static RDSizeI operator /(RDSizeI left, int right)
-		{
-			int? num = left.Width;
-			double? num2 = ((num != null) ? new double?((double)num.GetValueOrDefault()) : null) / (double)right;
-			checked
-			{
-				int? width = (num2 != null) ? new int?((int)Math.Round(num2.GetValueOrDefault())) : null;
-				num = left.Height;
-				num2 = ((num != null) ? new double?((double)num.GetValueOrDefault()) : null) / (double)right;
-				RDSizeI result = new(width, (num2 != null) ? new int?((int)Math.Round(num2.GetValueOrDefault())) : null);
-				return result;
-			}
-		}
-
-
+		/// <inheritdoc/>
+		public static RDSize operator *(float left, RDSizeI right) => new(left * right.Width, left * right.Height);
+		/// <inheritdoc/>
+		public static RDSize operator *(RDSizeI left, float right) => new(left.Width * right, left.Height * right);
+		/// <inheritdoc/>
+		public static RDSizeI operator *(int left, RDSizeI right) => new(left * right.Width, left * right.Height);
+		/// <inheritdoc/>
+		public static RDSizeI operator *(RDSizeI left, int? right) => new(left.Width * right, left.Height * right);
+		/// <inheritdoc/>
+		public static RDSize operator /(RDSizeI left, float right) => new(left.Width / right, left.Height / right);
+		/// <inheritdoc/>
+		public static RDSizeI operator /(RDSizeI left, int? right) => new(left.Width / right, left.Height / right);
+		/// <inheritdoc/>
 		public static bool operator ==(RDSizeI sz1, RDSizeI sz2) => sz1.Equals(sz2);
-
-
+		/// <inheritdoc/>
 		public static bool operator !=(RDSizeI sz1, RDSizeI sz2) => !sz1.Equals(sz2);
-
-
-		public static implicit operator RDSize(RDSizeI p)
-		{
-			int? num = p.Width;
-			float? width = (num != null) ? new float?((float)num.GetValueOrDefault()) : null;
-			num = p.Height;
-			RDSize result = new(width, (num != null) ? new float?((float)num.GetValueOrDefault()) : null);
-			return result;
-		}
-
-
-		public static implicit operator RDSizeE(RDSizeI p)
-		{
-			int? num2;
-			int? num = num2 = p.Width;
-			Expression? width = (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null;
-			num = num2 = p.Height;
-			RDSizeE result = new(width, (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null);
-			return result;
-		}
-
-
-		public static explicit operator RDPointI(RDSizeI size)
-		{
-			RDPointI result = new(size.Width, size.Height);
-			return result;
-		}
+		/// <summary>
+		/// Implicitly converts an <see cref="RDSizeI"/> to an <see cref="RDSize"/>.
+		/// </summary>
+		/// <param name="p">The <see cref="RDSizeI"/> to convert.</param>
+		/// <returns>A new <see cref="RDSize"/> with the same width and height.</returns>
+		public static implicit operator RDSize(RDSizeI p) => new(p.Width, p.Height);
+		/// <summary>
+		/// Implicitly converts an <see cref="RDSizeI"/> to an <see cref="RDSizeE"/>.
+		/// </summary>
+		/// <param name="p">The <see cref="RDSizeI"/> to convert.</param>
+		/// <returns>A new <see cref="RDSizeE"/> with the same width and height.</returns>
+		public static implicit operator RDSizeE(RDSizeI p) => new(p.Width, p.Height);
+		/// <summary>
+		/// Explicitly converts an <see cref="RDSizeI"/> to an <see cref="RDPointI"/>.
+		/// </summary>
+		/// <param name="size">The <see cref="RDSizeI"/> to convert.</param>
+		/// <returns>A new <see cref="RDPointI"/> with the same width and height.</returns>
+		public static explicit operator RDPointI(RDSizeI size) => new(size.Width, size.Height);
+		private readonly string GetDebuggerDisplay() => ToString();
 	}
 }

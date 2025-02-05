@@ -1,125 +1,149 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
+﻿using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Components
 {
-
-	public struct RDRectE : IEquatable<RDRectE>
+	/// <summary>
+	/// Represents a rectangle defined by four expressions: left, top, right, and bottom.
+	/// </summary>
+	/// <param name="left">The left expression of the rectangle.</param>
+	/// <param name="top">The top expression of the rectangle.</param>
+	/// <param name="right">The right expression of the rectangle.</param>
+	/// <param name="bottom">The bottom expression of the rectangle.</param>
+	public struct RDRectE(RDExpression? left, RDExpression? top, RDExpression? right, RDExpression? bottom) : IEquatable<RDRectE>
 	{
+		/// <summary>
+		/// Gets or sets the left expression of the rectangle.
+		/// </summary>
+		public RDExpression? Left { get; set; } = left;
 
-		public Expression? Left { get; set; }
+		/// <summary>
+		/// Gets or sets the right expression of the rectangle.
+		/// </summary>
+		public RDExpression? Right { get; set; } = right;
 
+		/// <summary>
+		/// Gets or sets the top expression of the rectangle.
+		/// </summary>
+		public RDExpression? Top { get; set; } = top;
 
-		public Expression? Right { get; set; }
+		/// <summary>
+		/// Gets or sets the bottom expression of the rectangle.
+		/// </summary>
+		public RDExpression? Bottom { get; set; } = bottom;
 
+		/// <summary>
+		/// Gets the left-bottom point of the rectangle.
+		/// </summary>
+		public readonly RDPointE LeftBottom => new(Left, Bottom);
 
-		public Expression? Top { get; set; }
+		/// <summary>
+		/// Gets the right-bottom point of the rectangle.
+		/// </summary>
+		public readonly RDPointE RightBottom => new(Right, Bottom);
 
+		/// <summary>
+		/// Gets the left-top point of the rectangle.
+		/// </summary>
+		public readonly RDPointE LeftTop => new(Left, Top);
 
-		public Expression? Bottom { get; set; }
+		/// <summary>
+		/// Gets the right-top point of the rectangle.
+		/// </summary>
+		public readonly RDPointE RightTop => new(Right, Top);
 
+		/// <summary>
+		/// Gets the width of the rectangle.
+		/// </summary>
+		public readonly RDExpression? Width => Right - Left;
 
-		public Expression? Width
-		{
-			get
-			{
-				return Right - Left;
-			}
-		}
+		/// <summary>
+		/// Gets the height of the rectangle.
+		/// </summary>
+		public readonly RDExpression? Height => Top - Bottom;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDRectE"/> struct with the specified location and size.
+		/// </summary>
+		/// <param name="location">The location of the rectangle.</param>
+		/// <param name="size">The size of the rectangle.</param>
+		public RDRectE(RDPointE? location, RDSizeE? size) : this(location?.X, location?.Y + size?.Height, location?.X + size?.Width, location?.Y) { }
 
-		public Expression? Height
-		{
-			get
-			{
-				return Top - Bottom;
-			}
-		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDRectE"/> struct with the specified size.
+		/// </summary>
+		/// <param name="size">The size of the rectangle.</param>
+		public RDRectE(RDSizeE size) : this(new RDExpression?(0f), size.Height, size.Width, new RDExpression?(0f)) { }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDRectE"/> struct with the specified width and height.
+		/// </summary>
+		/// <param name="width">The width of the rectangle.</param>
+		/// <param name="height">The height of the rectangle.</param>
+		public RDRectE(RDExpression? width, RDExpression? height) : this(new RDExpression?(0f), height, width, new RDExpression?(0f)) { }
 
-		public RDRectE(Expression? left, Expression? top, Expression? right, Expression? bottom)
-		{
-			this = default;
-			Left = left;
-			Right = right;
-			Top = top;
-			Bottom = bottom;
-		}
+		/// <summary>
+		/// Gets the location of the rectangle.
+		/// </summary>
+		public readonly RDPointE Location => new(Left, Bottom);
 
+		/// <summary>
+		/// Gets the size of the rectangle.
+		/// </summary>
+		public readonly RDSizeE Size => new(Width, Height);
 
-		public RDRectE(PointE location, RDSizeE size)
-		{
-			this = new RDRectE(location.X, location.Y + size.Height, location.X + size.Width, location.Y);
-		}
-
-
-		public RDRectE(RDSizeE size)
-		{
-			this = new RDRectE(new Expression?(0f), size.Height, size.Width, new Expression?(0f));
-		}
-
-
-		public RDRectE(Expression? width, Expression? height)
-		{
-			this = new RDRectE(new Expression?(0f), height, width, new Expression?(0f));
-		}
-
-
-		public PointE Location
-		{
-			get
-			{
-				PointE Location = new(Left, Bottom);
-				return Location;
-			}
-		}
-
-
-		public RDSizeE Size
-		{
-			get
-			{
-				RDSizeE Size = new(Width, Height);
-				return Size;
-			}
-		}
-
-
+		/// <summary>
+		/// Inflates the specified rectangle by the specified size.
+		/// </summary>
+		/// <param name="rect">The rectangle to inflate.</param>
+		/// <param name="size">The size to inflate by.</param>
+		/// <returns>The inflated rectangle.</returns>
 		public static RDRectE Inflate(RDRectE rect, RDSizeE size)
 		{
 			RDRectE result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(size);
 			return result;
 		}
-
-
-		public static RDRectE Inflate(RDRectE rect, Expression? x, Expression? y)
+		/// <summary>
+		/// Inflates the specified rectangle by the specified width and height.
+		/// </summary>
+		/// <param name="rect">The rectangle to inflate.</param>
+		/// <param name="x">The width to inflate by.</param>
+		/// <param name="y">The height to inflate by.</param>
+		/// <returns>The inflated rectangle.</returns>
+		public static RDRectE Inflate(RDRectE rect, RDExpression? x, RDExpression? y)
 		{
 			RDRectE result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(x, y);
 			return result;
 		}
 
+		/// <summary>
+		/// Truncates the specified rectangle.
+		/// </summary>
+		/// <param name="rect">The rectangle to truncate.</param>
+		/// <returns>The truncated rectangle.</returns>
+		public static RDRectE Truncate(RDRectE rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 
-		public static RDRectE Truncate(RDRectE rect)
-		{
-			RDRectE Truncate = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
-			return Truncate;
-		}
-
-
-		public void Offset(Expression? x, Expression? y)
+		/// <summary>
+		/// Offsets the rectangle by the specified width and height.
+		/// </summary>
+		/// <param name="x">The width to offset by.</param>
+		/// <param name="y">The height to offset by.</param>
+		public void Offset(RDExpression? x, RDExpression? y)
 		{
 			Left += x;
 			Top += y;
 			Right += x;
 			Bottom += y;
 		}
-
-
-		public void Offset(PointE p) => Offset(p.X, p.Y);
-
-
+		/// <summary>
+		/// Offsets the rectangle by the specified point.
+		/// </summary>
+		/// <param name="p">The point to offset by.</param>
+		public void Offset(RDPointE p) => Offset(p.X, p.Y);
+		/// <summary>
+		/// Inflates the rectangle by the specified size.
+		/// </summary>
+		/// <param name="size">The size to inflate by.</param>
 		public void Inflate(RDSizeE size)
 		{
 			Left -= size.Width;
@@ -127,87 +151,29 @@ namespace RhythmBase.Components
 			Right += size.Width;
 			Bottom -= size.Height;
 		}
-
-
-		public void Inflate(Expression? width, Expression? height)
+		/// <summary>
+		/// Inflates the rectangle by the specified width and height.
+		/// </summary>
+		/// <param name="width">The width to inflate by.</param>
+		/// <param name="height">The height to inflate by.</param>
+		public void Inflate(RDExpression? width, RDExpression? height)
 		{
 			Left -= width;
 			Top += height;
 			Right += width;
 			Bottom -= height;
 		}
-
-
+		/// <inheritdoc/>
 		public static bool operator ==(RDRectE rect1, RDRectE rect2) => rect1.Equals(rect2);
-
-
+		/// <inheritdoc/>
 		public static bool operator !=(RDRectE rect1, RDRectE rect2) => !rect1.Equals(rect2);
-
-
-		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDRectE) && Equals((obj != null) ? ((RDRectE)obj) : default);
-
-
-		public override int GetHashCode() => HashCode.Combine(Left, Top, Right, Bottom);
-
-
-		public override string ToString() => string.Format("{{Location=[{0},{1}],Size=[{2},{3}]}}",
-			[
-				Left,
-				Bottom,
-				Width,
-				Height
-			]);
-
-
-		public bool Equals(RDRectE other)
-		{
-			Expression? expression = Left;
-			Expression? expression2 = other.Left;
-			bool? flag2;
-			bool? flag = flag2 = (expression != null & expression2 != null) ? new bool?(expression.GetValueOrDefault() == expression2.GetValueOrDefault()) : null;
-			bool? flag3;
-			bool? flag4;
-			if (flag2 == null || flag.GetValueOrDefault())
-			{
-				expression2 = Top;
-				expression = other.Top;
-				flag3 = flag2 = (expression2 != null & expression != null) ? new bool?(expression2.GetValueOrDefault() == expression.GetValueOrDefault()) : null;
-				flag4 = (flag2 != null) ? (flag & flag3.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag4 = new bool?(false);
-			}
-			bool? flag5 = flag3 = flag4;
-			bool? flag6;
-			bool? flag7;
-			if (flag3 == null || flag5.GetValueOrDefault())
-			{
-				expression = Right;
-				expression2 = other.Right;
-				flag6 = flag3 = (expression != null & expression2 != null) ? new bool?(expression.GetValueOrDefault() == expression2.GetValueOrDefault()) : null;
-				flag7 = (flag3 != null) ? (flag5 & flag6.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag7 = new bool?(false);
-			}
-			bool? flag8 = flag6 = flag7;
-			bool? flag9;
-			bool? flag10;
-			if (flag6 == null || flag8.GetValueOrDefault())
-			{
-				expression2 = Bottom;
-				expression = other.Bottom;
-				flag9 = flag6 = (expression2 != null & expression != null) ? new bool?(expression2.GetValueOrDefault() == expression.GetValueOrDefault()) : null;
-				flag10 = (flag6 != null) ? (flag8 & flag9.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag10 = new bool?(false);
-			}
-			flag9 = flag10;
-			return flag9.Value;
-		}
+		/// <inheritdoc/>
+		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDRectE e && Equals(e);
+		/// <inheritdoc/>
+		public override readonly int GetHashCode() => HashCode.Combine(Left, Top, Right, Bottom);
+		/// <inheritdoc/>
+		public override readonly string ToString() => $"{{Location=[{Left},{Bottom}],Size=[{Width},{Height}]}}";
+		/// <inheritdoc/>
+		public readonly bool Equals(RDRectE other) => Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;
 	}
 }

@@ -2,20 +2,17 @@
 using RhythmBase.Converters;
 using System.Collections;
 using System.Runtime.CompilerServices;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
 	/// A list that limits the capacity of the list and uses the default value to fill the free capacity.
 	/// </summary>
-
 	[JsonConverter(typeof(LimitedListConverter))]
 	public class LimitedList : ICollection
 	{
 		/// <summary>
 		/// Default value.
 		/// </summary>
-
 		[JsonIgnore]
 		protected internal object? DefaultValue;
 		public int Count => list.Count;

@@ -1,133 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.VisualBasic.CompilerServices;
+using RhythmBase.Components;
+using RhythmBase.Exceptions;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
-using RhythmBase.Components;
-using RhythmBase.Exceptions;
-
+#pragma warning disable
 namespace RhythmBase.Expressions
 {
-
 	[StandardModule]
 	public static class ExpressionTree
 	{
-
 		private static bool IsOperator(this TokenType e) => e >= TokenType.Function;
-
 
 		private static int Level(this TokenType e)
 		{
-			int Level;
-			switch (e)
+			var Level = e switch
 			{
-				case TokenType.Variable:
-					Level = 15;
-					break;
-				case TokenType.Constant:
-					Level = 15;
-					break;
-				case TokenType.BooleanValue:
-					Level = 15;
-					break;
-				case TokenType.FloatValue:
-					Level = 15;
-					break;
-				case TokenType.IntegerValue:
-					Level = 15;
-					break;
-				case TokenType.String:
-					Level = 15;
-					break;
-				case TokenType.Boolean:
-					Level = 16;
-					break;
-				case TokenType.Function:
-					Level = 16;
-					break;
-				case TokenType.ArrayIndex:
-					Level = 16;
-					break;
-				case TokenType.Increment:
-					Level = 16;
-					break;
-				case TokenType.Decrement:
-					Level = 16;
-					break;
-				case TokenType.Add:
-					Level = 11;
-					break;
-				case TokenType.Subtract:
-					Level = 11;
-					break;
-				case TokenType.Multipy:
-					Level = 12;
-					break;
-				case TokenType.Divide:
-					Level = 12;
-					break;
-				case TokenType.Equal:
-					Level = 8;
-					break;
-				case TokenType.NotEqual:
-					Level = 8;
-					break;
-				case TokenType.LessThanOrEqual:
-					Level = 9;
-					break;
-				case TokenType.GreaterThanOrEqual:
-					Level = 9;
-					break;
-				case TokenType.Assign:
-					Level = 0;
-					break;
-				case TokenType.GreaterThan:
-					Level = 9;
-					break;
-				case TokenType.LessThan:
-					Level = 9;
-					break;
-				case TokenType.LeftParenthese:
-					Level = 16;
-					break;
-				case TokenType.RightParenthese:
-					Level = 16;
-					break;
-				case TokenType.LeftBracket:
-					Level = 16;
-					break;
-				case TokenType.RightBracket:
-					Level = 16;
-					break;
-				case TokenType.LeftBrace:
-					Level = 16;
-					break;
-				case TokenType.RightBrace:
-					Level = 16;
-					break;
-				case TokenType.Dot:
-					Level = 16;
-					break;
-				case TokenType.Comma:
-					Level = -1;
-					break;
-				case TokenType.And:
-					Level = 4;
-					break;
-				case TokenType.Or:
-					Level = 3;
-					break;
-				case TokenType.Not:
-					Level = 16;
-					break;
-				default:
-					throw new Exception();
-			}
+				TokenType.Variable => 15,
+				TokenType.Constant => 15,
+				TokenType.BooleanValue => 15,
+				TokenType.FloatValue => 15,
+				TokenType.IntegerValue => 15,
+				TokenType.String => 15,
+				TokenType.Boolean => 16,
+				TokenType.Function => 16,
+				TokenType.ArrayIndex => 16,
+				TokenType.Increment => 16,
+				TokenType.Decrement => 16,
+				TokenType.Add => 11,
+				TokenType.Subtract => 11,
+				TokenType.Multipy => 12,
+				TokenType.Divide => 12,
+				TokenType.Equal => 8,
+				TokenType.NotEqual => 8,
+				TokenType.LessThanOrEqual => 9,
+				TokenType.GreaterThanOrEqual => 9,
+				TokenType.Assign => 0,
+				TokenType.GreaterThan => 9,
+				TokenType.LessThan => 9,
+				TokenType.LeftParenthese => 16,
+				TokenType.RightParenthese => 16,
+				TokenType.LeftBracket => 16,
+				TokenType.RightBracket => 16,
+				TokenType.LeftBrace => 16,
+				TokenType.RightBrace => 16,
+				TokenType.Dot => 16,
+				TokenType.Comma => -1,
+				TokenType.And => 4,
+				TokenType.Or => 3,
+				TokenType.Not => 16,
+				_ => throw new Exception(),
+			};
 			return Level;
 		}
-
 
 		private static bool IsBinary(this TokenType e) => new TokenType[]
 			{
@@ -147,7 +72,6 @@ namespace RhythmBase.Expressions
 				TokenType.Or
 			}.Contains(e);
 
-
 		private static bool IsRightHalf(this TokenType e) => new TokenType[]
 			{
 				TokenType.RightParenthese,
@@ -155,25 +79,22 @@ namespace RhythmBase.Expressions
 				TokenType.RightBrace
 			}.Contains(e);
 
-
-		internal static Func<Variables, TResult> GetFunctionalExpression<TResult>(string exp)
+		internal static Func<RDVariables, TResult> GetFunctionalExpression<TResult>(string exp)
 		{
-			ParameterExpression param = System.Linq.Expressions.Expression.Parameter(typeof(Variables), "v");
+			ParameterExpression param = System.Linq.Expressions.Expression.Parameter(typeof(RDVariables), "v");
 			System.Linq.Expressions.Expression resultExp = GetExpression(exp, param);
-			Expression<Func<Variables, TResult>> lambda = System.Linq.Expressions.Expression.Lambda<Func<Variables, TResult>>(System.Linq.Expressions.Expression.Convert(resultExp, typeof(TResult)),
+			Expression<Func<RDVariables, TResult>> lambda = System.Linq.Expressions.Expression.Lambda<Func<RDVariables, TResult>>(System.Linq.Expressions.Expression.Convert(resultExp, typeof(TResult)),
 			[
 				param
 			]);
 			return lambda.Compile();
 		}
 
-
 		public static System.Linq.Expressions.Expression GetExpression(string exp, ParameterExpression param)
 		{
 			IEnumerable<Token> Tokens = ReadExpressionString(exp);
 			return ReadTree(Tokens, param);
 		}
-
 
 		private static IEnumerable<Token> ReadExpressionString(string exp)
 		{
@@ -184,8 +105,7 @@ namespace RhythmBase.Expressions
 				foreach (KeyValuePair<TokenType, Regex> pair in Ops)
 				{
 					Match match = pair.Value.Match(exp);
-					bool success = match.Success;
-					if (success)
+					if (match.Success)
 					{
 						L.Add(new Token(match.Groups["value"].Value, pair.Key));
 						exp = pair.Value.Replace(exp, "");
@@ -201,25 +121,20 @@ namespace RhythmBase.Expressions
 			return L.AsEnumerable();
 		}
 
-
 		private static System.Linq.Expressions.Expression ReadTree(IEnumerable<Token> l, ParameterExpression variableParameter)
 		{
 			Stack<Token> OperatorStack = new();
 			Stack<System.Linq.Expressions.Expression> ValueStack = new();
 			System.Linq.Expressions.Expression subVariableParameter = variableParameter;
-
 			foreach (Token item in l)
 			{
-				bool flag = item.type.IsOperator();
-				if (flag)
+				if (item.type.IsOperator())
 				{
-					bool flag2 = OperatorStack.Any() && (OperatorStack.Peek().type.Level() > item.type.Level() | OperatorStack.Peek().type.IsRightHalf() | OperatorStack.Peek().type == TokenType.Comma);
-					if (flag2)
+					if (OperatorStack.Count != 0 && (OperatorStack.Peek().type.Level() > item.type.Level() | OperatorStack.Peek().type.IsRightHalf() | OperatorStack.Peek().type == TokenType.Comma))
 					{
 						GroupNode(ValueStack, OperatorStack, variableParameter, ref subVariableParameter);
 					}
-					bool flag3 = item.type != TokenType.Dot;
-					if (flag3)
+					if (item.type != TokenType.Dot)
 					{
 						subVariableParameter = variableParameter;
 					}
@@ -230,10 +145,9 @@ namespace RhythmBase.Expressions
 					ValueStack.Push(ReadValueNode(item, ValueStack, OperatorStack, variableParameter, ref subVariableParameter));
 				}
 			}
-			while (OperatorStack.Any())
+			while (OperatorStack.Count != 0)
 			{
-				bool flag4 = OperatorStack.Peek().type != TokenType.Dot;
-				if (flag4)
+				if (OperatorStack.Peek().type != TokenType.Dot)
 				{
 					subVariableParameter = variableParameter;
 				}
@@ -246,7 +160,6 @@ namespace RhythmBase.Expressions
 			return ValueStack.Single();
 		}
 
-
 		private static System.Linq.Expressions.Expression ReadValueNode(Token token, Stack<System.Linq.Expressions.Expression> valueStack, Stack<Token> operatorStack, ParameterExpression VariableParameter, ref System.Linq.Expressions.Expression subVariableParameter)
 		{
 			System.Linq.Expressions.Expression ReadValueNode;
@@ -255,8 +168,7 @@ namespace RhythmBase.Expressions
 				case TokenType.Variable:
 					{
 						string name = token.value;
-						bool flag = operatorStack.Peek().type == TokenType.Dot;
-						if (flag)
+						if (operatorStack.Peek().type == TokenType.Dot)
 						{
 							operatorStack.Pop();
 							valueStack.Pop();
@@ -278,8 +190,7 @@ namespace RhythmBase.Expressions
 						[
 					System.Linq.Expressions.Expression.Constant(arrayIndex, typeof(int))
 						]);
-						bool flag2 = token.value.StartsWith('-');
-						if (flag2)
+						if (token.value.StartsWith('-'))
 						{
 							Value3 = System.Linq.Expressions.Expression.Negate(Value3);
 						}
@@ -293,8 +204,7 @@ namespace RhythmBase.Expressions
 						[
 					System.Linq.Expressions.Expression.Constant(arrayIndex2, typeof(int))
 						]);
-						bool flag3 = token.value.StartsWith('-');
-						if (flag3)
+						if (token.value.StartsWith('-'))
 						{
 							Value4 = System.Linq.Expressions.Expression.Negate(Value4);
 						}
@@ -308,8 +218,7 @@ namespace RhythmBase.Expressions
 						[
 					System.Linq.Expressions.Expression.Constant(arrayIndex3, typeof(int))
 						]);
-						bool flag4 = token.value.StartsWith('-');
-						if (flag4)
+						if (token.value.StartsWith('-'))
 						{
 							Value5 = System.Linq.Expressions.Expression.Negate(Value5);
 						}
@@ -333,7 +242,6 @@ namespace RhythmBase.Expressions
 			}
 			return ReadValueNode;
 		}
-
 
 		private static void GroupNode(Stack<System.Linq.Expressions.Expression> ValueStack, Stack<Token> OperatorStack, ParameterExpression variableParameter, ref System.Linq.Expressions.Expression subVariableParameter)
 		{
@@ -471,10 +379,7 @@ namespace RhythmBase.Expressions
 								{
 									throw new RhythmBaseException(string.Format("Parameters count not match. need {0}", method.GetParameters().Length));
 								}
-								//System.Linq.Expressions.Expression member2 = System.Linq.Expressions.Expression.Call(subVariableParameter, method, Parameters.Zip(method.GetParameters(), (ExpressionTree._Closure$__.$I13-0 == null) ? (ExpressionTree._Closure$__.$I13-0 = (System.Linq.Expressions.Expression i, ParameterInfo j) => System.Linq.Expressions.Expression.Convert(i, j.ParameterType)) : ExpressionTree._Closure$__.$I13-0));
-								//ValueStack.Push(member2);
-								//subVariableParameter = member2;
-								packed = true;
+																													packed = true;
 							}
 						}
 						break;
@@ -542,7 +447,6 @@ namespace RhythmBase.Expressions
 					throw new ExpressionException("Not implemented.");
 			}
 		}
-
 
 		private static readonly Dictionary<TokenType, Regex> Ops = new()
 		{
@@ -680,81 +584,45 @@ namespace RhythmBase.Expressions
 			}
 		};
 
-
 		private enum TokenType
 		{
-
 			Function,
-
 			ArrayIndex,
-
 			Boolean = -1,
-
 			String = -2,
-
 			IntegerValue = -3,
-
 			FloatValue = -4,
-
 			BooleanValue = -5,
-
 			Constant = -6,
-
 			Variable = -7,
-
 			Increment = 2,
-
 			Decrement,
-
 			Add,
-
 			Subtract,
-
 			Multipy,
-
 			Divide,
-
 			Equal,
-
 			NotEqual,
-
 			LessThanOrEqual,
-
 			GreaterThanOrEqual,
-
 			Assign,
-
 			GreaterThan,
-
 			LessThan,
-
 			LeftParenthese,
-
 			RightParenthese,
-
 			LeftBracket,
-
 			RightBracket,
-
 			LeftBrace,
-
 			RightBrace,
-
 			Dot,
-
 			Comma,
-
 			And,
-
 			Or,
-
 			Not
 		}
 
-
 		private struct Token
 		{
-
 			public Token(string value, TokenType token)
 			{
 				this = default;
@@ -762,14 +630,12 @@ namespace RhythmBase.Expressions
 				type = token;
 			}
 
-
-			public override string ToString() => string.Format("{0}, {1}", value, type);
-
+			public override readonly string ToString() => string.Format("{0}, {1}", value, type);
 
 			public string value;
-
 
 			public TokenType type;
 		}
 	}
 }
+#pragma warning enable

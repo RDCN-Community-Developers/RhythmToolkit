@@ -1,16 +1,19 @@
 ﻿using RhythmBase.Exceptions;
 using RhythmBase.Utils;
 using System.Diagnostics.CodeAnalysis;
-
+using System.Numerics;
 namespace RhythmBase.Components
 {
-
-	public struct Beat : IComparable<Beat>, IEquatable<Beat>
+	/// <summary>
+	/// A beat.
+	/// </summary>
+	public struct RDBeat : IComparable<RDBeat>, IEquatable<RDBeat>, IComparisonOperators<RDBeat, RDBeat, bool>
 	{
-		internal readonly RDLevel BaseLevel => _calculator?.Collection ?? [];
+		internal readonly RDLevel? BaseLevel => _calculator?.Collection;
 		/// <summary>
 		/// Whether this beat cannot be calculated.
 		/// </summary>
+		[MemberNotNullWhen(false, nameof(_calculator))]
 		public readonly bool IsEmpty => _calculator == null || (!_isBeatLoaded && !_isBarBeatLoaded && !_isTimeSpanLoaded);
 		/// <summary>
 		/// The total number of beats from this moment to the beginning of the level.
@@ -26,7 +29,6 @@ namespace RhythmBase.Components
 						_beat = _calculator!.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
 					else if (_isTimeSpanLoaded)
 						_beat = _calculator!.TimeSpanToBeatOnly(_TimeSpan) - 1f;
-
 					_isBeatLoaded = true;
 				}
 				return _beat + 1f;
@@ -90,7 +92,7 @@ namespace RhythmBase.Components
 			{
 				if (!_isBPMLoaded)
 				{
-					_BPM = _calculator.BeatsPerMinuteOf(this);
+					_BPM = _calculator?.BeatsPerMinuteOf(this) ?? throw new InvalidRDBeatException();
 					_isBPMLoaded = true;
 				}
 				return _BPM;
@@ -105,7 +107,7 @@ namespace RhythmBase.Components
 			{
 				if (!_isCPBLoaded)
 				{
-					_CPB = checked((uint)Math.Round((double)_calculator.CrotchetsPerBarOf(this)));
+					_CPB = (uint)Math.Round(_calculator?.CrotchetsPerBarOf(this) ?? throw new InvalidRDBeatException());
 					_isCPBLoaded = true;
 				}
 				return _CPB;
@@ -115,7 +117,7 @@ namespace RhythmBase.Components
 		/// Construct an instance without specifying a calculator.
 		/// </summary>
 		/// <param name="beatOnly">The total number of beats from this moment to the beginning of the level.</param>
-		public Beat(float beatOnly)
+		public RDBeat(float beatOnly)
 		{
 			this = default;
 			if (beatOnly < 1)
@@ -123,7 +125,13 @@ namespace RhythmBase.Components
 			_beat = beatOnly - 1f;
 			_isBeatLoaded = true;
 		}
-		public Beat(uint bar, float beat)
+		/// <summary>
+		/// Constructs an instance of RDBeat with the specified bar and beat.
+		/// </summary>
+		/// <param name="bar">The actual bar of this moment. Must be greater than or equal to 1.</param>
+		/// <param name="beat">The actual beat of this moment. Must be greater than or equal to 1.</param>
+		/// <exception cref="OverflowException">Thrown when the bar or beat is less than 1.</exception>
+		public RDBeat(uint bar, float beat)
 		{
 			this = default;
 			if (bar < 1)
@@ -133,7 +141,12 @@ namespace RhythmBase.Components
 			_BarBeat = new ValueTuple<uint, float>(bar, beat);
 			_isBarBeatLoaded = true;
 		}
-		public Beat(TimeSpan timeSpan)
+			/// <summary>
+		/// Constructs an instance of RDBeat with the specified time span.
+		/// </summary>
+		/// <param name="timeSpan">The total amount of time from the start of the level to the moment.</param>
+		/// <exception cref="OverflowException">Thrown when the time span is less than zero.</exception>
+		public RDBeat(TimeSpan timeSpan)
 		{
 			this = default;
 			if (timeSpan < TimeSpan.Zero)
@@ -146,9 +159,9 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="calculator">Specified calculator.</param>
 		/// <param name="beatOnly">The total number of beats from this moment to the beginning of the level.</param>
-		public Beat(BeatCalculator calculator, float beatOnly)
+		public RDBeat(BeatCalculator? calculator, float beatOnly)
 		{
-			this = new Beat(beatOnly);
+			this = new RDBeat(beatOnly);
 			_calculator = calculator;
 		}
 		/// <summary>
@@ -157,9 +170,9 @@ namespace RhythmBase.Components
 		/// <param name="calculator">Specified calculator.</param>
 		/// <param name="bar">The actual bar of this moment.</param>
 		/// <param name="beat">The actual beat of this moment.</param>
-		public Beat(BeatCalculator calculator, uint bar, float beat)
+		public RDBeat(BeatCalculator calculator, uint bar, float beat)
 		{
-			this = new Beat(bar, beat);
+			this = new RDBeat(bar, beat);
 			_calculator = calculator;
 			_beat = _calculator.BarBeatToBeatOnly(bar, beat) - 1f;
 		}
@@ -168,9 +181,9 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="calculator">Specified calculator.</param>
 		/// <param name="timeSpan">The total amount of time from the start of the level to the moment</param>
-		public Beat(BeatCalculator calculator, TimeSpan timeSpan)
+		public RDBeat(BeatCalculator calculator, TimeSpan timeSpan)
 		{
-			this = new Beat(timeSpan);
+			this = new RDBeat(timeSpan);
 			_calculator = calculator;
 			_beat = _calculator.TimeSpanToBeatOnly(timeSpan) - 1f;
 		}
@@ -179,12 +192,12 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="calculator">Specified calculator.</param>
 		/// <param name="beat">Another instance.</param>
-		public Beat(BeatCalculator calculator, Beat beat)
+		public RDBeat(BeatCalculator calculator, RDBeat beat)
 		{
 			this = default;
 			if (beat._isBeatLoaded)
 			{
-				if (beat._beat < 1f)
+				if (beat._beat < 0f)
 					throw new OverflowException(string.Format("The beat must not be less than 1, but {0} is given", beat._beat));
 				_beat = beat._beat;
 				_isBeatLoaded = true;
@@ -216,9 +229,9 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="calculator">Specified calculator.</param>
 		/// <returns>The first beat tied to the level.</returns>
-		public static Beat Default(BeatCalculator calculator)
+		public static RDBeat Default(BeatCalculator calculator)
 		{
-			Beat Default = new(calculator, 1f);
+			RDBeat Default = new(calculator, 1f);
 			return Default;
 		}
 		/// <summary>
@@ -228,19 +241,9 @@ namespace RhythmBase.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
-		public static bool FromSameLevel(Beat a, Beat b, bool @throw = false)
-		{
-			bool FromSameLevel;
-			if (a.BaseLevel.Equals(b.BaseLevel))
-				FromSameLevel = true;
-			else
-			{
-				if (@throw)
-					throw new RhythmBaseException("Beats must come from the same RDLevel.");
-				FromSameLevel = false;
-			}
-			return FromSameLevel;
-		}
+		public static bool FromSameLevel(RDBeat a, RDBeat b, bool @throw = false) =>
+			(a._calculator?.Equals(b._calculator) ?? true)
+			|| (@throw ? throw new RhythmBaseException("Beats must come from the same RDLevel.") : false);
 		/// <summary>
 		/// Determine if two beats are from the same level.
 		/// <br />
@@ -250,8 +253,15 @@ namespace RhythmBase.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
-		public static bool FromSameLevelOrNull(Beat a, Beat b, bool @throw = false) => a.BaseLevel == null || b.BaseLevel == null || FromSameLevel(a, b, @throw);
-		public bool FromSameLevel(Beat b, bool @throw = false) => FromSameLevel(this, b, @throw);
+		public static bool FromSameLevelOrNull(RDBeat a, RDBeat b, bool @throw = false) => a._calculator == null || b._calculator == null || FromSameLevel(a, b, @throw);
+		/// <summary>
+		/// Determine if two beats are from the same level.
+		/// </summary>
+		/// <param name="b">Another beat.</param>
+		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
+		/// <returns></returns>
+		[MemberNotNullWhen(true)]
+		public readonly bool FromSameLevel(RDBeat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.
 		/// <br />
@@ -260,14 +270,14 @@ namespace RhythmBase.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>	
-		public bool FromSameLevelOrNull(Beat b, bool @throw = false) => BaseLevel == null || b.BaseLevel == null || FromSameLevel(b, @throw);
+		public readonly bool FromSameLevelOrNull(RDBeat b, bool @throw = false) => BaseLevel == null || b.BaseLevel == null || FromSameLevel(b, @throw);
 		/// <summary>
 		/// Returns a new instance of unbinding the level.
 		/// </summary>
 		/// <returns>A new instance of unbinding the level.</returns>
-		public Beat WithoutBinding()
+		public readonly RDBeat WithoutBinding()
 		{
-			Beat result = this;
+			RDBeat result = this;
 			if (result._calculator != null)
 				result.Cache();
 			result._calculator = null;
@@ -293,22 +303,24 @@ namespace RhythmBase.Components
 			_isBarBeatLoaded = false;
 			_isTimeSpanLoaded = false;
 		}
+		/// <summary>
+		/// Caches the current state of the beat by accessing its properties.
+		/// </summary>
+		/// <exception cref="InvalidRDBeatException">Thrown when the beat cannot be calculated.</exception>
 		public void Cache()
 		{
 			IfNullThrowException();
-			//通过属性调用来更新值
-			object __ = BeatOnly;
+					object __ = BeatOnly;
 			__ = BarBeat;
 			__ = TimeSpan;
 		}
 		/// <summary>
 		///
 		/// </summary>
-
 		internal void ResetBPM()
 		{
 			if (!_isBeatLoaded)
-				_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
+				_beat = (_calculator?.TimeSpanToBeatOnly(_TimeSpan) - 1f) ?? throw new InvalidRDBeatException();
 			_isBeatLoaded = true;
 			_isTimeSpanLoaded = false;
 			_isBPMLoaded = false;
@@ -316,69 +328,80 @@ namespace RhythmBase.Components
 		internal void ResetCPB()
 		{
 			if (!_isBeatLoaded)
-				_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
+				_beat = (_calculator?.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f) ?? throw new InvalidRDBeatException();
 			_isBeatLoaded = true;
 			_isBarBeatLoaded = false;
 			_isCPBLoaded = false;
 		}
-		public static Beat operator +(Beat a, float b)
+		///  <inheritdoc/>
+		public static RDBeat operator +(RDBeat a, float b)
 		{
-			Beat result;
+			RDBeat result;
 			if (!a.IsEmpty)
-				result = new Beat(a._calculator!, a.BeatOnly + b);
+				result = new RDBeat(a._calculator, a.BeatOnly + b);
 			else
 			{
 				if (!a._isBeatLoaded)
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculate.");
-				result = new Beat(a._calculator!, a._beat + b);
+				result = new RDBeat(a._beat + b);
 			}
 			return result;
 		}
-		public static Beat operator +(Beat a, TimeSpan b)
+		///  <inheritdoc/>
+		public static RDBeat operator +(RDBeat a, TimeSpan b)
 		{
-			Beat result;
+			RDBeat result;
 			if (!a.IsEmpty)
-				result = new Beat(a._calculator!, a.TimeSpan + b);
+				result = new RDBeat(a._calculator, a.TimeSpan + b);
 			else
 			{
 				if (!a._isBeatLoaded)
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculate.");
-				result = new Beat(a._calculator!, a._TimeSpan + b);
+				result = new RDBeat(a._TimeSpan + b);
 			}
 			return result;
 		}
-		public static Beat operator -(Beat a, float b)
+		///  <inheritdoc/>
+		public static RDBeat operator -(RDBeat a, float b)
 		{
-			Beat result;
+			RDBeat result;
 			if (!a.IsEmpty)
-				result = new Beat(a._calculator!, a.BeatOnly - b);
+				result = new RDBeat(a._calculator, a.BeatOnly - b);
 			else
 			{
 				if (!a._isBeatLoaded)
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculate.");
-				result = new Beat(a._calculator!, a._beat - b);
+				result = new RDBeat(a._beat - b);
 			}
 			return result;
 		}
-		public static Beat operator -(Beat a, TimeSpan b)
+		///  <inheritdoc/>
+		public static RDBeat operator -(RDBeat a, TimeSpan b)
 		{
-			Beat result;
+			RDBeat result;
 			if (!a.IsEmpty)
-				result = new Beat(a._calculator!, a.TimeSpan - b);
+				result = new RDBeat(a._calculator, a.TimeSpan - b);
 			else
 			{
 				if (!a._isBeatLoaded)
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculate.");
-				result = new Beat(a._calculator!, a._TimeSpan - b);
+				result = new RDBeat(a._TimeSpan - b);
 			}
 			return result;
 		}
-		public static bool operator >(Beat a, Beat b) => FromSameLevel(a, b, true) && a.BeatOnly > b.BeatOnly;
-		public static bool operator <(Beat a, Beat b) => FromSameLevel(a, b, true) && a.BeatOnly < b.BeatOnly;
-		public static bool operator >=(Beat a, Beat b) => FromSameLevel(a, b, true) && a.BeatOnly >= b.BeatOnly;
-		public static bool operator <=(Beat a, Beat b) => FromSameLevel(a, b, true) && a.BeatOnly <= b.BeatOnly;
-		public static bool operator ==(Beat a, Beat b) => (FromSameLevel(a, b, true) && a._beat == b._beat) || (a._isBarBeatLoaded && b._isBarBeatLoaded && a._BarBeat.Bar == b._BarBeat.Bar && a._BarBeat.Beat == b._BarBeat.Beat) || (a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._TimeSpan == b._TimeSpan) || a.BeatOnly == b.BeatOnly;
-		public static bool operator !=(Beat a, Beat b) => !(a == b);
+		///  <inheritdoc/>
+		public static bool operator >(RDBeat a, RDBeat b) => FromSameLevel(a, b, true) && a.BeatOnly > b.BeatOnly;
+		///  <inheritdoc/>
+		public static bool operator <(RDBeat a, RDBeat b) => FromSameLevel(a, b, true) && a.BeatOnly < b.BeatOnly;
+		///  <inheritdoc/>
+		public static bool operator >=(RDBeat a, RDBeat b) => FromSameLevel(a, b, true) && a.BeatOnly >= b.BeatOnly;
+		///  <inheritdoc/>
+		public static bool operator <=(RDBeat a, RDBeat b) => FromSameLevel(a, b, true) && a.BeatOnly <= b.BeatOnly;
+		///  <inheritdoc/>
+		public static bool operator ==(RDBeat a, RDBeat b) => (FromSameLevel(a, b, true) && a._beat == b._beat) || (a._isBarBeatLoaded && b._isBarBeatLoaded && a._BarBeat.Bar == b._BarBeat.Bar && a._BarBeat.Beat == b._BarBeat.Beat) || (a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._TimeSpan == b._TimeSpan) || a.BeatOnly == b.BeatOnly;
+		///  <inheritdoc/>
+		public static bool operator !=(RDBeat a, RDBeat b) => !(a == b);
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			string ToString;
@@ -388,10 +411,14 @@ namespace RhythmBase.Components
 				ToString = string.Format("[{0},{1}]", BarBeat.bar, BarBeat.beat);
 			return ToString;
 		}
-		public override bool Equals([NotNull] object obj) => obj.GetType() == typeof(Beat) && Equals((obj != null) ? ((Beat)obj) : default);
-		public bool Equals(Beat other) => this == other;
+		///  <inheritdoc/>
+		public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is RDBeat e && Equals(e);
+		///  <inheritdoc/>
+		public readonly bool Equals(RDBeat other) => this == other;
+		///  <inheritdoc/>
 		public override int GetHashCode() => HashCode.Combine(BeatOnly, BaseLevel);
-		public int CompareTo(Beat other)
+		///  <inheritdoc/>
+		public int CompareTo(RDBeat other)
 		{
 			float result = BeatOnly - other.BeatOnly;
 			int CompareTo;

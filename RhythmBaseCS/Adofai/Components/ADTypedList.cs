@@ -1,6 +1,5 @@
 ﻿using RhythmBase.Adofai.Events;
 using System.Collections;
-
 namespace RhythmBase.Adofai.Components
 {
 	public class ADTypedList<TEvent> : IEnumerable<TEvent> where TEvent : ADBaseEvent

@@ -1,90 +1,102 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-
 namespace RhythmBase.Components
 {
-
-	public struct RDRectI : IEquatable<RDRectI>
+	/// <summary>
+	/// Represents a rectangle structure containing left, top, right, and bottom boundary values.
+	/// </summary>
+	/// <param name="left">The left boundary of the rectangle.</param>
+	/// <param name="top">The top boundary of the rectangle.</param>
+	/// <param name="right">The right boundary of the rectangle.</param>
+	/// <param name="bottom">The bottom boundary of the rectangle.</param>
+	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+	public struct RDRectI(int? left, int? top, int? right, int? bottom) : IEquatable<RDRectI>
 	{
+		/// <summary>
+		/// Gets or sets the left boundary of the rectangle.
+		/// </summary>
+		public int? Left { get; set; } = left;
 
-		public int? Left { get; set; }
+		/// <summary>
+		/// Gets or sets the right boundary of the rectangle.
+		/// </summary>
+		public int? Right { get; set; } = right;
 
+		/// <summary>
+		/// Gets or sets the top boundary of the rectangle.
+		/// </summary>
+		public int? Top { get; set; } = top;
 
-		public int? Right { get; set; }
+		/// <summary>
+		/// Gets or sets the bottom boundary of the rectangle.
+		/// </summary>
+		public int? Bottom { get; set; } = bottom;
 
+		/// <summary>
+		/// Gets the bottom-left corner point of the rectangle.
+		/// </summary>
+		public readonly RDPointI LeftBottom { get => new(Left, Bottom); }
 
-		public int? Top { get; set; }
+		/// <summary>
+		/// Gets the bottom-right corner point of the rectangle.
+		/// </summary>
+		public readonly RDPointI RightBottom { get => new(Right, Bottom); }
 
+		/// <summary>
+		/// Gets the top-left corner point of the rectangle.
+		/// </summary>
+		public readonly RDPointI LeftTop { get => new(Left, Top); }
 
-		public int? Bottom { get; set; }
+		/// <summary>
+		/// Gets the top-right corner point of the rectangle.
+		/// </summary>
+		public readonly RDPointI RightTop { get => new(Right, Top); }
 
+		/// <summary>
+		/// Gets the width of the rectangle.
+		/// </summary>
+		public readonly int? Width => checked(Right - Left);
 
-		public int? Width
-		{
-			get
-			{
-				return checked(Right - Left);
-			}
-		}
+		/// <summary>
+		/// Gets the height of the rectangle.
+		/// </summary>
+		public readonly int? Height => checked(Top - Bottom);
 
+		/// <summary>
+		/// Initializes a new instance of the rectangle with the specified location and size.
+		/// </summary>
+		/// <param name="location">The location of the rectangle.</param>
+		/// <param name="size">The size of the rectangle.</param>
+		public RDRectI(RDPointI? location, RDSizeI? size) : this(location?.X, location?.Y + size?.Height, location?.X + size?.Width, location?.Y) { }
 
-		public int? Height
-		{
-			get
-			{
-				return checked(Top - Bottom);
-			}
-		}
+		/// <summary>
+		/// Initializes a new instance of the rectangle with the specified size.
+		/// </summary>
+		/// <param name="size">The size of the rectangle.</param>
+		public RDRectI(RDSizeI? size) : this(0, size?.Height, size?.Width, 0) { }
 
+		/// <summary>
+		/// Initializes a new instance of the rectangle with the specified width and height.
+		/// </summary>
+		/// <param name="width">The width of the rectangle.</param>
+		/// <param name="height">The height of the rectangle.</param>
+		public RDRectI(int? width, int? height) : this(0, height, width, 0) { }
+		/// <summary>
+		/// Gets the location of the rectangle.
+		/// </summary>
+		public readonly RDPointI? Location => Left is null && Right is null ? null : new(Left, Bottom);
 
-		public RDRectI(int? left, int? top, int? right, int? bottom)
-		{
-			this = default;
-			Left = left;
-			Right = right;
-			Top = top;
-			Bottom = bottom;
-		}
+		/// <summary>
+		/// Gets the size of the rectangle.
+		/// </summary>
+		public readonly RDSizeI? Size => Width is null && Height is null ? null : new(Width, Height);
 
-
-		public RDRectI(RDPointI location, RDSizeI size)
-		{
-			this = checked(new RDRectI(location.X, location.Y + size.Height, location.X + size.Width, location.Y));
-		}
-
-
-		public RDRectI(RDSizeI size)
-		{
-			this = new RDRectI(new int?(0), size.Height, size.Width, new int?(0));
-		}
-
-
-		public RDRectI(int? width, int? height)
-		{
-			this = new RDRectI(new int?(0), height, width, new int?(0));
-		}
-
-
-		public RDPointI Location
-		{
-			get
-			{
-				RDPointI Location = new(Left, Bottom);
-				return Location;
-			}
-		}
-
-
-		public RDSizeI Size
-		{
-			get
-			{
-				RDSizeI Size = new(Width, Height);
-				return Size;
-			}
-		}
-
-
+		/// <summary>
+		/// Inflates the rectangle by the specified size.
+		/// </summary>
+		/// <param name="rect">The rectangle to inflate.</param>
+		/// <param name="size">The size to inflate by.</param>
+		/// <returns>The inflated rectangle.</returns>
 		public static RDRectI Inflate(RDRectI rect, RDSizeI size)
 		{
 			RDRectI result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
@@ -92,7 +104,13 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
+		/// <summary>
+		/// Inflates the rectangle by the specified width and height.
+		/// </summary>
+		/// <param name="rect">The rectangle to inflate.</param>
+		/// <param name="x">The width to inflate by.</param>
+		/// <param name="y">The height to inflate by.</param>
+		/// <returns>The inflated rectangle.</returns>
 		public static RDRectI Inflate(RDRectI rect, int? x, int? y)
 		{
 			RDRectI result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
@@ -100,418 +118,170 @@ namespace RhythmBase.Components
 			return result;
 		}
 
-
+		/// <summary>
+		/// Converts the specified RDRect to RDRectI using ceiling.
+		/// </summary>
+		/// <param name="rect">The RDRect to convert.</param>
+		/// <returns>The converted RDRectI.</returns>
 		public static RDRectI Ceiling(RDRect rect) => Ceiling(rect, false);
 
+		/// <summary>
+		/// Converts the specified RDRect to RDRectI using ceiling, and specifies whether to expand outwards.
+		/// </summary>
+		/// <param name="rect">The RDRect to convert.</param>
+		/// <param name="outwards">Whether to expand outwards.</param>
+		/// <returns>The converted RDRectI.</returns>
+		public static RDRectI Ceiling(RDRect rect, bool outwards) => new(
+				rect.Left == null ? null : (int)(outwards && rect.Width > 0 ? Math.Floor((double)rect.Left) : Math.Ceiling((double)rect.Left)),
+				rect.Top == null ? null : (int)(outwards && rect.Height > 0 ? Math.Floor((double)rect.Top) : Math.Ceiling((double)rect.Top)),
+				rect.Right == null ? null : (int)(outwards && rect.Width < 0 ? Math.Floor((double)rect.Right) : Math.Ceiling((double)rect.Right)),
+				rect.Bottom == null ? null : (int)(outwards && rect.Height < 0 ? Math.Floor((double)rect.Bottom) : Math.Ceiling((double)rect.Bottom)));
 
-		public static RDRectI Ceiling(RDRect rect, bool outwards)
-		{
-			double a;
-			if (rect.Left != null)
-			{
-				if (outwards)
-				{
-					float? num = rect.Width;
-					if (((num != null) ? new bool?(num.GetValueOrDefault() > 0f) : null).GetValueOrDefault())
-					{
-						a = Math.Floor((double)rect.Left.Value);
-						goto IL_7C;
-					}
-				}
-				a = Math.Ceiling((double)rect.Left.Value);
-			IL_7C:;
-			}
-			else
-			{
-				a = 0.0;
-			}
-			checked
-			{
-				int? left = new int?((int)Math.Round(a));
-				double a2;
-				if (rect.Top != null)
-				{
-					if (outwards)
-					{
-						float? num = rect.Height;
-						if (((num != null) ? new bool?(num.GetValueOrDefault() > 0f) : null).GetValueOrDefault())
-						{
-							a2 = Math.Floor((double)rect.Top.Value);
-							goto IL_10B;
-						}
-					}
-					a2 = Math.Ceiling((double)rect.Top.Value);
-				IL_10B:;
-				}
-				else
-				{
-					a2 = 0.0;
-				}
-				int? top = new int?((int)Math.Round(a2));
-				double a3;
-				if (rect.Right != null)
-				{
-					if (outwards)
-					{
-						float? num = rect.Width;
-						if (((num != null) ? new bool?(num.GetValueOrDefault() < 0f) : null).GetValueOrDefault())
-						{
-							a3 = Math.Floor((double)rect.Right.Value);
-							goto IL_19A;
-						}
-					}
-					a3 = Math.Ceiling((double)rect.Right.Value);
-				IL_19A:;
-				}
-				else
-				{
-					a3 = 0.0;
-				}
-				int? right = new int?((int)Math.Round(a3));
-				double a4;
-				if (rect.Bottom != null)
-				{
-					if (outwards)
-					{
-						float? num = rect.Height;
-						if (((num != null) ? new bool?(num.GetValueOrDefault() < 0f) : null).GetValueOrDefault())
-						{
-							a4 = Math.Floor((double)rect.Bottom.Value);
-							goto IL_229;
-						}
-					}
-					a4 = Math.Ceiling((double)rect.Bottom.Value);
-				IL_229:;
-				}
-				else
-				{
-					a4 = 0.0;
-				}
-				RDRectI Ceiling = new(left, top, right, new int?((int)Math.Round(a4)));
-				return Ceiling;
-			}
-		}
-
-
+		/// <summary>
+		/// Converts the specified RDRect to RDRectI using floor.
+		/// </summary>
+		/// <param name="rect">The RDRect to convert.</param>
+		/// <returns>The converted RDRectI.</returns>
 		public static RDRectI Floor(RDRect rect) => Ceiling(rect, false);
 
+		/// <summary>
+		/// Converts the specified RDRect to RDRectI using floor, and specifies whether to shrink inwards.
+		/// </summary>
+		/// <param name="rect">The RDRect to convert.</param>
+		/// <param name="inwards">Whether to shrink inwards.</param>
+		/// <returns>The converted RDRectI.</returns>
+		public static RDRectI Floor(RDRect rect, bool inwards) => new(
+				rect.Left == null ? null : (int)(inwards && rect.Width > 0 ? Math.Ceiling((double)rect.Left) : Math.Floor((double)rect.Left)),
+				rect.Top == null ? null : (int)(inwards && rect.Height > 0 ? Math.Ceiling((double)rect.Top) : Math.Floor((double)rect.Top)),
+				rect.Right == null ? null : (int)(inwards && rect.Width < 0 ? Math.Ceiling((double)rect.Right) : Math.Floor((double)rect.Right)),
+				rect.Bottom == null ? null : (int)(inwards && rect.Height < 0 ? Math.Ceiling((double)rect.Bottom) : Math.Floor((double)rect.Bottom)));
 
-		public static RDRectI Floor(RDRect rect, bool inwards)
-		{
-			double a;
-			if (rect.Left != null)
-			{
-				if (inwards)
-				{
-					float? num = rect.Width;
-					if (((num != null) ? new bool?(num.GetValueOrDefault() > 0f) : null).GetValueOrDefault())
-					{
-						a = Math.Ceiling((double)rect.Left.Value);
-						goto IL_7C;
-					}
-				}
-				a = Math.Floor((double)rect.Left.Value);
-			IL_7C:;
-			}
-			else
-			{
-				a = 0.0;
-			}
-			checked
-			{
-				int? left = new int?((int)Math.Round(a));
-				double a2;
-				if (rect.Top != null)
-				{
-					if (inwards)
-					{
-						float? num = rect.Height;
-						if (((num != null) ? new bool?(num.GetValueOrDefault() > 0f) : null).GetValueOrDefault())
-						{
-							a2 = Math.Ceiling((double)rect.Top.Value);
-							goto IL_10B;
-						}
-					}
-					a2 = Math.Floor((double)rect.Top.Value);
-				IL_10B:;
-				}
-				else
-				{
-					a2 = 0.0;
-				}
-				int? top = new int?((int)Math.Round(a2));
-				double a3;
-				if (rect.Right != null)
-				{
-					if (inwards)
-					{
-						float? num = rect.Width;
-						if (((num != null) ? new bool?(num.GetValueOrDefault() < 0f) : null).GetValueOrDefault())
-						{
-							a3 = Math.Ceiling((double)rect.Right.Value);
-							goto IL_19A;
-						}
-					}
-					a3 = Math.Floor((double)rect.Right.Value);
-				IL_19A:;
-				}
-				else
-				{
-					a3 = 0.0;
-				}
-				int? right = new int?((int)Math.Round(a3));
-				double a4;
-				if (rect.Bottom != null)
-				{
-					if (inwards)
-					{
-						float? num = rect.Height;
-						if (((num != null) ? new bool?(num.GetValueOrDefault() < 0f) : null).GetValueOrDefault())
-						{
-							a4 = Math.Ceiling((double)rect.Bottom.Value);
-							goto IL_229;
-						}
-					}
-					a4 = Math.Floor((double)rect.Bottom.Value);
-				IL_229:;
-				}
-				else
-				{
-					a4 = 0.0;
-				}
-				RDRectI Floor = new(left, top, right, new int?((int)Math.Round(a4)));
-				return Floor;
-			}
-		}
+		/// <summary>
+		/// Converts the specified RDRect to RDRectI using rounding.
+		/// </summary>
+		/// <param name="rect">The RDRect to convert.</param>
+		/// <returns>The converted RDRectI.</returns>
+		public static RDRectI Round(RDRect rect) => new(
+				new int?((int)Math.Round((rect.Left == null) ? 0.0 : Math.Round((double)rect.Left.Value))),
+				new int?((int)Math.Round((rect.Top == null) ? 0.0 : Math.Round((double)rect.Top.Value))),
+				new int?((int)Math.Round((rect.Right == null) ? 0.0 : Math.Round((double)rect.Right.Value))),
+				new int?((int)Math.Round((rect.Bottom == null) ? 0.0 : Math.Round((double)rect.Bottom.Value))));
 
+		/// <summary>
+		/// Returns a new RDRectI that is the union of two rectangles.
+		/// </summary>
+		/// <param name="rect1">The first rectangle.</param>
+		/// <param name="rect2">The second rectangle.</param>
+		/// <returns>The union of the two rectangles.</returns>
+		public static RDRectI Union(RDRectI rect1, RDRectI rect2) => new(
+				new int?((rect1.Left == null || rect2.Left == null) ? 0 : Math.Min(rect1.Left.Value, rect2.Left.Value)),
+				new int?((rect1.Top == null || rect2.Top == null) ? 0 : Math.Min(rect1.Top.Value, rect2.Top.Value)),
+				new int?((rect1.Right == null || rect2.Right == null) ? 0 : Math.Min(rect1.Right.Value, rect2.Right.Value)),
+				new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value)));
 
-		public static RDRectI Round(RDRect rect)
-		{
-			RDRectI Round = checked(new RDRectI(new int?((int)Math.Round((rect.Left == null) ? 0.0 : Math.Round((double)rect.Left.Value))), new int?((int)Math.Round((rect.Top == null) ? 0.0 : Math.Round((double)rect.Top.Value))), new int?((int)Math.Round((rect.Right == null) ? 0.0 : Math.Round((double)rect.Right.Value))), new int?((int)Math.Round((rect.Bottom == null) ? 0.0 : Math.Round((double)rect.Bottom.Value)))));
-			return Round;
-		}
+		/// <summary>
+		/// Returns a new RDRectI that is the intersection of two rectangles.
+		/// </summary>
+		/// <param name="rect1">The first rectangle.</param>
+		/// <param name="rect2">The second rectangle.</param>
+		/// <returns>The intersection of the two rectangles.</returns>
+		public static RDRectI Intersect(RDRectI rect1, RDRectI rect2) => rect1.IntersectsWithInclusive(rect2) ? new RDRectI(
+			new int?((rect1.Left == null || rect2.Left == null) ? 0 : Math.Max(rect1.Left.Value, rect2.Left.Value)),
+			new int?((rect1.Top == null || rect2.Top == null) ? 0 : Math.Max(rect1.Top.Value, rect2.Top.Value)),
+			new int?((rect1.Right == null || rect2.Right == null) ? 0 : Math.Min(rect1.Right.Value, rect2.Right.Value)),
+			new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))) : default;
 
+		/// <summary>
+		/// Converts the specified RDRect to RDRectI by truncating the decimal part.
+		/// </summary>
+		/// <param name="rect">The RDRect to convert.</param>
+		/// <returns>The converted RDRectI.</returns>
+		public static RDRectI Truncate(RDRect rect) => new(
+				(int?)rect.Left,
+				(int?)rect.Top,
+				(int?)rect.Right,
+				(int?)rect.Bottom);
 
-		public static RDRectI Union(RDRectI rect1, RDRectI rect2)
-		{
-			RDRectI Union = new(new int?((rect1.Left == null || rect2.Left == null) ? 0 : Math.Min(rect1.Left.Value, rect2.Left.Value)), new int?((rect1.Top == null || rect2.Top == null) ? 0 : Math.Min(rect1.Top.Value, rect2.Top.Value)), new int?((rect1.Right == null || rect2.Right == null) ? 0 : Math.Min(rect1.Right.Value, rect2.Right.Value)), new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value)));
-			return Union;
-		}
-
-
-		public static RDRectI Intersect(RDRectI rect1, RDRectI rect2) => rect1.IntersectsWithInclusive(rect2) ? new RDRectI(new int?((rect1.Left == null || rect2.Left == null) ? 0 : Math.Max(rect1.Left.Value, rect2.Left.Value)), new int?((rect1.Top == null || rect2.Top == null) ? 0 : Math.Max(rect1.Top.Value, rect2.Top.Value)), new int?((rect1.Right == null || rect2.Right == null) ? 0 : Math.Min(rect1.Right.Value, rect2.Right.Value)), new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))) : default;
-
-
-		public static RDRectI Truncate(RDRect rect)
-		{
-			float? num = rect.Left;
-			checked
-			{
-				int? left = (num != null) ? new int?((int)Math.Round((double)num.GetValueOrDefault())) : null;
-				num = rect.Top;
-				int? top = (num != null) ? new int?((int)Math.Round((double)num.GetValueOrDefault())) : null;
-				num = rect.Right;
-				int? right = (num != null) ? new int?((int)Math.Round((double)num.GetValueOrDefault())) : null;
-				num = rect.Bottom;
-				RDRectI Truncate = new(left, top, right, (num != null) ? new int?((int)Math.Round((double)num.GetValueOrDefault())) : null);
-				return Truncate;
-			}
-		}
-
-
+		/// <summary>
+		/// Offsets the rectangle by the specified amounts.
+		/// </summary>
+		/// <param name="x">The horizontal offset.</param>
+		/// <param name="y">The vertical offset.</param>
 		public void Offset(int? x, int? y)
 		{
-			checked
-			{
-				Left += x;
-				Top += y;
-				Right += x;
-				Bottom += y;
-			}
+			Left += x;
+			Top += y;
+			Right += x;
+			Bottom += y;
 		}
-
-
+		/// <summary>
+		/// Moves the rectangle by the specified point.
+		/// </summary>
+		/// <param name="p">The point containing the offset.</param>
 		public void Offset(RDPointI p) => Offset(p.X, p.Y);
 
-
+		/// <summary>
+		/// Inflates the rectangle by the specified size.
+		/// </summary>
+		/// <param name="size">The size to inflate by.</param>
 		public void Inflate(RDSizeI size)
 		{
-			checked
-			{
-				Left -= size.Width;
-				Top += size.Height;
-				Right += size.Width;
-				Bottom -= size.Height;
-			}
+			Left -= size.Width;
+			Top += size.Height;
+			Right += size.Width;
+			Bottom -= size.Height;
 		}
 
-
+		/// <summary>
+		/// Inflates the rectangle by the specified width and height.
+		/// </summary>
+		/// <param name="width">The width to inflate by.</param>
+		/// <param name="height">The height to inflate by.</param>
 		public void Inflate(int? width, int? height)
 		{
-			checked
-			{
-				Left -= width;
-				Top += height;
-				Right += width;
-				Bottom -= height;
-			}
+			Left -= width;
+			Top += height;
+			Right += width;
+			Bottom -= height;
 		}
-
-
-		public RDRectI Union(RDRectI rect) => Union(this, rect);
-
-
-		public bool IntersectsWithInclusive(RDRectI rect)
-		{
-			int? num = Left;
-			int? num2 = rect.Right;
-			bool? flag2;
-			bool? flag = flag2 = (num != null & num2 != null) ? new bool?(num.GetValueOrDefault() <= num2.GetValueOrDefault()) : null;
-			bool? flag3;
-			bool? flag4;
-			if (flag2 == null || flag.GetValueOrDefault())
-			{
-				num2 = Right;
-				num = rect.Left;
-				flag3 = flag2 = (num2 != null & num != null) ? new bool?(num2.GetValueOrDefault() >= num.GetValueOrDefault()) : null;
-				flag4 = (flag2 != null) ? (flag & flag3.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag4 = new bool?(false);
-			}
-			bool? flag5 = flag3 = flag4;
-			bool? flag6;
-			bool? flag7;
-			if (flag3 == null || flag5.GetValueOrDefault())
-			{
-				num = Top;
-				num2 = rect.Bottom;
-				flag6 = flag3 = (num != null & num2 != null) ? new bool?(num.GetValueOrDefault() <= num2.GetValueOrDefault()) : null;
-				flag7 = (flag3 != null) ? (flag5 & flag6.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag7 = new bool?(false);
-			}
-			bool? flag8 = flag6 = flag7;
-			bool? flag9;
-			bool? flag10;
-			if (flag6 == null || flag8.GetValueOrDefault())
-			{
-				num2 = Bottom;
-				num = rect.Top;
-				flag9 = flag6 = (num2 != null & num != null) ? new bool?(num2.GetValueOrDefault() >= num.GetValueOrDefault()) : null;
-				flag10 = (flag6 != null) ? (flag8 & flag9.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag10 = new bool?(false);
-			}
-			flag9 = flag10;
-			return flag9.Value;
-		}
-
-
+		///<summary>
+		/// Returns a new RDRectI that is the union of the current rectangle and the specified rectangle.
+		/// </summary>
+		/// <param name="rect">The rectangle to merge with.</param>
+		/// <returns>The union of the two rectangles.</returns>
+		public readonly RDRectI Union(RDRectI rect) => Union(this, rect);
+		/// <summary>
+		/// Determines whether the current rectangle intersects with the specified rectangle (including edges).
+		/// </summary>
+		/// <param name="rect">The rectangle to check.</param>
+		/// <returns>true if the two rectangles intersect (including edges); otherwise, false.</returns>
+		public readonly bool IntersectsWithInclusive(RDRectI rect) => Left <= rect.Right && Right >= rect.Left && Top <= rect.Bottom && Bottom >= rect.Top;
+		/// <inheritdoc/>
 		public static bool operator ==(RDRectI rect1, RDRectI rect2) => rect1.Equals(rect2);
-
-
+		/// <inheritdoc/>
 		public static bool operator !=(RDRectI rect1, RDRectI rect2) => !rect1.Equals(rect2);
+		/// <inheritdoc/>
+		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDRectI e && Equals(e);
+		/// <inheritdoc/>
+		public override readonly int GetHashCode() => HashCode.Combine(Left, Top, Right, Bottom);
+		/// <inheritdoc/>
+		public override readonly string ToString() => $"{{Location=[{Left},{Bottom}],Size=[{Width},{Height}]}}";
+		/// <inheritdoc/>
+		public readonly bool Equals(RDRectI other) => Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;
 
+		/// <summary>
+		/// Implicitly converts an <see cref="RDRectI"/> to an <see cref="RDRect"/>.
+		/// </summary>
+		/// <param name="rect">The <see cref="RDRectI"/> instance to convert.</param>
+		/// <returns>The converted <see cref="RDRect"/> instance.</returns>
+		public static implicit operator RDRect(RDRectI rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 
-		public override bool Equals([NotNullWhen(true)] object obj) => obj.GetType() == typeof(RDRectI) && Equals((obj != null) ? ((RDRectI)obj) : default);
-
-
-		public override int GetHashCode() => HashCode.Combine(Left, Top, Right, Bottom);
-
-
-		public override string ToString() => string.Format("{{Location=[{0},{1}],Size=[{2},{3}]}}",
-			[
-				Left,
-				Bottom,
-				Width,
-				Height
-			]);
-
-
-		public bool Equals(RDRectI other)
-		{
-			int? num = Left;
-			int? num2 = other.Left;
-			bool? flag2;
-			bool? flag = flag2 = (num != null & num2 != null) ? new bool?(num.GetValueOrDefault() == num2.GetValueOrDefault()) : null;
-			bool? flag3;
-			bool? flag4;
-			if (flag2 == null || flag.GetValueOrDefault())
-			{
-				num2 = Top;
-				num = other.Top;
-				flag3 = flag2 = (num2 != null & num != null) ? new bool?(num2.GetValueOrDefault() == num.GetValueOrDefault()) : null;
-				flag4 = (flag2 != null) ? (flag & flag3.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag4 = new bool?(false);
-			}
-			bool? flag5 = flag3 = flag4;
-			bool? flag6;
-			bool? flag7;
-			if (flag3 == null || flag5.GetValueOrDefault())
-			{
-				num = Right;
-				num2 = other.Right;
-				flag6 = flag3 = (num != null & num2 != null) ? new bool?(num.GetValueOrDefault() == num2.GetValueOrDefault()) : null;
-				flag7 = (flag3 != null) ? (flag5 & flag6.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag7 = new bool?(false);
-			}
-			bool? flag8 = flag6 = flag7;
-			bool? flag9;
-			bool? flag10;
-			if (flag6 == null || flag8.GetValueOrDefault())
-			{
-				num2 = Bottom;
-				num = other.Bottom;
-				flag9 = flag6 = (num2 != null & num != null) ? new bool?(num2.GetValueOrDefault() == num.GetValueOrDefault()) : null;
-				flag10 = (flag6 != null) ? (flag8 & flag9.GetValueOrDefault()) : null;
-			}
-			else
-			{
-				flag10 = new bool?(false);
-			}
-			flag9 = flag10;
-			return flag9.Value;
-		}
-
-
-		public static implicit operator RDRect(RDRectI rect)
-		{
-			int? num = rect.Left;
-			float? left = (num != null) ? new float?((float)num.GetValueOrDefault()) : null;
-			num = rect.Top;
-			float? top = (num != null) ? new float?((float)num.GetValueOrDefault()) : null;
-			num = rect.Right;
-			float? right = (num != null) ? new float?((float)num.GetValueOrDefault()) : null;
-			num = rect.Bottom;
-			RDRect result = new(left, top, right, (num != null) ? new float?((float)num.GetValueOrDefault()) : null);
-			return result;
-		}
-
-
-		public static implicit operator RDRectE(RDRectI rect)
-		{
-			int? num2;
-			int? num = num2 = rect.Left;
-			Expression? left = (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null;
-			num = num2 = rect.Top;
-			Expression? top = (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null;
-			num = num2 = rect.Right;
-			Expression? right = (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null;
-			num = num2 = rect.Bottom;
-			RDRectE result = new(left, top, right, (num2 != null) ? new Expression?((float)num.GetValueOrDefault()) : null);
-			return result;
-		}
+		/// <summary>
+		/// Implicitly converts an <see cref="RDRectI"/> to an <see cref="RDRectE"/>.
+		/// </summary>
+		/// <param name="rect">The <see cref="RDRectI"/> instance to convert.</param>
+		/// <returns>The converted <see cref="RDRectE"/> instance.</returns>
+		public static implicit operator RDRectE(RDRectI rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
+		private readonly string GetDebuggerDisplay() => ToString();
 	}
 }

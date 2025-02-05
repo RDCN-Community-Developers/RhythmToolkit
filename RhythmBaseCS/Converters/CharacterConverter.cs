@@ -1,50 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Assets;
 using RhythmBase.Components;
-
 namespace RhythmBase.Converters
 {
-
-	internal class CharacterConverter(RDLevel level, HashSet<SpriteFile> assets) : JsonConverter<RDCharacter>
+	internal class CharacterConverter : JsonConverter<RDCharacter>
 	{
 		public override void WriteJson(JsonWriter writer, RDCharacter value, JsonSerializer serializer)
 		{
-			bool isCustom = value.IsCustom;
-			if (isCustom)
-			{
-				writer.WriteValue(string.Format("custom:{0}", value.CustomCharacter.Name));
-			}
-			else
-			{
-				writer.WriteValue(value.Character.ToString());
-			}
+			writer.WriteValue(
+				value.IsCustom
+				? value.CustomCharacter == null
+					? ""
+					: $"custom:{value.CustomCharacter}"
+				: value.Character.ToString());
 		}
-
 
 		public override RDCharacter ReadJson(JsonReader reader, Type objectType, RDCharacter existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			string value = JToken.ReadFrom(reader).ToObject<string>();
-			bool flag = value.StartsWith("custom:");
+			string value = JToken.ReadFrom(reader).ToObject<string>()!;
 			RDCharacter ReadJson;
-			if (flag)
+			if (value.StartsWith("custom:"))
 			{
-				string name = value.Substring(7);
-				ReadJson = new RDCharacter(level, name);
+				string name = value[7..];
+				ReadJson = name;
 			}
 			else
 			{
-				ReadJson = new RDCharacter(level, Enum.Parse<Characters>(value));
+				ReadJson = Enum.Parse<RDCharacters>(value);
 			}
 			return ReadJson;
 		}
-
-
-		private readonly RDLevel level = level;
-
-
-		private readonly HashSet<SpriteFile> assets = assets;
 	}
 }

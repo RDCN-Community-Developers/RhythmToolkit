@@ -75,7 +75,6 @@ Namespace Tools
         End Sub
 #If DEBUG Then
         Public Sub CreateTags(ParamArray names() As String)
-
         End Sub
 #End If
         ''' <summary>
@@ -101,7 +100,6 @@ Namespace Tools
         ''' </summary>
         ''' <param name="magnification"></param>
         Public Sub ZoomTime(magnification As Single)
-
         End Sub
 #End If
 #If DEBUG Then
@@ -139,7 +137,6 @@ Namespace Tools
         ''' [未完成] 拆分轨道为精灵图
         ''' </summary>
         Public Sub SplitRow(Character As SpriteFile, ClassicBeat As SpriteFile, Heart As SpriteFile, beatSettings As SplitRowSettings, rows As IEnumerable(Of RowEventCollection), startBeat As Beat, endBeat As Beat, ShowRow As Boolean)
-
             '对于每个七拍轨道
             For Each row In rows.Where(Function(i) i.RowType = RowType.Classic)
                 Dim commentColor = Drawing.Color.FromArgb(Random.Shared.Next)
@@ -154,7 +151,6 @@ Namespace Tools
                     (Level.CreateDecoration(row.Rooms, ClassicBeat), 214),
                     (Level.CreateDecoration(row.Rooms, Heart), 282)
                 }
-
                 '精灵初始化
                 For Each item In Decos
                     item.deco.Visible = False
@@ -162,7 +158,6 @@ Namespace Tools
                     item.deco.Add(visible)
                     visible.Visible = Not row.HideAtStart
                 Next
-
                 '精灵轨道初始位置
                 For Each part In Decos
                     Dim tempEvent = New MoveRow With {.RowPosition = New RDPoint(35 / 352 * 100, 50), .Pivot = 0}
@@ -177,7 +172,6 @@ Namespace Tools
                     }
                     part.deco.Add(CharEvent)
                 Next
-
                 '精灵初始表情
                 Dim tempRowXs As New SetRowXs
                 For i = 0 To 5
@@ -185,10 +179,8 @@ Namespace Tools
                     Decos(i + 1).deco.Add(tempExpression)
                     tempExpression.Expression = beatSettings.Line
                 Next
-
                 '对于在范围内的每个节拍
                 For Each item In row.Where(Function(i) i.Active, startBeat, endBeat)
-
                     Select Case item.Type
                         Case EventType.HideRow
                             For Each part In Decos
@@ -258,13 +250,9 @@ Namespace Tools
                                 End If
                             Next
                         Case EventType.AddClassicBeat
-
                         Case EventType.AddFreeTimeBeat
-
                         Case EventType.PulseFreeTimeBeat
-
                     End Select
-
                 Next
                 row.HideAtStart = Not ShowRow
             Next
@@ -283,7 +271,6 @@ Namespace Tools
             Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel, Level.Last).Beat
             Dim t As Integer = 0
             Dim C = Level.Calculator
-
             Dim txt = copy.Clone(Of FloatingText)
             txt.Beat = New Beat(Level.Calculator, 1)
             txt.Text = If(increase, TimeSpan.Zero, finish.TimeSpan - TimeSpan.Zero).ToString
@@ -304,7 +291,6 @@ Namespace Tools
             Dim finish = Level.FirstOrDefault(Function(i) i.Type = EventType.FinishLevel).Beat
             Dim t As Integer = 0
             Dim C = Level.Calculator
-
             Dim txt = copy.Clone(Of FloatingText)
             txt.Beat = New Beat(Level.Calculator, 1)
             txt.Text = If(increase, (1, 1), (finish - 1).BarBeat).ToString
@@ -386,37 +372,28 @@ Namespace Tools
             Level.AddRange(sortList.OrderBy(sortKey))
         End Sub
         Public Class SplitRowSettings
-
             Public Line As String
             Public Synco As String
-
             Public Beat_Open As String
             Public Beat_Double_Flash As String
             Public Beat_Triple_Flash As String
             Public Beat_Flash As String
             Public Beat_Close As String
-
             Public X_Open As String
             Public X_Flash As String
             Public X_Close As String
-
             Public X_Synco_Open As String
             Public X_Synco_Flash As String
             Public X_Synco_Close As String
-
             Public Up_Open As String
             Public Up_Close As String
-
             Public Down_Open As String
             Public Down_Close As String
-
             Public Swing_Left As String
             Public Swing_Right As String
             Public Swing_Bounce As String
-
             Public Held_Start As String
             Public Held_End As String
-
         End Class
     End Class
 End Namespace

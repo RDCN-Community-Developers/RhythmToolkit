@@ -2,36 +2,37 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
-
 namespace RhythmBase.Converters
 {
-
 	internal class RoomConverter : JsonConverter
 	{
-
 		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
 		{
 			Type type = value!.GetType();
-			if (type == typeof(Room))
+			if (type == typeof(RDRoom))
 			{
 				writer.WriteStartArray();
-				foreach (int item in (((Room?)value) ?? default).Rooms)
+				foreach (int item in (((RDRoom?)value) ?? default).Rooms)
 					writer.WriteValue(item);
 				writer.WriteEndArray();
 			}
-			else if (type == typeof(SingleRoom))
+			else if (type == typeof(RDSingleRoom))
 			{
 				writer.WriteStartArray();
-				writer.WriteValue((((SingleRoom?)value) ?? default).Value);
+				writer.WriteValue((((RDSingleRoom?)value) ?? default).Value);
 				writer.WriteEndArray();
 			}
 			else
 				throw new NotImplementedException();
 		}
-		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+		public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
 		{
-			byte[] J = JArray.Load(reader).ToObject<byte[]>();
-			bool flag = objectType == typeof(Room);
+			JToken token = JArray.Load(reader);
+			byte[]? J = token.ToObject<byte[]>();
+			if (J == null)
+				throw new Exceptions.ConvertingException(token, new Exception($"Unreadable room: \"{J}\". path \"{reader.Path}\""));
+
+			bool flag = objectType == typeof(RDRoom);
 			object ReadJson;
 			if (flag)
 			{
@@ -39,13 +40,13 @@ namespace RhythmBase.Converters
 				if (existingValue != null)
 				{
 					object obj = existingValue;
-					enableTop = ((obj != null) ? ((Room)obj) : default).EnableTop;
+					enableTop = ((obj != null) ? ((RDRoom)obj) : default).EnableTop;
 				}
 				else
 				{
 					enableTop = true;
 				}
-				existingValue = new Room(enableTop);
+				existingValue = new RDRoom(enableTop);
 				foreach (byte item in J)
 				{
 					NewLateBinding.LateIndexSet(existingValue,
@@ -58,17 +59,16 @@ namespace RhythmBase.Converters
 			}
 			else
 			{
-				flag = objectType == typeof(SingleRoom);
+				flag = objectType == typeof(RDSingleRoom);
 				if (!flag)
 				{
 					throw new NotImplementedException();
 				}
-				ReadJson = new SingleRoom(J.Single());
+				ReadJson = new RDSingleRoom(J.Single());
 			}
 			return ReadJson;
 		}
 
-
-		public override bool CanConvert(Type objectType) => objectType == typeof(Room) || objectType == typeof(SingleRoom);
+		public override bool CanConvert(Type objectType) => objectType == typeof(RDRoom) || objectType == typeof(RDSingleRoom);
 	}
 }

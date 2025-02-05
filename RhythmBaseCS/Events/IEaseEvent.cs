@@ -1,15 +1,14 @@
-﻿using System;
-using RhythmBase.Components;
-
+﻿using RhythmBase.Components;
 namespace RhythmBase.Events
 {
-
-	public interface IEaseEvent
+	/// <summary>  
+	/// Interface representing an ease event.  
+	/// </summary>  
+	public interface IEaseEvent:IDurationEvent
 	{
-
+		/// <summary>  
+		/// Gets or sets the type of easing.  
+		/// </summary>  
 		Ease.EaseType Ease { get; set; }
-
-
-		float Duration { get; set; }
 	}
 }
