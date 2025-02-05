@@ -62,8 +62,6 @@ namespace RhythmBase.Settings
 		/// Defaults to <see langword="true" />.
 		/// </summary>
 		public bool Indented { get; set; } = true;
-
-		public bool Indented { get; set; }
 		internal void OnBeforeReading()
 		{
 			BeforeReading?.Invoke(this, EventArgs.Empty);

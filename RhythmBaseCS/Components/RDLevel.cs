@@ -245,17 +245,17 @@ namespace RhythmBase.Components
 			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
 			string extension = System.IO.Path.GetExtension(filepath);
 			RDLevel? Read;
-			if (Operators.CompareString(extension, ".rdzip", false) != 0 && Operators.CompareString(extension, ".zip", false) != 0)
+			if (extension != ".rdzip" || extension != ".zip")
 			{
-				if (Operators.CompareString(extension, ".rdlevel", false) != 0)
+				if (extension != ".rdlevel")
 					throw new RhythmBaseException("File not supported.");
 				settings.OnBeforeReading();
 				Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(File.OpenText(filepath)));
 				settings.OnAfterReading();
 			}
 			else
-				throw new RhythmBaseException("File not supported.");
-			return rdlevel;
+				Read = ReadFromZip(filepath, settings);
+			return Read ?? [];
 		}
 		/// <summary>
 		/// Reads an RDLevel from a TextReader with the specified filepath and settings.
