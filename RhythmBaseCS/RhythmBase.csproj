@@ -14,6 +14,7 @@
     <PackageIcon>RhythmToolkit.png</PackageIcon>
     <RepositoryUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit.git</RepositoryUrl>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	  <LangVersion>Preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Adofai\**" />

@@ -7,23 +7,25 @@ namespace RhythmBase.Components.Dialogue
 	/// Represents a list of rich text strings.
 	/// </summary>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public struct RDRichTextLine()
+	public struct RDLine<TStyle>()
+		 : IRDRichTextLine<TStyle>
+		where TStyle : IRDRichStringStyle<TStyle>, new()
 	{
 		/// <summary>
 		/// Gets or sets the list of rich text strings.
 		/// </summary>
-		private RDRichString[] texts = [];
+		private RDPhrase<TStyle>[] texts = [];
 		/// <summary>
 		/// The length of the string.
 		/// </summary>
 		public readonly int Length => texts.Sum(i => i.Length);
 		/// <summary>
-		/// Gets or sets the <see cref="RDRichTextLine"/> at the specified index.
+		/// Gets or sets the <see cref="RDLine{RDDialoguePhraseStyle}"/> at the specified index.
 		/// </summary>
-		/// <param name="index">The index of the <see cref="RDRichTextLine"/> to get or set.</param>
-		/// <returns>The <see cref="RDRichTextLine"/> at the specified index.</returns>
+		/// <param name="index">The index of the <see cref="RDLine{RDDialoguePhraseStyle}"/> to get or set.</param>
+		/// <returns>The <see cref="RDLine{RDDialoguePhraseStyle}"/> at the specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the index is out of range.</exception>
-		public RDRichTextLine this[Index index]
+		public RDLine<TStyle> this[Index index]
 		{
 			get
 			{
@@ -36,7 +38,7 @@ namespace RhythmBase.Components.Dialogue
 					i -= texts[ti].Length;
 					ti++;
 				}
-				RDRichTextLine line = new()
+				RDLine<TStyle> line = new()
 				{
 					texts = [texts[ti][i]]
 				};
@@ -50,14 +52,13 @@ namespace RhythmBase.Components.Dialogue
 				texts = Concat([this[..i], value, this[(i + 1)..]]).texts;
 			}
 		}
-
 		/// <summary>
-		/// Gets or sets the <see cref="RDRichTextLine"/> within the specified range.
+		/// Gets or sets the <see cref="RDLine{RDDialoguePhraseStyle}"/> within the specified range.
 		/// </summary>
-		/// <param name="range">The range of the <see cref="RDRichTextLine"/> to get or set.</param>
-		/// <returns>The <see cref="RDRichTextLine"/> within the specified range.</returns>
+		/// <param name="range">The range of the <see cref="RDLine{RDDialoguePhraseStyle}"/> to get or set.</param>
+		/// <returns>The <see cref="RDLine{RDDialoguePhraseStyle}"/> within the specified range.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the range is out of bounds.</exception>
-		public RDRichTextLine this[Range range]
+		public RDLine<TStyle> this[Range range]
 		{
 			get
 			{
@@ -66,7 +67,7 @@ namespace RhythmBase.Components.Dialogue
 				if (!(start <= end && end <= Length))
 					throw new ArgumentOutOfRangeException(nameof(range));
 				int ti = 0, tstart, tend;
-				RDRichString[] strings = [];
+				RDPhrase<TStyle>[] strings = [];
 				while (texts[ti].Length <= start)
 				{
 					start -= texts[ti].Length;
@@ -88,7 +89,7 @@ namespace RhythmBase.Components.Dialogue
 						strings = [.. strings, texts[i]];
 					strings = [texts[tstart][start..], .. strings, texts[tend][..end]];
 				}
-				RDRichTextLine line = new()
+				RDLine<TStyle> line = new()
 				{
 					texts = strings
 				};
@@ -103,15 +104,20 @@ namespace RhythmBase.Components.Dialogue
 				texts = Concat([this[..start], value, this[end..]]).texts;
 			}
 		}
-		private static RDRichTextLine Concat(params RDRichTextLine[] lines)
+		/// <inheritdoc/>
+		public static RDLine<TStyle> Concat(params RDLine<TStyle>[] lines)
 		{
-			RDRichString[] texts = [.. lines[0].texts];
-			foreach (RDRichTextLine line in lines[1..])
+			RDPhrase<TStyle>[] texts = [.. lines[0].texts];
+			foreach (RDLine<TStyle> line in lines[1..])
 			{
 				if (texts[^1].Style == line.texts[0].Style)
 				{
-					RDRichString richString = texts[^1];
-					richString.Text += line.texts[0].Text;
+					RDPhrase<TStyle> before = texts[^1], after = line.texts[0];
+					RDPhrase<TStyle> richString = new(before.Text + after.Text)
+					{
+						Style = before.Style,
+						Events = [.. before.Events, .. after.Events.Select(i => new RDDialogueTone(i.Type, i.Index + before.Length) { Pause = i.Pause })]
+					};
 					texts = [.. texts[..^1], richString, .. line.texts[1..]];
 				}
 				else
@@ -120,38 +126,38 @@ namespace RhythmBase.Components.Dialogue
 			return new() { texts = texts };
 		}
 		/// <summary>
-		/// Implicitly converts a <see cref="RDRichString"/> to a <see cref="RDRichTextLine"/>.
+		/// Implicitly converts a <see cref="RDPhrase{RDDialoguePhraseStyle}"/> to a <see cref="RDLine{RDDialoguePhraseStyle}"/>.
 		/// </summary>
-		/// <param name="text">The <see cref="RDRichString"/> to convert.</param>
-		/// <returns>A new <see cref="RDRichTextLine"/> containing the specified <see cref="RDRichString"/>.</returns>
-		public static implicit operator RDRichTextLine(RDRichString text) => new() { texts = [text] };
+		/// <param name="text">The <see cref="RDPhrase{RDDialoguePhraseStyle}"/> to convert.</param>
+		/// <returns>A new <see cref="RDLine{RDDialoguePhraseStyle}"/> containing the specified <see cref="RDPhrase{RDDialoguePhraseStyle}"/>.</returns>
+		public static implicit operator RDLine<TStyle>(RDPhrase<TStyle> text) => new() { texts = [text] };
 		/// <summary>
-		/// Implicitly converts a <see cref="RDRichString"/> to a <see cref="RDRichTextLine"/>.
+		/// Implicitly converts a <see cref="RDPhrase{RDDialoguePhraseStyle}"/> to a <see cref="RDLine{RDDialoguePhraseStyle}"/>.
 		/// </summary>
-		/// <param name="texts">The <see cref="RDRichString"/> to convert.</param>
-		/// <returns>A new <see cref="RDRichTextLine"/> containing the specified <see cref="RDRichString"/>.</returns>
-		public static implicit operator RDRichTextLine(RDRichString[] texts) => new() { texts = texts };
+		/// <param name="texts">The <see cref="RDPhrase{RDDialoguePhraseStyle}"/> to convert.</param>
+		/// <returns>A new <see cref="RDLine{RDDialoguePhraseStyle}"/> containing the specified <see cref="RDPhrase{RDDialoguePhraseStyle}"/>.</returns>
+		public static implicit operator RDLine<TStyle>(RDPhrase<TStyle>[] texts) => new() { texts = texts };
 		/// <summary>
-		/// Implicitly converts a <see cref="string"/> to a <see cref="RDRichTextLine"/>.
+		/// Implicitly converts a <see cref="string"/> to a <see cref="RDLine{RDDialoguePhraseStyle}"/>.
 		/// </summary>
 		/// <param name="text">The <see cref="string"/> to convert.</param>
-		/// <returns>A new <see cref="RDRichTextLine"/> containing the specified <see cref="string"/>.</returns>
-		public static implicit operator RDRichTextLine(string text) => new() { texts = [new RDRichString(text)] };
+		/// <returns>A new <see cref="RDLine{RDDialoguePhraseStyle}"/> containing the specified <see cref="string"/>.</returns>
+		public static implicit operator RDLine<TStyle>(string text) => new() { texts = [new RDPhrase<TStyle>(text)] };
 		/// <summary>
-		/// Deserializes a string into an <see cref="RDRichTextLine"/>.
+		/// Deserializes a string into an <see cref="RDLine{RDDialoguePhraseStyle}"/>.
 		/// </summary>
 		/// <param name="text">The string to deserialize.</param>
-		/// <returns>A new <see cref="RDRichTextLine"/> containing the deserialized content.</returns>
+		/// <returns>A new <see cref="RDLine{RDDialoguePhraseStyle}"/> containing the deserialized content.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the input text is null.</exception>
 		/// <exception cref="FormatException">Thrown when the input text has an invalid format.</exception>
-		public static RDRichTextLine Deserialize(string text)
+		static public RDLine<TStyle> Deserialize(string text)
 		{
-			RDRichTextLine line = "";
-			RDRichStringStyle style = new();
+			RDLine<TStyle> line = "";
+			TStyle style = new();
 			int start = 0;
 			while (start < text.Length)
 			{
-				RDRichStringStyle tempStyle = style;
+				TStyle tempStyle = style;
 				int end = text.IndexOf('<', start);
 				if (end == -1)
 				{
@@ -171,7 +177,7 @@ namespace RhythmBase.Components.Dialogue
 				string textpart = text[start..end];
 				line += DeserializeStringPart(textpart, tempStyle);
 				string[] keyvalue = text[(end + 1)..start2].Split('=', 2);
-				if (keyvalue[0].StartsWith('/') && style.RemoveProperty(keyvalue[0][1..]))
+				if (keyvalue[0].StartsWith('/') && style.ResetProperty(keyvalue[0][1..]))
 					start = start2 + 1;
 				else if (style.SetProperty(keyvalue[0], keyvalue.Length == 2 ? keyvalue[1] : "true"))
 					start = start2 + 1;
@@ -180,10 +186,12 @@ namespace RhythmBase.Components.Dialogue
 			}
 			return line;
 		}
-		private static RDRichString DeserializeStringPart(string text, RDRichStringStyle style)
+		private static RDPhrase<TStyle> DeserializeStringPart(string text, TStyle style)
 		{
+			if (!TStyle.HasPhrase)
+				return new RDPhrase<TStyle>(text) { Style = style };
 			int pstart = 0;
-			RDRichStringEvent[] events = [];
+			RDDialogueTone[] events = [];
 			while (pstart < text.Length)
 			{
 				int pend = text.IndexOf('[', pstart);
@@ -201,30 +209,30 @@ namespace RhythmBase.Components.Dialogue
 					continue;
 				}
 				string btag = text[(pend + 1)..pstart2];
-				if (RDRichStringEvent.Create(btag, pend, out RDRichStringEvent? e))
+				if (RDDialogueTone.Create(btag, pend, out RDDialogueTone? e))
 					events = [.. events, e];
 				text = text[..pend] + text[(pstart2 + 1)..];
 			}
-			return new RDRichString(text) { Style = style, Events = events };
+			return new RDPhrase<TStyle>(text) { Style = style, Events = events };
 		}
 		/// <summary>
-		/// Serializes the current <see cref="RDRichTextLine"/> instance to a string.
+		/// Serializes the current <see cref="RDLine{RDDialoguePhraseStyle}"/> instance to a string.
 		/// </summary>
-		/// <returns>A string representation of the current <see cref="RDRichTextLine"/> instance.</returns>
+		/// <returns>A string representation of the current <see cref="RDLine{RDDialoguePhraseStyle}"/> instance.</returns>
 		/// <remarks>
 		/// The serialization process converts the rich text line into a string format, including any styling information.
 		/// </remarks>
 		public readonly string Serialize()
 		{
 			StringBuilder sb = new();
-			RDRichStringStyle style = new();
+			TStyle style = new();
 			int ci = 0;
-			foreach (RDRichString str in texts)
+			foreach (RDPhrase<TStyle> str in texts)
 			{
-				sb.Append(RDRichStringStyle.GetXmlTag(style, str.Style));
+				sb.Append(TStyle.GetXmlTag(style, str.Style));
 				string part = str.Text;
 				int offset = 0;
-				foreach (RDRichStringEvent e in str.Events)
+				foreach (RDDialogueTone e in str.Events)
 				{
 					string serialized = e.Serialize();
 					part = part.Insert(e.Index + offset, serialized);
@@ -234,33 +242,16 @@ namespace RhythmBase.Components.Dialogue
 				ci += str.Length;
 				style = str.Style;
 			}
-			sb.Append(RDRichStringStyle.GetXmlTag(style, new()));
+			sb.Append(TStyle.GetXmlTag(style, new()));
 			return sb.ToString();
 		}
 		/// <summary>
-		/// Concatenates two <see cref="RDRichTextLine"/> instances.
+		/// Concatenates two <see cref="RDLine{RDDialoguePhraseStyle}"/> instances.
 		/// </summary>
-		/// <param name="left">The left <see cref="RDRichTextLine"/>.</param>
-		/// <param name="right">The right <see cref="RDRichTextLine"/>.</param>
-		/// <returns>A new <see cref="RDRichTextLine"/> that is the result of concatenating the two specified instances.</returns>
-		public static RDRichTextLine operator +(RDRichTextLine left, RDRichTextLine right)
-		{
-			if (right.Length == 0)
-				return left;
-			if (left.texts[^1].Style == right.texts[0].Style)
-			{
-				RDRichString richString = left.texts[^1];
-				richString.Text += right.texts[0].Text;
-				return new()
-				{
-					texts = [.. left.texts[..^1], richString, .. right.texts[1..]]
-				};
-			}
-			return new()
-			{
-				texts = [.. left.texts, .. right.texts]
-			};
-		}
+		/// <param name="left">The left <see cref="RDLine{RDDialoguePhraseStyle}"/>.</param>
+		/// <param name="right">The right <see cref="RDLine{RDDialoguePhraseStyle}"/>.</param>
+		/// <returns>A new <see cref="RDLine{RDDialoguePhraseStyle}"/> that is the result of concatenating the two specified instances.</returns>
+		public static RDLine<TStyle> operator +(RDLine<TStyle> left, RDLine<TStyle> right) => Concat([.. left.texts, .. right.texts]);
 		/// <inheritdoc/>
 		public override readonly string ToString() => string.Join("", texts);
 		/// <inheritdoc/>

@@ -26,7 +26,13 @@ namespace RhythmBase.Settings
 		/// <summary>
 		/// Initialize.
 		/// </summary>
-		public LevelReadOrWriteSettings() { }
+		public LevelReadOrWriteSettings()
+		{
+			BeforeReading = delegate { };
+			AfterReading = delegate { };
+			BeforeWriting = delegate { };
+			AfterWriting = delegate { };
+		}
 		/// <summary>
 		/// Enable resource preloading. This may grow read times. 
 		/// Defaults to <see langword="false" />.

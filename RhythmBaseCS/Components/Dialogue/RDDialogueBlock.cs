@@ -5,12 +5,12 @@ namespace RhythmBase.Components.Dialogue
 	/// <summary>
 	/// Represents a line of dialogue, which consists of multiple dialogue components.
 	/// </summary>
-	public class RDDialogueLine
-	{
+	public class RDDialogueBlock
+			{
 		/// <summary>
 		/// Gets or sets the character speaking the dialogue line.
 		/// </summary>
-		public string? Character { get; set; } = "Samurai";
+		public string? Character { get; set; }
 		/// <summary>
 		/// Gets or sets the expression of the character.
 		/// </summary>
@@ -19,9 +19,9 @@ namespace RhythmBase.Components.Dialogue
 		/// Gets or sets the content of the dialogue line.
 		/// </summary>
 		/// <value>
-		/// The content of the dialogue line, represented as an <see cref="RDRichTextLine"/>.
+		/// The content of the dialogue line, represented as an <see cref="RDLine{TStyle}"/>.
 		/// </value>
-		public RDRichTextLine Content { get; set; } = "";
+		public RDLine<RDDialoguePhraseStyle> Content { get; set; } = "";
 		/// <summary>
 		/// Serializes the dialogue line to a string.
 		/// </summary>
@@ -42,16 +42,16 @@ namespace RhythmBase.Components.Dialogue
 			return sb.ToString();
 		}
 		/// <summary>
-		/// Deserializes a string into a <see cref="RDDialogueLine"/> instance.
+		/// Deserializes a string into a <see cref="RDDialogueBlock"/> instance.
 		/// </summary>
 		/// <param name="str">The string to deserialize.</param>
-		/// <returns>A new <see cref="RDDialogueLine"/> containing the deserialized content.</returns>
+		/// <returns>A new <see cref="RDDialogueBlock"/> containing the deserialized content.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the input string is null.</exception>
 		/// <exception cref="FormatException">Thrown when the input string has an invalid format.</exception>
-		public static RDDialogueLine Deserialize(string str)
+		public static RDDialogueBlock Deserialize(string str)
 		{
 			str = str.Trim();
-			RDDialogueLine line = new();
+			RDDialogueBlock line = new();
 			int mi = str.IndexOf(':');
 			if (mi != -1)
 			{
@@ -64,21 +64,21 @@ namespace RhythmBase.Components.Dialogue
 				}
 				line.Character = character;
 			}
-			line.Content = RDRichTextLine.Deserialize(str[(mi + 1)..]);
+			line.Content = RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
 			return line;
 		}
 		/// <summary>
-		/// Deserializes a string into a <see cref="RDDialogueLine"/> instance, using a lookup of valid expressions.
+		/// Deserializes a string into a <see cref="RDDialogueBlock"/> instance, using a lookup of valid expressions.
 		/// </summary>
 		/// <param name="str">The string to deserialize.</param>
 		/// <param name="expressions">A lookup of valid expressions for each character.</param>
-		/// <returns>A new <see cref="RDDialogueLine"/> containing the deserialized content.</returns>
+		/// <returns>A new <see cref="RDDialogueBlock"/> containing the deserialized content.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the input string is null.</exception>
 		/// <exception cref="FormatException">Thrown when the input string has an invalid format.</exception>
-		public static RDDialogueLine Deserialize(string str, ILookup<string, string> expressions)
+		public static RDDialogueBlock Deserialize(string str, ILookup<string, string> expressions)
 		{
 			str = str.Trim();
-			RDDialogueLine line = new();
+			RDDialogueBlock line = new();
 			int mi = str.IndexOf(':');
 			if (mi != -1)
 			{
@@ -94,14 +94,14 @@ namespace RhythmBase.Components.Dialogue
 					character = str;
 				if (!expressions.Contains(character))
 				{
-					line.Content = RDRichTextLine.Deserialize(str);
+					line.Content = RDLine<RDDialoguePhraseStyle>.Deserialize(str);
 					return line;
 				}
 				line.Character = character;
 				if (expressions[character].Contains(expression))
 					line.Expression = expression;
 			}
-			line.Content = RDRichTextLine.Deserialize(str[(mi + 1)..]);
+			line.Content = RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
 			return line;
 		}
 		/// <inheritdoc/>

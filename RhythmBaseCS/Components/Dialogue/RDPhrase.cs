@@ -10,9 +10,11 @@ namespace RhythmBase.Components.Dialogue
 	/// </summary>
 	/// <param name="text">The text content of the rich string.</param>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public struct RDRichString(string text)
-		: IEqualityOperators<RDRichString, RDRichString, bool>,
-			IEquatable<RDRichString>
+	public struct RDPhrase
+		<TStyle>(string text)
+		: IEqualityOperators<RDPhrase<TStyle>, RDPhrase<TStyle>, bool>,
+			IEquatable<RDPhrase<TStyle>>
+		where TStyle : IRDRichStringStyle<TStyle>, new()
 	{
 		/// <summary>
 		/// Gets the text content of the rich string.
@@ -21,7 +23,7 @@ namespace RhythmBase.Components.Dialogue
 		/// <summary>
 		/// Gets or sets the events associated with the rich string.
 		/// </summary>
-		public RDRichStringEvent[] Events { get; init; } = [];
+		public RDDialogueTone[] Events { get; init; } = [];
 		/// <summary>
 		/// Gets the length of the text content.
 		/// </summary>
@@ -31,12 +33,12 @@ namespace RhythmBase.Components.Dialogue
 		/// Gets the rich string at the specified index.
 		/// </summary>
 		/// <param name="index">The index of the character.</param>
-		/// <returns>A new <see cref="RDRichString"/> with the character at the specified index.</returns>
-		public RDRichString this[Index index]
+		/// <returns>A new <see cref="RDPhrase{TStyle}"/> with the character at the specified index.</returns>
+		public RDPhrase<TStyle> this[Index index]
 		{
 			get
 			{
-				return new RDRichString
+				return new RDPhrase<TStyle>
 				{
 					Text = Text[index].ToString(),
 					Style = Style,
@@ -49,12 +51,12 @@ namespace RhythmBase.Components.Dialogue
 		/// Gets the rich string within the specified range.
 		/// </summary>
 		/// <param name="range">The range of characters.</param>
-		/// <returns>A new <see cref="RDRichString"/> with the characters within the specified range.</returns>
-		public RDRichString this[Range range]
+		/// <returns>A new <see cref="RDPhrase{TStyle}"/> with the characters within the specified range.</returns>
+		public RDPhrase<TStyle> this[Range range]
 		{
 			get
 			{
-				RDRichString style = new()
+				RDPhrase<TStyle> style = new()
 				{
 					Text = Text[range],
 					Style = Style,
@@ -63,33 +65,32 @@ namespace RhythmBase.Components.Dialogue
 				return style;
 			}
 		}
-		private readonly RDRichStringEvent[] GetEvents(int start, int length) => Events
+		private readonly RDDialogueTone[] GetEvents(int start, int length) => Events
 			.Where(e => e.Index >= start && e.Index < start + length)
-			.Select(e => new RDRichStringEvent (e.Type, e.Index - start))
+			.Select(e => new RDDialogueTone(e.Type, e.Index - start))
 			.ToArray();
 		/// <summary>
-		/// Gets a new <see cref="RDRichString"/> with the same style as the current instance.
+		/// Gets a new <see cref="RDPhrase{TStyle}"/> with the same style as the current instance.
 		/// </summary>
-		public RDRichStringStyle Style { get; init; }
-
+		public TStyle Style { get; init; } = new();
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RDRichString"/> struct with an empty text.
+		/// Initializes a new instance of the <see cref="RDPhrase{TStyle}"/> struct with an empty text.
 		/// </summary>
-		public RDRichString() : this("") { }
+		public RDPhrase() : this("") { }
 		/// <summary>
-		/// Implicitly converts a string to an <see cref="RDRichString"/>.
+		/// Implicitly converts a string to an <see cref="RDPhrase{TStyle}"/>.
 		/// </summary>
 		/// <param name="text">The text to convert.</param>
-		/// <returns>A new <see cref="RDRichString"/> instance with the specified text.</returns>
-		public static implicit operator RDRichString(string text) => new() { Text = text };
+		/// <returns>A new <see cref="RDPhrase{TStyle}"/> instance with the specified text.</returns>
+		public static implicit operator RDPhrase<TStyle>(string text) => new() { Text = text };
 		/// <inheritdoc/>
-		public static bool operator ==(RDRichString left, RDRichString right) => left.Text == right.Text && left.Style == right.Style;
+		public static bool operator ==(RDPhrase<TStyle> left, RDPhrase<TStyle> right) => left.Text == right.Text && left.Style == right.Style;
 		/// <inheritdoc/>
-		public static bool operator !=(RDRichString left, RDRichString right) => !(left == right);
+		public static bool operator !=(RDPhrase<TStyle> left, RDPhrase<TStyle> right) => !(left == right);
 		/// <inheritdoc/>
-		public readonly bool Equals(RDRichString other) => this == other;
+		public readonly bool Equals(RDPhrase<TStyle> other) => this == other;
 		/// <inheritdoc/>
-		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDRichString && base.Equals(obj);
+		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDPhrase<TStyle> && base.Equals(obj);
 		/// <inheritdoc/>
 		public override readonly int GetHashCode() => Text.GetHashCode();
 		/// <inheritdoc/>

@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace RhythmBase.Converters
 {
-	internal class DialogueListConverter : JsonConverter<RDDialogueList>
+	internal class DialogueListConverter : JsonConverter<RDDialogueExchange>
 	{
-		public override RDDialogueList? ReadJson(JsonReader reader, Type objectType, RDDialogueList? existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override RDDialogueExchange? ReadJson(JsonReader reader, Type objectType, RDDialogueExchange? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void WriteJson(JsonWriter writer, RDDialogueList? value, JsonSerializer serializer) => writer.WriteRawValue(value?.Serialize());
+		public override void WriteJson(JsonWriter writer, RDDialogueExchange? value, JsonSerializer serializer) => writer.WriteRawValue(value?.Serialize());
 	}
 }

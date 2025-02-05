@@ -5,7 +5,7 @@ namespace RhythmBase.Components.Dialogue
 	/// <summary>
 	/// Enum representing the different types of rich string events.
 	/// </summary>
-	public enum RDRichStringEventType
+	public enum RDDialogueToneType
 	{
 		/// <summary>
 		/// Static event type.
@@ -51,14 +51,22 @@ namespace RhythmBase.Components.Dialogue
 		/// Shake event type.
 		/// </summary>
 		Shake,
+		/// <summary>
+		/// Pause event type.
+		/// </summary>
+		Pause,
 	}
 	/// <summary>
 	/// Class representing a rich string event.
 	/// </summary>
 	/// <param name="Type">Rich string event type.</param>
 	/// <param name="Index">Rich string event index.</param>
-	public record RDRichStringEvent(RDRichStringEventType Type, int Index)
+	public record RDDialogueTone(RDDialogueToneType Type, int Index)
 	{
+		/// <summary>
+		/// Gets the pause duration for the dialogue event.
+		/// </summary>
+		public int? Pause { get; init; }
 		/// <summary>
 		/// Serializes the rich string event type to its corresponding string representation.
 		/// </summary>
@@ -66,45 +74,51 @@ namespace RhythmBase.Components.Dialogue
 		/// <exception cref="NotImplementedException">Thrown when the event type is not implemented.</exception>
 		public string Serialize() => "[" + Type switch
 		{
-			RDRichStringEventType.Static => "static",
-			RDRichStringEventType.Flash => "flash",
-			RDRichStringEventType.VerySlow => "vslow",
-			RDRichStringEventType.Slow => "slow",
-			RDRichStringEventType.Normal => "normal",
-			RDRichStringEventType.Fast => "fast",
-			RDRichStringEventType.VeryFast => "vfast",
-			RDRichStringEventType.VeryVeryFast => "vvvfast",
-			RDRichStringEventType.Excited => "excited",
-			RDRichStringEventType.Shout => "shout",
-			RDRichStringEventType.Shake => "shake",
+			RDDialogueToneType.Static => "static",
+			RDDialogueToneType.Flash => "flash",
+			RDDialogueToneType.VerySlow => "vslow",
+			RDDialogueToneType.Slow => "slow",
+			RDDialogueToneType.Normal => "normal",
+			RDDialogueToneType.Fast => "fast",
+			RDDialogueToneType.VeryFast => "vfast",
+			RDDialogueToneType.VeryVeryFast => "vvvfast",
+			RDDialogueToneType.Excited => "excited",
+			RDDialogueToneType.Shout => "shout",
+			RDDialogueToneType.Shake => "shake",
+			RDDialogueToneType.Pause => Pause?.ToString(),
 			_ => throw new NotImplementedException(),
 		} + "]";
 		/// <summary>
-		/// Creates a new instance of <see cref="RDRichStringEvent"/> based on the provided type and index.
+		/// Creates a new instance of <see cref="RDDialogueTone"/> based on the provided type and index.
 		/// </summary>
 		/// <param name="type">The string representation of the event type.</param>
 		/// <param name="index">The index of the event.</param>
-		/// <param name="result">The created <see cref="RDRichStringEvent"/> instance if successful, otherwise null.</param>
+		/// <param name="result">The created <see cref="RDDialogueTone"/> instance if successful, otherwise null.</param>
 		/// <returns>True if the event was successfully created, otherwise false.</returns>
-		public static bool Create(string type, int index, [NotNullWhen(true)] out RDRichStringEvent? result)
+		public static bool Create(string type, int index, [NotNullWhen(true)] out RDDialogueTone? result)
 		{
-			RDRichStringEventType? eventType = type switch
+			RDDialogueToneType? eventType = type switch
 			{
-				"static" => RDRichStringEventType.Static,
-				"flash" => RDRichStringEventType.Flash,
-				"vslow" => RDRichStringEventType.VerySlow,
-				"slow" => RDRichStringEventType.Slow,
-				"normal" => RDRichStringEventType.Normal,
-				"fast" => RDRichStringEventType.Fast,
-				"vfast" => RDRichStringEventType.VeryFast,
-				"vvvfast" => RDRichStringEventType.VeryVeryFast,
-				"excited" => RDRichStringEventType.Excited,
-				"shout" => RDRichStringEventType.Shout,
-				"shake" => RDRichStringEventType.Shake,
+				"static" => RDDialogueToneType.Static,
+				"flash" => RDDialogueToneType.Flash,
+				"vslow" => RDDialogueToneType.VerySlow,
+				"slow" => RDDialogueToneType.Slow,
+				"normal" => RDDialogueToneType.Normal,
+				"fast" => RDDialogueToneType.Fast,
+				"vfast" => RDDialogueToneType.VeryFast,
+				"vvvfast" => RDDialogueToneType.VeryVeryFast,
+				"excited" => RDDialogueToneType.Excited,
+				"shout" => RDDialogueToneType.Shout,
+				"shake" => RDDialogueToneType.Shake,
 				_ => null,
 			};
-			if (eventType == null)
+			if (eventType is null)
 			{
+				if (int.TryParse(type, out int pause))
+				{
+					result = new(RDDialogueToneType.Pause, index) { Pause = pause };
+					return true;
+				}
 				result = null;
 				return false;
 			}
