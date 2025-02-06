@@ -1,4 +1,5 @@
 ﻿using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 namespace RhythmBase.Events
 {
 	/// <summary>
@@ -22,7 +23,7 @@ namespace RhythmBase.Events
 		public RDRoom Rooms { get; set; }
 
 		/// <inheritdoc />
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 
 		/// <summary>
 		/// Gets or sets the start color of the flash.

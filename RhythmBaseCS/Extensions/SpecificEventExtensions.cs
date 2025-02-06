@@ -1,4 +1,5 @@
 ﻿using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Extensions;

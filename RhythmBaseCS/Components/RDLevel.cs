@@ -254,8 +254,8 @@ namespace RhythmBase.Components
 				settings.OnAfterReading();
 			}
 			else
-				throw new RhythmBaseException("File not supported.");
-			return Read??[];
+				Read = ReadFromZip(filepath, settings);
+			return Read ?? [];
 		}
 		/// <summary>
 		/// Reads an RDLevel from a TextReader with the specified filepath and settings.

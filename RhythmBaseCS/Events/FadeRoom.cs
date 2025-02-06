@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 namespace RhythmBase.Events
 {
 	/// <summary>
@@ -15,7 +16,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the easing type for the fade effect.
 		/// </summary>
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 
 		/// <summary>
 		/// Gets or sets the opacity level for the fade effect.
