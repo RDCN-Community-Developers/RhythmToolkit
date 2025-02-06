@@ -8,9 +8,31 @@ namespace RhythmBase.Settings
 	public class LevelReadOrWriteSettings
 	{
 		/// <summary>
+		/// Event triggered before reading.
+		/// </summary>
+		public event EventHandler BeforeReading;
+		/// <summary>
+		/// Event triggered after reading.
+		/// </summary>
+		public event EventHandler AfterReading;
+		/// <summary>
+		/// Event triggered before writing.
+		/// </summary>
+		public event EventHandler BeforeWriting;
+		/// <summary>
+		/// Event triggered after writing.
+		/// </summary>
+		public event EventHandler AfterWriting;
+		/// <summary>
 		/// Initialize.
 		/// </summary>
-		public LevelReadOrWriteSettings() { }
+		public LevelReadOrWriteSettings()
+		{
+			BeforeReading = delegate { };
+			AfterReading = delegate { };
+			BeforeWriting = delegate { };
+			AfterWriting = delegate { };
+		}
 		/// <summary>
 		/// Enable resource preloading. This may grow read times. 
 		/// Defaults to <see langword="false" />.
@@ -40,5 +62,21 @@ namespace RhythmBase.Settings
 		/// Defaults to <see langword="true" />.
 		/// </summary>
 		public bool Indented { get; set; } = true;
+		internal void OnBeforeReading()
+		{
+			BeforeReading?.Invoke(this, EventArgs.Empty);
+		}
+		internal void OnAfterReading()
+		{
+			AfterReading?.Invoke(this, EventArgs.Empty);
+		}
+		internal void OnBeforeWriting()
+		{
+			BeforeWriting?.Invoke(this, EventArgs.Empty);
+		}
+		internal void OnAfterWriting()
+		{
+			AfterWriting?.Invoke(this, EventArgs.Empty);
+		}
 	}
 }

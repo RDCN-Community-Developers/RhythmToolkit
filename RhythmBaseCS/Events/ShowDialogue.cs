@@ -1,10 +1,16 @@
-﻿namespace RhythmBase.Events
+﻿using Newtonsoft.Json;
+using RhythmBase.Components.Dialogue;
+
+namespace RhythmBase.Events
 {
 	/// <summary>
 	/// Represents an event to show a dialogue in the game.
 	/// </summary>
 	public class ShowDialogue : BaseEvent
 	{
+		private RDDialogueExchange dialogueList = [];
+		private string text = "";
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ShowDialogue"/> class.
 		/// </summary>
@@ -18,7 +24,27 @@
 		/// <summary>
 		/// Gets or sets the text of the dialogue.
 		/// </summary>
-		public string Text { get; set; } = "";
+		public string Text
+		{
+			get => text; set
+			{
+				text = value;
+				dialogueList = RDDialogueExchange.Deserialize(value);
+			}
+		}
+		/// <summary>
+		/// Gets or sets the dialogue list. When set, the Text property is updated with the serialized value of the dialogue list.
+		/// </summary>
+		/// <value>The dialogue list.</value>
+		[JsonIgnore]
+		public RDDialogueExchange DialogueList
+		{
+			get => dialogueList; set
+			{
+				dialogueList = value;
+				text = dialogueList.Serialize();
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the side of the panel where the dialogue will be shown.

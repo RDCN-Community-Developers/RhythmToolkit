@@ -1,5 +1,4 @@
-﻿using RhythmBase.Extensions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
@@ -174,20 +173,37 @@ namespace RhythmBase.Components
 		/// <exception cref="ArgumentException">Thrown when the hexadecimal string length is not 3, 4, 6, or 8</exception>
 		public static RDColor FromRgba(string hex)
 		{
+			if (TryFromRgba(hex, out RDColor color))
+				return color;
+			throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
+		}
+		/// <summary>
+		/// Tries to create an RDColor instance from a hexadecimal string.
+		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
+		/// </summary>
+		/// <param name="hex">The hexadecimal string representing the color.</param>
+		/// <param name="color">When this method returns, contains the RDColor instance created from the hexadecimal string, if the conversion succeeded, or the default value if the conversion failed.</param>
+		/// <returns>true if the hexadecimal string was converted successfully; otherwise, false.</returns>
+		public static bool TryFromRgba(string hex, [MaybeNullWhen(false)] out RDColor color)
+		{
 			hex = hex.Trim();
 			if (hex.StartsWith('#'))
 				hex = hex[1..];
-
-			hex = hex.Length switch
+			string? hex2 = hex.Length switch
 			{
 				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
 				4 => $"{hex[3]}{hex[3]}{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
 				6 => $"FF{hex}",
 				8 => $"{hex[6..8]}{hex[0..6]}",
-				_ => throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long."),
+				_ => null,
 			};
-
-			return new RDColor(Convert.ToUInt32(hex, 16));
+			if (hex2 is null)
+			{
+				color = default;
+				return false;
+			}
+			color = new RDColor(Convert.ToUInt32(hex2, 16));
+			return true;
 		}
 		/// <summary>
 		/// Creates an RDColor instance from a 32-bit RGBA value.
@@ -231,6 +247,34 @@ namespace RhythmBase.Components
 			};
 
 			return new RDColor(Convert.ToUInt32(hex, 16));
+		}
+		/// <summary>
+		/// Tries to create an RDColor instance from a hexadecimal string.
+		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
+		/// </summary>
+		/// <param name="hex">The hexadecimal string representing the color.</param>
+		/// <param name="color">When this method returns, contains the RDColor instance created from the hexadecimal string, if the conversion succeeded, or the default value if the conversion failed.</param>
+		/// <returns>true if the hexadecimal string was converted successfully; otherwise, false.</returns>
+		public static bool TryFromArgb(string hex, [MaybeNullWhen(false)] out RDColor color)
+		{
+			hex = hex.Trim();
+			if (hex.StartsWith('#'))
+				hex = hex[1..];
+			string? hex2 = hex.Length switch
+			{
+				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
+				4 => $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}{hex[3]}{hex[3]}",
+				6 => $"FF{hex}",
+				8 => hex,
+				_ => null,
+			};
+			if (hex2 is null)
+			{
+				color = default;
+				return false;
+			}
+			color = new RDColor(Convert.ToUInt32(hex2, 16));
+			return true;
 		}
 		/// <summary>
 		/// Creates an <see cref="RDColor"/> instance from a 32-bit ARGB value.
@@ -314,11 +358,23 @@ namespace RhythmBase.Components
 		/// Creates an RDColor instance from a color name.
 		/// </summary>
 		/// <param name="name">The name of the color.</param>
-		/// <returns>An RDColor instance representing the specified color.</returns>
-		/// <exception cref="ArgumentException">Thrown when the color name is unknown.</exception>
+		/// <returns>An RDColor instance corresponding to the specified color name.</returns>
+		/// <exception cref="ArgumentException">Thrown when the color name is invalid.</exception>
 		public static RDColor FromName(string name)
 		{
-			return name.ToLower() switch
+			if (TryFromName(name, out RDColor color))
+				return color;
+			throw new ArgumentException($"Invalid color name: {name}.");
+		}
+		/// <summary>
+		/// Tries to create an RDColor instance from a color name.
+		/// </summary>
+		/// <param name="name">The name of the color.</param>
+		/// <param name="color">When this method returns, contains the RDColor instance created from the color name, if the conversion succeeded, or the default value if the conversion failed.</param>
+		/// <returns>true if the color name was converted successfully; otherwise, false.</returns>
+		public static bool TryFromName(string name, [MaybeNullWhen(false)] out RDColor color)
+		{
+			RDColor? color2 = name.ToLower() switch
 			{
 				"aliceblue" => AliceBlue,
 				"antiquewhite" => AntiqueWhite,
@@ -462,8 +518,173 @@ namespace RhythmBase.Components
 				"yellowgreen" => YellowGreen,
 				"transparent" => Transparent,
 				"empty" => Empty,
-				_ => throw new ArgumentException($"Unknown color name: {name}"),
+				_ => null,
 			};
+			if (color2 is null)
+			{
+				color = default;
+				return false;
+			}
+			color = color2.Value;
+			return true;
+		}
+		/// <summary>
+		/// Tries to get the name(s) of the color.
+		/// </summary>
+		/// <param name="names">When this method returns, contains the name(s) of the color if the conversion succeeded, or an empty array if the conversion failed.</param>
+		/// <returns>true if the color name(s) were found; otherwise, false.</returns>
+		/// <remarks>
+		/// For colors with multiple names, the CMYK name is preferred.
+		/// </remarks>
+		public readonly bool TryGetName([NotNullWhen(true)] out string[] names)
+		{
+			names = color switch
+			{
+				4293982463u => ["AliceBlue"],
+				4294634455u => ["AntiqueWhite"],
+				4278255615u => ["Cyan", "Aqua"],
+				4286578644u => ["Aquamarine"],
+				4293984255u => ["Azure"],
+				4294309340u => ["Beige"],
+				4294960324u => ["Bisque"],
+				4278190080u => ["Black"],
+				4294962125u => ["BlanchedAlmond"],
+				4278190335u => ["Blue"],
+				4287245282u => ["BlueViolet"],
+				4289014314u => ["Brown"],
+				4292786311u => ["BurlyWood"],
+				4284456608u => ["CadetBlue"],
+				4286578432u => ["Chartreuse"],
+				4291979550u => ["Chocolate"],
+				4294934352u => ["Coral"],
+				4284782061u => ["CornflowerBlue"],
+				4294965468u => ["Cornsilk"],
+				4292613180u => ["Crimson"],
+				4278190219u => ["DarkBlue"],
+				4278225803u => ["DarkCyan"],
+				4290283019u => ["DarkGoldenrod"],
+				4289309097u => ["DarkGray"],
+				4278215680u => ["DarkGreen"],
+				4290623339u => ["DarkKhaki"],
+				4287299723u => ["DarkMagenta"],
+				4283788079u => ["DarkOliveGreen"],
+				4294937600u => ["DarkOrange"],
+				4288230092u => ["DarkOrchid"],
+				4287299584u => ["DarkRed"],
+				4293498490u => ["DarkSalmon"],
+				4287609995u => ["DarkSeaGreen"],
+				4282924427u => ["DarkSlateBlue"],
+				4281290575u => ["DarkSlateGray"],
+				4278243025u => ["DarkTurquoise"],
+				4287889619u => ["DarkViolet"],
+				4294907027u => ["DeepPink"],
+				4278239231u => ["DeepSkyBlue"],
+				4285098345u => ["DimGray"],
+				4280193279u => ["DodgerBlue"],
+				4289864226u => ["Firebrick"],
+				4294966000u => ["FloralWhite"],
+				4280453922u => ["ForestGreen"],
+				4294902015u => ["Magenta", "Fuchsia"],
+				4292664540u => ["Gainsboro"],
+				4294506751u => ["GhostWhite"],
+				4294956800u => ["Gold"],
+				4292519200u => ["Goldenrod"],
+				4286611584u => ["Gray"],
+				4278222848u => ["Green"],
+				4289593135u => ["GreenYellow"],
+				4293984240u => ["Honeydew"],
+				4294928820u => ["HotPink"],
+				4291648604u => ["IndianRed"],
+				4283105410u => ["Indigo"],
+				4294967280u => ["Ivory"],
+				4293977740u => ["Khaki"],
+				4293322490u => ["Lavender"],
+				4294963445u => ["LavenderBlush"],
+				4286381056u => ["LawnGreen"],
+				4294965965u => ["LemonChiffon"],
+				4289583334u => ["LightBlue"],
+				4293951616u => ["LightCoral"],
+				4292935679u => ["LightCyan"],
+				4294638290u => ["LightGoldenrodYellow"],
+				4292072403u => ["LightGray"],
+				4287688336u => ["LightGreen"],
+				4294948545u => ["LightPink"],
+				4294942842u => ["LightSalmon"],
+				4280332970u => ["LightSeaGreen"],
+				4287090426u => ["LightSkyBlue"],
+				4286023833u => ["LightSlateGray"],
+				4289774814u => ["LightSteelBlue"],
+				4294967264u => ["LightYellow"],
+				4278255360u => ["Lime"],
+				4281519410u => ["LimeGreen"],
+				4294635750u => ["Linen"],
+				4286578688u => ["Maroon"],
+				4284927402u => ["MediumAquamarine"],
+				4278190285u => ["MediumBlue"],
+				4290401747u => ["MediumOrchid"],
+				4287852763u => ["MediumPurple"],
+				4282168177u => ["MediumSeaGreen"],
+				4286277870u => ["MediumSlateBlue"],
+				4278254234u => ["MediumSpringGreen"],
+				4282962380u => ["MediumTurquoise"],
+				4291237253u => ["MediumVioletRed"],
+				4279834992u => ["MidnightBlue"],
+				4294311930u => ["MintCream"],
+				4294960353u => ["MistyRose"],
+				4294960309u => ["Moccasin"],
+				4294958765u => ["NavajoWhite"],
+				4278190208u => ["Navy"],
+				4294833638u => ["OldLace"],
+				4286611456u => ["Olive"],
+				4285238819u => ["OliveDrab"],
+				4294944000u => ["Orange"],
+				4294919424u => ["OrangeRed"],
+				4292505814u => ["Orchid"],
+				4293847210u => ["PaleGoldenrod"],
+				4288215960u => ["PaleGreen"],
+				4289720046u => ["PaleTurquoise"],
+				4292571283u => ["PaleVioletRed"],
+				4294963157u => ["PapayaWhip"],
+				4294957753u => ["PeachPuff"],
+				4291659071u => ["Peru"],
+				4294951115u => ["Pink"],
+				4292714717u => ["Plum"],
+				4289781990u => ["PowderBlue"],
+				4286578816u => ["Purple"],
+				4294901760u => ["Red"],
+				4290547599u => ["RosyBrown"],
+				4282477025u => ["RoyalBlue"],
+				4287317267u => ["SaddleBrown"],
+				4294606962u => ["Salmon"],
+				4294222944u => ["SandyBrown"],
+				4281240407u => ["SeaGreen"],
+				4294964718u => ["SeaShell"],
+				4288696877u => ["Sienna"],
+				4290822336u => ["Silver"],
+				4287090411u => ["SkyBlue"],
+				4285160141u => ["SlateBlue"],
+				4285563024u => ["SlateGray"],
+				4294966010u => ["Snow"],
+				4278255487u => ["SpringGreen"],
+				4282811060u => ["SteelBlue"],
+				4291998860u => ["Tan"],
+				4278222976u => ["Teal"],
+				4292394968u => ["Thistle"],
+				4294927175u => ["Tomato"],
+				4282441936u => ["Turquoise"],
+				4293821166u => ["Violet"],
+				4294303411u => ["Wheat"],
+				uint.MaxValue => ["White"],
+				4294309365u => ["WhiteSmoke"],
+				4294967040u => ["Yellow"],
+				4288335154u => ["YellowGreen"],
+				16777215u => ["Transparent"],
+				0u => ["Empty"],
+				_ => [],
+			};
+			if (names.Length == 0)
+				return false;
+			return true;
 		}
 		/// <inheritdoc/>
 		public static bool operator ==(RDColor left, RDColor right) => left.color == right.color;

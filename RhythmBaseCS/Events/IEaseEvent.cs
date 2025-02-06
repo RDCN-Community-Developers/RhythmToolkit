@@ -1,4 +1,4 @@
-﻿using RhythmBase.Components;
+﻿using RhythmBase.Components.Easing;
 namespace RhythmBase.Events
 {
 	/// <summary>  
@@ -9,6 +9,13 @@ namespace RhythmBase.Events
 		/// <summary>  
 		/// Gets or sets the type of easing.  
 		/// </summary>  
-		Ease.EaseType Ease { get; set; }
+		EaseType Ease { get; set; }
+		///// <summary>  
+		///// Gets the default ease event.  
+		///// </summary>  
+		///// <value>  
+		///// The default ease event.  
+		///// </value>  
+		//static abstract IEaseEvent DefaultEvent => default;
 	}
 }

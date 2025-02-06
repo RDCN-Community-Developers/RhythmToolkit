@@ -36,7 +36,7 @@ namespace RhythmBase.Components
 		{
 			if (string.IsNullOrWhiteSpace(exp))
 				return 0;
-			IEnumerable<RDCodeUtils.Token> tokens = RDCodeUtils.Reader.ReadToEnd(exp); 
+			IEnumerable<RDCodeUtils.Token> tokens = RDCodeUtils.Reader.ReadToEnd(exp);
 			throw new NotImplementedException();
 		}
 		static RDExpression INumberBase<RDExpression>.One => 1;
@@ -61,19 +61,13 @@ namespace RhythmBase.Components
 		/// Initializes a new instance of the <see cref="RDExpression"/> struct with a string value.
 		/// </summary>
 		/// <param name="value">The string value of the expression.</param>
-		public RDExpression(string value)
+		public RDExpression([AllowNull] string value)
 		{
-			this = default;
-			if (float.TryParse(value, out float numeric))
-			{
-				IsNumeric = true;
+			IsNumeric = float.TryParse(value, out float numeric);
+			if (IsNumeric)
 				NumericValue = numeric;
-			}
 			else
-			{
-				IsNumeric = false;
-				_exp = value;
-			}
+				_exp = value ?? "";
 		}
 		/// <inheritdoc/>
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDExpression e && Equals(e);

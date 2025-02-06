@@ -1,4 +1,5 @@
 ﻿using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using System.Reflection;
 using static RhythmBase.Extensions.Extensions;
 
@@ -76,13 +77,13 @@ namespace RhythmBase.Events
 			public static CallCustomMethod SkipRankText(bool value) => PropertyAssignment(nameof(SkipRankText), value);
 			public static CallCustomMethod AlternativeMatrix(bool value) => PropertyAssignment(nameof(AlternativeMatrix), value);
 			public static CallCustomMethod ToggleSingleRowReflections(byte room, byte row, bool value) => FunctionCalling(nameof(ToggleSingleRowReflections), room, row, value);
-			public static CallCustomMethod SetScrollSpeed(byte roomID, float speed, float duration, Ease.EaseType ease) => RoomFunctionCalling(roomID, nameof(SetScrollSpeed), speed, duration, ease);
-			public static CallCustomMethod SetScrollOffset(byte roomID, float cameraOffset, float duration, Ease.EaseType ease) => RoomFunctionCalling(roomID, nameof(SetScrollOffset), cameraOffset, duration, ease);
+			public static CallCustomMethod SetScrollSpeed(byte roomID, float speed, float duration, EaseType ease) => RoomFunctionCalling(roomID, nameof(SetScrollSpeed), speed, duration, ease);
+			public static CallCustomMethod SetScrollOffset(byte roomID, float cameraOffset, float duration, EaseType ease) => RoomFunctionCalling(roomID, nameof(SetScrollOffset), cameraOffset, duration, ease);
 			public static CallCustomMethod DarkenedRollerdisco(byte roomID, float value) => RoomFunctionCalling(roomID, nameof(DarkenedRollerdisco), value);
 			public static CallCustomMethod CurrentSongVol(float targetVolume, float fadeTimeSeconds) => FunctionCalling(nameof(CurrentSongVol), targetVolume, fadeTimeSeconds);
 			public static CallCustomMethod PreviousSongVol(float targetVolume, float fadeTimeSeconds) => FunctionCalling(nameof(PreviousSongVol), targetVolume, fadeTimeSeconds);
-			public static CallCustomMethod EditTree(byte room, string property, float value, float beats, Ease.EaseType ease) => RoomFunctionCalling(room, nameof(EditTree), property, value, beats, ease);
-			public static IEnumerable<CallCustomMethod> EditTree(byte room, ProceduralTree treeProperties, float beats, Ease.EaseType ease)
+			public static CallCustomMethod EditTree(byte room, string property, float value, float beats, EaseType ease) => RoomFunctionCalling(room, nameof(EditTree), property, value, beats, ease);
+			public static IEnumerable<CallCustomMethod> EditTree(byte room, ProceduralTree treeProperties, float beats, EaseType ease)
 			{
 				List<CallCustomMethod> L = [];
 				foreach (FieldInfo p in typeof(ProceduralTree).GetFields())
@@ -93,7 +94,7 @@ namespace RhythmBase.Events
 				}
 				return L;
 			}
-			public static CallCustomMethod EditTreeColor(byte room, bool location, string color, float beats, Ease.EaseType ease) => RoomFunctionCalling(room, nameof(EditTreeColor), location, color, beats, ease);
+			public static CallCustomMethod EditTreeColor(byte room, bool location, string color, float beats, EaseType ease) => RoomFunctionCalling(room, nameof(EditTreeColor), location, color, beats, ease);
 			public struct ProceduralTree
 			{
 				/// <summary>

@@ -12,7 +12,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		protected BaseBeatsPerMinute()
 		{
-			_bpm = 100f;
+			_bpm = Utils.Utils.DefaultBPM;
 		}
 
 		/// <summary>

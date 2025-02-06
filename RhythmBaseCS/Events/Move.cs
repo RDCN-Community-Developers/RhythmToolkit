@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 namespace RhythmBase.Events
 {
 	/// <summary>
@@ -59,7 +60,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the easing type of the move event.
 		/// </summary>
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 
 		/// <summary>
 		/// Returns a string that represents the current object.
