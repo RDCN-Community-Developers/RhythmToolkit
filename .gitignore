@@ -377,3 +377,5 @@ FodyWeavers.xsd
 # 忽略 RhythmBase 文件夹
 /RhythmBase/
 /FastTest/
+/WinFormsApp1_1738759589_1
+/TestUI
