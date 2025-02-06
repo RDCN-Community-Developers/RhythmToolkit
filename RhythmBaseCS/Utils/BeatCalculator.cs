@@ -29,7 +29,7 @@ namespace RhythmBase.Utils
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
 		/// <returns>Total 1-based beats.</returns>
-		internal float BarBeatToBeatOnly(uint bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
+		public float BarBeatToBeatOnly(uint bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
@@ -42,19 +42,19 @@ namespace RhythmBase.Utils
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
-		internal (uint bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
+		public (uint bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>Total time span.</returns>
-		internal TimeSpan BeatOnlyToTimeSpan(float beat) => BeatOnlyToTimeSpan(beat, _BPMList);
+		public TimeSpan BeatOnlyToTimeSpan(float beat) => BeatOnlyToTimeSpan(beat, _BPMList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="timeSpan">Total time span.</param>
 		/// <returns>Total 1-based beats.</returns>
-		internal float TimeSpanToBeatOnly(TimeSpan timeSpan) => TimeSpanToBeatOnly(timeSpan, _BPMList);
+		public float TimeSpanToBeatOnly(TimeSpan timeSpan) => TimeSpanToBeatOnly(timeSpan, _BPMList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
@@ -80,7 +80,7 @@ namespace RhythmBase.Utils
 		}
 		private static TimeSpan BeatOnlyToTimeSpan(float beatOnly, IEnumerable<BaseBeatsPerMinute> BPMCollection)
 		{
-			ValueTuple<float, float> fore = new(1f, 100f);
+			ValueTuple<float, float> fore = new(1f, Utils.DefaultBPM);
 			BaseBeatsPerMinute? foreBPM = BPMCollection.FirstOrDefault();
 			if (foreBPM != null)
 				fore = new ValueTuple<float, float>(foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute);
@@ -96,7 +96,7 @@ namespace RhythmBase.Utils
 		}
 		private static float TimeSpanToBeatOnly(TimeSpan timeSpan, IEnumerable<BaseBeatsPerMinute> BPMCollection)
 		{
-			ValueTuple<float, float> fore = new(1f, 100f);
+			ValueTuple<float, float> fore = new(1f, Utils.DefaultBPM);
 			BaseBeatsPerMinute? foreBPM = BPMCollection.FirstOrDefault();
 			if (foreBPM != null)
 				fore = new ValueTuple<float, float>(foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute);
@@ -120,9 +120,30 @@ namespace RhythmBase.Utils
 		/// </summary>
 		public RDBeat BeatOf(TimeSpan timeSpan) => new(this, timeSpan);
 		/// <summary>
+		/// Creates an interval between two beats.
+		/// </summary>
+		/// <param name="beat1">The first beat.</param>
+		/// <param name="beat2">The second beat.</param>
+		/// <returns>An RDRange representing the interval between the two beats.</returns>
+		public RDRange IntervalOf(RDBeat beat1, RDBeat beat2) => new(new(this, beat1), new(this, beat2));
+		/// <summary>
+		/// Creates an interval between two beats specified by bar and beat.
+		/// </summary>
+		/// <param name="beat1">The first beat specified by bar and beat.</param>
+		/// <param name="beat2">The second beat specified by bar and beat.</param>
+		/// <returns>An RDRange representing the interval between the two beats.</returns>
+		public RDRange IntervalOf((uint bar, float beat) beat1, (uint bar, float beat) beat2) => IntervalOf(BeatOf(beat1.bar, beat1.beat), BeatOf(beat2.bar, beat2.beat));
+		/// <summary>
+		/// Creates an interval between two beats specified by time spans.
+		/// </summary>
+		/// <param name="timeSpan1">The first time span.</param>
+		/// <param name="timeSpan2">The second time span.</param>
+		/// <returns>An RDRange representing the interval between the two time spans.</returns>
+		public RDRange IntervalOf(TimeSpan timeSpan1, TimeSpan timeSpan2) => IntervalOf(BeatOf(timeSpan1), BeatOf(timeSpan2));
+		/// <summary>
 		/// Calculate the BPM of the moment in which the beat is.
 		/// </summary>
-		public float BeatsPerMinuteOf(RDBeat beat) => _BPMList.LastOrDefault((BaseBeatsPerMinute i) => i.Beat < beat)?.BeatsPerMinute ?? 100f;
+		public float BeatsPerMinuteOf(RDBeat beat) => _BPMList.LastOrDefault((BaseBeatsPerMinute i) => i.Beat < beat)?.BeatsPerMinute ?? Utils.DefaultBPM;
 		/// <summary>
 		/// Calculate the CPB of the moment in which the beat is.
 		/// </summary>

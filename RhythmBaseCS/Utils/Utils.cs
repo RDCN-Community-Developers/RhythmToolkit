@@ -59,5 +59,13 @@ namespace RhythmBase.Utils
 			converters.Add(new StringEnumConverter());
 			return EventsSerializer;
 		}
+		/// <summary>
+		/// The default beats per minute.
+		/// </summary>
+		public const float DefaultBPM = 100f;
+		/// <summary>
+		/// The default crotchets per bar.
+		/// </summary>
+		public const int DefaultCPB = 8;
 	}
 }
