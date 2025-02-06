@@ -3,32 +3,6 @@
 namespace RhythmBase.Components.Easing
 {
 	/// <summary>
-	/// Represents a node in the easing process.
-	/// </summary>
-	/// <param name="target">The target value of the easing node.</param>
-	public struct EaseNode(float target)
-	{
-		/// <summary>
-		/// Gets or sets the time at which the easing node starts.
-		/// </summary>
-		public float Time { get; set; } = 0;
-
-		/// <summary>
-		/// Gets or sets the target value of the easing node.
-		/// </summary>
-		public float Target { get; set; } = target;
-
-		/// <summary>
-		/// Gets or sets the duration of the easing node.
-		/// </summary>
-		public float Duration { get; set; } = 0;
-
-		/// <summary>
-		/// Gets or sets the type of easing to be applied.
-		/// </summary>
-		public EaseType Type { get; set; } = EaseType.Linear;
-	}
-	/// <summary>
 	/// Represents a value that changes over time according to a series of easing nodes.
 	/// </summary>
 	/// <remarks>
@@ -36,8 +10,11 @@ namespace RhythmBase.Components.Easing
 	/// </remarks>
 	/// <param name="originalValue">The original value before any easing is applied.</param>
 	/// <param name="nodes">The collection of easing nodes that define how the value changes over time.</param>
-	public class EaseValue(float originalValue, IEnumerable<EaseNode> nodes)
+	public struct EaseValue(float originalValue, IEnumerable<EaseNode> nodes)
 	{
+		/// <summary>
+		/// Gets or sets the collection of easing nodes, ordered by their start time.
+		/// </summary>
 		public EaseNode[] Nodes { get; set; } = [.. nodes.OrderBy(x => x.Time)];
 		/// <summary>
 		/// Gets or sets the original value before any easing is applied.
@@ -48,12 +25,8 @@ namespace RhythmBase.Components.Easing
 		/// </summary>
 		/// <param name="time">The time at which to get the value.</param>
 		/// <returns>The value at the specified time.</returns>
-		public float GetValue(float time)
+		public readonly float GetValue(float time)
 		{
-			if (time > 1.2)
-			{
-				int j = 0;
-			}
 			if (Nodes.Length == 0 || time <= Nodes[0].Time)
 				return OriginalValue;
 			int i = Nodes.Length - 1;
