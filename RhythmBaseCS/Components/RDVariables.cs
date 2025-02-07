@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Text.RegularExpressions;
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -7,60 +6,92 @@ namespace RhythmBase.Components
 	/// </summary>
 	public sealed class RDVariables
 	{
+		/// <summary>
+		/// Enumeration representing different ranks.
+		/// </summary>
+		public enum RDRank
+		{
+			/// <summary>
+			/// S+ rank.
+			/// </summary>
+			SPlus,
+			/// <summary>
+			/// S rank.
+			/// </summary>
+			S,
+			/// <summary>
+			/// A rank.
+			/// </summary>
+			A,
+			/// <summary>
+			/// B rank.
+			/// </summary>
+			B,
+			/// <summary>
+			/// C rank.
+			/// </summary>
+			C,
+			/// <summary>
+			/// D rank.
+			/// </summary>
+			D,
+			/// <summary>
+			/// F rank.
+			/// </summary>
+			F,
+		}
 #pragma warning disable CS1591
-#pragma warning disable SYSLIB1045
+#pragma warning disable IDE1006
 		public RDVariables()
 		{
 			i = new int[10];
 			f = new float[10];
 			b = new bool[10];
 		}
-
-		public static int Rand(int @int) => Random.Shared.Next(1, @int);
-
-		public static bool atLeastRank(char @char) => throw new NotImplementedException();
-
-		public static bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => false;
-
+		public static int Rand(int value) =>
+			(value > 0
+				? Random.Shared.Next(1, value)
+				: -Random.Shared.Next(1, -value)
+			) + 1;
+		public static bool atLeastRank(string rank) => rank switch
+		{
+			"S+" => SimulateCurrentRank <= RDRank.SPlus,
+			"S" => SimulateCurrentRank <= RDRank.S,
+			"A" => SimulateCurrentRank <= RDRank.A,
+			"B" => SimulateCurrentRank <= RDRank.B,
+			"C" => SimulateCurrentRank <= RDRank.C,
+			"D" => SimulateCurrentRank <= RDRank.D,
+			"F" => SimulateCurrentRank <= RDRank.F,
+			_ => throw new ArgumentException("Invalid rank"),
+		};
+		public static bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => numberOfPerfects / (float)hitsToCheck > SimulateAtLeastNPerfectsSuccessRate;
 		public object this[string variableName]
 		{
-			get
+			get => variableName switch
 			{
-				Match match = Regex.Match(variableName, "^([ifb])(\\d)$");
-				int index = match.Groups[2].Value[0] - '0';
-				if (match.Success)
-					return match.Groups[1].Value switch
-					{
-						"i" => i[index],
-						"f" => f[index],
-						"b" => b[index],
-						_ => throw new NotImplementedException(),
-					};
-				return GetType().GetField(variableName)?.GetValue(this)!;
-			}
+			['i', char ii] => i[ii - '0'],
+			['f', char fi] => f[fi - '0'],
+			['b', char bi] => b[bi - '0'],
+				_ => GetType().GetField(variableName)?.GetValue(this)!,
+			};
 			set
 			{
-				Match match = Regex.Match(variableName, "^([ifb])(\\d)$");
-				int index = match.Groups[2].Value[0] - '0';
-				if (match.Success)
+				switch (variableName)
 				{
-					switch (match.Groups[1].Value)
-					{
-						case "i":
-							i[index] = value is int v1 ? v1 : throw new ArgumentException( "Value is not an integer.");
-							break;
-						case "f":
-							f[index] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
-							break;
-						case "b":
-							b[index] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
-							break;
-					}
-				}
-				else
-				{
-					FieldInfo? field = GetType().GetField(variableName);
-					field?.SetValue(this, value);
+					case ['i', char ii]:
+						i[ii - '0'] = value is int v1 ? v1 : throw new ArgumentException("Value is not an integer.");
+						break;
+					case ['f', char fi]:
+						f[fi] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
+						break;
+					case ['b', char bi]:
+						b[bi] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
+						break;
+					default:
+						FieldInfo? field = GetType().GetField(variableName);
+						field?.SetValue(this, value);
+						break;
+
 				}
 			}
 		}
@@ -182,5 +213,7 @@ namespace RhythmBase.Components
 		public bool useFlashFontForFloatingText;
 
 		public bool wobblyLines;
+		public static float SimulateAtLeastNPerfectsSuccessRate { get; set; } = 0.9f;
+		public static RDRank SimulateCurrentRank { get; set; } = RDRank.S;
 	}
 }
