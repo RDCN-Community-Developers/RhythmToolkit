@@ -17,11 +17,8 @@
 	  <LangVersion>Preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Adofai\**" />
     <Compile Remove="Assets\**" />
-    <EmbeddedResource Remove="Adofai\**" />
     <EmbeddedResource Remove="Assets\**" />
-    <None Remove="Adofai\**" />
     <None Remove="Assets\**" />
   </ItemGroup>
   <ItemGroup>
