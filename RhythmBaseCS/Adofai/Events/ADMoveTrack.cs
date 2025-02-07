@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
 namespace RhythmBase.Adofai.Events
 {
@@ -47,7 +48,7 @@ namespace RhythmBase.Adofai.Events
 
 		public RDPoint PositionOffset { get; set; }
 
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 
 		public bool MaxVfxOnly { get; set; }
 	}

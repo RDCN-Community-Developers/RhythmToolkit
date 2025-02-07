@@ -25,9 +25,9 @@ namespace RhythmBase.Adofai.Converters
 				return _canwrite;
 			}
 		}
-		public override void WriteJson(JsonWriter writer, TEvent value, JsonSerializer serializer) => throw new NotImplementedException();
+		public override void WriteJson(JsonWriter writer, TEvent? value, JsonSerializer serializer) => throw new NotImplementedException();
 
-		public override TEvent ReadJson(JsonReader reader, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer) => GetDeserializedObject((JObject)JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer);
+		public override TEvent ReadJson(JsonReader reader, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer) => GetDeserializedObject((JObject)JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer);
 
 		public virtual TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{

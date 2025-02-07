@@ -1,7 +1,7 @@
 ﻿using System;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
-using SkiaSharp;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADBloom : ADBaseTaggedTileAction, IEaseEvent
@@ -19,10 +19,10 @@ namespace RhythmBase.Adofai.Events
 
 		public int Intensity { get; set; }
 
-		public SKColor Color { get; set; }
+		public RDColor Color { get; set; }
 
 		public float Duration { get; set; }
 
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Components.Dialogue;
+using RhythmBase.Components.RichText;
 
 namespace RhythmBase.Events
 {

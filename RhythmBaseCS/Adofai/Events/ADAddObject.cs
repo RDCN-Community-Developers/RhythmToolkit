@@ -1,6 +1,5 @@
 ﻿using System;
 using RhythmBase.Components;
-using SkiaSharp;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADAddObject : ADBaseEvent
@@ -16,9 +15,9 @@ namespace RhythmBase.Adofai.Events
 
 		public PlanetColorTypes PlanetColorType { get; set; }
 
-		public SKColor PlanetColor { get; set; }
+		public RDColor PlanetColor { get; set; }
 
-		public SKColor PlanetTailColor { get; set; }
+		public RDColor PlanetTailColor { get; set; }
 
 		public TrackTypes TrackType { get; set; }
 
@@ -26,9 +25,9 @@ namespace RhythmBase.Adofai.Events
 
 		public ADTrackColorTypes TrackColorType { get; set; }
 
-		public SKColor TrackColor { get; set; }
+		public RDColor TrackColor { get; set; }
 
-		public SKColor SecondaryTrackColor { get; set; }
+		public RDColor SecondaryTrackColor { get; set; }
 
 		public float TrackColorAnimDuration { get; set; }
 
@@ -48,7 +47,7 @@ namespace RhythmBase.Adofai.Events
 
 		public bool TrackGlowEnabled { get; set; }
 
-		public SKColor TrackGlowColor { get; set; }
+		public RDColor TrackGlowColor { get; set; }
 
 		public RDPointN Position { get; set; }
 

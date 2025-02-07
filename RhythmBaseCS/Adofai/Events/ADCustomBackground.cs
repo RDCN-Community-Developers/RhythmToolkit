@@ -1,6 +1,5 @@
 ﻿using System;
 using RhythmBase.Components;
-using SkiaSharp;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADCustomBackground : ADBaseTaggedTileAction
@@ -12,11 +11,11 @@ namespace RhythmBase.Adofai.Events
 
 		public override ADEventType Type { get; }
 
-		public SKColor Color { get; set; }
+		public RDColor Color { get; set; }
 
 		public string BgImage { get; set; }
 
-		public SKColor ImageColor { get; set; }
+		public RDColor ImageColor { get; set; }
 
 		public RDPoint Parallax { get; set; }
 

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
-namespace RhythmBase.Components.Dialogue
+namespace RhythmBase.Components.RichText
 {
 	/// <summary>
 	/// Defines the interface for rich string styles.

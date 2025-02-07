@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace RhythmBase.Components.Dialogue
+namespace RhythmBase.Components.RichText
 {
 	/// <summary>
 	/// Enum representing the different types of rich string events.
@@ -61,7 +61,7 @@ namespace RhythmBase.Components.Dialogue
 	/// </summary>
 	/// <param name="Type">Rich string event type.</param>
 	/// <param name="Index">Rich string event index.</param>
-	public record RDDialogueTone(RDDialogueToneType Type, int Index)
+	public record struct RDDialogueTone(RDDialogueToneType Type, int Index)
 	{
 		/// <summary>
 		/// Gets the pause duration for the dialogue event.

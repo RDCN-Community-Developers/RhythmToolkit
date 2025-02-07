@@ -1,7 +1,7 @@
 ﻿using System;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
-using SkiaSharp;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADFlash : ADBaseTaggedTileAction, IEaseEvent
@@ -17,14 +17,14 @@ namespace RhythmBase.Adofai.Events
 
 		public string Plane { get; set; }
 
-		public SKColor StartColor { get; set; }
+		public RDColor StartColor { get; set; }
 
 		public float StartOpacity { get; set; }
 
-		public SKColor EndColor { get; set; }
+		public RDColor EndColor { get; set; }
 
 		public float EndOpacity { get; set; }
 
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 	}
 }

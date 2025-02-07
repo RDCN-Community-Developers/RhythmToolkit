@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.Components.Dialogue
+﻿namespace RhythmBase.Components.RichText
 {
 	/// <summary>
 	/// Represents a line of rich text with a specific style.

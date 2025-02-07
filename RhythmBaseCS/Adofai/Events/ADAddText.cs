@@ -1,6 +1,5 @@
 ﻿using System;
 using RhythmBase.Components;
-using SkiaSharp;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADAddText : ADBaseEvent
@@ -30,7 +29,7 @@ namespace RhythmBase.Adofai.Events
 
 		public bool LockScale { get; set; }
 
-		public SKColor Color { get; set; }
+		public RDColor Color { get; set; }
 
 		public float Opacity { get; set; }
 

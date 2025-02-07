@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
-using SkiaSharp;
 namespace RhythmBase.Adofai.Events
 {
 	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
@@ -19,7 +19,7 @@ namespace RhythmBase.Adofai.Events
 
 		public string Tag { get; set; }
 
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 
 		public RDPoint? PositionOffset { get; set; }
 
@@ -37,7 +37,7 @@ namespace RhythmBase.Adofai.Events
 
 		public RDSize? Scale { get; set; }
 
-		public SKColor? Color { get; set; }
+		public RDColor? Color { get; set; }
 
 		public float? Opacity { get; set; }
 

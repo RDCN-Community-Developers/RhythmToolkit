@@ -1,4 +1,4 @@
-﻿using RhythmBase.Components.Dialogue;
+﻿using RhythmBase.Components.RichText;
 using System;
 using System.Collections.Generic;
 using System.Linq;

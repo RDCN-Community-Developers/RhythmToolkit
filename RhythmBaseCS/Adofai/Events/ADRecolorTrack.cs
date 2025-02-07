@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
-using SkiaSharp;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADRecolorTrack : ADBaseTaggedTileAction, IEaseEvent
@@ -48,9 +48,9 @@ namespace RhythmBase.Adofai.Events
 
 		public ADTrackColorTypes TrackColorType { get; set; }
 
-		public SKColor TrackColor { get; set; }
+		public RDColor TrackColor { get; set; }
 
-		public SKColor SecondaryTrackColor { get; set; }
+		public RDColor SecondaryTrackColor { get; set; }
 
 		public float TrackColorAnimDuration { get; set; }
 
@@ -62,6 +62,6 @@ namespace RhythmBase.Adofai.Events
 
 		public float TrackGlowIntensity { get; set; }
 
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 	}
 }

@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
-namespace RhythmBase.Components.Dialogue
+namespace RhythmBase.Components.RichText
 {
 
 	/// <summary>
@@ -10,8 +10,7 @@ namespace RhythmBase.Components.Dialogue
 	/// </summary>
 	/// <param name="text">The text content of the rich string.</param>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public struct RDPhrase
-		<TStyle>(string text)
+	public struct RDPhrase<TStyle>(string text)
 		: IEqualityOperators<RDPhrase<TStyle>, RDPhrase<TStyle>, bool>,
 			IEquatable<RDPhrase<TStyle>>
 		where TStyle : IRDRichStringStyle<TStyle>, new()

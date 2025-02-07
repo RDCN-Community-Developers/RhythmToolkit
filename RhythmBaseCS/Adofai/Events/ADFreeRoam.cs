@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
 namespace RhythmBase.Adofai.Events
 {
@@ -16,7 +17,7 @@ namespace RhythmBase.Adofai.Events
 		public int PositionOffset { get; set; }
 		public int OutTime { get; set; }
 		[JsonProperty("OutEase")]
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 		public string HitsoundOnBeats { get; set; }
 		public string HitsoundOffBeats { get; set; }
 		public int CountdownTicks { get; set; }

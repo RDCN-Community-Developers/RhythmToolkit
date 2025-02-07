@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
-using SkiaSharp;
 namespace RhythmBase.Adofai.Events
 {
 	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
@@ -14,13 +14,13 @@ namespace RhythmBase.Adofai.Events
 		public override ADEventType Type { get; }
 		public float Duration { get; set; }
 		public string Tag { get; set; }
-		public Ease.EaseType Ease { get; set; }
-		public SKColor? PlanetColor { get; set; }
-		public SKColor? PlanetTailColor { get; set; }
+		public EaseType Ease { get; set; }
+		public RDColor? PlanetColor { get; set; }
+		public RDColor? PlanetTailColor { get; set; }
 		public float? TrackAngle { get; set; }
 		public ADTrackColorTypes? TrackColorType { get; set; }
-		public SKColor? TrackColor { get; set; }
-		public SKColor? SecondaryTrackColor { get; set; }
+		public RDColor? TrackColor { get; set; }
+		public RDColor? SecondaryTrackColor { get; set; }
 		public float? TrackColorAnimDuration { get; set; }
 		public float? TrackOpacity { get; set; }
 		public ADTrackStyles? TrackStyle { get; set; }
@@ -29,6 +29,6 @@ namespace RhythmBase.Adofai.Events
 		public bool? TrackRedSwirl { get; set; }
 		public bool? TrackGraySetSpeedIcon { get; set; }
 		public bool? TrackGlowEnabled { get; set; }
-		public SKColor? TrackGlowColor { get; set; }
+		public RDColor? TrackGlowColor { get; set; }
 	}
 }

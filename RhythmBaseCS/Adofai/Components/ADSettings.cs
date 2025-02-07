@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Components;
-using SkiaSharp;
+using RhythmBase.Components.Easing;
 namespace RhythmBase.Adofai.Components
 {
 	public class ADSettings
@@ -30,7 +30,7 @@ namespace RhythmBase.Adofai.Components
 
 		public string PreviewIcon { get; set; }
 
-		public SKColor PreviewIconColor { get; set; }
+		public RDColor PreviewIconColor { get; set; }
 
 		public float PreviewSongStart { get; set; }
 
@@ -66,9 +66,9 @@ namespace RhythmBase.Adofai.Components
 
 		public ADTrackColorTypes TrackColorType { get; set; }
 
-		public SKColor TrackColor { get; set; }
+		public RDColor TrackColor { get; set; }
 
-		public SKColor SecondaryTrackColor { get; set; }
+		public RDColor SecondaryTrackColor { get; set; }
 
 		public float TrackColorAnimDuration { get; set; }
 
@@ -86,13 +86,13 @@ namespace RhythmBase.Adofai.Components
 
 		public int BeatsBehind { get; set; }
 
-		public SKColor BackgroundColor { get; set; }
+		public RDColor BackgroundColor { get; set; }
 
 		public bool ShowDefaultBGIfNoImage { get; set; }
 
 		public string BgImage { get; set; }
 
-		public SKColor BgImageColor { get; set; }
+		public RDColor BgImageColor { get; set; }
 
 		public RDPointI Parallax { get; set; }
 
@@ -122,15 +122,15 @@ namespace RhythmBase.Adofai.Components
 
 		public bool StickToFloors { get; set; }
 
-		public Ease.EaseType PlanetEase { get; set; }
+		public EaseType PlanetEase { get; set; }
 
 		public int PlanetEaseParts { get; set; }
 
 		public ADEasePartBehaviors PlanetEasePartBehavior { get; set; }
 
-		public SKColor DefaultTextColor { get; set; }
+		public RDColor DefaultTextColor { get; set; }
 
-		public SKColor DefaultTextShadowColor { get; set; }
+		public RDColor DefaultTextShadowColor { get; set; }
 
 		public string CongratsText { get; set; }
 

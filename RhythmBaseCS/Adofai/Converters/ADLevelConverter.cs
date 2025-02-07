@@ -5,8 +5,8 @@ using Newtonsoft.Json.Serialization;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
-using RhythmBase.Converters;
 using RhythmBase.Extensions;
+using RhythmBase.Converters;
 using RhythmBase.Settings;
 namespace RhythmBase.Adofai.Converters
 {
@@ -66,7 +66,7 @@ namespace RhythmBase.Adofai.Converters
 						break;
 					case "angleData":
 						JArray jobj2 = JArray.Load(reader);
-						outLevel.AddRange(jobj2.ToObject<List<ADTile>>(AllInOneSerializer)!);
+						//outLevel.AddRange(jobj2.ToObject<List<ADTile>>(AllInOneSerializer)!);
 						break;
 					case "actions":
 						JActions = JArray.Load(reader);

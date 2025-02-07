@@ -1,5 +1,6 @@
 ﻿using System;
 using RhythmBase.Components;
+using RhythmBase.Components.Easing;
 using RhythmBase.Events;
 namespace RhythmBase.Adofai.Events
 {
@@ -18,7 +19,7 @@ namespace RhythmBase.Adofai.Events
 
 		public float Intensity { get; set; }
 
-		public Ease.EaseType Ease { get; set; }
+		public EaseType Ease { get; set; }
 
 		public float FadeOut { get; set; }
 	}
