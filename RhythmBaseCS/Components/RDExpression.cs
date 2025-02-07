@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
-using RhythmBase.Utils;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
@@ -36,8 +35,9 @@ namespace RhythmBase.Components
 		{
 			if (string.IsNullOrWhiteSpace(exp))
 				return 0;
-			IEnumerable<RDCodeUtils.Token> tokens = RDCodeUtils.Reader.ReadToEnd(exp);
-			throw new NotImplementedException();
+			if (float.TryParse(exp, out float result))
+				return result;
+			return 0;
 		}
 		static RDExpression INumberBase<RDExpression>.One => 1;
 		static int INumberBase<RDExpression>.Radix => 10;
