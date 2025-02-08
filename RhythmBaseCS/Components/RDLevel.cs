@@ -217,7 +217,16 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="row">The row to be removed.</param>
 		/// <returns></returns>
-		public bool RemoveRow(RowEventCollection row) => Rows.Contains(row) && ModifiableRows.Remove(row);
+		public bool RemoveRow(RowEventCollection row)
+		{
+			if (Rows.Contains(row))
+			{
+				this.RemoveRange(row);
+				return ModifiableRows.Remove(row);
+			}
+			else
+				return false;
+		}
 		/// <summary>
 		/// Read from file as level.
 		/// Use default input settings.
@@ -439,7 +448,7 @@ namespace RhythmBase.Components
 				base.Add(item);
 			else if (item.Type == EventType.TintRows && ((TintRows)item).Parent == null)
 				base.Add(item);
-			else if (Utils.EventTypeUtils.RowTypes.Contains(item.Type))
+			else if (EventTypeUtils.RowTypes.Contains(item.Type))
 			{
 				BaseRowAction rowAction = (BaseRowAction)item;
 				if (rowAction.Parent == null)
@@ -448,7 +457,7 @@ namespace RhythmBase.Components
 				rowAction.Parent.AddSafely((BaseRowAction)item);
 				base.Add(item);
 			}
-			else if (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type))
+			else if (EventTypeUtils.DecorationTypes.Contains(item.Type))
 			{
 				BaseDecorationAction decoAction = (BaseDecorationAction)item;
 				if (decoAction.Parent == null)
@@ -460,7 +469,7 @@ namespace RhythmBase.Components
 			//BPM 和 CPB
 			else if (item.Type == EventType.SetCrotchetsPerBar)
 				AddSetCrotchetsPerBar((SetCrotchetsPerBar)item);
-			else if (Utils.EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
+			else if (EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 				AddBaseBeatsPerMinute((BaseBeatsPerMinute)item);
 			// 其他
 			else
