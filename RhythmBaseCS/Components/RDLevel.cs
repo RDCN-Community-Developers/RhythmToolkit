@@ -254,7 +254,7 @@ namespace RhythmBase.Components
 			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
 			string extension = System.IO.Path.GetExtension(filepath);
 			RDLevel? Read;
-			if (extension != ".rdzip" || extension != ".zip")
+			if (extension != ".rdzip" && extension != ".zip")
 			{
 				if (extension != ".rdlevel")
 					throw new RhythmBaseException("File not supported.");
