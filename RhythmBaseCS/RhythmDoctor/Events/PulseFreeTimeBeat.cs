@@ -6,6 +6,8 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// </summary>
 	public class PulseFreeTimeBeat : BaseBeat
 	{
+		private uint customPulse;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PulseFreeTimeBeat"/> class.
 		/// </summary>
@@ -24,7 +26,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the custom pulse value.
 		/// </summary>
-		public uint CustomPulse { get; set; }
+		public uint CustomPulse
+		{
+			get => customPulse; set
+			{
+				customPulse = value;
+				Action = ActionType.Custom;
+			}
+		}
+
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
