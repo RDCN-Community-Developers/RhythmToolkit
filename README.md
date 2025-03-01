@@ -14,4 +14,4 @@ C Sharp, Visual Basic
 
 感谢节奏医生饭制部玩家对这个项目的支持。
 
-[API文档](/RadiationTherapy.md) 
+[教程文档](https://docs.obugs.cn/#/RhythmBaseTutorial) 
