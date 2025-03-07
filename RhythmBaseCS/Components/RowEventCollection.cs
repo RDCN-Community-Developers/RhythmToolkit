@@ -57,7 +57,7 @@ namespace RhythmBase.Components
 		/// Gets the initial beat sound for the row.
 		/// </summary>
 		[JsonIgnore]
-		public RDAudio Sound { get; }
+		public RDAudio Sound { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the beats are muted.
@@ -133,9 +133,27 @@ namespace RhythmBase.Components
 		/// <param name="item">The row event to add.</param>
 		public override void Add(BaseRowAction item)
 		{
-			item._parent?.Remove(item);
-			item._parent = this;
-			Parent?.Add(item);
+			if (item is not BaseBeat ||
+				(item is BaseBeat && (
+				((item.Type
+				is EventType.AddClassicBeat
+				or EventType.AddFreeTimeBeat
+				or EventType.PulseFreeTimeBeat
+				or EventType.SetRowXs
+				) && RowType is RowType.Classic) ||
+				((item.Type
+				is EventType.AddOneshotBeat
+				or EventType.SetOneshotWave
+				) && RowType is RowType.Oneshot)
+				))
+				)
+			{
+				item._parent?.Remove(item);
+				item._parent = this;
+				Parent?.Add(item);
+				return;
+			}
+			throw new IllegalRowEventTypeException(item.Type, RowType);
 		}
 
 		/// <summary>
