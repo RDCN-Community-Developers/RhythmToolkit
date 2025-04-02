@@ -23,7 +23,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the voice source.
 		/// </summary>
-		public VoiceSources VoiceSource { get; set; }
+		public VoiceSources VoiceSource { get; set; } = VoiceSources.Nurse;
 
 		/// <summary>
 		/// Gets or sets the tick value.
@@ -33,7 +33,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the volume.
 		/// </summary>
-		public uint Volume { get; set; }
+		public uint Volume { get; set; } = 100;
 
 		/// <summary>
 		/// Gets the event type.

@@ -11,7 +11,6 @@ namespace RhythmBase.Events
 		/// </summary>
 		public SetCountingSound()
 		{
-			Volume = 100;
 			Sounds = new RDAudio[7];
 			Type = EventType.SetCountingSound;
 			Tab = Tabs.Sounds;
@@ -35,7 +34,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the volume of the counting sound.
 		/// </summary>
-		public int Volume { get; set; }
+		public int Volume { get; set; } = 100;
 
 		/// <summary>
 		/// Gets or sets the list of sounds for the counting sound.

@@ -31,7 +31,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the tick value.
 		/// </summary>
-		public float Tick { get; set; }
+		public float Tick { get; set; } = 1f;
 
 		/// <summary>
 		/// Gets or sets the number of loops.

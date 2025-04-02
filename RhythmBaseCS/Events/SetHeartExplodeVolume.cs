@@ -17,7 +17,7 @@
 		/// <summary>
 		/// Gets or sets the volume of the heart explosion sound.
 		/// </summary>
-		public uint Volume { get; set; }
+		public uint Volume { get; set; } = 60;
 
 		/// <summary>
 		/// Gets the type of the event.
