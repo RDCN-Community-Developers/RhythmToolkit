@@ -7,7 +7,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents a floating text event in a room.
 	/// </summary>
-	public class FloatingText : BaseEvent, IRoomEvent,IDurationEvent
+	public class FloatingText : BaseEvent, IRoomEvent,IDurationEvent, IColorEvent
 	{
 		/// <summary>
 		/// Gets the type of the event.

@@ -9,6 +9,7 @@ using RhythmBase.Utils;
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
+using System.Reflection;
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -443,34 +444,37 @@ namespace RhythmBase.Components
 			//更改节拍的关联关卡
 			((BaseEvent)item)._beat._calculator = Calculator;
 			((BaseEvent)item)._beat.ResetCache();
-			if (item.Type == EventType.Comment && ((Comment)item).Parent == null)
+			//重置调色板关联
+			if (item is IColorEvent colorEvent)
+				foreach (PropertyInfo info in item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+					if (info.PropertyType == typeof(PaletteColor))
+						typeof(PaletteColor).GetField(nameof(PaletteColor.parent), BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(info.GetValue(colorEvent), ColorPalette);
+			if (item is Comment comment && comment.Parent == null)
 				//注释事件可能在精灵板块，也可能不在
 				base.Add(item);
-			else if (item.Type == EventType.TintRows && ((TintRows)item).Parent == null)
+			else if (item is TintRows tintRows && tintRows.Parent == null)
 				base.Add(item);
-			else if (EventTypeUtils.RowTypes.Contains(item.Type))
+			else if (item is BaseRowAction baseRowAction)
 			{
-				BaseRowAction rowAction = (BaseRowAction)item;
-				if (rowAction.Parent == null)
+				if (baseRowAction.Parent == null)
 					throw new UnreadableEventException("The Parent property of this event should not be null. Call RowEventCollection.Add() instead.", item);
 				//添加至对应轨道
-				rowAction.Parent.AddSafely((BaseRowAction)item);
+				baseRowAction.Parent.AddSafely(baseRowAction);
 				base.Add(item);
 			}
-			else if (EventTypeUtils.DecorationTypes.Contains(item.Type))
+			else if (item is BaseDecorationAction decoAction)
 			{
-				BaseDecorationAction decoAction = (BaseDecorationAction)item;
 				if (decoAction.Parent == null)
 					throw new UnreadableEventException("The Parent property of this event should not be null. Call DecorationEventCollection.Add() instead.", item);
 				//添加至对应精灵
-				decoAction.Parent.AddSafely((BaseDecorationAction)item);
+				decoAction.Parent.AddSafely(decoAction);
 				base.Add(item);
 			}
 			//BPM 和 CPB
-			else if (item.Type == EventType.SetCrotchetsPerBar)
-				AddSetCrotchetsPerBar((SetCrotchetsPerBar)item);
-			else if (EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
-				AddBaseBeatsPerMinute((BaseBeatsPerMinute)item);
+			else if (item is SetCrotchetsPerBar setCrochetsPerBar)
+				AddSetCrotchetsPerBar(setCrochetsPerBar);
+			else if (item is BaseBeatsPerMinute baseBeatsPerMinute)
+				AddBaseBeatsPerMinute(baseBeatsPerMinute);
 			// 其他
 			else
 				base.Add(item);

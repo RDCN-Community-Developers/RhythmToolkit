@@ -4,7 +4,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents a text explosion event in a room.
 	/// </summary>
-	public class TextExplosion : BaseEvent, IRoomEvent
+	public class TextExplosion : BaseEvent, IRoomEvent, IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TextExplosion"/> class.

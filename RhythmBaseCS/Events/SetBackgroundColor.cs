@@ -5,7 +5,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents an event to set the background color.
 	/// </summary>
-	public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent
+	public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetBackgroundColor"/> class.

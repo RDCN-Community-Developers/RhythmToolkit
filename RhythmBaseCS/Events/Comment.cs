@@ -4,7 +4,7 @@ using RhythmBase.Components;
 namespace RhythmBase.Events
 {
 	/// <inheritdoc />
-	public partial class Comment : BaseDecorationAction
+	public partial class Comment : BaseDecorationAction, IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Comment"/> class.

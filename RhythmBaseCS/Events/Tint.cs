@@ -7,7 +7,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents a Tint event which is a type of BaseDecorationAction and implements IEaseEvent.
 	/// </summary>
-	public class Tint : BaseDecorationAction, IEaseEvent
+	public class Tint : BaseDecorationAction, IEaseEvent, IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tint"/> class.

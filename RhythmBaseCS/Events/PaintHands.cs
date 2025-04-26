@@ -5,7 +5,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents an event to paint hands with specified properties.
 	/// </summary>
-	public class PaintHands : BaseEvent, IEaseEvent, IRoomEvent
+	public class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PaintHands"/> class.

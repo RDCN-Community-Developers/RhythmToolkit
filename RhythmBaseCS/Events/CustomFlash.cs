@@ -5,7 +5,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents a custom flash event.
 	/// </summary>
-	public class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent
+	public class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent,IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CustomFlash"/> class.
