@@ -13,7 +13,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public SetVFXPreset()
 		{
-			Rooms = new RDRoom(true, new byte[1]);
+			Rooms = new RDRoom(true, [0]);
 			Color = new PaletteColor(false);
 			Type = EventType.SetVFXPreset;
 			Tab = Tabs.Actions;

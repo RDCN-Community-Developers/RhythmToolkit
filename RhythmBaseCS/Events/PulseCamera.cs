@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public PulseCamera()
 		{
-			Rooms = new RDRoom(true, new byte[1]);
+			Rooms = new RDRoom(true, [0]);
 			Type = EventType.PulseCamera;
 			Tab = Tabs.Actions;
 		}

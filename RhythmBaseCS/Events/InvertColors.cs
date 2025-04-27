@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public InvertColors()
 		{
-			Rooms = new RDRoom(false, new byte[1]);
+			Rooms = new RDRoom(false, [0]);
 			Type = EventType.InvertColors;
 			Tab = Tabs.Actions;
 		}

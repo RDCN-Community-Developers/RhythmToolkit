@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public SetHandOwner()
 		{
-			Rooms = new RDRoom(true, new byte[1]);
+			Rooms = new RDRoom(true, [0]);
 			Type = EventType.SetHandOwner;
 			Tab = Tabs.Actions;
 		}

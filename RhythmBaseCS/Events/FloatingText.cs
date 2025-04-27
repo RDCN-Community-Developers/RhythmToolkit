@@ -28,7 +28,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the room associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; } = new RDRoom(true, new byte[1]);
+		public RDRoom Rooms { get; set; } = new RDRoom(true, [0]);
 
 		/// <summary>
 		/// Gets or sets the fade out rate of the text.

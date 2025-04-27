@@ -12,9 +12,11 @@ namespace RhythmBase.Events
 		/// </summary>
 		public CustomFlash()
 		{
-			Rooms = new RDRoom(true, new byte[1]);
+			Rooms = new RDRoom(true, [0]);
 			StartColor = new PaletteColor(false);
 			EndColor = new PaletteColor(false);
+			StartOpacity = 100;
+			EndOpacity = 100;
 			Type = EventType.CustomFlash;
 			Tab = Tabs.Actions;
 		}
