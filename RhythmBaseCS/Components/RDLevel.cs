@@ -6,7 +6,6 @@ using RhythmBase.Exceptions;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
 using RhythmBase.Utils;
-
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Reflection;

@@ -22,7 +22,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets the target identifier.
 		/// </summary>
-		public virtual string Target => Parent?.Id ?? "";
+		public virtual string Target => Parent?.Id ?? _decoId;
 
 		/// <summary>
 		/// Gets or sets the beat associated with this action.
@@ -35,7 +35,7 @@ namespace RhythmBase.Events
 			set => _beat = _beat.BaseLevel == null ?
 							value.BaseLevel == null ?
 								value :
-								value.WithoutBinding() :
+								value.WithoutLink() :
 							new(_beat.BaseLevel.Calculator, value);
 		}
 
@@ -74,5 +74,6 @@ namespace RhythmBase.Events
 		/// The parent decoration event collection.
 		/// </summary>
 		internal DecorationEventCollection? _parent;
+		internal string _decoId = "";
 	}
 }

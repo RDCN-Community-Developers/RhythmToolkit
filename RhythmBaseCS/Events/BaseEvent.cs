@@ -38,7 +38,7 @@ namespace RhythmBase.Events
 			set
 			{
 				if (_beat.BaseLevel == null)
-					_beat = value.BaseLevel == null ? value : value.WithoutBinding();
+					_beat = value.BaseLevel == null ? value : value.WithoutLink();
 				else
 				{
 					value = new RDBeat(_beat.BaseLevel.Calculator, value);
@@ -77,12 +77,12 @@ namespace RhythmBase.Events
 			if (EventTypeUtils.ToEnum<TEvent>() == Type)
 			{
 				TEvent e = (TEvent)MemberwiseClone();
-				((BaseEvent)(object)e)._beat = Beat.WithoutBinding();
+				((BaseEvent)(object)e)._beat = Beat.WithoutLink();
 				return e;
 			}
 			TEvent temp = new()
 			{
-				Beat = Beat.WithoutBinding(),
+				Beat = Beat.WithoutLink(),
 				Y = Y,
 				Tag = Tag,
 				Condition = Condition,
@@ -99,7 +99,7 @@ namespace RhythmBase.Events
 		{
 			TEvent temp = new()
 			{
-				Beat = Beat.WithoutBinding(),
+				Beat = Beat.WithoutLink(),
 				Y = Y,
 				Tag = Tag,
 				Condition = Condition,

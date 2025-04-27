@@ -44,23 +44,16 @@ namespace RhythmBase.Events
 				_beat = _beat.BaseLevel == null
 					? value.BaseLevel == null
 						? value
-						: value.WithoutBinding()
+						: value.WithoutLink()
 					: new(_beat.BaseLevel.Calculator, value);
 			}
 		}
 
 		/// <summary>
-		/// Gets the row index. This function is obsolete and may be removed in the next release. Use Index instead.
-		/// </summary>
-		[JsonIgnore]
-		[Obsolete("This function is obsolete and may be removed in the next release. Use Index instead.")]
-		public int Row { get; }
-
-		/// <summary>
 		/// Gets the index of the row in the parent collection.
 		/// </summary>
 		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
-		public int Index => Parent?.Index ?? -1;
+		public int Index => Parent?.Index ?? _row;
 
 		/// <summary>
 		/// Clones this event and its basic properties. Clone will be added to the level.
@@ -88,5 +81,6 @@ namespace RhythmBase.Events
 		}
 
 		internal RowEventCollection? _parent;
+		internal int _row;
 	}
 }

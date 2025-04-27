@@ -43,7 +43,7 @@ namespace RhythmBase.Utils
 				ContractResolver = new RDContractResolver()
 			};
 			IList<JsonConverter> converters = EventsSerializer.Converters;
-			converters.Add(new PanelColorConverter(rdlevel.ColorPalette));
+			converters.Add(new PaletteColorConverter(rdlevel.ColorPalette));
 			converters.Add(new ColorConverter());
 			converters.Add(new ConditionalConverter());
 			converters.Add(new CharacterConverter());

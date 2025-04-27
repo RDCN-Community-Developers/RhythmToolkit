@@ -57,7 +57,7 @@ namespace RhythmBase.Components
 		/// Gets the initial beat sound for the row.
 		/// </summary>
 		[JsonIgnore]
-		public RDAudio Sound { get; }
+		public RDAudio Sound { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the beats are muted.
