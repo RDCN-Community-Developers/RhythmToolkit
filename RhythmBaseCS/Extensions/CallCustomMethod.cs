@@ -22,6 +22,7 @@ namespace RhythmBase.Events
 																										 : i.ToString() ?? ""))}";
 			public static CallCustomMethod RoomFunctionCalling(byte room, string functionName, params object[] @params) => new() { MethodName = $"room[{room}].{functionName}({ArgumentCombining(@params)})" };
 			private static CallCustomMethod VfxFunctionCalling(string functionName, params object[] @params) => new() { MethodName = $"vfx.{functionName}({ArgumentCombining(@params)})" };
+			public static CallCustomMethod BombBeats(bool value) => PropertyAssignment(nameof(BombBeats), value);
 			public static CallCustomMethod SetScoreboardLights(bool Mode, string Text) => FunctionCalling(nameof(SetScoreboardLights), Mode, Text);
 			public static CallCustomMethod InvisibleChars(bool value) => PropertyAssignment(nameof(InvisibleChars), value);
 			public static CallCustomMethod InvisibleHeart(bool value) => PropertyAssignment(nameof(InvisibleHeart), value);

@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// Gets the parent decoration event collection.
 		/// </summary>
 		[JsonIgnore]
-		public DecorationEventCollection? Parent => _parent;
+		public Decoration? Parent => _parent;
 
 		/// <summary>
 		/// Gets or sets the Y coordinate.
@@ -57,7 +57,7 @@ namespace RhythmBase.Events
 		/// <typeparam name="TEvent">The type of event that will be generated.</typeparam>
 		/// <param name="decoration">The decoration event collection to associate with the clone.</param>
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
-		internal TEvent Clone<TEvent>(DecorationEventCollection decoration) where TEvent : BaseDecorationAction, new()
+		internal TEvent Clone<TEvent>(Decoration decoration) where TEvent : BaseDecorationAction, new()
 		{
 			TEvent Temp = base.Clone<TEvent>(decoration.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
 			Temp._parent = decoration;
@@ -73,7 +73,7 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// The parent decoration event collection.
 		/// </summary>
-		internal DecorationEventCollection? _parent;
+		internal Decoration? _parent;
 		internal string _decoId = "";
 	}
 }

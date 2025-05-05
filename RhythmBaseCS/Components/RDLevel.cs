@@ -16,6 +16,8 @@ namespace RhythmBase.Components
 	/// </summary>
 	public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	{
+		/// <inheritdoc/>
+		public override int Count => Rows.Sum(i => i.Count) + Decorations.Sum(i => i.Count) + base.Count;
 		/// <summary>
 		/// The calculator that comes with the level.
 		/// </summary>
@@ -25,16 +27,14 @@ namespace RhythmBase.Components
 		/// Level Settings.
 		/// </summary>
 		public Settings Settings { get; set; }
-		internal List<RowEventCollection> ModifiableRows { get; } = new List<RowEventCollection>(16);
-		internal List<DecorationEventCollection> ModifiableDecorations { get; } = [];
 		/// <summary>
 		/// Level tile collection.
 		/// </summary>
-		public IReadOnlyList<RowEventCollection> Rows => ModifiableRows.AsReadOnly();
+		public RowCollection Rows { get; }
 		/// <summary>
 		/// Level decoration collection.
 		/// </summary>
-		public IReadOnlyList<DecorationEventCollection> Decorations => ModifiableDecorations.AsReadOnly();
+		public DecorationCollection Decorations { get; }
 		/// <summary>
 		/// Level condition collection.
 		/// </summary>
@@ -49,7 +49,7 @@ namespace RhythmBase.Components
 		public RDColor[] ColorPalette
 		{
 			get => colorPalette;
-			set => colorPalette = value.Length == 21 ? value : throw new RhythmBaseException();
+			internal set => colorPalette = value.Length == 21 ? value : throw new RhythmBaseException();
 		}
 		/// <summary>
 		/// Level file path.
@@ -79,6 +79,8 @@ namespace RhythmBase.Components
 			Conditionals = [];
 			Bookmarks = [];
 			ColorPalette = new RDColor[21];
+			Rows = new(this);
+			Decorations = new(this);
 		}
 
 		/// <summary>
@@ -146,7 +148,7 @@ namespace RhythmBase.Components
 				playsong.Song = new RDAudio() { Filename = "sndOrientalTechno" };
 				settheme.Preset = SetTheme.Theme.OrientalTechno;
 				rdlevel.AddRange([playsong, settheme]);
-				RowEventCollection samurai = rdlevel.CreateRow(new RDSingleRoom(RDRoomIndex.Room1), RDCharacters.Samurai);
+				Row samurai = rdlevel.CreateRow(new RDSingleRoom(RDRoomIndex.Room1), RDCharacters.Samurai);
 				samurai.Sound.Filename = "Shaker";
 				samurai.Add(new AddClassicBeat());
 				return rdlevel;
@@ -158,14 +160,15 @@ namespace RhythmBase.Components
 		/// <param name="room">The room where this decoration is in.</param>
 		/// <param name="sprite">The sprite referenced by this decoration.</param>
 		/// <returns>Decoration that created and added to the level.</returns>
-		public DecorationEventCollection CreateDecoration(RDSingleRoom room, [NotNull] string sprite)
+		[Obsolete("Use `new Decoration()` instead. This method will be removed in the future.")]
+		public Decoration CreateDecoration(RDSingleRoom room, [NotNull] string sprite)
 		{
-			DecorationEventCollection temp = new(room)
+			Decoration temp = new(room)
 			{
 				Parent = this,
 				Filename = sprite
 			};
-			ModifiableDecorations.Add(temp);
+			Decorations.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -173,10 +176,11 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="decoration">Decoration that was copied.</param>
 		/// <returns></returns>
-		public DecorationEventCollection CloneDecoration(DecorationEventCollection decoration)
+		[Obsolete("Use `Decoration.Clone()` instead. This method will be removed in the future.")]
+		public Decoration CloneDecoration(Decoration decoration)
 		{
-			DecorationEventCollection temp = decoration.Clone();
-			ModifiableDecorations.Add(temp);
+			Decoration temp = decoration.Clone();
+			Decorations.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -184,12 +188,13 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="decoration">The decoration to be removed.</param>
 		/// <returns></returns>
-		public bool RemoveDecoration(DecorationEventCollection decoration)
+		[Obsolete("Use `RDLevel.Decorations.Remove()` instead. This method will be removed in the future.")]
+		public bool RemoveDecoration(Decoration decoration)
 		{
 			if (Decorations.Contains(decoration))
 			{
 				this.RemoveRange(decoration);
-				return ModifiableDecorations.Remove(decoration);
+				return Decorations.Remove(decoration);
 			}
 			else
 				return false;
@@ -200,16 +205,17 @@ namespace RhythmBase.Components
 		/// <param name="room">The room where this row is in.</param>
 		/// <param name="character">The character used by this row.</param>
 		/// <returns>Row that created and added to the level.</returns>
-		public RowEventCollection CreateRow(RDSingleRoom room, RDCharacter character)
+		[Obsolete("Use `new Row()` instead. This method will be removed in the future.")]
+		public Row CreateRow(RDSingleRoom room, RDCharacter character)
 		{
-			RowEventCollection temp = new()
+			Row temp = new()
 			{
 				Character = character,
 				Rooms = room,
 				Parent = this
 			};
 			temp.Parent = this;
-			ModifiableRows.Add(temp);
+			Rows.Add(temp);
 			return temp;
 		}
 		/// <summary>
@@ -217,12 +223,13 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="row">The row to be removed.</param>
 		/// <returns></returns>
-		public bool RemoveRow(RowEventCollection row)
+		[Obsolete("Use `RDLevel.Rows.Remove()` instead. This method will be removed in the future.")]
+		public bool RemoveRow(Row row)
 		{
 			if (Rows.Contains(row))
 			{
 				this.RemoveRange(row);
-				return ModifiableRows.Remove(row);
+				return Rows.Remove(row);
 			}
 			else
 				return false;
@@ -484,7 +491,7 @@ namespace RhythmBase.Components
 		/// <param name="item">Event.</param>
 		/// <returns></returns>
 		public override bool Contains(IBaseEvent item) => (Utils.EventTypeUtils.RowTypes.Contains(item.Type)
-			&& Rows.Any((RowEventCollection i) => i.Contains(item))) || (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((DecorationEventCollection i) => i.Contains(item))) || base.Contains(item);
+			&& Rows.Any((Row i) => i.Contains(item))) || (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((Decoration i) => i.Contains(item))) || base.Contains(item);
 		/// <summary>
 		/// Remove event from the level.
 		/// </summary>
@@ -494,14 +501,14 @@ namespace RhythmBase.Components
 		{
 			bool Remove;
 			if (Utils.EventTypeUtils.RowTypes.Contains(item.Type)
-				&& Rows.Any((RowEventCollection i) => i.RemoveSafely((BaseRowAction)item)))
+				&& Rows.Any((Row i) => i.RemoveSafely((BaseRowAction)item)))
 			{
 				base.Remove(item);
 				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
 			else if (Utils.EventTypeUtils.DecorationTypes.Contains(item.Type)
-					&& Decorations.Any((DecorationEventCollection i) => i.RemoveSafely((BaseDecorationAction)item)))
+					&& Decorations.Any((Decoration i) => i.RemoveSafely((BaseDecorationAction)item)))
 			{
 				base.Remove(item);
 				((BaseEvent)item)._beat._calculator = null;

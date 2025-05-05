@@ -17,10 +17,10 @@ namespace RhythmBase.Converters
 		{
 			JsonProperty p = base.CreateProperty(member, memberSerialization);
 			Predicate<object>? f = null;
-			if (p.DeclaringType == typeof(RowEventCollection))
+			if (p.DeclaringType == typeof(Row))
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
-					nameof(RowEventCollection.RowToMimic) => i => ((RowEventCollection)i).RowToMimic >= 0,
+					nameof(Row.RowToMimic) => i => ((Row)i).RowToMimic >= 0,
 					_ => null
 				};
 			if (p.DeclaringType?.IsAssignableTo(typeof(BaseEvent)) == true)

@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the parent row event collection.
 		/// </summary>
 		[JsonIgnore]
-		public RowEventCollection? Parent
+		public Row? Parent
 		{
 			get => _parent;
 			internal set
@@ -73,14 +73,14 @@ namespace RhythmBase.Events
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
 		/// <param name="row">The row event collection to assign the clone to.</param>
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
-		internal TEvent Clone<TEvent>(RowEventCollection row) where TEvent : BaseRowAction, new()
+		internal TEvent Clone<TEvent>(Row row) where TEvent : BaseRowAction, new()
 		{
 			TEvent Temp = base.Clone<TEvent>(row.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
 			Temp.Parent = row;
 			return Temp;
 		}
 
-		internal RowEventCollection? _parent;
+		internal Row? _parent;
 		internal int _row;
 	}
 }

@@ -40,7 +40,7 @@ namespace RhythmBase.Converters
 			}
 			if (settings.Linked)
 			{
-				RowEventCollection Parent = level.ModifiableRows[rowId];
+				Row Parent = level.Rows[rowId];
 				obj._parent = Parent;
 			}
 			obj._row = rowId;

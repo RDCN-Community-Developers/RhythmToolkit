@@ -13,7 +13,7 @@ namespace RhythmBase.Converters
 			TEvent? obj = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
 			if (obj is null) return obj;
 			string decoId = jobj["target"]?.ToObject<string>()!;
-			DecorationEventCollection? Parent = level.ModifiableDecorations.FirstOrDefault(i => i.Id == decoId);
+			Decoration? Parent = level.Decorations.FirstOrDefault(i => i.Id == decoId);
 			if (Parent == null)
 				if (!settings.Linked && obj.Type != EventType.Comment)
 					switch (settings.UnreadableEventsHandling)
