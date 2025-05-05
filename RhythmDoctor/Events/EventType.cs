@@ -25,10 +25,12 @@
 		/// Drop the bass.
 		/// </summary>
 		BassDrop,
+		Blend,
 		/// <summary>
 		/// Call a custom method.
 		/// </summary>
 		CallCustomMethod,
+		ChangeCharacter,
 		/// <summary>
 		/// Change the players' rows.
 		/// </summary>
@@ -149,6 +151,8 @@
 		/// Reorder the rooms.
 		/// </summary>
 		ReorderRooms,
+		ReorderRow,
+		ReorderSprite,
 		/// <summary>
 		/// Say "Ready, Get Set, Go".
 		/// </summary>
@@ -233,6 +237,7 @@
 		/// Set the visibility.
 		/// </summary>
 		SetVisible,
+		SetWindowContent,
 		/// <summary>
 		/// Shake the screen.
 		/// </summary>
@@ -277,6 +282,7 @@
 		/// Tint rows effect.
 		/// </summary>
 		TintRows,
+		WindowResize,
 #if DEBUG
 #endif
 	}

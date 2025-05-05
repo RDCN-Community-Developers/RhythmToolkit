@@ -59,6 +59,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			converters.Add(new BaseRowActionConverter<BaseRowAction>(rdlevel, settings));
 			converters.Add(new BaseDecorationActionConverter<BaseDecorationAction>(rdlevel, settings));
 			converters.Add(new BaseEventConverter<IBaseEvent>(rdlevel, settings));
+			converters.Add(new ReorderSpriteConverter(rdlevel, settings));
 			converters.Add(new BookmarkConverter(rdlevel.Calculator));
 			converters.Add(new StringEnumConverter());
 			return EventsSerializer;

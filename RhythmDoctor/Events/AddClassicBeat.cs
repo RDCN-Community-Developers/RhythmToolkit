@@ -25,6 +25,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the hold value.
 		/// </summary>
 		public float Hold { get; set; }
+
+		/// <summary>  
+		/// Gets or sets the number of beats in a classic beat pattern.  
+		/// </summary>  
+		public ushort Length { get; set; } = 7;
+
 		/// <summary>
 		/// Gets or sets the classic beat pattern.
 		/// </summary>

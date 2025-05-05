@@ -29,6 +29,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		Rooms,
 		/// <summary>  
+		/// Represents the Windows tab.  
+		/// </summary>  
+		Windows,
+		/// <summary>  
 		/// Represents an unknown tab.  
 		/// </summary>  
 		Unknown

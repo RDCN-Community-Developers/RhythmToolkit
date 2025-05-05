@@ -1,0 +1,21 @@
+﻿namespace RhythmBase.Components
+{
+	/// <summary>
+	/// Defines the possible transition types for hiding the row.
+	/// </summary>
+	public enum Transitions
+	{
+		/// <summary>
+		/// Smooth transition.
+		/// </summary>
+		Smooth,
+		/// <summary>
+		/// Instant transition.
+		/// </summary>
+		Instant,
+		/// <summary>
+		/// Full transition.
+		/// </summary>
+		Full
+	}
+}

@@ -40,6 +40,17 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets a value indicating whether to skip the shot.
 		/// </summary>
 		public bool Skipshot { get; set; }
+
+		/// <summary>  
+		/// Gets or sets a value indicating whether the hold action is enabled.  
+		/// </summary>  
+		public bool Hold { get; set; } = false;
+
+		/// <summary>  
+		/// Gets or sets a value indicating whether a sudden hold cue is triggered.  
+		/// </summary>  
+		public bool SuddenHoldCue { get; set; } = false;
+
 		/// <summary>
 		/// Gets or sets the freeze burn mode.
 		/// </summary>
@@ -55,8 +66,7 @@ namespace RhythmBase.RhythmDoctor.Events
 					? 0.5f : value;
 		}
 		/// <inheritdoc/>
-		public override EventType Type => EventType.AddOneshotBeat;
-		/// <inheritdoc/>
+		public override EventType Type => EventType.AddOneshotBeat;		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {FreezeBurnMode} {PulseType}";
 		private float _delay = 0f;
 		private string GetDebuggerDisplay() => ToString();
