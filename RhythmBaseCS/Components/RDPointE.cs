@@ -46,35 +46,35 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(string x, float y) : this((RDExpression)x, (RDExpression)y) { }
+		public RDPointE([AllowNull] string x, float y) : this(x ?? default(RDExpression?), (RDExpression)y) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(float x, string y) : this((RDExpression)x, (RDExpression)y) { }
+		public RDPointE(float x, [AllowNull] string y) : this((RDExpression)x, y ?? default(RDExpression?)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(string x, RDExpression? y) : this((RDExpression)x, y) { }
+		public RDPointE([AllowNull] string x, RDExpression? y) : this(x ?? default(RDExpression?), y) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(RDExpression? x, string y) : this(x, (RDExpression)y) { }
+		public RDPointE(RDExpression? x, [AllowNull] string y) : this(x, y ?? default(RDExpression?)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(string x, string y) : this((RDExpression)x, (RDExpression)y) { }
+		public RDPointE([AllowNull] string x, [AllowNull] string y) : this(x ?? default(RDExpression?), y ?? default(RDExpression?)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified point.

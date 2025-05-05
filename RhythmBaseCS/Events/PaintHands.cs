@@ -14,7 +14,7 @@ namespace RhythmBase.Events
 		{
 			TintColor = new PaletteColor(true);
 			BorderColor = new PaletteColor(true);
-			Rooms = new RDRoom(true, new byte[1]);
+			Rooms = new RDRoom(true, [0]);
 			Type = EventType.PaintHands;
 			Tab = Tabs.Actions;
 		}

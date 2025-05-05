@@ -13,7 +13,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public Stutter()
 		{
-			Rooms = new RDRoom(false, new byte[1]);
+			Rooms = new RDRoom(false, [0]);
 			Type = EventType.Stutter;
 			Tab = Tabs.Actions;
 		}

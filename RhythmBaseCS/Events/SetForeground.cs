@@ -12,7 +12,7 @@ namespace RhythmBase.Events
 		/// </summary>  
 		public SetForeground()
 		{
-			Rooms = new RDRoom(false, new byte[1]);
+			Rooms = new RDRoom(false, [0]);
 			Color = new PaletteColor(true);
 			Type = EventType.SetForeground;
 			Tab = Tabs.Actions;

@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public Flash()
 		{
-			Rooms = new RDRoom(true, new byte[1]);
+			Rooms = new RDRoom(true, [0]);
 			Type = EventType.Flash;
 			Tab = Tabs.Actions;
 		}

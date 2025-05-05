@@ -14,7 +14,7 @@ namespace RhythmBase.Events
 			Preset = Theme.None;
 			Type = EventType.SetTheme;
 			Tab = Tabs.Actions;
-			Rooms = new RDRoom(false, new byte[1]);
+			Rooms = new RDRoom(false, [0]);
 		}
 
 		/// <summary>  

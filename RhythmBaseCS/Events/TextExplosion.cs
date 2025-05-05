@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public TextExplosion()
 		{
-			Rooms = new RDRoom(false, new byte[1]);
+			Rooms = new RDRoom(false, [0]);
 			Color = new PaletteColor(false);
 			Type = EventType.TextExplosion;
 			Tab = Tabs.Actions;

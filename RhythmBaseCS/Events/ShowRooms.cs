@@ -13,7 +13,7 @@ namespace RhythmBase.Events
 		/// </summary>  
 		public ShowRooms()
 		{
-			Rooms = new RDRoom(false, new byte[1]);
+			Rooms = new RDRoom(false, [0]);
 			Heights = new List<int>(4);
 			Type = EventType.ShowRooms;
 			Tab = Tabs.Rooms;

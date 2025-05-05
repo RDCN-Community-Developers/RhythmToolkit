@@ -14,7 +14,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public MoveCamera()
 		{
-			Rooms = new RDRoom(true, new byte[1]);
+			Rooms = new RDRoom(true, [0]);
 			Type = EventType.MoveCamera;
 			Tab = Tabs.Actions;
 		}
