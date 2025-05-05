@@ -6,9 +6,9 @@ using RhythmBase.Extensions;
 using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
-	internal partial class PanelColorConverter : JsonConverter<PaletteColor>
+	internal partial class PaletteColorConverter : JsonConverter<PaletteColor>
 	{
-		internal PanelColorConverter(RDColor[] list)
+		internal PaletteColorConverter(RDColor[] list)
 		{
 			parent = list;
 		}
@@ -21,22 +21,23 @@ namespace RhythmBase.Converters
 			}
 			else
 			{
-				string s = value.Value.ToString().Replace("#", "");
-				string alpha = s[..2];
-				string rgb = s[2..];
 				if (value.EnableAlpha)
 				{
-					writer.WriteValue(rgb + alpha);
+					writer.WriteValue(value.Value.ToString("RRGGBBAA"));
 				}
 				else
 				{
-					writer.WriteValue(rgb);
+					writer.WriteValue(value.Value.ToString("RRGGBB"));
 				}
 			}
 		}
 
 		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
+			if (existingValue == null)
+			{
+				throw new Exceptions.ConvertingException(new Exception($"PaletteColorConverter: Inner exception: Property has no default value."));
+			}
 			JToken token = JToken.Load(reader);
 			string? JString = token.Value<string>();
 			if (JString.IsNullOrEmpty())
@@ -44,28 +45,14 @@ namespace RhythmBase.Converters
 				throw new Exceptions.ConvertingException(token, new Exception($"Unreadable color: \"{token}\". path \"{reader.Path}\""));
 			}
 			Match reg = PaletteColorRegex().Match(JString);
-			existingValue!.parent = parent;
+			existingValue.parent = parent;
 			if (reg.Success)
 			{
 				existingValue.PaletteIndex = int.Parse(reg.Groups[1].Value);
 			}
 			else
 			{
-				string s = JString.Replace("#", "");
-				string alpha = "";
-				if (s.Length > 6)
-				{
-					alpha = s[6..];
-				}
-				string rgb = s[..6];
-				if (s.Length > 6)
-				{
-					existingValue.Color = new RDColor?(RDColor.FromArgb(alpha + rgb));
-				}
-				else
-				{
-					existingValue.Color = new RDColor?(RDColor.FromRgba(rgb));
-				}
+				existingValue.Color = RDColor.FromRgba(JString);
 			}
 			return existingValue;
 		}

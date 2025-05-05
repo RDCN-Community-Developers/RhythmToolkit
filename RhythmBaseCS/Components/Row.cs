@@ -8,12 +8,12 @@ namespace RhythmBase.Components
 	/// A collection of row events.
 	/// </summary>
 	[JsonObject]
-	public class RowEventCollection : OrderedEventCollection<BaseRowAction>
+	public class Row : OrderedEventCollection<BaseRowAction>
 	{
 		/// <summary>
 		/// Gets or sets the character associated with the row.
 		/// </summary>
-		public RDCharacter Character { get; set; }
+		public RDCharacter Character { get; set; } = RDCharacters.Samurai;
 
 		/// <summary>
 		/// Gets or sets the type of the row.
@@ -35,12 +35,12 @@ namespace RhythmBase.Components
 		/// Gets the index of the row.
 		/// </summary>
 		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
-		public sbyte Index => (sbyte)(Parent?.ModifiableRows.IndexOf(this) ?? throw new RhythmBaseException());
+		public sbyte Index => (sbyte)(Parent?.Rows.IndexOf(this) ?? throw new RhythmBaseException());
 
 		/// <summary>
 		/// Gets or sets the rooms associated with the row.
 		/// </summary>
-		public RDSingleRoom Rooms { get; set; }
+		public RDSingleRoom Rooms { get; set; } = new(RDRoomIndex.Room1);
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the row is hidden at the start.
@@ -57,7 +57,7 @@ namespace RhythmBase.Components
 		/// Gets the initial beat sound for the row.
 		/// </summary>
 		[JsonIgnore]
-		public RDAudio Sound { get; set; }
+		public RDAudio Sound { get; set; } = new RDAudio();
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the beats are muted.
@@ -69,7 +69,7 @@ namespace RhythmBase.Components
 		/// Gets or sets the row to mimic.
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public sbyte RowToMimic { get; set; }
+		public sbyte RowToMimic { get; set; } = -1;
 
 		/// <summary>
 		/// Gets or sets the name of the pulse sound.
@@ -118,14 +118,9 @@ namespace RhythmBase.Components
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RowEventCollection"/> class.
+		/// Initializes a new instance of the <see cref="Row"/> class.
 		/// </summary>
-		internal RowEventCollection()
-		{
-			Rooms = new RDSingleRoom(RDRoomIndex.Room1);
-			Sound = new RDAudio();
-			RowToMimic = -1;
-		}
+		public Row() { }
 
 		/// <summary>
 		/// Adds an item to the row.

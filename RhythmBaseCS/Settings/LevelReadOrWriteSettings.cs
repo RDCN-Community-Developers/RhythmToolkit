@@ -57,6 +57,11 @@ namespace RhythmBase.Settings
 		/// </summary>
 		/// <returns></returns>
 		public List<(JObject item, string reason)> UnreadableEvents { get; set; } = [];
+		/// <summary>  
+		/// Indicates whether the level elements' associated information are interlinked.  
+		/// Defaults to <see langword="true" />.  
+		/// </summary>  
+		public bool Linked { get; set; } = true;
 		/// <summary>
 		/// Use indentation. 
 		/// Defaults to <see langword="true" />.

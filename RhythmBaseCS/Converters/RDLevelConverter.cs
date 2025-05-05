@@ -30,12 +30,12 @@ namespace RhythmBase.Converters
 			writer.WriteRawValue(JsonConvert.SerializeObject(value!.Settings, Formatting.Indented, AllInOneSerializer));
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
-			foreach (RowEventCollection item in value.Rows)
+			foreach (Row item in value.Rows)
 				writer.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer));
 			writer.WriteEndArray();
 			writer.WritePropertyName("decorations");
 			writer.WriteStartArray();
-			foreach (DecorationEventCollection item2 in value.Decorations)
+			foreach (Decoration item2 in value.Decorations)
 				writer.WriteRawValue(JsonConvert.SerializeObject(item2, Formatting.None, AllInOneSerializer));
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
@@ -85,16 +85,16 @@ namespace RhythmBase.Converters
 						break;
 					case "rows":
 						JArray jarr1 = JArray.Load(reader);
-						outLevel.ModifiableRows.AddRange(jarr1.ToObject<List<RowEventCollection>>(AllInOneSerializer)!);
-						foreach (RowEventCollection row in outLevel.ModifiableRows)
+						outLevel.Rows.AddRange(jarr1.ToObject<List<Row>>(AllInOneSerializer)!);
+						foreach (Row row in outLevel.Rows)
 						{
 							row.Parent = outLevel;
 						}
 						break;
 					case "decorations":
 						JArray jarr2 = JArray.Load(reader);
-						outLevel.ModifiableDecorations.AddRange(jarr2.ToObject<List<DecorationEventCollection>>(AllInOneSerializer)!);
-						foreach (DecorationEventCollection deco in outLevel.ModifiableDecorations)
+						outLevel.Decorations.AddRange(jarr2.ToObject<List<Decoration>>(AllInOneSerializer)!);
+						foreach (Decoration deco in outLevel.Decorations)
 						{
 							deco.Parent = outLevel;
 						}

@@ -38,11 +38,12 @@ namespace RhythmBase.Converters
 						throw new ConvertingException($"The row id {rowId} out of range.");
 				}
 			}
-			else
+			if (settings.Linked)
 			{
-				RowEventCollection Parent = level.ModifiableRows[(int)rowId];
+				Row Parent = level.Rows[rowId];
 				obj._parent = Parent;
 			}
+			obj._row = rowId;
 			return obj;
 		}
 	}

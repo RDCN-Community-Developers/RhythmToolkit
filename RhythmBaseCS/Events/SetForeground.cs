@@ -5,7 +5,7 @@ namespace RhythmBase.Events
 	/// <summary>  
 	/// Represents an event to set the foreground in a room.  
 	/// </summary>  
-	public class SetForeground : BaseEvent, IEaseEvent, IRoomEvent
+	public class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	{
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetForeground"/> class.  

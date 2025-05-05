@@ -11,7 +11,7 @@ namespace RhythmBase.Converters
 
 		public override RDColor ReadJson(JsonReader reader, Type objectType, RDColor existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			string JString = JToken.Load(reader).Value<string>() ?? throw new RhythmBase.Exceptions.ConvertingException("Cannot read the color.");
+			string JString = JToken.Load(reader).Value<string>() ?? throw new Exceptions.ConvertingException("Cannot read the color.");
 			return RDColor.FromRgba(JString);
 		}
 	}

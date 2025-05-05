@@ -32,7 +32,7 @@ namespace RhythmBase.Extensions
 			AdvanceText A = new()
 			{
 				Parent = e,
-				Beat = beat.WithoutBinding()
+				Beat = beat.WithoutLink()
 			};
 			e.Children.Add(A);
 			return A;

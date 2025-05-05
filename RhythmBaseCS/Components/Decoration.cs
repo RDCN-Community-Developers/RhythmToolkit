@@ -8,7 +8,7 @@ namespace RhythmBase.Components
 	/// A decoration.
 	/// </summary>
 	[JsonObject]
-	public class DecorationEventCollection : OrderedEventCollection<BaseDecorationAction>
+	public class Decoration : OrderedEventCollection<BaseDecorationAction>
 	{
 		/// <summary>
 		/// Decorated ID.
@@ -49,14 +49,14 @@ namespace RhythmBase.Components
 		public bool Visible { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DecorationEventCollection"/> class.
+		/// Initializes a new instance of the <see cref="Decoration"/> class.
 		/// </summary>
-		public DecorationEventCollection()
+		public Decoration()
 		{
 			Room = new RDSingleRoom(RDRoomIndex.Room1);
 		}
 		/// <param name="room">Decoration room.</param>
-		internal DecorationEventCollection(RDSingleRoom room)
+		internal Decoration(RDSingleRoom room)
 		{
 			Room = room;
 			_id = GetHashCode().ToString();
@@ -86,7 +86,16 @@ namespace RhythmBase.Components
 				Room,
 				Filename
 			]);
-		internal DecorationEventCollection Clone() => (DecorationEventCollection)MemberwiseClone();
+		/// <summary>  
+		/// Creates a shallow copy of the current <see cref="Decoration"/> instance.  
+		/// </summary>  
+		/// <returns>A new <see cref="Decoration"/> instance that is a shallow copy of the current instance.</returns>  
+		public Decoration Clone()
+		{
+			var s = (Decoration)MemberwiseClone();
+			s.Parent = null;
+			return s;
+		}
 		private string _id = "";
 		[JsonIgnore]
 		internal RDLevel? Parent = null;

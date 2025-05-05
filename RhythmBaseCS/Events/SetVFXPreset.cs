@@ -6,7 +6,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents an event to set a VFX preset.
 	/// </summary>
-	public class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent
+	public class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetVFXPreset"/> class.

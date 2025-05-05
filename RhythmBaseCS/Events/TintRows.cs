@@ -6,7 +6,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents an event that tints rows with specified colors and effects.
 	/// </summary>
-	public class TintRows : BaseRowAnimation, IEaseEvent
+	public class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TintRows"/> class.

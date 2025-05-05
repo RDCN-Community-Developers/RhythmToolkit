@@ -36,10 +36,11 @@ namespace RhythmBase.Converters
 			existingValue = (TEvent?)jobj.ToObject(SubClassType, serializer)
 				?? throw new ConvertingException(jobj, new Exception($"Cannot convert this event: \"{jobj}\". path \"{jobj.Path}\""));
 			_canread = true;
-			((BaseEvent)(object)existingValue)._beat = level.Calculator.BeatOf(
+			RDBeat beat = level.Calculator.BeatOf(
 				uint.Parse(((string?)jobj["bar"])
 				?? throw new Exception($"Missing property \"{jobj["bar"]}\".path \"{jobj.Path}\"")),
 				float.Parse((string?)jobj["beat"] ?? 1.ToString()));
+			((BaseEvent)(object)existingValue)._beat = beat;
 			return existingValue;
 		}
 		public virtual JObject SetSerializedObject(TEvent value, JsonSerializer serializer)

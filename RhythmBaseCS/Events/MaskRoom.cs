@@ -5,7 +5,7 @@ namespace RhythmBase.Events
 	/// <summary>
 	/// Represents a MaskRoom event in the RhythmBase system.
 	/// </summary>
-	public class MaskRoom : BaseEvent
+	public class MaskRoom : BaseEvent, IColorEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MaskRoom"/> class.

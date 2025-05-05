@@ -11,7 +11,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the parent row event collection.
 		/// </summary>
 		[JsonIgnore]
-		public RowEventCollection? Parent
+		public Row? Parent
 		{
 			get => _parent;
 			internal set
@@ -44,23 +44,16 @@ namespace RhythmBase.Events
 				_beat = _beat.BaseLevel == null
 					? value.BaseLevel == null
 						? value
-						: value.WithoutBinding()
+						: value.WithoutLink()
 					: new(_beat.BaseLevel.Calculator, value);
 			}
 		}
 
 		/// <summary>
-		/// Gets the row index. This function is obsolete and may be removed in the next release. Use Index instead.
-		/// </summary>
-		[JsonIgnore]
-		[Obsolete("This function is obsolete and may be removed in the next release. Use Index instead.")]
-		public int Row { get; }
-
-		/// <summary>
 		/// Gets the index of the row in the parent collection.
 		/// </summary>
 		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
-		public int Index => Parent?.Index ?? -1;
+		public int Index => Parent?.Index ?? _row;
 
 		/// <summary>
 		/// Clones this event and its basic properties. Clone will be added to the level.
@@ -80,13 +73,14 @@ namespace RhythmBase.Events
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
 		/// <param name="row">The row event collection to assign the clone to.</param>
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
-		internal TEvent Clone<TEvent>(RowEventCollection row) where TEvent : BaseRowAction, new()
+		internal TEvent Clone<TEvent>(Row row) where TEvent : BaseRowAction, new()
 		{
 			TEvent Temp = base.Clone<TEvent>(row.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
 			Temp.Parent = row;
 			return Temp;
 		}
 
-		internal RowEventCollection? _parent;
+		internal Row? _parent;
+		internal int _row;
 	}
 }

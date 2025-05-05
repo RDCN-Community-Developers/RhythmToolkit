@@ -160,6 +160,11 @@ namespace RhythmBase.Extensions
 			foreach (TEvent item in items)
 				e.Add(item);
 		}
+		public static void AddRange<TCollection>(this LevelElementCollection<TCollection> e, IEnumerable<TCollection> items) where TCollection : OrderedEventCollection
+		{
+			foreach (TCollection item in items)
+				e.Add(item);
+		}
 		/// <summary>
 		/// Filters a sequence of events based on a predicate.
 		/// </summary>
@@ -834,7 +839,7 @@ namespace RhythmBase.Extensions
 		public static IEnumerable<RDHit> GetHitBeat(this RDLevel e)
 		{
 			List<RDHit> L = [];
-			foreach (RowEventCollection item in e.Rows)
+			foreach (Row item in e.Rows)
 			{
 				L.AddRange(item.HitBeats());
 			}
@@ -867,15 +872,15 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Get all classic beat events and their variants.
 		/// </summary>
-		private static IEnumerable<BaseBeat> ClassicBeats(this RowEventCollection e) => e.Where((BaseBeat i) => i.Type == EventType.AddClassicBeat | i.Type == EventType.AddFreeTimeBeat | i.Type == EventType.PulseFreeTimeBeat);
+		private static IEnumerable<BaseBeat> ClassicBeats(this Row e) => e.Where((BaseBeat i) => i.Type == EventType.AddClassicBeat | i.Type == EventType.AddFreeTimeBeat | i.Type == EventType.PulseFreeTimeBeat);
 		/// <summary>
 		/// Get all oneshot beat events.
 		/// </summary>
-		private static IEnumerable<BaseBeat> OneshotBeats(this RowEventCollection e) => e.Where((BaseBeat i) => i.Type == EventType.AddOneshotBeat);
+		private static IEnumerable<BaseBeat> OneshotBeats(this Row e) => e.Where((BaseBeat i) => i.Type == EventType.AddOneshotBeat);
 		/// <summary>
 		/// Get all hits of all beats.
 		/// </summary>
-		public static IEnumerable<RDHit> HitBeats(this RowEventCollection e)
+		public static IEnumerable<RDHit> HitBeats(this Row e)
 		{
 			RowType rowType = e.RowType;
 			IEnumerable<RDHit> HitBeats;
@@ -915,7 +920,7 @@ namespace RhythmBase.Extensions
 		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
 		/// <exception cref="RhythmBaseException"></exception>
-		public static SortedDictionary<float, int[]> GetRowBeatStatus(this RowEventCollection e)
+		public static SortedDictionary<float, int[]> GetRowBeatStatus(this Row e)
 		{
 			SortedDictionary<float, int[]> L = [];
 			RowType rowType = e.RowType;
@@ -956,7 +961,7 @@ namespace RhythmBase.Extensions
 		/// <summary>
 		/// Get all beats of the row.
 		/// </summary>
-		public static IEnumerable<BaseBeat> Beats(this RowEventCollection e)
+		public static IEnumerable<BaseBeat> Beats(this Row e)
 		{
 			RowType rowType = e.RowType;
 			IEnumerable<BaseBeat> Beats;
