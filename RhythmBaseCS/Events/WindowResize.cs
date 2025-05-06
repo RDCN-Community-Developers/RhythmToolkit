@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Components.Easing;
-using RhythmBase.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RhythmBase.Components
+namespace RhythmBase.Events
 {
 	public class WindowResize : BaseEvent, IEaseEvent
 	{
@@ -21,7 +20,7 @@ namespace RhythmBase.Components
 		[JsonProperty("tab")]
 		public Tabs CustomTab { get; set; }
 		/// <inheritdoc/>
-		public EaseType Ease { get ; set; }
+		public EaseType Ease { get; set; }
 		/// <inheritdoc/>
 		public float Duration { get; set; }
 	}
