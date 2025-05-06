@@ -11,19 +11,13 @@ namespace RhythmBase.Events
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="ShowRooms"/> class.  
 		/// </summary>  
-		public ShowRooms()
-		{
-			Rooms = new RDRoom(false, [0]);
-			Heights = new List<int>(4);
-			Type = EventType.ShowRooms;
-			Tab = Tabs.Rooms;
-		}
+		public ShowRooms() { }
 
 		/// <summary>  
 		/// Gets or sets the rooms associated with the event.  
 		/// </summary>  
 		[JsonProperty]
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom(false, [0]);
 
 		/// <summary>  
 		/// Gets or sets the ease type for the event.  
@@ -33,7 +27,7 @@ namespace RhythmBase.Events
 		/// <summary>  
 		/// Gets or sets the heights associated with the event.  
 		/// </summary>
-		public List<int> Heights { get; set; }
+		public int?[] Heights { get; } = new int?[4];
 
 		/// <summary>  
 		/// Gets or sets the duration of the transition.  
@@ -44,11 +38,11 @@ namespace RhythmBase.Events
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.ShowRooms;
 
 		/// <summary>  
 		/// Gets the tab associated with the event.  
 		/// </summary>  
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Rooms;
 	}
 }

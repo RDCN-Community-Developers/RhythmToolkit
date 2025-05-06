@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.Events
+﻿using RhythmBase.Components;
+
+namespace RhythmBase.Events
 {
 	/// <summary>
 	/// Represents an event to reorder rooms.
@@ -17,7 +19,7 @@
 		/// <summary>
 		/// Gets or sets the order of the rooms.
 		/// </summary>
-		public List<uint> Order { get; set; } = [];
+		public RoomOrder Order { get; set; } = new();
 
 		/// <summary>
 		/// Gets the type of the event.

@@ -2,6 +2,7 @@
 using RhythmBase.Converters;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
+using static RhythmBase.Utils.EventTypeUtils;
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -130,16 +131,8 @@ namespace RhythmBase.Components
 		{
 			if (item is not BaseBeat ||
 				(item is BaseBeat && (
-				((item.Type
-				is EventType.AddClassicBeat
-				or EventType.AddFreeTimeBeat
-				or EventType.PulseFreeTimeBeat
-				or EventType.SetRowXs
-				) && RowType is RowType.Classic) ||
-				((item.Type
-				is EventType.AddOneshotBeat
-				or EventType.SetOneshotWave
-				) && RowType is RowType.Oneshot)
+				((EventTypeEnumsForRowClassic.Contains(item.Type)) && RowType is RowType.Classic) ||
+				((EventTypeEnumsForRowOneshot.Contains(item.Type)) && RowType is RowType.Oneshot)
 				))
 				)
 			{

@@ -54,6 +54,7 @@ namespace RhythmBase.Components
 		public Decoration()
 		{
 			Room = new RDSingleRoom(RDRoomIndex.Room1);
+			_id = GetHashCode().ToString();
 		}
 		/// <param name="room">Decoration room.</param>
 		internal Decoration(RDSingleRoom room)

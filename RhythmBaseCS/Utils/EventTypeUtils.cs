@@ -245,5 +245,18 @@ namespace RhythmBase.Utils
 			EventType.TagAction,
 			EventType.CallCustomMethod
 		]);
+
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForRowClassic => new(
+		[
+			EventType.AddClassicBeat,
+			EventType.AddFreeTimeBeat,
+			EventType.PulseFreeTimeBeat,
+			EventType.SetRowXs,
+		]);
+		public static ReadOnlyCollection<EventType> EventTypeEnumsForRowOneshot => new(
+		[
+			EventType.AddOneshotBeat,
+			EventType.SetOneshotWave,
+		]);
 	}
 }
