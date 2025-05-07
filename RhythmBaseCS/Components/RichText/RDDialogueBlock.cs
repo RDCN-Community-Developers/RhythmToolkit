@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace RhythmBase.Components.RichText
+﻿using System.Text;namespace RhythmBase.Components.RichText
 {
 	/// <summary>
 	/// Represents a line of dialogue, which consists of multiple dialogue components.

@@ -14,6 +14,6 @@ namespace RhythmBase.Exceptions
 		/// <summary>
 		/// Gets the unreadable event item.
 		/// </summary>
-		public IBaseEvent Item { get; } = item;
+		public IBaseEvent Item => item;
 	}
 }

@@ -1,11 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-
-namespace RhythmBase.Components.RichText
-{
-
-	/// <summary>
+using System.Numerics;namespace RhythmBase.Components.RichText
+{	/// <summary>
 	/// Represents a rich text string with various styling options.
 	/// </summary>
 	/// <param name="text">The text content of the rich string.</param>
@@ -44,9 +40,7 @@ namespace RhythmBase.Components.RichText
 					Events = GetEvents(index.GetOffset(Length), 1)
 				};
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the rich string within the specified range.
 		/// </summary>
 		/// <param name="range">The range of characters.</param>

@@ -13,9 +13,7 @@ namespace RhythmBase.Events
 		protected BaseBeatsPerMinute()
 		{
 			_bpm = Utils.Utils.DefaultBPM;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the beat associated with this event.
 		/// </summary>
 		public override RDBeat Beat
@@ -29,9 +27,7 @@ namespace RhythmBase.Events
 				base.Beat = value;
 				ResetTimeLine();
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the beats per minute (BPM) for this event.
 		/// </summary>
 		public virtual float BeatsPerMinute
@@ -45,9 +41,7 @@ namespace RhythmBase.Events
 				_bpm = value;
 				ResetTimeLine();
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Resets the timeline for all events in the same level that occur after this event.
 		/// </summary>
 		private void ResetTimeLine()
@@ -61,8 +55,6 @@ namespace RhythmBase.Events
 					item.Beat.ResetBPM();
 				}
 			}
-		}
-
-		private float _bpm;
+		}		private float _bpm;
 	}
 }

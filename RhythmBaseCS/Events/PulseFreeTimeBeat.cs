@@ -12,29 +12,19 @@ namespace RhythmBase.Events
 		public PulseFreeTimeBeat()
 		{
 			Type = EventType.PulseFreeTimeBeat;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the hold duration.
 		/// </summary>
-		public float Hold { get; set; }
-
-		/// <summary>
+		public float Hold { get; set; }		/// <summary>
 		/// Gets or sets the action type.
 		/// </summary>
-		public ActionType Action { get; set; }
-
-		/// <summary>
+		public ActionType Action { get; set; }		/// <summary>
 		/// Gets or sets the custom pulse value.
 		/// </summary>
-		public uint CustomPulse { get; set; }
-
-		/// <summary>
+		public uint CustomPulse { get; set; }		/// <summary>
 		/// Gets the event type.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
@@ -57,9 +47,7 @@ namespace RhythmBase.Events
 					break;
 			}
 			return base.ToString() + $"{Out}";
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Defines the action types for the pulse free time beat.
 		/// </summary>
 		public enum ActionType

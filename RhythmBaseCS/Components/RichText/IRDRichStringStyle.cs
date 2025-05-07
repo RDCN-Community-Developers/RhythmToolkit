@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-
-namespace RhythmBase.Components.RichText
+using System.Numerics;namespace RhythmBase.Components.RichText
 {
 	/// <summary>
 	/// Defines the interface for rich string styles.
@@ -15,47 +13,35 @@ namespace RhythmBase.Components.RichText
 		/// </summary>
 		/// <param name="obj">The object to compare with the current object.</param>
 		/// <returns>True if the specified object is equal to the current object; otherwise, false.</returns>
-		bool Equals([NotNullWhen(true)] object? obj) => obj is TSelf e && Equals(e);
-
-		/// <summary>
+		bool Equals([NotNullWhen(true)] object? obj) => obj is TSelf e && Equals(e);		/// <summary>
 		/// Gets the closing tag for the specified name.
 		/// </summary>
 		/// <param name="name">The name of the tag.</param>
 		/// <returns>The closing tag for the specified name.</returns>
-		static string GetCloseTag(string name) => $"</{name}>";
-
-		/// <summary>
+		static string GetCloseTag(string name) => $"</{name}>";		/// <summary>
 		/// Gets the opening tag for the specified name and optional argument.
 		/// </summary>
 		/// <param name="name">The name of the tag.</param>
 		/// <param name="arg">The optional argument for the tag.</param>
 		/// <returns>The opening tag for the specified name and optional argument.</returns>
-		static string GetOpenTag(string name, string? arg = null)=> arg is null ? $"<{name}>" : $"<{name}={arg}>";
-
-		/// <summary>
+		static string GetOpenTag(string name, string? arg = null)=> arg is null ? $"<{name}>" : $"<{name}={arg}>";		/// <summary>
 		/// Generates an XML tag representing the differences between two <see cref="RDDialoguePhraseStyle"/> instances.
 		/// </summary>
 		/// <param name="before">The initial <see cref="RDDialoguePhraseStyle"/> instance.</param>
 		/// <param name="after">The modified <see cref="RDDialoguePhraseStyle"/> instance.</param>
 		/// <returns>A string containing the XML tag that represents the differences between the two instances.</returns>
-		static abstract string GetXmlTag(TSelf before, TSelf after);
-
-		/// <summary>
+		static abstract string GetXmlTag(TSelf before, TSelf after);		/// <summary>
 		/// Resets the property of the rich string style based on the provided name.
 		/// </summary>
 		/// <param name="name">The name of the property to reset.</param>
 		/// <returns>True if the property was successfully reset; otherwise, false.</returns>
-		bool ResetProperty(string name);
-
-		/// <summary>
+		bool ResetProperty(string name);		/// <summary>
 		/// Sets the property of the rich string style based on the provided name and value.
 		/// </summary>
 		/// <param name="name">The name of the property to set.</param>
 		/// <param name="value">The value to set for the property.</param>
 		/// <returns>True if the property was successfully set; otherwise, false.</returns>
-		bool SetProperty(string name, string value);
-
-		/// <summary>
+		bool SetProperty(string name, string value);		/// <summary>
 		/// Tries to add a tag to the specified string based on the provided name and boolean values.
 		/// </summary>
 		/// <param name="tag">The string to which the tag will be added.</param>
@@ -68,9 +54,7 @@ namespace RhythmBase.Components.RichText
 				tag += after
 				? GetOpenTag(name)
 				: GetCloseTag(name);
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Tries to add a tag to the specified string based on the provided name and optional string values.
 		/// </summary>
 		/// <param name="tag">The string to which the tag will be added.</param>

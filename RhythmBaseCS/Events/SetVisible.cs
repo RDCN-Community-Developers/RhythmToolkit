@@ -12,24 +12,16 @@
 		{
 			Type = EventType.SetVisible;
 			Tab = Tabs.Decorations;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab to which the event belongs.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Gets or sets a value indicating whether the decoration is visible.
 		/// </summary>
-		public bool Visible { get; set; }
-
-		/// <summary>
+		public bool Visible { get; set; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Text;
-
-namespace RhythmBase.Components.RichText
+using System.Text;namespace RhythmBase.Components.RichText
 {
 	/// <summary>
 	/// Represents a list of rich text strings.

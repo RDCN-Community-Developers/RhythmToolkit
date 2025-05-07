@@ -5,9 +5,7 @@ namespace RhythmBase.Converters
 {
 	internal class TabsConverter : JsonConverter<Tabs>
 	{
-		public override void WriteJson(JsonWriter writer, Tabs value, JsonSerializer serializer) => writer.WriteValue(TabNames[(int)value]);
-
-		public override Tabs ReadJson(JsonReader reader, Type objectType, Tabs existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, Tabs value, JsonSerializer serializer) => writer.WriteValue(TabNames[(int)value]);		public override Tabs ReadJson(JsonReader reader, Type objectType, Tabs existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			string value = JToken.Load(reader).ToObject<string>()??throw new RhythmBase.Exceptions.ConvertingException("Cannot read the tab.");
 			int t = TabNames.ToList().IndexOf(value);
@@ -22,9 +20,7 @@ namespace RhythmBase.Converters
 				ReadJson = Tabs.Unknown;
 			}
 			return ReadJson;
-		}
-
-		private static readonly string[] TabNames =
+		}		private static readonly string[] TabNames =
 		[
 			"Song",
 			"Rows",

@@ -13,84 +13,54 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the left expression of the rectangle.
 		/// </summary>
-		public RDExpression? Left { get; set; } = left;
-
-		/// <summary>
+		public RDExpression? Left { get; set; } = left;		/// <summary>
 		/// Gets or sets the right expression of the rectangle.
 		/// </summary>
-		public RDExpression? Right { get; set; } = right;
-
-		/// <summary>
+		public RDExpression? Right { get; set; } = right;		/// <summary>
 		/// Gets or sets the top expression of the rectangle.
 		/// </summary>
-		public RDExpression? Top { get; set; } = top;
-
-		/// <summary>
+		public RDExpression? Top { get; set; } = top;		/// <summary>
 		/// Gets or sets the bottom expression of the rectangle.
 		/// </summary>
-		public RDExpression? Bottom { get; set; } = bottom;
-
-		/// <summary>
+		public RDExpression? Bottom { get; set; } = bottom;		/// <summary>
 		/// Gets the left-bottom point of the rectangle.
 		/// </summary>
-		public readonly RDPointE LeftBottom => new(Left, Bottom);
-
-		/// <summary>
+		public readonly RDPointE LeftBottom => new(Left, Bottom);		/// <summary>
 		/// Gets the right-bottom point of the rectangle.
 		/// </summary>
-		public readonly RDPointE RightBottom => new(Right, Bottom);
-
-		/// <summary>
+		public readonly RDPointE RightBottom => new(Right, Bottom);		/// <summary>
 		/// Gets the left-top point of the rectangle.
 		/// </summary>
-		public readonly RDPointE LeftTop => new(Left, Top);
-
-		/// <summary>
+		public readonly RDPointE LeftTop => new(Left, Top);		/// <summary>
 		/// Gets the right-top point of the rectangle.
 		/// </summary>
-		public readonly RDPointE RightTop => new(Right, Top);
-
-		/// <summary>
+		public readonly RDPointE RightTop => new(Right, Top);		/// <summary>
 		/// Gets the width of the rectangle.
 		/// </summary>
-		public readonly RDExpression? Width => Right - Left;
-
-		/// <summary>
+		public readonly RDExpression? Width => Right - Left;		/// <summary>
 		/// Gets the height of the rectangle.
 		/// </summary>
-		public readonly RDExpression? Height => Top - Bottom;
-
-		/// <summary>
+		public readonly RDExpression? Height => Top - Bottom;		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRectE"/> struct with the specified location and size.
 		/// </summary>
 		/// <param name="location">The location of the rectangle.</param>
 		/// <param name="size">The size of the rectangle.</param>
-		public RDRectE(RDPointE? location, RDSizeE? size) : this(location?.X, location?.Y + size?.Height, location?.X + size?.Width, location?.Y) { }
-
-		/// <summary>
+		public RDRectE(RDPointE? location, RDSizeE? size) : this(location?.X, location?.Y + size?.Height, location?.X + size?.Width, location?.Y) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRectE"/> struct with the specified size.
 		/// </summary>
 		/// <param name="size">The size of the rectangle.</param>
-		public RDRectE(RDSizeE size) : this(new RDExpression?(0f), size.Height, size.Width, new RDExpression?(0f)) { }
-
-		/// <summary>
+		public RDRectE(RDSizeE size) : this(new RDExpression?(0f), size.Height, size.Width, new RDExpression?(0f)) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRectE"/> struct with the specified width and height.
 		/// </summary>
 		/// <param name="width">The width of the rectangle.</param>
 		/// <param name="height">The height of the rectangle.</param>
-		public RDRectE(RDExpression? width, RDExpression? height) : this(new RDExpression?(0f), height, width, new RDExpression?(0f)) { }
-
-		/// <summary>
+		public RDRectE(RDExpression? width, RDExpression? height) : this(new RDExpression?(0f), height, width, new RDExpression?(0f)) { }		/// <summary>
 		/// Gets the location of the rectangle.
 		/// </summary>
-		public readonly RDPointE Location => new(Left, Bottom);
-
-		/// <summary>
+		public readonly RDPointE Location => new(Left, Bottom);		/// <summary>
 		/// Gets the size of the rectangle.
 		/// </summary>
-		public readonly RDSizeE Size => new(Width, Height);
-
-		/// <summary>
+		public readonly RDSizeE Size => new(Width, Height);		/// <summary>
 		/// Inflates the specified rectangle by the specified size.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -114,16 +84,12 @@ namespace RhythmBase.Components
 			RDRectE result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(x, y);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Truncates the specified rectangle.
 		/// </summary>
 		/// <param name="rect">The rectangle to truncate.</param>
 		/// <returns>The truncated rectangle.</returns>
-		public static RDRectE Truncate(RDRectE rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
-
-		/// <summary>
+		public static RDRectE Truncate(RDRectE rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);		/// <summary>
 		/// Offsets the rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="x">The width to offset by.</param>

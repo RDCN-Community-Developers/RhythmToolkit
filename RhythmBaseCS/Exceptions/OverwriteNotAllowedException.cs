@@ -13,13 +13,9 @@
 		/// <summary>
 		/// Gets or sets the file path that caused the exception.
 		/// </summary>
-		public string FilePath { get; set; } = filepath;
-
-		/// <summary>
+		public string FilePath { get; set; } = filepath;		/// <summary>
 		/// Gets the message that describes the current exception.
 		/// </summary>
-		public override string Message => string.Format("Cannot save file '{0}' because overwriting is disabled by the settings and a file with the same name already exists.\r\nTo correct this, change the path or filename or set the OverWrite property of {1} to false.", FilePath, _referType.Name);
-
-		private readonly Type _referType = referType;
+		public override string Message => string.Format("Cannot save file '{0}' because overwriting is disabled by the settings and a file with the same name already exists.\r\nTo correct this, change the path or filename or set the OverWrite property of {1} to false.", FilePath, _referType.Name);		private readonly Type _referType = referType;
 	}
 }

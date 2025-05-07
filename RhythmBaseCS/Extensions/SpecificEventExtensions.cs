@@ -3,9 +3,7 @@ using RhythmBase.Components.Easing;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Extensions;
-using System.Text.RegularExpressions;
-
-namespace RhythmBase.Extensions
+using System.Text.RegularExpressions;namespace RhythmBase.Extensions
 {
 	public static partial class Extensions
 	{

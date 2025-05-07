@@ -11,9 +11,7 @@ namespace RhythmBase.Converters
 		{
 			Converters = { new StringEnumConverter() },
 			ContractResolver = new CamelCasePropertyNamesContractResolver()
-		}));
-
-		public override BaseConditional ReadJson(JsonReader reader, Type objectType, BaseConditional? existingValue, bool hasExistingValue, JsonSerializer serializer)
+		}));		public override BaseConditional ReadJson(JsonReader reader, Type objectType, BaseConditional? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JObject J = JObject.Load(reader);
 			Type? SubClassType = Type.GetType($"{typeof(BaseConditional).Namespace}.Conditions.{J["type"]}Condition");

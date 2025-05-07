@@ -1,7 +1,6 @@
 ﻿using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using System.Collections.ObjectModel;
-
 namespace RhythmBase.Utils
 {
 	/// <summary>  
@@ -40,14 +39,12 @@ namespace RhythmBase.Utils
 			}
 			return ConvertToEnum;
 		}
-
 		/// <summary>  
 		/// Converts a generic event type to its corresponding EventType enumeration.  
 		/// </summary>  
 		/// <typeparam name="TEvent">The generic event type to convert.</typeparam>  
 		/// <returns>The corresponding EventType enumeration.</returns>  
 		public static EventType ToEnum<TEvent>() where TEvent : IBaseEvent, new() => ToEnum(typeof(TEvent));
-
 		/// <summary>  
 		/// Converts a type to an array of corresponding EventType enumerations.  
 		/// </summary>  
@@ -67,14 +64,12 @@ namespace RhythmBase.Utils
 			}
 			return ConvertToEnums;
 		}
-
 		/// <summary>  
 		/// Converts a generic event type to an array of corresponding EventType enumerations.  
 		/// </summary>  
 		/// <typeparam name="TEvent">The generic event type to convert.</typeparam>  
 		/// <returns>An array of corresponding EventType enumerations.</returns>  
 		public static EventType[] ToEnums<TEvent>() where TEvent : IBaseEvent => ToEnums(typeof(TEvent));
-
 		/// <summary>  
 		/// Converts a string representation of an event type to its corresponding Type.  
 		/// </summary>  
@@ -93,7 +88,6 @@ namespace RhythmBase.Utils
 			}
 			return ConvertToType;
 		}
-
 		/// <summary>  
 		/// Converts an EventType enumeration to its corresponding Type.  
 		/// </summary>  
@@ -120,13 +114,11 @@ namespace RhythmBase.Utils
 			}
 			return ConvertToType;
 		}
-
 		private static readonly ReadOnlyCollection<Type> EventTypes = (from i in typeof(IBaseEvent).Assembly.GetTypes()
 																	   where i.IsAssignableTo(typeof(IBaseEvent))
 																	   select i)
 			.ToList()
 			.AsReadOnly();
-
 		/// <summary>  
 		/// A dictionary that records the correspondence of event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" /> to <see cref="T:RhythmBase.Events.EventType" />.  
 		/// </summary>  
@@ -136,17 +128,14 @@ namespace RhythmBase.Utils
 			.Select((Type j) => ToEnum(j))
 			.ToArray())
 			.AsReadOnly();
-
 		/// <summary>  
 		/// A dictionary that records the correspondence of <see cref="T:RhythmBase.Events.EventType" /> to event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" />.  
 		/// </summary>  
 		private static readonly ReadOnlyDictionary<EventType, Type> Enum_EventType = Enum.GetValues<EventType>().ToDictionary((EventType i) => i, (EventType i) => i.ToType()).AsReadOnly();
-
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseRowAction" />.  
 		/// </summary>  
 		public static readonly ReadOnlyCollection<EventType> RowTypes = ToEnums<BaseRowAction>().AsReadOnly();
-
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseDecorationAction" />.  
 		/// </summary>  
@@ -172,7 +161,6 @@ namespace RhythmBase.Utils
 			EventType.SetHandOwner,
 			EventType.SetPlayStyle
 		]);
-
 		/// <summary>  
 		/// Event types for environment.  
 		/// </summary>  
@@ -185,7 +173,6 @@ namespace RhythmBase.Utils
 			EventType.Flash,
 			EventType.CustomFlash
 		]);
-
 		/// <summary>  
 		/// Event types for row effects.  
 		/// </summary>  
@@ -196,7 +183,6 @@ namespace RhythmBase.Utils
 			EventType.PlayExpression,
 			EventType.TintRows
 		]);
-
 		/// <summary>  
 		/// Event types for camera effects.  
 		/// </summary>  
@@ -207,7 +193,6 @@ namespace RhythmBase.Utils
 			EventType.FlipScreen,
 			EventType.PulseCamera
 		]);
-
 		/// <summary>  
 		/// Event types for visual effects.  
 		/// </summary>  
@@ -223,7 +208,6 @@ namespace RhythmBase.Utils
 			EventType.PaintHands,
 			EventType.NewWindowDance
 		]);
-
 		/// <summary>  
 		/// Event types for text effects.  
 		/// </summary>  
@@ -235,7 +219,6 @@ namespace RhythmBase.Utils
 			EventType.FloatingText,
 			EventType.AdvanceText
 		]);
-
 		/// <summary>  
 		/// Event types for utility actions.  
 		/// </summary>  

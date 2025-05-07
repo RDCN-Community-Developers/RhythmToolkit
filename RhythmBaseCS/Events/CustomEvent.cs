@@ -13,9 +13,7 @@ namespace RhythmBase.Events
 	{
 		/// <inheritdoc/>
 		[JsonIgnore]
-		public override EventType Type => EventType.CustomEvent;
-
-		/// <summary>
+		public override EventType Type => EventType.CustomEvent;		/// <summary>
 		/// Gets or sets the actual type of the custom event.
 		/// </summary>
 		[JsonIgnore]
@@ -23,28 +21,20 @@ namespace RhythmBase.Events
 		{
 			get => Data["Type".ToLowerCamelCase()]?.ToObject<string>() ?? "";
 			init => Data["Type".ToLowerCamelCase()] = value;
-		}
-
-		/// <inheritdoc/>
-		public override Tabs Tab { get; }
-
-		/// <inheritdoc/>
+		}		/// <inheritdoc/>
+		public override Tabs Tab { get; }		/// <inheritdoc/>
 		public override int Y
 		{
 			get => (int)(Data["Y".ToLowerCamelCase()] ?? 0);
 			set => Data["Y".ToLowerCamelCase()] = value;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="CustomEvent"/> class.
 		/// </summary>
 		public CustomEvent()
 		{
 			Data = [];
 			Tab = Tabs.Unknown;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="CustomEvent"/> class with the specified data.
 		/// </summary>
 		/// <param name="data">The data for the custom event.</param>
@@ -58,20 +48,14 @@ namespace RhythmBase.Events
 				? null
 				: Condition.Load(Data["condition"]?.ToObject<string>() ?? "");
 			Active = Data["active"]?.ToObject<bool>() ?? true;
-		}
-
-		/// <inheritdoc/>
-		public override string ToString() => $"{Beat} *{ActureType}";
-
-		/// <summary>
+		}		/// <inheritdoc/>
+		public override string ToString() => $"{Beat} *{ActureType}";		/// <summary>
 		/// Tries to convert the current custom event to a base event.
 		/// </summary>
 		/// <param name="value">The base event to convert to.</param>
 		/// <param name="type">The type of the event.</param>
 		/// <returns>True if the conversion was successful; otherwise, false.</returns>
-		public virtual bool TryConvert(ref BaseEvent? value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
-
-		/// <summary>
+		public virtual bool TryConvert(ref BaseEvent? value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());		/// <summary>
 		/// Tries to convert the current custom event to a base event with the specified settings.
 		/// </summary>
 		/// <param name="value">The base event to convert to.</param>
@@ -101,9 +85,7 @@ namespace RhythmBase.Events
 				TryConvert = true;
 			}
 			return TryConvert;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the data for the custom event.
 		/// </summary>
 		[JsonIgnore]

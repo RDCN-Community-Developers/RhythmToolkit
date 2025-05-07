@@ -17,81 +17,53 @@ namespace RhythmBase.Events
 			Color = new PaletteColor(false);
 			Type = EventType.SetVFXPreset;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
-
-		/// <summary>
+		public RDRoom Rooms { get; set; }		/// <summary>
 		/// Gets or sets the VFX preset.
 		/// </summary>
-		public Presets Preset { get; set; }
-
-		/// <summary>
+		public Presets Preset { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether the VFX is enabled.
 		/// </summary>
-		public bool Enable { get; set; }
-
-		/// <summary>
+		public bool Enable { get; set; }		/// <summary>
 		/// Gets or sets the threshold value for the VFX.
 		/// </summary>
 		[EaseProperty]
-		public float Threshold { get; set; }
-
-		/// <summary>
+		public float Threshold { get; set; }		/// <summary>
 		/// Gets or sets the intensity of the VFX.
 		/// </summary>
 		[EaseProperty]
-		public float Intensity { get; set; }
-
-		/// <summary>
+		public float Intensity { get; set; }		/// <summary>
 		/// Gets or sets the color of the VFX.
 		/// </summary>
 		[EaseProperty]
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-		public PaletteColor Color { get; set; }
-
-		/// <summary>
+		public PaletteColor Color { get; set; }		/// <summary>
 		/// Gets or sets the X coordinate for the VFX.
 		/// </summary>
 		[EaseProperty]
-		public float FloatX { get; set; }
-
-		/// <summary>
+		public float FloatX { get; set; }		/// <summary>
 		/// Gets or sets the Y coordinate for the VFX.
 		/// </summary>
 		[EaseProperty]
-		public float FloatY { get; set; }
-
-		/// <summary>
+		public float FloatY { get; set; }		/// <summary>
 		/// Gets or sets the easing type for the VFX.
 		/// </summary>
-		public EaseType Ease { get; set; }
-
-		/// <summary>
+		public EaseType Ease { get; set; }		/// <summary>
 		/// Gets or sets the duration of the VFX.
 		/// </summary>
-		public float Duration { get; set; }
-
-		/// <summary>
+		public float Duration { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => $"{base.ToString()} {Preset}";
-
-		/// <summary>
+		public override string ToString() => $"{base.ToString()} {Preset}";		/// <summary>
 		/// Enum representing various VFX presets.
 		/// </summary>
 		public enum Presets
@@ -143,9 +115,7 @@ namespace RhythmBase.Events
 			DisableAll,
 			Diamonds,
 			Tutorial,
-			Balloons,
-
-					BlackAndWhite,
+			Balloons,					BlackAndWhite,
 			Blackout,
 			ScreenScrollX,
 			ScreenScroll,

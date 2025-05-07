@@ -14,41 +14,27 @@ namespace RhythmBase.Events
 		{
 			Type = EventType.PlaySound;
 			Tab = Tabs.Sounds;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets a value indicating whether the sound is custom.
 		/// </summary>
-		public bool IsCustom { get; set; }
-
-		/// <summary>
+		public bool IsCustom { get; set; }		/// <summary>
 		/// Gets or sets the type of the custom sound.
 		/// </summary>
-		public CustomSoundTypes CustomSoundType { get; set; }
-
-		/// <summary>
+		public CustomSoundTypes CustomSoundType { get; set; }		/// <summary>
 		/// Gets or sets the audio sound.
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public RDAudio? Sound { get; set; }
-
-		/// <summary>
+		public RDAudio? Sound { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + $" {(IsCustom ? Sound?.ToString() : CustomSoundType.ToString())}";
-
-		/// <summary>
+		public override string ToString() => base.ToString() + $" {(IsCustom ? Sound?.ToString() : CustomSoundType.ToString())}";		/// <summary>
 		/// Defines the types of custom sounds.
 		/// </summary>
 		public enum CustomSoundTypes
@@ -56,24 +42,16 @@ namespace RhythmBase.Events
 			/// <summary>
 			/// Cue sound type.
 			/// </summary>
-			CueSound,
-
-			/// <summary>
+			CueSound,			/// <summary>
 			/// Music sound type.
 			/// </summary>
-			MusicSound,
-
-			/// <summary>
+			MusicSound,			/// <summary>
 			/// Beat sound type.
 			/// </summary>
-			BeatSound,
-
-			/// <summary>
+			BeatSound,			/// <summary>
 			/// Hit sound type.
 			/// </summary>
-			HitSound,
-
-			/// <summary>
+			HitSound,			/// <summary>
 			/// Other sound type.
 			/// </summary>
 			OtherSound

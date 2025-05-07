@@ -12,9 +12,7 @@ namespace RhythmBase.Components.Conditions
 		public LanguageCondition()
 		{
 			Type = ConditionType.Language;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the game language.
 		/// </summary>
 		[JsonProperty(nameof(Language))]
@@ -22,14 +20,10 @@ namespace RhythmBase.Components.Conditions
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the type of the condition.
 		/// </summary>
-		public override ConditionType Type { get; }
-
-		/// <summary>
+		public override ConditionType Type { get; }		/// <summary>
 		/// Represents the supported game languages.
 		/// </summary>
 		public enum Languages
@@ -37,44 +31,28 @@ namespace RhythmBase.Components.Conditions
 			/// <summary>
 			/// English language.
 			/// </summary>
-			English,
-
-			/// <summary>
+			English,			/// <summary>
 			/// Spanish language.
 			/// </summary>
-			Spanish,
-
-			/// <summary>
+			Spanish,			/// <summary>
 			/// Portuguese language.
 			/// </summary>
-			Portuguese,
-
-			/// <summary>
+			Portuguese,			/// <summary>
 			/// Simplified Chinese language.
 			/// </summary>
-			ChineseSimplified,
-
-			/// <summary>
+			ChineseSimplified,			/// <summary>
 			/// Traditional Chinese language.
 			/// </summary>
-			ChineseTraditional,
-
-			/// <summary>
+			ChineseTraditional,			/// <summary>
 			/// Korean language.
 			/// </summary>
-			Korean,
-
-			/// <summary>
+			Korean,			/// <summary>
 			/// Polish language.
 			/// </summary>
-			Polish,
-
-			/// <summary>
+			Polish,			/// <summary>
 			/// Japanese language.
 			/// </summary>
-			Japanese,
-
-			/// <summary>
+			Japanese,			/// <summary>
 			/// German language.
 			/// </summary>
 			German

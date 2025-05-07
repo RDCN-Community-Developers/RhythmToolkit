@@ -10,9 +10,7 @@ namespace RhythmBase.Events
 	public class CustomDecorationEvent : BaseDecorationAction
 	{
 		/// <inheritdoc />
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the actual type of the decoration event.
 		/// </summary>
 		[JsonIgnore]
@@ -22,12 +20,8 @@ namespace RhythmBase.Events
 			{
 				return Data["Type".ToLowerCamelCase()]?.ToString() ?? "";
 			}
-		}
-
-		/// <inheritdoc />
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		}		/// <inheritdoc />
+		public override Tabs Tab { get; }		/// <summary>
 		/// Initializes a new instance of the <see cref="CustomDecorationEvent"/> class.
 		/// </summary>
 		public CustomDecorationEvent()
@@ -35,9 +29,7 @@ namespace RhythmBase.Events
 			Data = [];
 			Type = EventType.CustomDecorationEvent;
 			Tab = Tabs.Decorations;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="CustomDecorationEvent"/> class with the specified data.
 		/// </summary>
 		/// <param name="data">The JSON data for the event.</param>
@@ -52,18 +44,10 @@ namespace RhythmBase.Events
 				? Data["condition"] is null ? null : Condition.Load(Data["condition"]!.ToObject<string>() ?? "")
 				: null;
 			Active = Data["active"]?.ToObject<bool>() ?? true;
-		}
-
-		/// <inheritdoc />
-		public override string ToString() => $"{Beat} *{ActureType}";
-
-		/// <inheritdoc />
-		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
-
-		/// <inheritdoc />
-		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type, LevelReadOrWriteSettings settings) => TryConvert(ref value, ref type, settings);
-
-		/// <summary>
+		}		/// <inheritdoc />
+		public override string ToString() => $"{Beat} *{ActureType}";		/// <inheritdoc />
+		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());		/// <inheritdoc />
+		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type, LevelReadOrWriteSettings settings) => TryConvert(ref value, ref type, settings);		/// <summary>
 		/// Explicit conversion from <see cref="CustomEvent"/> to <see cref="CustomDecorationEvent"/>.
 		/// </summary>
 		/// <param name="e">The <see cref="CustomEvent"/> instance.</param>
@@ -73,9 +57,7 @@ namespace RhythmBase.Events
 			return e.Data["row"] != null
 				? new CustomDecorationEvent(e.Data)
 				: throw new RhythmBaseException("The row field is missing from the field contained in this object.");
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the JSON data for the event.
 		/// </summary>
 		public JObject Data;

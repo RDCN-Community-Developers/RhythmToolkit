@@ -1,7 +1,5 @@
 ﻿
-namespace RhythmBase.Components;
-
-/// <summary>
+namespace RhythmBase.Components;/// <summary>
 /// A Character.
 /// </summary>
 public readonly struct RDCharacter

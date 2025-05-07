@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
-namespace FastTest
+using System.Threading.Tasks;namespace FastTest
 {
 	public class Timer : IDisposable
 	{
@@ -25,9 +23,7 @@ namespace FastTest
 			Console.WriteLine($"{name ?? "It"} takes {(t - time).TotalMilliseconds}ms");
 			time = t;
 		}
-	}
-
-	public static class Extensions
+	}	public static class Extensions
 	{
 		public static void RemoveBookmarks(this RDLevel e) =>
 			e.Bookmarks.Clear();

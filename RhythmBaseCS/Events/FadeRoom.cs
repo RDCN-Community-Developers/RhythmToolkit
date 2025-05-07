@@ -11,35 +11,23 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FadeRoom"/> class.
 		/// </summary>
-		public FadeRoom() { }
-
-		/// <summary>
+		public FadeRoom() { }		/// <summary>
 		/// Gets or sets the easing type for the fade effect.
 		/// </summary>
-		public EaseType Ease { get; set; }
-
-		/// <summary>
+		public EaseType Ease { get; set; }		/// <summary>
 		/// Gets or sets the opacity level for the fade effect.
 		/// </summary>
 		[EaseProperty]
-		public uint Opacity { get; set; }
-
-		/// <summary>
+		public uint Opacity { get; set; }		/// <summary>
 		/// Gets or sets the duration of the fade effect.
 		/// </summary>
-		public float Duration { get; set; }
-
-		/// <summary>
+		public float Duration { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.FadeRoom;
-
-		/// <summary>
+		public override EventType Type => EventType.FadeRoom;		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Rooms;
-
-		/// <summary>
+		public override Tabs Tab => Tabs.Rooms;		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>
 		[JsonIgnore]

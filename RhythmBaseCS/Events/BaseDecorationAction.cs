@@ -11,20 +11,14 @@ namespace RhythmBase.Events
 		/// Gets the parent decoration event collection.
 		/// </summary>
 		[JsonIgnore]
-		public Decoration? Parent => _parent;
-
-		/// <summary>
+		public Decoration? Parent => _parent;		/// <summary>
 		/// Gets or sets the Y coordinate.
 		/// </summary>
 		[JsonIgnore]
-		public override int Y { get => base.Y; set => base.Y = value; }
-
-		/// <summary>
+		public override int Y { get => base.Y; set => base.Y = value; }		/// <summary>
 		/// Gets the target identifier.
 		/// </summary>
-		public virtual string Target => Parent?.Id ?? _decoId;
-
-		/// <summary>
+		public virtual string Target => Parent?.Id ?? _decoId;		/// <summary>
 		/// Gets or sets the beat associated with this action.
 		/// </summary>
 		/// <inheritdoc/>
@@ -37,9 +31,7 @@ namespace RhythmBase.Events
 								value :
 								value.WithoutLink() :
 							new(_beat.BaseLevel.Calculator, value);
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Clones this event and its basic properties. The clone will be added to the level.
 		/// </summary>
 		/// <typeparam name="TEvent">The type of event that will be generated.</typeparam>
@@ -49,9 +41,7 @@ namespace RhythmBase.Events
 			TEvent Temp = base.Clone<TEvent>();
 			Temp._parent = Parent;
 			return Temp;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Clones this event and its basic properties, associating it with a specific decoration event collection.
 		/// </summary>
 		/// <typeparam name="TEvent">The type of event that will be generated.</typeparam>
@@ -62,15 +52,11 @@ namespace RhythmBase.Events
 			TEvent Temp = base.Clone<TEvent>(decoration.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
 			Temp._parent = decoration;
 			return Temp;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the room associated with this action.
 		/// </summary>
 		[JsonIgnore]
-		public RDSingleRoom Room => Parent?.Room ?? RDSingleRoom.Default;
-
-		/// <summary>
+		public RDSingleRoom Room => Parent?.Room ?? RDSingleRoom.Default;		/// <summary>
 		/// The parent decoration event collection.
 		/// </summary>
 		internal Decoration? _parent;

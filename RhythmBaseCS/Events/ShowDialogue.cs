@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Components.RichText;
-
-namespace RhythmBase.Events
+using RhythmBase.Components.RichText;namespace RhythmBase.Events
 {
 	/// <summary>
 	/// Represents an event to show a dialogue in the game.
@@ -9,9 +7,7 @@ namespace RhythmBase.Events
 	public class ShowDialogue : BaseEvent
 	{
 		private RDDialogueExchange dialogueList = [];
-		private string text = "";
-
-		/// <summary>
+		private string text = "";		/// <summary>
 		/// Initializes a new instance of the <see cref="ShowDialogue"/> class.
 		/// </summary>
 		public ShowDialogue()
@@ -19,9 +15,7 @@ namespace RhythmBase.Events
 			Speed = 1;
 			Type = EventType.ShowDialogue;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the text of the dialogue.
 		/// </summary>
 		public string Text
@@ -44,45 +38,29 @@ namespace RhythmBase.Events
 				dialogueList = value;
 				text = dialogueList.Serialize();
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the side of the panel where the dialogue will be shown.
 		/// </summary>
-		public Sides PanelSide { get; set; }
-
-		/// <summary>
+		public Sides PanelSide { get; set; }		/// <summary>
 		/// Gets or sets the side of the portrait in the dialogue.
 		/// </summary>
-		public PortraitSides PortraitSide { get; set; }
-
-		/// <summary>
+		public PortraitSides PortraitSide { get; set; }		/// <summary>
 		/// Gets or sets the speed of the dialogue display.
 		/// </summary>
-		public int Speed { get; set; }
-
-		/// <summary>
+		public int Speed { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether text sounds should be played.
 		/// </summary>
-		public bool PlayTextSounds { get; set; }
-
-		/// <summary>
+		public bool PlayTextSounds { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab where the event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
-
-		/// <summary>
+		public override string ToString() => base.ToString() + string.Format(" {0}", Text);		/// <summary>
 		/// Specifies the sides where the dialogue panel can be shown.
 		/// </summary>
 		public enum Sides
@@ -95,9 +73,7 @@ namespace RhythmBase.Events
 			/// The top side.
 			/// </summary>
 			Top
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Specifies the sides where the portrait can be shown.
 		/// </summary>
 		public enum PortraitSides

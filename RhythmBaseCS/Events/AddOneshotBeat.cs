@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace RhythmBase.Events
+﻿using System.Diagnostics;namespace RhythmBase.Events
 {
 	/// <summary>
 	/// Represents an event to add a one-shot beat.
@@ -11,49 +9,31 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AddOneshotBeat"/> class.
 		/// </summary>
-		public AddOneshotBeat() { }
-
-		/// <summary>
+		public AddOneshotBeat() { }		/// <summary>
 		/// Gets or sets the type of pulse.
 		/// </summary>
-		public Pulse PulseType { get; set; }
-
-		/// <summary>
+		public Pulse PulseType { get; set; }		/// <summary>
 		/// Gets or sets the number of subdivisions.
 		/// </summary>
-		public byte Subdivisions { get; set; } = 1;
-
-		/// <summary>
+		public byte Subdivisions { get; set; } = 1;		/// <summary>
 		/// Gets or sets a value indicating whether the subdivision sound is enabled.
 		/// </summary>
-		public bool SubdivSound { get; set; }
-
-		/// <summary>
+		public bool SubdivSound { get; set; }		/// <summary>
 		/// Gets or sets the tick value.
 		/// </summary>
-		public float Tick { get; set; } = 1f;
-
-		/// <summary>
+		public float Tick { get; set; } = 1f;		/// <summary>
 		/// Gets or sets the number of loops.
 		/// </summary>
-		public uint Loops { get; set; }
-
-		/// <summary>
+		public uint Loops { get; set; }		/// <summary>
 		/// Gets or sets the interval value.
 		/// </summary>
-		public float Interval { get; set; }
-
-		/// <summary>
+		public float Interval { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether to skip the shot.
 		/// </summary>
-		public bool Skipshot { get; set; }
-
-		/// <summary>
+		public bool Skipshot { get; set; }		/// <summary>
 		/// Gets or sets the freeze burn mode.
 		/// </summary>
-		public FreezeBurn? FreezeBurnMode { get; set; }
-
-		/// <summary>
+		public FreezeBurn? FreezeBurnMode { get; set; }		/// <summary>
 		/// Gets or sets the delay value.
 		/// </summary>
 		public float Delay
@@ -64,14 +44,8 @@ namespace RhythmBase.Events
 					? 0.5f : value;
 		}
 		/// <inheritdoc/>
-		public override EventType Type { get; } = EventType.AddOneshotBeat;
-
-		/// <inheritdoc/>
-		public override string ToString() => base.ToString() + $" {FreezeBurnMode} {PulseType}";
-
-		private float _delay = 0f;
-
-		/// <summary>
+		public override EventType Type => EventType.AddOneshotBeat;		/// <inheritdoc/>
+		public override string ToString() => base.ToString() + $" {FreezeBurnMode} {PulseType}";		private float _delay = 0f;		/// <summary>
 		/// Represents the type of pulse.
 		/// </summary>
 		/// <remarks>
@@ -82,25 +56,17 @@ namespace RhythmBase.Events
 			/// <summary>
 			/// A wave pulse.
 			/// </summary>
-			Wave,
-
-			/// <summary>
+			Wave,			/// <summary>
 			/// A square pulse.
 			/// </summary>
-			Square,
-
-			/// <summary>
+			Square,			/// <summary>
 			/// A triangle pulse.
 			/// </summary>
-			Triangle,
-
-			/// <summary>
+			Triangle,			/// <summary>
 			/// A heart-shaped pulse.
 			/// </summary>
 			Heart
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Represents the freeze burn mode.
 		/// </summary>
 		/// <remarks>
@@ -111,14 +77,10 @@ namespace RhythmBase.Events
 			/// <summary>
 			/// A wave freeze burn mode.
 			/// </summary>
-			Wave,
-
-			/// <summary>
+			Wave,			/// <summary>
 			/// A freeze shot mode.
 			/// </summary>
-			Freezeshot,
-
-			/// <summary>
+			Freezeshot,			/// <summary>
 			/// A burn shot mode.
 			/// </summary>
 			Burnshot

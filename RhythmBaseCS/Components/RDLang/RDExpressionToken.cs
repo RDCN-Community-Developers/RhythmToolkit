@@ -1,6 +1,4 @@
-﻿using sly.lexer;
-
-namespace RhythmBase.Components.RDLang
+﻿using sly.lexer;namespace RhythmBase.Components.RDLang
 {
 	internal enum RDExpressionToken
 	{

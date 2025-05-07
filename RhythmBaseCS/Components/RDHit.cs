@@ -40,9 +40,7 @@ namespace RhythmBase.Components
 			Parent = parent;
 			Beat = beat;
 			Hold = hold;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

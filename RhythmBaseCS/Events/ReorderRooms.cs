@@ -15,7 +15,6 @@ namespace RhythmBase.Events
 			Type = EventType.ReorderRooms;
 			Tab = Tabs.Rooms;
 		}
-
 		/// <summary>
 		/// Gets or sets the order of the rooms.
 		/// </summary>
@@ -25,7 +24,6 @@ namespace RhythmBase.Events
 		/// Gets the type of the event.
 		/// </summary>
 		public override EventType Type { get; }
-
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>

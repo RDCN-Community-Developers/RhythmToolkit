@@ -1,13 +1,12 @@
 ﻿using System;
 namespace RhythmBase.Adofai.Events
 {
+	/// <summary>
+	/// Represents a bookmark event in the ADOFAI game.
+	/// </summary>
 	public class ADBookmark : ADBaseTileEvent
 	{
-		public ADBookmark()
-		{
-			Type = ADEventType.Bookmark;
-		}
-
-		public override ADEventType Type { get; }
+		/// <inheritdoc/>
+		public override ADEventType Type => ADEventType.Bookmark;
 	}
 }

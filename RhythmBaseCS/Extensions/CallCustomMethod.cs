@@ -1,9 +1,7 @@
 ﻿using RhythmBase.Components;
 using RhythmBase.Components.Easing;
 using System.Reflection;
-using static RhythmBase.Extensions.Extensions;
-
-namespace RhythmBase.Events
+using static RhythmBase.Extensions.Extensions;namespace RhythmBase.Events
 {
 	public partial class CallCustomMethod
 	{
@@ -117,7 +115,5 @@ namespace RhythmBase.Events
 					PulseRate,
 					PulseWavelength;
 			}
-		}
-
-	}
+		}	}
 }

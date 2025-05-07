@@ -4,9 +4,7 @@
 	/// Interface representing a duration event.  
 	/// </summary>  
 	public interface IDurationEvent
-	{
-
-		/// <summary>  
+	{		/// <summary>  
 		/// Gets or sets the duration of the ease event.  
 		/// </summary>  
 		float Duration { get; }

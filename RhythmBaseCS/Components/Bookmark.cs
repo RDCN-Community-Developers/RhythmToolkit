@@ -8,20 +8,14 @@
 		/// <summary>
 		/// Gets or sets the beat where the bookmark is located.
 		/// </summary>
-		public RDBeat Beat { get; set; }
-
-		/// <summary>
+		public RDBeat Beat { get; set; }		/// <summary>
 		/// Gets or sets the color of the bookmark.
 		/// </summary>
-		public BookmarkColors Color { get; set; }
-
-		/// <summary>
+		public BookmarkColors Color { get; set; }		/// <summary>
 		/// Returns a string that represents the current bookmark.
 		/// </summary>
 		/// <returns>A string that represents the current bookmark.</returns>
-		public override string ToString() => string.Format("{0}, {1}", Beat, Color);
-
-		/// <summary>
+		public override string ToString() => string.Format("{0}, {1}", Beat, Color);		/// <summary>
 		/// Specifies the colors available for bookmarks.
 		/// </summary>
 		public enum BookmarkColors

@@ -16,9 +16,7 @@ namespace RhythmBase.Events
 			Tab = Tabs.Actions;
 		}
 		/// <inheritdoc/>
-		public RDRoom Rooms { get; set; }
-
-		/// <summary>  
+		public RDRoom Rooms { get; set; }		/// <summary>  
 		/// Gets or sets the strength of the BassDrop event.  
 		/// </summary>  
 		public StrengthType Strength { get; set; }
@@ -36,14 +34,10 @@ namespace RhythmBase.Events
 			/// <summary>  
 			/// Low strength.  
 			/// </summary>  
-			Low,
-
-			/// <summary>  
+			Low,			/// <summary>  
 			/// Medium strength.  
 			/// </summary>  
-			Medium,
-
-			/// <summary>  
+			Medium,			/// <summary>  
 			/// High strength.  
 			/// </summary>  
 			High

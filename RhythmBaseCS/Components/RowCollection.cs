@@ -48,7 +48,6 @@
 				_items[index] = value;
 			}
 		}
-
 		/// <summary>  
 		/// Gets an enumerable collection of <see cref="Row"/> instances associated with the specified <see cref="RDRoom"/>.  
 		/// </summary>  
@@ -65,6 +64,11 @@
 				}
 			}
 		}
+		/// <summary>  
+		/// Removes the <see cref="Row"/> at the specified index from the collection.  
+		/// </summary>  
+		/// <param name="index">The zero-based index of the <see cref="Row"/> to remove.</param>  
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the specified index is out of range.</exception>  
 		public void RemoveAt(int index)
 		{
 			if (index < 0 || index >= _items.Count)

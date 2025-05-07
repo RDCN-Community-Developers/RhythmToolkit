@@ -11,63 +11,41 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the location of the rectangle.
 		/// </summary>
-		public RDPointNI Location { get; set; } = location;
-
-		/// <summary>
+		public RDPointNI Location { get; set; } = location;		/// <summary>
 		/// Gets or sets the size of the rectangle.
 		/// </summary>
-		public RDSizeNI Size { get; set; } = size;
-
-		/// <summary>
+		public RDSizeNI Size { get; set; } = size;		/// <summary>
 		/// Gets or sets the pivot point of the rotation.
 		/// </summary>
-		public RDPointNI Pivot { get; set; } = pivot;
-
-		/// <summary>
+		public RDPointNI Pivot { get; set; } = pivot;		/// <summary>
 		/// Gets or sets the angle of rotation in degrees.
 		/// </summary>
-		public float Angle { get; set; } = angle;
-
-		/// <summary>
+		public float Angle { get; set; } = angle;		/// <summary>
 		/// Gets the top-left point of the rotated rectangle.
 		/// </summary>
-		public readonly RDPointN LeftTop => (Location - (RDSizeNI)Pivot + new RDSizeNI(0, Size.Height)).Rotate(Location, Angle);
-
-		/// <summary>
+		public readonly RDPointN LeftTop => (Location - (RDSizeNI)Pivot + new RDSizeNI(0, Size.Height)).Rotate(Location, Angle);		/// <summary>
 		/// Gets the top-right point of the rotated rectangle.
 		/// </summary>
-		public readonly RDPointN RightTop => (Location - (RDSizeNI)Pivot + Size).Rotate(Location, Angle);
-
-		/// <summary>
+		public readonly RDPointN RightTop => (Location - (RDSizeNI)Pivot + Size).Rotate(Location, Angle);		/// <summary>
 		/// Gets the bottom-left point of the rotated rectangle.
 		/// </summary>
-		public readonly RDPointN LeftBottom => (Location - (RDSizeNI)Pivot).Rotate(Location, Angle);
-
-		/// <summary>
+		public readonly RDPointN LeftBottom => (Location - (RDSizeNI)Pivot).Rotate(Location, Angle);		/// <summary>
 		/// Gets the bottom-right point of the rotated rectangle.
 		/// </summary>
-		public readonly RDPointN RightBottom => (Location - (RDSizeNI)Pivot + new RDSizeNI(Size.Width, 0)).Rotate(Location, Angle);
-
-		/// <summary>
+		public readonly RDPointN RightBottom => (Location - (RDSizeNI)Pivot + new RDSizeNI(Size.Width, 0)).Rotate(Location, Angle);		/// <summary>
 		/// Gets the rectangle without rotation.
 		/// </summary>
-		public readonly RDRectNI WithoutRotate => new(Location - (RDSizeNI)Pivot, Size);
-
-		/// <summary>
+		public readonly RDRectNI WithoutRotate => new(Location - (RDSizeNI)Pivot, Size);		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRotatedRectNI"/> struct.
 		/// </summary>
 		/// <param name="rect">The rectangle.</param>
 		/// <param name="pivot">The pivot point.</param>
 		/// <param name="angle">The angle of rotation.</param>
-		public RDRotatedRectNI(RDRectNI rect, RDPointNI pivot, float angle) : this(rect.Location, rect.Size, pivot, angle) { }
-
-		/// <summary>
+		public RDRotatedRectNI(RDRectNI rect, RDPointNI pivot, float angle) : this(rect.Location, rect.Size, pivot, angle) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRotatedRectNI"/> struct.
 		/// </summary>
 		/// <param name="rect">The rectangle.</param>
-		public RDRotatedRectNI(RDRectNI rect) : this(rect.Location, rect.Size, default, 0f) { }
-
-		/// <summary>
+		public RDRotatedRectNI(RDRectNI rect) : this(rect.Location, rect.Size, default, 0f) { }		/// <summary>
 		/// Inflates the specified rectangle by the specified size.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -78,9 +56,7 @@ namespace RhythmBase.Components
 			RDRotatedRectNI result = rect;
 			result.Inflate(size);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Inflates the specified rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -92,22 +68,16 @@ namespace RhythmBase.Components
 			RDRotatedRectNI result = rect;
 			result.Inflate(x, y);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the rectangle by the specified x and y values.
 		/// </summary>
 		/// <param name="x">The x value to offset by.</param>
 		/// <param name="y">The y value to offset by.</param>
-		public void Offset(int x, int y) => Location += (RDSizeNI)new RDPointNI(x, y);
-
-		/// <summary>
+		public void Offset(int x, int y) => Location += (RDSizeNI)new RDPointNI(x, y);		/// <summary>
 		/// Offsets the rectangle by the specified point.
 		/// </summary>
 		/// <param name="p">The point to offset by.</param>
-		public void Offset(RDPointNI p) => Offset(p.X, p.Y);
-
-		/// <summary>
+		public void Offset(RDPointNI p) => Offset(p.X, p.Y);		/// <summary>
 		/// Inflates the rectangle by the specified size.
 		/// </summary>
 		/// <param name="size">The size to inflate by.</param>
@@ -115,9 +85,7 @@ namespace RhythmBase.Components
 		{
 			Size += new RDSizeNI(size.Width * 2, size.Height * 2);
 			Pivot -= (RDSizeNI)new RDPointNI(size.Width, size.Height);
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Inflates the rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="width">The width to inflate by.</param>
@@ -126,24 +94,18 @@ namespace RhythmBase.Components
 		{
 			Size += new RDSizeNI(width * 2, height * 2);
 			Pivot -= (RDSizeNI)new RDPointNI(width, height);
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Determines whether the rectangle contains the specified point.
 		/// </summary>
 		/// <param name="x">The x coordinate of the point.</param>
 		/// <param name="y">The y coordinate of the point.</param>
 		/// <returns><c>true</c> if the rectangle contains the point; otherwise, <c>false</c>.</returns>
-		public readonly bool Contains(int x, int y) => WithoutRotate.Contains(new RDPointN((float)x, (float)y).Rotate(-Angle));
-
-		/// <summary>
+		public readonly bool Contains(int x, int y) => WithoutRotate.Contains(new RDPointN((float)x, (float)y).Rotate(-Angle));		/// <summary>
 		/// Determines whether the rectangle contains the specified point.
 		/// </summary>
 		/// <param name="p">The point.</param>
 		/// <returns><c>true</c> if the rectangle contains the point; otherwise, <c>false</c>.</returns>
-		public readonly bool Contains(RDPointN p) => WithoutRotate.Contains(p.Rotate(-Angle));
-
-		/// <summary>
+		public readonly bool Contains(RDPointN p) => WithoutRotate.Contains(p.Rotate(-Angle));		/// <summary>
 		/// Determines whether the rectangle contains the specified rotated rectangle.
 		/// </summary>
 		/// <param name="rect">The rotated rectangle.</param>
@@ -152,9 +114,7 @@ namespace RhythmBase.Components
 			Contains(rect.LeftTop) &&
 			Contains(rect.RightTop) &&
 			Contains(rect.LeftBottom) &&
-			Contains(rect.RightBottom);
-
-		/// <summary>
+			Contains(rect.RightBottom);		/// <summary>
 		/// Determines whether the rectangle intersects with the specified rotated rectangle.
 		/// </summary>
 		/// <param name="rect">The rotated rectangle.</param>

@@ -13,9 +13,7 @@ namespace RhythmBase.Converters
 					? ""
 					: $"custom:{value.CustomCharacter}"
 				: value.Character.ToString());
-		}
-
-		public override RDCharacter ReadJson(JsonReader reader, Type objectType, RDCharacter existingValue, bool hasExistingValue, JsonSerializer serializer)
+		}		public override RDCharacter ReadJson(JsonReader reader, Type objectType, RDCharacter existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			string value = JToken.ReadFrom(reader).ToObject<string>()!;
 			RDCharacter ReadJson;

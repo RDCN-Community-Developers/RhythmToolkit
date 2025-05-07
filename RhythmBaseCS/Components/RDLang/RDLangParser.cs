@@ -1,7 +1,5 @@
 ﻿using sly.lexer;
-using sly.parser.generator;
-
-namespace RhythmBase.Components.RDLang
+using sly.parser.generator;namespace RhythmBase.Components.RDLang
 {
 	internal class RDLangParser
 	{

@@ -5,9 +5,7 @@ using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Extensions;
 using RhythmBase.Settings;
-using RhythmBase.Utils;
-
-namespace RhythmBase.Converters
+using RhythmBase.Utils;namespace RhythmBase.Converters
 {
 	internal class RDLevelConverter : JsonConverter<RDLevel>
 	{

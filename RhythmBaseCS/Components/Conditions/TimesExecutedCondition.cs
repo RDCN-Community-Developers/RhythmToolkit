@@ -11,14 +11,10 @@
 		public TimesExecutedCondition()
 		{
 			Type = ConditionType.TimesExecuted;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the maximum number of executions allowed.
 		/// </summary>
-		public int MaxTimes { get; set; }
-
-		/// <summary>
+		public int MaxTimes { get; set; }		/// <summary>
 		/// Gets the type of the condition.
 		/// </summary>
 		public override ConditionType Type { get; }

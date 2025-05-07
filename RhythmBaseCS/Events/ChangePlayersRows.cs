@@ -10,30 +10,18 @@
 			CpuMarkers = new List<CpuType>(16);
 			Type = EventType.ChangePlayersRows;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the list of players.
 		/// </summary>
-		public List<PlayerType> Players { get; set; }
-
-		/// <summary>
+		public List<PlayerType> Players { get; set; }		/// <summary>
 		/// Gets or sets the player mode.
 		/// </summary>
-		public PlayerModes PlayerMode { get; set; }
-
-		/// <summary>
+		public PlayerModes PlayerMode { get; set; }		/// <summary>
 		/// Gets or sets the list of CPU markers.
 		/// </summary>
-		public List<CpuType> CpuMarkers { get; set; }
-
-		/// <inheritdoc />
-		public override EventType Type { get; }
-
-		/// <inheritdoc />
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public List<CpuType> CpuMarkers { get; set; }		/// <inheritdoc />
+		public override EventType Type { get; }		/// <inheritdoc />
+		public override Tabs Tab { get; }		/// <summary>
 		/// Represents the types of CPUs.
 		/// </summary>
 		public enum CpuType
@@ -66,9 +54,7 @@
 			/// Samurai CPU type.
 			/// </summary>
 			Samurai
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Represents the modes of players.
 		/// </summary>
 		public enum PlayerModes

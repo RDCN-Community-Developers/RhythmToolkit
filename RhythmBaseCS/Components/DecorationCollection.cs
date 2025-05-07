@@ -9,7 +9,6 @@
 	/// <param name="parent">The parent <see cref="RDLevel"/> instance associated with this collection.</param>
 	public class DecorationCollection(RDLevel parent) : LevelElementCollection<Decoration>(parent,false)
 	{
-
 		/// <summary>
 		/// Adds a <see cref="Decoration"/> to the collection.
 		/// </summary>
@@ -19,7 +18,6 @@
 			item.Parent = parent;
 			_items.Add(item);
 		}
-
 		/// <summary>
 		/// Removes a <see cref="Decoration"/> from the collection.
 		/// </summary>
@@ -50,7 +48,6 @@
 				_items[index] = value;
 			}
 		}
-
 		/// <summary>
 		/// Gets an enumerable collection of <see cref="Decoration"/> associated with the specified <see cref="RDRoom"/>.
 		/// </summary>
@@ -67,7 +64,6 @@
 				}
 			}
 		}
-
 		/// <summary>
 		/// Gets the <see cref="Decoration"/> with the specified ID.
 		/// </summary>
@@ -85,6 +81,11 @@
 				return null;
 			}
 		}
+		/// <summary>  
+		/// Removes the <see cref="Decoration"/> at the specified index.  
+		/// </summary>  
+		/// <param name="index">The zero-based index of the <see cref="Decoration"/> to remove.</param>  
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of range.</exception>  
 		public void RemoveAt(int index)
 		{
 			if (index < 0 || index >= _items.Count)

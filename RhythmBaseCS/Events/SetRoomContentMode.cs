@@ -14,24 +14,16 @@ namespace RhythmBase.Events
 		{
 			Type = EventType.SetRoomContentMode;
 			Tab = Tabs.Rooms;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the mode of the room content.
 		/// </summary>
-		public Modes Mode { get; set; }
-
-		/// <summary>
+		public Modes Mode { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>
 		[JsonIgnore]
@@ -41,9 +33,7 @@ namespace RhythmBase.Events
 			{
 				return new RDSingleRoom(checked((byte)Y));
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Defines the modes for room content.
 		/// </summary>
 		public enum Modes

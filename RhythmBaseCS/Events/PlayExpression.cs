@@ -12,29 +12,19 @@
 		{
 			Type = EventType.PlayExpression;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the expression to be played.
 		/// </summary>
-		public string Expression { get; set; } = "";
-
-		/// <summary>
+		public string Expression { get; set; } = "";		/// <summary>
 		/// Gets or sets a value indicating whether to replace the current expression.
 		/// </summary>
-		public bool Replace { get; set; }
-
-		/// <summary>
+		public bool Replace { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab where the event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

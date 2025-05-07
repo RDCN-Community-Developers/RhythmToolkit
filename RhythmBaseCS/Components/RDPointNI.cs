@@ -15,19 +15,13 @@ namespace RhythmBase.Components
 		/// Initializes a new instance of the <see cref="RDPointNI"/> struct with the specified size.
 		/// </summary>
 		/// <param name="sz">The size to initialize the point with.</param>
-		public RDPointNI(RDSizeNI sz) : this(sz.Width, sz.Height) { }
-
-		/// <summary>
+		public RDPointNI(RDSizeNI sz) : this(sz.Width, sz.Height) { }		/// <summary>
 		/// Gets or sets the X coordinate of the point.
 		/// </summary>
-		public int X { get; set; } = x;
-
-		/// <summary>
+		public int X { get; set; } = x;		/// <summary>
 		/// Gets or sets the Y coordinate of the point.
 		/// </summary>
-		public int Y { get; set; } = y;
-
-		/// <summary>
+		public int Y { get; set; } = y;		/// <summary>
 		/// Offsets the point by the specified point.
 		/// </summary>
 		/// <param name="p">The point to offset by.</param>
@@ -35,9 +29,7 @@ namespace RhythmBase.Components
 		{
 			X += p.X;
 			Y += p.Y;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the point by the specified size.
 		/// </summary>
 		/// <param name="p">The size to offset by.</param>
@@ -45,9 +37,7 @@ namespace RhythmBase.Components
 		{
 			X += p.Width;
 			Y += p.Height;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the point by the specified horizontal and vertical amounts.
 		/// </summary>
 		/// <param name="dx">The horizontal offset.</param>
@@ -56,9 +46,7 @@ namespace RhythmBase.Components
 		{
 			X += dx;
 			Y += dy;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Returns a new point with coordinates rounded up to the nearest integer values.
 		/// </summary>
 		/// <param name="value">The point to round up.</param>
@@ -66,9 +54,7 @@ namespace RhythmBase.Components
 		public static RDPointNI Ceiling(RDPointN value) => new(
 		(int)Math.Ceiling((double)value.X),
 		(int)Math.Ceiling((double)value.Y)
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Adds the specified size to the point.
 		/// </summary>
 		/// <param name="pt">The point to add to.</param>
@@ -76,9 +62,7 @@ namespace RhythmBase.Components
 		/// <returns>A new point with the size added.</returns>
 		public static RDPointNI Add(RDPointNI pt, RDSizeNI sz) => new(
 		pt.X + sz.Width, pt.Y + sz.Height
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Returns a new point with coordinates truncated to the nearest integer values.
 		/// </summary>
 		/// <param name="value">The point to truncate.</param>
@@ -86,9 +70,7 @@ namespace RhythmBase.Components
 		public static RDPointNI Truncate(RDPointN value) => new(
 		(int)Math.Truncate((double)value.X),
 		(int)Math.Truncate((double)value.Y)
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Subtracts the specified size from the point.
 		/// </summary>
 		/// <param name="pt">The point to subtract from.</param>
@@ -96,9 +78,7 @@ namespace RhythmBase.Components
 		/// <returns>A new point with the size subtracted.</returns>
 		public static RDPointNI Subtract(RDPointNI pt, RDSizeNI sz) => new(
 		pt.X - sz.Width, pt.Y - sz.Height
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Returns a new point with coordinates rounded to the nearest integer values.
 		/// </summary>
 		/// <param name="value">The point to round.</param>
@@ -106,9 +86,7 @@ namespace RhythmBase.Components
 		public static RDPointNI Round(RDPointN value) => new(
 		(int)Math.Round((double)value.X),
 		(int)Math.Round((double)value.Y)
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Multiplies the point by the specified 2x2 matrix.
 		/// </summary>
 		/// <param name="matrix">The 2x2 matrix to multiply by.</param>
@@ -173,23 +151,17 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointNI"/> to convert.</param>
 		/// <returns>An <see cref="RDPointN"/> with the same coordinates.</returns>
-		public static implicit operator RDPointN(RDPointNI p) => new(p.X, p.Y);
-
-		/// <summary>
+		public static implicit operator RDPointN(RDPointNI p) => new(p.X, p.Y);		/// <summary>
 		/// Implicitly converts an <see cref="RDPointNI"/> to an <see cref="RDPointI"/>.
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointNI"/> to convert.</param>
 		/// <returns>An <see cref="RDPointI"/> with the same coordinates.</returns>
-		public static implicit operator RDPointI(RDPointNI p) => new(new int?(p.X), new int?(p.Y));
-
-		/// <summary>
+		public static implicit operator RDPointI(RDPointNI p) => new(new int?(p.X), new int?(p.Y));		/// <summary>
 		/// Implicitly converts an <see cref="RDPointNI"/> to an <see cref="RDPointE"/>.
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointNI"/> to convert.</param>
 		/// <returns>An <see cref="RDPointE"/> with the same coordinates.</returns>
-		public static implicit operator RDPointE(RDPointNI p) => new(p.X, p.Y);
-
-		/// <summary>
+		public static implicit operator RDPointE(RDPointNI p) => new(p.X, p.Y);		/// <summary>
 		/// Explicitly converts an <see cref="RDPointNI"/> to an <see cref="RDSizeNI"/>.
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointNI"/> to convert.</param>

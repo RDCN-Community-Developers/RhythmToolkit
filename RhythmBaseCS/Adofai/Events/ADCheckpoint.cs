@@ -1,15 +1,14 @@
-﻿using System;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
+	/// <summary>
+	/// Represents a checkpoint event in the ADOFAI game.
+	/// </summary>
 	public class ADCheckpoint : ADBaseTileEvent
 	{
-		public ADCheckpoint()
-		{
-			Type = ADEventType.Checkpoint;
-		}
-
-		public override ADEventType Type { get; }
-
+		/// <inheritdoc/>
+		public override ADEventType Type => ADEventType.Checkpoint;		/// <summary>
+		/// Gets or sets the tile offset for the checkpoint.
+		/// </summary>
 		public int TileOffset { get; set; }
 	}
 }

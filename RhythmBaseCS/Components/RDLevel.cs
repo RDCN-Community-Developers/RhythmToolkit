@@ -82,7 +82,6 @@ namespace RhythmBase.Components
 			Rows = new(this);
 			Decorations = new(this);
 		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDLevel"/> class with the specified items.
 		/// </summary>
@@ -109,7 +108,6 @@ namespace RhythmBase.Components
 					new(0xFF880015u),
 					new(0xFFB97A57u),
 					RDColor.Red,
-
 					new(0xFFFFAEC9u),
 					new(0xFFFF7F27u),
 					new(0xFFFFC90Eu),
@@ -117,7 +115,6 @@ namespace RhythmBase.Components
 					new(0xFFEFE4B0u),
 					new(0xFF22B14Cu),
 					new(0xFFB5E61Du),
-
 					new(0xFF00A2E8u),
 					new(0xFF99D9EAu),
 					new(0xFF3F48CCu),
@@ -126,14 +123,12 @@ namespace RhythmBase.Components
 					new(0xFFC8BFE7u),
 					new(0x00000000u)
 				];
-
 				rdlevel.Settings.RankMaxMistakes = [
 					20,
 					15,
 					10,
 					5
 				];
-
 				rdlevel.Settings.RankDescription = [
 					"Better call 911, now!",
 					"Ugh, you can do better",
@@ -142,7 +137,6 @@ namespace RhythmBase.Components
 					"You are really good!",
 					"Wow! That's awesome!!"
 				];
-
 				PlaySong playsong = new();
 				SetTheme settheme = new();
 				playsong.Song = new RDAudio() { Filename = "sndOrientalTechno" };
@@ -289,7 +283,6 @@ namespace RhythmBase.Components
 			Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(reader)) ?? throw new RhythmBaseException("Cannot read the file.");
 			return Read;
 		}
-
 		/// <summary>
 		/// Reads an RDLevel from a TextReader with the specified settings.
 		/// </summary>
@@ -304,7 +297,6 @@ namespace RhythmBase.Components
 		/// <param name="filepath">The path to the zip file.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file.</returns>
 		public static RDLevel ReadFromZip(string filepath) => ReadFromZip(filepath, new LevelReadOrWriteSettings());
-
 		/// <summary>
 		/// Read from a zip file as a level with specific settings.
 		/// </summary>
@@ -318,7 +310,6 @@ namespace RhythmBase.Components
 		/// <param name="stream">The stream of the zip file.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file.</returns>
 		public static RDLevel ReadFromZip(Stream stream) => ReadFromZip(stream, new LevelReadOrWriteSettings());
-
 		/// <summary>
 		/// Read from a zip file as a level with specific settings.
 		/// </summary>
@@ -376,7 +367,6 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="stream">The text writer to write the level to.</param>
 		public void Write(TextWriter stream) => Write(stream, new LevelReadOrWriteSettings());
-
 		/// <summary>
 		/// Save the level to a text writer.
 		/// </summary>
@@ -389,14 +379,12 @@ namespace RhythmBase.Components
 			Serializer(settings).Serialize(writer, this);
 			settings.OnAfterWriting();
 		}
-
 		/// <summary>
 		/// Save the level to a stream.
 		/// Use default output settings.
 		/// </summary>
 		/// <param name="stream">The stream to write the level to.</param>
 		public void Write(Stream stream) => Write(new StreamWriter(stream, leaveOpen: true), new LevelReadOrWriteSettings());
-
 		/// <summary>
 		/// Save the level to a stream.
 		/// </summary>
@@ -695,7 +683,6 @@ namespace RhythmBase.Components
 		internal string _path;
 		private bool isZip = false;
 		private RDColor[] colorPalette = new RDColor[21];
-
 		/// <summary>
 		/// Variables.
 		/// </summary>

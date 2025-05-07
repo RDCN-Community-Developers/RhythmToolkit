@@ -15,29 +15,19 @@ namespace RhythmBase.Events
 			Narrate = true;
 			Type = EventType.ShowStatusSign;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets a value indicating whether to use beats.
 		/// </summary>
-		public bool UseBeats { get; set; }
-
-		/// <summary>
+		public bool UseBeats { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether to narrate.
 		/// </summary>
-		public bool Narrate { get; set; }
-
-		/// <summary>
+		public bool Narrate { get; set; }		/// <summary>
 		/// Gets or sets the text to display.
 		/// </summary>
-		public string Text { get; set; } = "";
-
-		/// <summary>
+		public string Text { get; set; } = "";		/// <summary>
 		/// Gets or sets the duration of the status sign in seconds.
 		/// </summary>
-		public float Duration { get; set; }
-
-		/// <summary>
+		public float Duration { get; set; }		/// <summary>
 		/// Gets or sets the duration of the status sign as a <see cref="TimeSpan"/>.
 		/// </summary>
 		[JsonIgnore]
@@ -62,19 +52,13 @@ namespace RhythmBase.Events
 				UseBeats = false;
 				Duration = (float)value.TotalSeconds;
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab of the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

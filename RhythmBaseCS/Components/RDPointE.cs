@@ -18,85 +18,59 @@ namespace RhythmBase.Components
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified size.
 		/// </summary>
 		/// <param name="sz">The size to initialize the point with.</param>
-		public RDPointE(RDSize sz) : this(sz.Width, sz.Height) { }
-
-		/// <summary>
+		public RDPointE(RDSize sz) : this(sz.Width, sz.Height) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified coordinates.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(float x, float y) : this((RDExpression)x, (RDExpression)y) { }
-
-		/// <summary>
+		public RDPointE(float x, float y) : this((RDExpression)x, (RDExpression)y) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(RDExpression? x, float y) : this(x, (RDExpression)y) { }
-
-		/// <summary>
+		public RDPointE(RDExpression? x, float y) : this(x, (RDExpression)y) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(float x, RDExpression? y) : this((RDExpression)x, y) { }
-
-		/// <summary>
+		public RDPointE(float x, RDExpression? y) : this((RDExpression)x, y) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE([AllowNull] string x, float y) : this(x ?? default(RDExpression?), (RDExpression)y) { }
-
-		/// <summary>
+		public RDPointE([AllowNull] string x, float y) : this(x ?? default(RDExpression?), (RDExpression)y) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(float x, [AllowNull] string y) : this((RDExpression)x, y ?? default(RDExpression?)) { }
-
-		/// <summary>
+		public RDPointE(float x, [AllowNull] string y) : this((RDExpression)x, y ?? default(RDExpression?)) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE([AllowNull] string x, RDExpression? y) : this(x ?? default(RDExpression?), y) { }
-
-		/// <summary>
+		public RDPointE([AllowNull] string x, RDExpression? y) : this(x ?? default(RDExpression?), y) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE(RDExpression? x, [AllowNull] string y) : this(x, y ?? default(RDExpression?)) { }
-
-		/// <summary>
+		public RDPointE(RDExpression? x, [AllowNull] string y) : this(x, y ?? default(RDExpression?)) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public RDPointE([AllowNull] string x, [AllowNull] string y) : this(x ?? default(RDExpression?), y ?? default(RDExpression?)) { }
-
-		/// <summary>
+		public RDPointE([AllowNull] string x, [AllowNull] string y) : this(x ?? default(RDExpression?), y ?? default(RDExpression?)) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified point.
 		/// </summary>
 		/// <param name="p">The point to initialize the point with.</param>
-		public RDPointE(RDPointI p) : this(p.X, p.Y) { }
-
-		/// <summary>
+		public RDPointE(RDPointI p) : this(p.X, p.Y) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified point.
 		/// </summary>
 		/// <param name="p">The point to initialize the point with.</param>
 		public RDPointE(RDPoint p) : this(p.X, p.Y) { }
 		/// <inheritdoc/>
-		public readonly bool IsEmpty => X == null && Y == null;
-
-		/// <inheritdoc/>
-		public RDExpression? X { get; set; } = x;
-
-		/// <inheritdoc/>
-		public RDExpression? Y { get; set; } = y;
-
-		/// <summary>
+		public readonly bool IsEmpty => X == null && Y == null;		/// <inheritdoc/>
+		public RDExpression? X { get; set; } = x;		/// <inheritdoc/>
+		public RDExpression? Y { get; set; } = y;		/// <summary>
 		/// Offsets the point by the specified point.
 		/// </summary>
 		/// <param name="p">The point to offset by.</param>
@@ -104,9 +78,7 @@ namespace RhythmBase.Components
 		{
 			X += p.X;
 			Y += p.Y;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the point by the specified amounts.
 		/// </summary>
 		/// <param name="dx">The amount to offset the x-coordinate.</param>
@@ -115,9 +87,7 @@ namespace RhythmBase.Components
 		{
 			X += dx;
 			Y += dy;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Adds the specified size to the point.
 		/// </summary>
 		/// <param name="pt">The point to add to.</param>
@@ -125,19 +95,13 @@ namespace RhythmBase.Components
 		/// <returns>The resulting point.</returns>
 		public static RDPointE Add(RDPointE pt, RDSizeI sz) => new(
 		pt.X + sz.Width, pt.Y + sz.Height
-		);
-
-		/// <inheritdoc cref="Add(RDPointE, RDSizeI)"/>
+		);		/// <inheritdoc cref="Add(RDPointE, RDSizeI)"/>
 		public static RDPointE Add(RDPointE pt, RDSize sz) => new(
 		pt.X + sz.Width, pt.Y + sz.Height
-		);
-
-		/// <inheritdoc cref="Add(RDPointE, RDSizeI)"/>
+		);		/// <inheritdoc cref="Add(RDPointE, RDSizeI)"/>
 		public static RDPointE Add(RDPointE pt, RDSizeE sz) => new(
 		pt.X + sz.Width, pt.Y + sz.Height
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Subtracts the specified size from the point.
 		/// </summary>
 		/// <param name="pt">The point to subtract from.</param>
@@ -145,31 +109,17 @@ namespace RhythmBase.Components
 		/// <returns>The resulting point.</returns>
 		public static RDPointE Subtract(RDPointE pt, RDSizeI sz) => new(
 		pt.X - sz.Width, pt.Y - sz.Height
-		);
-
-		/// <inheritdoc cref="Subtract(RDPointE, RDSizeI)"/>
+		);		/// <inheritdoc cref="Subtract(RDPointE, RDSizeI)"/>
 		public static RDPointE Subtract(RDPointE pt, RDSize sz) => new(
 		pt.X - sz.Width, pt.Y - sz.Height
-		);
-
-		/// <inheritdoc cref="Subtract(RDPointE, RDSizeI)"/>
+		);		/// <inheritdoc cref="Subtract(RDPointE, RDSizeI)"/>
 		public static RDPointE Subtract(RDPointE pt, RDSizeE sz) => new(
 		pt.X - sz.Width, pt.Y - sz.Height
-		);
-
-		/// <inheritdoc/>
-		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDPointE e && Equals(e);
-
-		/// <inheritdoc/>
-		public override readonly int GetHashCode() => HashCode.Combine(X, Y);
-
-		/// <inheritdoc/>
-		public override readonly string ToString() => $"[{(X?.ExpressionValue) ?? "null"},{(Y?.ExpressionValue) ?? "null"}]";
-
-		/// <inheritdoc/>
-		public readonly bool Equals(RDPointE other) => other.X == X && other.Y == Y;
-
-		/// <summary>
+		);		/// <inheritdoc/>
+		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDPointE e && Equals(e);		/// <inheritdoc/>
+		public override readonly int GetHashCode() => HashCode.Combine(X, Y);		/// <inheritdoc/>
+		public override readonly string ToString() => $"[{(X?.ExpressionValue) ?? "null"},{(Y?.ExpressionValue) ?? "null"}]";		/// <inheritdoc/>
+		public readonly bool Equals(RDPointE other) => other.X == X && other.Y == Y;		/// <summary>
 		/// Multiplies the point by the specified matrix.
 		/// </summary>
 		/// <param name="matrix">The matrix to multiply by.</param>
@@ -224,9 +174,7 @@ namespace RhythmBase.Components
 		/// <inheritdoc/>
 		public static bool operator ==(RDPointE left, RDPointE right) => left.Equals(right);
 		/// <inheritdoc/>
-		public static bool operator !=(RDPointE left, RDPointE right) => !left.Equals(right);
-
-		/// <summary>
+		public static bool operator !=(RDPointE left, RDPointE right) => !left.Equals(right);		/// <summary>
 		/// Converts the specified <see cref="RDPointE"/> to an <see cref="RDSizeE"/>.
 		/// </summary>
 		/// <param name="p">The point to convert.</param>

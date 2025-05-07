@@ -1,7 +1,5 @@
 ﻿using sly.parser;
-using sly.parser.generator;
-
-namespace RhythmBase.Components.RDLang
+using sly.parser.generator;namespace RhythmBase.Components.RDLang
 {
 	/// <summary>
 	/// RDLang class provides functionality to parse and evaluate expressions written in a custom language.

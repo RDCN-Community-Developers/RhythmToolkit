@@ -4,7 +4,6 @@ using RhythmBase.Components;
 using RhythmBase.Events;
 using RhythmBase.Exceptions;
 using RhythmBase.Utils;
-
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -160,6 +159,12 @@ namespace RhythmBase.Extensions
 			foreach (TEvent item in items)
 				e.Add(item);
 		}
+		/// <summary>  
+		/// Adds a range of items to the specified <see cref="LevelElementCollection{TCollection}"/>.  
+		/// </summary>  
+		/// <typeparam name="TCollection">The type of elements in the collection, constrained to <see cref="OrderedEventCollection"/>.</typeparam>  
+		/// <param name="e">The <see cref="LevelElementCollection{TCollection}"/> to which the items will be added.</param>  
+		/// <param name="items">The range of items to add to the collection.</param>  
 		public static void AddRange<TCollection>(this LevelElementCollection<TCollection> e, IEnumerable<TCollection> items) where TCollection : OrderedEventCollection
 		{
 			foreach (TCollection item in items)
@@ -832,7 +837,6 @@ namespace RhythmBase.Extensions
 				count += e.Remove(item) ? 1 : 0;
 			return count;
 		}
-
 		/// <summary>
 		/// Get all the hit of the level.
 		/// </summary>
@@ -975,7 +979,6 @@ namespace RhythmBase.Extensions
 				Beats = e.ClassicBeats();
 			return Beats;
 		}
-
 		/// <summary>
 		/// Returns all previous events of the same type, including events of the same beat but executed before itself.
 		/// </summary>
@@ -1024,7 +1027,6 @@ namespace RhythmBase.Extensions
 		/// Returns the next event of the specified type, including events of the same beat but executed after itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
 		public static TEvent? NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().FirstOrDefault();      //?
-
 		/// <summary>
 		/// Shallow copy.
 		/// </summary>

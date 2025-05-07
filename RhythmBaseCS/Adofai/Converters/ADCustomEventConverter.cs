@@ -8,7 +8,7 @@ namespace RhythmBase.Adofai.Converters
 {
 	internal class ADCustomEventConverter(ADLevel level, LevelReadOrWriteSettings settings) : ADBaseEventConverter<ADCustomEvent>(level, settings)
 	{
-		public override ADCustomEvent GetDeserializedObject(JObject jobj, Type objectType, ADCustomEvent existingValue, bool hasExistingValue, JsonSerializer serializer) => new()
+		public override ADCustomEvent GetDeserializedObject(JObject jobj, Type objectType, ADCustomEvent? existingValue, bool hasExistingValue, JsonSerializer serializer) => new()
 		{
 			Data = jobj
 		};

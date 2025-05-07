@@ -7,14 +7,10 @@ namespace RhythmBase.Converters
 		public TimeConverter()
 		{
 			_timeType = TimeType.MiliSecond;
-		}
-
-		public TimeConverter(TimeType type)
+		}		public TimeConverter(TimeType type)
 		{
 			_timeType = type;
-		}
-
-		public override void WriteJson(JsonWriter writer, TimeSpan value, JsonSerializer serializer)
+		}		public override void WriteJson(JsonWriter writer, TimeSpan value, JsonSerializer serializer)
 		{
 			switch (_timeType)
 			{
@@ -36,9 +32,7 @@ namespace RhythmBase.Converters
 				default:
 					break;
 			}
-		}
-
-		public override TimeSpan ReadJson(JsonReader reader, Type objectType, TimeSpan existingValue, bool hasExistingValue, JsonSerializer serializer)
+		}		public override TimeSpan ReadJson(JsonReader reader, Type objectType, TimeSpan existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			float value = JToken.ReadFrom(reader).ToObject<float>();
 			return _timeType switch
@@ -50,11 +44,7 @@ namespace RhythmBase.Converters
 				TimeType.Microsecond => TimeSpan.FromMicroseconds((int)value),
 				_ => throw new NotImplementedException()
 			};
-		}
-
-		private readonly TimeType _timeType;
-
-		public enum TimeType
+		}		private readonly TimeType _timeType;		public enum TimeType
 		{
 			Hour,
 			Minute,

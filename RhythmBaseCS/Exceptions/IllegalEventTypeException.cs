@@ -15,35 +15,25 @@ namespace RhythmBase.Exceptions
 			{
 				return string.Format("Illegal type: \"{0}\"{1}", IllegalTypeName, ExtraMessage.IsNullOrEmpty() ? "." : string.Format(", {0}", ExtraMessage));
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the extra message that provides additional information about the exception.
 		/// </summary>
-		public string ExtraMessage { get; }
-
-		/// <summary>
+		public string ExtraMessage { get; }		/// <summary>
 		/// Gets the name of the illegal type that caused the exception.
 		/// </summary>
-		public string IllegalTypeName { get; }
-
-		/// <summary>
+		public string IllegalTypeName { get; }		/// <summary>
 		/// Initializes a new instance of the <see cref="IllegalEventTypeException"/> class with the specified type.
 		/// </summary>
 		/// <param name="type">The illegal type that caused the exception.</param>
 		public IllegalEventTypeException(Type type) : this(type, string.Empty)
 		{
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="IllegalEventTypeException"/> class with the specified type name.
 		/// </summary>
 		/// <param name="type">The name of the illegal type that caused the exception.</param>
 		public IllegalEventTypeException(string type) : this(type, string.Empty)
 		{
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="IllegalEventTypeException"/> class with the specified type and extra message.
 		/// </summary>
 		/// <param name="type">The illegal type that caused the exception.</param>
@@ -52,9 +42,7 @@ namespace RhythmBase.Exceptions
 		{
 			IllegalTypeName = type.Name;
 			ExtraMessage = extraMessage;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="IllegalEventTypeException"/> class with the specified type name and extra message.
 		/// </summary>
 		/// <param name="type">The name of the illegal type that caused the exception.</param>
@@ -63,9 +51,7 @@ namespace RhythmBase.Exceptions
 		{
 			IllegalTypeName = type;
 			ExtraMessage = extraMessage;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="IllegalEventTypeException"/> class with the specified type, extra message, and inner exception.
 		/// </summary>
 		/// <param name="type">The illegal type that caused the exception.</param>
@@ -75,9 +61,7 @@ namespace RhythmBase.Exceptions
 		{
 			IllegalTypeName = type.Name;
 			ExtraMessage = extraMessage;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="IllegalEventTypeException"/> class with the specified type name, extra message, and inner exception.
 		/// </summary>
 		/// <param name="type">The name of the illegal type that caused the exception.</param>

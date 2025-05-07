@@ -14,7 +14,7 @@ namespace RhythmBase.Events
 		/// </summary>
 		public AdvanceText() { }
 		/// <inheritdoc/>
-		public override EventType Type { get; } = EventType.AdvanceText;
+		public override EventType Type => EventType.AdvanceText;
 		/// <inheritdoc/>
 		[JsonIgnore]
 		public RDRoom Rooms
@@ -23,15 +23,11 @@ namespace RhythmBase.Events
 			set => Parent.Rooms = value;
 		}
 		/// <inheritdoc/>
-		public override Tabs Tab { get; } = Tabs.Actions;
-
-		/// <summary>
+		public override Tabs Tab => Tabs.Actions;		/// <summary>
 		/// Gets or sets the parent floating text associated with the event.
 		/// </summary>
 		[JsonIgnore]
-		public FloatingText Parent { get; internal set; } = new();
-
-		/// <summary>
+		public FloatingText Parent { get; internal set; } = new();		/// <summary>
 		/// Gets or sets the fade-out duration for the text.
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]

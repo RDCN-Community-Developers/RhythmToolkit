@@ -15,7 +15,6 @@ namespace RhythmBase.Components
 		/// Gets or sets the character associated with the row.
 		/// </summary>
 		public RDCharacter Character { get; set; } = RDCharacters.Samurai;
-
 		/// <summary>
 		/// Gets or sets the type of the row.
 		/// </summary>
@@ -31,47 +30,39 @@ namespace RhythmBase.Components
 				}
 			}
 		}
-
 		/// <summary>
 		/// Gets the index of the row.
 		/// </summary>
 		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
 		public sbyte Index => (sbyte)(Parent?.Rows.IndexOf(this) ?? throw new RhythmBaseException());
-
 		/// <summary>
 		/// Gets or sets the rooms associated with the row.
 		/// </summary>
 		public RDSingleRoom Rooms { get; set; } = new(RDRoomIndex.Room1);
-
 		/// <summary>
 		/// Gets or sets a value indicating whether the row is hidden at the start.
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public bool HideAtStart { get; set; }
-
 		/// <summary>
 		/// Gets or sets the initial player mode for the row.
 		/// </summary>
 		public PlayerType Player { get; set; } = PlayerType.P1;
-
 		/// <summary>
 		/// Gets the initial beat sound for the row.
 		/// </summary>
 		[JsonIgnore]
 		public RDAudio Sound { get; set; } = new RDAudio();
-
 		/// <summary>
 		/// Gets or sets a value indicating whether the beats are muted.
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public bool MuteBeats { get; set; }
-
 		/// <summary>
 		/// Gets or sets the row to mimic.
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public sbyte RowToMimic { get; set; } = -1;
-
 		/// <summary>
 		/// Gets or sets the name of the pulse sound.
 		/// </summary>
@@ -80,7 +71,6 @@ namespace RhythmBase.Components
 			get => Sound.Filename;
 			set => Sound.Filename = value;
 		}
-
 		/// <summary>
 		/// Gets or sets the volume of the pulse sound.
 		/// </summary>
@@ -89,7 +79,6 @@ namespace RhythmBase.Components
 			get => Sound.Volume;
 			set => Sound.Volume = value;
 		}
-
 		/// <summary>
 		/// Gets or sets the pitch of the pulse sound.
 		/// </summary>
@@ -98,7 +87,6 @@ namespace RhythmBase.Components
 			get => Sound.Pitch;
 			set => Sound.Pitch = value;
 		}
-
 		/// <summary>
 		/// Gets or sets the pan of the pulse sound.
 		/// </summary>
@@ -107,7 +95,6 @@ namespace RhythmBase.Components
 			get => Sound.Pan;
 			set => Sound.Pan = value;
 		}
-
 		/// <summary>
 		/// Gets or sets the offset of the pulse sound.
 		/// </summary>
@@ -117,12 +104,10 @@ namespace RhythmBase.Components
 			get => Sound.Offset;
 			set => Sound.Offset = value;
 		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Row"/> class.
 		/// </summary>
 		public Row() { }
-
 		/// <summary>
 		/// Adds an item to the row.
 		/// </summary>
@@ -143,29 +128,24 @@ namespace RhythmBase.Components
 			}
 			throw new IllegalRowEventTypeException(item.Type, RowType);
 		}
-
 		/// <summary>
 		/// Adds an item to the row safely.
 		/// </summary>
 		/// <param name="item">The row event to add.</param>
 		internal void AddSafely(BaseRowAction item) => base.Add(item);
-
 		/// <summary>
 		/// Removes an item from the row.
 		/// </summary>
 		/// <param name="item">The row event to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
 		public override bool Remove(BaseRowAction item) => Parent?.Remove(item) ?? throw new RhythmBaseException();
-
 		/// <summary>
 		/// Removes an item from the row safely.
 		/// </summary>
 		/// <param name="item">The row event to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
 		internal bool RemoveSafely(BaseRowAction item) => base.Remove(item);
-
 		private RowType _rowType;
-
 		[JsonIgnore]
 		internal RDLevel? Parent = null;
 	}

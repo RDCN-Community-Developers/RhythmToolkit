@@ -12,29 +12,19 @@
 		{
 			Type = EventType.HideRow;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the transition type for hiding the row.
 		/// </summary>
-		public Transitions Transition { get; set; }
-
-		/// <summary>
+		public Transitions Transition { get; set; }		/// <summary>
 		/// Gets or sets the visibility state of the row.
 		/// </summary>
-		public Shows Show { get; set; }
-
-		/// <summary>
+		public Shows Show { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab category of the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Defines the possible transition types for hiding the row.
 		/// </summary>
 		public enum Transitions
@@ -51,9 +41,7 @@
 			/// Full transition.
 			/// </summary>
 			Full
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Defines the possible visibility states of the row.
 		/// </summary>
 		public enum Shows

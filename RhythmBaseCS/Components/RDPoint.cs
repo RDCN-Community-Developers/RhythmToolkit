@@ -16,24 +16,16 @@ namespace RhythmBase.Components
 		/// Initializes a new instance of the <see cref="RDPoint"/> struct with the specified size.
 		/// </summary>
 		/// <param name="sz">The size to initialize the point with.</param>
-		public RDPoint(RDSize sz) : this(sz.Width, sz.Height) { }
-
-		/// <summary>
+		public RDPoint(RDSize sz) : this(sz.Width, sz.Height) { }		/// <summary>
 		/// Gets a value indicating whether this point is empty.
 		/// </summary>
-		public readonly bool IsEmpty => X == null && Y == null;
-
-		/// <summary>
+		public readonly bool IsEmpty => X == null && Y == null;		/// <summary>
 		/// Gets or sets the X coordinate of the point.
 		/// </summary>
-		public float? X { get; set; } = x;
-
-		/// <summary>
+		public float? X { get; set; } = x;		/// <summary>
 		/// Gets or sets the Y coordinate of the point.
 		/// </summary>
-		public float? Y { get; set; } = y;
-
-		/// <summary>
+		public float? Y { get; set; } = y;		/// <summary>
 		/// Offsets the point by the specified point.
 		/// </summary>
 		/// <param name="p">The point to offset by.</param>
@@ -41,9 +33,7 @@ namespace RhythmBase.Components
 		{
 			X += p.X;
 			Y += p.Y;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the point by the specified amounts.
 		/// </summary>
 		/// <param name="dx">The amount to offset the X coordinate.</param>
@@ -52,9 +42,7 @@ namespace RhythmBase.Components
 		{
 			X += dx;
 			Y += dy;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Adds the specified size to the point.
 		/// </summary>
 		/// <param name="pt">The point to add to.</param>
@@ -62,9 +50,7 @@ namespace RhythmBase.Components
 		/// <returns>A new point that is the result of the addition.</returns>
 		public static RDPoint Add(RDPoint pt, RDSizeI sz) => new(
 		pt.X + sz.Width, pt.Y + sz.Height
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Adds the specified size to the point.
 		/// </summary>
 		/// <param name="pt">The point to add to.</param>
@@ -72,9 +58,7 @@ namespace RhythmBase.Components
 		/// <returns>A new point that is the result of the addition.</returns>
 		public static RDPoint Add(RDPoint pt, RDSize sz) => new(
 		pt.X + sz.Width, pt.Y + sz.Height
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Subtracts the specified size from the point.
 		/// </summary>
 		/// <param name="pt">The point to subtract from.</param>
@@ -82,9 +66,7 @@ namespace RhythmBase.Components
 		/// <returns>A new point that is the result of the subtraction.</returns>
 		public static RDPoint Subtract(RDPoint pt, RDSizeI sz) => new(
 		pt.X - sz.Width, pt.Y - sz.Height
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Subtracts the specified size from the point.
 		/// </summary>
 		/// <param name="pt">The point to subtract from.</param>
@@ -92,9 +74,7 @@ namespace RhythmBase.Components
 		/// <returns>A new point that is the result of the subtraction.</returns>
 		public static RDPoint Subtract(RDPoint pt, RDSize sz) => new(
 		pt.X - sz.Width, pt.Y - sz.Height
-		);
-
-		/// <summary>
+		);		/// <summary>
 		/// Multiplies the point by the specified matrix.
 		/// </summary>
 		/// <param name="matrix">The matrix to multiply by.</param>

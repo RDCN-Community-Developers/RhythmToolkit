@@ -23,15 +23,11 @@ namespace RhythmBase.Events
 				}
 				_parent = value;
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the room associated with this action.
 		/// </summary>
 		[JsonIgnore]
-		public RDSingleRoom Room => _parent?.Rooms ?? RDSingleRoom.Default;
-
-		/// <inheritdoc/>
+		public RDSingleRoom Room => _parent?.Rooms ?? RDSingleRoom.Default;		/// <inheritdoc/>
 		/// <summary>
 		/// Gets or sets the beat associated with this action.
 		/// </summary>
@@ -47,15 +43,11 @@ namespace RhythmBase.Events
 						: value.WithoutLink()
 					: new(_beat.BaseLevel.Calculator, value);
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the index of the row in the parent collection.
 		/// </summary>
 		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
-		public int Index => Parent?.Index ?? _row;
-
-		/// <summary>
+		public int Index => Parent?.Index ?? _row;		/// <summary>
 		/// Clones this event and its basic properties. Clone will be added to the level.
 		/// </summary>
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
@@ -65,9 +57,7 @@ namespace RhythmBase.Events
 			TEvent Temp = base.Clone<TEvent>();
 			Temp.Parent = Parent;
 			return Temp;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Clones this event and assigns it to a specified row event collection.
 		/// </summary>
 		/// <typeparam name="TEvent">Type that will be generated.</typeparam>
@@ -78,9 +68,7 @@ namespace RhythmBase.Events
 			TEvent Temp = base.Clone<TEvent>(row.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
 			Temp.Parent = row;
 			return Temp;
-		}
-
-		internal Row? _parent;
+		}		internal Row? _parent;
 		internal int _row;
 	}
 }

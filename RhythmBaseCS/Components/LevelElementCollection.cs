@@ -1,15 +1,16 @@
 ﻿using System.Collections;
-
 namespace RhythmBase.Components
 {
-	/// <summary>
-	/// Represents a collection used to manage <see cref="Row"/> or <see cref="Decoration"/> elements.
-	/// </summary>
-	/// <typeparam name="T">The type of elements in the collection, constrained to <see cref="OrderedEventCollection"/>.</typeparam>
+	/// <summary>  
+	/// Represents a collection used to manage <see cref="Row"/> or <see cref="Decoration"/> elements.  
+	/// </summary>  
+	/// <typeparam name="T">The type of elements in the collection, constrained to <see cref="OrderedEventCollection"/>.</typeparam>  
 	/// <remarks>  
-	/// Initializes a new instance of the <see cref="LevelElementCollection{T}"/> class.  
+	/// This abstract class provides a base implementation for managing a collection of elements  
+	/// that are either rows or decorations within a rhythm level.  
 	/// </remarks>  
 	/// <param name="parent">The parent <see cref="RDLevel"/> instance associated with this collection.</param>  
+	/// <param name="limited">A boolean value indicating whether the collection has a fixed size limit.</param>  
 	public abstract class LevelElementCollection<T>(RDLevel parent, bool limited) : ICollection<T> where T : OrderedEventCollection
 	{
 		/// <summary>  
@@ -24,7 +25,6 @@ namespace RhythmBase.Components
 		public int Count => _items.Count;
 		/// <inheritdoc/>
 		public bool IsReadOnly { get; internal set; } = false;
-
 		/// <inheritdoc/>
 		public abstract void Add(T item);
 		/// <inheritdoc/>

@@ -17,35 +17,25 @@ namespace RhythmBase.Converters
 					: vertical.ToString()) 
 				+ horizontal.ToString()
 			);
-		}
-
-		public override FloatingText.AnchorStyle ReadJson(JsonReader reader, Type objectType, FloatingText.AnchorStyle existingValue, bool hasExistingValue, JsonSerializer serializer)
+		}		public override FloatingText.AnchorStyle ReadJson(JsonReader reader, Type objectType, FloatingText.AnchorStyle existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken token = JToken.ReadFrom(reader);
 			string JString = token.ToObject<string>() ?? throw new Exceptions.ConvertingException("Cannot read the anchor.");
 			Match match = AnchorStyleRegex().Match(JString);
 			if (!match.Success)
 				throw new Exceptions.ConvertingException(token, $"Illegal Anchor: {JString}");
-			FloatingText.AnchorStyle result = FloatingText.AnchorStyle.Center;
-
-			result |= match.Groups[1].Value switch
+			FloatingText.AnchorStyle result = FloatingText.AnchorStyle.Center;			result |= match.Groups[1].Value switch
 			{
 				"Upper" => FloatingText.AnchorStyle.Upper,
 				"Lower" => FloatingText.AnchorStyle.Lower,
 				_ => 0,
-			};
-
-			result |= match.Groups[2].Value switch
+			};			result |= match.Groups[2].Value switch
 			{
 				"Left" => FloatingText.AnchorStyle.Left,
 				"Right" => FloatingText.AnchorStyle.Right,
 				_ => 0,
-			};
-
-			return result;
-		}
-
-		[GeneratedRegex("(Upper|Middle|Lower)(Left|Center|Right)")]
+			};			return result;
+		}		[GeneratedRegex("(Upper|Middle|Lower)(Left|Center|Right)")]
 		private static partial Regex AnchorStyleRegex();
 	}
 }

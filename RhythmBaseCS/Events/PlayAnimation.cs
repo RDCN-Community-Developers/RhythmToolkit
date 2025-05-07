@@ -13,25 +13,17 @@ namespace RhythmBase.Events
 		{
 			Type = EventType.PlayAnimation;
 			Tab = Tabs.Decorations;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Gets or sets the expression for the animation.
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-		public string Expression { get; set; } = "";
-
-		/// <summary>
+		public string Expression { get; set; } = "";		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

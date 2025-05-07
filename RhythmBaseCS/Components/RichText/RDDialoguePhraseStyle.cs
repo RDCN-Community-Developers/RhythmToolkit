@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace RhythmBase.Components.RichText
+﻿using System.Diagnostics.CodeAnalysis;namespace RhythmBase.Components.RichText
 {
 	/// <summary>
 	/// Represents the style of a rich string.

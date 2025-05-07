@@ -5,9 +5,7 @@ namespace RhythmBase.Converters
 {
 	internal class PatternConverter : JsonConverter<Patterns[]>
 	{
-		public override void WriteJson(JsonWriter writer, Patterns[]? value, JsonSerializer serializer) => writer.WriteValue(Utils.Utils.GetPatternString(value ?? throw new RhythmBase.Exceptions.ConvertingException($"Pattern cannot be null.")));
-
-		public override Patterns[] ReadJson(JsonReader reader, Type objectType, Patterns[]? existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, Patterns[]? value, JsonSerializer serializer) => writer.WriteValue(Utils.Utils.GetPatternString(value ?? throw new RhythmBase.Exceptions.ConvertingException($"Pattern cannot be null.")));		public override Patterns[] ReadJson(JsonReader reader, Type objectType, Patterns[]? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			string? pattern = JToken.ReadFrom(reader).ToObject<string>();
 			if (pattern == null || pattern.Length != 6)

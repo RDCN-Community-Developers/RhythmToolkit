@@ -1,28 +1,38 @@
-﻿using System;
-using RhythmBase.Components;
+﻿using RhythmBase.Components;
 using RhythmBase.Components.Easing;
 using RhythmBase.Events;
 namespace RhythmBase.Adofai.Events
 {
+	/// <summary>  
+	/// Represents a Bloom event in the Adofai event system.  
+	/// </summary>  
 	public class ADBloom : ADBaseTaggedTileAction, IEaseEvent
 	{
-		public ADBloom()
-		{
-			Type = ADEventType.Bloom;
-		}
-
-		public override ADEventType Type { get; }
-
+		/// <inheritdoc/>
+		public override ADEventType Type => ADEventType.Bloom;
+		/// <summary>  
+		/// Gets or sets a value indicating whether the bloom effect is enabled.  
+		/// </summary>  
 		public bool Enabled { get; set; }
-
+		/// <summary>  
+		/// Gets or sets the threshold value for the bloom effect.  
+		/// </summary>  
 		public int Threshold { get; set; }
-
+		/// <summary>  
+		/// Gets or sets the intensity of the bloom effect.  
+		/// </summary>  
 		public int Intensity { get; set; }
-
+		/// <summary>  
+		/// Gets or sets the color of the bloom effect.  
+		/// </summary>  
 		public RDColor Color { get; set; }
-
+		/// <summary>  
+		/// Gets or sets the duration of the bloom effect.  
+		/// </summary>  
 		public float Duration { get; set; }
-
+		/// <summary>  
+		/// Gets or sets the easing type for the bloom effect.  
+		/// </summary>  
 		public EaseType Ease { get; set; }
 	}
 }

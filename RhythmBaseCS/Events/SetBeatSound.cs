@@ -14,19 +14,13 @@ namespace RhythmBase.Events
 			Sound = new RDAudio();
 			Type = EventType.SetBeatSound;
 			Tab = Tabs.Sounds;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the audio sound for the beat.
 		/// </summary>
-		public RDAudio Sound { get; set; }
-
-		/// <summary>
+		public RDAudio Sound { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }

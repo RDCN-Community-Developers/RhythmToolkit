@@ -24,7 +24,6 @@ namespace RhythmBase.Components
 		/// </summary>
 		[JsonProperty("row")]
 		public int Index => Parent?.Decorations.ToList().IndexOf(this) ?? throw new RhythmBaseException();
-
 		/// <summary>
 		/// Room.
 		/// </summary>
@@ -47,7 +46,6 @@ namespace RhythmBase.Components
 		/// The initial visibility of this decoration.
 		/// </summary>
 		public bool Visible { get; set; }
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Decoration"/> class.
 		/// </summary>

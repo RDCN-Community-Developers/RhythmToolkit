@@ -14,34 +14,22 @@ namespace RhythmBase.Events
 			Rooms = new RDRoom(true, [0]);
 			Type = EventType.FlipScreen;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the rooms associated with this event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
-
-		/// <summary>
+		public RDRoom Rooms { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether the screen should be flipped horizontally.
 		/// </summary>
-		public bool FlipX { get; set; }
-
-		/// <summary>
+		public bool FlipX { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether the screen should be flipped vertically.
 		/// </summary>
-		public bool FlipY { get; set; }
-
-		/// <summary>
+		public bool FlipY { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab where this event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

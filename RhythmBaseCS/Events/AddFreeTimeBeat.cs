@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace RhythmBase.Events
+﻿using System.Diagnostics;namespace RhythmBase.Events
 {
 	/// <summary>
 	/// Represents an event to add a free time beat.
@@ -11,19 +9,15 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AddFreeTimeBeat"/> class.
 		/// </summary>
-		public AddFreeTimeBeat() { }
-
-		/// <summary>
+		public AddFreeTimeBeat() { }		/// <summary>
 		/// Gets or sets the hold duration of the beat.
 		/// </summary>
-		public float Hold { get; set; }
-
-		/// <summary>
+		public float Hold { get; set; }		/// <summary>
 		/// Gets or sets the pulse value of the beat.
 		/// </summary>
 		public byte Pulse { get; set; }
 		/// <inheritdoc/>
-		public override EventType Type { get; } = EventType.AddFreeTimeBeat;
+		public override EventType Type => EventType.AddFreeTimeBeat;
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {(Pulse + 1)}";
 		private string GetDebuggerDisplay() => ToString();

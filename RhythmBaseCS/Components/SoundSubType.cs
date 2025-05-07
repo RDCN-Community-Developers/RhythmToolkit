@@ -13,24 +13,16 @@ namespace RhythmBase.Components
 		public SoundSubType()
 		{
 			Audio = new RDAudio();
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the referenced audio.
 		/// </summary>
-		public RDAudio Audio { get; set; }
-
-		/// <summary>
+		public RDAudio Audio { get; set; }		/// <summary>
 		/// Gets or sets the sound effect name.
 		/// </summary>
-		public SoundTypes GroupSubtype { get; set; }
-
-		/// <summary>
+		public SoundTypes GroupSubtype { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="SoundSubType"/> is used.
 		/// </summary>
-		public bool Used { get; set; }
-
-		/// <summary>
+		public bool Used { get; set; }		/// <summary>
 		/// Gets or sets the filename of the audio.
 		/// </summary>
 		[JsonProperty]
@@ -38,9 +30,7 @@ namespace RhythmBase.Components
 		{
 			get => Audio.Filename;
 			set => Audio.Filename = value;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the volume of the audio.
 		/// </summary>
 		[JsonProperty]
@@ -54,9 +44,7 @@ namespace RhythmBase.Components
 			{
 				Audio.Volume = value;
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the pitch of the audio.
 		/// </summary>
 		[JsonProperty]
@@ -70,9 +58,7 @@ namespace RhythmBase.Components
 			{
 				Audio.Pitch = value;
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the pan of the audio.
 		/// </summary>
 		[JsonProperty]
@@ -86,9 +72,7 @@ namespace RhythmBase.Components
 			{
 				Audio.Pan = value;
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the offset of the audio.
 		/// </summary>
 		[JsonConverter(typeof(MilliSecondConverter))]

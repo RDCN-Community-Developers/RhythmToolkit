@@ -8,9 +8,7 @@
 		/// <summary>
 		/// Nearest neighbor filtering.
 		/// </summary>
-		NearestNeighbor,
-
-		/// <summary>
+		NearestNeighbor,		/// <summary>
 		/// Bilinear filtering.
 		/// </summary>
 		BiliNear

@@ -11,17 +11,13 @@
 		public PlayerModeCondition()
 		{
 			Type = ConditionType.PlayerMode;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets a value indicating whether two-player mode is enabled.
 		/// </summary>
 		/// <value>
 		///   <c>true</c> if two-player mode is enabled; otherwise, <c>false</c>.
 		/// </value>
-		public bool TwoPlayerMode { get; set; }
-
-		/// <summary>
+		public bool TwoPlayerMode { get; set; }		/// <summary>
 		/// Gets the type of the condition.
 		/// </summary>
 		/// <value>

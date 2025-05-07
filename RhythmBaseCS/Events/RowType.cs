@@ -8,9 +8,7 @@
 		/// <summary>
 		/// Represents a classic row type.
 		/// </summary>
-		Classic,
-
-		/// <summary>
+		Classic,		/// <summary>
 		/// Represents a oneshot row type.
 		/// </summary>
 		Oneshot

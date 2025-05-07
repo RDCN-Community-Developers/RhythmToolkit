@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace RhythmBase.Components.Easing
+﻿using System.Data;namespace RhythmBase.Components.Easing
 {
 	/// <summary>
 	/// Represents a value that changes over time according to a series of easing nodes.

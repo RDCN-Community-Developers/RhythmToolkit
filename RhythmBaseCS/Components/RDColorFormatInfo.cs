@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace RhythmBase.Components
+﻿using System.Text.RegularExpressions;namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Provides a custom format provider for RDColor.
@@ -9,9 +7,7 @@ namespace RhythmBase.Components
 	{
 		/// <inheritdoc/>
 		public object? GetFormat(Type? formatType) => formatType == typeof(ICustomFormatter) ? new RDColorFormatter() : (object?)null;
-	}
-
-	/// <summary>
+	}	/// <summary>
 	/// Custom formatter for RDColor.
 	/// </summary>
 	internal class RDColorFormatter : ICustomFormatter, IFormatProvider
@@ -42,9 +38,7 @@ namespace RhythmBase.Components
 					"ARGB" or "argb" or _ => $"A:{color.A},R:{color.R},G:{color.G},B:{color.B}",
 				}
 				: arg?.ToString() ?? string.Empty;
-		}
-
-		private static string ReplaceColorComponent(string format, char component, int value)
+		}		private static string ReplaceColorComponent(string format, char component, int value)
 		{
 			int startIndex = 0;
 			while ((startIndex = format.IndexOf(component, startIndex)) != -1)
@@ -59,9 +53,7 @@ namespace RhythmBase.Components
 				startIndex += replacement.Length;
 			}
 			return format;
-		}
-
-		/// <inheritdoc/>
+		}		/// <inheritdoc/>
 		public object? GetFormat(Type? formatType) => formatType == typeof(ICustomFormatter) ? this : (object?)null;
 	}
 }

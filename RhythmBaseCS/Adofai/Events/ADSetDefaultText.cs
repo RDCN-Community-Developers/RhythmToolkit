@@ -5,30 +5,36 @@ using RhythmBase.Components.Easing;
 using RhythmBase.Events;
 namespace RhythmBase.Adofai.Events
 {
+	/// <summary>  
+	/// Represents an event to set default text properties in the Adofai editor.  
+	/// </summary>  
 	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class ADSetDefaultText : ADBaseTaggedTileAction, IEaseEvent
-	{
-		public ADSetDefaultText()
-		{
-			Type = ADEventType.SetDefaultText;
-		}
-
-		public override ADEventType Type { get; }
-
-		public float Duration { get; set; }
-
-		public EaseType Ease { get; set; }
-
-		public RDColor? DefaultTextColor { get; set; }
-
-		public RDColor? DefaultTextShadowColor { get; set; }
-
-		public RDPoint? LevelTitlePosition { get; set; }
-
-		public string LevelTitleText { get; set; }
-
-		public string CongratsText { get; set; }
-
-		public string PerfectText { get; set; }
+	{		/// <inheritdoc/>
+		public override ADEventType Type => ADEventType.SetDefaultText;		/// <summary>  
+		/// Gets or sets the duration of the event.  
+		/// </summary>  
+		public float Duration { get; set; }		/// <summary>  
+		/// Gets or sets the easing type for the event.  
+		/// </summary>  
+		public EaseType Ease { get; set; }		/// <summary>  
+		/// Gets or sets the default text color.  
+		/// </summary>  
+		public RDColor? DefaultTextColor { get; set; }		/// <summary>  
+		/// Gets or sets the default text shadow color.  
+		/// </summary>  
+		public RDColor? DefaultTextShadowColor { get; set; }		/// <summary>  
+		/// Gets or sets the position of the level title.  
+		/// </summary>  
+		public RDPoint? LevelTitlePosition { get; set; }		/// <summary>  
+		/// Gets or sets the text for the level title.  
+		/// </summary>  
+		public string LevelTitleText { get; set; } = string.Empty;		/// <summary>  
+		/// Gets or sets the text to display upon level completion.  
+		/// </summary>  
+		public string CongratsText { get; set; } = string.Empty;		/// <summary>  
+		/// Gets or sets the text to display for a perfect score.  
+		/// </summary>  
+		public string PerfectText { get; set; } = string.Empty;
 	}
 }

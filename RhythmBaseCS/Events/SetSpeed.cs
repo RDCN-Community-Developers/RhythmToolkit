@@ -16,41 +16,27 @@ namespace RhythmBase.Events
 			Type = EventType.SetSpeed;
 			Rooms = RDRoom.Default();
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the type of easing for the event.
 		/// </summary>
-		public EaseType Ease { get; set; }
-
-		/// <summary>
+		public EaseType Ease { get; set; }		/// <summary>
 		/// Gets or sets the speed for the event.
 		/// </summary>
 		[EaseProperty]
-		public float Speed { get; set; }
-
-		/// <summary>
+		public float Speed { get; set; }		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
-		public float Duration { get; set; }
-
-		/// <summary>
+		public float Duration { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
 		[JsonIgnore]
-		public RDRoom Rooms { get; set; }
-
-		/// <summary>
+		public RDRoom Rooms { get; set; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>

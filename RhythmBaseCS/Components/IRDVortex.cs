@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace RhythmBase.Components
+﻿using System.Numerics;namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Represents a vortex interface that supports various mathematical operations.

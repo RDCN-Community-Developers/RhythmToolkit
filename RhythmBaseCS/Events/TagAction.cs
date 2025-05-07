@@ -13,37 +13,25 @@ namespace RhythmBase.Events
 		{
 			Type = EventType.TagAction;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the action associated with the tag.
 		/// </summary>
 		[JsonIgnore]
-		public Actions Action { get; set; }
-
-		/// <summary>
+		public Actions Action { get; set; }		/// <summary>
 		/// Gets or sets the action tag.
 		/// </summary>
 		[JsonProperty("Tag")]
-		public string ActionTag { get; set; } = "";
-
-		/// <summary>
+		public string ActionTag { get; set; } = "";		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", ActionTag);
-
-		/// <summary>
+		public override string ToString() => base.ToString() + string.Format(" {0}", ActionTag);		/// <summary>
 		/// Defines the possible actions for a tag.
 		/// </summary>
 		[Flags]
@@ -52,25 +40,17 @@ namespace RhythmBase.Events
 			/// <summary>
 			/// Represents the run action.
 			/// </summary>
-			Run = 2,
-
-			/// <summary>
+			Run = 2,			/// <summary>
 			/// Represents all actions.
 			/// </summary>
-			All = 1,
-
-			/// <summary>
+			All = 1,			/// <summary>
 			/// Represents the enable action.
 			/// </summary>
-			Enable = 6,
-
-			/// <summary>
+			Enable = 6,			/// <summary>
 			/// Represents the disable action.
 			/// </summary>
 			Disable = 4
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Defines special tags for the action.
 		/// </summary>
 		public enum SpecialTag

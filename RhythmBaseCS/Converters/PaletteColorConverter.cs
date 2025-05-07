@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Components;
-using RhythmBase.Extensions;
-
-using System.Text.RegularExpressions;
+using RhythmBase.Extensions;using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
 	internal partial class PaletteColorConverter : JsonConverter<PaletteColor>
@@ -11,9 +9,7 @@ namespace RhythmBase.Converters
 		internal PaletteColorConverter(RDColor[] list)
 		{
 			parent = list;
-		}
-
-		public override void WriteJson(JsonWriter writer, PaletteColor? value, JsonSerializer serializer)
+		}		public override void WriteJson(JsonWriter writer, PaletteColor? value, JsonSerializer serializer)
 		{
 			if (value?.EnablePanel ?? throw new NotImplementedException())
 			{
@@ -30,9 +26,7 @@ namespace RhythmBase.Converters
 					writer.WriteValue(value.Value.ToString("RRGGBB"));
 				}
 			}
-		}
-
-		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor? existingValue, bool hasExistingValue, JsonSerializer serializer)
+		}		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			if (existingValue == null)
 			{
@@ -55,11 +49,7 @@ namespace RhythmBase.Converters
 				existingValue.Color = RDColor.FromRgba(JString);
 			}
 			return existingValue;
-		}
-
-		private readonly RDColor[] parent;
-
-		[GeneratedRegex("pal(\\d+)")]
+		}		private readonly RDColor[] parent;		[GeneratedRegex("pal(\\d+)")]
 		private static partial Regex PaletteColorRegex();
 	}
 }

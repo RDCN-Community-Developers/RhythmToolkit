@@ -8,7 +8,7 @@ namespace RhythmBase.Converters
 {
 	internal class RDContractResolver : DefaultContractResolver
 	{
-		public static RDContractResolver Instance { get; } = new RDContractResolver();
+		public static RDContractResolver Instance => new RDContractResolver();
 		public RDContractResolver() : base()
 		{
 			NamingStrategy = new CamelCaseNamingStrategy();

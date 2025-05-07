@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace RhythmBase.Components.RichText
+﻿using System.Diagnostics.CodeAnalysis;namespace RhythmBase.Components.RichText
 {
 	/// <summary>
 	/// Enum representing the different types of rich string events.

@@ -13,39 +13,25 @@ namespace RhythmBase.Events
 		{
 			Type = EventType.SayReadyGetSetGo;
 			Tab = Tabs.Sounds;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the phrase to say.
 		/// </summary>
-		public Words PhraseToSay { get; set; }
-
-		/// <summary>
+		public Words PhraseToSay { get; set; }		/// <summary>
 		/// Gets or sets the voice source.
 		/// </summary>
-		public VoiceSources VoiceSource { get; set; } = VoiceSources.Nurse;
-
-		/// <summary>
+		public VoiceSources VoiceSource { get; set; } = VoiceSources.Nurse;		/// <summary>
 		/// Gets or sets the tick value.
 		/// </summary>
-		public float Tick { get; set; }
-
-		/// <summary>
+		public float Tick { get; set; }		/// <summary>
 		/// Gets or sets the volume.
 		/// </summary>
-		public uint Volume { get; set; } = 100;
-
-		/// <summary>
+		public uint Volume { get; set; } = 100;		/// <summary>
 		/// Gets the event type.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Gets a value indicating whether the phrase is splitable.
 		/// </summary>
 		[JsonIgnore]
@@ -55,15 +41,11 @@ namespace RhythmBase.Events
 			{
 				return PhraseToSay == Words.SayReaDyGetSetGoNew || PhraseToSay == Words.SayGetSetGo || PhraseToSay == Words.SayReaDyGetSetOne || PhraseToSay == Words.SayGetSetOne || PhraseToSay == Words.SayReadyGetSetGo;
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}: {1}", VoiceSource, PhraseToSay);
-
-		/// <summary>
+		public override string ToString() => base.ToString() + string.Format(" {0}: {1}", VoiceSource, PhraseToSay);		/// <summary>
 		/// Represents the phrases that can be said.
 		/// </summary>
 		public enum Words
@@ -164,9 +146,7 @@ namespace RhythmBase.Events
 			/// Represents the phrase "Ready".
 			/// </summary>
 			JustSayReady
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Represents the sources of the voice.
 		/// </summary>
 		public enum VoiceSources

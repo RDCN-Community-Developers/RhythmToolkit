@@ -14,44 +14,28 @@ namespace RhythmBase.Events
 			Sounds = new RDAudio[7];
 			Type = EventType.SetCountingSound;
 			Tab = Tabs.Sounds;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the voice source for the counting sound.
 		/// </summary>
-		public VoiceSources VoiceSource { get; set; }
-
-		/// <summary>
+		public VoiceSources VoiceSource { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="SetCountingSound"/> is enabled.
 		/// </summary>
-		public bool Enabled { get; set; }
-
-		/// <summary>
+		public bool Enabled { get; set; }		/// <summary>
 		/// Gets or sets the subdivision offset for the counting sound.
 		/// </summary>
-		public float SubdivOffset { get; set; }
-
-		/// <summary>
+		public float SubdivOffset { get; set; }		/// <summary>
 		/// Gets or sets the volume of the counting sound.
 		/// </summary>
-		public int Volume { get; set; } = 100;
-
-		/// <summary>
+		public int Volume { get; set; } = 100;		/// <summary>
 		/// Gets or sets the list of sounds for the counting sound.
 		/// </summary>
-		public RDAudio[] Sounds { get; set; }
-
-		/// <summary>
+		public RDAudio[] Sounds { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Represents the different voice sources for the counting sound.
 		/// </summary>
 		public enum VoiceSources

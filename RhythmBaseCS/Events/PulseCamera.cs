@@ -14,34 +14,22 @@ namespace RhythmBase.Events
 			Rooms = new RDRoom(true, [0]);
 			Type = EventType.PulseCamera;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
-
-		/// <summary>
+		public RDRoom Rooms { get; set; }		/// <summary>
 		/// Gets or sets the strength of the pulse.
 		/// </summary>
-		public byte Strength { get; set; }
-
-		/// <summary>
+		public byte Strength { get; set; }		/// <summary>
 		/// Gets or sets the count of pulses.
 		/// </summary>
-		public int Count { get; set; }
-
-		/// <summary>
+		public int Count { get; set; }		/// <summary>
 		/// Gets or sets the frequency of the pulses.
 		/// </summary>
-		public float Frequency { get; set; }
-
-		/// <summary>
+		public float Frequency { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }

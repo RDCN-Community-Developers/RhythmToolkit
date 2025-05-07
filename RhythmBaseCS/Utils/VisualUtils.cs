@@ -1,6 +1,4 @@
-﻿using RhythmBase.Components;
-
-namespace RhythmBase.Utils
+﻿using RhythmBase.Components;namespace RhythmBase.Utils
 {
 	/// <summary>
 	/// Visual utils.
@@ -10,9 +8,7 @@ namespace RhythmBase.Utils
 		/// <summary>
 		/// Converts percentage point to pixel point with default screen size (352 * 198).
 		/// </summary>
-		public static RDPointE PercentToPixel(RDPointE point) => PercentToPixel(point, RDSizeNI.Screen);
-
-		/// <summary>
+		public static RDPointE PercentToPixel(RDPointE point) => PercentToPixel(point, RDSizeNI.Screen);		/// <summary>
 		/// Converts percentage point to pixel point with specified size.
 		/// </summary>
 		/// <param name="point">The percentage point.</param>
@@ -22,16 +18,12 @@ namespace RhythmBase.Utils
 		{
 			RDPointE PercentToPixel = new(point.X * size.Width / 100f, point.Y * size.Height / 100f);
 			return PercentToPixel;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Converts pixel point to percentage point with default screen size (352 * 198).
 		/// </summary>
 		/// <param name="point">The pixel point.</param>
 		/// <returns>The percentage point.</returns>
-		public static (float? X, float? Y) PixelToPercent((float X, float Y) point) => PixelToPercent(point, (352f, 198f));
-
-		/// <summary>
+		public static (float? X, float? Y) PixelToPercent((float X, float Y) point) => PixelToPercent(point, (352f, 198f));		/// <summary>
 		/// Converts pixel point to percentage point with specified size.
 		/// </summary>
 		/// <param name="point">The pixel point.</param>
@@ -41,9 +33,7 @@ namespace RhythmBase.Utils
 		{
 			(float? X, float? Y) PixelToPercent = (point.X * 100f / size.X, point.Y * 100f / size.Y);
 			return PixelToPercent;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Translates a point in room perspective.
 		/// </summary>
 		/// <param name="p">The point to translate.</param>
@@ -63,16 +53,12 @@ namespace RhythmBase.Utils
 				new RDSizeN((p1p3.X - p1p2.X - p1p4.X) * p.X * p.Y, (p1p3.Y - p1p2.Y - p1p4.Y) * p.X * p.Y) +
 				new RDSizeN(p1p4.X * p.Y, p1p4.Y * p.Y);
 			return pr;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Converts degrees to radians.
 		/// </summary>
 		/// <param name="degree">The angle in degrees.</param>
 		/// <returns>The angle in radians.</returns>
-		public static float DegreeToRadius(float degree) => float.Pi * degree / 180f;
-
-		/// <summary>
+		public static float DegreeToRadius(float degree) => float.Pi * degree / 180f;		/// <summary>
 		/// Converts radians to degrees.
 		/// </summary>
 		/// <param name="radius">The angle in radians.</param>

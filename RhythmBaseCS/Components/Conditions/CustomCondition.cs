@@ -11,15 +11,11 @@
 		public CustomCondition()
 		{
 			Type = ConditionType.Custom;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the expression for the custom condition.
 		/// </summary>
 		/// <value>The expression as a string.</value>
-		public string Expression { get; set; } = "";
-
-		/// <summary>
+		public string Expression { get; set; } = "";		/// <summary>
 		/// Gets the type of the condition.
 		/// </summary>
 		/// <value>The type of the condition, which is <see cref="BaseConditional.ConditionType.Custom"/>.</value>

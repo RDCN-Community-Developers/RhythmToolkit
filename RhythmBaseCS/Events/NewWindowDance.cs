@@ -16,105 +16,69 @@ namespace RhythmBase.Events
 			Amplitude = 0f;
 			Type = EventType.NewWindowDance;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the preset.
 		/// </summary>
-		public Presets Preset { get; set; }
-
-		/// <summary>
+		public Presets Preset { get; set; }		/// <summary>
 		/// Gets or sets the same preset behavior.
 		/// </summary>
-		public SamePresetBehaviors SamePresetBehavior { get; set; }
-
-		/// <summary>
+		public SamePresetBehaviors SamePresetBehavior { get; set; }		/// <summary>
 		/// Gets or sets the position.
 		/// </summary>
 		[EaseProperty]
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public RDPointE Position { get; set; }
-
-		/// <summary>
+		public RDPointE Position { get; set; }		/// <summary>
 		/// Gets or sets the reference.
 		/// </summary>
-		public References Reference { get; set; }
-
-		/// <summary>
+		public References Reference { get; set; }		/// <summary>
 		/// Gets or sets a value indicating whether to use a circle.
 		/// </summary>
-		public bool UseCircle { get; set; }
-
-		/// <summary>
+		public bool UseCircle { get; set; }		/// <summary>
 		/// Gets or sets the speed.
 		/// </summary>
 		[EaseProperty]
-		public float Speed { get; set; }
-
-		/// <summary>
+		public float Speed { get; set; }		/// <summary>
 		/// Gets or sets the amplitude.
 		/// </summary>
 		[EaseProperty]
-		public float Amplitude { get; set; }
-
-		/// <summary>
+		public float Amplitude { get; set; }		/// <summary>
 		/// Gets or sets the amplitude vector.
 		/// </summary>
 		[EaseProperty]
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public RDPointE AmplitudeVector { get; set; }
-
-		/// <summary>
+		public RDPointE AmplitudeVector { get; set; }		/// <summary>
 		/// Gets or sets the angle.
 		/// </summary>
 		[EaseProperty]
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public float? Angle { get; set; }
-
-		/// <summary>
+		public float? Angle { get; set; }		/// <summary>
 		/// Gets or sets the frequency.
 		/// </summary>
 		[EaseProperty]
-		public float Frequency { get; set; }
-
-		/// <summary>
+		public float Frequency { get; set; }		/// <summary>
 		/// Gets or sets the period.
 		/// </summary>
 		[EaseProperty]
-		public float Period { get; set; }
-
-		/// <summary>
+		public float Period { get; set; }		/// <summary>
 		/// Gets or sets the ease type.
 		/// </summary>
-		public EaseTypes EaseType { get; set; }
-
-		/// <summary>
+		public EaseTypes EaseType { get; set; }		/// <summary>
 		/// Gets or sets the sub ease type.
 		/// </summary>
-		public EaseType SubEase { get; set; }
-
-		/// <summary>
+		public EaseType SubEase { get; set; }		/// <summary>
 		/// Gets or sets the duration.
 		/// </summary>
 		[JsonProperty("easingDuration")]
-		public float Duration { get; set; }
-
-		/// <summary>
+		public float Duration { get; set; }		/// <summary>
 		/// Gets or sets the ease.
 		/// </summary>
-		public EaseType Ease { get; set; }
-
-		/// <summary>
+		public EaseType Ease { get; set; }		/// <summary>
 		/// Gets the event type.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Represents the presets.
 		/// </summary>
 		public enum Presets
@@ -139,9 +103,7 @@ namespace RhythmBase.Events
 			/// Shake per preset.
 			/// </summary>
 			ShakePer
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Represents the same preset behaviors.
 		/// </summary>
 		public enum SamePresetBehaviors
@@ -154,9 +116,7 @@ namespace RhythmBase.Events
 			/// Keep behavior.
 			/// </summary>
 			Keep
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Represents the references.
 		/// </summary>
 		public enum References
@@ -169,9 +129,7 @@ namespace RhythmBase.Events
 			/// Edge reference.
 			/// </summary>
 			Edge
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Represents the ease types.
 		/// </summary>
 		public enum EaseTypes

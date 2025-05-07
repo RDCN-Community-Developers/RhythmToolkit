@@ -9,31 +9,26 @@ namespace RhythmBase.Adofai.Components
 	public struct ADBeat : IComparable<ADBeat>, IEquatable<ADBeat>
 	{
 		internal readonly ADLevel? baseLevel => _calculator?.Collection;
-
 		/// <summary>
 		/// Gets or sets the beat only value.
 		/// </summary>
 		public readonly float BeatOnly
 		{
 			get => _beat + 1f;
-
 			set
 			{
 			}
 		}
-
 		/// <summary>
 		/// Gets or sets the time span.
 		/// </summary>
 		public readonly TimeSpan TimeSpan
 		{
 			get => _timeSpan;
-
 			set
 			{
 			}
 		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADBeat"/> struct with a specified beat.
 		/// </summary>
@@ -44,7 +39,6 @@ namespace RhythmBase.Adofai.Components
 			_beat = beat;
 			_isBeatLoaded = true;
 		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADBeat"/> struct with a specified time span.
 		/// </summary>
@@ -55,27 +49,25 @@ namespace RhythmBase.Adofai.Components
 			_timeSpan = timeSpan;
 			_isTimeSpanLoaded = true;
 		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADBeat"/> struct with a specified calculator and beat.
 		/// </summary>
 		/// <param name="calculator">The beat calculator.</param>
 		/// <param name="beat">The beat value.</param>
-		public ADBeat(ADBeatCalculator calculator, float beat)
+		public ADBeat(ADBeatCalculator? calculator, float beat)
 		{
 			this = default;
 			_calculator = calculator;
 			_beat = beat;
 			_isBeatLoaded = true;
 		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADBeat"/> struct with a specified calculator and time span.
 		/// </summary>
 		/// <param name="calculator">The beat calculator.</param>
 		/// <param name="timeSpan">The time span value.</param>
 		/// <exception cref="OverflowException">Thrown when the time span is less than zero.</exception>
-		public ADBeat(ADBeatCalculator calculator, TimeSpan timeSpan)
+		public ADBeat(ADBeatCalculator? calculator, TimeSpan timeSpan)
 		{
 			this = default;
 			if (timeSpan < TimeSpan.Zero)
@@ -105,7 +97,7 @@ namespace RhythmBase.Adofai.Components
 		/// <returns></returns>
 		public static bool FromSameLevel(ADBeat a, ADBeat b, bool @throw = false)
 		{
-			bool flag = a.baseLevel.Equals(b.baseLevel);
+			bool flag = a.baseLevel?.Equals(b.baseLevel) ?? true;
 			bool FromSameLevel;
 			if (flag)
 			{
@@ -131,7 +123,14 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
 		public static bool FromSameLevelOrNull(ADBeat a, ADBeat b, bool @throw = false) => a.baseLevel == null || b.baseLevel == null || FromSameLevel(a, b, @throw);
-
+		/// <summary>  
+		/// Determines if the current beat and the specified beat are from the same level.  
+		/// </summary>  
+		/// <param name="b">The beat to compare with the current beat.</param>  
+		/// <param name="throw">If set to <c>true</c>, an exception will be thrown if the beats are not from the same level.</param>  
+		/// <returns>  
+		/// <c>true</c> if the beats are from the same level; otherwise, <c>false</c>.  
+		/// </returns>  
 		public readonly bool FromSameLevel(ADBeat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.
@@ -152,7 +151,6 @@ namespace RhythmBase.Adofai.Components
 			result._calculator = null;
 			return result;
 		}
-
 		private readonly void IfNullThrowException()
 		{
 			if (IsEmpty)
@@ -168,16 +166,13 @@ namespace RhythmBase.Adofai.Components
 			float i = BeatOnly;
 			_isTimeSpanLoaded = false;
 		}
-
 		internal void ResetBPM()
 		{
 			_isBeatLoaded = true;
 			_isTimeSpanLoaded = false;
 			_isBpmLoaded = false;
 		}
-
 		internal void ResetCPB() => _isBeatLoaded = true;
-
 		/// <summary>
 		/// Gets a value indicating whether this instance is empty.
 		/// </summary>
@@ -191,28 +186,24 @@ namespace RhythmBase.Adofai.Components
 				return _calculator == null || (!_isBeatLoaded && !_isTimeSpanLoaded);
 			}
 		}
-
 		/// <inheritdoc/>
 		public static ADBeat operator +(ADBeat a, float b)
 		{
 			ADBeat result = new(a._calculator, a.BeatOnly + b);
 			return result;
 		}
-
 		/// <inheritdoc/>
 		public static ADBeat operator +(ADBeat a, TimeSpan b)
 		{
 			ADBeat result = new(a._calculator, a.TimeSpan + b);
 			return result;
 		}
-
 		/// <inheritdoc/>
 		public static ADBeat operator -(ADBeat a, float b)
 		{
 			ADBeat result = new(a._calculator, a.BeatOnly - b);
 			return result;
 		}
-
 		/// <inheritdoc/>
 		public static ADBeat operator -(ADBeat a, TimeSpan b)
 		{
@@ -222,48 +213,31 @@ namespace RhythmBase.Adofai.Components
 		/// <inheritdoc/>
 		public static bool operator >(ADBeat a, ADBeat b) => FromSameLevel(a, b, true) && a.BeatOnly > b.BeatOnly;
 		/// <inheritdoc/>
-
 		public static bool operator <(ADBeat a, ADBeat b) => FromSameLevel(a, b, true) && a.BeatOnly < b.BeatOnly;
 		/// <inheritdoc/>
-
 		public static bool operator >=(ADBeat a, ADBeat b) => FromSameLevel(a, b, true) && a.BeatOnly >= b.BeatOnly;
 		/// <inheritdoc/>
-
 		public static bool operator <=(ADBeat a, ADBeat b) => FromSameLevel(a, b, true) && a.BeatOnly <= b.BeatOnly;
-
 		/// <inheritdoc/>
 		public static bool operator ==(ADBeat a, ADBeat b) => (FromSameLevel(a, b, true) && a._beat == b._beat) || (a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._timeSpan == b._timeSpan) || a.BeatOnly == b.BeatOnly;
-
 		/// <inheritdoc/>
 		public static bool operator !=(ADBeat a, ADBeat b) => !(a == b);
-
 		/// <inheritdoc/>
 		public readonly int CompareTo(ADBeat other) => checked((int)Math.Round((double)unchecked(_beat - other._beat)));
-
 		/// <inheritdoc/>
 		public override readonly string ToString() => string.Format("[{0}]", BeatOnly);
-
 		/// <inheritdoc/>
-		public override readonly bool Equals([NotNull] object obj) => obj.GetType() == typeof(ADBeat) && Equals((obj != null) ? ((ADBeat)obj) : default);
-
+		public override readonly bool Equals(object? obj) => obj is ADBeat b && Equals((ADBeat)obj);
 		/// <inheritdoc/>
-		public readonly bool Equals(ADBeat other) => this == other;
-
+		public readonly bool Equals([NotNull] ADBeat other) => this == other;
 		/// <inheritdoc/>
 		public override readonly int GetHashCode() => HashCode.Combine(BeatOnly, baseLevel);
-
 		internal ADBeatCalculator? _calculator;
-
 		private bool _isBeatLoaded;
-
 		private bool _isTimeSpanLoaded;
-
 		private bool _isBpmLoaded;
-
 		private float _beat;
-
 		private TimeSpan _timeSpan;
-
 		private float _bpm;
 	}
 }

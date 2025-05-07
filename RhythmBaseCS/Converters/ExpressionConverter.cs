@@ -24,9 +24,7 @@ namespace RhythmBase.Converters
 					writer.WriteValue(string.Format("{{{0}}}", value.ExpressionValue));
 				}
 			}
-		}
-
-		public override RDExpression ReadJson(JsonReader reader, Type objectType, RDExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
+		}		public override RDExpression ReadJson(JsonReader reader, Type objectType, RDExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			string js = JToken.ReadFrom(reader).ToObject<string>() ?? throw new RhythmBase.Exceptions.ConvertingException("Cannot read the expression.");
 			RDExpression ReadJson = new(js.TrimStart('{').TrimEnd('}'));

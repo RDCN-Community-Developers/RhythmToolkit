@@ -15,67 +15,43 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the left boundary of the rectangle.
 		/// </summary>
-		public int? Left { get; set; } = left;
-
-		/// <summary>
+		public int? Left { get; set; } = left;		/// <summary>
 		/// Gets or sets the right boundary of the rectangle.
 		/// </summary>
-		public int? Right { get; set; } = right;
-
-		/// <summary>
+		public int? Right { get; set; } = right;		/// <summary>
 		/// Gets or sets the top boundary of the rectangle.
 		/// </summary>
-		public int? Top { get; set; } = top;
-
-		/// <summary>
+		public int? Top { get; set; } = top;		/// <summary>
 		/// Gets or sets the bottom boundary of the rectangle.
 		/// </summary>
-		public int? Bottom { get; set; } = bottom;
-
-		/// <summary>
+		public int? Bottom { get; set; } = bottom;		/// <summary>
 		/// Gets the bottom-left corner point of the rectangle.
 		/// </summary>
-		public readonly RDPointI LeftBottom { get => new(Left, Bottom); }
-
-		/// <summary>
+		public readonly RDPointI LeftBottom { get => new(Left, Bottom); }		/// <summary>
 		/// Gets the bottom-right corner point of the rectangle.
 		/// </summary>
-		public readonly RDPointI RightBottom { get => new(Right, Bottom); }
-
-		/// <summary>
+		public readonly RDPointI RightBottom { get => new(Right, Bottom); }		/// <summary>
 		/// Gets the top-left corner point of the rectangle.
 		/// </summary>
-		public readonly RDPointI LeftTop { get => new(Left, Top); }
-
-		/// <summary>
+		public readonly RDPointI LeftTop { get => new(Left, Top); }		/// <summary>
 		/// Gets the top-right corner point of the rectangle.
 		/// </summary>
-		public readonly RDPointI RightTop { get => new(Right, Top); }
-
-		/// <summary>
+		public readonly RDPointI RightTop { get => new(Right, Top); }		/// <summary>
 		/// Gets the width of the rectangle.
 		/// </summary>
-		public readonly int? Width => checked(Right - Left);
-
-		/// <summary>
+		public readonly int? Width => checked(Right - Left);		/// <summary>
 		/// Gets the height of the rectangle.
 		/// </summary>
-		public readonly int? Height => checked(Top - Bottom);
-
-		/// <summary>
+		public readonly int? Height => checked(Top - Bottom);		/// <summary>
 		/// Initializes a new instance of the rectangle with the specified location and size.
 		/// </summary>
 		/// <param name="location">The location of the rectangle.</param>
 		/// <param name="size">The size of the rectangle.</param>
-		public RDRectI(RDPointI? location, RDSizeI? size) : this(location?.X, location?.Y + size?.Height, location?.X + size?.Width, location?.Y) { }
-
-		/// <summary>
+		public RDRectI(RDPointI? location, RDSizeI? size) : this(location?.X, location?.Y + size?.Height, location?.X + size?.Width, location?.Y) { }		/// <summary>
 		/// Initializes a new instance of the rectangle with the specified size.
 		/// </summary>
 		/// <param name="size">The size of the rectangle.</param>
-		public RDRectI(RDSizeI? size) : this(0, size?.Height, size?.Width, 0) { }
-
-		/// <summary>
+		public RDRectI(RDSizeI? size) : this(0, size?.Height, size?.Width, 0) { }		/// <summary>
 		/// Initializes a new instance of the rectangle with the specified width and height.
 		/// </summary>
 		/// <param name="width">The width of the rectangle.</param>
@@ -84,14 +60,10 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets the location of the rectangle.
 		/// </summary>
-		public readonly RDPointI? Location => Left is null && Right is null ? null : new(Left, Bottom);
-
-		/// <summary>
+		public readonly RDPointI? Location => Left is null && Right is null ? null : new(Left, Bottom);		/// <summary>
 		/// Gets the size of the rectangle.
 		/// </summary>
-		public readonly RDSizeI? Size => Width is null && Height is null ? null : new(Width, Height);
-
-		/// <summary>
+		public readonly RDSizeI? Size => Width is null && Height is null ? null : new(Width, Height);		/// <summary>
 		/// Inflates the rectangle by the specified size.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -102,9 +74,7 @@ namespace RhythmBase.Components
 			RDRectI result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(size);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Inflates the rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -116,16 +86,12 @@ namespace RhythmBase.Components
 			RDRectI result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(x, y);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Converts the specified RDRect to RDRectI using ceiling.
 		/// </summary>
 		/// <param name="rect">The RDRect to convert.</param>
 		/// <returns>The converted RDRectI.</returns>
-		public static RDRectI Ceiling(RDRect rect) => Ceiling(rect, false);
-
-		/// <summary>
+		public static RDRectI Ceiling(RDRect rect) => Ceiling(rect, false);		/// <summary>
 		/// Converts the specified RDRect to RDRectI using ceiling, and specifies whether to expand outwards.
 		/// </summary>
 		/// <param name="rect">The RDRect to convert.</param>
@@ -135,16 +101,12 @@ namespace RhythmBase.Components
 				rect.Left == null ? null : (int)(outwards && rect.Width > 0 ? Math.Floor((double)rect.Left) : Math.Ceiling((double)rect.Left)),
 				rect.Top == null ? null : (int)(outwards && rect.Height > 0 ? Math.Floor((double)rect.Top) : Math.Ceiling((double)rect.Top)),
 				rect.Right == null ? null : (int)(outwards && rect.Width < 0 ? Math.Floor((double)rect.Right) : Math.Ceiling((double)rect.Right)),
-				rect.Bottom == null ? null : (int)(outwards && rect.Height < 0 ? Math.Floor((double)rect.Bottom) : Math.Ceiling((double)rect.Bottom)));
-
-		/// <summary>
+				rect.Bottom == null ? null : (int)(outwards && rect.Height < 0 ? Math.Floor((double)rect.Bottom) : Math.Ceiling((double)rect.Bottom)));		/// <summary>
 		/// Converts the specified RDRect to RDRectI using floor.
 		/// </summary>
 		/// <param name="rect">The RDRect to convert.</param>
 		/// <returns>The converted RDRectI.</returns>
-		public static RDRectI Floor(RDRect rect) => Ceiling(rect, false);
-
-		/// <summary>
+		public static RDRectI Floor(RDRect rect) => Ceiling(rect, false);		/// <summary>
 		/// Converts the specified RDRect to RDRectI using floor, and specifies whether to shrink inwards.
 		/// </summary>
 		/// <param name="rect">The RDRect to convert.</param>
@@ -154,9 +116,7 @@ namespace RhythmBase.Components
 				rect.Left == null ? null : (int)(inwards && rect.Width > 0 ? Math.Ceiling((double)rect.Left) : Math.Floor((double)rect.Left)),
 				rect.Top == null ? null : (int)(inwards && rect.Height > 0 ? Math.Ceiling((double)rect.Top) : Math.Floor((double)rect.Top)),
 				rect.Right == null ? null : (int)(inwards && rect.Width < 0 ? Math.Ceiling((double)rect.Right) : Math.Floor((double)rect.Right)),
-				rect.Bottom == null ? null : (int)(inwards && rect.Height < 0 ? Math.Ceiling((double)rect.Bottom) : Math.Floor((double)rect.Bottom)));
-
-		/// <summary>
+				rect.Bottom == null ? null : (int)(inwards && rect.Height < 0 ? Math.Ceiling((double)rect.Bottom) : Math.Floor((double)rect.Bottom)));		/// <summary>
 		/// Converts the specified RDRect to RDRectI using rounding.
 		/// </summary>
 		/// <param name="rect">The RDRect to convert.</param>
@@ -165,9 +125,7 @@ namespace RhythmBase.Components
 				new int?((int)Math.Round((rect.Left == null) ? 0.0 : Math.Round((double)rect.Left.Value))),
 				new int?((int)Math.Round((rect.Top == null) ? 0.0 : Math.Round((double)rect.Top.Value))),
 				new int?((int)Math.Round((rect.Right == null) ? 0.0 : Math.Round((double)rect.Right.Value))),
-				new int?((int)Math.Round((rect.Bottom == null) ? 0.0 : Math.Round((double)rect.Bottom.Value))));
-
-		/// <summary>
+				new int?((int)Math.Round((rect.Bottom == null) ? 0.0 : Math.Round((double)rect.Bottom.Value))));		/// <summary>
 		/// Returns a new RDRectI that is the union of two rectangles.
 		/// </summary>
 		/// <param name="rect1">The first rectangle.</param>
@@ -177,9 +135,7 @@ namespace RhythmBase.Components
 				new int?((rect1.Left == null || rect2.Left == null) ? 0 : Math.Min(rect1.Left.Value, rect2.Left.Value)),
 				new int?((rect1.Top == null || rect2.Top == null) ? 0 : Math.Min(rect1.Top.Value, rect2.Top.Value)),
 				new int?((rect1.Right == null || rect2.Right == null) ? 0 : Math.Min(rect1.Right.Value, rect2.Right.Value)),
-				new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value)));
-
-		/// <summary>
+				new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value)));		/// <summary>
 		/// Returns a new RDRectI that is the intersection of two rectangles.
 		/// </summary>
 		/// <param name="rect1">The first rectangle.</param>
@@ -189,9 +145,7 @@ namespace RhythmBase.Components
 			new int?((rect1.Left == null || rect2.Left == null) ? 0 : Math.Max(rect1.Left.Value, rect2.Left.Value)),
 			new int?((rect1.Top == null || rect2.Top == null) ? 0 : Math.Max(rect1.Top.Value, rect2.Top.Value)),
 			new int?((rect1.Right == null || rect2.Right == null) ? 0 : Math.Min(rect1.Right.Value, rect2.Right.Value)),
-			new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))) : default;
-
-		/// <summary>
+			new int?((rect1.Bottom == null || rect2.Bottom == null) ? 0 : Math.Min(rect1.Bottom.Value, rect2.Bottom.Value))) : default;		/// <summary>
 		/// Converts the specified RDRect to RDRectI by truncating the decimal part.
 		/// </summary>
 		/// <param name="rect">The RDRect to convert.</param>
@@ -200,9 +154,7 @@ namespace RhythmBase.Components
 				(int?)rect.Left,
 				(int?)rect.Top,
 				(int?)rect.Right,
-				(int?)rect.Bottom);
-
-		/// <summary>
+				(int?)rect.Bottom);		/// <summary>
 		/// Offsets the rectangle by the specified amounts.
 		/// </summary>
 		/// <param name="x">The horizontal offset.</param>
@@ -218,9 +170,7 @@ namespace RhythmBase.Components
 		/// Moves the rectangle by the specified point.
 		/// </summary>
 		/// <param name="p">The point containing the offset.</param>
-		public void Offset(RDPointI p) => Offset(p.X, p.Y);
-
-		/// <summary>
+		public void Offset(RDPointI p) => Offset(p.X, p.Y);		/// <summary>
 		/// Inflates the rectangle by the specified size.
 		/// </summary>
 		/// <param name="size">The size to inflate by.</param>
@@ -230,9 +180,7 @@ namespace RhythmBase.Components
 			Top += size.Height;
 			Right += size.Width;
 			Bottom -= size.Height;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Inflates the rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="width">The width to inflate by.</param>
@@ -267,16 +215,12 @@ namespace RhythmBase.Components
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"{{Location=[{Left},{Bottom}],Size=[{Width},{Height}]}}";
 		/// <inheritdoc/>
-		public readonly bool Equals(RDRectI other) => Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;
-
-		/// <summary>
+		public readonly bool Equals(RDRectI other) => Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;		/// <summary>
 		/// Implicitly converts an <see cref="RDRectI"/> to an <see cref="RDRect"/>.
 		/// </summary>
 		/// <param name="rect">The <see cref="RDRectI"/> instance to convert.</param>
 		/// <returns>The converted <see cref="RDRect"/> instance.</returns>
-		public static implicit operator RDRect(RDRectI rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
-
-		/// <summary>
+		public static implicit operator RDRect(RDRectI rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);		/// <summary>
 		/// Implicitly converts an <see cref="RDRectI"/> to an <see cref="RDRectE"/>.
 		/// </summary>
 		/// <param name="rect">The <see cref="RDRectI"/> instance to convert.</param>

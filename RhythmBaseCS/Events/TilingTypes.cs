@@ -8,9 +8,7 @@
 		/// <summary>
 		/// Tiling type where the content scrolls.
 		/// </summary>
-		Scroll,
-
-		/// <summary>
+		Scroll,		/// <summary>
 		/// Tiling type where the content pulses.
 		/// </summary>
 		Pulse

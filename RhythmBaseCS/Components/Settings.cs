@@ -8,9 +8,7 @@ namespace RhythmBase.Components
 	public class Settings
 	{
 		private int[] rankMaxMistakes = new int[4];
-		private string[] rankDescription = ["", "", "", "", "", ""];
-
-		/// <summary>  
+		private string[] rankDescription = ["", "", "", "", "", ""];		/// <summary>  
 		/// Level settings.  
 		/// </summary>  
 		public Settings()

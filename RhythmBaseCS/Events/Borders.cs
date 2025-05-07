@@ -8,14 +8,10 @@
 		/// <summary>
 		/// No border.
 		/// </summary>
-		None,
-
-		/// <summary>
+		None,		/// <summary>
 		/// An outline border.
 		/// </summary>
-		Outline,
-
-		/// <summary>
+		Outline,		/// <summary>
 		/// A glowing border.
 		/// </summary>
 		Glow

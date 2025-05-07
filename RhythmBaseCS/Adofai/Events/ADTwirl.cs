@@ -1,13 +1,12 @@
 ﻿using System;
 namespace RhythmBase.Adofai.Events
 {
+	/// <summary>  
+	/// Represents the Twirl event in the ADOFAI editor.  
+	/// </summary>  
 	public class ADTwirl : ADBaseTileEvent
 	{
-		public ADTwirl()
-		{
-			Type = ADEventType.Twirl;
-		}
-
-		public override ADEventType Type { get; }
+		/// <inheritdoc/>
+		public override ADEventType Type => ADEventType.Twirl;
 	}
 }

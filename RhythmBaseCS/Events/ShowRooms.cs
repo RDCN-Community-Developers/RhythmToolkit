@@ -23,7 +23,6 @@ namespace RhythmBase.Events
 		/// Gets or sets the ease type for the event.  
 		/// </summary>  
 		public EaseType Ease { get; set; }
-
 		/// <summary>  
 		/// Gets or sets the heights associated with the event.  
 		/// </summary>
@@ -34,7 +33,6 @@ namespace RhythmBase.Events
 		/// </summary>  
 		[JsonProperty("transitionTime")]
 		public float Duration { get; set; }
-
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  

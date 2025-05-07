@@ -30,9 +30,7 @@ namespace RhythmBase.Converters
 			JToken token = JArray.Load(reader);
 			byte[]? J = token.ToObject<byte[]>();
 			if (J == null)
-				throw new Exceptions.ConvertingException(token, new Exception($"Unreadable room: \"{J}\". path \"{reader.Path}\""));
-
-			bool flag = objectType == typeof(RDRoom);
+				throw new Exceptions.ConvertingException(token, new Exception($"Unreadable room: \"{J}\". path \"{reader.Path}\""));			bool flag = objectType == typeof(RDRoom);
 			object ReadJson;
 			if (flag)
 			{
@@ -67,8 +65,6 @@ namespace RhythmBase.Converters
 				ReadJson = new RDSingleRoom(J.Single());
 			}
 			return ReadJson;
-		}
-
-		public override bool CanConvert(Type objectType) => objectType == typeof(RDRoom) || objectType == typeof(RDSingleRoom);
+		}		public override bool CanConvert(Type objectType) => objectType == typeof(RDRoom) || objectType == typeof(RDSingleRoom);
 	}
 }

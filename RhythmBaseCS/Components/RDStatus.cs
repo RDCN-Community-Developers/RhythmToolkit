@@ -1,5 +1,4 @@
 ﻿using RhythmBase.Events;
-
 namespace RhythmBase.Components
 {
 	/// <summary>
@@ -11,13 +10,11 @@ namespace RhythmBase.Components
 		/// Gets the beat information.
 		/// </summary>
 		public RDBeat Beat { get; internal init; }
-
 		/// <summary>
 		/// Gets the room status information.
 		/// </summary>
 		public RoomStatus[] RoomStatus { get; internal init; }
 	}
-
 	/// <summary>
 	/// Represents the status of a room.
 	/// </summary>
@@ -27,7 +24,6 @@ namespace RhythmBase.Components
 		/// Gets the beat information.
 		/// </summary>
 		public RDBeat Beat { get; internal init; }
-
 		/// <summary>
 		/// Gets the running VFX presets.
 		/// </summary>

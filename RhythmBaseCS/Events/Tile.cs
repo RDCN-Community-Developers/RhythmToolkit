@@ -16,63 +16,41 @@ namespace RhythmBase.Events
 		{
 			Type = EventType.Tile;
 			Tab = Tabs.Decorations;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Gets or sets the position of the tile.
 		/// </summary>
 		[EaseProperty]
-		public RDPoint? Position { get; set; }
-
-		/// <summary>
+		public RDPoint? Position { get; set; }		/// <summary>
 		/// Gets or sets the tiling of the tile.
 		/// </summary>
 		[EaseProperty]
-		public RDPoint? Tiling { get; set; }
-
-		/// <summary>
+		public RDPoint? Tiling { get; set; }		/// <summary>
 		/// Gets or sets the speed of the tile.
 		/// </summary>
 		[EaseProperty]
-		public RDPoint? Speed { get; set; }
-
-		/// <summary>
+		public RDPoint? Speed { get; set; }		/// <summary>
 		/// Gets or sets the type of tiling.
 		/// </summary>
-		public TilingTypes TilingType { get; set; }
-
-		/// <summary>
+		public TilingTypes TilingType { get; set; }		/// <summary>
 		/// Gets or sets the interval for the tiling.
 		/// </summary>
-		public float Interval { get; set; }
-
-		/// <summary>
+		public float Interval { get; set; }		/// <summary>
 		/// Gets or sets the Y coordinate. Always returns 0.
 		/// </summary>
 		[JsonIgnore]
-		public override int Y => 0;
-
-		/// <summary>
+		public override int Y => 0;		/// <summary>
 		/// Gets or sets the easing type for the event.
 		/// </summary>
-		public EaseType Ease { get; set; }
-
-		/// <summary>
+		public EaseType Ease { get; set; }		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
-		public float Duration { get; set; }
-
-		/// <summary>
+		public float Duration { get; set; }		/// <summary>
 		/// Defines the types of tiling available.
 		/// </summary>
 		public enum TilingTypes
@@ -80,9 +58,7 @@ namespace RhythmBase.Events
 			/// <summary>
 			/// Represents a scrolling tiling type.
 			/// </summary>
-			Scroll,
-
-			/// <summary>
+			Scroll,			/// <summary>
 			/// Represents a pulsing tiling type.
 			/// </summary>
 			Pulse

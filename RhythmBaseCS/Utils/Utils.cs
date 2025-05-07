@@ -26,11 +26,7 @@ namespace RhythmBase.Utils
 					Patterns.Down => "d",
 					Patterns.Banana => "b",
 					Patterns.Return => "r",
-					_ => throw new ConvertingException($"Invalid pattern: {p}")
-
-				}) ?? throw new ConvertingException($"Cannot write pattern."));
-
-		/// <summary>
+					_ => throw new ConvertingException($"Invalid pattern: {p}")				}) ?? throw new ConvertingException($"Cannot write pattern."));		/// <summary>
 		/// Gets the JSON serializer settings for the specified level and settings.
 		/// </summary>
 		/// <param name="rdlevel">The level to serialize.</param>

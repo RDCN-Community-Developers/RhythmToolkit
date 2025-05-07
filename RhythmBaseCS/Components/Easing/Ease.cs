@@ -1,6 +1,4 @@
-﻿namespace RhythmBase.Components.Easing
-
-{
+﻿namespace RhythmBase.Components.Easing{
 	///<summary>
 	/// The EaseType enumeration represents various types of easing functions.
 	/// These functions are used to create smooth transitions in animations.
@@ -199,9 +197,7 @@
 		public static double Calculate(this EaseType Type, double x, double from, double to) => Type.Calculate(x) * (to - from) + from;
 		/// <summary>
 		/// Ease types.
-		/// </summary>
-
-		private static class EaseFunction
+		/// </summary>		private static class EaseFunction
 		{
 			private const double c1 = 1.525;
 			private const double c2 = 1.70158;

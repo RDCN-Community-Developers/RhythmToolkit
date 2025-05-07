@@ -5,30 +5,37 @@ using RhythmBase.Components.Easing;
 using RhythmBase.Events;
 namespace RhythmBase.Adofai.Events
 {
+	/// <summary>  
+	/// Represents an event to move the camera in the Adofai game.  
+	/// </summary>  
 	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class ADMoveCamera : ADBaseTaggedTileAction, IEaseEvent
 	{
-		public ADMoveCamera()
-		{
-			Type = ADEventType.MoveCamera;
-		}
-
-		public override ADEventType Type { get; }
-
-		public float Duration { get; set; }
-
-		public EaseType Ease { get; set; }
-
-		public bool DontDisable { get; set; }
-
-		public bool MinVfxOnly { get; set; }
-
-		public ADCameraRelativeTo RelativeTo { get; set; }
-
-		public RDPoint? Position { get; set; }
-
-		public float Rotation { get; set; }
-
+		/// <inheritdoc/>
+		public override ADEventType Type => ADEventType.MoveCamera;		/// <summary>  
+		/// Gets or sets the duration of the camera movement.  
+		/// </summary>  
+		public float Duration { get; set; }		/// <summary>  
+		/// Gets or sets the easing type for the camera movement.  
+		/// </summary>  
+		public EaseType Ease { get; set; }		/// <summary>  
+		/// Gets or sets a value indicating whether the camera should not be disabled after the movement.  
+		/// </summary>  
+		public bool DontDisable { get; set; }		/// <summary>  
+		/// Gets or sets a value indicating whether only minimal visual effects should be applied.  
+		/// </summary>  
+		public bool MinVfxOnly { get; set; }		/// <summary>  
+		/// Gets or sets the reference point for the camera movement.  
+		/// </summary>  
+		public ADCameraRelativeTo RelativeTo { get; set; }		/// <summary>  
+		/// Gets or sets the target position of the camera.  
+		/// </summary>  
+		public RDPoint? Position { get; set; }		/// <summary>  
+		/// Gets or sets the rotation angle of the camera.  
+		/// </summary>  
+		public float Rotation { get; set; }		/// <summary>  
+		/// Gets or sets the zoom level of the camera.  
+		/// </summary>  
 		public float Zoom { get; set; }
 	}
 }

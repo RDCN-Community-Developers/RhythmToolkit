@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-
-namespace RhythmBase.Components
+using System.Numerics;namespace RhythmBase.Components
 {
 	/// <summary>
 	/// Represents a color with red, green, blue, and alpha components.
@@ -82,13 +80,9 @@ namespace RhythmBase.Components
 		{
 			float r = this.R / 255f;
 			float g = this.G / 255f;
-			float b = this.B / 255f;
-
-			float max = Math.Max(r, Math.Max(g, b));
+			float b = this.B / 255f;			float max = Math.Max(r, Math.Max(g, b));
 			float min = Math.Min(r, Math.Min(g, b));
-			float delta = max - min;
-
-			h = 0;
+			float delta = max - min;			h = 0;
 			if (delta != 0)
 			{
 				if (max == r)
@@ -104,12 +98,8 @@ namespace RhythmBase.Components
 					h = (r - g) / delta + 4;
 				}
 				h /= 6;
-			}
-
-			l = (max + min) / 2;
-			s = delta == 0 ? 0 : delta / (1 - Math.Abs(2 * l - 1));
-
-			h *= 360;
+			}			l = (max + min) / 2;
+			s = delta == 0 ? 0 : delta / (1 - Math.Abs(2 * l - 1));			h *= 360;
 			s *= 100;
 			l *= 100;
 		}
@@ -123,13 +113,9 @@ namespace RhythmBase.Components
 		{
 			float r = this.R / 255f;
 			float g = this.G / 255f;
-			float b = this.B / 255f;
-
-			float max = Math.Max(r, Math.Max(g, b));
+			float b = this.B / 255f;			float max = Math.Max(r, Math.Max(g, b));
 			float min = Math.Min(r, Math.Min(g, b));
-			float delta = max - min;
-
-			h = 0f;
+			float delta = max - min;			h = 0f;
 			if (delta != 0)
 			{
 				if (max == r)
@@ -145,17 +131,11 @@ namespace RhythmBase.Components
 					h = (r - g) / delta + 4;
 				}
 				h /= 6;
-			}
-
-			s = max == 0 ? 0 : delta / max;
-			v = max;
-
-			h *= 360;
+			}			s = max == 0 ? 0 : delta / max;
+			v = max;			h *= 360;
 			s *= 100;
 			v *= 100;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Creates an RDColor instance from RGBA values.
 		/// </summary>
 		/// <param name="r">Red component</param>
@@ -235,18 +215,14 @@ namespace RhythmBase.Components
 		{
 			hex = hex.Trim();
 			if (hex.StartsWith('#'))
-				hex = hex[1..];
-
-			hex = hex.Length switch
+				hex = hex[1..];			hex = hex.Length switch
 			{
 				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
 				4 => $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}{hex[3]}{hex[3]}",
 				6 => $"FF{hex}",
 				8 => hex,
 				_ => throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long."),
-			};
-
-			return new RDColor(Convert.ToUInt32(hex, 16));
+			};			return new RDColor(Convert.ToUInt32(hex, 16));
 		}
 		/// <summary>
 		/// Tries to create an RDColor instance from a hexadecimal string.
@@ -310,16 +286,12 @@ namespace RhythmBase.Components
 					if (t < 1 / 2.0) return q;
 					if (t < 2 / 3.0) return p + (q - p) * (2 / 3.0f - t) * 6;
 					return p;
-				}
-
-				float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+				}				float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
 				float p = 2 * l - q;
 				r = hue2rgb(p, q, h + 1 / 3.0f);
 				g = hue2rgb(p, q, h);
 				b = hue2rgb(p, q, h - 1 / 3.0f);
-			}
-
-			return new RDColor((uint)(a << 24 | (int)(r * 255) << 16 | (int)(g * 255) << 8 | (int)(b * 255)));
+			}			return new RDColor((uint)(a << 24 | (int)(r * 255) << 16 | (int)(g * 255) << 8 | (int)(b * 255)));
 		}
 		/// <summary>
 		/// Creates an RDColor object from HSV values.
@@ -333,15 +305,11 @@ namespace RhythmBase.Components
 		{
 			h /= 360;
 			s /= 100;
-			v /= 100;
-
-			int hi = (int)(h * 6);
+			v /= 100;			int hi = (int)(h * 6);
 			float f = h * 6 - hi;
 			float p = v * (1 - s);
 			float q = v * (1 - f * s);
-			float t = v * (1 - (1 - f) * s);
-
-			float r = 0, g = 0, b = 0;
+			float t = v * (1 - (1 - f) * s);			float r = 0, g = 0, b = 0;
 			switch (hi % 6)
 			{
 				case 0: r = v; g = t; b = p; break;
@@ -350,9 +318,7 @@ namespace RhythmBase.Components
 				case 3: r = p; g = q; b = v; break;
 				case 4: r = t; g = p; b = v; break;
 				case 5: r = v; g = p; b = q; break;
-			}
-
-			return new RDColor((uint)(a << 24 | (int)(r * 255) << 16 | (int)(g * 255) << 8 | (int)(b * 255)));
+			}			return new RDColor((uint)(a << 24 | (int)(r * 255) << 16 | (int)(g * 255) << 8 | (int)(b * 255)));
 		}
 		/// <summary>
 		/// Creates an RDColor instance from a color name.
@@ -705,714 +671,430 @@ namespace RhythmBase.Components
 				? formatter.Format(format, this, formatProvider)
 				: ToString();
 		/// <inheritdoc/>
-		public readonly string ToString(string? format) => ToString(format, null);
-
-		///<summary>
+		public readonly string ToString(string? format) => ToString(format, null);		///<summary>
 		///Gets the predefined color of alice blue, or #FFF0F8FF.
 		///</summary>
-		public static readonly RDColor AliceBlue = new(4293982463u);
-
-		///<summary>
+		public static readonly RDColor AliceBlue = new(4293982463u);		///<summary>
 		///Gets the predefined color of antique white, or #FFFAEBD7.
 		///</summary>
-		public static readonly RDColor AntiqueWhite = new(4294634455u);
-
-		///<summary>
+		public static readonly RDColor AntiqueWhite = new(4294634455u);		///<summary>
 		///Gets the predefined color of aqua, or #FF00FFFF.
 		///</summary>
-		public static readonly RDColor Aqua = new(4278255615u);
-
-		///<summary>
+		public static readonly RDColor Aqua = new(4278255615u);		///<summary>
 		///Gets the predefined color of aquamarine, or #FF7FFFD4.
 		///</summary>
-		public static readonly RDColor Aquamarine = new(4286578644u);
-
-		///<summary>
+		public static readonly RDColor Aquamarine = new(4286578644u);		///<summary>
 		///Gets the predefined color of azure, or #FFF0FFFF.
 		///</summary>
-		public static readonly RDColor Azure = new(4293984255u);
-
-		///<summary>
+		public static readonly RDColor Azure = new(4293984255u);		///<summary>
 		///Gets the predefined color of beige, or #FFF5F5DC.
 		///</summary>
-		public static readonly RDColor Beige = new(4294309340u);
-
-		///<summary>
+		public static readonly RDColor Beige = new(4294309340u);		///<summary>
 		///Gets the predefined color of bisque, or #FFFFE4C4.
 		///</summary>
-		public static readonly RDColor Bisque = new(4294960324u);
-
-		///<summary>
+		public static readonly RDColor Bisque = new(4294960324u);		///<summary>
 		///Gets the predefined color of black, or #FF000000.
 		///</summary>
-		public static readonly RDColor Black = new(4278190080u);
-
-		///<summary>
+		public static readonly RDColor Black = new(4278190080u);		///<summary>
 		///Gets the predefined color of blanched almond, or #FFFFEBCD.
 		///</summary>
-		public static readonly RDColor BlanchedAlmond = new(4294962125u);
-
-		///<summary>
+		public static readonly RDColor BlanchedAlmond = new(4294962125u);		///<summary>
 		///Gets the predefined color of blue, or #FF0000FF.
 		///</summary>
-		public static readonly RDColor Blue = new(4278190335u);
-
-		///<summary>
+		public static readonly RDColor Blue = new(4278190335u);		///<summary>
 		///Gets the predefined color of blue violet, or #FF8A2BE2.
 		///</summary>
-		public static readonly RDColor BlueViolet = new(4287245282u);
-
-		///<summary>
+		public static readonly RDColor BlueViolet = new(4287245282u);		///<summary>
 		///Gets the predefined color of brown, or #FFA52A2A.
 		///</summary>
-		public static readonly RDColor Brown = new(4289014314u);
-
-		///<summary>
+		public static readonly RDColor Brown = new(4289014314u);		///<summary>
 		///Gets the predefined color of burly wood, or #FFDEB887.
 		///</summary>
-		public static readonly RDColor BurlyWood = new(4292786311u);
-
-		///<summary>
+		public static readonly RDColor BurlyWood = new(4292786311u);		///<summary>
 		///Gets the predefined color of cadet blue, or #FF5F9EA0.
 		///</summary>
-		public static readonly RDColor CadetBlue = new(4284456608u);
-
-		///<summary>
+		public static readonly RDColor CadetBlue = new(4284456608u);		///<summary>
 		///Gets the predefined color of chartreuse, or #FF7FFF00.
 		///</summary>
-		public static readonly RDColor Chartreuse = new(4286578432u);
-
-		///<summary>
+		public static readonly RDColor Chartreuse = new(4286578432u);		///<summary>
 		///Gets the predefined color of chocolate, or #FFD2691E.
 		///</summary>
-		public static readonly RDColor Chocolate = new(4291979550u);
-
-		///<summary>
+		public static readonly RDColor Chocolate = new(4291979550u);		///<summary>
 		///Gets the predefined color of coral, or #FFFF7F50.
 		///</summary>
-		public static readonly RDColor Coral = new(4294934352u);
-
-		///<summary>
+		public static readonly RDColor Coral = new(4294934352u);		///<summary>
 		///Gets the predefined color of cornflower blue, or #FF6495ED.
 		///</summary>
-		public static readonly RDColor CornflowerBlue = new(4284782061u);
-
-		///<summary>
+		public static readonly RDColor CornflowerBlue = new(4284782061u);		///<summary>
 		///Gets the predefined color of cornsilk, or #FFFFF8DC.
 		///</summary>
-		public static readonly RDColor Cornsilk = new(4294965468u);
-
-		///<summary>
+		public static readonly RDColor Cornsilk = new(4294965468u);		///<summary>
 		///Gets the predefined color of crimson, or #FFDC143C.
 		///</summary>
-		public static readonly RDColor Crimson = new(4292613180u);
-
-		///<summary>
+		public static readonly RDColor Crimson = new(4292613180u);		///<summary>
 		///Gets the predefined color of cyan, or #FF00FFFF.
 		///</summary>
-		public static readonly RDColor Cyan = new(4278255615u);
-
-		///<summary>
+		public static readonly RDColor Cyan = new(4278255615u);		///<summary>
 		///Gets the predefined color of dark blue, or #FF00008B.
 		///</summary>
-		public static readonly RDColor DarkBlue = new(4278190219u);
-
-		///<summary>
+		public static readonly RDColor DarkBlue = new(4278190219u);		///<summary>
 		///Gets the predefined color of dark cyan, or #FF008B8B.
 		///</summary>
-		public static readonly RDColor DarkCyan = new(4278225803u);
-
-		///<summary>
+		public static readonly RDColor DarkCyan = new(4278225803u);		///<summary>
 		///Gets the predefined color of dark goldenrod, or #FFB8860B.
 		///</summary>
-		public static readonly RDColor DarkGoldenrod = new(4290283019u);
-
-		///<summary>
+		public static readonly RDColor DarkGoldenrod = new(4290283019u);		///<summary>
 		///Gets the predefined color of dark gray, or #FFA9A9A9.
 		///</summary>
-		public static readonly RDColor DarkGray = new(4289309097u);
-
-		///<summary>
+		public static readonly RDColor DarkGray = new(4289309097u);		///<summary>
 		///Gets the predefined color of dark green, or #FF006400.
 		///</summary>
-		public static readonly RDColor DarkGreen = new(4278215680u);
-
-		///<summary>
+		public static readonly RDColor DarkGreen = new(4278215680u);		///<summary>
 		///Gets the predefined color of dark khaki, or #FFBDB76B.
 		///</summary>
-		public static readonly RDColor DarkKhaki = new(4290623339u);
-
-		///<summary>
+		public static readonly RDColor DarkKhaki = new(4290623339u);		///<summary>
 		///Gets the predefined color of dark magenta, or #FF8B008B.
 		///</summary>
-		public static readonly RDColor DarkMagenta = new(4287299723u);
-
-		///<summary>
+		public static readonly RDColor DarkMagenta = new(4287299723u);		///<summary>
 		///Gets the predefined color of dark olive green, or #FF556B2F.
 		///</summary>
-		public static readonly RDColor DarkOliveGreen = new(4283788079u);
-
-		///<summary>
+		public static readonly RDColor DarkOliveGreen = new(4283788079u);		///<summary>
 		///Gets the predefined color of dark orange, or #FFFF8C00.
 		///</summary>
-		public static readonly RDColor DarkOrange = new(4294937600u);
-
-		///<summary>
+		public static readonly RDColor DarkOrange = new(4294937600u);		///<summary>
 		///Gets the predefined color of dark orchid, or #FF9932CC.
 		///</summary>
-		public static readonly RDColor DarkOrchid = new(4288230092u);
-
-		///<summary>
+		public static readonly RDColor DarkOrchid = new(4288230092u);		///<summary>
 		///Gets the predefined color of dark red, or #FF8B0000.
 		///</summary>
-		public static readonly RDColor DarkRed = new(4287299584u);
-
-		///<summary>
+		public static readonly RDColor DarkRed = new(4287299584u);		///<summary>
 		///Gets the predefined color of dark salmon, or #FFE9967A.
 		///</summary>
-		public static readonly RDColor DarkSalmon = new(4293498490u);
-
-		///<summary>
+		public static readonly RDColor DarkSalmon = new(4293498490u);		///<summary>
 		///Gets the predefined color of dark sea green, or #FF8FBC8B.
 		///</summary>
-		public static readonly RDColor DarkSeaGreen = new(4287609995u);
-
-		///<summary>
+		public static readonly RDColor DarkSeaGreen = new(4287609995u);		///<summary>
 		///Gets the predefined color of dark slate blue, or #FF483D8B.
 		///</summary>
-		public static readonly RDColor DarkSlateBlue = new(4282924427u);
-
-		///<summary>
+		public static readonly RDColor DarkSlateBlue = new(4282924427u);		///<summary>
 		///Gets the predefined color of dark slate gray, or #FF2F4F4F.
 		///</summary>
-		public static readonly RDColor DarkSlateGray = new(4281290575u);
-
-		///<summary>
+		public static readonly RDColor DarkSlateGray = new(4281290575u);		///<summary>
 		///Gets the predefined color of dark turquoise, or #FF00CED1.
 		///</summary>
-		public static readonly RDColor DarkTurquoise = new(4278243025u);
-
-		///<summary>
+		public static readonly RDColor DarkTurquoise = new(4278243025u);		///<summary>
 		///Gets the predefined color of dark violet, or #FF9400D3.
 		///</summary>
-		public static readonly RDColor DarkViolet = new(4287889619u);
-
-		///<summary>
+		public static readonly RDColor DarkViolet = new(4287889619u);		///<summary>
 		///Gets the predefined color of deep pink, or #FFFF1493.
 		///</summary>
-		public static readonly RDColor DeepPink = new(4294907027u);
-
-		///<summary>
+		public static readonly RDColor DeepPink = new(4294907027u);		///<summary>
 		///Gets the predefined color of deep sky blue, or #FF00BFFF.
 		///</summary>
-		public static readonly RDColor DeepSkyBlue = new(4278239231u);
-
-		///<summary>
+		public static readonly RDColor DeepSkyBlue = new(4278239231u);		///<summary>
 		///Gets the predefined color of dim gray, or #FF696969.
 		///</summary>
-		public static readonly RDColor DimGray = new(4285098345u);
-
-		///<summary>
+		public static readonly RDColor DimGray = new(4285098345u);		///<summary>
 		///Gets the predefined color of dodger blue, or #FF1E90FF.
 		///</summary>
-		public static readonly RDColor DodgerBlue = new(4280193279u);
-
-		///<summary>
+		public static readonly RDColor DodgerBlue = new(4280193279u);		///<summary>
 		///Gets the predefined color of firebrick, or #FFB22222.
 		///</summary>
-		public static readonly RDColor Firebrick = new(4289864226u);
-
-		///<summary>
+		public static readonly RDColor Firebrick = new(4289864226u);		///<summary>
 		///Gets the predefined color of floral white, or #FFFFFAF0.
 		///</summary>
-		public static readonly RDColor FloralWhite = new(4294966000u);
-
-		///<summary>
+		public static readonly RDColor FloralWhite = new(4294966000u);		///<summary>
 		///Gets the predefined color of forest green, or #FF228B22.
 		///</summary>
-		public static readonly RDColor ForestGreen = new(4280453922u);
-
-		///<summary>
+		public static readonly RDColor ForestGreen = new(4280453922u);		///<summary>
 		///Gets the predefined color of fuchsia, or #FFFF00FF.
 		///</summary>
-		public static readonly RDColor Fuchsia = new(4294902015u);
-
-		///<summary>
+		public static readonly RDColor Fuchsia = new(4294902015u);		///<summary>
 		///Gets the predefined color of gainsboro, or #FFDCDCDC.
 		///</summary>
-		public static readonly RDColor Gainsboro = new(4292664540u);
-
-		///<summary>
+		public static readonly RDColor Gainsboro = new(4292664540u);		///<summary>
 		///Gets the predefined color of ghost white, or #FFF8F8FF.
 		///</summary>
-		public static readonly RDColor GhostWhite = new(4294506751u);
-
-		///<summary>
+		public static readonly RDColor GhostWhite = new(4294506751u);		///<summary>
 		///Gets the predefined color of gold, or #FFFFD700.
 		///</summary>
-		public static readonly RDColor Gold = new(4294956800u);
-
-		///<summary>
+		public static readonly RDColor Gold = new(4294956800u);		///<summary>
 		///Gets the predefined color of goldenrod, or #FFDAA520.
 		///</summary>
-		public static readonly RDColor Goldenrod = new(4292519200u);
-
-		///<summary>
+		public static readonly RDColor Goldenrod = new(4292519200u);		///<summary>
 		///Gets the predefined color of gray, or #FF808080.
 		///</summary>
-		public static readonly RDColor Gray = new(4286611584u);
-
-		///<summary>
+		public static readonly RDColor Gray = new(4286611584u);		///<summary>
 		///Gets the predefined color of green, or #FF008000.
 		///</summary>
-		public static readonly RDColor Green = new(4278222848u);
-
-		///<summary>
+		public static readonly RDColor Green = new(4278222848u);		///<summary>
 		///Gets the predefined color of green yellow, or #FFADFF2F.
 		///</summary>
-		public static readonly RDColor GreenYellow = new(4289593135u);
-
-		///<summary>
+		public static readonly RDColor GreenYellow = new(4289593135u);		///<summary>
 		///Gets the predefined color of honeydew, or #FFF0FFF0.
 		///</summary>
-		public static readonly RDColor Honeydew = new(4293984240u);
-
-		///<summary>
+		public static readonly RDColor Honeydew = new(4293984240u);		///<summary>
 		///Gets the predefined color of hot pink, or #FFFF69B4.
 		///</summary>
-		public static readonly RDColor HotPink = new(4294928820u);
-
-		///<summary>
+		public static readonly RDColor HotPink = new(4294928820u);		///<summary>
 		///Gets the predefined color of indian red, or #FFCD5C5C.
 		///</summary>
-		public static readonly RDColor IndianRed = new(4291648604u);
-
-		///<summary>
+		public static readonly RDColor IndianRed = new(4291648604u);		///<summary>
 		///Gets the predefined color of indigo, or #FF4B0082.
 		///</summary>
-		public static readonly RDColor Indigo = new(4283105410u);
-
-		///<summary>
+		public static readonly RDColor Indigo = new(4283105410u);		///<summary>
 		///Gets the predefined color of ivory, or #FFFFFFF0.
 		///</summary>
-		public static readonly RDColor Ivory = new(4294967280u);
-
-		///<summary>
+		public static readonly RDColor Ivory = new(4294967280u);		///<summary>
 		///Gets the predefined color of khaki, or #FFF0E68C.
 		///</summary>
-		public static readonly RDColor Khaki = new(4293977740u);
-
-		///<summary>
+		public static readonly RDColor Khaki = new(4293977740u);		///<summary>
 		///Gets the predefined color of lavender, or #FFE6E6FA.
 		///</summary>
-		public static readonly RDColor Lavender = new(4293322490u);
-
-		///<summary>
+		public static readonly RDColor Lavender = new(4293322490u);		///<summary>
 		///Gets the predefined color of lavender blush, or #FFFFF0F5.
 		///</summary>
-		public static readonly RDColor LavenderBlush = new(4294963445u);
-
-		///<summary>
+		public static readonly RDColor LavenderBlush = new(4294963445u);		///<summary>
 		///Gets the predefined color of lawn green, or #FF7CFC00.
 		///</summary>
-		public static readonly RDColor LawnGreen = new(4286381056u);
-
-		///<summary>
+		public static readonly RDColor LawnGreen = new(4286381056u);		///<summary>
 		///Gets the predefined color of lemon chiffon, or #FFFFFACD.
 		///</summary>
-		public static readonly RDColor LemonChiffon = new(4294965965u);
-
-		///<summary>
+		public static readonly RDColor LemonChiffon = new(4294965965u);		///<summary>
 		///Gets the predefined color of light blue, or #FFADD8E6.
 		///</summary>
-		public static readonly RDColor LightBlue = new(4289583334u);
-
-		///<summary>
+		public static readonly RDColor LightBlue = new(4289583334u);		///<summary>
 		///Gets the predefined color of light coral, or #FFF08080.
 		///</summary>
-		public static readonly RDColor LightCoral = new(4293951616u);
-
-		///<summary>
+		public static readonly RDColor LightCoral = new(4293951616u);		///<summary>
 		///Gets the predefined color of light cyan, or #FFE0FFFF.
 		///</summary>
-		public static readonly RDColor LightCyan = new(4292935679u);
-
-		///<summary>
+		public static readonly RDColor LightCyan = new(4292935679u);		///<summary>
 		///Gets the predefined color of light goldenrod yellow, or #FFFAFAD2.
 		///</summary>
-		public static readonly RDColor LightGoldenrodYellow = new(4294638290u);
-
-		///<summary>
+		public static readonly RDColor LightGoldenrodYellow = new(4294638290u);		///<summary>
 		///Gets the predefined color of light gray, or #FFD3D3D3.
 		///</summary>
-		public static readonly RDColor LightGray = new(4292072403u);
-
-		///<summary>
+		public static readonly RDColor LightGray = new(4292072403u);		///<summary>
 		///Gets the predefined color of light green, or #FF90EE90.
 		///</summary>
-		public static readonly RDColor LightGreen = new(4287688336u);
-
-		///<summary>
+		public static readonly RDColor LightGreen = new(4287688336u);		///<summary>
 		///Gets the predefined color of light pink, or #FFFFB6C1.
 		///</summary>
-		public static readonly RDColor LightPink = new(4294948545u);
-
-		///<summary>
+		public static readonly RDColor LightPink = new(4294948545u);		///<summary>
 		///Gets the predefined color of light salmon, or #FFFFA07A.
 		///</summary>
-		public static readonly RDColor LightSalmon = new(4294942842u);
-
-		///<summary>
+		public static readonly RDColor LightSalmon = new(4294942842u);		///<summary>
 		///Gets the predefined color of light sea green, or #FF20B2AA.
 		///</summary>
-		public static readonly RDColor LightSeaGreen = new(4280332970u);
-
-		///<summary>
+		public static readonly RDColor LightSeaGreen = new(4280332970u);		///<summary>
 		///Gets the predefined color of light sky blue, or #FF87CEFA.
 		///</summary>
-		public static readonly RDColor LightSkyBlue = new(4287090426u);
-
-		///<summary>
+		public static readonly RDColor LightSkyBlue = new(4287090426u);		///<summary>
 		///Gets the predefined color of light slate gray, or #FF778899.
 		///</summary>
-		public static readonly RDColor LightSlateGray = new(4286023833u);
-
-		///<summary>
+		public static readonly RDColor LightSlateGray = new(4286023833u);		///<summary>
 		///Gets the predefined color of light steel blue, or #FFB0C4DE.
 		///</summary>
-		public static readonly RDColor LightSteelBlue = new(4289774814u);
-
-		///<summary>
+		public static readonly RDColor LightSteelBlue = new(4289774814u);		///<summary>
 		///Gets the predefined color of light yellow, or #FFFFFFE0.
 		///</summary>
-		public static readonly RDColor LightYellow = new(4294967264u);
-
-		///<summary>
+		public static readonly RDColor LightYellow = new(4294967264u);		///<summary>
 		///Gets the predefined color of lime, or #FF00FF00.
 		///</summary>
-		public static readonly RDColor Lime = new(4278255360u);
-
-		///<summary>
+		public static readonly RDColor Lime = new(4278255360u);		///<summary>
 		///Gets the predefined color of lime green, or #FF32CD32.
 		///</summary>
-		public static readonly RDColor LimeGreen = new(4281519410u);
-
-		///<summary>
+		public static readonly RDColor LimeGreen = new(4281519410u);		///<summary>
 		///Gets the predefined color of linen, or #FFFAF0E6.
 		///</summary>
-		public static readonly RDColor Linen = new(4294635750u);
-
-		///<summary>
+		public static readonly RDColor Linen = new(4294635750u);		///<summary>
 		///Gets the predefined color of magenta, or #FFFF00FF.
 		///</summary>
-		public static readonly RDColor Magenta = new(4294902015u);
-
-		///<summary>
+		public static readonly RDColor Magenta = new(4294902015u);		///<summary>
 		///Gets the predefined color of maroon, or #FF800000.
 		///</summary>
-		public static readonly RDColor Maroon = new(4286578688u);
-
-		///<summary>
+		public static readonly RDColor Maroon = new(4286578688u);		///<summary>
 		///Gets the predefined color of medium aquamarine, or #FF66CDAA.
 		///</summary>
-		public static readonly RDColor MediumAquamarine = new(4284927402u);
-
-		///<summary>
+		public static readonly RDColor MediumAquamarine = new(4284927402u);		///<summary>
 		///Gets the predefined color of medium blue, or #FF0000CD.
 		///</summary>
-		public static readonly RDColor MediumBlue = new(4278190285u);
-
-		///<summary>
+		public static readonly RDColor MediumBlue = new(4278190285u);		///<summary>
 		///Gets the predefined color of medium orchid, or #FFBA55D3.
 		///</summary>
-		public static readonly RDColor MediumOrchid = new(4290401747u);
-
-		///<summary>
+		public static readonly RDColor MediumOrchid = new(4290401747u);		///<summary>
 		///Gets the predefined color of medium purple, or #FF9370DB.
 		///</summary>
-		public static readonly RDColor MediumPurple = new(4287852763u);
-
-		///<summary>
+		public static readonly RDColor MediumPurple = new(4287852763u);		///<summary>
 		///Gets the predefined color of medium sea green, or #FF3CB371.
 		///</summary>
-		public static readonly RDColor MediumSeaGreen = new(4282168177u);
-
-		///<summary>
+		public static readonly RDColor MediumSeaGreen = new(4282168177u);		///<summary>
 		///Gets the predefined color of medium slate blue, or #FF7B68EE.
 		///</summary>
-		public static readonly RDColor MediumSlateBlue = new(4286277870u);
-
-		///<summary>
+		public static readonly RDColor MediumSlateBlue = new(4286277870u);		///<summary>
 		///Gets the predefined color of medium spring green, or #FF00FA9A.
 		///</summary>
-		public static readonly RDColor MediumSpringGreen = new(4278254234u);
-
-		///<summary>
+		public static readonly RDColor MediumSpringGreen = new(4278254234u);		///<summary>
 		///Gets the predefined color of medium turquoise, or #FF48D1CC.
 		///</summary>
-		public static readonly RDColor MediumTurquoise = new(4282962380u);
-
-		///<summary>
+		public static readonly RDColor MediumTurquoise = new(4282962380u);		///<summary>
 		///Gets the predefined color of medium violet red, or #FFC71585.
 		///</summary>
-		public static readonly RDColor MediumVioletRed = new(4291237253u);
-
-		///<summary>
+		public static readonly RDColor MediumVioletRed = new(4291237253u);		///<summary>
 		///Gets the predefined color of midnight blue, or #FF191970.
 		///</summary>
-		public static readonly RDColor MidnightBlue = new(4279834992u);
-
-		///<summary>
+		public static readonly RDColor MidnightBlue = new(4279834992u);		///<summary>
 		///Gets the predefined color of mint cream, or #FFF5FFFA.
 		///</summary>
-		public static readonly RDColor MintCream = new(4294311930u);
-
-		///<summary>
+		public static readonly RDColor MintCream = new(4294311930u);		///<summary>
 		///Gets the predefined color of misty rose, or #FFFFE4E1.
 		///</summary>
-		public static readonly RDColor MistyRose = new(4294960353u);
-
-		///<summary>
+		public static readonly RDColor MistyRose = new(4294960353u);		///<summary>
 		///Gets the predefined color of moccasin, or #FFFFE4B5.
 		///</summary>
-		public static readonly RDColor Moccasin = new(4294960309u);
-
-		///<summary>
+		public static readonly RDColor Moccasin = new(4294960309u);		///<summary>
 		///Gets the predefined color of navajo white, or #FFFFDEAD.
 		///</summary>
-		public static readonly RDColor NavajoWhite = new(4294958765u);
-
-		///<summary>
+		public static readonly RDColor NavajoWhite = new(4294958765u);		///<summary>
 		///Gets the predefined color of navy, or #FF000080.
 		///</summary>
-		public static readonly RDColor Navy = new(4278190208u);
-
-		///<summary>
+		public static readonly RDColor Navy = new(4278190208u);		///<summary>
 		///Gets the predefined color of old lace, or #FFFDF5E6.
 		///</summary>
-		public static readonly RDColor OldLace = new(4294833638u);
-
-		///<summary>
+		public static readonly RDColor OldLace = new(4294833638u);		///<summary>
 		///Gets the predefined color of olive, or #FF808000.
 		///</summary>
-		public static readonly RDColor Olive = new(4286611456u);
-
-		///<summary>
+		public static readonly RDColor Olive = new(4286611456u);		///<summary>
 		///Gets the predefined color of olive drab, or #FF6B8E23.
 		///</summary>
-		public static readonly RDColor OliveDrab = new(4285238819u);
-
-		///<summary>
+		public static readonly RDColor OliveDrab = new(4285238819u);		///<summary>
 		///Gets the predefined color of orange, or #FFFFA500.
 		///</summary>
-		public static readonly RDColor Orange = new(4294944000u);
-
-		///<summary>
+		public static readonly RDColor Orange = new(4294944000u);		///<summary>
 		///Gets the predefined color of orange red, or #FFFF4500.
 		///</summary>
-		public static readonly RDColor OrangeRed = new(4294919424u);
-
-		///<summary>
+		public static readonly RDColor OrangeRed = new(4294919424u);		///<summary>
 		///Gets the predefined color of orchid, or #FFDA70D6.
 		///</summary>
-		public static readonly RDColor Orchid = new(4292505814u);
-
-		///<summary>
+		public static readonly RDColor Orchid = new(4292505814u);		///<summary>
 		///Gets the predefined color of pale goldenrod, or #FFEEE8AA.
 		///</summary>
-		public static readonly RDColor PaleGoldenrod = new(4293847210u);
-
-		///<summary>
+		public static readonly RDColor PaleGoldenrod = new(4293847210u);		///<summary>
 		///Gets the predefined color of pale green, or #FF98FB98.
 		///</summary>
-		public static readonly RDColor PaleGreen = new(4288215960u);
-
-		///<summary>
+		public static readonly RDColor PaleGreen = new(4288215960u);		///<summary>
 		///Gets the predefined color of pale turquoise, or #FFAFEEEE.
 		///</summary>
-		public static readonly RDColor PaleTurquoise = new(4289720046u);
-
-		///<summary>
+		public static readonly RDColor PaleTurquoise = new(4289720046u);		///<summary>
 		///Gets the predefined color of pale violet red, or #FFDB7093.
 		///</summary>
-		public static readonly RDColor PaleVioletRed = new(4292571283u);
-
-		///<summary>
+		public static readonly RDColor PaleVioletRed = new(4292571283u);		///<summary>
 		///Gets the predefined color of papaya whip, or #FFFFEFD5.
 		///</summary>
-		public static readonly RDColor PapayaWhip = new(4294963157u);
-
-		///<summary>
+		public static readonly RDColor PapayaWhip = new(4294963157u);		///<summary>
 		///Gets the predefined color of peach puff, or #FFFFDAB9.
 		///</summary>
-		public static readonly RDColor PeachPuff = new(4294957753u);
-
-		///<summary>
+		public static readonly RDColor PeachPuff = new(4294957753u);		///<summary>
 		///Gets the predefined color of peru, or #FFCD853F.
 		///</summary>
-		public static readonly RDColor Peru = new(4291659071u);
-
-		///<summary>
+		public static readonly RDColor Peru = new(4291659071u);		///<summary>
 		///Gets the predefined color of pink, or #FFFFC0CB.
 		///</summary>
-		public static readonly RDColor Pink = new(4294951115u);
-
-		///<summary>
+		public static readonly RDColor Pink = new(4294951115u);		///<summary>
 		///Gets the predefined color of plum, or #FFDDA0DD.
 		///</summary>
-		public static readonly RDColor Plum = new(4292714717u);
-
-		///<summary>
+		public static readonly RDColor Plum = new(4292714717u);		///<summary>
 		///Gets the predefined color of powder blue, or #FFB0E0E6.
 		///</summary>
-		public static readonly RDColor PowderBlue = new(4289781990u);
-
-		///<summary>
+		public static readonly RDColor PowderBlue = new(4289781990u);		///<summary>
 		///Gets the predefined color of purple, or #FF800080.
 		///</summary>
-		public static readonly RDColor Purple = new(4286578816u);
-
-		///<summary>
+		public static readonly RDColor Purple = new(4286578816u);		///<summary>
 		///Gets the predefined color of red, or #FFFF0000.
 		///</summary>
-		public static readonly RDColor Red = new(4294901760u);
-
-		///<summary>
+		public static readonly RDColor Red = new(4294901760u);		///<summary>
 		///Gets the predefined color of rosy brown, or #FFBC8F8F.
 		///</summary>
-		public static readonly RDColor RosyBrown = new(4290547599u);
-
-		///<summary>
+		public static readonly RDColor RosyBrown = new(4290547599u);		///<summary>
 		///Gets the predefined color of royal blue, or #FF4169E1.
 		///</summary>
-		public static readonly RDColor RoyalBlue = new(4282477025u);
-
-		///<summary>
+		public static readonly RDColor RoyalBlue = new(4282477025u);		///<summary>
 		///Gets the predefined color of saddle brown, or #FF8B4513.
 		///</summary>
-		public static readonly RDColor SaddleBrown = new(4287317267u);
-
-		///<summary>
+		public static readonly RDColor SaddleBrown = new(4287317267u);		///<summary>
 		///Gets the predefined color of salmon, or #FFFA8072.
 		///</summary>
-		public static readonly RDColor Salmon = new(4294606962u);
-
-		///<summary>
+		public static readonly RDColor Salmon = new(4294606962u);		///<summary>
 		///Gets the predefined color of sandy brown, or #FFF4A460.
 		///</summary>
-		public static readonly RDColor SandyBrown = new(4294222944u);
-
-		///<summary>
+		public static readonly RDColor SandyBrown = new(4294222944u);		///<summary>
 		///Gets the predefined color of sea green, or #FF2E8B57.
 		///</summary>
-		public static readonly RDColor SeaGreen = new(4281240407u);
-
-		///<summary>
+		public static readonly RDColor SeaGreen = new(4281240407u);		///<summary>
 		///Gets the predefined color of sea shell, or #FFFFF5EE.
 		///</summary>
-		public static readonly RDColor SeaShell = new(4294964718u);
-
-		///<summary>
+		public static readonly RDColor SeaShell = new(4294964718u);		///<summary>
 		///Gets the predefined color of sienna, or #FFA0522D.
 		///</summary>
-		public static readonly RDColor Sienna = new(4288696877u);
-
-		///<summary>
+		public static readonly RDColor Sienna = new(4288696877u);		///<summary>
 		///Gets the predefined color of silver, or #FFC0C0C0.
 		///</summary>
-		public static readonly RDColor Silver = new(4290822336u);
-
-		///<summary>
+		public static readonly RDColor Silver = new(4290822336u);		///<summary>
 		///Gets the predefined color of sky blue, or #FF87CEEB.
 		///</summary>
-		public static readonly RDColor SkyBlue = new(4287090411u);
-
-		///<summary>
+		public static readonly RDColor SkyBlue = new(4287090411u);		///<summary>
 		///Gets the predefined color of slate blue, or #FF6A5ACD.
 		///</summary>
-		public static readonly RDColor SlateBlue = new(4285160141u);
-
-		///<summary>
+		public static readonly RDColor SlateBlue = new(4285160141u);		///<summary>
 		///Gets the predefined color of slate gray, or #FF708090.
 		///</summary>
-		public static readonly RDColor SlateGray = new(4285563024u);
-
-		///<summary>
+		public static readonly RDColor SlateGray = new(4285563024u);		///<summary>
 		///Gets the predefined color of snow, or #FFFFFAFA.
 		///</summary>
-		public static readonly RDColor Snow = new(4294966010u);
-
-		///<summary>
+		public static readonly RDColor Snow = new(4294966010u);		///<summary>
 		///Gets the predefined color of spring green, or #FF00FF7F.
 		///</summary>
-		public static readonly RDColor SpringGreen = new(4278255487u);
-
-		///<summary>
+		public static readonly RDColor SpringGreen = new(4278255487u);		///<summary>
 		///Gets the predefined color of steel blue, or #FF4682B4.
 		///</summary>
-		public static readonly RDColor SteelBlue = new(4282811060u);
-
-		///<summary>
+		public static readonly RDColor SteelBlue = new(4282811060u);		///<summary>
 		///Gets the predefined color of tan, or #FFD2B48C.
 		///</summary>
-		public static readonly RDColor Tan = new(4291998860u);
-
-		///<summary>
+		public static readonly RDColor Tan = new(4291998860u);		///<summary>
 		///Gets the predefined color of teal, or #FF008080.
 		///</summary>
-		public static readonly RDColor Teal = new(4278222976u);
-
-		///<summary>
+		public static readonly RDColor Teal = new(4278222976u);		///<summary>
 		///Gets the predefined color of thistle, or #FFD8BFD8.
 		///</summary>
-		public static readonly RDColor Thistle = new(4292394968u);
-
-		///<summary>
+		public static readonly RDColor Thistle = new(4292394968u);		///<summary>
 		///Gets the predefined color of tomato, or #FFFF6347.
 		///</summary>
-		public static readonly RDColor Tomato = new(4294927175u);
-
-		///<summary>
+		public static readonly RDColor Tomato = new(4294927175u);		///<summary>
 		///Gets the predefined color of turquoise, or #FF40E0D0.
 		///</summary>
-		public static readonly RDColor Turquoise = new(4282441936u);
-
-		///<summary>
+		public static readonly RDColor Turquoise = new(4282441936u);		///<summary>
 		///Gets the predefined color of violet, or #FFEE82EE.
 		///</summary>
-		public static readonly RDColor Violet = new(4293821166u);
-
-		///<summary>
+		public static readonly RDColor Violet = new(4293821166u);		///<summary>
 		///Gets the predefined color of wheat, or #FFF5DEB3.
 		///</summary>
-		public static readonly RDColor Wheat = new(4294303411u);
-
-		///<summary>
+		public static readonly RDColor Wheat = new(4294303411u);		///<summary>
 		///Gets the predefined color of white, or #FFFFFFFF.
 		///</summary>
-		public static readonly RDColor White = new(uint.MaxValue);
-
-		///<summary>
+		public static readonly RDColor White = new(uint.MaxValue);		///<summary>
 		///Gets the predefined color of white smoke, or #FFF5F5F5.
 		///</summary>
-		public static readonly RDColor WhiteSmoke = new(4294309365u);
-
-		///<summary>
+		public static readonly RDColor WhiteSmoke = new(4294309365u);		///<summary>
 		///Gets the predefined color of yellow, or #FFFFFF00.
 		///</summary>
-		public static readonly RDColor Yellow = new(4294967040u);
-
-		///<summary>
+		public static readonly RDColor Yellow = new(4294967040u);		///<summary>
 		///Gets the predefined color of yellow green, or #FF9ACD32.
 		///</summary>
-		public static readonly RDColor YellowGreen = new(4288335154u);
-
-		///<summary>
+		public static readonly RDColor YellowGreen = new(4288335154u);		///<summary>
 		///Gets the predefined color of white transparent, or #00FFFFFF.
 		///</summary>
-		public static readonly RDColor Transparent = new(16777215u);
-
-		///<summary>
+		public static readonly RDColor Transparent = new(16777215u);		///<summary>
 		///Gets the predefined empty color (black transparent), or #00000000.
 		///</summary>
 		public static readonly RDColor Empty = new(0u);

@@ -14,9 +14,7 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Indicates if the top room can be applied.
 		/// </summary>
-		public bool EnableTop { get; }
-
-		/// <summary>
+		public bool EnableTop { get; }		/// <summary>
 		/// Gets or sets whether the specified room is enabled.
 		/// </summary>
 		/// <param name="Index">The index of the room.</param>
@@ -30,9 +28,7 @@ namespace RhythmBase.Components
 				if (!(Index >= 4 && !EnableTop))
 					_data = value ? (_data | (RDRoomIndex)(1 << (int)Index)) : (_data & (RDRoomIndex)(1 << (int)Index));
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the list of enabled rooms.
 		/// </summary>
 		public readonly List<byte> Rooms
@@ -46,27 +42,19 @@ namespace RhythmBase.Components
 					.Select(x => (byte)x)
 					.ToList();
 			}
-		}
-
-		/// <inheritdoc/>
-		public override readonly string ToString() => string.Format("[{0}]", string.Join(",", Rooms));
-
-		/// <summary>
+		}		/// <inheritdoc/>
+		public override readonly string ToString() => string.Format("[{0}]", string.Join(",", Rooms));		/// <summary>
 		/// Returns an instance with only room 1 enabled.
 		/// </summary>
 		/// <returns>An instance with only room 1 enabled.</returns>
 		public static RDRoom Default() => new(false, [])
 		{
 			_data = RDRoomIndex.Room1
-		};
-
-		/// <summary>
+		};		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRoom"/> struct.
 		/// </summary>
 		/// <param name="enableTop">Indicates if the top room can be applied.</param>
-		public RDRoom(bool enableTop) => EnableTop = enableTop;
-
-		/// <summary>
+		public RDRoom(bool enableTop) => EnableTop = enableTop;		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRoom"/> struct with specified rooms.
 		/// </summary>
 		/// <param name="enableTop">Indicates if the top room can be applied.</param>
@@ -84,9 +72,7 @@ namespace RhythmBase.Components
 					this[rooms.Single()] = true;
 			else
 				_data = RDRoomIndex.RoomNotAvaliable;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Checks if the specified rooms are included.
 		/// </summary>
 		/// <param name="rooms">The rooms to check.</param>
@@ -115,22 +101,14 @@ namespace RhythmBase.Components
 		public readonly bool Contains(RDRoomIndex room)
 		{
 			return _data.HasFlag(room);
-		}
-
-		/// <inheritdoc/>
-		public static bool operator ==(RDRoom R1, RDRoom R2) => R1._data == R2._data;
-
-		/// <inheritdoc/>
-		public static bool operator !=(RDRoom R1, RDRoom R2) => !(R1 == R2);
-
-		/// <summary>
+		}		/// <inheritdoc/>
+		public static bool operator ==(RDRoom R1, RDRoom R2) => R1._data == R2._data;		/// <inheritdoc/>
+		public static bool operator !=(RDRoom R1, RDRoom R2) => !(R1 == R2);		/// <summary>
 		/// Implicitly converts a SingleRoom to a Room.
 		/// </summary>
 		/// <param name="room">The SingleRoom instance to convert.</param>
 		/// <returns>A Room instance.</returns>
-		public static implicit operator RDRoom(RDSingleRoom room) => new(room.EnableTop, [0, ((byte)room.Room)]);
-
-		/// <summary>
+		public static implicit operator RDRoom(RDSingleRoom room) => new(room.EnableTop, [0, ((byte)room.Room)]);		/// <summary>
 		/// Explicitly converts a Room to a SingleRoom.
 		/// </summary>
 		/// <param name="room">The Room instance to convert.</param>
@@ -139,17 +117,9 @@ namespace RhythmBase.Components
 		public static explicit operator RDSingleRoom(RDRoom room) =>
 			room.Rooms.Count == 1
 				? new RDSingleRoom(room.Rooms.Single())
-				: throw new Exceptions.RhythmBaseException();
-
-		/// <inheritdoc/>
-		public override readonly bool Equals(object? obj) => obj is RDRoom e && Equals(e);
-
-		/// <inheritdoc/>
-		public override readonly int GetHashCode() => HashCode.Combine(_data);
-
-		/// <inheritdoc/>
-		public readonly bool Equals(RDRoom other) => this == other;
-
-		private RDRoomIndex _data;
+				: throw new Exceptions.RhythmBaseException();		/// <inheritdoc/>
+		public override readonly bool Equals(object? obj) => obj is RDRoom e && Equals(e);		/// <inheritdoc/>
+		public override readonly int GetHashCode() => HashCode.Combine(_data);		/// <inheritdoc/>
+		public readonly bool Equals(RDRoom other) => this == other;		private RDRoomIndex _data;
 	}
 }

@@ -12,19 +12,13 @@
 		{
 			Type = EventType.SetHeartExplodeVolume;
 			Tab = Tabs.Sounds;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the volume of the heart explosion sound.
 		/// </summary>
-		public uint Volume { get; set; } = 60;
-
-		/// <summary>
+		public uint Volume { get; set; } = 60;		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }

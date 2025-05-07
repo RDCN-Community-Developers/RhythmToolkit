@@ -45,16 +45,12 @@ namespace RhythmBase.Adofai.Utils
 				throw new IllegalEventTypeException(type, "Multiple matching EventTypes were found. Please check if the type is an abstract class type.", new ArgumentException("Multiple matching EventTypes were found. Please check if the type is an abstract class type.", nameof(type)));
 			}
 			return ADConvertToEnum;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Converts a generic type to an ADEventType enumeration.
 		/// </summary>
 		/// <typeparam name="T">The type to convert, which must inherit from ADBaseEvent and have a parameterless constructor.</typeparam>
 		/// <returns>The corresponding ADEventType enumeration.</returns>
-		public static ADEventType ConvertToADEnum<T>() where T : ADBaseEvent, new() => ADConvertToEnum(typeof(T));
-
-		/// <summary>
+		public static ADEventType ConvertToADEnum<T>() where T : ADBaseEvent, new() => ADConvertToEnum(typeof(T));		/// <summary>
 		/// Converts a generic type to an array of ADEventType enumerations.
 		/// </summary>
 		/// <typeparam name="T">The type to convert, which must inherit from BaseEvent.</typeparam>
@@ -72,9 +68,7 @@ namespace RhythmBase.Adofai.Utils
 				throw new IllegalEventTypeException(typeof(T), "This exception is not expected. Please contact the developer to handle this exception.");
 			}
 			return ConvertToADEnums;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Converts a string representation of an ADEventType to a Type.
 		/// </summary>
 		/// <param name="type">The string representation of the ADEventType.</param>
@@ -88,9 +82,7 @@ namespace RhythmBase.Adofai.Utils
 			else
 				ADConvertToType = ConvertToType(ADEventType.CustomEvent);
 			return ADConvertToType;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Converts an ADEventType enumeration to a Type.
 		/// </summary>
 		/// <param name="type">The ADEventType enumeration to convert.</param>
@@ -113,9 +105,7 @@ namespace RhythmBase.Adofai.Utils
 					throw new IllegalEventTypeException(Conversions.ToString((int)type), "This value does not exist in the EventType enumeration.");
 				}
 			return ConvertToType;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets a JsonSerializer configured with the necessary converters for the given ADLevel and settings.
 		/// </summary>
 		/// <param name="adlevel">The ADLevel instance.</param>
@@ -133,20 +123,14 @@ namespace RhythmBase.Adofai.Utils
 			converters.Add(new ADBaseTileEventConverter<ADBaseTileEvent>(adlevel, settings));
 			converters.Add(new ADBaseEventConverter<ADBaseEvent>(adlevel, settings));
 			return AllInOneSerializer;
-		}
-
-		private static readonly ReadOnlyCollection<Type> ADETypes = (from i in typeof(ADBaseEvent).Assembly.GetTypes()
+		}		private static readonly ReadOnlyCollection<Type> ADETypes = (from i in typeof(ADBaseEvent).Assembly.GetTypes()
 																	 where i.IsAssignableTo(typeof(ADBaseEvent))
-																	 select i).ToList().AsReadOnly();
-
-		/// <summary>
+																	 select i).ToList().AsReadOnly();		/// <summary>
 		/// A dictionary that records the correspondence of ADEventType to event types inheriting from ADBaseEvent.
 		/// </summary>
 		public static readonly ReadOnlyDictionary<Type, ADEventType[]> ADETypesToEnum = ADETypes.ToDictionary((Type i) => i, (Type i) => (from j in ADETypes
 																																		  where (j == i || j.IsAssignableTo(i)) && !j.IsAbstract
-																																		  select j).Select((Type j) => ADConvertToEnum(j)).ToArray()).AsReadOnly();
-
-		/// <summary>
+																																		  select j).Select((Type j) => ADConvertToEnum(j)).ToArray()).AsReadOnly();		/// <summary>
 		/// A dictionary that records the correspondence of event types inheriting from ADBaseEvent to ADEventType.
 		/// </summary>
 		public static readonly ReadOnlyDictionary<ADEventType, Type> ADEnumToEType = Enum.GetValues<ADEventType>().ToDictionary((ADEventType i) => i, ConvertToType).AsReadOnly();

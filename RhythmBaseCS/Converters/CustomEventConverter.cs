@@ -13,9 +13,7 @@ namespace RhythmBase.Converters
 			if(result == null) return null;
 			result.Data = jobj;
 			return result;
-		}
-
-		public override JObject SetSerializedObject(CustomEvent value, JsonSerializer serializer)
+		}		public override JObject SetSerializedObject(CustomEvent value, JsonSerializer serializer)
 		{
 			JObject jobj = base.SetSerializedObject(value, serializer);
 			JObject data = (JObject)value.Data.DeepClone();

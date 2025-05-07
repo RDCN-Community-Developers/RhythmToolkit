@@ -1,7 +1,5 @@
 ﻿using RhythmBase.Events;
-using System.Reflection;
-
-namespace RhythmBase.Components.Easing
+using System.Reflection;namespace RhythmBase.Components.Easing
 {
 	/// <summary>
 	/// Represents an easing property with a point value.

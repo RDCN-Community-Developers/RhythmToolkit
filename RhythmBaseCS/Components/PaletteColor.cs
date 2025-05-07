@@ -48,7 +48,7 @@
 		/// Specifies whether this object supports alpha channel.
 		/// </summary>
 		/// <returns></returns>
-		public bool EnableAlpha { get; } = enableAlpha;
+		public bool EnableAlpha => enableAlpha;
 		/// <summary>
 		/// Specifies whether this object is used for this color.
 		/// </summary>
@@ -72,9 +72,7 @@
 		/// </summary>  
 		/// <param name="paletteColor">The <see cref="PaletteColor"/> instance to convert.</param>  
 		/// <returns>The <see cref="RDColor"/> value of the <see cref="PaletteColor"/>.</returns>  
-		public static implicit operator RDColor(PaletteColor paletteColor) => paletteColor.Value;
-
-		/// <summary>  
+		public static implicit operator RDColor(PaletteColor paletteColor) => paletteColor.Value;		/// <summary>  
 		/// Implicitly converts an <see cref="RDColor"/> to a <see cref="PaletteColor"/> instance.  
 		/// </summary>  
 		/// <param name="color">The <see cref="RDColor"/> to convert.</param>  

@@ -15,32 +15,22 @@ namespace RhythmBase.Components
 		/// Initializes a new instance of the <see cref="RDSizeN"/> struct with the specified point.
 		/// </summary>
 		/// <param name="pt">The point to initialize the size with.</param>
-		public RDSizeN(RDPointN pt) : this(pt.X, pt.Y) { }
-
-		/// <summary>
+		public RDSizeN(RDPointN pt) : this(pt.X, pt.Y) { }		/// <summary>
 		/// Gets or sets the width of the size.
 		/// </summary>
-		public float Width { get; set; } = width;
-
-		/// <summary>
+		public float Width { get; set; } = width;		/// <summary>
 		/// Gets or sets the height of the size.
 		/// </summary>
-		public float Height { get; set; } = height;
-
-		/// <summary>
+		public float Height { get; set; } = height;		/// <summary>
 		/// Gets the area of the size.
 		/// </summary>
-		public readonly float Area => Width * Height;
-
-		/// <summary>
+		public readonly float Area => Width * Height;		/// <summary>
 		/// Adds two sizes together.
 		/// </summary>
 		/// <param name="sz1">The first size.</param>
 		/// <param name="sz2">The second size.</param>
 		/// <returns>The result of adding the two sizes.</returns>
-		public static RDSizeN Add(RDSizeN sz1, RDSizeN sz2) => new(sz1.Width + sz2.Width, sz1.Height + sz2.Height);
-
-		/// <summary>
+		public static RDSizeN Add(RDSizeN sz1, RDSizeN sz2) => new(sz1.Width + sz2.Width, sz1.Height + sz2.Height);		/// <summary>
 		/// Subtracts one size from another.
 		/// </summary>
 		/// <param name="sz1">The size to subtract from.</param>
@@ -84,16 +74,12 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="size">The <see cref="RDSizeN"/> to convert.</param>
 		/// <returns>A new <see cref="RDSize"/> instance.</returns>
-		public static implicit operator RDSize(RDSizeN size) => new(new float?(size.Width), new float?(size.Height));
-
-		/// <summary>
+		public static implicit operator RDSize(RDSizeN size) => new(new float?(size.Width), new float?(size.Height));		/// <summary>
 		/// Implicitly converts an <see cref="RDSizeN"/> to an <see cref="RDSizeE"/>.
 		/// </summary>
 		/// <param name="size">The <see cref="RDSizeN"/> to convert.</param>
 		/// <returns>A new <see cref="RDSizeE"/> instance.</returns>
-		public static implicit operator RDSizeE(RDSizeN size) => new(size.Width, size.Height);
-
-		/// <summary>
+		public static implicit operator RDSizeE(RDSizeN size) => new(size.Width, size.Height);		/// <summary>
 		/// Explicitly converts an <see cref="RDSizeN"/> to an <see cref="RDPointN"/>.
 		/// </summary>
 		/// <param name="size">The <see cref="RDSizeN"/> to convert.</param>

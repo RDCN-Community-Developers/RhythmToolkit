@@ -1,20 +1,19 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
-using RhythmBase.Adofai.Utils;
+using RhythmBase.Exceptions;
 using RhythmBase.Settings;
 namespace RhythmBase.Adofai.Converters
 {
 	internal class ADBaseTileEventConverter<TEvent>(ADLevel level, LevelReadOrWriteSettings inputSettings) : ADBaseEventConverter<TEvent>(level, inputSettings) where TEvent : ADBaseTileEvent
 	{
-		public override TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			JToken jtoken = jobj["floor"];
+			JToken? jtoken = jobj["floor"];
 			int? parentIndex = (jtoken != null) ? new int?(jtoken.ToObject<int>()) : null;
 			_canread = false;
-			if (Utils.Utils.ADConvertToType(jobj["eventType"].ToObject<string>()) == typeof(ADCustomEvent))
+			if (Utils.Utils.ADConvertToType(jobj["eventType"]?.ToObject<string>() ?? throw new IllegalEventTypeException(jobj["eventType"]?.ToObject<string>() ?? "UnknownType")) == typeof(ADCustomEvent))
 			{
 				existingValue = (TEvent)(object)new ADCustomTileEventConverter(level, settings).GetDeserializedObject(jobj, objectType, null, hasExistingValue, serializer);
 			}
@@ -34,8 +33,8 @@ namespace RhythmBase.Adofai.Converters
 		public override JObject SetSerializedObject(TEvent value, JsonSerializer serializer)
 		{
 			JObject jobj = base.SetSerializedObject(value, serializer);
-			JToken s = jobj.First;
-			s.AddBeforeSelf(new JProperty("floor", level.tileOrder.IndexOf(value.Parent)));
+			JToken? s = jobj.First;
+			s?.AddBeforeSelf(new JProperty("floor", level.tileOrder.IndexOf(value.Parent ?? throw new RhythmBaseException())));
 			return jobj;
 		}
 	}

@@ -6,9 +6,7 @@ namespace RhythmBase.Events
 	/// </summary>
 	public class Stutter : BaseEvent, IRoomEvent
 	{
-		private float sourceBeat = 1;
-
-		/// <summary>
+		private float sourceBeat = 1;		/// <summary>
 		/// Initializes a new instance of the <see cref="Stutter"/> class.
 		/// </summary>
 		public Stutter()
@@ -16,14 +14,10 @@ namespace RhythmBase.Events
 			Rooms = new RDRoom(false, [0]);
 			Type = EventType.Stutter;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the room associated with the stutter event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
-
-		/// <summary>
+		public RDRoom Rooms { get; set; }		/// <summary>
 		/// Gets or sets the source beat of the stutter event.
 		/// </summary>
 		public float SourceBeat
@@ -34,29 +28,19 @@ namespace RhythmBase.Events
 		/// <summary>
 		/// Gets or sets the length of the stutter event.
 		/// </summary>
-		public float Length { get; set; }
-
-		/// <summary>
+		public float Length { get; set; }		/// <summary>
 		/// Gets or sets the action of the stutter event.
 		/// </summary>
-		public Actions Action { get; set; }
-
-		/// <summary>
+		public Actions Action { get; set; }		/// <summary>
 		/// Gets or sets the number of loops for the stutter event.
 		/// </summary>
-		public int Loops { get; set; }
-
-		/// <summary>
+		public int Loops { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
-
-		/// <summary>
+		public override Tabs Tab { get; }		/// <summary>
 		/// Defines the possible actions for the stutter event.
 		/// </summary>
 		public enum Actions
@@ -64,9 +48,7 @@ namespace RhythmBase.Events
 			/// <summary>
 			/// Add action.
 			/// </summary>
-			Add,
-
-			/// <summary>
+			Add,			/// <summary>
 			/// Cancel action.
 			/// </summary>
 			Cancel

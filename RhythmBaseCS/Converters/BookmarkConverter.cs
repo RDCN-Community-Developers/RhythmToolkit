@@ -17,9 +17,7 @@ namespace RhythmBase.Converters
 			writer.WritePropertyName("color");
 			writer.WriteValue((int)value.Color);
 			writer.WriteEndObject();
-		}
-
-		public override Bookmark ReadJson(JsonReader reader, Type objectType, Bookmark? existingValue, bool hasExistingValue, JsonSerializer serializer)
+		}		public override Bookmark ReadJson(JsonReader reader, Type objectType, Bookmark? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken jobj = JToken.ReadFrom(reader);
 			return new Bookmark
@@ -27,8 +25,6 @@ namespace RhythmBase.Converters
 				Beat = calculator.BeatOf(jobj["bar"]!.ToObject<uint>(), jobj["beat"]!.ToObject<float>()),
 				Color = Enum.Parse<Bookmark.BookmarkColors>((string)jobj["color"]!)
 			};
-		}
-
-		private readonly BeatCalculator calculator = calculator;
+		}		private readonly BeatCalculator calculator = calculator;
 	}
 }

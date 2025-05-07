@@ -8,14 +8,10 @@
 		/// <summary>
 		/// Gets or sets the status type of the beat.
 		/// </summary>
-		public StatusType Status;
-
-		/// <summary>
+		public StatusType Status;		/// <summary>
 		/// Gets or sets the beat count.
 		/// </summary>
-		public ushort BeatCount;
-
-		/// <summary>
+		public ushort BeatCount;		/// <summary>
 		/// Defines the various status types for a classic beat.
 		/// </summary>
 		public enum StatusType

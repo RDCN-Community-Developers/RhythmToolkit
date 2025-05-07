@@ -13,34 +13,22 @@ namespace RhythmBase.Events
 		{
 			Type = EventType.SetClapSounds;
 			Tab = Tabs.Sounds;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the clap sound for player 1.
 		/// </summary>
-		public RDAudio? P1Sound { get; set; }
-
-		/// <summary>
+		public RDAudio? P1Sound { get; set; }		/// <summary>
 		/// Gets or sets the clap sound for player 2.
 		/// </summary>
-		public RDAudio? P2Sound { get; set; }
-
-		/// <summary>
+		public RDAudio? P2Sound { get; set; }		/// <summary>
 		/// Gets or sets the clap sound for the CPU.
 		/// </summary>
-		public RDAudio? CpuSound { get; set; }
-
-		/// <summary>
+		public RDAudio? CpuSound { get; set; }		/// <summary>
 		/// Gets or sets the row type for the event.
 		/// </summary>
-		public RowType RowType { get; set; }
-
-		/// <summary>
+		public RowType RowType { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }

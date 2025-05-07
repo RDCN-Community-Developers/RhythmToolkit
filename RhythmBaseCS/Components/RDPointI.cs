@@ -15,33 +15,23 @@ namespace RhythmBase.Components
 		/// Initializes a new instance of the <see cref="RDPointI"/> struct with the specified size.
 		/// </summary>
 		/// <param name="sz">The size to initialize the point with.</param>
-		public RDPointI(RDSizeI sz) : this(sz.Width, sz.Height) { }
-
-		/// <summary>
+		public RDPointI(RDSizeI sz) : this(sz.Width, sz.Height) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointI"/> struct with the specified nullable size.
 		/// </summary>
 		/// <param name="sz">The nullable size to initialize the point with.</param>
 		public RDPointI(RDSizeN sz) : this(
 		   (int)Math.Round((double)sz.Width),
 		   (int)Math.Round((double)sz.Height))
-		{ }
-
-		/// <summary>
+		{ }		/// <summary>
 		/// Gets a value indicating whether this point is empty.
 		/// </summary>
-		public readonly bool IsEmpty => X == null && Y == null;
-
-		/// <summary>
+		public readonly bool IsEmpty => X == null && Y == null;		/// <summary>
 		/// Gets or sets the X coordinate of this point.
 		/// </summary>
-		public int? X { get; set; } = x;
-
-		/// <summary>
+		public int? X { get; set; } = x;		/// <summary>
 		/// Gets or sets the Y coordinate of this point.
 		/// </summary>
-		public int? Y { get; set; } = y;
-
-		/// <summary>
+		public int? Y { get; set; } = y;		/// <summary>
 		/// Offsets this point by the specified point.
 		/// </summary>
 		/// <param name="p">The point to offset by.</param>
@@ -49,9 +39,7 @@ namespace RhythmBase.Components
 		{
 			X += p.X;
 			Y += p.Y;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets this point by the specified amounts.
 		/// </summary>
 		/// <param name="dx">The amount to offset the X coordinate.</param>
@@ -60,9 +48,7 @@ namespace RhythmBase.Components
 		{
 			X += dx;
 			Y += dy;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Returns a new point that is the ceiling of the specified point.
 		/// </summary>
 		/// <param name="value">The point to ceiling.</param>
@@ -70,9 +56,7 @@ namespace RhythmBase.Components
 		public static RDPointI Ceiling(RDPoint value) => new(
 		   (value.X == null) ? null : (int)Math.Ceiling((double)value.X),
 		   (value.Y == null) ? null : (int)Math.Ceiling((double)value.Y)
-		   );
-
-		/// <summary>
+		   );		/// <summary>
 		/// Adds the specified size to the specified point.
 		/// </summary>
 		/// <param name="pt">The point to add to.</param>
@@ -80,9 +64,7 @@ namespace RhythmBase.Components
 		/// <returns>A new point that is the sum of the specified point and size.</returns>
 		public static RDPointI Add(RDPointI pt, RDSizeI sz) => new(
 		   pt.X + sz.Width, pt.Y + sz.Height
-		   );
-
-		/// <summary>
+		   );		/// <summary>
 		/// Returns a new point that is the truncated value of the specified point.
 		/// </summary>
 		/// <param name="value">The point to truncate.</param>
@@ -90,9 +72,7 @@ namespace RhythmBase.Components
 		public static RDPointI Truncate(RDPoint value) => new(
 		   (value.X == null) ? null : (int)Math.Truncate((double)value.X),
 		   (value.Y == null) ? null : (int)Math.Truncate((double)value.Y)
-		   );
-
-		/// <summary>
+		   );		/// <summary>
 		/// Subtracts the specified size from the specified point.
 		/// </summary>
 		/// <param name="pt">The point to subtract from.</param>
@@ -100,9 +80,7 @@ namespace RhythmBase.Components
 		/// <returns>A new point that is the difference of the specified point and size.</returns>
 		public static RDPointI Subtract(RDPointI pt, RDSizeI sz) => new(
 		   pt.X - sz.Width, pt.Y - sz.Height
-		   );
-
-		/// <summary>
+		   );		/// <summary>
 		/// Returns a new point that is the rounded value of the specified point.
 		/// </summary>
 		/// <param name="value">The point to round.</param>
@@ -110,9 +88,7 @@ namespace RhythmBase.Components
 		public static RDPointI Round(RDPoint value) => new(
 		   ((value.X == null) ? null : (int)Math.Round((double)value.X.Value)),
 		   ((value.Y == null) ? null : (int)Math.Round((double)value.Y.Value))
-		   );
-
-		/// <summary>
+		   );		/// <summary>
 		/// Multiplies this point by the specified matrix.
 		/// </summary>
 		/// <param name="matrix">The matrix to multiply by.</param>
@@ -133,9 +109,7 @@ namespace RhythmBase.Components
 				return MultipyByMatrix;
 			}
 			throw new Exception("Matrix not match, 2*2 matrix expected.");
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Rotates this point by the specified angle.
 		/// </summary>
 		/// <param name="angle">The angle to rotate by.</param>
@@ -181,16 +155,12 @@ namespace RhythmBase.Components
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointI"/> to convert.</param>
 		/// <returns>A new <see cref="RDPoint"/> with the same coordinates as the input <see cref="RDPointI"/>.</returns>
-		public static implicit operator RDPoint(RDPointI p) => new(p.X, p.Y);
-
-		/// <summary>
+		public static implicit operator RDPoint(RDPointI p) => new(p.X, p.Y);		/// <summary>
 		/// Implicitly converts an <see cref="RDPointI"/> to an <see cref="RDPointE"/>.
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointI"/> to convert.</param>
 		/// <returns>A new <see cref="RDPointE"/> with the same coordinates as the input <see cref="RDPointI"/>.</returns>
-		public static implicit operator RDPointE(RDPointI p) => new(p.X, p.Y);
-
-		/// <summary>
+		public static implicit operator RDPointE(RDPointI p) => new(p.X, p.Y);		/// <summary>
 		/// Explicitly converts an <see cref="RDPointI"/> to an <see cref="RDSizeI"/>.
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointI"/> to convert.</param>

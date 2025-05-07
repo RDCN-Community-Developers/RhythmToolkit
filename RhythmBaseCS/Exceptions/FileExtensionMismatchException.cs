@@ -10,17 +10,13 @@
 		/// </summary>
 		public FileExtensionMismatchException()
 		{
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="FileExtensionMismatchException"/> class with a specified error message.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
 		public FileExtensionMismatchException(string message) : base(message)
 		{
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="FileExtensionMismatchException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>

@@ -8,14 +8,10 @@
 		/// <summary>
 		/// Gets the error message.
 		/// </summary>
-		public override string Message { get; }
-
-		/// <summary>
+		public override string Message { get; }		/// <summary>
 		/// Gets the level version that caused the exception.
 		/// </summary>
-		public int LevelVersion;
-
-		/// <summary>
+		public int LevelVersion;		/// <summary>
 		/// Initializes a new instance of the <see cref="VersionTooLowException"/> class with the specified version.
 		/// </summary>
 		/// <param name="version">The version that is too low.</param>
@@ -23,9 +19,7 @@
 		{
 			Message = string.Format("Might not support. The version {0} is too low. Save this level with the latest version of the game to update the level version.", LevelVersion);
 			LevelVersion = version;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Initializes a new instance of the <see cref="VersionTooLowException"/> class with the specified version and inner exception.
 		/// </summary>
 		/// <param name="version">The version that is too low.</param>

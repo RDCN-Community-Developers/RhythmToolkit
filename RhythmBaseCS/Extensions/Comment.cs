@@ -1,8 +1,6 @@
 ﻿using RhythmBase.Components;
 using RhythmBase.Components.Easing;
-using static RhythmBase.Extensions.Extensions;
-
-namespace RhythmBase.Events
+using static RhythmBase.Extensions.Extensions;namespace RhythmBase.Events
 {
 	public partial class Comment
 	{

@@ -11,43 +11,29 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the location of the rectangle.
 		/// </summary>
-		public RDPointE? Location { get; set; } = location;
-
-		/// <summary>
+		public RDPointE? Location { get; set; } = location;		/// <summary>
 		/// Gets or sets the size of the rectangle.
 		/// </summary>
-		public RDSizeE? Size { get; set; } = size;
-
-		/// <summary>
+		public RDSizeE? Size { get; set; } = size;		/// <summary>
 		/// Gets or sets the pivot point of the rotation.
 		/// </summary>
-		public RDPointE? Pivot { get; set; } = pivot;
-
-		/// <summary>
+		public RDPointE? Pivot { get; set; } = pivot;		/// <summary>
 		/// Gets or sets the angle of rotation in degrees.
 		/// </summary>
-		public RDExpression? Angle { get; set; } = angle;
-
-		/// <summary>
+		public RDExpression? Angle { get; set; } = angle;		/// <summary>
 		/// Gets the rectangle without rotation.
 		/// </summary>
-		public readonly RDRectE? WithoutRotate => Location is null && Pivot is null && Size is null ? null : new(Location - (RDSizeE)(Pivot??default), Size);
-
-		/// <summary>
+		public readonly RDRectE? WithoutRotate => Location is null && Pivot is null && Size is null ? null : new(Location - (RDSizeE)(Pivot??default), Size);		/// <summary>
 		/// IItializes a new instance of the <see cref="RDRotatedRectE"/> struct.
 		/// </summary>
 		/// <param name="rect">The rectangle.</param>
 		/// <param name="pivot">The pivot point.</param>
 		/// <param name="angle">The angle of rotation.</param>
-		public RDRotatedRectE(RDRectE? rect, RDPointE? pivot, float angle) : this(rect?.Location, rect?.Size, pivot, angle) { }
-
-		/// <summary>
+		public RDRotatedRectE(RDRectE? rect, RDPointE? pivot, float angle) : this(rect?.Location, rect?.Size, pivot, angle) { }		/// <summary>
 		/// IItializes a new instance of the <see cref="RDRotatedRectE"/> struct.
 		/// </summary>
 		/// <param name="rect">The rectangle.</param>
-		public RDRotatedRectE(RDRectE? rect) : this(rect?.Location, rect?.Size, null, 0f) { }
-
-		/// <summary>
+		public RDRotatedRectE(RDRectE? rect) : this(rect?.Location, rect?.Size, null, 0f) { }		/// <summary>
 		/// Inflates the specified rectangle by the specified size.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -58,9 +44,7 @@ namespace RhythmBase.Components
 			RDRotatedRectE result = rect;
 			result.Inflate(size);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Inflates the specified rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -72,22 +56,16 @@ namespace RhythmBase.Components
 			RDRotatedRectE result = rect;
 			result.Inflate(x, y);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the rectangle by the specified x and y values.
 		/// </summary>
 		/// <param name="x">The x value to offset by.</param>
 		/// <param name="y">The y value to offset by.</param>
-		public void Offset(RDExpression? x, RDExpression? y) => Location += (RDSizeE)new RDPointE(x, y);
-
-		/// <summary>
+		public void Offset(RDExpression? x, RDExpression? y) => Location += (RDSizeE)new RDPointE(x, y);		/// <summary>
 		/// Offsets the rectangle by the specified point.
 		/// </summary>
 		/// <param name="p">The point to offset by.</param>
-		public void Offset(RDPointE p) => Offset(p.X, p.Y);
-
-		/// <summary>
+		public void Offset(RDPointE p) => Offset(p.X, p.Y);		/// <summary>
 		/// Inflates the rectangle by the specified size.
 		/// </summary>
 		/// <param name="size">The size to inflate by.</param>
@@ -95,9 +73,7 @@ namespace RhythmBase.Components
 		{
 			Size += new RDSizeE(size.Width * 2, size.Height * 2);
 			Pivot -= (RDSizeE)new RDPointE(size.Width, size.Height);
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Inflates the rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="width">The width to inflate by.</param>

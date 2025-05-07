@@ -11,9 +11,7 @@
 		public InvalidRDBeatException()
 		{
 			Message = "The beat is invalid, possibly because the beat is not associated with the RDLevel.";
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the error message that explains the reason for the exception.
 		/// </summary>
 		public override string Message { get; }

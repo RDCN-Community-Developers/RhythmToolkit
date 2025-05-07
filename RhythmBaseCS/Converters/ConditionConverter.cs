@@ -31,9 +31,7 @@ namespace RhythmBase.Converters
 				}
 			}
 			while (!ReadIsEndList(s, ref p));
-			Value.Duration = ReadFloat(s, ref p);
-
-			return Value;
+			Value.Duration = ReadFloat(s, ref p);			return Value;
 		}
 		private static int ReadInt(string s, ref int p)
 		{
@@ -70,11 +68,7 @@ namespace RhythmBase.Converters
 				return false;
 			}
 			return true;
-		}
-
-		private static bool ReadIsEndList(string s, ref int p) => p < s.Length && s[p++] == 'd';
-
-		private readonly List<BaseConditional> conditionals = Conditionals;
+		}		private static bool ReadIsEndList(string s, ref int p) => p < s.Length && s[p++] == 'd';		private readonly List<BaseConditional> conditionals = Conditionals;
 		[GeneratedRegex("~?\\d+(?=[&d])")]
 		private static partial Regex ConditionsRegex();
 		[GeneratedRegex("\\d+")]

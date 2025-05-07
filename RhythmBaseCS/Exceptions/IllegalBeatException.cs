@@ -15,9 +15,7 @@ namespace RhythmBase.Exceptions
 			{
 				return string.Format("This beat is invalid, the event {0} only allows the beat to be at the beginning of the bar.", ((BaseEvent)Item).Type);
 			}
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets the event that caused the exception.
 		/// </summary>
 		public IBarBeginningEvent Item = item;

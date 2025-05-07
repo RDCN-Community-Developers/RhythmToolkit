@@ -17,47 +17,31 @@ namespace RhythmBase.Events
 			Rooms = new RDRoom(true, [0]);
 			Type = EventType.MoveCamera;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
-
-		/// <summary>
+		public RDRoom Rooms { get; set; }		/// <summary>
 		/// Gets or sets the camera position.
 		/// </summary>
 		[EaseProperty]
-		public RDPointE? CameraPosition { get; set; }
-
-		/// <summary>
+		public RDPointE? CameraPosition { get; set; }		/// <summary>
 		/// Gets or sets the zoom level.
 		/// </summary>
 		[EaseProperty]
-		public int? Zoom { get; set; }
-
-		/// <summary>
+		public int? Zoom { get; set; }		/// <summary>
 		/// Gets or sets the angle of the camera.
 		/// </summary>
 		[EaseProperty]
-		public RDExpression? Angle { get; set; }
-
-		/// <summary>
+		public RDExpression? Angle { get; set; }		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
-		public float Duration { get; set; }
-
-		/// <summary>
+		public float Duration { get; set; }		/// <summary>
 		/// Gets or sets the easing type of the event.
 		/// </summary>
-		public EaseType Ease { get; set; }
-
-		/// <summary>
+		public EaseType Ease { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }

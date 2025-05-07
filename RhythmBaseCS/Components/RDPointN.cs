@@ -15,19 +15,13 @@ namespace RhythmBase.Components
 		/// Initializes a new instance of the <see cref="RDPointN"/> struct with the specified size.
 		/// </summary>
 		/// <param name="sz">The size to initialize the point with.</param>
-		public RDPointN(RDSizeN sz) : this(sz.Width, sz.Height) { }
-
-		/// <summary>
+		public RDPointN(RDSizeN sz) : this(sz.Width, sz.Height) { }		/// <summary>
 		/// Gets or sets the X coordinate of the point.
 		/// </summary>
-		public float X { get; set; } = x;
-
-		/// <summary>
+		public float X { get; set; } = x;		/// <summary>
 		/// Gets or sets the Y coordinate of the point.
 		/// </summary>
-		public float Y { get; set; } = y;
-
-		/// <summary>
+		public float Y { get; set; } = y;		/// <summary>
 		/// Offsets the point by the specified size.
 		/// </summary>
 		/// <param name="p">The size to offset the point by.</param>
@@ -35,9 +29,7 @@ namespace RhythmBase.Components
 		{
 			X += p.Width;
 			Y += p.Height;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the point by the specified point.
 		/// </summary>
 		/// <param name="p">The point to offset the point by.</param>
@@ -45,9 +37,7 @@ namespace RhythmBase.Components
 		{
 			X += p.X;
 			Y += p.Y;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the point by the specified horizontal and vertical amounts.
 		/// </summary>
 		/// <param name="dx">The horizontal amount to offset the point by.</param>
@@ -56,9 +46,7 @@ namespace RhythmBase.Components
 		{
 			X += dx;
 			Y += dy;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Adds the specified size to the point.
 		/// </summary>
 		/// <param name="pt">The point to add to.</param>
@@ -68,9 +56,7 @@ namespace RhythmBase.Components
 		{
 			RDPointN Add = new(pt.X + (float)sz.Width, pt.Y + (float)sz.Height);
 			return Add;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Adds the specified size to the point.
 		/// </summary>
 		/// <param name="pt">The point to add to.</param>
@@ -80,9 +66,7 @@ namespace RhythmBase.Components
 		{
 			RDPointN Add = new(pt.X + sz.Width, pt.Y + sz.Height);
 			return Add;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Subtracts the specified size from the point.
 		/// </summary>
 		/// <param name="pt">The point to subtract from.</param>
@@ -92,9 +76,7 @@ namespace RhythmBase.Components
 		{
 			RDPointN Subtract = new(pt.X - (float)sz.Width, pt.Y - (float)sz.Height);
 			return Subtract;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Subtracts the specified size from the point.
 		/// </summary>
 		/// <param name="pt">The point to subtract from.</param>
@@ -104,9 +86,7 @@ namespace RhythmBase.Components
 		{
 			RDPointN Subtract = new(pt.X - sz.Width, pt.Y - sz.Height);
 			return Subtract;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Multiplies the point by the specified 2x2 matrix.
 		/// </summary>
 		/// <param name="matrix">The 2x2 matrix to multiply the point by.</param>
@@ -169,23 +149,17 @@ namespace RhythmBase.Components
 		/// <inheritdoc/>
 		public static bool operator ==(RDPointN left, RDPointN right) => left.Equals(right);
 		/// <inheritdoc/>
-		public static bool operator !=(RDPointN left, RDPointN right) => !left.Equals(right);
-
-		/// <summary>
+		public static bool operator !=(RDPointN left, RDPointN right) => !left.Equals(right);		/// <summary>
 		/// Implicitly converts an <see cref="RDPointN"/> to an <see cref="RDPoint"/>.
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointN"/> to convert.</param>
 		/// <returns>A new <see cref="RDPoint"/> with the same coordinates.</returns>
-		public static implicit operator RDPoint(RDPointN p) => new(new float?(p.X), new float?(p.Y));
-
-		/// <summary>
+		public static implicit operator RDPoint(RDPointN p) => new(new float?(p.X), new float?(p.Y));		/// <summary>
 		/// Implicitly converts an <see cref="RDPointN"/> to an <see cref="RDPointE"/>.
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointN"/> to convert.</param>
 		/// <returns>A new <see cref="RDPointE"/> with the same coordinates.</returns>
-		public static implicit operator RDPointE(RDPointN p) => new(p.X, p.Y);
-
-		/// <summary>
+		public static implicit operator RDPointE(RDPointN p) => new(p.X, p.Y);		/// <summary>
 		/// Explicitly converts an <see cref="RDPointN"/> to an <see cref="RDSizeN"/>.
 		/// </summary>
 		/// <param name="p">The <see cref="RDPointN"/> to convert.</param>

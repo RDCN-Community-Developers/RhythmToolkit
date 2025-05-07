@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
@@ -29,7 +28,7 @@ namespace RhythmBase.Adofai.Components
 		/// Level directory path.
 		/// </summary>
 		[JsonIgnore]
-		public string Directory => System.IO.Path.GetDirectoryName(_path);
+		public string Directory => System.IO.Path.GetDirectoryName(_path) ?? "";
 		/// <summary>
 		/// Get all the events of the level.
 		/// </summary>
@@ -48,12 +47,19 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		[JsonIgnore]
 		public ADBeatCalculator Calculator { get; }
+		/// <summary>  
+		/// Initializes a new instance of the <see cref="ADLevel"/> class.  
+		/// </summary>  
 		public ADLevel()
 		{
 			Settings = new ADSettings();
 			Decorations = [];
 			Calculator = new ADBeatCalculator(this);
 		}
+		/// <summary>  
+		/// Initializes a new instance of the <see cref="ADLevel"/> class with a collection of tiles.  
+		/// </summary>  
+		/// <param name="items">The collection of tiles to initialize the level with.</param>  
 		public ADLevel(IEnumerable<ADTile> items)
 		{
 			Settings = new ADSettings();
@@ -92,6 +98,6 @@ namespace RhythmBase.Adofai.Components
 			}
 			return LevelSerializer.Deserialize<ADLevel>(new JsonTextReader(File.OpenText(filepath)))!;
 		}
-		internal string _path;
+		internal string _path = string.Empty;
 	}
 }

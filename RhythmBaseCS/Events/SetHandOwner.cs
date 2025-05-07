@@ -14,29 +14,19 @@ namespace RhythmBase.Events
 			Rooms = new RDRoom(true, [0]);
 			Type = EventType.SetHandOwner;
 			Tab = Tabs.Actions;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Gets or sets the room associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
-
-		/// <summary>
+		public RDRoom Rooms { get; set; }		/// <summary>
 		/// Gets or sets the hand associated with the event.
 		/// </summary>
-		public PlayerHands Hand { get; set; }
-
-		/// <summary>
+		public PlayerHands Hand { get; set; }		/// <summary>
 		/// Gets or sets the character associated with the event.
 		/// </summary>
-		public RDCharacters Character { get; set; }
-
-		/// <summary>
+		public RDCharacters Character { get; set; }		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
-
-		/// <summary>
+		public override EventType Type { get; }		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }

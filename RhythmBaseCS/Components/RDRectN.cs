@@ -15,84 +15,54 @@ namespace RhythmBase.Components
 		/// <summary>
 		/// Gets or sets the left edge of the rectangle.
 		/// </summary>
-		public float Left { get; set; } = left;
-
-		/// <summary>
+		public float Left { get; set; } = left;		/// <summary>
 		/// Gets or sets the right edge of the rectangle.
 		/// </summary>
-		public float Right { get; set; } = top;
-
-		/// <summary>
+		public float Right { get; set; } = top;		/// <summary>
 		/// Gets or sets the top edge of the rectangle.
 		/// </summary>
-		public float Top { get; set; } = right;
-
-		/// <summary>
+		public float Top { get; set; } = right;		/// <summary>
 		/// Gets or sets the bottom edge of the rectangle.
 		/// </summary>
-		public float Bottom { get; set; } = bottom;
-
-		/// <summary>
+		public float Bottom { get; set; } = bottom;		/// <summary>
 		/// Gets the point at the left-bottom corner of the rectangle.
 		/// </summary>
-		public readonly RDPointN LeftBottom => new(Left, Bottom);
-
-		/// <summary>
+		public readonly RDPointN LeftBottom => new(Left, Bottom);		/// <summary>
 		/// Gets the point at the right-bottom corner of the rectangle.
 		/// </summary>
-		public readonly RDPointN RightBottom => new(Right, Bottom);
-
-		/// <summary>
+		public readonly RDPointN RightBottom => new(Right, Bottom);		/// <summary>
 		/// Gets the point at the left-top corner of the rectangle.
 		/// </summary>
-		public readonly RDPointN LeftTop => new(Left, Top);
-
-		/// <summary>
+		public readonly RDPointN LeftTop => new(Left, Top);		/// <summary>
 		/// Gets the point at the right-top corner of the rectangle.
 		/// </summary>
-		public readonly RDPointN RightTop => new(Right, Top);
-
-		/// <summary>
+		public readonly RDPointN RightTop => new(Right, Top);		/// <summary>
 		/// Gets the width of the rectangle.
 		/// </summary>
-		public readonly float Width => Right - Left;
-
-		/// <summary>
+		public readonly float Width => Right - Left;		/// <summary>
 		/// Gets the height of the rectangle.
 		/// </summary>
-		public readonly float Height => Top - Bottom;
-
-		/// <summary>
+		public readonly float Height => Top - Bottom;		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRectN"/> struct with the specified location and size.
 		/// </summary>
 		/// <param name="location">The location of the rectangle.</param>
 		/// <param name="size">The size of the rectangle.</param>
-		public RDRectN(RDPointN location, RDSizeN size) : this(location.X, location.Y + size.Height, location.X + size.Width, location.Y) { }
-
-		/// <summary>
+		public RDRectN(RDPointN location, RDSizeN size) : this(location.X, location.Y + size.Height, location.X + size.Width, location.Y) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRectN"/> struct with the specified size.
 		/// </summary>
 		/// <param name="size">The size of the rectangle.</param>
-		public RDRectN(RDSizeN size) : this(0f, size.Height, size.Width, 0f) { }
-
-		/// <summary>
+		public RDRectN(RDSizeN size) : this(0f, size.Height, size.Width, 0f) { }		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRectN"/> struct with the specified width and height.
 		/// </summary>
 		/// <param name="width">The width of the rectangle.</param>
 		/// <param name="height">The height of the rectangle.</param>
-		public RDRectN(float width, float height) : this(0f, height, width, 0f) { }
-
-		/// <summary>
+		public RDRectN(float width, float height) : this(0f, height, width, 0f) { }		/// <summary>
 		/// Gets the location of the rectangle as an <see cref="RDPointNI"/>.
 		/// </summary>
-		public readonly RDPointNI Location => new((int)Math.Round((double)Left), (int)Math.Round((double)Bottom));
-
-		/// <summary>
+		public readonly RDPointNI Location => new((int)Math.Round((double)Left), (int)Math.Round((double)Bottom));		/// <summary>
 		/// Gets the size of the rectangle as an <see cref="RDSizeNI"/>.
 		/// </summary>
-		public readonly RDSizeNI Size => (new RDSizeNI((int)Math.Round((double)Width), (int)Math.Round((double)Height)));
-
-		/// <summary>
+		public readonly RDSizeNI Size => (new RDSizeNI((int)Math.Round((double)Width), (int)Math.Round((double)Height)));		/// <summary>
 		/// Inflates the specified rectangle by the specified size.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -103,9 +73,7 @@ namespace RhythmBase.Components
 			RDRectN result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(size);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Inflates the specified rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="rect">The rectangle to inflate.</param>
@@ -117,39 +85,29 @@ namespace RhythmBase.Components
 			RDRectN result = new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 			result.Inflate(x, y);
 			return result;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Determines whether the rectangle contains the specified point.
 		/// </summary>
 		/// <param name="x">The x-coordinate of the point.</param>
 		/// <param name="y">The y-coordinate of the point.</param>
 		/// <returns><c>true</c> if the rectangle contains the point; otherwise, <c>false</c>.</returns>
-		public readonly bool Contains(float x, float y) => Left < x && x < Right && Bottom < y && y < Top;
-
-		/// <summary>
+		public readonly bool Contains(float x, float y) => Left < x && x < Right && Bottom < y && y < Top;		/// <summary>
 		/// Determines whether the rectangle contains the specified point.
 		/// </summary>
 		/// <param name="p">The point to check.</param>
 		/// <returns><c>true</c> if the rectangle contains the point; otherwise, <c>false</c>.</returns>
-		public readonly bool Contains(RDPointN p) => Left < p.X && p.X < Right && Bottom < p.Y && p.Y < Top;
-
-		/// <summary>
+		public readonly bool Contains(RDPointN p) => Left < p.X && p.X < Right && Bottom < p.Y && p.Y < Top;		/// <summary>
 		/// Determines whether the rectangle contains the specified rectangle.
 		/// </summary>
 		/// <param name="rect">The rectangle to check.</param>
 		/// <returns><c>true</c> if the rectangle contains the specified rectangle; otherwise, <c>false</c>.</returns>
-		public readonly bool Contains(RDRectN rect) => Left < rect.Left && rect.Right < Right && Bottom < rect.Bottom && rect.Top < Top;
-
-		/// <summary>
+		public readonly bool Contains(RDRectN rect) => Left < rect.Left && rect.Right < Right && Bottom < rect.Bottom && rect.Top < Top;		/// <summary>
 		/// Returns the union of two rectangles.
 		/// </summary>
 		/// <param name="rect1">The first rectangle.</param>
 		/// <param name="rect2">The second rectangle.</param>
 		/// <returns>The union of the two rectangles.</returns>
-		public static RDRectN Union(RDRectN rect1, RDRectN rect2) => new(Math.Min(rect1.Left, rect2.Left), Math.Max(rect1.Top, rect2.Top), Math.Max(rect1.Right, rect2.Right), Math.Min(rect1.Bottom, rect2.Bottom));
-
-		/// <summary>
+		public static RDRectN Union(RDRectN rect1, RDRectN rect2) => new(Math.Min(rect1.Left, rect2.Left), Math.Max(rect1.Top, rect2.Top), Math.Max(rect1.Right, rect2.Right), Math.Min(rect1.Bottom, rect2.Bottom));		/// <summary>
 		/// Returns the intersection of two rectangles.
 		/// </summary>
 		/// <param name="rect1">The first rectangle.</param>
@@ -159,16 +117,12 @@ namespace RhythmBase.Components
 		Math.Max(rect1.Left, rect2.Left),
 		Math.Max(rect1.Top, rect2.Top),
 		Math.Min(rect1.Right, rect2.Right),
-		Math.Min(rect1.Bottom, rect2.Bottom)) : default;
-
-		/// <summary>
+		Math.Min(rect1.Bottom, rect2.Bottom)) : default;		/// <summary>
 		/// Truncates the specified rectangle.
 		/// </summary>
 		/// <param name="rect">The rectangle to truncate.</param>
 		/// <returns>The truncated rectangle.</returns>
-		public static RDRectN Truncate(RDRectN rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
-
-		/// <summary>
+		public static RDRectN Truncate(RDRectN rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);		/// <summary>
 		/// Offsets the rectangle by the specified amount.
 		/// </summary>
 		/// <param name="x">The amount to offset by along the x-axis.</param>
@@ -179,15 +133,11 @@ namespace RhythmBase.Components
 			Top += y;
 			Right += x;
 			Bottom += y;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Offsets the rectangle by the specified point.
 		/// </summary>
 		/// <param name="p">The point to offset by.</param>
-		public void Offset(RDPointN p) => Offset(p.X, p.Y);
-
-		/// <summary>
+		public void Offset(RDPointN p) => Offset(p.X, p.Y);		/// <summary>
 		/// Inflates the rectangle by the specified size.
 		/// </summary>
 		/// <param name="size">The size to inflate by.</param>
@@ -197,9 +147,7 @@ namespace RhythmBase.Components
 			Top += size.Height;
 			Right += size.Width;
 			Bottom -= size.Height;
-		}
-
-		/// <summary>
+		}		/// <summary>
 		/// Inflates the rectangle by the specified width and height.
 		/// </summary>
 		/// <param name="width">The width to inflate by.</param>
@@ -234,16 +182,12 @@ namespace RhythmBase.Components
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"{{Location=[{Left},{Bottom}],Size=[{Width},{Height}]}}";
 		/// <inheritdoc/>
-		public readonly bool Equals(RDRectN other) => Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;
-
-		/// <summary>
+		public readonly bool Equals(RDRectN other) => Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;		/// <summary>
 		/// Converts an <see cref="RDRectN"/> to an <see cref="RDRect"/>.
 		/// </summary>
 		/// <param name="rect">The <see cref="RDRectN"/> to convert.</param>
 		/// <returns>An <see cref="RDRect"/> that represents the same rectangle.</returns>
-		public static implicit operator RDRect(RDRectN rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
-
-		/// <summary>
+		public static implicit operator RDRect(RDRectN rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);		/// <summary>
 		/// Converts an <see cref="RDRectN"/> to an <see cref="RDRectE"/>.
 		/// </summary>
 		/// <param name="rect">The <see cref="RDRectN"/> to convert.</param>
