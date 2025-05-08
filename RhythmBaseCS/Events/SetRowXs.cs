@@ -15,7 +15,7 @@ namespace RhythmBase.Events
 		public Patterns[] Pattern
 		{
 			get => _pattern;
-			set => _pattern = value.Length == 6 ? value : throw new RhythmBase.Exceptions.RhythmBaseException();
+			set => _pattern = value.Length == 6 ? value : throw new Exceptions.RhythmBaseException();
 		}		/// <summary>
 		/// Gets or sets the synco beat.
 		/// </summary>

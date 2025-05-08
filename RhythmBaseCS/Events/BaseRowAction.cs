@@ -65,7 +65,7 @@ namespace RhythmBase.Events
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		internal TEvent Clone<TEvent>(Row row) where TEvent : BaseRowAction, new()
 		{
-			TEvent Temp = base.Clone<TEvent>(row.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
+			TEvent Temp = base.Clone<TEvent>(row.Parent ?? throw new Exceptions.RhythmBaseException());
 			Temp.Parent = row;
 			return Temp;
 		}		internal Row? _parent;

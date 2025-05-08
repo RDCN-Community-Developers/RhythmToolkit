@@ -22,9 +22,9 @@ namespace RhythmBase.Converters
 		public virtual TEvent? GetDeserializedObject(JObject jobj, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken? typeToken = (jobj["type"])
-				?? throw new Exceptions.ConvertingException(jobj, new Exception($"Missing property \"{jobj["type"]}\". path \"{jobj.Path}\""));
+				?? throw new ConvertingException(jobj, new Exception($"Missing property \"{jobj["type"]}\". path \"{jobj.Path}\""));
 			Type SubClassType = Utils.EventTypeUtils.ToType(typeToken.ToObject<string>()
-				?? throw new Exceptions.ConvertingException(jobj, new Exception($"Missing property \"{typeToken}\". path \"{jobj.Path}\"")));
+				?? throw new ConvertingException(jobj, new Exception($"Missing property \"{typeToken}\". path \"{jobj.Path}\"")));
 			if (SubClassType == null)
 				if (jobj["target"] != null)
 					SubClassType = typeof(CustomDecorationEvent);

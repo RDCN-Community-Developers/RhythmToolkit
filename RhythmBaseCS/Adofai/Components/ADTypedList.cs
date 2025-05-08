@@ -5,8 +5,8 @@ namespace RhythmBase.Adofai.Components
 	/// <summary>
 	/// Represents a strongly-typed list of events that implements <see cref="IEnumerable{T}"/>.
 	/// </summary>
-	/// <typeparam name="TEvent">The type of event, which must inherit from <see cref="ADBaseEvent"/>.</typeparam>
-	public class ADTypedList<TEvent> : IEnumerable<TEvent> where TEvent : ADBaseEvent
+	/// <typeparam name="TEvent">The type of event, which must inherit from <see cref="BaseEvent"/>.</typeparam>
+	public class ADTypedList<TEvent> : IEnumerable<TEvent> where TEvent : BaseEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADTypedList{TEvent}"/> class.
@@ -19,7 +19,7 @@ namespace RhythmBase.Adofai.Components
 		/// Adds an event to the list.
 		/// </summary>
 		/// <param name="item">The event to add.</param>
-		public void Add(TEvent item)
+		public virtual void Add(TEvent item)
 		{
 			list.Add(item);
 			_types.Add(item.Type);
@@ -50,6 +50,6 @@ namespace RhythmBase.Adofai.Components
 		private readonly List<TEvent> list;		/// <summary>
 		/// A set of event types contained in the list.
 		/// </summary>
-		protected internal HashSet<ADEventType> _types;
+		protected internal HashSet<EventType> _types;
 	}
 }

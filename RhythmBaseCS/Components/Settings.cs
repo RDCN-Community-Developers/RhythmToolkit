@@ -136,7 +136,7 @@ namespace RhythmBase.Components
 		public int[] RankMaxMistakes
 		{
 			get => rankMaxMistakes;
-			set => rankMaxMistakes = value.Length == 4 ? value : throw new RhythmBase.Exceptions.RhythmBaseException();
+			set => rankMaxMistakes = value.Length == 4 ? value : throw new Exceptions.RhythmBaseException();
 		}
 		/// <summary>  
 		/// Description of each rank.  
@@ -144,7 +144,7 @@ namespace RhythmBase.Components
 		public string[] RankDescription
 		{
 			get => rankDescription;
-			set => rankDescription = value.Length == 6 ? value : throw new RhythmBase.Exceptions.RhythmBaseException();
+			set => rankDescription = value.Length == 6 ? value : throw new Exceptions.RhythmBaseException();
 		}
 		/// <summary>  
 		/// Mods enabled for the level.  

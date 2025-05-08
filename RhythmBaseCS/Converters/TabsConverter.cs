@@ -7,7 +7,7 @@ namespace RhythmBase.Converters
 	{
 		public override void WriteJson(JsonWriter writer, Tabs value, JsonSerializer serializer) => writer.WriteValue(TabNames[(int)value]);		public override Tabs ReadJson(JsonReader reader, Type objectType, Tabs existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			string value = JToken.Load(reader).ToObject<string>()??throw new RhythmBase.Exceptions.ConvertingException("Cannot read the tab.");
+			string value = JToken.Load(reader).ToObject<string>()??throw new Exceptions.ConvertingException("Cannot read the tab.");
 			int t = TabNames.ToList().IndexOf(value);
 			bool flag = t >= 0;
 			Tabs ReadJson;

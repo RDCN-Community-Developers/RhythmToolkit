@@ -8,7 +8,7 @@ namespace RhythmBase.Converters
 	{
 		public override void WriteJson(JsonWriter writer, Bookmark? value, JsonSerializer serializer)
 		{
-			var beat = value?.Beat.BarBeat ??throw new RhythmBase.Exceptions.ConvertingException("Cannot write the bookmark.");
+			var beat = value?.Beat.BarBeat ??throw new Exceptions.ConvertingException("Cannot write the bookmark.");
 			writer.WriteStartObject();
 			writer.WritePropertyName("bar");
 			writer.WriteValue(beat.bar);

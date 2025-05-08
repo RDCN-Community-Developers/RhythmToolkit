@@ -49,7 +49,7 @@ namespace RhythmBase.Events
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		internal TEvent Clone<TEvent>(Decoration decoration) where TEvent : BaseDecorationAction, new()
 		{
-			TEvent Temp = base.Clone<TEvent>(decoration.Parent ?? throw new RhythmBase.Exceptions.RhythmBaseException());
+			TEvent Temp = base.Clone<TEvent>(decoration.Parent ?? throw new Exceptions.RhythmBaseException());
 			Temp._parent = decoration;
 			return Temp;
 		}		/// <summary>

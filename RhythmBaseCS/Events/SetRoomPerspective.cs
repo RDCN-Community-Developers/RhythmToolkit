@@ -24,7 +24,7 @@ namespace RhythmBase.Events
 		/// Gets or sets the corner positions of the room.  
 		/// </summary>  
 		[EaseProperty]
-		public RDPointE?[] CornerPositions { get => cornerPositions; set =>  cornerPositions = value.Length == 4?value:throw new RhythmBase.Exceptions.RhythmBaseException(); }		/// <summary>  
+		public RDPointE?[] CornerPositions { get => cornerPositions; set =>  cornerPositions = value.Length == 4?value:throw new Exceptions.RhythmBaseException(); }		/// <summary>  
 		/// Gets or sets the duration of the event.  
 		/// </summary>  
 		public float Duration { get; set; }		/// <summary>  
