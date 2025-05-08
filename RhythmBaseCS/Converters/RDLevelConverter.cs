@@ -40,7 +40,7 @@ namespace RhythmBase.Converters
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
 			writer.WriteStartArray();
-			foreach (IBaseEvent item3 in ((settings.InactiveEventsHandling == InactiveEventsHandling.Retain) ? value.Where(i => i.Active) : value.AsEnumerable()))
+			foreach (IBaseEvent item3 in ((settings.InactiveEventsHandling == InactiveEventsHandling.Retain) ? value.Where(i => i.Active) : value))
 				writer.WriteRawValue(JsonConvert.SerializeObject(item3, Formatting.None, AllInOneSerializer));
 			writer.WriteEndArray();
 			writer.WritePropertyName("conditionals");

@@ -19,19 +19,19 @@ namespace RhythmBase.Converters
 			switch (_timeType)
 			{
 				case TimeType.Hour:
-					writer.WriteValue(value.TotalHours);
+					writer.WriteRawValue(value.TotalHours.ToString());
 					break;
 				case TimeType.Minute:
-					writer.WriteValue(value.TotalMinutes);
+					writer.WriteRawValue(value.TotalMinutes.ToString());
 					break;
 				case TimeType.Second:
-					writer.WriteValue(value.TotalSeconds);
+					writer.WriteRawValue(value.TotalSeconds.ToString());
 					break;
 				case TimeType.MiliSecond:
-					writer.WriteValue((int)value.TotalMilliseconds);
+					writer.WriteRawValue(((int)value.TotalMilliseconds).ToString());
 					break;
 				case TimeType.Microsecond:
-					writer.WriteValue((int)value.TotalMicroseconds);
+					writer.WriteRawValue(((int)value.TotalMicroseconds).ToString());
 					break;
 				default:
 					break;

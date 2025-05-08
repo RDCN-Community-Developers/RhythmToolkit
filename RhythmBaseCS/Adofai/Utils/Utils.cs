@@ -125,6 +125,7 @@ namespace RhythmBase.Adofai.Utils
 		{
 			JsonSerializer AllInOneSerializer = new();
 			JsonConverterCollection converters = AllInOneSerializer.Converters;
+			converters.Add(new FloatConverter());
 			converters.Add(new StringEnumConverter());
 			converters.Add(new ColorConverter());
 			converters.Add(new ADTileConverter(adlevel));

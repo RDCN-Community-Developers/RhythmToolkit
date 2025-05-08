@@ -40,9 +40,10 @@ namespace RhythmBase.Utils
 		{
 			JsonSerializerSettings EventsSerializer = new()
 			{
-				ContractResolver = new RDContractResolver()
+				ContractResolver = new RDContractResolver(),
 			};
 			IList<JsonConverter> converters = EventsSerializer.Converters;
+			converters.Add(new FloatConverter());
 			converters.Add(new PaletteColorConverter(rdlevel.ColorPalette));
 			converters.Add(new ColorConverter());
 			converters.Add(new ConditionalConverter());

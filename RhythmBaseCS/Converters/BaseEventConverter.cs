@@ -53,7 +53,7 @@ namespace RhythmBase.Converters
 			JToken s = JObj.First ?? throw new ConvertingException($"Internal error: Missing properties. path \"{JObj.Path}\"");
 			s.AddBeforeSelf(new JProperty("bar", b.Item1));
 			if (value is not IBarBeginningEvent)
-				s.AddBeforeSelf(new JProperty("beat", b.Item2));
+				s.AddBeforeSelf(new JProperty("beat", b.Item2 % 1 == 0 ? (int)b.Item2 : (object)b.Item2));
 			s.AddBeforeSelf(new JProperty("type", value.Type.ToString()));
 			if (JObj.Value<string>("tag") is string str && string.IsNullOrEmpty(str))
 				JObj.Property("tag")?.Remove();
