@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RhythmBase.Adofai.Components;
+using System;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
@@ -7,13 +8,16 @@ namespace RhythmBase.Adofai.Events
 	public class ADSetSpeed : ADBaseTaggedTileAction
 	{
 		/// <inheritdoc/>
-		public override ADEventType Type => ADEventType.SetSpeed;		/// <summary>  
+		public override ADEventType Type => ADEventType.SetSpeed;
+		/// <summary>  
 		/// Gets or sets the type of speed adjustment.  
 		/// </summary>  
-		public SpeedType SpeedType { get; set; }		/// <summary>  
+		public SpeedType SpeedType { get; set; }
+		/// <summary>  
 		/// Gets or sets the beats per minute (BPM) value.  
 		/// </summary>  
-		public float BeatsPerMinute { get; set; }		/// <summary>  
+		public float BeatsPerMinute { get; set; }
+		/// <summary>  
 		/// Gets or sets the BPM multiplier value.  
 		/// </summary>  
 		public float BpmMultiplier { get; set; }

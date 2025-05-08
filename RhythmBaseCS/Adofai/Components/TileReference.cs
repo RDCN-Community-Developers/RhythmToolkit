@@ -1,8 +1,12 @@
-﻿namespace RhythmBase.Adofai.Components
+﻿using RhythmBase.Adofai.Converters;
+using System.Text.Json.Serialization;
+
+namespace RhythmBase.Adofai.Components
 {
 	/// <summary>  
 	/// Represents a reference to a tile, including its type and offset.  
 	/// </summary>  
+	[JsonConverter(typeof(ADTileReferenceConverter))]
 	public struct TileReference
 	{
 		/// <summary>  
