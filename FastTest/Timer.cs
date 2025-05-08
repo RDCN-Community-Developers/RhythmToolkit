@@ -1,11 +1,8 @@
-﻿using RhythmBase.Components;
-using RhythmBase.Events;
-using RhythmBase.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;namespace FastTest
+﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
+
+namespace FastTest
 {
 	public class Timer : IDisposable
 	{
@@ -23,7 +20,8 @@ using System.Threading.Tasks;namespace FastTest
 			Console.WriteLine($"{name ?? "It"} takes {(t - time).TotalMilliseconds}ms");
 			time = t;
 		}
-	}	public static class Extensions
+	}
+	public static class Extensions
 	{
 		public static void RemoveBookmarks(this RDLevel e) =>
 			e.Bookmarks.Clear();
