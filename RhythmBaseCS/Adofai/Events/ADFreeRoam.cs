@@ -1,8 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
-using RhythmBase.Components;
-using RhythmBase.Components.Easing;
-using RhythmBase.Events;
+﻿using Newtonsoft.Json;
+using RhythmBase.Global.Components.Easing;
+using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADFreeRoam : ADBaseTileEvent, IEaseEvent

@@ -4,10 +4,10 @@ using Newtonsoft.Json.Converters;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Events;
-using RhythmBase.Converters;
-using RhythmBase.Events;
-using RhythmBase.Exceptions;
-using RhythmBase.Settings;
+using RhythmBase.Global.Converters;
+using RhythmBase.Global.Exceptions;
+using RhythmBase.Global.Settings;
+using RhythmBase.RhythmDoctor.Events;
 using System.Collections.ObjectModel;
 namespace RhythmBase.Adofai.Utils
 {

@@ -1,11 +1,6 @@
-﻿using RhythmBase.Components;
-using RhythmBase.Events;
-using RhythmBase.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
 
 namespace FastTest
 {

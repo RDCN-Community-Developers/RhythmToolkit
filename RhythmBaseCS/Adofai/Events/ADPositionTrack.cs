@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
-using RhythmBase.Components;
+using RhythmBase.Global.Components;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADPositionTrack : ADBaseTileEvent

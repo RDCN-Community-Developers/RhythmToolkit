@@ -5,9 +5,8 @@ using Newtonsoft.Json.Serialization;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
-using RhythmBase.Extensions;
-using RhythmBase.Converters;
-using RhythmBase.Settings;
+using RhythmBase.Global.Converters;
+using RhythmBase.Global.Settings;
 namespace RhythmBase.Adofai.Converters
 {
 	internal class ADLevelConverter(string location, LevelReadOrWriteSettings settings) : JsonConverter<ADLevel>

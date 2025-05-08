@@ -4,7 +4,8 @@ using Newtonsoft.Json.Linq;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
-using RhythmBase.Settings;
+using RhythmBase.Global.Settings;
+
 namespace RhythmBase.Adofai.Converters
 {
 	internal class ADBaseTileEventConverter<TEvent>(ADLevel level, LevelReadOrWriteSettings inputSettings) : ADBaseEventConverter<TEvent>(level, inputSettings) where TEvent : ADBaseTileEvent

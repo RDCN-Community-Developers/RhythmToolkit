@@ -1,4 +1,4 @@
-﻿using RhythmBase.Components;
+﻿using RhythmBase.Global.Components;
 using System;
 namespace RhythmBase.Adofai.Events
 {

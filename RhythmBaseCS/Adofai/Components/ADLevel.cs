@@ -3,8 +3,9 @@ using Newtonsoft.Json;
 using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
-using RhythmBase.Exceptions;
-using RhythmBase.Settings;
+using RhythmBase.Global.Exceptions;
+using RhythmBase.Global.Settings;
+
 namespace RhythmBase.Adofai.Components
 {
 	/// <summary>

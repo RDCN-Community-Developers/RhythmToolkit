@@ -3,7 +3,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
-using RhythmBase.Settings;
+using RhythmBase.Global.Settings;
+
 namespace RhythmBase.Adofai.Converters
 {
 	internal class ADCustomEventConverter(ADLevel level, LevelReadOrWriteSettings settings) : ADBaseEventConverter<ADCustomEvent>(level, settings)

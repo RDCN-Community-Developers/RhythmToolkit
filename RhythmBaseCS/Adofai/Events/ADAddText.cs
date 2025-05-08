@@ -1,5 +1,5 @@
 ﻿using System;
-using RhythmBase.Components;
+using RhythmBase.Global.Components;
 namespace RhythmBase.Adofai.Events
 {
 	public class ADAddText : ADBaseEvent
