@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RhythmBase.Adofai.Extensions;
 using RhythmBase.Global.Components;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.Global.Settings;

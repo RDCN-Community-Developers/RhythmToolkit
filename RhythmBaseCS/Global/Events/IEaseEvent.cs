@@ -1,5 +1,6 @@
 ﻿using RhythmBase.Global.Components.Easing;
-namespace RhythmBase.RhythmDoctor.Events
+using RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.Global.Events
 {
 	/// <summary>  
 	/// Interface representing an ease event.  

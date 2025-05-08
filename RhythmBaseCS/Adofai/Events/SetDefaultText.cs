@@ -1,8 +1,7 @@
-﻿using System;
-using Newtonsoft.Json;
-using RhythmBase.Components;
-using RhythmBase.Components.Easing;
-using RhythmBase.Events;
+﻿using Newtonsoft.Json;
+using RhythmBase.Global.Components;
+using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Events;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
@@ -10,29 +9,38 @@ namespace RhythmBase.Adofai.Events
 	/// </summary>  
 	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class SetDefaultText : BaseTaggedTileAction, IEaseEvent, IStartEvent
-	{		/// <inheritdoc/>
-		public override EventType Type => EventType.SetDefaultText;		/// <summary>  
+	{
+		/// <inheritdoc/>
+		public override EventType Type => EventType.SetDefaultText;
+		/// <summary>  
 		/// Gets or sets the duration of the event.  
 		/// </summary>  
-		public float Duration { get; set; }		/// <summary>  
+		public float Duration { get; set; }
+		/// <summary>  
 		/// Gets or sets the easing type for the event.  
 		/// </summary>  
-		public EaseType Ease { get; set; }		/// <summary>  
+		public EaseType Ease { get; set; }
+		/// <summary>  
 		/// Gets or sets the default text color.  
 		/// </summary>  
-		public RDColor? DefaultTextColor { get; set; }		/// <summary>  
+		public RDColor? DefaultTextColor { get; set; }
+		/// <summary>  
 		/// Gets or sets the default text shadow color.  
 		/// </summary>  
-		public RDColor? DefaultTextShadowColor { get; set; }		/// <summary>  
+		public RDColor? DefaultTextShadowColor { get; set; }
+		/// <summary>  
 		/// Gets or sets the position of the level title.  
 		/// </summary>  
-		public RDPoint? LevelTitlePosition { get; set; }		/// <summary>  
+		public RDPoint? LevelTitlePosition { get; set; }
+		/// <summary>  
 		/// Gets or sets the text for the level title.  
 		/// </summary>  
-		public string LevelTitleText { get; set; } = string.Empty;		/// <summary>  
+		public string LevelTitleText { get; set; } = string.Empty;
+		/// <summary>  
 		/// Gets or sets the text to display upon level completion.  
 		/// </summary>  
-		public string CongratsText { get; set; } = string.Empty;		/// <summary>  
+		public string CongratsText { get; set; } = string.Empty;
+		/// <summary>  
 		/// Gets or sets the text to display for a perfect score.  
 		/// </summary>  
 		public string PerfectText { get; set; } = string.Empty;

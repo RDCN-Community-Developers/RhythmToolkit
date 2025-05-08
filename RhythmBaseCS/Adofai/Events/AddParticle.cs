@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Adofai.Converters;
-using RhythmBase.Components;
+using RhythmBase.Global.Components;
 
 namespace RhythmBase.Adofai.Events
 {

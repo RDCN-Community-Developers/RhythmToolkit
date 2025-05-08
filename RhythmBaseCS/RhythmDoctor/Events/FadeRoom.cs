@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -29,10 +30,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type => EventType.FadeRoom;		/// <summary>
+		public override EventType Type => EventType.FadeRoom;
+		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab => Tabs.Rooms;		/// <summary>
+		public override Tabs Tab => Tabs.Rooms;
+		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>
 		[JsonIgnore]

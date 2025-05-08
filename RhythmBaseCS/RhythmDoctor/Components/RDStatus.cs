@@ -61,7 +61,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the stutter settings of the room.
 		/// </summary>
-		public required Events.Stutter? Stutter { get; init; }
+		public required Stutter? Stutter { get; init; }
 
 		/// <summary>
 		/// Gets the screen flip settings of the room.
@@ -71,7 +71,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the bass drop settings of the room.
 		/// </summary>
-		public required Events.BassDrop? BassDrop { get; init; }
+		public required BassDrop? BassDrop { get; init; }
 
 		/// <summary>
 		/// Gets the flash settings of the room.
@@ -92,7 +92,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the parent row event collection.
 		/// </summary>
-		public required RowEventCollection ParentRow { get; init; }
+		public required Row ParentRow { get; init; }
 
 		/// <summary>
 		/// Gets the player type.

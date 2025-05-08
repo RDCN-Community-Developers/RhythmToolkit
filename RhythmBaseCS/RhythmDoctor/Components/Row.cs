@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Exceptions;
 using RhythmBase.Global.Converters;
+using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Events;
 using static RhythmBase.RhythmDoctor.Utils.EventTypeUtils;
 namespace RhythmBase.RhythmDoctor.Components

@@ -2,8 +2,8 @@
 using Newtonsoft.Json.Linq;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
-using RhythmBase.Exceptions;
-using RhythmBase.Settings;
+using RhythmBase.Global.Exceptions;
+using RhythmBase.Global.Settings;
 namespace RhythmBase.Adofai.Converters
 {
 	internal class BaseEventConverter

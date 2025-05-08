@@ -1,21 +1,19 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
-using RhythmBase.Adofai.Utils;
 using RhythmBase.Global.Settings;
 
 namespace RhythmBase.Adofai.Converters
 {
-	internal class ADBaseTileEventConverter<TEvent>(ADLevel level, LevelReadOrWriteSettings inputSettings) : ADBaseEventConverter<TEvent>(level, inputSettings) where TEvent : ADBaseTileEvent
+	internal class ADBaseTileEventConverter<TEvent>(ADLevel level, LevelReadOrWriteSettings inputSettings) : ADBaseEventConverter<TEvent>(level, inputSettings) where TEvent : BaseTileEvent
 	{
 		public override TEvent GetDeserializedObject(JObject jobj, Type objectType, TEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken jtoken = jobj["floor"];
 			int? parentIndex = (jtoken != null) ? new int?(jtoken.ToObject<int>()) : null;
 			_canread = false;
-			if (Utils.Utils.ADConvertToType(jobj["eventType"].ToObject<string>()) == typeof(ADCustomEvent))
+			if (Utils.Utils.ADConvertToType(jobj["eventType"].ToObject<string>()) == typeof(CustomEvent))
 			{
 				existingValue = (TEvent)(object)new ADCustomTileEventConverter(level, settings).GetDeserializedObject(jobj, objectType, null, hasExistingValue, serializer);
 			}
@@ -28,7 +26,7 @@ namespace RhythmBase.Adofai.Converters
 			if (parentIndex != null)
 			{
 				existingValue.Parent = level[parentIndex.Value];
-				existingValue.Parent.Add((ADBaseTileEvent)(object)existingValue);
+				existingValue.Parent.Add((BaseTileEvent)(object)existingValue);
 			}
 			return existingValue;
 		}

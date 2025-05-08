@@ -1,7 +1,7 @@
 ﻿using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Events;
 using System.Reflection;
 namespace RhythmBase.RhythmDoctor.Extensions
 {

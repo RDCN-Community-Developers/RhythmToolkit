@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Events;
 
 namespace RhythmBase.RhythmDoctor.Events
 {

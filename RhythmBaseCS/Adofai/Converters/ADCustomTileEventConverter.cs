@@ -7,9 +7,9 @@ using RhythmBase.Global.Settings;
 
 namespace RhythmBase.Adofai.Converters
 {
-	internal class ADCustomTileEventConverter(ADLevel level, LevelReadOrWriteSettings settings) : ADBaseTileEventConverter<ADCustomTileEvent>(level, settings)
+	internal class ADCustomTileEventConverter(ADLevel level, LevelReadOrWriteSettings settings) : ADBaseTileEventConverter<CustomTileEvent>(level, settings)
 	{
-		public override ADCustomTileEvent GetDeserializedObject(JObject jobj, Type objectType, ADCustomTileEvent existingValue, bool hasExistingValue, JsonSerializer serializer) => new()
+		public override CustomTileEvent GetDeserializedObject(JObject jobj, Type objectType, CustomTileEvent existingValue, bool hasExistingValue, JsonSerializer serializer) => new()
 		{
 			Parent = level[jobj["floor"].ToObject<int>()],
 			Data = jobj

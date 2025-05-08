@@ -1,5 +1,4 @@
-﻿using RhythmBase.Components.Easing;
-using System;
+﻿using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
@@ -8,13 +7,16 @@ namespace RhythmBase.Adofai.Events
 	public class SetPlanetRotation : BaseTileEvent
 	{
 		/// <inheritdoc/>
-		public override EventType Type => EventType.SetPlanetRotation;		/// <summary>  
+		public override EventType Type => EventType.SetPlanetRotation;
+		/// <summary>  
 		/// Gets or sets the easing function to be used for the rotation.  
 		/// </summary>  
-		public EaseType Ease { get; set; }		/// <summary>  
+		public EaseType Ease { get; set; }
+		/// <summary>  
 		/// Gets or sets the number of parts the easing function is divided into.  
 		/// </summary>  
-		public int EaseParts { get; set; }		/// <summary>  
+		public int EaseParts { get; set; }
+		/// <summary>  
 		/// Gets or sets the behavior of the easing parts.  
 		/// </summary>  
 		public EasePartBehaviors EasePartBehavior { get; set; }

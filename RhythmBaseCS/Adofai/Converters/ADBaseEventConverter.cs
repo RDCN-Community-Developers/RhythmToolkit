@@ -9,7 +9,7 @@ using RhythmBase.Global.Settings;
 
 namespace RhythmBase.Adofai.Converters
 {
-	internal class ADBaseEventConverter<TEvent>(ADLevel level, LevelReadOrWriteSettings inputSettings) : JsonConverter<TEvent> where TEvent : ADBaseEvent
+	internal class ADBaseEventConverter<TEvent>(ADLevel level, LevelReadOrWriteSettings inputSettings) : JsonConverter<TEvent> where TEvent : BaseEvent
 	{
 		public override bool CanRead
 		{
@@ -34,7 +34,7 @@ namespace RhythmBase.Adofai.Converters
 		{
 			Type SubClassType = Utils.Utils.ADConvertToType(jobj["eventType"].ToObject<string>());
 			_canread = false;
-			existingValue = Conversions.ToGenericParameter<TEvent>((SubClassType != null) ? jobj.ToObject(SubClassType, serializer) : jobj.ToObject<ADCustomEvent>(serializer));
+			existingValue = Conversions.ToGenericParameter<TEvent>((SubClassType != null) ? jobj.ToObject(SubClassType, serializer) : jobj.ToObject<CustomEvent>(serializer));
 			_canread = true;
 			return existingValue;
 		}

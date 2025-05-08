@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Converters;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.Global.Components;
+using RhythmBase.Global.Exceptions;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 
 namespace RhythmBase.RhythmDoctor.Converters

@@ -34,7 +34,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		public override EventType Type => EventType.AddClassicBeat;
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() +
-			$" {Utils.Utils.GetPatternString(this.RowXs())} {((Swing is 0.5f or 0f) ? "" : " Swing")}";		/// <summary>
+			$" {Utils.Utils.GetPatternString(this.RowXs())} {((Swing is 0.5f or 0f) ? "" : " Swing")}";
+		/// <summary>
 		/// Defines the classic beat patterns.
 		/// </summary>
 		public enum ClassicBeatPatterns

@@ -1,5 +1,5 @@
-﻿using RhythmBase.Components.Easing;
-using RhythmBase.Events;
+﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Events;
 
 namespace RhythmBase.Adofai.Events
 {

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿
+using Newtonsoft.Json;
 using RhythmBase.Global.Converters;
 using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;

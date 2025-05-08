@@ -4,10 +4,9 @@ using Newtonsoft.Json.Converters;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Events;
+using RhythmBase.Global.Settings;
 using RhythmBase.Global.Converters;
 using RhythmBase.Global.Exceptions;
-using RhythmBase.Global.Settings;
-using RhythmBase.RhythmDoctor.Events;
 using System.Collections.ObjectModel;
 namespace RhythmBase.Adofai.Utils
 {
@@ -59,7 +58,7 @@ namespace RhythmBase.Adofai.Utils
 		/// <typeparam name="T">The type to convert, which must inherit from BaseEvent.</typeparam>
 		/// <returns>An array of corresponding ADEventType enumerations.</returns>
 		/// <exception cref="IllegalEventTypeException">Thrown when no matching EventType is found.</exception>
-		public static EventType[] ConvertToADEnums<T>() where T : RhythmBase.Events.BaseEvent
+		public static EventType[] ConvertToADEnums<T>() where T : RhythmBase.RhythmDoctor.Events.BaseEvent
 		{
 			EventType[] ConvertToADEnums;
 			try
@@ -128,9 +127,9 @@ namespace RhythmBase.Adofai.Utils
 			converters.Add(new ColorConverter());
 			converters.Add(new TileConverter(adlevel));
 			converters.Add(new CustomTileEventConverter(adlevel, settings));
-			converters.Add(new Converters.CustomEventConverter(adlevel, settings));
+			converters.Add(new CustomEventConverter(adlevel, settings));
 			converters.Add(new BaseTileEventConverter<BaseTileEvent>(adlevel, settings));
-			converters.Add(new Converters.BaseEventConverter<BaseEvent>(adlevel, settings));
+			converters.Add(new BaseEventConverter<BaseEvent>(adlevel, settings));
 			return EventsSerializer;
 		}
 		private static readonly ReadOnlyCollection<Type> ADETypes = (from i in typeof(BaseEvent).Assembly.GetTypes()

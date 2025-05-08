@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Components

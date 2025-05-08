@@ -1,5 +1,4 @@
-﻿using System;
-using RhythmBase.Components;
+﻿using RhythmBase.Global.Components;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
@@ -8,7 +7,8 @@ namespace RhythmBase.Adofai.Events
 	public class ScreenScroll : BaseTaggedTileAction, IStartEvent
 	{
 		/// <inheritdoc/>
-		public override EventType Type => EventType.ScreenScroll;		/// <summary>  
+		public override EventType Type => EventType.ScreenScroll;
+		/// <summary>  
 		/// Gets or sets the scroll size for the screen.  
 		/// </summary>  
 		public RDSizeN Scroll { get; set; }

@@ -1,4 +1,20 @@
-﻿namespace RhythmBase.Global.Exceptions
+﻿using RhythmBase.Global.Components;
+using RhythmBase.Global.Converters;
+using RhythmBase.Global.Events;
+using RhythmBase.Global.Exceptions;
+using RhythmBase.Global.Settings;
+using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Converters;
+using RhythmBase.Adofai.Events;
+using RhythmBase.Adofai.Extensions;
+using RhythmBase.Adofai.Utils;
+using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
+using RhythmBase.RhythmDoctor.Utils;
+
+namespace RhythmBase.Global.Exceptions
 {
 	/// <summary>
 	/// Exception thrown when the version is too low.

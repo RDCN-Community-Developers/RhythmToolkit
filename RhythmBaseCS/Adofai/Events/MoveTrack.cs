@@ -1,8 +1,7 @@
 ﻿using RhythmBase.Adofai.Components;
-using RhythmBase.Components;
-using RhythmBase.Components.Easing;
-using RhythmBase.Events;
-using System.Runtime.CompilerServices;
+using RhythmBase.Global.Components;
+using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Events;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
@@ -31,10 +30,12 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the position offset for the track movement.  
 		/// </summary>  
-		public RDPoint PositionOffset { get; set; }		/// <summary>  
+		public RDPoint PositionOffset { get; set; }
+		/// <summary>  
 		/// Gets or sets the easing type for the track movement.  
 		/// </summary>  
-		public EaseType Ease { get; set; }		/// <summary>  
+		public EaseType Ease { get; set; }
+		/// <summary>  
 		/// Gets or sets a value indicating whether the movement should only affect the maximum visual effects.  
 		/// </summary>  
 		public bool MaxVfxOnly { get; set; }	}
