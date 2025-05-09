@@ -470,96 +470,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="bars">Specified bar range.</param>
 		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bars)));
 		/// <summary>
-		/// Remove a sequence of events in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent"></typeparam>
-		/// <param name="e">Collection</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>()));
-		/// <summary>
-		/// Remove a sequence of events located at a beat in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="beat">Specified beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(beat)));
-		/// <summary>
-		/// Remove a sequence of events located at a range of beat in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="startBeat">Specified start beat.</param>
-		/// <param name="endBeat">Specified end beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(startBeat, endBeat)));
-		/// <summary>
-		/// Filters a sequence of events located at a range of beat in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="range">Specified beat range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(range)));
-		/// <summary>
-		/// Remove a sequence of events located at a bar in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="bar">Specified bar.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(bar)));
-		/// <summary>
-		/// Remove a sequence of events located at a range of bar in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="bars">Specified bar range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where<TEvent>(bars)));
-		/// <summary>
-		/// Remove a sequence of events based on a predicate located at a range of bar in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate)));
-		/// <summary>
-		/// Remove a sequence of events based on a predicate located at a beat in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="predicate">A function to test each event for a condition.</param>
-		/// <param name="beat">Specified beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, beat)));
-		/// <summary>
-		/// Remove a sequence of events based on a predicate located at a range of beat in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="predicate">A function to test each event for a condition.</param>
-		/// <param name="startBeat">Specified start beat.</param>
-		/// <param name="endBeat">Specified end beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, startBeat, endBeat)));
-		/// <summary>
-		/// Remove a sequence of events based on a predicate located at a range of beat in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="e">Collection</param>
-		/// <param name="predicate">A function to test each event for a condition.</param>
-		/// <param name="range">Specified beat range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, range)));
-		/// <summary>
-		/// Filters a sequence of events based on a predicate located at a bar in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="predicate">A function to test each event for a condition.</param>
-		/// <param name="bar">Specified bar.</param>
-		/// <param name="e">Collection</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bar)));
-		/// <summary>
-		/// Filters a sequence of events based on a predicate located at a range of bar in specified event type.
-		/// </summary>
-		/// <typeparam name="TEvent">Specified event type.</typeparam>
-		/// <param name="predicate">A function to test each event for a condition.</param>
-		/// <param name="bars">Specified bar range.</param>
-		/// <param name="e">Collection</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bars)));
-		/// <summary>
 		/// Returns the first element of the collection.
 		/// </summary>
 		/// <param name="e">Collection</param>
@@ -811,19 +721,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">Specified condition.</param>
 		/// <param name="bar">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.TakeWhile<TEvent>(bar).TakeWhile(predicate);
-		/// <summary>
-		/// Remove a range of events.
-		/// </summary>
-		/// <param name="e">Collection</param>
-		/// <param name="items">A range of events.</param>
-		/// <returns>The number of events successfully removed.</returns>
-		public static int RemoveRange<TEvent>(this OrderedEventCollection e, IEnumerable<TEvent> items) where TEvent : IBaseEvent
-		{
-			int count = 0;
-			foreach (var item in items)
-				count += e.Remove(item) ? 1 : 0;
-			return count;
-		}
 		/// <summary>
 		/// Remove a range of events.
 		/// </summary>

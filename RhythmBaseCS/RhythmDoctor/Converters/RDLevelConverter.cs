@@ -42,7 +42,18 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WritePropertyName("events");
 			writer.WriteStartArray();
 			foreach (IBaseEvent item3 in settings.InactiveEventsHandling == InactiveEventsHandling.Retain ? value.Where(i => i.Active) : value)
-				writer.WriteRawValue(JsonConvert.SerializeObject(item3, Formatting.None, AllInOneSerializer));
+				if (item3 is Group group)
+					foreach (var item in group)
+					{
+						if (item == group)
+							throw new RhythmBaseException("A group cannot contain itself as an item.");
+						else if (item is SetCrotchetsPerBar)
+							throw new RhythmBaseException("SetCrotchetsPerBar events are not allowed within a group.");
+						item._beat._calculator = value.Calculator;
+						writer.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer));
+					}
+				else
+					writer.WriteRawValue(JsonConvert.SerializeObject(item3, Formatting.None, AllInOneSerializer));
 			writer.WriteEndArray();
 			writer.WritePropertyName("conditionals");
 			writer.WriteStartArray();
@@ -129,6 +140,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			{
 				List<(FloatingText @event, int id)> FloatingTextCollection = [];
 				List<(AdvanceText @event, int id)> AdvanceTextCollection = [];
+				List<Group> GroupCollection = [];
 				foreach (JToken item in JEvents)
 				{
 					if (!(settings.InactiveEventsHandling > InactiveEventsHandling.Retain && (item["active"]?.Value<bool>() ?? false)))
@@ -168,12 +180,24 @@ namespace RhythmBase.RhythmDoctor.Converters
 								}
 								if (settings.InactiveEventsHandling == InactiveEventsHandling.Store && !TempEvent2.Active)
 									settings.InactiveEvents.Add(TempEvent2);
-								else
-									outLevel.Add(TempEvent2);
+								else if (settings.EnableGroupEvent && TempEvent2 is Comment comment && Group.TryParse(comment, out Group? group))
+								{
+									GroupCollection.Add(group);
+									outLevel.Add(group);
+								}
+								else outLevel.Add(TempEvent2);
 							}
 						}
 					}
 				}
+				if (settings.EnableGroupEvent)
+					foreach (var group in GroupCollection)
+					{
+						outLevel.RemoveAll(i => (
+						(i is TagAction tag && Group.MatchTag(tag.ActionTag, out string type, out _, out _)) ||
+						(Group.MatchTag(i.Tag, out type, out _, out _))) &&
+						type == group.GetType().Name);
+					}
 				foreach (var (@event, id) in AdvanceTextCollection)
 				{
 					FloatingText Parent = FloatingTextCollection.First((i) => i.id == id).@event;
