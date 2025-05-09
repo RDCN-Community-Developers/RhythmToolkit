@@ -1,4 +1,5 @@
-﻿namespace RhythmBase.RhythmDoctor.Events
+﻿using RhythmBase.RhythmDoctor.Components;
+namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents an event to hide a row with specific transitions and visibility options.

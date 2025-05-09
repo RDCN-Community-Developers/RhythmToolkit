@@ -1,12 +1,8 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Components.Easing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Events;
 
-namespace RhythmBase.Events
+namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Represents a window resize event.  

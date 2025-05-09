@@ -1,4 +1,4 @@
-﻿using RhythmBase.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 using sly.lexer.fsm.transitioncheck;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RhythmBase.Events
+namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Represents an action to change the character in a row event.  

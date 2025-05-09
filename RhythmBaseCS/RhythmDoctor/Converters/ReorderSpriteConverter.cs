@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Components;
-using RhythmBase.Events;
-using RhythmBase.Settings;
-namespace RhythmBase.Converters
+using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.Global.Settings;
+namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class ReorderSpriteConverter(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<ReorderRow>(level, inputSettings)
 	{

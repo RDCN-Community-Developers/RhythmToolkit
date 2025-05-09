@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.Components
+﻿namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Defines the possible transition types for hiding the row.

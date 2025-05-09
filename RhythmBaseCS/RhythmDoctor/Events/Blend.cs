@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RhythmBase.Events
+namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Represents a blend decoration action in the rhythm base.  

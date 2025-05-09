@@ -1,4 +1,4 @@
-﻿using RhythmBase.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace RhythmBase.Events
+namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Represents the base class for all window-related events.  
