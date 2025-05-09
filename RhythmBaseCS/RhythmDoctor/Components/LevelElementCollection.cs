@@ -48,6 +48,12 @@ namespace RhythmBase.RhythmDoctor.Components
 		public int IndexOf(T item) => _items.IndexOf(item);
 		/// <inheritdoc/>
 		public abstract bool Remove(T item);
+		/// <summary>  
+		/// Retrieves the elements in the collection that are associated with the specified room.  
+		/// </summary>  
+		/// <param name="room">The <see cref="RDRoom"/> to filter the elements by.</param>  
+		/// <returns>A collection of elements associated with the specified room.</returns>  
+		public abstract IEnumerable<T> ElementsOf(RDRoom room);
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

@@ -28,7 +28,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		/// <param name="item">The event to remove.</param>
 		/// <returns>The result of the removal operation.</returns>
-		public object Remove(TEvent item)
+		public virtual bool Remove(TEvent item)
 		{
 			_types.Remove(item.Type);
 			return list.Remove(item);

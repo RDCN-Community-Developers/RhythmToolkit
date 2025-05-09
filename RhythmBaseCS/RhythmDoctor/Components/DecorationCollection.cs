@@ -93,5 +93,7 @@
 			_items[index].Parent = null;
 			_items.RemoveAt(index);
 		}
+		/// <inheritdoc/>
+		public override IEnumerable<Decoration> ElementsOf(RDRoom room) => _items.Where(item => room.Contains(item.Room));
 	}
 }

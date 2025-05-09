@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Adofai.Events;
+﻿using RhythmBase.Adofai.Events;
 using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Adofai.Components
 {
@@ -106,6 +105,17 @@ namespace RhythmBase.Adofai.Components
 		{
 			if ((item is not IStartEvent) || (Previous is null))
 				base.Add(item);
+			item.Parent = this;
+		}
+		/// <inheritdoc />
+		public override bool Remove(BaseTileEvent item)
+		{
+			if (base.Remove(item))
+			{
+				item.Parent = null;
+				return true;
+			}
+			return false;
 		}
 		/// <summary>
 		/// Returns a string representation of the tile, including its index, beat, angle, and event count.

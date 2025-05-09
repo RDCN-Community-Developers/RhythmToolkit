@@ -144,7 +144,8 @@ namespace RhythmBase.RhythmDoctor.Components
 				playsong.Song = new RDAudio() { Filename = "sndOrientalTechno" };
 				settheme.Preset = SetTheme.Theme.OrientalTechno;
 				rdlevel.AddRange([playsong, settheme]);
-				Row samurai = rdlevel.CreateRow(new RDSingleRoom(RDRoomIndex.Room1), RDCharacters.Samurai);
+				Row samurai = new() { Rooms = RDRoomIndex.Room1, Character = RDCharacters.Samurai };
+				rdlevel.Rows.Add(samurai);
 				samurai.Sound.Filename = "Shaker";
 				samurai.Add(new AddClassicBeat());
 				return rdlevel;
