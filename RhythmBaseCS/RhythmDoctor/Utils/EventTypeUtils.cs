@@ -233,17 +233,23 @@ namespace RhythmBase.RhythmDoctor.Utils
 			EventType.CallCustomMethod
 		]);
 
+		/// <summary>  
+		/// Event types that inherit from classic row actions.  
+		/// </summary>  
 		public static ReadOnlyCollection<EventType> EventTypeEnumsForRowClassic => new(
 		[
-			EventType.AddClassicBeat,
-			EventType.AddFreeTimeBeat,
-			EventType.PulseFreeTimeBeat,
-			EventType.SetRowXs,
+		   EventType.AddClassicBeat,
+		   EventType.AddFreeTimeBeat,
+		   EventType.PulseFreeTimeBeat,
+		   EventType.SetRowXs,
 		]);
+		/// <summary>  
+		/// Event types that inherit from oneshot row actions.  
+		/// </summary>  
 		public static ReadOnlyCollection<EventType> EventTypeEnumsForRowOneshot => new(
 		[
-			EventType.AddOneshotBeat,
-			EventType.SetOneshotWave,
+		   EventType.AddOneshotBeat,
+		   EventType.SetOneshotWave,
 		]);
 	}
 }
