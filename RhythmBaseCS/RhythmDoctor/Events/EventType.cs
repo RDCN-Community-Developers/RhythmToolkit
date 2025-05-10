@@ -74,6 +74,10 @@
 		/// </summary>
 		FloatingText,
 		/// <summary>
+		/// A group of events, from user-defined event.
+		/// </summary>
+		Group,
+		/// <summary>
 		/// Hide the row.
 		/// </summary>
 		HideRow,

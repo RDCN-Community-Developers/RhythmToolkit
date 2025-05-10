@@ -23,13 +23,12 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				IfNullThrowException();
-				if (!_isBeatLoaded)
+				if (!_isBeatLoaded && _calculator is not null)
 				{
 					if (_isBarBeatLoaded)
-						_beat = _calculator!.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
+						_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
 					else if (_isTimeSpanLoaded)
-						_beat = _calculator!.TimeSpanToBeatOnly(_TimeSpan) - 1f;
+						_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
 					_isBeatLoaded = true;
 				}
 				return _beat + 1f;
@@ -42,14 +41,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				IfNullThrowException();
-				if (!_isBarBeatLoaded)
+				if (!_isBarBeatLoaded && _calculator is not null)
 				{
 					if (_isBeatLoaded)
-						_BarBeat = _calculator!.BeatOnlyToBarBeat(_beat + 1f);
+						_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1f);
 					else if (_isTimeSpanLoaded)
 					{
-						_beat = _calculator!.TimeSpanToBeatOnly(_TimeSpan) - 1f;
+						_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
 						_isBeatLoaded = true;
 						_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1f);
 					}
@@ -65,16 +63,15 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				IfNullThrowException();
-				if (!_isTimeSpanLoaded)
+				if (!_isTimeSpanLoaded && _calculator is not null)
 				{
 					if (_isBeatLoaded)
-						_TimeSpan = _calculator!.BeatOnlyToTimeSpan(_beat + 1f);
+						_TimeSpan = _calculator.BeatOnlyToTimeSpan(_beat + 1f);
 					else
 					{
 						if (_isBarBeatLoaded)
 						{
-							_beat = _calculator!.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
+							_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
 							_isBeatLoaded = true;
 							_TimeSpan = _calculator.BeatOnlyToTimeSpan(_beat + 1f);
 						}
@@ -160,7 +157,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="calculator">Specified calculator.</param>
 		/// <param name="beatOnly">The total number of beats from this moment to the beginning of the level.</param>
-		public RDBeat(BeatCalculator? calculator, float beatOnly)
+		public RDBeat(BeatCalculator calculator, float beatOnly)
 		{
 			this = new RDBeat(beatOnly);
 			_calculator = calculator;

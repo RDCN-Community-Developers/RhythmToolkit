@@ -433,8 +433,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public override void Add(IBaseEvent item)
 		{
 			//添加默认节拍
-			if (((BaseEvent)item)._beat.IsEmpty)
-				((BaseEvent)item)._beat._calculator = Calculator;
+			((BaseEvent)item)._beat._calculator = Calculator;
 			//部分事件只能在小节的开头
 			if (item is IBarBeginningEvent @event && ((BaseEvent)item)._beat.BarBeat.beat != 1f)
 				throw new IllegalBeatException(@event);
@@ -451,20 +450,20 @@ namespace RhythmBase.RhythmDoctor.Components
 				base.Add(item);
 			else if (item is TintRows tintRows && tintRows.Parent == null)
 				base.Add(item);
-			else if (item is BaseRowAction baseRowAction)
+			else if (item is BaseRowAction rowAction)
 			{
-				if (baseRowAction.Parent == null)
-					throw new UnreadableEventException("The Parent property of this event should not be null. Call RowEventCollection.Add() instead.", item);
 				//添加至对应轨道
-				baseRowAction.Parent.AddSafely(baseRowAction);
+				Row? parent = rowAction.Parent ?? (rowAction.Index < Rows.Count ? Rows[rowAction.Index] : null);
+				if (parent == null) Rows._unhandledRowEvents.Add(rowAction);
+				else parent.AddSafely(rowAction);
 				base.Add(item);
 			}
 			else if (item is BaseDecorationAction decoAction)
 			{
-				if (decoAction.Parent == null)
-					throw new UnreadableEventException("The Parent property of this event should not be null. Call DecorationEventCollection.Add() instead.", item);
 				//添加至对应精灵
-				decoAction.Parent.AddSafely(decoAction);
+				Decoration? parent = decoAction.Parent ?? Decorations[decoAction._decoId];
+				if (parent == null) Decorations._unhandledRowEvents.Add(decoAction);
+				else parent.AddSafely(decoAction);
 				base.Add(item);
 			}
 			//BPM 和 CPB

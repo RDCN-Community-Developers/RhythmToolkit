@@ -5,8 +5,9 @@ using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class CustomDecorationEventConverter(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseDecorationActionConverter<CustomDecorationEvent>(level, inputSettings)
+	internal class CustomDecorationEventConverter(RDLevel? level, LevelReadOrWriteSettings inputSettings) : BaseDecorationActionConverter<CustomDecorationEvent>(level, inputSettings)
 	{
+		public CustomDecorationEventConverter(LevelReadOrWriteSettings inputSettings) : this(null, inputSettings) { }
 		public override CustomDecorationEvent? GetDeserializedObject(JObject jobj, Type objectType, CustomDecorationEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			CustomDecorationEvent? result = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);

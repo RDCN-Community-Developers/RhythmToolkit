@@ -11,15 +11,6 @@ namespace RhythmBase.Converters
 		{
 			string s = JToken.Load(reader).ToObject<string>()!;
 			Condition Value = new();
-			//MatchCollection ConditionIds = ConditionsRegex().Matches(J);
-			//foreach (Match match in ConditionIds)
-			//{
-			//	BaseConditional Parent = (from i in conditionals
-			//							  where i.Id == int.Parse(ConditionIndexRegex().Match(match.Value).Value)
-			//							  select i).First();
-			//	Value.ConditionLists.Add(new ValueTuple<bool, BaseConditional>(match.Value[0] != '~', Parent));
-			//}
-			//Value.Duration = float.Parse (ConditionDurationRegex().Match(J).Value);
 			int p = 0;
 			do
 			{
@@ -72,11 +63,5 @@ namespace RhythmBase.Converters
 		}
 		private static bool ReadIsEndList(string s, ref int p) => p < s.Length && s[p++] == 'd';
 		private readonly List<BaseConditional> conditionals = Conditionals;
-		[GeneratedRegex("~?\\d+(?=[&d])")]
-		private static partial Regex ConditionsRegex();
-		[GeneratedRegex("\\d+")]
-		private static partial Regex ConditionIndexRegex();
-		[GeneratedRegex("(?<=d)[\\d\\.]+")]
-		private static partial Regex ConditionDurationRegex();
 	}
 }

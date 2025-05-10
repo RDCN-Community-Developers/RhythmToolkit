@@ -6,8 +6,9 @@ using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class BaseRowActionConverter<TEvent>(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<TEvent>(level, inputSettings) where TEvent : BaseRowAction
+	internal class BaseRowActionConverter<TEvent>(RDLevel? level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<TEvent>(level, inputSettings) where TEvent : BaseRowAction
 	{
+		public BaseRowActionConverter(LevelReadOrWriteSettings inputSettings) : this(null, inputSettings) { }
 		public override TEvent? GetDeserializedObject(JObject jobj, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			TEvent? obj = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
@@ -27,7 +28,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					}
 				}
 			}
-			else if (rowId >= level.Rows.Count)
+			else if (settings.Linked && rowId >= level?.Rows.Count)
 			{
 				switch (settings.UnreadableEventsHandling)
 				{
@@ -40,7 +41,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			if (settings.Linked)
 			{
-				Row Parent = level.Rows[rowId];
+				Row? Parent = level?.Rows[rowId];
 				obj._parent = Parent;
 			}
 			obj._row = rowId;

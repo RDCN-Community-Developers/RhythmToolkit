@@ -57,8 +57,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 			EventType[] ConvertToEnums;
 			//try
 			//{
-				//var _ = typeof(IBaseEvent).Assembly.GetTypes().Where(i=>i.Namespace == typeof(IBaseEvent).Namespace);
-				ConvertToEnums = EventType_Enums[type];
+			//var _ = typeof(IBaseEvent).Assembly.GetTypes().Where(i=>i.Namespace == typeof(IBaseEvent).Namespace);
+			ConvertToEnums = EventType_Enums[type];
 			//}
 			//catch (Exception ex)
 			//{
@@ -127,9 +127,13 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>  
 		private static readonly ReadOnlyDictionary<Type, EventType[]> EventType_Enums = EventTypes.ToDictionary((i) => i, (i) => (from j in EventTypes
 																																  where (j == i || j.IsAssignableTo(i)) && !j.IsAbstract
-																																  select j)
-			.Select((j) => ToEnum(j))
+																																  select ToEnum(j))
 			.ToArray())
+			.AsReadOnly();
+		internal static readonly ReadOnlyDictionary<string, Type> GroupTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
+																				where i.IsAssignableTo(typeof(Group))
+																				select i)
+			.ToDictionary(i => i.Name, i => i)
 			.AsReadOnly();
 		/// <summary>  
 		/// A dictionary that records the correspondence of <see cref="T:RhythmBase.Events.EventType" /> to event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" />.  
