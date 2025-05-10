@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Converters;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
@@ -8,10 +7,11 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class BaseEventConverter<TEvent>(RDLevel level, LevelReadOrWriteSettings inputSettings) : JsonConverter<TEvent> where TEvent : IBaseEvent
+	internal class BaseEventConverter<TEvent>(RDLevel? level, LevelReadOrWriteSettings inputSettings) : JsonConverter<TEvent> where TEvent : IBaseEvent
 	{
 		public override bool CanRead => _canread;
 		public override bool CanWrite => _canwrite;
+		public BaseEventConverter(LevelReadOrWriteSettings inputSettings) : this(null, inputSettings) { }
 		public override void WriteJson(JsonWriter writer, TEvent? value, JsonSerializer serializer)
 		{
 			if (value == null)
@@ -38,11 +38,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 			existingValue = (TEvent?)jobj.ToObject(SubClassType, serializer)
 				?? throw new ConvertingException(jobj, new Exception($"Cannot convert this event: \"{jobj}\". path \"{jobj.Path}\""));
 			_canread = true;
-			RDBeat beat = level.Calculator.BeatOf(
-				uint.Parse((string?)jobj["bar"]
-				?? throw new Exception($"Missing property \"{jobj["bar"]}\".path \"{jobj.Path}\"")),
-				float.Parse((string?)jobj["beat"] ?? 1.ToString()));
-			((BaseEvent)(object)existingValue)._beat = beat;
+			uint bar = uint.Parse((string?)jobj["bar"]
+				?? throw new Exception($"Missing property \"{jobj["bar"]}\".path \"{jobj.Path}\""));
+			float beat = float.Parse((string?)jobj["beat"] ?? 1.ToString());
+			RDBeat rdbeat = level?.Calculator.BeatOf(bar, beat) ?? new(bar, beat);
+			((BaseEvent)(object)existingValue)._beat = rdbeat;
 			return existingValue;
 		}
 		public virtual JObject SetSerializedObject(TEvent value, JsonSerializer serializer)
@@ -61,7 +61,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				JObj.Property("tag")?.Remove();
 			return JObj;
 		}
-		protected readonly RDLevel level = level;
+		protected readonly RDLevel? level = level;
 		protected readonly LevelReadOrWriteSettings settings = inputSettings;
 		private bool _canread = true;
 		private bool _canwrite = true;

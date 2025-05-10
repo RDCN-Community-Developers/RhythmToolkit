@@ -6,7 +6,7 @@ using RhythmBase.RhythmDoctor.Utils;
 
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class BookmarkConverter(BeatCalculator calculator) : JsonConverter<Bookmark>
+	internal class BookmarkConverter(BeatCalculator? calculator = default) : JsonConverter<Bookmark>
 	{
 		public override void WriteJson(JsonWriter writer, Bookmark? value, JsonSerializer serializer)
 		{
@@ -23,12 +23,16 @@ namespace RhythmBase.RhythmDoctor.Converters
 		public override Bookmark ReadJson(JsonReader reader, Type objectType, Bookmark? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken jobj = JToken.ReadFrom(reader);
+			uint bar = jobj["bar"]?.ToObject<uint>()
+				?? throw new ConvertingException(jobj, new Exception($"Missing property \"{jobj["bar"]}\". path \"{jobj.Path}\""));
+			float beat = jobj["beat"]?.ToObject<float>()
+				?? throw new ConvertingException(jobj, new Exception($"Missing property \"{jobj["beat"]}\". path \"{jobj.Path}\""));
 			return new Bookmark
 			{
-				Beat = calculator.BeatOf(jobj["bar"]!.ToObject<uint>(), jobj["beat"]!.ToObject<float>()),
+				Beat = calculator?.BeatOf(bar, beat) ?? new(bar, beat),
 				Color = Enum.Parse<Bookmark.BookmarkColors>((string)jobj["color"]!)
 			};
 		}
-		private readonly BeatCalculator calculator = calculator;
+		private readonly BeatCalculator? calculator = calculator;
 	}
 }

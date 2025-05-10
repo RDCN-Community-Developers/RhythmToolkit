@@ -5,8 +5,9 @@ using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class TagActionConverter(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<TagAction>(level, inputSettings)
+	internal class TagActionConverter(RDLevel? level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<TagAction>(level, inputSettings)
 	{
+		public TagActionConverter(LevelReadOrWriteSettings inputSettings) : this(null, inputSettings) { }
 		public override JObject SetSerializedObject(TagAction value, JsonSerializer serializer)
 		{
 			JObject jobj = base.SetSerializedObject(value, serializer);

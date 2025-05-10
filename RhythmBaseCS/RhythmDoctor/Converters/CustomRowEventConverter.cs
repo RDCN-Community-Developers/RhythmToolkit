@@ -5,8 +5,9 @@ using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class CustomRowEventConverter(RDLevel level, LevelReadOrWriteSettings inputSettings) : BaseRowActionConverter<CustomRowEvent>(level, inputSettings)
+	internal class CustomRowEventConverter(RDLevel? level, LevelReadOrWriteSettings inputSettings) : BaseRowActionConverter<CustomRowEvent>(level, inputSettings)
 	{
+		public CustomRowEventConverter(LevelReadOrWriteSettings inputSettings) : this(null, inputSettings) { }
 		public override CustomRowEvent? GetDeserializedObject(JObject jobj, Type objectType, CustomRowEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			CustomRowEvent? result = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
