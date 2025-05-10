@@ -61,6 +61,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteEndArray();
 			writer.WriteEndObject();
 			writer.Close();
+			foreach(BaseRowAction baseRowAction in value.Rows._unhandledRowEvents)
+				settings.UnreadableEvents.Add((JObject.FromObject(baseRowAction), "Unhandled row event"));
+			foreach (BaseDecorationAction baseDecorationAction in value.Decorations._unhandledRowEvents)
+				settings.UnreadableEvents.Add((JObject.FromObject(baseDecorationAction), "Unhandled decoration event"));
 		}
 		public override RDLevel ReadJson(JsonReader reader, Type objectType, RDLevel? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{

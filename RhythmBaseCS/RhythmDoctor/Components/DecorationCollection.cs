@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.RhythmDoctor.Components
+﻿using RhythmBase.RhythmDoctor.Events;
+
+namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Represents a collection of decoration events in a level.
@@ -9,14 +11,19 @@
 	/// <param name="parent">The parent <see cref="RDLevel"/> instance associated with this collection.</param>
 	public class DecorationCollection(RDLevel parent) : LevelElementCollection<Decoration>(parent, false)
 	{
+		internal readonly List<BaseDecorationAction> _unhandledRowEvents = [];
 		/// <summary>
 		/// Adds a <see cref="Decoration"/> to the collection.
 		/// </summary>
-		/// <param name="item">The <see cref="Decoration"/> to add.</param>
-		public override void Add(Decoration item)
+		/// <param name="decoration">The <see cref="Decoration"/> to add.</param>
+		public override void Add(Decoration decoration)
 		{
-			item.Parent = parent;
-			_items.Add(item);
+			if(_items.Contains(decoration))
+				return;
+			decoration.Parent = parent;
+			foreach (var i in decoration)
+				parent.Add(i);
+			_items.Add(decoration);
 		}
 		/// <summary>
 		/// Removes a <see cref="Decoration"/> from the collection.
@@ -26,7 +33,10 @@
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> is null.</exception>
 		public override bool Remove(Decoration item)
 		{
-			ArgumentNullException.ThrowIfNull(item);
+			if (!_items.Contains(item))
+				return false;
+			foreach (var i in item)
+				parent.Remove(i);
 			item.Parent = null;
 			return _items.Remove(item);
 		}
