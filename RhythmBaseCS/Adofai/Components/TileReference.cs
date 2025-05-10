@@ -1,5 +1,5 @@
-﻿using RhythmBase.Adofai.Converters;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using RhythmBase.Adofai.Converters;
 
 namespace RhythmBase.Adofai.Components
 {
