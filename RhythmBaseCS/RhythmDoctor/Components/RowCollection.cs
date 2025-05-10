@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.RhythmDoctor.Components
+﻿using RhythmBase.RhythmDoctor.Events;
+
+namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Represents a collection of row events in a level.
@@ -9,14 +11,21 @@
 	/// <param name="parent">The parent <see cref="RDLevel"/> instance associated with this collection.</param>
 	public class RowCollection(RDLevel parent) : LevelElementCollection<Row>(parent, true)
 	{
+		internal readonly List<BaseRowAction> _unhandledRowEvents = [];
 		/// <summary>
 		/// Adds a <see cref="Row"/> to the collection.
 		/// </summary>
-		/// <param name="item">The <see cref="Row"/> to add.</param>
-		public override void Add(Row item)
+		/// <param name="row">The <see cref="Row"/> to add.</param>
+		public override void Add(Row row)
 		{
-			item.Parent = parent;
-			_items.Add(item);
+			if (_items.Contains(row))
+				return;
+			row.Parent = parent;
+			foreach (var i in row)
+				parent.Add(i);
+			foreach(var e in _unhandledRowEvents.Where(i=>i.Index == Count))
+				row.Add(e);
+			_items.Add(row);
 		}
 		/// <summary>
 		/// Removes a <see cref="Row"/> from the collection.
@@ -26,7 +35,10 @@
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> is null.</exception>
 		public override bool Remove(Row item)
 		{
-			ArgumentNullException.ThrowIfNull(item);
+			if (!_items.Contains(item))
+				return false;
+			foreach (var i in item)
+				parent.Remove(i);
 			item.Parent = null;
 			return _items.Remove(item);
 		}
