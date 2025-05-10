@@ -16,9 +16,14 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			if (value == null)
 				throw new ConvertingException($"Event is null");
-			serializer.Formatting = Formatting.None;
-			writer.WriteRawValue(JsonConvert.SerializeObject(SetSerializedObject(value, serializer)));
-			serializer.Formatting = Formatting.Indented;
+			if (_canwrite)
+			{
+				_canwrite = false;
+				serializer.Formatting = Formatting.None;
+				writer.WriteRawValue(JsonConvert.SerializeObject(SetSerializedObject(value, serializer)));
+				serializer.Formatting = Formatting.Indented;
+				_canwrite = true;
+			}
 		}
 		public override TEvent? ReadJson(JsonReader reader, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer) => GetDeserializedObject((JObject)JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer);
 		public virtual TEvent? GetDeserializedObject(JObject jobj, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
