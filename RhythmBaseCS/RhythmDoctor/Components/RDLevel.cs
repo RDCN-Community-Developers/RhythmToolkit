@@ -562,6 +562,20 @@ namespace RhythmBase.RhythmDoctor.Components
 				]
 			};
 		}
+		/// <summary>  
+		/// Extracts all group events from the level and adds their individual events to the level.  
+		/// </summary>  
+		/// <remarks>  
+		/// This method iterates through all group events in the level, adds their individual events to the level,  
+		/// and then removes the original group events.  
+		/// </remarks>  
+		public void ExtractGroups()
+		{
+			IEnumerable<Group> groups = this.Where<Group>();
+			foreach (var group in groups)
+				this.AddRange(group);
+			this.RemoveRange(groups);
+		}
 		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item)
 		{
 			SetCrotchetsPerBar? frt = item.FrontOrDefault();
