@@ -39,7 +39,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 						throw new ConvertingException($"The row id {rowId} out of range.");
 				}
 			}
-			if (settings.Linked)
+			if (settings.Linked && rowId >= 0)
 			{
 				Row? Parent = level?.Rows[rowId];
 				obj._parent = Parent;
