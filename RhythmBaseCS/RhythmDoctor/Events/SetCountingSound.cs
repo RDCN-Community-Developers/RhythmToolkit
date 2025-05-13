@@ -12,9 +12,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public SetCountingSound()
 		{
-			Sounds = new RDAudio[7];
-			Type = EventType.SetCountingSound;
-			Tab = Tabs.Sounds;
 		}
 		/// <summary>
 		/// Gets or sets the voice source for the counting sound.
@@ -35,15 +32,23 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the list of sounds for the counting sound.
 		/// </summary>
-		public RDAudio[] Sounds { get; set; }
+		public RDAudio[] Sounds { get; set; } = [
+			new RDAudio(){Filename = "Jyi - ChineseCount1" },
+			new RDAudio(){Filename = "Jyi - ChineseCount2" },
+			new RDAudio(){Filename = "Jyi - ChineseCount3" },
+			new RDAudio(){Filename = "Jyi - ChineseCount4" },
+			new RDAudio(){Filename = "Jyi - ChineseCount5" },
+			new RDAudio(){Filename = "Jyi - ChineseCount6" },
+			new RDAudio(){Filename = "Jyi - ChineseCount7" }
+			];
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetCountingSound;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Sounds;
 		/// <summary>
 		/// Represents the different voice sources for the counting sound.
 		/// </summary>

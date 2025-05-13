@@ -103,6 +103,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
 					nameof(SetCountingSound.VoiceSource) => i => i is SetCountingSound e && e.VoiceSource == SetCountingSound.VoiceSources.Custom,
+					nameof(SetCountingSound.Sounds) => i => i is SetCountingSound e && e.VoiceSource == SetCountingSound.VoiceSources.Custom,
 					_ => null
 				};
 			if (p.DeclaringType == typeof(AddOneshotBeat))
