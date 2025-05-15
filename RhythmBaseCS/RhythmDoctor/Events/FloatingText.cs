@@ -66,6 +66,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public AnchorStyle Anchor { get; set; }
 		/// <summary>
+		/// Gets or sets a value indicating whether to narrate the text.
+		/// </summary>
+		public bool Narrate { get; set; } = true;
+		/// <summary>
 		/// Specifies the anchor style of the text.
 		/// </summary>
 		[JsonConverter(typeof(AnchorStyleConverter))]
