@@ -54,16 +54,10 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <exception cref="IllegalEventTypeException">Thrown when an unexpected exception occurs.</exception>  
 		public static EventType[] ToEnums(Type type)
 		{
+			if (type.IsAssignableTo(typeof(Group)))
+				return [EventType.Group];
 			EventType[] ConvertToEnums;
-			//try
-			//{
-			//var _ = typeof(IBaseEvent).Assembly.GetTypes().Where(i=>i.Namespace == typeof(IBaseEvent).Namespace);
 			ConvertToEnums = EventType_Enums[type];
-			//}
-			//catch (Exception ex)
-			//{
-			//	throw new IllegalEventTypeException(type, "This exception is not expected. Please contact the developer to handle this exception.", ex);
-			//}
 			return ConvertToEnums;
 		}
 		/// <summary>  

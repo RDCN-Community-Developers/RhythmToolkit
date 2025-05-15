@@ -44,18 +44,18 @@ namespace RhythmBase.RhythmDoctor.Converters
 			foreach (IBaseEvent item3 in value)
 				if (item3 is Group group)
 					if (settings.EnableGroupEvent)
+					{
+						List<Group> groups = [group];
 						foreach (var item in group)
 						{
-							if (item == group)
-								throw new RhythmBaseException("A group cannot contain itself as an item.");
-							else if (item is SetCrotchetsPerBar)
-								throw new RhythmBaseException("SetCrotchetsPerBar events are not allowed within a group.");
+							if (groups.Contains(item)) throw new RhythmBaseException("Detected a group within itself. This is not allowed.");
+							else if (item is SetCrotchetsPerBar) throw new RhythmBaseException("SetCrotchetsPerBar events are not allowed within a group.");
 							item._beat._calculator = value.Calculator;
 							writer.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer));
 						}
+					}
 					else throw new RhythmBaseException("An unexpected error occurred while processing the group event. Ensure that the group event is properly configured and adheres to the expected structure.");
-				else
-					writer.WriteRawValue(JsonConvert.SerializeObject(item3, Formatting.None, AllInOneSerializer));
+				else writer.WriteRawValue(JsonConvert.SerializeObject(item3, Formatting.None, AllInOneSerializer));
 			writer.WriteEndArray();
 			writer.WritePropertyName("conditionals");
 			writer.WriteStartArray();

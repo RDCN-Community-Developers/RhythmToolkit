@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Global.Exceptions;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -8,9 +9,6 @@ using System.Text.RegularExpressions;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
-	/// <summary>
-	/// Represents a group of events in Rhythm Doctor.
-	/// </summary>
 	public abstract partial class Group : BaseEvent, IEnumerable<BaseEvent>
 	{
 		/// <summary>
@@ -37,11 +35,46 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>An enumerable collection of <see cref="BaseEvent"/> objects.</returns>
 		public abstract IEnumerable<BaseEvent> GenerateEvents();
-		/// <summary>
-		/// Retrieves the events in the group with additional tagging and comments.
-		/// </summary>
-		/// <exception cref="InvalidRDBeatException">Thrown if any event in the group has an empty beat.</exception>
-		protected abstract JObject Data { get; set; }
+		/// <summary>  
+		/// Sets the parent row for the specified event.  
+		/// </summary>  
+		/// <typeparam name="TEvent">The type of the event, which must inherit from <see cref="BaseRowAction"/>.</typeparam>  
+		/// <param name="ev">The event to set the parent for.</param>  
+		/// <param name="row">The parent row to associate with the event.</param>  
+		/// <returns>The event with its parent row set.</returns>  
+		protected static TEvent SetParent<TEvent>(TEvent ev, Row row) where TEvent : BaseRowAction
+		{
+			ev._row = row.Index;
+			return ev;
+		}
+		/// <summary>  
+		/// Sets the parent decoration for the specified event.  
+		/// </summary>  
+		/// <typeparam name="TEvent">The type of the event, which must inherit from <see cref="BaseDecorationAction"/>.</typeparam>  
+		/// <param name="ev">The event to set the parent for.</param>  
+		/// <param name="deco">The parent decoration to associate with the event.</param>  
+		/// <returns>The event with its parent decoration set.</returns>  
+		protected static TEvent SetParent<TEvent>(TEvent ev, Decoration deco) where TEvent : BaseDecorationAction
+		{
+			ev._decoId = deco.Id;
+			return ev;
+		}
+		/// <summary>  
+		/// Gets the collection of rows associated with the current beat's base level.  
+		/// </summary>  
+		/// <remarks>  
+		/// This property retrieves the rows from the base level of the current beat.  
+		/// If the base level is null, the property will return null.  
+		/// </remarks>  
+		protected RowCollection? Rows => _beat.BaseLevel?.Rows;
+		/// <summary>  
+		/// Gets the collection of decorations associated with the current beat's base level.  
+		/// </summary>  
+		/// <remarks>  
+		/// This property retrieves the decorations from the base level of the current beat.  
+		/// If the base level is null, the property will return null.  
+		/// </remarks>  
+		protected DecorationCollection? Decorations => _beat.BaseLevel?.Decorations;
 		private IEnumerable<BaseEvent> GetTaggedEvents(string tag, string comment)
 		{
 			BaseEvent[] events = [.. GenerateEvents().OrderBy(i => {
@@ -50,10 +83,11 @@ namespace RhythmBase.RhythmDoctor.Events
 			if (events.Length == 0)
 				yield break;
 			var startBeat = events.Min(i => i.Beat);
+			Flush();
 			yield return new Comment()
 			{
 				Beat = Beat,
-				Text = tag + "\n/* " + comment + " */\n" + Data.ToString(Formatting.None),
+				Text = tag + "\n/* " + comment + " */\n" + JsonConvert.SerializeObject(_data, Formatting.None, Utils.Utils.GetSerializer()) //Data.ToString(Formatting.None),
 			};
 			yield return new TagAction()
 			{
@@ -111,13 +145,14 @@ namespace RhythmBase.RhythmDoctor.Events
 				group.Tag = id;
 				group.Condition = comment.Condition;
 				group.Active = comment.Active;
-				group.Data = JObject.Parse(ReplaceCommentMatch().Replace(lines[1], ""));
+				group._data = JObject.Parse(ReplaceCommentMatch().Replace(lines[1], ""));
 				result = group;
 				return true;
 			}
 			result = null;
 			return false;
 		}
+		internal abstract void Flush();
 		internal static bool MatchTag(string tag, out string typeName, out string id, out string tagstag)
 		{
 			tagstag = "";
@@ -137,5 +172,55 @@ namespace RhythmBase.RhythmDoctor.Events
 		private static partial Regex TagMatch();
 		[GeneratedRegex(@"/\*.*\*/")]
 		private static partial Regex ReplaceCommentMatch();
+		/// <summary>  
+		/// Gets or sets the data associated with the group.  
+		/// </summary>  
+		/// <remarks>  
+		/// This property allows derived classes to store and retrieve additional data  
+		/// specific to the group. The data can be of any type, but it is recommended  
+		/// to use a type that is serializable for compatibility with JSON serialization.  
+		/// </remarks>  
+		internal JObject _data = [];
+		public bool _loaded = false;
+	}
+	/// <summary>
+	/// Represents a group of events in Rhythm Doctor.
+	/// </summary>
+	public abstract partial class Group<T> : Group where T : notnull, new()
+	{
+		/// <summary>
+		/// Retrieves the events in the group with additional tagging and comments.
+		/// </summary>
+		/// <exception cref="InvalidRDBeatException">Thrown if any event in the group has an empty beat.</exception>
+		protected T Data
+		{
+			get
+			{
+				T ins = _loaded ? _instance : _data.ToObject<T>(JsonSerializer.Create(Utils.Utils.GetSerializer())) ?? new();
+				_instance = ins;
+				_loaded = true;
+				return ins;
+			}
+			set
+			{
+				_instance = value;
+				_loaded = true;
+			}
+		}
+		internal override void Flush()
+		{
+			_data = JObject.FromObject(_instance, JsonSerializer.Create(Utils.Utils.GetSerializer()));
+		}
+		/// <summary>  
+		/// Initializes a new instance of the <see cref="Group{T}"/> class.  
+		/// </summary>  
+		/// <remarks>  
+		/// This constructor initializes the <see cref="Data"/> property with a new instance of type <typeparamref name="T"/>.  
+		/// </remarks>  
+		public Group()
+		{
+			_data = JObject.FromObject(_instance, JsonSerializer.Create(Utils.Utils.GetSerializer()));
+		}
+		private T _instance = new();
 	}
 }
