@@ -8,6 +8,7 @@ using RhythmBase.Global.Components;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.Adofai.Components;
 namespace RhythmBase.RhythmDoctor.Utils
 {
 	/// <summary>
@@ -51,6 +52,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			converters.Add(new CharacterConverter());
 			converters.Add(new ConditionConverter(rdlevel.Conditionals));
 			converters.Add(new TagActionConverter(rdlevel, settings));
+			converters.Add(new ShowRoomsConverter(rdlevel, settings));
 			converters.Add(new CustomDecorationEventConverter(rdlevel, settings));
 			converters.Add(new CustomRowEventConverter(rdlevel, settings));
 			converters.Add(new CustomEventConverter(rdlevel, settings));
@@ -81,6 +83,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			converters.Add(new CharacterConverter());
 			converters.Add(new ConditionConverter([]));
 			converters.Add(new TagActionConverter(settings));
+			converters.Add(new ShowRoomsConverter(settings));
 			converters.Add(new CustomDecorationEventConverter(settings));
 			converters.Add(new CustomRowEventConverter(settings));
 			converters.Add(new CustomEventConverter(settings));

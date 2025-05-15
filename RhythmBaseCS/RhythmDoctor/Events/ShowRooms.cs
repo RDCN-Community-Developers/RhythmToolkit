@@ -10,26 +10,26 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// </summary>  
 	public class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent
 	{
+		private RoomHeight _height = new();
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="ShowRooms"/> class.  
 		/// </summary>  
 		public ShowRooms() { }
-
-		/// <summary>  
-		/// Gets or sets the rooms associated with the event.  
-		/// </summary>  
-		[JsonProperty]
-		public RDRoom Rooms { get; set; } = new RDRoom(false, [0]);
-
+		[JsonIgnore]
+		public RoomHeight Height { get => _height; set => _height = value; }
+		[JsonIgnore]
+		public RDRoom Rooms
+		{
+			get => _height.Room;
+			set
+			{
+				_height.Room = value;
+			}
+		}
 		/// <summary>  
 		/// Gets or sets the ease type for the event.  
 		/// </summary>  
 		public EaseType Ease { get; set; }
-		/// <summary>  
-		/// Gets or sets the heights associated with the event.  
-		/// </summary>
-		public int?[] Heights { get; set; } = new int?[4];
-
 		/// <summary>  
 		/// Gets or sets the duration of the transition.  
 		/// </summary>  
