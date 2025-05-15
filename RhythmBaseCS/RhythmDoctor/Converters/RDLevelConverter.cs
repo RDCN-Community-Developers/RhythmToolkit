@@ -41,7 +41,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
 			writer.WriteStartArray();
-			foreach (IBaseEvent item3 in settings.InactiveEventsHandling == InactiveEventsHandling.Retain ? value.Where(i => i.Active) : value)
+			foreach (IBaseEvent item3 in value)
 				if (item3 is Group group)
 					if (settings.EnableGroupEvent)
 						foreach (var item in group)
@@ -74,7 +74,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteEndArray();
 			writer.WriteEndObject();
 			writer.Close();
-			foreach(BaseRowAction baseRowAction in value.Rows._unhandledRowEvents)
+			foreach (BaseRowAction baseRowAction in value.Rows._unhandledRowEvents)
 				settings.UnreadableEvents.Add((JObject.FromObject(baseRowAction), "Unhandled row event"));
 			foreach (BaseDecorationAction baseDecorationAction in value.Decorations._unhandledRowEvents)
 				settings.UnreadableEvents.Add((JObject.FromObject(baseDecorationAction), "Unhandled decoration event"));
@@ -149,49 +149,49 @@ namespace RhythmBase.RhythmDoctor.Converters
 				List<Group> GroupCollection = [];
 				foreach (JToken item in JEvents)
 				{
-					if (!(settings.InactiveEventsHandling > InactiveEventsHandling.Retain && (item["active"]?.Value<bool>() ?? false)))
+					if ((settings.InactiveEventsHandling is not InactiveEventsHandling.Ignore) || !(item["active"]?.Value<bool>() ?? true))
 					{
-						Type eventType = EventTypeUtils.ToType((string)item["type"]!);
-						if (eventType == null)
+						BaseEvent ev;
+						Type evt = EventTypeUtils.ToType((string)item["type"]!);
+						if (evt == null)
 						{
-							BaseEvent TempEvent;
 							if (item["target"] != null)
-								TempEvent = item.ToObject<CustomDecorationEvent>(AllInOneSerializer)!;
+								ev = item.ToObject<CustomDecorationEvent>(AllInOneSerializer)!;
 							else if (item["row"] != null)
-								TempEvent = item.ToObject<CustomRowEvent>(AllInOneSerializer)!;
+								ev = item.ToObject<CustomRowEvent>(AllInOneSerializer)!;
 							else
-								TempEvent = item.ToObject<CustomEvent>(AllInOneSerializer)!;
-							if (settings.InactiveEventsHandling == InactiveEventsHandling.Store && !TempEvent.Active)
-								settings.InactiveEvents.Add(TempEvent);
+								ev = item.ToObject<CustomEvent>(AllInOneSerializer)!;
+							if (settings.InactiveEventsHandling is InactiveEventsHandling.Store && !ev.Active)
+								settings.InactiveEvents.Add(ev);
 							else
-								outLevel.Add(TempEvent);
+								outLevel.Add(ev);
 						}
 						else
 						{
-							BaseEvent TempEvent2 = (BaseEvent)item.ToObject(eventType, AllInOneSerializer)!;
-							if (TempEvent2 != null)
+							ev = (BaseEvent)item.ToObject(evt, AllInOneSerializer)!;
+							if (ev != null)
 							{
-								if (TempEvent2.Type != EventType.CustomEvent)
+								if (ev.Type != EventType.CustomEvent)
 								{
-									EventType type = TempEvent2.Type;
+									EventType type = ev.Type;
 									switch (type)
 									{
 										case EventType.FloatingText:
-											FloatingTextCollection.Add(((FloatingText)TempEvent2, (int)item["id"]!));
+											FloatingTextCollection.Add(((FloatingText)ev, (int)item["id"]!));
 											break;
 										case EventType.AdvanceText:
-											AdvanceTextCollection.Add(((AdvanceText)TempEvent2, (int)item["id"]!));
+											AdvanceTextCollection.Add(((AdvanceText)ev, (int)item["id"]!));
 											break;
 									}
 								}
-								if (settings.InactiveEventsHandling == InactiveEventsHandling.Store && !TempEvent2.Active)
-									settings.InactiveEvents.Add(TempEvent2);
-								else if (settings.EnableGroupEvent && TempEvent2 is Comment comment && Group.TryParse(comment, out Group? group))
+								if (settings.InactiveEventsHandling is InactiveEventsHandling.Store && !ev.Active)
+									settings.InactiveEvents.Add(ev);
+								else if (settings.EnableGroupEvent && ev is Comment comment && Group.TryParse(comment, out Group? group))
 								{
 									GroupCollection.Add(group);
 									outLevel.Add(group);
 								}
-								else outLevel.Add(TempEvent2);
+								else outLevel.Add(ev);
 							}
 						}
 					}

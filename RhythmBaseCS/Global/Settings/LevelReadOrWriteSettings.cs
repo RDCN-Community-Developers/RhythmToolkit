@@ -40,20 +40,20 @@ namespace RhythmBase.Global.Settings
 		public bool PreloadAssets { get; set; } = false;
 		/// <summary>
 		/// Action on inactive items on reads or writes.
-		/// Defaults to <see cref="F:RhythmBase.Settings.InactiveEventsHandling.Retain" />.
+		/// Defaults to <see cref="F:RhythmBase.Global.Settings.InactiveEventsHandling.Retain" />.
 		/// </summary>
 		public InactiveEventsHandling InactiveEventsHandling { get; set; } = InactiveEventsHandling.Retain;
 		/// <summary>
-		/// Stores unreadable event data when the <see cref="P:RhythmBase.Settings.LevelReadOrWriteSettings.InactiveEventsHandling" /> is <see cref="F:RhythmBase.Settings.InactiveEventsHandling.Store" />.
+		/// Stores unreadable event data when the <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.InactiveEventsHandling" /> is <see cref="F:RhythmBase.Global.Settings.InactiveEventsHandling.Store" />.
 		/// </summary>
 		public List<BaseEvent> InactiveEvents { get; set; } = [];
 		/// <summary>
 		/// Action on unreadable events.
-		/// Defaults to <see cref="F:RhythmBase.Settings.UnreadableEventHandling.ThrowException" />.
+		/// Defaults to <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.ThrowException" />.
 		/// </summary>
 		public UnreadableEventHandling UnreadableEventsHandling { get; set; } = UnreadableEventHandling.ThrowException;
 		/// <summary>
-		/// Stores unreadable event data when the <see cref="P:RhythmBase.Settings.LevelReadOrWriteSettings.UnreadableEventsHandling" /> is <see cref="F:RhythmBase.Settings.UnreadableEventHandling.Store" />.
+		/// Stores unreadable event data when the <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.UnreadableEventsHandling" /> is <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.Store" />.
 		/// </summary>
 		/// <returns></returns>
 		public List<(JObject item, string reason)> UnreadableEvents { get; set; } = [];

@@ -28,7 +28,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the heights associated with the event.  
 		/// </summary>
-		public int?[] Heights { get; } = new int?[4];
+		public int?[] Heights { get; set; } = new int?[4];
 
 		/// <summary>  
 		/// Gets or sets the duration of the transition.  

@@ -6,7 +6,7 @@
 	public enum UnreadableEventHandling
 	{
 		/// <summary>
-		/// Stores unreadable events in <see cref="P:RhythmBase.Settings.LevelReadOrWriteSettings.UnreadableEvents" /> for restoration.
+		/// Stores unreadable events in <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.UnreadableEvents" /> for restoration.
 		/// </summary>
 		Store,
 		/// <summary>

@@ -20,10 +20,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public float Hold { get; set; }
 		/// <summary>
-		/// Gets or sets the action type.
-		/// </summary>
-		public ActionType Action { get; set; }
-		/// <summary>
 		/// Gets or sets the custom pulse value.
 		/// </summary>
 		public uint CustomPulse
@@ -34,7 +30,10 @@ namespace RhythmBase.RhythmDoctor.Events
 				Action = ActionType.Custom;
 			}
 		}
-
+		/// <summary>
+		/// Gets or sets the action type.
+		/// </summary>
+		public ActionType Action { get; set; }
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>

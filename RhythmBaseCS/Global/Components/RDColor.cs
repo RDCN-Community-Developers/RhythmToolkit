@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Newtonsoft.Json;
+using RhythmBase.Global.Converters;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
@@ -8,6 +10,7 @@ namespace RhythmBase.Global.Components
 	/// Represents a color with red, green, blue, and alpha components.
 	/// </summary>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+	[JsonConverter(typeof(ColorConverter))]
 	public struct RDColor(uint hex) :
 		IEqualityOperators<RDColor, RDColor, bool>,
 		IEquatable<RDColor>, IFormattable

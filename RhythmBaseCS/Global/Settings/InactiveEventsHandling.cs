@@ -11,7 +11,7 @@
 		/// </summary>
 		Retain,
 		/// <summary>
-		/// Dumps inactivated events to <see cref="P:RhythmBase.Settings.LevelReadOrWriteSettings.InactiveEvents" /> on reads and writes.
+		/// Dumps inactivated events to <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.InactiveEvents" /> on reads and writes.
 		/// </summary>
 		Store,
 		/// <summary>
