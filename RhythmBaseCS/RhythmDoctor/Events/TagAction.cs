@@ -9,16 +9,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TagAction"/> class.
 		/// </summary>
-		public TagAction()
-		{
-			Type = EventType.TagAction;
-			Tab = Tabs.Actions;
-		}
+		public TagAction() { }
 		/// <summary>
 		/// Gets or sets the action associated with the tag.
 		/// </summary>
 		[JsonIgnore]
-		public Actions Action { get; set; }
+		public Actions Action { get; set; } = Actions.Run;
 		/// <summary>
 		/// Gets or sets the action tag.
 		/// </summary>
@@ -27,11 +23,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.TagAction;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

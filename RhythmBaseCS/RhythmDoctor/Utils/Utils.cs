@@ -70,8 +70,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <returns>A <see cref="JsonSerializerSettings"/> object configured with the necessary converters and contract resolver.</returns>  
 		public static JsonSerializerSettings GetSerializer(LevelReadOrWriteSettings? settings = default)
 		{
-			if (_serializerInstance != null)
-				return _serializerInstance;
 			settings ??= new LevelReadOrWriteSettings();
 			JsonSerializerSettings EventsSerializer = new()
 			{
@@ -94,7 +92,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 			converters.Add(new BaseEventConverter<IBaseEvent>(settings));
 			converters.Add(new BookmarkConverter());
 			converters.Add(new StringEnumConverter());
-			_serializerInstance = EventsSerializer;
 			return EventsSerializer;
 		}
 		/// <summary>
@@ -105,6 +102,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// The default crotchets per bar.
 		/// </summary>
 		public const int DefaultCPB = 8;
-		private static JsonSerializerSettings? _serializerInstance;
+		internal const string RhythmBaseGroupDataHeader = "$RhythmBase_GroupData$";
+		internal const string RhythmBaseGroupEventHeader = "$RhythmBase_GroupEvent$";
 	}
 }
