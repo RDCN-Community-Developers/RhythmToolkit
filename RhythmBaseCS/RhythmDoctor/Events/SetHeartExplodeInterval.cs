@@ -20,7 +20,7 @@
 		/// <summary>
 		/// Gets or sets the interval value.
 		/// </summary>
-		public int Interval { get; set; }
+		public float Interval { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>

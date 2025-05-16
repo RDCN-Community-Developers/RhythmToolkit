@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event that tints rows with specified colors and effects.
 	/// </summary>
-	public class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent
+	public class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TintRows"/> class.
@@ -62,6 +62,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab category.
 		/// </summary>
 		public override Tabs Tab { get; }
+		/// <inheritdoc/>
+		public RDRoom Rooms { get; set; } = new RDRoom(true, [0]);
 		/// <summary>
 		/// Gets a value indicating whether to tint all rows.
 		/// </summary>

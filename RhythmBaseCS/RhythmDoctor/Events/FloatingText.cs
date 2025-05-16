@@ -5,6 +5,40 @@ using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
+	/// <summary>  
+	/// Specifies the category of the narration.  
+	/// </summary>  
+	public enum NarrationCategory
+	{
+		/// <summary>  
+		/// Fallback category, used as a default when no other category applies.  
+		/// </summary>  
+		Fallback,
+		/// <summary>  
+		/// Navigation category, used for guiding the user through the interface or level.  
+		/// </summary>  
+		Navigation,
+		/// <summary>  
+		/// Instruction category, used for providing instructions or tutorials.  
+		/// </summary>  
+		Instruction,
+		/// <summary>  
+		/// Notification category, used for alerts or notifications.  
+		/// </summary>  
+		Notification,
+		/// <summary>  
+		/// Dialogue category, used for character or story dialogues.  
+		/// </summary>  
+		Dialogue,
+		/// <summary>  
+		/// Description category, used for descriptive text or explanations.  
+		/// </summary>  
+		Description,
+		/// <summary>  
+		/// Subtitles category, used for displaying subtitles.  
+		/// </summary>  
+		Subtitles,
+	}
 	/// <summary>
 	/// Represents a floating text event in a room.
 	/// </summary>
@@ -69,6 +103,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets a value indicating whether to narrate the text.
 		/// </summary>
 		public bool Narrate { get; set; } = true;
+		/// <summary>
+		/// Gets or sets the narration category of the text.
+		/// </summary>
+		public NarrationCategory NarrationCategory { get; set; }
 		/// <summary>
 		/// Specifies the anchor style of the text.
 		/// </summary>

@@ -14,7 +14,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public SetBackgroundColor()
 		{
-			Rooms = new RDRoom(false, [0]);
+			Rooms = new RDRoom(true, [0]);
 			Color = new PaletteColor(true);
 			Type = EventType.SetBackgroundColor;
 			Tab = Tabs.Actions;

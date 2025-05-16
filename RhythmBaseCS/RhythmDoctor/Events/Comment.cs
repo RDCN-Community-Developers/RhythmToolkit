@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Global.Components;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Events;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -19,6 +18,12 @@ namespace RhythmBase.RhythmDoctor.Events
 				Color = RDColor.FromRgba(242, 230, 68)
 			};
 			Type = EventType.Comment;
+		}
+		/// <inheritdoc />
+		public override int Y
+		{
+			get => Tab == Tabs.Decorations ? base.Y : field;
+			set;
 		}
 		/// <summary>
 		/// Gets or sets the custom tab.
