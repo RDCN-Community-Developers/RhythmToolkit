@@ -5,11 +5,17 @@ using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
 using static RhythmBase.RhythmDoctor.Utils.Utils;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
+	/// <summary>  
+	/// Represents a base class for grouping events in Rhythm Doctor.  
+	/// </summary>  
+	/// <remarks>  
+	/// This class provides functionality for managing and processing collections of events,  
+	/// including tagging, parent association, and event generation.  
+	/// </remarks>
 	public abstract partial class Group : BaseEvent, IEnumerable<BaseEvent>
 	{
 		/// <summary>
@@ -100,7 +106,7 @@ namespace RhythmBase.RhythmDoctor.Events
 					}
 					ev.Tag = newTag;
 				}
-				//ev.Y -= yMax + 1;
+				ev.Y -= yMax + 1;
 				yield return ev;
 			}
 		}
@@ -131,7 +137,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				data = null;
 				return false;
 			}
-			string[] lines = comment.Text.Split(['\r','\n'], StringSplitOptions.RemoveEmptyEntries);
+			string[] lines = comment.Text.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 			if (lines.Length < 3 || lines[0] != RhythmBaseGroupDataHeader)
 			{
 				data = null;
@@ -167,7 +173,6 @@ namespace RhythmBase.RhythmDoctor.Events
 			group.Beat = tagAction.Beat;
 			group.Condition = tagAction.Condition;
 			group.Active = tagAction.Active;
-			//group._data = JObject.Parse(ReplaceCommentMatch().Replace(lines[1], ""));
 			result = group;
 			return true;
 		}
@@ -190,10 +195,6 @@ namespace RhythmBase.RhythmDoctor.Events
 			id = "";
 			return false;
 		}
-		[GeneratedRegex(@"^RDTKGROUP_([a-zA-Z_][a-zA-Z0-9_]*)_([0-9A-F]{8})(_(.+))?$")]
-		private static partial Regex TagMatch();
-		[GeneratedRegex(@"/\*.*\*/")]
-		private static partial Regex ReplaceCommentMatch();
 		internal JObject _data = [];
 		internal bool _loaded = false;
 		internal object _instance = new();

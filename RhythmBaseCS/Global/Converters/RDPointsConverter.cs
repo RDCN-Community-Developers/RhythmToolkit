@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.Global.Components;
 using RhythmBase.RhythmDoctor.Components;
-using System.Diagnostics.CodeAnalysis;
+using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.Global.Converters
 {
 	internal class RDPointsConverter : JsonConverter
@@ -34,11 +33,17 @@ namespace RhythmBase.Global.Converters
 			else if (value is RDPointE v5)
 			{
 				if (v5.X != null)
-					writer.WriteValue(v5.X.Value.IsNumeric ? v5.X.Value.NumericValue : v5.X.Value.ExpressionValue);
+					if (v5.X.Value.IsNumeric)
+						writer.WriteRawValue(v5.X.Value.NumericValue.ToString("G"));
+					else
+						writer.WriteValue(v5.X.Value.ExpressionValue);
 				else
 					writer.WriteNull();
 				if (v5.Y != null)
-					writer.WriteValue(v5.Y.Value.IsNumeric ? v5.Y.Value.NumericValue : v5.Y.Value.ExpressionValue);
+					if (v5.Y.Value.IsNumeric)
+						writer.WriteRawValue(v5.Y.Value.NumericValue.ToString("G"));
+					else
+						writer.WriteValue(v5.Y.Value.ExpressionValue);
 				else
 					writer.WriteNull();
 			}
@@ -66,11 +71,17 @@ namespace RhythmBase.Global.Converters
 			{
 				RDSizeE temp2 = value != null ? v10 : default;
 				if (temp2.Width != null)
-					writer.WriteValue(temp2.Width.Value.IsNumeric ? temp2.Width.Value.NumericValue : temp2.Width.Value.ExpressionValue);
+					if (temp2.Width.Value.IsNumeric)
+						writer.WriteRawValue(temp2.Width.Value.NumericValue.ToString("G"));
+					else
+						writer.WriteValue(temp2.Width.Value.ExpressionValue);
 				else
 					writer.WriteNull();
 				if (temp2.Height != null)
-					writer.WriteValue(temp2.Height.Value.IsNumeric ? temp2.Height.Value.NumericValue : temp2.Height.Value.ExpressionValue);
+					if (temp2.Height.Value.IsNumeric)
+						writer.WriteRawValue(temp2.Height.Value.NumericValue.ToString("G"));
+					else
+						writer.WriteValue(temp2.Height.Value.ExpressionValue);
 				else
 					writer.WriteNull();
 			}
@@ -80,7 +91,11 @@ namespace RhythmBase.Global.Converters
 		}
 		public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
 		{
-			JToken ja = JToken.ReadFrom(reader);
+			if(reader.TokenType == JsonToken.Raw)
+			{
+
+			}
+			JArray ja = (JArray)JToken.ReadFrom(reader);
 			object ReadJson;
 			if (objectType == typeof(RDPointNI) || objectType == typeof(RDPointNI?))
 				ReadJson = new RDPointNI(ja[0]!.ToObject<int>(), ja[1]!.ToObject<int>());
