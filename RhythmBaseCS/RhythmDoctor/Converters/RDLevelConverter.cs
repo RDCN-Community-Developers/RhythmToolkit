@@ -60,7 +60,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.Formatting = settings.Indented ? Formatting.Indented : Formatting.None;
 			writer.WriteStartObject();
 			writer.WritePropertyName("settings");
-			writer.WriteRawValue(JsonConvert.SerializeObject(value.Settings, Formatting.Indented, AllInOneSerializer));
+			writer.WriteRawValue(JsonConvert.SerializeObject(value.Settings, settings.Indented ? Formatting.Indented : Formatting.None, AllInOneSerializer));
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
 			foreach (Row item in value.Rows)

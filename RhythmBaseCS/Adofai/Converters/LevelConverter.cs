@@ -22,7 +22,7 @@ namespace RhythmBase.Adofai.Converters
 			writer.WriteEndArray();
 			writer.Formatting = settings.Indented ? Formatting.Indented : Formatting.None;
 			writer.WritePropertyName("settings");
-			writer.WriteRawValue(JsonConvert.SerializeObject(value.Settings, Formatting.Indented, AllInOneSerializer));
+			writer.WriteRawValue(JsonConvert.SerializeObject(value.Settings, settings.Indented ? Formatting.Indented : Formatting.None, AllInOneSerializer));
 			writer.WritePropertyName("actions");
 			writer.WriteStartArray();
 			foreach (Tile item2 in value)
