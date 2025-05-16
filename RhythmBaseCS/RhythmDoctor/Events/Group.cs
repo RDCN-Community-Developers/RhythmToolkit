@@ -134,7 +134,17 @@ namespace RhythmBase.RhythmDoctor.Events
 		private string _groupTag;
 		internal static bool TryParse(Comment comment, [NotNullWhen(true)] out Group? result)
 		{
+			if(string.IsNullOrEmpty(comment.Text))
+			{
+				result = null;
+				return false;
+			}
 			string[] lines = comment.Text.Split(['\r', '\n'], 2, StringSplitOptions.RemoveEmptyEntries);
+			if (lines.Length < 2)
+			{
+				result = null;
+				return false;
+			}
 			if (MatchTag(lines[0], out string typeName, out string id, out _))
 			{
 				if (!EventTypeUtils.GroupTypes.TryGetValue(typeName, out Type? groupType))
