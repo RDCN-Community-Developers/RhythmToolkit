@@ -7,7 +7,7 @@
     <AssemblyName>RhythmBase</AssemblyName>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>RhythmToolkit</Title>
-    <Version>1.2.0-beta1</Version>
+    <Version>1.2.0-rc1</Version>
     <Authors>obugs</Authors>
     <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels.</Description>
     <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RadiationTherapy</PackageProjectUrl>

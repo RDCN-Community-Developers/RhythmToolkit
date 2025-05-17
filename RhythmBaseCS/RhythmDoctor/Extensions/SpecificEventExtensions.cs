@@ -164,7 +164,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			{
 				sbyte b = (sbyte)(e.Subdivisions - 1);
 				for (sbyte j = 0; j <= b; j += 1)
-					L.Add(new RDHit(e, new RDBeat(e._beat._calculator, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + (float)j * (e.Tick / (float)e.Subdivisions)), 0f));
+					L.Add(new RDHit(e, new RDBeat(e._beat._calculator!, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + (float)j * (e.Tick / (float)e.Subdivisions)), 0f));
 			}
 			return L.AsEnumerable();
 		}
@@ -442,7 +442,7 @@ e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
 				AddOneshotBeat T = e.MemberwiseClone();
 				T.Loops = 0U;
 				T.Interval = 0f;
-				T.Beat = new RDBeat(e._beat._calculator, unchecked(e.Beat.BeatOnly + i * e.Interval));
+				T.Beat = new RDBeat(e._beat._calculator!, unchecked(e.Beat.BeatOnly + i * e.Interval));
 				L.Add(T);
 			}
 			return L.AsEnumerable();

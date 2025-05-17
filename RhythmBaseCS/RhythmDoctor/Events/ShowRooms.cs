@@ -15,8 +15,14 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Initializes a new instance of the <see cref="ShowRooms"/> class.  
 		/// </summary>  
 		public ShowRooms() { }
+		/// <summary>  
+		/// Gets or sets the height configuration for the room.  
+		/// </summary>  
 		[JsonIgnore]
 		public RoomHeight Height { get => _height; set => _height = value; }
+		/// <summary>  
+		/// Gets or sets the room configuration associated with the height.  
+		/// </summary>  
 		[JsonIgnore]
 		public RDRoom Rooms
 		{

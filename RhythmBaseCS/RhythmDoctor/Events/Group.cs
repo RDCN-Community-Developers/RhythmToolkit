@@ -222,7 +222,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents a group of events in Rhythm Doctor.
 	/// </summary>
-	public abstract partial class Group<T> : Group where T : struct
+	public abstract partial class Group<T> : Group where T : new()
 	{
 		/// <summary>
 		/// Retrieves the events in the group with additional tagging and comments.
@@ -232,20 +232,20 @@ namespace RhythmBase.RhythmDoctor.Events
 		{
 			get
 			{
-				T ins = _loaded ? (T)_instance : _data.ToObject<T>(JsonSerializer.Create(GetSerializer()));
+				T ins = _loaded ? (T)_instance : _data.ToObject<T>(JsonSerializer.Create(GetSerializer())) ?? new();
 				_instance = ins;
 				_loaded = true;
 				return ins;
 			}
 			set
 			{
-				_instance = value;
+				_instance = value ?? new();
 				_loaded = true;
 			}
 		}
 		internal override void Flush()
 		{
-			_instance = _data.ToObject<T>(JsonSerializer.Create(GetSerializer()));
+			_instance = _data.ToObject<T>(JsonSerializer.Create(GetSerializer())) ?? new();
 			_data = JObject.FromObject(_instance, JsonSerializer.Create(GetSerializer()));
 		}
 		/// <summary>  
