@@ -527,15 +527,17 @@ namespace RhythmBase.RhythmDoctor.Components
 			return new()
 			{
 				Beat = beat,
-				RoomStatus = [
-					..new RDRoomIndex[] {
+				RoomStatus = new RDRoomIndex[] {
 						RDRoomIndex.Room1,
 						RDRoomIndex.Room2,
 						RDRoomIndex.Room3,
 						RDRoomIndex.Room4,
 						RDRoomIndex.RoomTop,
-					}.Select(room=>
-						new RoomStatus(){
+					}.ToList().ToDictionary(
+						room => room,
+						room =>
+						new RoomStatus()
+						{
 							Beat = beat,
 							RunningVFXs =[.. this.Where<SetVFXPreset>(vfx=>vfx.Rooms.Contains(room)&& vfx.VFXDuration().Contains(beat), new RDRange(null,beat))],
 							Background = this.Where<SetBackgroundColor>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
@@ -547,15 +549,8 @@ namespace RhythmBase.RhythmDoctor.Components
 							Stutter = this.Where<Stutter>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
 							Theme = this.Where<SetTheme>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault()?.Preset ?? Themes.None,
 						}
-					)
-				],
-				RowStatus = [..Rows.Select(i=>new RowStatus(){
-					Beat = beat,
-					ParentRow = i,
-					PlayerType = this.LastOrDefault<ChangePlayersRows>(j => j.Players[i.Index] != PlayerType.NoChange)?.Players[i.Index]??i.Player,
-					Sound = this.LastOrDefault<SetBeatSound>()?.Sound??i.Sound
-				})
-				]
+					),
+				RowStatus = [.. Rows.Select(i => i.GetStatus(beat))]
 			};
 		}
 		///// <summary>  

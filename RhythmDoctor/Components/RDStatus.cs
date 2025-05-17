@@ -1,4 +1,5 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.Global.Components;
+using RhythmBase.RhythmDoctor.Events;
 
 namespace RhythmBase.RhythmDoctor.Components
 {
@@ -43,6 +44,7 @@ readonly
 			set;
 #endif
 		}
+		public required Dictionary<RDRoomIndex,RoomStatus> RoomStatus { get; init; }
 
 		/// <summary>
 		/// Gets the row status information.
@@ -304,5 +306,7 @@ record struct RowStatus
 			set;
 #endif
 		}
+		public required RDAudio Sound { get; init; }
+		public required RDRotatedRectE Position { get; init; }
 	}
 }
