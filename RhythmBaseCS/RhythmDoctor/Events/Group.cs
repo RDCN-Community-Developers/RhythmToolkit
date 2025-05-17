@@ -93,7 +93,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				else
 				{
 					string preTag = ev.Tag;
-					string newTag = tag + "\n" + ev.Tag;
+					string newTag = tag + "_" + ev.Tag;
 					if (tags.Add(newTag))
 					{
 						TagAction action = new()
@@ -115,7 +115,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			return new TagAction()
 			{
 				Beat = Beat,
-				ActionTag = $"{RhythmBaseGroupEventHeader}\n{DataType}\n{DataId}",
+				ActionTag = $"{RhythmBaseGroupEventHeader}{EventTypeUtils.GroupTypes.IndexOf(GetType()):X8}{DataId:X8}",
 			};
 		}
 		/// <summary>
@@ -123,52 +123,59 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>An enumerator for the events in the group.</returns>
 		IEnumerator<BaseEvent> IEnumerable<BaseEvent>.GetEnumerator() => GenerateTaggedEvents(
-			$"{RhythmBaseGroupEventHeader}\n{DataType}\n{DataId}"
+			$"{RhythmBaseGroupEventHeader}{EventTypeUtils.GroupTypes.IndexOf(GetType()):X8}{DataId:X8}"
 			).GetEnumerator();
 		/// <summary>
 		/// Returns an enumerator that iterates through the events in the group.
 		/// </summary>
 		/// <returns>An enumerator for the events in the group.</returns>
 		IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<BaseEvent>)this).GetEnumerator();
-		internal static bool TryParse(Comment comment, [NotNullWhen(true)] out JObject[]? data)
+		internal static bool TryParse(Comment comment, [NotNullWhen(true)] out string[]? types, [NotNullWhen(true)] out JObject[]? data)
 		{
 			if (string.IsNullOrEmpty(comment.Text))
 			{
+				types = null;
 				data = null;
 				return false;
 			}
 			string[] lines = comment.Text.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 			if (lines.Length < 3 || lines[0] != RhythmBaseGroupDataHeader)
 			{
+				types = null;
 				data = null;
 				return false;
 			}
+			List<string> typel = [];
 			List<JObject> datal = [];
 			for (int i = 2; i < lines.Length; i++)
 			{
-				datal.Add(JObject.Parse(lines[i]));
+				if (lines[i].StartsWith('@'))
+					typel.Add(lines[i][1..]);
+				else
+					datal.Add(JObject.Parse(lines[i]));
 			}
+			types = [.. typel];
 			data = [.. datal];
 			return true;
 		}
-		internal static bool TryParse(TagAction tagAction, [NotNullWhen(true)] out Group? result)
+		internal static bool TryParse(TagAction tagAction, string[] types, [NotNullWhen(true)] out Group? result)
 		{
-			if (string.IsNullOrEmpty(tagAction.ActionTag))
+			if (!TryMatch(tagAction))
 			{
 				result = null;
 				return false;
 			}
-			string[] lines = tagAction.ActionTag.Split('\n', 3, StringSplitOptions.RemoveEmptyEntries);
-			if (lines.Length < 3 || lines[0] != RhythmBaseGroupEventHeader)
+			string info = tagAction.ActionTag.Substring(RhythmBaseGroupEventHeader.Length, 16);
+			int typeIndex = Convert.ToInt32(info[..8], 16);
+			int id = Convert.ToInt32(info[8..], 16);
+			if (typeIndex < 0 || typeIndex >= types.Length)
 			{
 				result = null;
 				return false;
 			}
-			string type = lines[1];
-			string id = lines[2];
-			if (!EventTypeUtils.GroupTypes.TryGetValue(type, out Type? groupType))
-				throw new IllegalEventTypeException(type, "This value does not exist in the EventType enumeration.");
-			Group group = (Group)Activator.CreateInstance(groupType)!;
+			Type? type = EventTypeUtils.GroupTypes.FirstOrDefault(i => i.FullName == types[typeIndex])
+				?? throw new IllegalEventTypeException(types[typeIndex], "This value does not exist in the EventType enumeration.");
+			Group group = (Group)Activator.CreateInstance(type)!;
 			group.DataId = id;
 			group.Beat = tagAction.Beat;
 			group.Condition = tagAction.Condition;
@@ -176,30 +183,35 @@ namespace RhythmBase.RhythmDoctor.Events
 			result = group;
 			return true;
 		}
+		internal static bool TryMatch(TagAction tagAction) => !string.IsNullOrEmpty(tagAction.ActionTag) &&
+				tagAction.ActionTag.StartsWith(RhythmBaseGroupEventHeader) &&
+				tagAction.ActionTag.Length >= RhythmBaseGroupEventHeader.Length + 16;
 		internal abstract void Flush();
-		internal static bool MatchTag(string tag, out string typeName, out string id, out string tagstag)
+		internal static bool MatchTag(string tag, out int type, out int id, out string tagstag)
 		{
 			if (!string.IsNullOrEmpty(tag))
 			{
-				string[] args = tag.Split('\n', 3, StringSplitOptions.RemoveEmptyEntries);
-				if (args.Length >= 3 && args[0] == RhythmBaseGroupEventHeader)
+				if (tag.StartsWith(RhythmBaseGroupEventHeader))
 				{
-					typeName = args[1];
-					id = args[2];
-					tagstag = args.Length > 3 ? args[3] : "";
+					tag = tag[RhythmBaseGroupEventHeader.Length..];
+					type = Convert.ToInt32(tag[..8], 16);
+					id = Convert.ToInt32(tag[8..16], 16);
+					if (tag.Length > 17 && tag[16] == '_')
+						tagstag = tag[17..];
+					else
+						tagstag = "";
 					return true;
 				}
 			}
 			tagstag = "";
-			typeName = "";
-			id = "";
+			type = 0;
+			id = 0;
 			return false;
 		}
 		internal JObject _data = [];
 		internal bool _loaded = false;
 		internal object _instance = new();
-		internal abstract string DataType { get; }
-		internal abstract string DataId { get; set; }
+		internal abstract int DataId { get; set; }
 	}
 	/// <summary>
 	/// Represents a group of events in Rhythm Doctor.
@@ -237,7 +249,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// This constructor initializes the <see cref="Data"/> property with a new instance of type <typeparamref name="T"/>.  
 		/// </remarks>  
 		public Group() { }
-		internal override string DataType => GetType().Name;
-		internal override string DataId { get; set; } = "";
+		internal override int DataId { get; set; }
 	}
 }

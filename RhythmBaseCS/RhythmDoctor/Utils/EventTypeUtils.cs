@@ -124,10 +124,10 @@ namespace RhythmBase.RhythmDoctor.Utils
 																																  select ToEnum(j))
 			.ToArray())
 			.AsReadOnly();
-		internal static readonly ReadOnlyDictionary<string, Type> GroupTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
-																				where i.IsAssignableTo(typeof(Group))
-																				select i)
-			.ToDictionary(i => i.Name, i => i)
+		internal static readonly ReadOnlyCollection<Type> GroupTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
+																		where i.IsAssignableTo(typeof(Group))
+																		select i)
+			.ToList()
 			.AsReadOnly();
 		/// <summary>  
 		/// A dictionary that records the correspondence of <see cref="T:RhythmBase.Events.EventType" /> to event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" />.  
