@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 	internal class RDLangParser
 	{
 		internal const string PlainString = "";
-		private static List<Token<RDExpressionToken>> TokenList { get; set; } = [];
+		private static Stack<Token<RDExpressionToken>> TokenStack { get; set; } = [];
 		public required RDVariables Variables { get; set; }
 		[NodeName("integer")]
 		[Production("primary: Number")]
@@ -80,7 +80,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		[Production("argument: String")]
 		public static float String(Token<RDExpressionToken> stringToken)
 		{
-			TokenList.Add(new(RDExpressionToken.String,
+			TokenStack.Push(new(RDExpressionToken.String,
 				stringToken.Value switch
 				{
 				['s', 't', 'r', ':', ..] => stringToken.Value[4..],
@@ -134,16 +134,24 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		}
 		[NodeName("function_call")]
 		[Production("primary: Identifier LeftParenthesis [d] functionRight")]
-		public static float FunctionCallWithArguments(Token<RDExpressionToken> identifierToken, float _) => EvaluateFunction(identifierToken.Value, TokenList);
+		public static float FunctionCallWithArguments(Token<RDExpressionToken> identifierToken, float _) => EvaluateFunction(identifierToken.Value, TokenStack);
 		[NodeName("function_right")]
 		[Production("functionRight: RightParenthesis [d]")]
 		public static float FunctionCall() => 0;
 		[NodeName("function_right")]
 		[Production("functionRight: Number RightParenthesis [d]")]
+		[Production("functionRight: String RightParenthesis [d]")]
 		[Production("functionRight: PlainString RightParenthesis [d]")]
 		public static float FunctionEnd(Token<RDExpressionToken> valueToken)
 		{
-			TokenList.Add(valueToken);
+			TokenStack.Push(valueToken);
+			return 1;
+		}
+		[NodeName("function_right")]
+		[Production("functionRight: expression RightParenthesis [d]")]
+		public static float FunctionEnd2(float arg)
+		{
+			TokenStack.Push(new(RDExpressionToken.Number, arg.ToString(), new()));
 			return 1;
 		}
 		[NodeName("arguments")]
@@ -152,32 +160,32 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		[Production("functionRight: PlainString Comma [d] functionRight")]
 		public static float ArgumentListWithComma(Token<RDExpressionToken> valueToken, float argument)
 		{
-			TokenList.Add(valueToken);
+			TokenStack.Push(valueToken);
 			return 1 + argument;
 		}
 		[NodeName("arguments")]
 		[Production("functionRight: expression Comma [d] functionRight")]
 		public static float ArgumentListWithComma2(float arg, float argument)
 		{
-			TokenList.Add(new(RDExpressionToken.Number, arg.ToString(), new()));
+			TokenStack.Push(new(RDExpressionToken.Number, arg.ToString(), new()));
 			return 1 + argument;
 		}
-		private static float EvaluateFunction(string functionName, List<Token<RDExpressionToken>> tokenList)
+		private static float EvaluateFunction(string functionName, Stack<Token<RDExpressionToken>> tokenList)
 		{
 			return functionName switch
 			{
-				"Rand" => TokenList.Count == 1
-					? int.TryParse(tokenList[0].Value, out int result)
+				"Rand" => TokenStack.Count == 1
+					? int.TryParse(tokenList.Pop().Value, out int result)
 						? RDVariables.Rand(result)
 						: throw new ArgumentException("Invalid argument type for Rand function")
 					: throw new ArgumentException("Invalid argument count for Rand function"),
-				"atLeastRank" => TokenList.Count == 1
-					? RDVariables.atLeastRank(tokenList[0].Value)
+				"atLeastRank" => TokenStack.Count == 1
+					? RDVariables.atLeastRank(tokenList.Pop().Value)
 						? 1.0f
 						: 0.0f
 					: throw new ArgumentException("Invalid argument count for atLeastRank function"),
-				"atLeastNPerfects" => TokenList.Count == 2
-					? RDVariables.atLeastNPerfects(int.Parse(tokenList[0].Value), int.Parse(tokenList[1].Value))
+				"atLeastNPerfects" => TokenStack.Count == 2
+					? RDVariables.atLeastNPerfects(int.Parse(tokenList.Pop().Value), int.Parse(tokenList.Pop().Value))
 						? 1.0f
 						: 0.0f
 					: throw new ArgumentException("Invalid argument count for atLeastNPerfects function"),
