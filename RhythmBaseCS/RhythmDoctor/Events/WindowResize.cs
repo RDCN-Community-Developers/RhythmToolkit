@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Events;
 
@@ -13,6 +14,16 @@ namespace RhythmBase.RhythmDoctor.Events
 		public override EventType Type => EventType.WindowResize;
 		/// <inheritdoc/>
 		public override Tabs Tab => CustomTab;
+		/// <summary>  
+		/// Gets or sets the scale of the window resize event.  
+		/// </summary>  
+		[EaseProperty]
+		public RDSizeE? Scale { get; set; } = new(1, 1);
+		/// <summary>  
+		/// Gets or sets the pivot point for the window resize event.  
+		/// </summary>  
+		[EaseProperty]
+		public RDPointE? Pivot { get; set; } = new(50f, 50f);
 		/// <summary>
 		/// Gets or sets the custom tab.
 		/// </summary>
