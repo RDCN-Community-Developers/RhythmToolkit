@@ -115,6 +115,11 @@ namespace RhythmBase.RhythmDoctor.Events
 			return new TagAction()
 			{
 				Beat = Beat,
+				Y = Y,
+				Tag = Tag,
+				Condition = Condition,
+				Active = Active,
+				Action = TagAction.Actions.Run,
 				ActionTag = $"{RhythmBaseGroupEventHeader}{EventTypeUtils.GroupTypes.IndexOf(GetType()):X8}{DataId:X8}",
 			};
 		}
@@ -178,6 +183,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			Group group = (Group)Activator.CreateInstance(type)!;
 			group.DataId = id;
 			group.Beat = tagAction.Beat;
+			group.Y = tagAction.Y;
 			group.Condition = tagAction.Condition;
 			group.Active = tagAction.Active;
 			result = group;
