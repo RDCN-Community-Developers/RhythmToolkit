@@ -474,6 +474,8 @@ namespace RhythmBase.RhythmDoctor.Components
 			// 其他
 			else
 				base.Add(item);
+			if(item is FloatingText floatingText)
+				_floatingTexts.Add(floatingText);
 		}
 		/// <summary>
 		/// Determine if the level contains this event.
@@ -519,6 +521,8 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			else
 				Remove = false;
+			if(item is FloatingText floatingText)
+				_floatingTexts.Remove(floatingText);
 			return Remove;
 		}
 		/// <summary>
@@ -706,6 +710,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		internal string _path;
 		private bool isZip = false;
 		private RDColor[] colorPalette = new RDColor[21];
+		internal List<FloatingText> _floatingTexts = [];
 		/// <summary>
 		/// Variables.
 		/// </summary>

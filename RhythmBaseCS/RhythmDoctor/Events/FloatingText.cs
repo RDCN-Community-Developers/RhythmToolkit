@@ -47,10 +47,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type => EventType.FloatingText;		/// <summary>
+		public override EventType Type => EventType.FloatingText;
+		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab => Tabs.Actions;		/// <summary>
+		public override Tabs Tab => Tabs.Actions;
+		/// <summary>
 		/// Gets the list of child advance texts.
 		/// </summary>
 		[JsonIgnore]
@@ -67,10 +69,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the color of the text.
 		/// </summary>
-		public PaletteColor Color { get; set; } = new PaletteColor(true)
-		{
-			Color = RDColor.White,
-		};
+		[JsonProperty]
+		public PaletteColor Color { get; internal set; } = new PaletteColor(true) { Color = RDColor.White, };
 		/// <summary>
 		/// Gets or sets the angle of the text.
 		/// </summary>
@@ -82,15 +82,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the outline color of the text.
 		/// </summary>
-		public PaletteColor OutlineColor { get; set; } = new PaletteColor(true)
-		{
-			Color = RDColor.Black,
-		};
+		[JsonProperty]
+		public PaletteColor OutlineColor { get; internal set; } = new PaletteColor(true) { Color = RDColor.Black, };
 		/// <summary>
 		/// Gets the ID of the event.
 		/// </summary>
 		[JsonProperty]
-		internal int Id => (int)GeneratedId;
+		internal int Id => _beat.BaseLevel?._floatingTexts.IndexOf(this) ?? -1;
 		/// <summary>
 		/// Gets or sets the position of the text.
 		/// </summary>
@@ -146,22 +144,16 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the text content.
 		/// </summary>
-		public string Text { get; set; } = "等呀等得好心慌……";
+		public string Text { get; set; } = "等/呀/等/得/好/心/慌……";
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FloatingText"/> class.
 		/// </summary>
-		public FloatingText()
-		{
-			GeneratedId = _PrivateId;
-			_PrivateId = checked((uint)(unchecked(_PrivateId) + 1UL));
-		}
+		public FloatingText() { }
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + $" {Text}";
-		private static uint _PrivateId = 0U;
-		private readonly uint GeneratedId;
 		private readonly List<AdvanceText> _children = [];
 		/// <summary>
 		/// Specifies the mode of the text.

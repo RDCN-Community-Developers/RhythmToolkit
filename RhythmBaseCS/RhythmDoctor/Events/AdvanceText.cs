@@ -23,7 +23,8 @@ namespace RhythmBase.RhythmDoctor.Events
 			set => Parent.Rooms = value;
 		}
 		/// <inheritdoc/>
-		public override Tabs Tab => Tabs.Actions;		/// <summary>
+		public override Tabs Tab => Tabs.Actions;
+		/// <summary>
 		/// Gets or sets the parent floating text associated with the event.
 		/// </summary>
 		[JsonIgnore]
