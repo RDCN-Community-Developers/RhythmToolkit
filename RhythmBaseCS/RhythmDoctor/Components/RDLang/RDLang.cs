@@ -10,7 +10,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 	public static class RDLang
 	{
 		private static readonly RDVariables variables = new();
-		private static readonly RDLangParser parserInstance;
+		private static readonly RDLangParserOld parserInstance;
 		/// <summary>
 		/// Gets the collection of variables used in the custom language.
 		/// </summary>
@@ -21,16 +21,16 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		/// <summary>
 		/// Lazy-initialized parser for the custom language expressions.
 		/// </summary>
-		internal static Lazy<Parser<RDExpressionToken, float>> Parser = new(() =>
+		internal static Lazy<Parser<TokenTypeOld, float>> Parser = new(() =>
 		{
-			var builder = new ParserBuilder<RDExpressionToken, float>();
+			var builder = new ParserBuilder<TokenTypeOld, float>();
 			var build = builder.BuildParser(parserInstance, ParserType.LL_RECURSIVE_DESCENT, "expression");
 			var parser = build.Result;
 			return parser;
 		});
 		static RDLang()
 		{
-			parserInstance = new RDLangParser() { Variables = variables };
+			parserInstance = new RDLangParserOld() { Variables = variables };
 		}
 		/// <summary>
 		/// Tries to parse the given code string into a float result.
@@ -40,9 +40,14 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		/// <returns>True if parsing is successful; otherwise, false.</returns>
 		public static bool TryRun(string code, out float result)
 		{
-			var parseResult = Parser.Value.Parse(code);
-			result = parseResult.Result;
-			return parseResult.IsOk;
+			//var parseResult = Parser.Value.Parse(code);
+			//result = parseResult.Result;
+			//return parseResult.IsOk;
+
+			RDLangParser.TryParse(code);
+
+			result = 0;
+			return false;
 		}
 	}
 }

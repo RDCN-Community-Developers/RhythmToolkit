@@ -65,14 +65,14 @@ namespace RhythmBase.RhythmDoctor.Components
 			_ => throw new ArgumentException("Invalid rank"),
 		};
 		public static bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => numberOfPerfects / (float)hitsToCheck > SimulateAtLeastNPerfectsSuccessRate;
-		public object this[string variableName]
+		public object? this[string variableName]
 		{
 			get => variableName switch
 			{
 			['i', char ii] => i[ii - '0'],
 			['f', char fi] => f[fi - '0'],
 			['b', char bi] => b[bi - '0'],
-				_ => GetType().GetField(variableName)?.GetValue(this)!,
+				_ => GetType().GetField(variableName)?.GetValue(this),
 			};
 			set
 			{
