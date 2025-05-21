@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RhythmBase.RhythmDoctor.Components.RDLang
+﻿namespace RhythmBase.RhythmDoctor.Components.RDLang
 {
 	partial class RDLangParser
 	{
@@ -83,31 +77,37 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						NewLine();
 						break;
 					case '+':
-						tokens.Add(NewToken(TokenType.Add, "+"));
+						if (PeekChar == '+')
+							tokens.Add(NewToken(TokenType.OperatorIncreasement, "++"));
+						else
+							tokens.Add(NewToken(TokenType.OperatorAdd, "+"));
 						break;
 					case '-':
-						tokens.Add(NewToken(TokenType.Subtract, "-"));
+						if (PeekChar == '-')
+							tokens.Add(NewToken(TokenType.OperatorDecreasement, "--"));
+						else
+							tokens.Add(NewToken(TokenType.OperatorSubtract, "-"));
 						break;
 					case '*':
-						tokens.Add(NewToken(TokenType.Multipy, "*"));
+						tokens.Add(NewToken(TokenType.OperatorMultipy, "*"));
 						break;
 					case '/':
-						tokens.Add(NewToken(TokenType.Divide, "/"));
+						tokens.Add(NewToken(TokenType.OperatorDivide, "/"));
 						break;
 					case '=':
-						tokens.Add(NewToken(TokenType.Assignment, "="));
+						tokens.Add(NewToken(TokenType.OperatorAssignment, "="));
 						break;
 					case '>':
 						if (TryRead("="))
-							tokens.Add(NewToken(TokenType.GreaterThanOrEqual, ">="));
+							tokens.Add(NewToken(TokenType.OperatorGreaterThanOrEqual, ">="));
 						else
-							tokens.Add(NewToken(TokenType.GreaterThan, ">"));
+							tokens.Add(NewToken(TokenType.OperatorGreaterThan, ">"));
 						break;
 					case '<':
 						if (TryRead("="))
-							tokens.Add(NewToken(TokenType.LessThanOrEqual, "<="));
+							tokens.Add(NewToken(TokenType.OperatorLessThanOrEqual, "<="));
 						else
-							tokens.Add(NewToken(TokenType.LessThan, "<"));
+							tokens.Add(NewToken(TokenType.OperatorLessThan, "<"));
 						break;
 					case '(':
 						tokens.Add(NewToken(TokenType.LeftParenthesis, "("));
@@ -115,8 +115,17 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 					case ')':
 						tokens.Add(NewToken(TokenType.RightParenthesis, ")"));
 						break;
+					case '[':
+						tokens.Add(NewToken(TokenType.LeftBracket, "["));
+						break;
+					case ']':
+						tokens.Add(NewToken(TokenType.RightBracket, "]"));
+						break;
 					case ',':
 						tokens.Add(NewToken(TokenType.Comma, ","));
+						break;
+					case '.':
+						tokens.Add(NewToken(TokenType.Dot, "."));
 						break;
 					case >= '0' and <= '9':
 						int value = c - '0';
@@ -129,15 +138,14 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 							ReadChar();
 							float floatValue = value;
 							while (char.IsDigit(PeekChar))
-							{
 								floatValue = floatValue * 10 + (ReadChar() - '0');
-							}
 							tokens.Add(NewToken(TokenType.Float, floatValue));
 						}
 						else
-						{
 							tokens.Add(NewToken(TokenType.Integer, value));
-						}
+						break;
+					case '!':
+						tokens.Add(NewToken(TokenType.OperatorNot, "!"));
 						break;
 					case 'b':
 						if (char.IsDigit(PeekChar))
@@ -146,9 +154,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 							goto strl;
 						break;
 					case 'f':
-						if (TryRead("alse"))
-							tokens.Add(NewToken(TokenType.False, false));
-						else if (char.IsDigit(PeekChar))
+						if (char.IsDigit(PeekChar))
 							tokens.Add(NewToken(TokenType.VariableFloat, ReadChar() - '0'));
 						else
 							goto strl;
@@ -159,37 +165,13 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						else
 							goto strl;
 						break;
-					case 't':
-						if (TryRead("rue"))
-							tokens.Add(NewToken(TokenType.True, true));
-						else
-							goto strl;
-						break;
-					// str:[string]
-					case 's':
-						if (TryRead("tr:"))
-						{
-							string str1 = "";
-							while (PeekChar != ',' && PeekChar != ')')
-							{
-								str1 += ReadChar();
-							}
-							tokens.Add(NewToken(TokenType.String, str1));
-						}
-						else
-						{
-							goto strl;
-						}
-						break;
 					// "[string]"
 					case '"':
 						string str2 = "";
 						while (PeekChar != '"')
 						{
 							if (IsChar(PeekChar, '\0', '\n', '\r'))
-							{
 								throw new Exception($"Unexpected end of string at {_line}:{_column}");
-							}
 							str2 += ReadChar();
 						}
 						ReadChar(); // consume the closing "
@@ -201,24 +183,45 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						bool isIdentifier = true;
 						string str3 = c.ToString();
 						if (!char.IsLetter(c) && c != '_')
-						{
 							isIdentifier = false;
-						}
 						while (!IsChar(PeekChar, '\0', '\n', '\r', ',', '(', ')'))
 						{
 							if (!char.IsLetterOrDigit(PeekChar) && PeekChar != '_')
-							{
 								isIdentifier = false;
-							}
 							str3 += ReadChar();
 						}
 						if (isIdentifier)
 						{
-							tokens.Add(NewToken(TokenType.StringOrIdentifier, str3));
+							switch (str3)
+							{
+								case "And":
+									tokens.Add(NewToken(TokenType.OperatorAnd, str3));
+									break;
+								case "Or":
+									tokens.Add(NewToken(TokenType.OperatorOr, str3));
+									break;
+								case "true":
+									tokens.Add(NewToken(TokenType.True, true));
+									break;
+								case "false":
+									tokens.Add(NewToken(TokenType.False, false));
+									break;
+								default:
+									tokens.Add(NewToken(TokenType.StringOrIdentifier, str3));
+									break;
+							}
 						}
 						else
 						{
-							tokens.Add(NewToken(TokenType.String, str3));
+							switch (str3)
+							{
+								case ['s', 't', 'r', ':']:
+									tokens.Add(NewToken(TokenType.String, str3[4..]));
+									break;
+								default:
+									tokens.Add(NewToken(TokenType.String, str3));
+									break;
+							}
 						}
 						break;
 				}

@@ -52,94 +52,174 @@ Function ->
 		private static readonly Stack<IPattern> argsStack = new();
 		private static void Calculate(ref PatternGroup pattern, IPattern[] values, RDVariables variables)
 		{
-			switch (pattern.Name)
+			switch (pattern.GroupType)
 			{
+				case GroupType.Sentence:
+					switch (values)
+					{
+						case [
+								PatternGroup { GroupType: GroupType.Identifier } pg0,
+								PatternValue { TokenType: TokenType.OperatorIncreasement }
+							]:
+							pattern.FloatValue = pg0.FloatValue + 1f;
+							break;
+						case [
+								PatternGroup { GroupType: GroupType.Identifier } pg0,
+								PatternValue { TokenType: TokenType.OperatorDecreasement }
+							]:
+							pattern.FloatValue = pg0.FloatValue - 1f;
+							break;
+						case [
+								PatternGroup { GroupType: GroupType.Identifier } pg0,
+								PatternValue { TokenType: TokenType.OperatorAssignment },
+								PatternGroup { GroupType: GroupType.Expression } pg1
+							]:
+							FieldAssignment(pg0.AssignableToken, pg1.FloatValue, variables);
+							break;
+						case [PatternGroup { GroupType: GroupType.Expression } pg0,]:
+							pattern.FloatValue = pg0.FloatValue;
+							break;
+					}
+					break;
+				case GroupType.Identifier:
+					switch (values)
+					{
+						case [PatternGroup { GroupType: GroupType.Variable } pg0,]:
+							pattern.FloatValue = pg0.FloatValue;
+							pattern.AssignableToken = pg0.AssignableToken;
+							break;
+						case [
+								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
+								PatternValue { TokenType: TokenType.Dot },
+								PatternGroup { GroupType: GroupType.Identifier } pg1,
+							]:
+							pattern.StringValue = $"{pg0.Value.Value}.{pg1.StringValue}";
+							pattern.AssignableToken = [new((string)pg0.Value.Value), ..pg1.AssignableToken];
+							break;
+						case [
+								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
+								PatternValue { TokenType: TokenType.LeftBracket },
+								PatternValue { TokenType: TokenType.Integer } pg1,
+								PatternValue { TokenType: TokenType.RightBracket },
+								PatternValue { TokenType: TokenType.Dot },
+								PatternGroup { GroupType: GroupType.Identifier } pg2,
+							]:
+							pattern.StringValue = $"{(string)pg0.Value.Value}[{pg1.Value.Value}].{pg2.StringValue}";
+							pattern.AssignableToken = [new((string)pg0.Value.Value, (int)pg1.Value.Value), .. pg2.AssignableToken];
+							break;
+					}
+					break;
+				case GroupType.Variable:
+					switch (values)
+					{
+						case [PatternValue { TokenType: TokenType.VariableInteger } pg0,]:
+							pattern.FloatValue = variables.i[(int)pg0.Value.Value];
+							pattern.AssignableToken = [new($"i{pg0.Value.Value}")];
+							break;
+						case [PatternValue { TokenType: TokenType.VariableFloat } pg0,]:
+							pattern.FloatValue = variables.f[(int)pg0.Value.Value];
+							pattern.AssignableToken = [new($"f{pg0.Value.Value}")];
+							break;
+						case [PatternValue { TokenType: TokenType.VariableBoolean } pg0,]:
+							pattern.FloatValue = variables.b[(int)pg0.Value.Value] ? 1f : 0f;
+							pattern.AssignableToken = [new($"b{pg0.Value.Value}")];
+							break;
+						case [PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,]:
+							object? tokenValue = pg0.Value.TokenID switch
+							{
+								TokenType.VariableInteger => variables.i[(int)pg0.Value.Value],
+								TokenType.VariableFloat => variables.f[(int)pg0.Value.Value],
+								TokenType.VariableBoolean => variables.b[(int)pg0.Value.Value],
+								TokenType.StringOrIdentifier => variables[(string)pg0.Value.Value],
+								_ => null,
+							};
+							pattern.FloatValue = tokenValue is float f ? f : 0f;
+							pattern.StringValue = (string)pg0.Value.Value;
+							pattern.AssignableToken = [new((string)pg0.Value.Value)];
+							break;
+						case [
+								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
+								PatternValue { TokenType: TokenType.LeftBracket },
+								PatternValue { TokenType: TokenType.Integer } pg1,
+								PatternValue { TokenType: TokenType.RightBracket },
+							]:
+							pattern.FloatValue = variables.i[(int)pg1.Value.Value];
+							pattern.AssignableToken = [new((string)pg0.Value.Value, (int)pg1.Value.Value)];
+							break;
+					}
+					break;
 				case GroupType.Expression:
 					switch (values)
 					{
-						case [PatternGroup { Name: GroupType.Digit } pg0,]:
+						case [PatternGroup { GroupType: GroupType.Number } pg0,]:
 							pattern.FloatValue = pg0.FloatValue;
 							pattern.StringValue = pg0.StringValue;
 							pattern.AssignableToken = pg0.AssignableToken;
 							break;
-						case [PatternGroup { Name: GroupType.Function } pg0,]:
+						case [PatternGroup { GroupType: GroupType.Function } pg0,]:
 							pattern.FloatValue = pg0.FloatValue;
 							break;
 						case [
 								PatternValue { TokenType: TokenType.LeftParenthesis },
-								PatternGroup { Name: GroupType.Expression } pg1,
+								PatternGroup { GroupType: GroupType.Expression } pg1,
 								PatternValue { TokenType: TokenType.RightParenthesis },
 							]:
 							pattern.FloatValue = pg1.FloatValue;
 							break;
 						case [
-								PatternGroup { Name: GroupType.Expression } pg0,
-								PatternGroup { Name: GroupType.Operator } pg1,
-								PatternGroup { Name: GroupType.Expression } pg2,
+								PatternGroup { GroupType: GroupType.Expression } pg0,
+								PatternGroup { GroupType: GroupType.Operator, Patterns: [PatternValue pg1pv] },
+								PatternGroup { GroupType: GroupType.Expression } pg2,
 							]:
-							switch (((PatternValue)(pg1.Patterns[0])).TokenType)
+							switch (pg1pv.TokenType)
 							{
-								case TokenType.Add:
+								case TokenType.OperatorAdd:
 									pattern.FloatValue = pg0.FloatValue + pg2.FloatValue;
 									break;
-								case TokenType.Subtract:
+								case TokenType.OperatorSubtract:
 									pattern.FloatValue = pg0.FloatValue - pg2.FloatValue;
 									break;
-								case TokenType.Multipy:
+								case TokenType.OperatorMultipy:
 									pattern.FloatValue = pg0.FloatValue * pg2.FloatValue;
 									break;
-								case TokenType.Divide:
+								case TokenType.OperatorDivide:
 									pattern.FloatValue = pg0.FloatValue / pg2.FloatValue;
 									break;
-								case TokenType.Assignment:
-									if (pg0.AssignableToken is PatternValue token)
-									{
-										pattern.FloatValue = pg0.FloatValue = pg2.FloatValue;
-										if (token.Value.Value is string value)
-											pattern.StringValue = value;
-										switch (token.Value.TokenID)
-										{
-											case TokenType.VariableInteger:
-												variables.i[(int)token.Value.Value] = (int)pg2.FloatValue;
-												break;
-											case TokenType.VariableFloat:
-												variables.f[(int)token.Value.Value] = pg2.FloatValue;
-												break;
-											case TokenType.VariableBoolean:
-												variables.b[(int)token.Value.Value] = pg2.FloatValue != 0f;
-												break;
-											case TokenType.StringOrIdentifier:
-												variables[(string)token.Value.Value] = pg2.FloatValue;
-												break;
-											default:
-												break;
-										}
-										break;
-									}
-									else
-										pattern.FloatValue = pg0.FloatValue == pg2.FloatValue ? 1f : 0f;
+								case TokenType.OperatorAssignment:
+									pattern.FloatValue = pg0.FloatValue == pg2.FloatValue ? 1f : 0f;
 									break;
-								case TokenType.GreaterThan:
+								case TokenType.OperatorGreaterThan:
 									pattern.FloatValue = pg0.FloatValue > pg2.FloatValue ? 1f : 0f;
 									break;
-								case TokenType.GreaterThanOrEqual:
+								case TokenType.OperatorGreaterThanOrEqual:
 									pattern.FloatValue = pg0.FloatValue >= pg2.FloatValue ? 1f : 0f;
 									break;
-								case TokenType.LessThan:
+								case TokenType.OperatorLessThan:
 									pattern.FloatValue = pg0.FloatValue < pg2.FloatValue ? 1f : 0f;
 									break;
-								case TokenType.LessThanOrEqual:
+								case TokenType.OperatorLessThanOrEqual:
 									pattern.FloatValue = pg0.FloatValue <= pg2.FloatValue ? 1f : 0f;
 									break;
-								default:
+								case TokenType.OperatorAnd:
+									pattern.FloatValue = (pg0.FloatValue != 0f && pg2.FloatValue != 0f) ? 1f : 0f;
 									break;
 							}
 							break;
-						default:
+						case [
+								PatternValue { TokenType: TokenType.OperatorAdd },
+								PatternGroup { GroupType: GroupType.Expression } pg1,
+							]:
+							pattern.FloatValue = pg1.FloatValue;
+							break;
+						case [
+								PatternValue { TokenType: TokenType.OperatorSubtract },
+								PatternGroup { GroupType: GroupType.Expression } pg1,
+							]:
+							pattern.FloatValue = -pg1.FloatValue;
 							break;
 					}
 					break;
-				case GroupType.Digit:
+				case GroupType.Number:
 					switch (values)
 					{
 						case [PatternValue { TokenType: TokenType.Integer } pg0,]:
@@ -151,49 +231,11 @@ Function ->
 						case [PatternValue { TokenType: TokenType.Boolean } pg0,]:
 							pattern.FloatValue = (bool)pg0.Value.Value ? 1f : 0f;
 							break;
-						case [PatternValue { TokenType: TokenType.VariableInteger } pg0,]:
-							pattern.FloatValue = variables.i[(int)pg0.Value.Value];
-							pattern.AssignableToken = pg0;
-							break;
-						case [PatternValue { TokenType: TokenType.VariableFloat } pg0,]:
-							pattern.FloatValue = variables.f[(int)pg0.Value.Value];
-							pattern.AssignableToken = pg0;
-							break;
-						case [PatternValue { TokenType: TokenType.VariableBoolean } pg0,]:
-							pattern.FloatValue = variables.b[(int)pg0.Value.Value] ? 1f : 0f;
-							pattern.AssignableToken = pg0;
-							break;
 						case [PatternValue { TokenType: TokenType.True },]:
 							pattern.FloatValue = 1f;
 							break;
 						case [PatternValue { TokenType: TokenType.False },]:
 							pattern.FloatValue = 0f;
-							break;
-						case [PatternValue { TokenType: TokenType.Add }, PatternValue { TokenType: TokenType.Integer } pg1,]:
-							pattern.FloatValue = (int)pg1.Value.Value;
-							break;
-						case [PatternValue { TokenType: TokenType.Subtract }, PatternValue { TokenType: TokenType.Integer } pg1,]:
-							pattern.FloatValue = -(int)pg1.Value.Value;
-							break;
-						case [PatternValue { TokenType: TokenType.Add }, PatternValue { TokenType: TokenType.Float } pg1,]:
-							pattern.FloatValue = (float)pg1.Value.Value;
-							break;
-						case [PatternValue { TokenType: TokenType.Subtract }, PatternValue { TokenType: TokenType.Float } pg1,]:
-							pattern.FloatValue = -(float)pg1.Value.Value;
-							break;
-						case [PatternValue { TokenType: TokenType.Add }, PatternValue { TokenType: TokenType.VariableInteger } pg1,]:
-							pattern.FloatValue = variables.i[(int)pg1.Value.Value];
-							break;
-						case [PatternValue { TokenType: TokenType.Subtract }, PatternValue { TokenType: TokenType.VariableInteger } pg1,]:
-							pattern.FloatValue = -variables.i[(int)pg1.Value.Value];
-							break;
-						case [PatternValue { TokenType: TokenType.Add }, PatternValue { TokenType: TokenType.VariableFloat } pg1,]:
-							pattern.FloatValue = variables.f[(int)pg1.Value.Value];
-							break;
-						case [PatternValue { TokenType: TokenType.Subtract }, PatternValue { TokenType: TokenType.VariableFloat } pg1,]:
-							pattern.FloatValue = -variables.f[(int)pg1.Value.Value];
-							break;
-						default:
 							break;
 					}
 					break;
@@ -205,28 +247,15 @@ Function ->
 						case [PatternValue { TokenType: TokenType.String } pg0,]:
 							pattern.StringValue = (string)pg0.Value.Value;
 							break;
-						case [PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,]:
-							object? tokenValue = pg0.Value.TokenID switch
-							{
-								TokenType.VariableInteger => variables.i[(int)pg0.Value.Value],
-								TokenType.VariableFloat => variables.f[(int)pg0.Value.Value],
-								TokenType.VariableBoolean => variables.b[(int)pg0.Value.Value],
-								TokenType.StringOrIdentifier => variables[(string)pg0.Value.Value],
-								_ => null,
-							};
-							pattern.AssignableToken = pg0;
-							break;
-						case [PatternGroup { Name: GroupType.Expression } pg0,]:
+						case [PatternGroup { GroupType: GroupType.Expression } pg0,]:
 							pattern.FloatValue = pg0.FloatValue;
 							break;
 						case [
-								PatternGroup { Name: GroupType.Args },
+								PatternGroup { GroupType: GroupType.Args },
 								PatternValue { TokenType: TokenType.Comma },
-								PatternGroup { Name: GroupType.Args },
+								PatternGroup { GroupType: GroupType.Args },
 							]:
 							pattern.Patterns = values;
-							break;
-						default:
 							break;
 					}
 					break;
@@ -236,27 +265,29 @@ Function ->
 						case [
 								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
 								PatternValue { TokenType: TokenType.LeftParenthesis },
-								PatternGroup { Name: GroupType.Args } pg1,
+								PatternGroup { GroupType: GroupType.Args } pg1,
 								PatternValue { TokenType: TokenType.RightParenthesis },
 							]:
 							Stack<PatternGroup> argList = new();
 							while (pg1.Patterns is [
-								PatternGroup { Name: GroupType.Args } subpg1,
+								PatternGroup { GroupType: GroupType.Args } subpg1,
 								PatternValue { TokenType: TokenType.Comma },
-								PatternGroup { Name: GroupType.Args } subpg2])
+								PatternGroup { GroupType: GroupType.Args } subpg2])
 							{
 								argList.Push(subpg2);
 								pg1 = subpg1;
 							}
 							argList.Push(pg1);
-							float value = FunctionCalling((string)pg0.Value.Value, [.. argList], variables);
-							pattern.FloatValue = value;
+							pattern.FloatValue = FunctionCalling((string)pg0.Value.Value, [.. argList], variables);
 							break;
-						default:
+						case [
+								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
+								PatternValue { TokenType: TokenType.LeftParenthesis },
+								PatternValue { TokenType: TokenType.RightParenthesis },
+							]:
+							pattern.FloatValue = FunctionCalling((string)pg0.Value.Value, [], variables);
 							break;
 					}
-					break;
-				default:
 					break;
 			}
 		}
@@ -264,7 +295,7 @@ Function ->
 		{
 			switch (identifier)
 			{
-				case "rand":
+				case "Rand":
 					if (args.Length == 1)
 						return RDVariables.Rand((int)args[0].FloatValue);
 					throw new RhythmBaseException("Invalid number of arguments for 'rand'. Expected 1 argument.");
@@ -284,9 +315,19 @@ Function ->
 					throw new Exception($"Function '{identifier}' not found.");
 			}
 		}
-		private static void FieldAssignment(string identifier, IPattern[] args, RDVariables variables)
+		private static void FieldAssignment(IdentifierToken[] tokens, float value, RDVariables variables)
 		{
+			for (int i = 0; i < tokens.Length; i++)
+			{
+				if (tokens[i].Index >= 0)
+				{
 
+				}
+				else
+				{
+
+				}
+			}
 		}
 	}
 }

@@ -10,7 +10,6 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 	public static class RDLang
 	{
 		private static readonly RDVariables variables = new();
-		private static readonly RDLangParserOld parserInstance;
 		/// <summary>
 		/// Gets the collection of variables used in the custom language.
 		/// </summary>
@@ -19,33 +18,34 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		/// </value>
 		public static RDVariables Variables { get => variables; }
 		/// <summary>
-		/// Lazy-initialized parser for the custom language expressions.
+		/// Attempts to parse and execute the provided code in the custom language.
 		/// </summary>
-		internal static Lazy<Parser<TokenTypeOld, float>> Parser = new(() =>
-		{
-			var builder = new ParserBuilder<TokenTypeOld, float>();
-			var build = builder.BuildParser(parserInstance, ParserType.LL_RECURSIVE_DESCENT, "expression");
-			var parser = build.Result;
-			return parser;
-		});
-		static RDLang()
-		{
-			parserInstance = new RDLangParserOld() { Variables = variables };
-		}
-		/// <summary>
-		/// Tries to parse the given code string into a float result.
-		/// </summary>
-		/// <param name="code">The code string to parse.</param>
-		/// <param name="result">The parsed float result if the parsing is successful.</param>
-		/// <returns>True if parsing is successful; otherwise, false.</returns>
+		/// <param name="code">The code to execute.</param>
+		/// <param name="result">
+		/// When this method returns, contains the result of the execution if successful; otherwise, 0.
+		/// </param>
+		/// <returns>
+		/// <c>true</c> if the code was successfully executed; otherwise, <c>false</c>.
+		/// </returns>
 		public static bool TryRun(string code, out float result)
 		{
-			//var parseResult = Parser.Value.Parse(code);
-			//result = parseResult.Result;
-			//return parseResult.IsOk;
+			RDLangParser.TryRun(code);
 
-			RDLangParser.TryParse(code);
-
+			result = 0;
+			return false;
+		}
+		/// <summary>
+		/// Attempts to parse and evaluate the provided code in the custom language.
+		/// </summary>
+		/// <param name="code">The code to evaluate.</param>
+		/// <param name="result">
+		/// When this method returns, contains the result of the evaluation if successful; otherwise, 0.
+		/// </param>
+		/// <returns>
+		/// <c>true</c> if the code was successfully evaluated; otherwise, <c>false</c>.
+		/// </returns>
+		public static bool TryEvaluate(string code, out float result)
+		{
 			result = 0;
 			return false;
 		}

@@ -14,24 +14,32 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		VariableFloat,
 		VariableBoolean,
 
-		Add,
-		Subtract,
-		Multipy,
-		Divide,
+		OperatorAdd,
+		OperatorSubtract,
+		OperatorMultipy,
+		OperatorDivide,
+		OperatorIncreasement,
+		OperatorDecreasement,
+		OperatorAnd,
+		OperatorOr,
+		OperatorNot,
 
 		True,
 		False,
 
-		Assignment,
-		GreaterThanOrEqual,
-		GreaterThan,
-		LessThanOrEqual,
-		LessThan,
+		OperatorAssignment,
+		OperatorGreaterThanOrEqual,
+		OperatorGreaterThan,
+		OperatorLessThanOrEqual,
+		OperatorLessThan,
 
 		LeftParenthesis,
 		RightParenthesis,
+		LeftBracket,
+		RightBracket,
 
 		Comma,
+		Dot,
 	}
 
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
@@ -59,12 +67,13 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 	}
 	internal static partial class RDLangParser
 	{
-		public static void TryParse(string code)
+		public static bool TryRun(string code)
 		{
 			if (string.IsNullOrEmpty(code))
-				return;
+				return false;
 			Token[] tokens = ReadAsToken(code);
-			Func(tokens, RDLang.Variables);
+			Run(tokens, RDLang.Variables);
+			return true;
 		}
 	}
 }
