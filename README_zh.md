@@ -15,14 +15,14 @@
 3. 在控制台中输入以下命令：
 
     ```
-    Install-Package RhythmBase
+    Install-Package RhythmBase -Version 1.2.0-rc2
     ```
 
 4. 等待安装完成，并确保项目已引用所需的 NuGet 包。
 5. 如果使用 .NET CLI，请输入：
 
     ```
-    dotnet add package RhythmBase
+    dotnet add package RhythmBase -version 1.2.0-rc2
     ```
 
 ## 编写

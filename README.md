@@ -15,14 +15,14 @@ To install the RhythmBase NuGet package, follow these steps:
 3. In the console, enter the following command:
 
     ```
-    Install-Package RhythmBase
+    Install-Package RhythmBase -Version 1.2.0-rc2
     ```
 
 4. Wait for the installation to complete and ensure your project references the required NuGet package.
 5. To install using the .NET CLI, use:
 
     ```
-    dotnet add package RhythmBase
+    dotnet add package RhythmBase -version 1.2.0-rc2
     ```
 
 ## Coding
