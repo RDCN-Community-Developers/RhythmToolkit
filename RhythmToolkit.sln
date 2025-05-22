@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "RhythmAddition", "RhythmTools\RhythmAddition.vbproj", "{EEA70834-7EAE-465E-B90A-D1421A259B09}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastTest", "FastTest\FastTest.csproj", "{87931AE0-3DD0-4AC2-B2D3-8E7720980E38}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RhythmHospital", "RhythmEdega\RhythmHospital.csproj", "{F0D688D5-E714-404F-87DC-63BB673B27C7}"
@@ -12,6 +10,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RhythmBase", "RhythmBaseCS\RhythmBase.csproj", "{B7F525A8-CB1F-456C-B5C8-C998435C6150}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32EF0F5F-6012-485E-B537-7F413AED21B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RhythmBase.Test", "RhythmBase.Test\RhythmBase.Test.csproj", "{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,22 +25,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|arm64.Build.0 = Debug|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|x64.Build.0 = Debug|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Debug|x86.Build.0 = Debug|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|arm64.ActiveCfg = Release|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|arm64.Build.0 = Release|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|x64.ActiveCfg = Release|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|x64.Build.0 = Release|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|x86.ActiveCfg = Release|Any CPU
-		{EEA70834-7EAE-465E-B90A-D1421A259B09}.Release|x86.Build.0 = Release|Any CPU
 		{87931AE0-3DD0-4AC2-B2D3-8E7720980E38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{87931AE0-3DD0-4AC2-B2D3-8E7720980E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87931AE0-3DD0-4AC2-B2D3-8E7720980E38}.Debug|arm64.ActiveCfg = Debug|Any CPU
@@ -89,6 +73,22 @@ Global
 		{B7F525A8-CB1F-456C-B5C8-C998435C6150}.Release|x64.Build.0 = Release|Any CPU
 		{B7F525A8-CB1F-456C-B5C8-C998435C6150}.Release|x86.ActiveCfg = Release|Any CPU
 		{B7F525A8-CB1F-456C-B5C8-C998435C6150}.Release|x86.Build.0 = Release|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Debug|arm64.Build.0 = Debug|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Debug|x64.Build.0 = Debug|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Debug|x86.Build.0 = Debug|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Release|arm64.ActiveCfg = Release|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Release|arm64.Build.0 = Release|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Release|x64.ActiveCfg = Release|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Release|x64.Build.0 = Release|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Release|x86.ActiveCfg = Release|Any CPU
+		{3AB7D6D2-29B6-48D9-A5A8-4B2FF5AB7677}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

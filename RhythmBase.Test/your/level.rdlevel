@@ -1,0 +1,85 @@
+﻿{
+	"settings":
+	{
+		"version": 61, 
+		"artist": "RhythmBase", 
+		"song": "RhythmBase", 
+		"specialArtistType": "None", 
+		"artistPermission": "", 
+		"artistLinks": "", 
+		"author": "RhythmBase", 
+		"difficulty": "Medium", 
+		"seizureWarning": false, 
+		"previewImage": "RhythmToolkit.png", 
+		"syringeIcon": "", 
+		"previewSong": "", 
+		"previewSongStartTime": 0, 
+		"previewSongDuration": 10, 
+		"songNameHue": 0.88, 
+		"songLabelGrayscale": false, 
+		"description": "", 
+		"tags": "", 
+		"separate2PLevelFilename": "", 
+		"canBePlayedOn": "OnePlayerOnly", 
+		"firstBeatBehavior": "RunNormally", 
+		"multiplayerAppearance": "HorizontalStrips", 
+		"levelVolume": 1, 
+		"rankMaxMistakes": [20, 15, 10, 5], 
+
+		"rankDescription":
+		[
+			"你这个毫无希望的实习生！",
+			"啊，你还可以做得更好",
+			"嗯，勉强还成……",
+			"咱们是黄金组合！",
+			"你的表现真给力！",
+			"惊艳绝伦的演出！！"
+		]
+	},
+	"rows":
+	[
+		{ "rooms": [0], "row": 0, "rowType": "Classic", "player": "P1", "character": "Samurai", "pulseSound": "Shaker" },
+	],
+	"decorations":
+	[
+	],
+	"events":
+	[
+		{ "bar": 1, "beat": 1, "y": 0, "type": "SetTheme", "rooms": [0], "preset": "OrientalTechno", "skipPaintEffects": false },
+		{ "bar": 1, "y": 0, "type": "PlaySong", "song": {"filename": "sndOrientalTechno"}, "bpm": 100, "loop": false },
+		{ "bar": 1, "beat": 1, "y": 0, "type": "AddClassicBeat", "row": 0, "tick": 1, "swing": 0, "hold": 0 },
+		{ "bar": 1, "beat": 2, "y": 1, "type": "FinishLevel" },
+		{ "bar": 1, "beat": 3, "y": 2, "type": "FinishLevel" },
+		{ "bar": 1, "beat": 4, "y": 3, "type": "FinishLevel" },
+	],
+	"conditionals":
+	[
+	],
+	"bookmarks":
+	[
+	],
+	"colorPalette":
+	[
+		"000000ff",
+		"ffffffff",
+		"7f7f7fff",
+		"c3c3c3ff",
+		"880015ff",
+		"b97a57ff",
+		"ff0000ff",
+		"ffaec9ff",
+		"ff7f27ff",
+		"ffc90eff",
+		"fff200ff",
+		"efe4b0ff",
+		"22b14cff",
+		"b5e61dff",
+		"00a2e8ff",
+		"99d9eaff",
+		"3f48ccff",
+		"7092beff",
+		"a349a4ff",
+		"c8bfe7ff",
+		"00000000"
+	]
+}

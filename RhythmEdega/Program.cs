@@ -1,9 +1,4 @@
-﻿
-using static RhythmBase.Events.SetTheme;
-using System;
-using RhythmBase.Events;
-using RhythmBase.Components;
-namespace RhythmEdega
+﻿namespace RhythmEdega
 {
 	internal class Program
 	{

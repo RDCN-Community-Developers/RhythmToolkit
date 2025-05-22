@@ -19,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	{
 		/// <inheritdoc/>
-		public override int Count => Rows.Sum(i => i.Count) + Decorations.Sum(i => i.Count) + base.Count;
+		public override int Count => base.Count;
 		/// <summary>
 		/// The calculator that comes with the level.
 		/// </summary>
