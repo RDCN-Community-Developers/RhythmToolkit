@@ -59,6 +59,29 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		public override readonly string ToString() => TokenType.ToString();
 		private readonly string GetDebuggerDisplay() => ToString();
 	}
+
+	public struct Error
+	{
+		public string Message;
+		public int Line;
+		public int Column;
+		public string Name;
+		public Error(string message)
+		{
+			Message = message;
+			Line = 0;
+			Column = -1;
+			Name = "";
+		}
+		public Error(string message, Token token)
+		{
+			Message = message;
+			Line = token.Line;
+			Column = token.Column;
+			Name = token.Name;
+		}
+		public override readonly string ToString() => $"{Message} at {Line}:{Column}";
+	}
 	internal enum ActionType
 	{
 		Shift = 0b01,
@@ -130,11 +153,16 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		private static Stack<PatternValue> inputStack = [];
 		private static readonly Stack<IPattern> symbolStack = [];
 		private static readonly Stack<int> stateStack = [];
-		private static Action GetAction(int state, TokenType tokenType) => actions[state, actionIndexes.IndexOf(tokenType)];
+		private static Action GetAction(int state, TokenType tokenType, RDLangType type) => type switch
+		{
+			RDLangType.Statement => actions[state, actionIndexes.IndexOf(tokenType)],
+			RDLangType.Expression => actions2[state, actionIndexes2.IndexOf(tokenType)],
+			_ => throw new NotImplementedException(),
+		};
 		private static Action GetLastAction(int state, RDLangType type) => type switch
 		{
 			RDLangType.Statement => actions[state, actions.GetLength(1) - 1],
-			RDLangType.Expression => actions2[state, actions.GetLength(1) - 1],
+			RDLangType.Expression => actions2[state, actions2.GetLength(1) - 1],
 			_ => throw new NotImplementedException(),
 		};
 		private static Action GetGoTo(int state, GroupType groupType, RDLangType type) => type switch
@@ -143,7 +171,13 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 			RDLangType.Expression => goTos2[state, goToIndexes.IndexOf(groupType)],
 			_ => throw new NotImplementedException(),
 		};
-		private static float Run(Token[] tokens, RDVariables variables, RDLangType type)
+		private static PatternGroup GetPatterns(int index, RDLangType type) => type switch
+		{
+			RDLangType.Statement => patterns[index],
+			RDLangType.Expression => patterns2[index],
+			_ => throw new NotImplementedException(),
+		};
+		private static float Run(Token[] tokens, RDVariables variables, RDLangType type, out Error? error)
 		{
 			inputStack = new(tokens.Select(i => new PatternValue(i.TokenID) { Value = i }).Reverse());
 			symbolStack.Clear();
@@ -156,11 +190,9 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 				//Console.WriteLine($"Symbol: {string.Join(", ", symbolStack.Select(i => i.ToString()).Reverse())}");
 				//Console.WriteLine();
 				int state = stateStack.Peek();
-				Action action;
-				if (!inputStack.TryPeek(out PatternValue peekPattern))
-					action = GetLastAction(state, type);
-				else
-					action = GetAction(state, peekPattern.TokenType);
+				Action action = inputStack.TryPeek(out PatternValue peekPattern)
+					? GetAction(state, peekPattern.TokenType, type)
+					: GetLastAction(state, type);
 				switch (action.ActionType)
 				{
 					case ActionType.Shift:
@@ -171,7 +203,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 					case ActionType.Reduce:
 					reduce:
 						Stack<IPattern> ptargs = [];
-						var ps = patterns[action.ReduceTo];
+						var ps = GetPatterns(action.ReduceTo, type);
 						for (int i = 0; i < ps.Patterns.Length; i++)
 						{
 							var peak = symbolStack.Pop();
@@ -199,8 +231,16 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						else
 							goto reduce;
 					case ActionType.Error:
-						throw new Exception($"Error at state {state}: {action.ErrorInfo}");
+						if (inputStack.TryPeek(out PatternValue pv2))
+						{
+							Token token = pv2.Value;
+							error = new(action.ErrorInfo, token);
+							return 0;
+						}
+						error = new(action.ErrorInfo);
+						return 0;
 					case ActionType.Accept:
+						error = null;
 						return ((PatternGroup)symbolStack.Single()).FloatValue;
 					default:
 						throw new Exception($"Unknown action type: {action.ActionType}");

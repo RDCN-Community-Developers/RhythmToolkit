@@ -59,6 +59,38 @@ Function ->
 	| Identifier LeftParenthesis RightParenthesis
 	| Identifier LeftParenthesis Args RightParenthesis
 		 */
+		private static readonly List<TokenType> actionIndexes =
+			[
+			TokenType.Comma,
+			TokenType.Dot,
+			TokenType.False,
+			TokenType.Float,
+			TokenType.Integer,
+			TokenType.LeftBracket,
+			TokenType.LeftParenthesis,
+			TokenType.OperatorAdd,
+			TokenType.OperatorAnd,
+			TokenType.OperatorAssignment,
+			TokenType.OperatorDecreasement,
+			TokenType.OperatorDivide,
+			TokenType.OperatorGreaterThan,
+			TokenType.OperatorGreaterThanOrEqual,
+			TokenType.OperatorIncreasement,
+			TokenType.OperatorLessThan,
+			TokenType.OperatorLessThanOrEqual,
+			TokenType.OperatorMultipy,
+			TokenType.OperatorNot,
+			TokenType.OperatorOr,
+			TokenType.OperatorSubtract,
+			TokenType.RightBracket,
+			TokenType.RightParenthesis,
+			TokenType.String,
+			TokenType.StringOrIdentifier,
+			TokenType.True,
+			TokenType.VariableBoolean,
+			TokenType.VariableFloat,
+			TokenType.VariableInteger,
+		];
 		private static readonly PatternGroup[] patterns = [
 			new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.OperatorIncreasement),},
 			new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.OperatorDecreasement),},
@@ -227,6 +259,36 @@ Function ->
 {"","","","","","","",""},
 		};
 
+		private static readonly List<TokenType> actionIndexes2 =
+			[
+			TokenType.Comma,
+			TokenType.Dot,
+			TokenType.False,
+			TokenType.Float,
+			TokenType.Integer,
+			TokenType.LeftBracket,
+			TokenType.LeftParenthesis,
+			TokenType.OperatorAdd,
+			TokenType.OperatorAnd,
+			TokenType.OperatorAssignment,
+			TokenType.OperatorDivide,
+			TokenType.OperatorGreaterThan,
+			TokenType.OperatorGreaterThanOrEqual,
+			TokenType.OperatorLessThan,
+			TokenType.OperatorLessThanOrEqual,
+			TokenType.OperatorMultipy,
+			TokenType.OperatorNot,
+			TokenType.OperatorOr,
+			TokenType.OperatorSubtract,
+			TokenType.RightBracket,
+			TokenType.RightParenthesis,
+			TokenType.String,
+			TokenType.StringOrIdentifier,
+			TokenType.True,
+			TokenType.VariableBoolean,
+			TokenType.VariableFloat,
+			TokenType.VariableInteger,
+		];
 		private static readonly PatternGroup[] patterns2 = [
 			new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Expression),},
 
@@ -275,7 +337,7 @@ Function ->
 					];
 		private static readonly Action[,] actions2 = new Action[,] {
 			{"","","s12","s9","s8","","s5","s6","","","","","","","","","","","s7","","","","s14","s11","s17","s16","s15",""},
-{"","","","","","","","","","","","","","","","","","","","","","","","","","","","new()"},
+{"","","","","","","","","","","","","","","","","","","","","","","","","","","",new()},
 { "","","","","","","","s19","s28","s23","s22","s24","s25","s26","s27","s21","s30","s29","s20","","","","","","","","","r0"},
 { "r9","","","","","","","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","","r9","","","","","","","r9"},
 { "r10","","","","","","","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","","r10","","","","","","","r10"},
@@ -381,38 +443,6 @@ Function ->
 {"","","","","","","",""},
 		};
 
-		private static readonly List<TokenType> actionIndexes =
-			[
-			TokenType.Comma,
-			TokenType.Dot,
-			TokenType.False,
-			TokenType.Float,
-			TokenType.Integer,
-			TokenType.LeftBracket,
-			TokenType.LeftParenthesis,
-			TokenType.OperatorAdd,
-			TokenType.OperatorAnd,
-			TokenType.OperatorAssignment,
-			TokenType.OperatorDecreasement,
-			TokenType.OperatorDivide,
-			TokenType.OperatorGreaterThan,
-			TokenType.OperatorGreaterThanOrEqual,
-			TokenType.OperatorIncreasement,
-			TokenType.OperatorLessThan,
-			TokenType.OperatorLessThanOrEqual,
-			TokenType.OperatorMultipy,
-			TokenType.OperatorNot,
-			TokenType.OperatorOr,
-			TokenType.OperatorSubtract,
-			TokenType.RightBracket,
-			TokenType.RightParenthesis,
-			TokenType.String,
-			TokenType.StringOrIdentifier,
-			TokenType.True,
-			TokenType.VariableBoolean,
-			TokenType.VariableFloat,
-			TokenType.VariableInteger,
-		];
 		private static readonly List<GroupType> goToIndexes =
 			[
 			GroupType.Sentence,

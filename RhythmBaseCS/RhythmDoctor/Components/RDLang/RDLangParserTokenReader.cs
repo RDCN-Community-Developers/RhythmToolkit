@@ -25,7 +25,11 @@
 				TokenID = tokenType,
 				Value = value,
 				Line = _line,
-				Column = _column
+				Column = _column - tokenType switch
+				{
+					TokenType.VariableInteger or TokenType.VariableFloat or TokenType.VariableBoolean => 2,
+					_ => value?.ToString()?.Length ?? 0,
+				}
 			};
 		}
 		private static char ReadChar()

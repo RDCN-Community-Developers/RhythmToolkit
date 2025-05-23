@@ -59,5 +59,9 @@
 		{
 			return RDLangParser.Run(code, RDLangType.Expression);
 		}
+		public static Token[] Analyze(string code)
+		{
+			return RDLangParser.Analyze(code);
+		}
 	}
 }
