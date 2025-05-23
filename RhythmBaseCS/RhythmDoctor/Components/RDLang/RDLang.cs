@@ -1,8 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-using sly.parser;
-using sly.parser.generator;
-
-namespace RhythmBase.RhythmDoctor.Components.RDLang
+﻿namespace RhythmBase.RhythmDoctor.Components.RDLang
 {
 	/// <summary>
 	/// RDLang class provides functionality to parse and evaluate expressions written in a custom language.
@@ -29,10 +25,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		/// </returns>
 		public static bool TryRun(string code, out float result)
 		{
-			RDLangParser.TryRun(code);
-
-			result = 0;
-			return false;
+			return RDLangParser.TryRun(code, RDLangType.Statement, out result);
 		}
 		/// <summary>
 		/// Attempts to parse and evaluate the provided code in the custom language.
@@ -46,8 +39,25 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		/// </returns>
 		public static bool TryEvaluate(string code, out float result)
 		{
-			result = 0;
-			return false;
+			return RDLangParser.TryRun(code, RDLangType.Expression, out result);
+		}
+		/// <summary>
+		/// Executes the provided code written in the custom language as a statement.
+		/// </summary>
+		/// <param name="code">The code to execute.</param>
+		/// <returns>The result of the execution as a float.</returns>
+		public static float Run(string code)
+		{
+			return RDLangParser.Run(code, RDLangType.Statement);
+		}
+		/// <summary>
+		/// Evaluates the provided code written in the custom language as an expression.
+		/// </summary>
+		/// <param name="code">The code to evaluate.</param>
+		/// <returns>The result of the evaluation as a float.</returns>
+		public static float Evaluate(string code)
+		{
+			return RDLangParser.Run(code, RDLangType.Expression);
 		}
 	}
 }

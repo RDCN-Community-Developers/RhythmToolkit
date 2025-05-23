@@ -2,11 +2,15 @@
 
 namespace RhythmBase.RhythmDoctor.Components.RDLang
 {
+	internal enum RDLangType
+	{
+		Statement,
+		Expression,
+	}
 	internal enum TokenType
 	{
 		Integer,
 		Float,
-		Boolean,
 		String,
 		StringOrIdentifier,
 
@@ -51,8 +55,8 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		public int Column { get; set; }
 		public readonly override string ToString()
 		{
-			string vstr = Value?.ToString()??"";
-			if(TokenID is TokenType.VariableInteger)
+			string vstr = Value?.ToString() ?? "";
+			if (TokenID is TokenType.VariableInteger)
 				vstr = "i" + vstr;
 			else if (TokenID is TokenType.VariableFloat)
 				vstr = "f" + vstr;
@@ -67,13 +71,28 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 	}
 	internal static partial class RDLangParser
 	{
-		public static bool TryRun(string code)
+		public static float Run(string code, RDLangType type)
 		{
+			if (string.IsNullOrEmpty(code))
+				return 0;
+			Token[] tokens = ReadAsToken(code);
+			return Run(tokens, RDLang.Variables, type);
+		}
+		public static bool TryRun(string code, RDLangType type, out float result)
+		{
+			result = 0;
 			if (string.IsNullOrEmpty(code))
 				return false;
 			Token[] tokens = ReadAsToken(code);
-			Run(tokens, RDLang.Variables);
-			return true;
+			try
+			{
+				result = Run(tokens, RDLang.Variables, type);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 }

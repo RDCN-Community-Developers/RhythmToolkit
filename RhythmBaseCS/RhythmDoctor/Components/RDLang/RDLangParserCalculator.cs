@@ -1,55 +1,11 @@
 ﻿using RhythmBase.Global.Exceptions;
+using System.Reflection;
 
 namespace RhythmBase.RhythmDoctor.Components.RDLang
 {
 	partial class RDLangParser
 	{
-		/*
-Expression ->
-	| Digit
-	| Function
-    | leftParenthesis Expression rightParenthesis
-	| Expression Operator Expression
-
-Digit ->
-	| integer
-	| float
-	| boolean
-	| variableInteger
-	| variableFloat
-	| variableBoolean
-	| true
-	| false
-    | add integer
-    | subtract integer
-    | add float
-    | subtract float
-    | add variableInteger
-    | subtract variableInteger
-    | add variableFloat
-    | subtract variableFloat
-
-Operator ->
-	| add
-	| subtract
-	| multipy
-	| divide
-	| assignment
-	| greaterThan
-	| greaterThanOrEqual
-	| lessThan
-	| lessThanOrEqual
-
-Args ->
-	| string
-	| stringOrIdentifier
-	| Expression
-	| Args comma Args
-
-Function ->
-	| stringOrIdentifier leftParenthesis Args rightParenthesis
-		 */
-		private static readonly Stack<IPattern> argsStack = new();
+		private static readonly Type variablesType = typeof(RDVariables);
 		private static void Calculate(ref PatternGroup pattern, IPattern[] values, RDVariables variables)
 		{
 			switch (pattern.GroupType)
@@ -228,9 +184,6 @@ Function ->
 						case [PatternValue { TokenType: TokenType.Float } pg0,]:
 							pattern.FloatValue = (float)pg0.Value.Value;
 							break;
-						case [PatternValue { TokenType: TokenType.Boolean } pg0,]:
-							pattern.FloatValue = (bool)pg0.Value.Value ? 1f : 0f;
-							break;
 						case [PatternValue { TokenType: TokenType.True },]:
 							pattern.FloatValue = 1f;
 							break;
@@ -263,7 +216,7 @@ Function ->
 					switch (values)
 					{
 						case [
-								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
+								PatternGroup { GroupType: GroupType.Identifier } pg0,
 								PatternValue { TokenType: TokenType.LeftParenthesis },
 								PatternGroup { GroupType: GroupType.Args } pg1,
 								PatternValue { TokenType: TokenType.RightParenthesis },
@@ -278,27 +231,28 @@ Function ->
 								pg1 = subpg1;
 							}
 							argList.Push(pg1);
-							pattern.FloatValue = FunctionCalling((string)pg0.Value.Value, [.. argList], variables);
+							pattern.FloatValue = FunctionCalling(pg0, [.. argList], variables);
 							break;
 						case [
-								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
+								PatternGroup { GroupType: GroupType.Identifier } pg0,
 								PatternValue { TokenType: TokenType.LeftParenthesis },
 								PatternValue { TokenType: TokenType.RightParenthesis },
 							]:
-							pattern.FloatValue = FunctionCalling((string)pg0.Value.Value, [], variables);
+							pattern.FloatValue = FunctionCalling(pg0, [], variables);
 							break;
 					}
 					break;
 			}
 		}
-		private static float FunctionCalling(string identifier, PatternGroup[] args, RDVariables variables)
+		private static float FunctionCalling(PatternGroup identifier, PatternGroup[] args, RDVariables variables)
 		{
-			switch (identifier)
+			string identifierName = string.Join('.', identifier.AssignableToken.Select(i=>i.ToString()));
+			switch (identifierName)
 			{
 				case "Rand":
 					if (args.Length == 1)
 						return RDVariables.Rand((int)args[0].FloatValue);
-					throw new RhythmBaseException("Invalid number of arguments for 'rand'. Expected 1 argument.");
+					throw new RhythmBaseException("Invalid number of arguments for 'Rand'. Expected 1 argument.");
 				case "atLeastRank":
 					if (args.Length == 1)
 						return RDVariables.atLeastRank(args[0].StringValue) ? 1f : 0f;
@@ -317,16 +271,31 @@ Function ->
 		}
 		private static void FieldAssignment(IdentifierToken[] tokens, float value, RDVariables variables)
 		{
+			if (tokens.Length == 1)
+			{
+				variables[tokens[0].Identifier] = value;
+				return;
+			}
+			PropertyInfo? info = null;
+			object? key = RDLang.Variables;
 			for (int i = 0; i < tokens.Length; i++)
 			{
 				if (tokens[i].Index >= 0)
 				{
-
+					info = variablesType.GetProperty(tokens[i].Identifier);
+					key = info?.GetValue(key) ?? null;
+					info = info?.PropertyType.GetProperty("Item");
+					key = info?.GetValue(key, [tokens[i].Index]) ?? null;
 				}
 				else
 				{
-
+					info = variablesType.GetProperty(tokens[i].Identifier);
+					key = info?.GetValue(key) ?? null;
 				}
+			}
+			if (info != null && key != null)
+			{
+				info.SetValue(key, value);
 			}
 		}
 	}
