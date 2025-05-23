@@ -217,14 +217,14 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 			{
 				if (error?.Column == -1)
 				{
-					error = new Error("The statement does not end.")
+					error = new Error($"{error?.Message} At line {error?.Line}, column {error?.Column}.")
 					{
 						Line = tokens[^1].Line,
 						Column = tokens[^1].Column,
 						Name = tokens[^1].Name
 					};
 				}
-				throw new SyntaxErrorException(error?.Message)
+				throw new SyntaxErrorException($"{error?.Message} At line {error?.Line}, column {error?.Column}.")
 				{
 					Data = {
 						["Line"] = error?.Line,
