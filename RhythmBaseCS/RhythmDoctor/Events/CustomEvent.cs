@@ -21,7 +21,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		public string ActureType
 		{
 			get => Data["Type".ToLowerCamelCase()]?.ToObject<string>() ?? "";
-			init => Data["Type".ToLowerCamelCase()] = value;
+
+#if NET5_0_OR_GREATER
+			init
+#else
+			set
+#endif
+ => Data["Type".ToLowerCamelCase()] = value;
 		}
 		/// <inheritdoc/>
 		public override Tabs Tab { get; }

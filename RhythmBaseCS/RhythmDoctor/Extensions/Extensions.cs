@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using RhythmBase.Global.Components;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
@@ -12,9 +11,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 	/// <summary>
 	/// Extensions
 	/// </summary>
-	[StandardModule]
 	public static partial class Extensions
 	{
+#if NETSTANDARD2_1
+		internal static T FirstOrDefault<T>(this IEnumerable<T> e, T defaultValue) => e.FirstOrDefault(defaultValue);
+		internal static T FirstOrDefault<T>(this IEnumerable<T> e, Func<T, bool> predicate, T defaultValue) => e.FirstOrDefault(predicate, defaultValue);
+		internal static T LastOrDefault<T>(this IEnumerable<T> e, T defaultValue) => e.LastOrDefault(defaultValue);
+		internal static T LastOrDefault<T>(this IEnumerable<T> e, Func<T, bool> predicate, T defaultValue) => e.LastOrDefault(predicate, defaultValue);
+#endif
 		private static (float start, float end) GetRange(OrderedEventCollection e, Index index)
 		{
 			(float, float) GetRange;

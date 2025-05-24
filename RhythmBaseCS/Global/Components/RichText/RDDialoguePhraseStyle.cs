@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Components;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace RhythmBase.Global.Components.RichText
 {
@@ -77,7 +76,11 @@ namespace RhythmBase.Global.Components.RichText
 		/// </summary>
 		public bool Whisper { get; set; }
 		/// <inheritdoc/>
-		public static bool HasPhrase => true;
+		public
+#if NET7_0_OR_GREATER
+			static
+#endif
+			bool HasPhrase => true;
 		/// <summary>
 		/// Sets the property of the rich string style based on the provided name and value.
 		/// </summary>
@@ -215,7 +218,11 @@ namespace RhythmBase.Global.Components.RichText
 			return true;
 		}
 		/// <inheritdoc/>
-		public static string GetXmlTag(RDDialoguePhraseStyle before, RDDialoguePhraseStyle after)
+		public
+#if NET7_0_OR_GREATER
+			static
+#endif
+			string GetXmlTag(RDDialoguePhraseStyle before, RDDialoguePhraseStyle after)
 		{
 			string tag = "";
 			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "color",

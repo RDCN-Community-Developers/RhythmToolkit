@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 	{
 		internal const string PlainString = "";
 		private static Stack<Token<RDExpressionToken>> TokenStack { get; set; } = [];
-		public required RDVariables Variables { get; set; }
+		public RDVariables Variables { get; set; }
 		[NodeName("integer")]
 		[Production("primary: Number")]
 		public static float Primary(Token<RDExpressionToken> intToken) => float.Parse(intToken.Value);

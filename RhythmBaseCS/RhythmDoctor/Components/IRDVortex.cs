@@ -9,19 +9,25 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <typeparam name="TRight">The type of the right operand in addition and subtraction operations.</typeparam>
 	/// <typeparam name="TValue">The type of the value in multiplication and division operations.</typeparam>
 	public interface IRDVortex<TSelf, TRight, TValue> :
-		IEquatable<TSelf>,
+		IEquatable<TSelf>
+#if NET7_0_OR_GREATER
+		,
 		IAdditionOperators<TSelf, TRight, TSelf>,
 		ISubtractionOperators<TSelf, TRight, TSelf>,
 		IMultiplyOperators<TSelf, TValue, TSelf>,
 		IDivisionOperators<TSelf, TValue, TSelf>,
 		IEqualityOperators<TSelf, TSelf, bool>
+#endif
 		where TSelf :
-			IEquatable<TSelf>,
+			IEquatable<TSelf>
+#if NET7_0_OR_GREATER
+		,
 			IAdditionOperators<TSelf, TRight, TSelf>,
 			ISubtractionOperators<TSelf, TRight, TSelf>,
 			IMultiplyOperators<TSelf, TValue, TSelf>,
 			IDivisionOperators<TSelf, TValue, TSelf>,
 			IEqualityOperators<TSelf, TSelf, bool>
+#endif
 	{
 	}
 }

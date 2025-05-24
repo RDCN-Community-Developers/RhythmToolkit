@@ -22,9 +22,15 @@ namespace RhythmBase.Global.Components.Easing
 			(byte)Math.Clamp(_b.GetValue(beat.BeatOnly), 0, 255),
 			(byte)Math.Clamp(_a.GetValue(beat.BeatOnly), 0, 255));
 		/// <inheritdoc/>
-		public static bool CanConvert(object data) => data is RDColor;
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public bool CanConvert(object data) => data is RDColor;
 		/// <inheritdoc/>
-		public static EaseNode?[] Convert(IEaseEvent data, PropertyInfo property)
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public EaseNode?[] Convert(IEaseEvent data, PropertyInfo property)
 		{
 			RDColor? value = (RDColor?)property.GetValue(data);
 			return [
@@ -51,7 +57,10 @@ namespace RhythmBase.Global.Components.Easing
 			];
 		}
 		/// <inheritdoc/>
-		public static IEaseProperty<RDColor> CreateEaseProperty(RDColor originalValue, IEaseEvent[] data, PropertyInfo property)
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public IEaseProperty<RDColor> CreateEaseProperty(RDColor originalValue, IEaseEvent[] data, PropertyInfo property)
 		{
 			EaseNode?[][] nodes = [.. data.Select(d => Convert(d, property))];
 			return new EasePropertyColor()

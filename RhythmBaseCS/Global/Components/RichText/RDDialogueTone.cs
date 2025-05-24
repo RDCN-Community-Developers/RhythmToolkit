@@ -66,7 +66,13 @@ namespace RhythmBase.Global.Components.RichText
 		/// <summary>
 		/// Gets the pause duration for the dialogue event.
 		/// </summary>
-		public int? Pause { get; init; }
+		public int? Pause { get;
+#if NET5_0_OR_GREATER
+			init;
+#else
+			internal set;
+#endif
+		}
 		/// <summary>
 		/// Serializes the rich string event type to its corresponding string representation.
 		/// </summary>

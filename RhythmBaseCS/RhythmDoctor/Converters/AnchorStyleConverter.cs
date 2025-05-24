@@ -40,7 +40,11 @@ namespace RhythmBase.Converters
 			};
 			return result;
 		}
+#if NET7_0_OR_GREATER
 		[GeneratedRegex("(Upper|Middle|Lower)(Left|Center|Right)")]
 		private static partial Regex AnchorStyleRegex();
+#elif NETSTANDARD2_1
+		private static Regex AnchorStyleRegex() => new("(Upper|Middle|Lower)(Left|Center|Right)", RegexOptions.Compiled);
+#endif
 	}
 }

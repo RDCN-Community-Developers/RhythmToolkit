@@ -56,7 +56,11 @@ namespace RhythmBase.Converters
 			return existingValue;
 		}
 		private readonly RDColor[] parent;
+#if NET7_0_OR_GREATER
 		[GeneratedRegex("pal(\\d+)")]
 		private static partial Regex PaletteColorRegex();
+#elif NETSTANDARD2_1
+		private static Regex PaletteColorRegex() => new("pal(\\d+)", RegexOptions.Compiled);
+#endif
 	}
 }

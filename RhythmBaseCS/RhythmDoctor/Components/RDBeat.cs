@@ -8,13 +8,18 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <summary>
 	/// A beat.
 	/// </summary>
-	public struct RDBeat : IComparable<RDBeat>, IEquatable<RDBeat>, IComparisonOperators<RDBeat, RDBeat, bool>
+	public struct RDBeat : IComparable<RDBeat>, IEquatable<RDBeat>
+#if NET7_0_OR_GREATER
+		, IComparisonOperators<RDBeat, RDBeat, bool>
+#endif
 	{
 		internal readonly RDLevel? BaseLevel => _calculator?.Collection;
 		/// <summary>
 		/// Whether this beat cannot be calculated.
 		/// </summary>
+#if NET7_0_OR_GREATER
 		[MemberNotNullWhen(false, nameof(_calculator))]
+#endif
 		public readonly bool IsEmpty => _calculator == null || !_isBeatLoaded && !_isBarBeatLoaded && !_isTimeSpanLoaded;
 		/// <summary>
 		/// The total number of beats from this moment to the beginning of the level.
@@ -258,7 +263,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
+#if NET7_0_OR_GREATER
 		[MemberNotNullWhen(true)]
+#endif
 		public readonly bool FromSameLevel(RDBeat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.

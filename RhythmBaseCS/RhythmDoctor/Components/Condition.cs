@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using RhythmBase.Global.Exceptions;
+﻿using RhythmBase.Global.Exceptions;
 using System.Text.RegularExpressions;
 namespace RhythmBase.RhythmDoctor.Components
 {

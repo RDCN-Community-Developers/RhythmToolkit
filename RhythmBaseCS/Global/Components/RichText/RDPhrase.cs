@@ -9,8 +9,10 @@ namespace RhythmBase.Global.Components.RichText
 	/// </summary>
 	/// <param name="text">The text content of the rich string.</param>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public struct RDPhrase<TStyle>(string text)
-		: IEqualityOperators<RDPhrase<TStyle>, RDPhrase<TStyle>, bool>,
+	public struct RDPhrase<TStyle>(string text) :
+#if NET7_0_OR_GREATER
+		IEqualityOperators<RDPhrase<TStyle>, RDPhrase<TStyle>, bool>,
+#endif
 			IEquatable<RDPhrase<TStyle>>
 		where TStyle : IRDRichStringStyle<TStyle>, new()
 	{
@@ -21,7 +23,15 @@ namespace RhythmBase.Global.Components.RichText
 		/// <summary>
 		/// Gets or sets the events associated with the rich string.
 		/// </summary>
-		public RDDialogueTone[] Events { get; init; } = [];
+		public RDDialogueTone[] Events
+		{
+			get;
+#if NET5_0_OR_GREATER
+			init;
+#else
+			internal set;
+#endif
+		} = [];
 		/// <summary>
 		/// Gets the length of the text content.
 		/// </summary>
@@ -69,7 +79,15 @@ namespace RhythmBase.Global.Components.RichText
 		/// <summary>
 		/// Gets a new <see cref="RDPhrase{TStyle}"/> with the same style as the current instance.
 		/// </summary>
-		public TStyle Style { get; init; } = new();
+		public TStyle Style
+		{
+			get;
+#if NET5_0_OR_GREATER
+			init;
+#elif NETSTANDARD2_1
+			set;
+#endif
+		} = new();
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPhrase{TStyle}"/> struct with an empty text.
 		/// </summary>
@@ -81,7 +99,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// <returns>A new <see cref="RDPhrase{TStyle}"/> instance with the specified text.</returns>
 		public static implicit operator RDPhrase<TStyle>(string text) => new() { Text = text };
 		/// <inheritdoc/>
-		public static bool operator ==(RDPhrase<TStyle> left, RDPhrase<TStyle> right) => left.Text == right.Text && left.Style == right.Style;
+		public static bool operator ==(RDPhrase<TStyle> left, RDPhrase<TStyle> right) => left.Text == right.Text && left.Style.Equals(right.Style);
 		/// <inheritdoc/>
 		public static bool operator !=(RDPhrase<TStyle> left, RDPhrase<TStyle> right) => !(left == right);
 		/// <inheritdoc/>

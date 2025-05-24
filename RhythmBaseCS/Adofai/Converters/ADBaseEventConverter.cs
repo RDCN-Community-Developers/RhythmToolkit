@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Adofai.Components;
@@ -34,7 +33,7 @@ namespace RhythmBase.Adofai.Converters
 		{
 			Type SubClassType = Utils.Utils.ADConvertToType(jobj["eventType"].ToObject<string>());
 			_canread = false;
-			existingValue = Conversions.ToGenericParameter<TEvent>((SubClassType != null) ? jobj.ToObject(SubClassType, serializer) : jobj.ToObject<CustomEvent>(serializer));
+			existingValue = (TEvent)((SubClassType != null) ? jobj.ToObject(SubClassType, serializer) : jobj.ToObject<CustomEvent>(serializer));
 			_canread = true;
 			return existingValue;
 		}

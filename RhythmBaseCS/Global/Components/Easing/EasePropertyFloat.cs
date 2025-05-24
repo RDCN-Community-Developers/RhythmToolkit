@@ -14,9 +14,15 @@ namespace RhythmBase.Global.Components.Easing
 		/// <inheritdoc/>
 		public float GetValue(RDBeat beat) => _value.GetValue(beat.BeatOnly);
 		/// <inheritdoc/>
-		public static bool CanConvert(object data) => data is float;
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public bool CanConvert(object data) => data is float;
 		/// <inheritdoc/>
-		public static EaseNode?[] Convert(IEaseEvent data, PropertyInfo property)
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public EaseNode?[] Convert(IEaseEvent data, PropertyInfo property)
 		{
 			RDExpression? value = (RDExpression?)property.GetValue(data);
 			return [
@@ -28,7 +34,10 @@ namespace RhythmBase.Global.Components.Easing
 			];
 		}
 		/// <inheritdoc/>
-		public static IEaseProperty<float> CreateEaseProperty(float originalValue, IEaseEvent[] data, PropertyInfo property)
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public IEaseProperty<float> CreateEaseProperty(float originalValue, IEaseEvent[] data, PropertyInfo property)
 		{
 			EaseNode?[][] nodes = [.. data.Select(d => Convert(d, property))];
 			return new EasePropertyFloat()

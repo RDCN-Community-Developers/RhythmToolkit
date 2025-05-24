@@ -7,7 +7,11 @@ namespace RhythmBase.Global.Components.RichText
 	/// Defines the interface for rich string styles.
 	/// </summary>
 	/// <typeparam name="TSelf">The type that implements this interface.</typeparam>
-	public interface IRDRichStringStyle<TSelf> : IEqualityOperators<TSelf, TSelf, bool>, IEquatable<TSelf>
+	public interface IRDRichStringStyle<TSelf> :
+#if NET7_0_OR_GREATER
+		IEqualityOperators<TSelf, TSelf, bool>, 
+#endif
+		IEquatable<TSelf>
 	where TSelf : IRDRichStringStyle<TSelf>
 	{
 		/// <summary>
@@ -36,7 +40,10 @@ namespace RhythmBase.Global.Components.RichText
 		/// <param name="before">The initial <see cref="RDDialoguePhraseStyle"/> instance.</param>
 		/// <param name="after">The modified <see cref="RDDialoguePhraseStyle"/> instance.</param>
 		/// <returns>A string containing the XML tag that represents the differences between the two instances.</returns>
-		static abstract string GetXmlTag(TSelf before, TSelf after);
+#if NET7_0_OR_GREATER
+		static
+#endif
+		abstract string GetXmlTag(TSelf before, TSelf after);
 		/// <summary>
 		/// Resets the property of the rich string style based on the provided name.
 		/// </summary>
@@ -83,6 +90,10 @@ namespace RhythmBase.Global.Components.RichText
 		/// <summary>
 		/// Gets a value indicating whether the style has a phrase.
 		/// </summary>
-		static abstract bool HasPhrase { get; }
+
+#if NET7_0_OR_GREATER
+		static
+#endif
+		abstract bool HasPhrase { get; }
 	}
 }

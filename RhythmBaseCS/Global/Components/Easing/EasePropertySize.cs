@@ -15,9 +15,15 @@ namespace RhythmBase.Global.Components.Easing
 		/// <inheritdoc/>
 		public RDSizeN GetValue(RDBeat beat) => new(_width.GetValue(beat.BeatOnly), _height.GetValue(beat.BeatOnly));
 		/// <inheritdoc/>
-		public static bool CanConvert(object data) => data is RDSize;
+#if NET7_0_OR_GREATER
+static
+#endif
+		public bool CanConvert(object data) => data is RDSize;
 		/// <inheritdoc/>
-		public static EaseNode?[] Convert(IEaseEvent data, PropertyInfo property)
+#if NET7_0_OR_GREATER
+static
+#endif
+		public EaseNode?[] Convert(IEaseEvent data, PropertyInfo property)
 		{
 			RDSizeE? value = (RDSizeE?)property.GetValue(data);
 			return [
@@ -34,7 +40,10 @@ namespace RhythmBase.Global.Components.Easing
 			];
 		}
 		/// <inheritdoc/>
-		public static IEaseProperty<RDSizeN> CreateEaseProperty(RDSizeN originalValue, IEaseEvent[] data, PropertyInfo property)
+#if NET7_0_OR_GREATER
+static
+#endif
+		public IEaseProperty<RDSizeN> CreateEaseProperty(RDSizeN originalValue, IEaseEvent[] data, PropertyInfo property)
 		{
 			EaseNode?[][] nodes = [.. data.Select(d => Convert(d, property))];
 			return new EasePropertySize()

@@ -105,7 +105,11 @@ namespace RhythmBase.Global.Components.RichText
 			}
 		}
 		/// <inheritdoc/>
-		public static RDLine<TStyle> Concat(params RDLine<TStyle>[] lines)
+		public
+#if NET7_0_OR_GREATER
+			static
+#endif
+			RDLine<TStyle> Concat(params RDLine<TStyle>[] lines)
 		{
 			RDPhrase<TStyle>[] texts = [.. lines[0].texts];
 			foreach (RDLine<TStyle> line in lines[1..])
@@ -150,7 +154,11 @@ namespace RhythmBase.Global.Components.RichText
 		/// <returns>A new <see cref="RDLine{RDPhraseStyle}"/> containing the deserialized content.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the input text is null.</exception>
 		/// <exception cref="FormatException">Thrown when the input text has an invalid format.</exception>
-		static public RDLine<TStyle> Deserialize(string text)
+
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public RDLine<TStyle> Deserialize(string text)
 		{
 			RDLine<TStyle> line = "";
 			TStyle style = new();
@@ -188,7 +196,13 @@ namespace RhythmBase.Global.Components.RichText
 		}
 		private static RDPhrase<TStyle> DeserializeStringPart(string text, TStyle style)
 		{
-			if (!TStyle.HasPhrase)
+			if (!
+#if NET7_0_OR_GREATER
+				TStyle
+#elif NETSTANDARD2_1
+				style
+#endif
+				.HasPhrase)
 				return new RDPhrase<TStyle>(text) { Style = style };
 			int pstart = 0;
 			RDDialogueTone[] events = [];
@@ -229,7 +243,13 @@ namespace RhythmBase.Global.Components.RichText
 			int ci = 0;
 			foreach (RDPhrase<TStyle> str in texts)
 			{
-				sb.Append(TStyle.GetXmlTag(style, str.Style));
+				sb.Append(
+#if NET7_0_OR_GREATER
+					TStyle
+#elif NETSTANDARD2_1
+					str.Style
+					#endif
+					.GetXmlTag(style, str.Style));
 				string part = str.Text;
 				int offset = 0;
 				foreach (RDDialogueTone e in str.Events)
@@ -242,7 +262,13 @@ namespace RhythmBase.Global.Components.RichText
 				ci += str.Length;
 				style = str.Style;
 			}
-			sb.Append(TStyle.GetXmlTag(style, new()));
+			sb.Append(
+#if NET7_0_OR_GREATER
+				TStyle
+#elif NETSTANDARD2_1
+								style
+#endif
+.GetXmlTag(style, new()));
 			return sb.ToString();
 		}
 		/// <summary>
@@ -251,7 +277,11 @@ namespace RhythmBase.Global.Components.RichText
 		/// <param name="left">The left <see cref="RDLine{RDPhraseStyle}"/>.</param>
 		/// <param name="right">The right <see cref="RDLine{RDPhraseStyle}"/>.</param>
 		/// <returns>A new <see cref="RDLine{RDPhraseStyle}"/> that is the result of concatenating the two specified instances.</returns>
-		public static RDLine<TStyle> operator +(RDLine<TStyle> left, RDLine<TStyle> right) => Concat([.. left.texts, .. right.texts]);
+		public static RDLine<TStyle> operator +(RDLine<TStyle> left, RDLine<TStyle> right) =>
+#if NETSTANDARD2_1
+			left.
+#endif
+			Concat([.. left.texts, .. right.texts]);
 		/// <inheritdoc/>
 		public override readonly string ToString() => string.Join("", texts);
 		/// <inheritdoc/>

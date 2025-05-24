@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Converters;
@@ -13,7 +12,6 @@ namespace RhythmBase.Adofai.Utils
 	/// <summary>
 	/// Useful utils.
 	/// </summary>
-	[StandardModule]
 	public static class Utils
 	{
 		/// <summary>  
@@ -106,7 +104,7 @@ namespace RhythmBase.Adofai.Utils
 				}
 				catch
 				{
-					throw new IllegalEventTypeException(Conversions.ToString((int)type), "This value does not exist in the EventType enumeration.");
+					throw new IllegalEventTypeException(type.ToString(), "This value does not exist in the EventType enumeration.");
 				}
 			return ConvertToType;
 		}
@@ -133,13 +131,13 @@ namespace RhythmBase.Adofai.Utils
 			return EventsSerializer;
 		}
 		private static readonly ReadOnlyCollection<Type> ADETypes = (from i in typeof(BaseEvent).Assembly.GetTypes()
-																	 where i.IsAssignableTo(typeof(BaseEvent))
+																	 where (typeof(BaseEvent)).IsAssignableFrom(i)
 																	 select i).ToList().AsReadOnly();
 		/// <summary>
 		/// A dictionary that records the correspondence of ADEventType to event types inheriting from ADBaseEvent.
 		/// </summary>
 		public static readonly ReadOnlyDictionary<Type, EventType[]> ADETypesToEnum = ADETypes.ToDictionary((Type i) => i, (Type i) => (from j in ADETypes
-																																		where (j == i || j.IsAssignableTo(i)) && !j.IsAbstract
+																																		where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
 																																		select j).Select((Type j) => ADConvertToEnum(j)).ToArray()).AsReadOnly();
 		/// <summary>
 		/// A dictionary that records the correspondence of event types inheriting from ADBaseEvent to ADEventType.

@@ -12,7 +12,9 @@ namespace RhythmBase.Global.Components
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	[JsonConverter(typeof(ColorConverter))]
 	public struct RDColor(uint hex) :
+#if NET7_0_OR_GREATER
 		IEqualityOperators<RDColor, RDColor, bool>,
+#endif
 		IEquatable<RDColor>, IFormattable
 	{
 		/// <summary>

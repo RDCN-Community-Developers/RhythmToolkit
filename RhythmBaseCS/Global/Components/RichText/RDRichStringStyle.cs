@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Components;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace RhythmBase.Global.Components.RichText
 {
@@ -13,9 +12,15 @@ namespace RhythmBase.Global.Components.RichText
 		/// </summary>
 		public RDColor? Color { get; set; }
 		/// <inheritdoc/>
-		public static bool HasPhrase => false;
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public bool HasPhrase => false;
 		/// <inheritdoc/>
-		public static string GetXmlTag(RDRichStringStyle before, RDRichStringStyle after)
+#if NET7_0_OR_GREATER
+		static
+#endif
+		public string GetXmlTag(RDRichStringStyle before, RDRichStringStyle after)
 		{
 			string tag = "";
 			IRDRichStringStyle<RDRichStringStyle>.TryAddTag(ref tag, "color",

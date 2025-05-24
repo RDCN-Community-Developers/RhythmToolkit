@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents a pulse free time beat event.

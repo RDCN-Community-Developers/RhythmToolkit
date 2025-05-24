@@ -31,14 +31,20 @@ namespace RhythmBase.Global.Components.Easing
 		/// </summary>
 		/// <param name="data">The data to check.</param>
 		/// <returns><c>true</c> if the data can be converted; otherwise, <c>false</c>.</returns>
-		static abstract bool CanConvert(object data);
+#if NET7_0_OR_GREATER
+		static 
+#endif
+		abstract bool CanConvert(object data);
 		/// <summary>
 		/// Converts the specified easing event data to an array of easing nodes.
 		/// </summary>
 		/// <param name="data">The easing event data to convert.</param>
 		/// <param name="property">The property information of the easing event.</param>
 		/// <returns>An array of easing nodes.</returns>
-		static abstract EaseNode?[] Convert(IEaseEvent data, PropertyInfo property);
+#if NET7_0_OR_GREATER
+		static 
+#endif
+		abstract EaseNode?[] Convert(IEaseEvent data, PropertyInfo property);
 		/// <summary>
 		/// Creates an easing property with the specified original value and easing event data.
 		/// </summary>
@@ -46,6 +52,9 @@ namespace RhythmBase.Global.Components.Easing
 		/// <param name="data">The array of easing event data.</param>
 		/// <param name="property">The property information of the easing event.</param>
 		/// <returns>An easing property instance.</returns>
-		static abstract IEaseProperty<TValue> CreateEaseProperty(TValue originalValue, IEaseEvent[] data, PropertyInfo property);
+#if NET7_0_OR_GREATER
+		static
+#endif
+		abstract IEaseProperty<TValue> CreateEaseProperty(TValue originalValue, IEaseEvent[] data, PropertyInfo property);
 	}
 }
