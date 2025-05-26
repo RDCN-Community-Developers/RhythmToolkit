@@ -66,7 +66,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			float Synco = 0 <= x.SyncoBeat && x.SyncoBeat < (sbyte)index ? (float)((x.SyncoSwing == 0f) ? 0.5 : ((double)x.SyncoSwing)) : 0f;
 			if (index >= 7)
 				throw new RhythmBaseException("THIS IS 7TH BEAT GAMES!");
-			return e.Beat.DurationOffset(e.Tick * ((float)index - Synco));
+			return e.Beat.DurationOffset(e.Tick * (index - Synco));
 		}
 		/// <summary>
 		/// Converts Xs patterns to string form.
@@ -164,7 +164,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			{
 				sbyte b = (sbyte)(e.Subdivisions - 1);
 				for (sbyte j = 0; j <= b; j += 1)
-					L.Add(new RDHit(e, new RDBeat(e._beat._calculator!, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + (float)j * (e.Tick / (float)e.Subdivisions)), 0f));
+					L.Add(new RDHit(e, new RDBeat(e._beat._calculator!, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + j * (e.Tick / e.Subdivisions)), 0f));
 			}
 			return L.AsEnumerable();
 		}
@@ -201,7 +201,7 @@ e.IsHitable()
 		/// <item>If <paramref name="item1" /> is after <paramref name="item2" />, <see langword="true" /></item>
 		/// <item>Else, <see langword="false" /></item>
 		/// </list></returns>
-		public static bool IsBehind(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) => (item1.Beat > item2.Beat || (item1.Beat.BeatOnly == item2.Beat.BeatOnly && (e.eventsBeatOrder[item1.Beat].BeforeThan(item2, item1))));
+		public static bool IsBehind(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) => item1.Beat > item2.Beat || (item1.Beat.BeatOnly == item2.Beat.BeatOnly && e.eventsBeatOrder[item1.Beat].BeforeThan(item2, item1));
 		/// <summary>
 		/// Check if another event is after itself, including events of the same beat but executed after itself.
 		/// </summary>
@@ -225,7 +225,7 @@ e.IsHitable()
 					case EventType.AddFreeTimeBeat:
 						{
 							AddFreeTimeBeat Temp2 = (AddFreeTimeBeat)item;
-							if (PulseIndexMin <= (int)Temp2.Pulse & (int)Temp2.Pulse <= PulseIndexMax)
+							if (PulseIndexMin <= Temp2.Pulse & Temp2.Pulse <= PulseIndexMax)
 								return true;
 							break;
 						}
@@ -285,7 +285,7 @@ e.IsHitable()
 		/// <item>If <paramref name="item1" /> is in front of <paramref name="item2" />, <see langword="true" /></item>
 		/// <item>Else, <see langword="false" /></item>
 		/// </list></returns>
-		public static bool IsInFrontOf(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) => (item1.Beat < item2.Beat || (item1.Beat.BeatOnly == item2.Beat.BeatOnly && (e.eventsBeatOrder[item1.Beat].BeforeThan(item1, item2))));
+		public static bool IsInFrontOf(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) => item1.Beat < item2.Beat || (item1.Beat.BeatOnly == item2.Beat.BeatOnly && e.eventsBeatOrder[item1.Beat].BeforeThan(item1, item2));
 		/// <summary>
 		/// Check if another event is in front of itself, including events of the same beat but executed before itself.
 		/// </summary>
@@ -346,7 +346,7 @@ e.IsHitable()
 			ChangePlayersRows? changePlayersRows = e.Beat.BaseLevel?.LastOrDefault((ChangePlayersRows i) => i.Active && i.Players[e.Index] != PlayerType.NoChange);
 			return (changePlayersRows != null)
 					? changePlayersRows.Players[e.Index]
-					: (PlayerType)(e.Parent?.Player ?? throw new NotImplementedException());
+					: e.Parent?.Player ?? throw new NotImplementedException();
 		}
 		/// <summary>
 		/// Get the actual beat pattern.
@@ -374,7 +374,7 @@ e.IsHitable()
 				else
 				{
 					num = (setXs != null) ? new int?((int)setXs.GetValueOrDefault()) : null;
-					if (!(((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault()))
+					if (!((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault())
 					{
 						throw new RhythmBaseException("How?");
 					}
@@ -389,7 +389,7 @@ e.IsHitable()
 		/// Get the special tag of the tag event.
 		/// </summary>
 		/// <returns>special tags.</returns>
-		public static TagAction.SpecialTag[] SpetialTags(this TagAction e) => (TagAction.SpecialTag[])(from i in Enum.GetValues<TagAction.SpecialTag>()
+		public static TagAction.SpecialTag[] SpetialTags(this TagAction e) => (TagAction.SpecialTag[])(from i in (TagAction.SpecialTag[])Enum.GetValues(typeof(TagAction.SpecialTag))
 																									   where e.ActionTag.Contains(string.Format("[{0}]", i))
 																									   select i);
 		/// <summary>
@@ -472,8 +472,8 @@ e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
 				{
 					PulseFreeTimeBeat Pulse = e.Clone<PulseFreeTimeBeat>();
 					PulseFreeTimeBeat pulseFreeTimeBeat;
-					(pulseFreeTimeBeat = Pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * (float)i;
-					if (i >= (int)Xs.SyncoBeat)
+					(pulseFreeTimeBeat = Pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * i;
+					if (i >= Xs.SyncoBeat)
 						(pulseFreeTimeBeat = Pulse).Beat = pulseFreeTimeBeat.Beat - Xs.SyncoSwing;
 					if (i % 2 == 1)
 						(pulseFreeTimeBeat = Pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));

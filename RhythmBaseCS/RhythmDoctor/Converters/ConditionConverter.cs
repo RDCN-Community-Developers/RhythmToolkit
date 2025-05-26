@@ -28,7 +28,7 @@ namespace RhythmBase.Converters
 		private static int ReadInt(string s, ref int p)
 		{
 			int r = 0;
-			while (p < s.Length && char.IsAsciiDigit(s[p]))
+			while (p < s.Length && s[p] is >= '0' and <= '9')
 			{
 				r *= 10;
 				r += s[p] - '0';
@@ -43,7 +43,7 @@ namespace RhythmBase.Converters
 			{
 				p++;
 				float f = 0.1f;
-				while (p < s.Length && char.IsAsciiDigit(s[p]))
+				while (p < s.Length && s[p] is >= '0' and <= '9')
 				{
 					r += f * (s[p] - '0');
 					f *= 0.1f;

@@ -54,7 +54,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <exception cref="IllegalEventTypeException">Thrown when an unexpected exception occurs.</exception>  
 		public static EventType[] ToEnums(Type type)
 		{
-			if (type.IsAssignableTo(typeof(Group)))
+			if (typeof(Group).IsAssignableFrom(type))
 				return [EventType.Group];
 			EventType[] ConvertToEnums;
 			ConvertToEnums = EventType_Enums[type];
@@ -112,36 +112,35 @@ namespace RhythmBase.RhythmDoctor.Utils
 		}
 
 		private static readonly ReadOnlyCollection<Type> EventTypes = (from i in typeof(IBaseEvent).Assembly.GetTypes().Where(i => i.Namespace == typeof(IBaseEvent).Namespace)
-																	   where i.IsAssignableTo(typeof(IBaseEvent))
+																	   where typeof(IBaseEvent).IsAssignableFrom(i)
 																	   select i)
 			.ToList()
 			.AsReadOnly();
 		/// <summary>  
 		/// A dictionary that records the correspondence of event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" /> to <see cref="T:RhythmBase.Events.EventType" />.  
 		/// </summary>  
-		private static readonly ReadOnlyDictionary<Type, EventType[]> EventType_Enums = EventTypes.ToDictionary((i) => i, (i) => (from j in EventTypes
-																																  where (j == i || j.IsAssignableTo(i)) && !j.IsAbstract
-																																  select ToEnum(j))
-			.ToArray())
-			.AsReadOnly();
+		private static readonly ReadOnlyDictionary<Type, EventType[]> EventType_Enums = new(EventTypes.ToDictionary((i) => i, (i) => (from j in EventTypes
+																																	  where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
+																																	  select ToEnum(j))
+			.ToArray()));
 		internal static readonly ReadOnlyCollection<Type> GroupTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
-																		where i.IsAssignableTo(typeof(Group))
+																		where typeof(Group).IsAssignableFrom(i)
 																		select i)
 			.ToList()
 			.AsReadOnly();
 		/// <summary>  
 		/// A dictionary that records the correspondence of <see cref="T:RhythmBase.Events.EventType" /> to event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" />.  
 		/// </summary>  
-		private static readonly ReadOnlyDictionary<EventType, Type> Enum_EventType = Enum.GetValues<EventType>().ToDictionary((i) => i, (i) => i.ToType()).AsReadOnly();
+		private static readonly ReadOnlyDictionary<EventType, Type> Enum_EventType = new(((EventType[])Enum.GetValues(typeof(EventType))).ToDictionary((i) => i, (i) => i.ToType()));
 
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseRowAction" />.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> RowTypes = ToEnums<BaseRowAction>().AsReadOnly();
+		public static readonly ReadOnlyCollection<EventType> RowTypes = new(ToEnums<BaseRowAction>());
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseDecorationAction" />.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> DecorationTypes = ToEnums<BaseDecorationAction>().AsReadOnly();
+		public static readonly ReadOnlyCollection<EventType> DecorationTypes = new(ToEnums<BaseDecorationAction>());
 		/// <summary>  
 		/// Custom event types.  
 		/// </summary>  

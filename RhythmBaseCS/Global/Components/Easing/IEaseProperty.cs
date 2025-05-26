@@ -19,7 +19,11 @@ namespace RhythmBase.Global.Components.Easing
 		/// <summary>
 		/// Gets the type of the value.
 		/// </summary>
+#if NETSTANDARD
+		Type Type { get; }
+#else
 		static Type Type => typeof(TValue);
+#endif
 		/// <summary>
 		/// Gets the value at the specified beat.
 		/// </summary>

@@ -42,22 +42,6 @@ namespace RhythmBase.Global.Components
 				}
 				: arg?.ToString() ?? string.Empty;
 		}
-		private static string ReplaceColorComponent(string format, char component, int value)
-		{
-			int startIndex = 0;
-			while ((startIndex = format.IndexOf(component, startIndex)) != -1)
-			{
-				int length = 1;
-				while (startIndex + length < format.Length && format[startIndex + length] == component)
-				{
-					length++;
-				}
-				string replacement = char.IsUpper(component) ? value.ToString($"X{length}") : value.ToString();
-				format = string.Concat(format.AsSpan(0, startIndex), replacement, format.AsSpan(startIndex + length));
-				startIndex += replacement.Length;
-			}
-			return format;
-		}
 		/// <inheritdoc/>
 		public object? GetFormat(Type? formatType) => formatType == typeof(ICustomFormatter) ? this : (object?)null;
 	}

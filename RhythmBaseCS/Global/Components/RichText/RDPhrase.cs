@@ -37,6 +37,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// </summary>
 		/// <value>The number of characters in the text content.</value>
 		public readonly int Length => Text.Length;
+#if NETCOREAPP3_0_OR_GREATER
 		/// <summary>
 		/// Gets the rich string at the specified index.
 		/// </summary>
@@ -72,6 +73,7 @@ namespace RhythmBase.Global.Components.RichText
 				return style;
 			}
 		}
+#endif
 		private readonly RDDialogueTone[] GetEvents(int start, int length) => Events
 			.Where(e => e.Index >= start && e.Index < start + length)
 			.Select(e => new RDDialogueTone(e.Type, e.Index - start))
@@ -84,7 +86,7 @@ namespace RhythmBase.Global.Components.RichText
 			get;
 #if NET5_0_OR_GREATER
 			init;
-#elif NETSTANDARD2_1
+#else
 			set;
 #endif
 		} = new();
@@ -105,7 +107,11 @@ namespace RhythmBase.Global.Components.RichText
 		/// <inheritdoc/>
 		public readonly bool Equals(RDPhrase<TStyle> other) => this == other;
 		/// <inheritdoc/>
+#if NET6_0_OR_GREATER
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDPhrase<TStyle> && base.Equals(obj);
+#else
+		public override readonly bool Equals(object? obj) => obj is RDPhrase<TStyle> && base.Equals(obj);
+#endif
 		/// <inheritdoc/>
 		public override readonly int GetHashCode() => Text.GetHashCode();
 		/// <inheritdoc/>

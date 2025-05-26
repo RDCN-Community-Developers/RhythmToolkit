@@ -55,16 +55,25 @@ namespace RhythmBase.Global.Components.RichText
 			int mi = str.IndexOf(':');
 			if (mi != -1)
 			{
+#if NETSTANDARD
+				string character = str.Substring(0, mi);
+#else
 				string character = str[..mi];
+#endif
 				if (character.Contains('_'))
 				{
-					string[] parts = character.Split('_', 2);
+					string[] parts = character.Split(['_'], 2);
 					character = parts[0];
 					line.Expression = parts[1];
 				}
 				line.Character = character;
 			}
-			line.Content = RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
+			line.Content =
+#if !NETSTANDARD
+				RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
+#else
+			new RDLine<RDDialoguePhraseStyle>().Deserialize(str.Substring(mi + 1));
+#endif
 			return line;
 		}
 		/// <summary>
@@ -82,11 +91,15 @@ namespace RhythmBase.Global.Components.RichText
 			int mi = str.IndexOf(':');
 			if (mi != -1)
 			{
+#if NETSTANDARD
+				string character = str.Substring(0, mi);
+#else
 				string character = str[..mi];
+#endif
 				string expression = "";
 				if (character.Contains('_'))
 				{
-					string[] parts = character.Split('_', 2);
+					string[] parts = character.Split(['_'], 2);
 					character = parts[0];
 					expression = parts[1];
 				}
@@ -94,14 +107,24 @@ namespace RhythmBase.Global.Components.RichText
 					character = str;
 				if (!expressions.Contains(character))
 				{
-					line.Content = RDLine<RDDialoguePhraseStyle>.Deserialize(str);
+					line.Content =
+#if NET7_0_OR_GREATER
+						RDLine<RDDialoguePhraseStyle>.Deserialize(str);
+#else
+				new RDLine<RDDialoguePhraseStyle>().Deserialize(str);
+#endif
 					return line;
 				}
 				line.Character = character;
 				if (expressions[character].Contains(expression))
 					line.Expression = expression;
 			}
-			line.Content = RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
+			line.Content =
+#if NET7_0_OR_GREATER
+				RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
+#else
+			new RDLine<RDDialoguePhraseStyle>().Deserialize(str.Substring(mi + 1));
+#endif
 			return line;
 		}
 		/// <inheritdoc/>

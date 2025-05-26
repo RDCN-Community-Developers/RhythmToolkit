@@ -29,9 +29,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			Dictionary<string, IEaseProperty> values = [];
 			foreach (var property in properties)
 			{
+#if NET7_0_OR_GREATER					
 				if (property.PropertyType.IsAssignableFrom(typeof(RDExpression)))
 				{
-					values[property.Name] = EasePropertyFloat.CreateEaseProperty(0, [.. obj], property);
+					values[property.Name] =	EasePropertyFloat.CreateEaseProperty(0, [.. obj], property);
 				}
 				else if (property.PropertyType.IsAssignableFrom(typeof(RDPointE)))
 				{
@@ -49,6 +50,28 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				{
 					throw new NotSupportedException($"Unsupported property type {property.PropertyType}");
 				}
+#else
+				if (property.PropertyType.IsAssignableFrom(typeof(RDExpression)))
+				{
+					values[property.Name] =new	EasePropertyFloat().CreateEaseProperty(0, [.. obj], property);
+				}
+				else if (property.PropertyType.IsAssignableFrom(typeof(RDPointE)))
+				{
+					values[property.Name] = new EasePropertyPoint().CreateEaseProperty(default, [.. obj], property);
+				}
+				else if (property.PropertyType.IsAssignableFrom(typeof(RDSizeE)))
+				{
+					values[property.Name] = new EasePropertySize().CreateEaseProperty(default, [.. obj], property);
+				}
+				else if (property.PropertyType.IsAssignableFrom(typeof(RDColor)))
+				{
+					values[property.Name] = new EasePropertyColor().CreateEaseProperty(default, [.. obj], property);
+				}
+				else
+				{
+					throw new NotSupportedException($"Unsupported property type {property.PropertyType}");
+				}
+#endif
 			}
 			return values;
 		}

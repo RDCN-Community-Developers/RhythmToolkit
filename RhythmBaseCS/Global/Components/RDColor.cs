@@ -182,17 +182,30 @@ namespace RhythmBase.Global.Components
 		/// <param name="hex">The hexadecimal string representing the color.</param>
 		/// <param name="color">When this method returns, contains the RDColor instance created from the hexadecimal string, if the conversion succeeded, or the default value if the conversion failed.</param>
 		/// <returns>true if the hexadecimal string was converted successfully; otherwise, false.</returns>
+#if NETSTANDARD
+		public static bool TryFromRgba(string hex, out RDColor color)
+#else
 		public static bool TryFromRgba(string hex, [MaybeNullWhen(false)] out RDColor color)
+#endif
 		{
 			hex = hex.Trim();
+#if NETSTANDARD
+			if (hex.StartsWith("#"))
+				hex = hex.Substring(1);
+#else
 			if (hex.StartsWith('#'))
 				hex = hex[1..];
+#endif
 			string? hex2 = hex.Length switch
 			{
 				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
 				4 => $"{hex[3]}{hex[3]}{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
 				6 => $"FF{hex}",
+#if NETSTANDARD
+				8 => $"{hex.Substring(6, 2)}{hex.Substring(0, 6)}",
+#else
 				8 => $"{hex[6..8]}{hex[0..6]}",
+#endif
 				_ => null,
 			};
 			if (hex2 is null)
@@ -232,8 +245,13 @@ namespace RhythmBase.Global.Components
 		public static RDColor FromArgb(string hex)
 		{
 			hex = hex.Trim();
+#if NETSTANDARD
+			if (hex.StartsWith("#"))
+				hex = hex.Substring(1);
+#else
 			if (hex.StartsWith('#'))
 				hex = hex[1..];
+#endif
 			hex = hex.Length switch
 			{
 				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
@@ -251,11 +269,20 @@ namespace RhythmBase.Global.Components
 		/// <param name="hex">The hexadecimal string representing the color.</param>
 		/// <param name="color">When this method returns, contains the RDColor instance created from the hexadecimal string, if the conversion succeeded, or the default value if the conversion failed.</param>
 		/// <returns>true if the hexadecimal string was converted successfully; otherwise, false.</returns>
-		public static bool TryFromArgb(string hex, [MaybeNullWhen(false)] out RDColor color)
+#if NETSTANDARD
+		public static bool TryFromArgb(string hex, out RDColor color)
+#else
+		public static bool TryFromArgb(string hex, [MaybeNullWhen(false)]  out RDColor color)
+#endif
 		{
 			hex = hex.Trim();
+#if NETSTANDARD
+			if (hex.StartsWith("#"))
+				hex = hex.Substring(1);
+#else
 			if (hex.StartsWith('#'))
 				hex = hex[1..];
+#endif
 			string? hex2 = hex.Length switch
 			{
 				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
@@ -363,7 +390,11 @@ namespace RhythmBase.Global.Components
 		/// <param name="name">The name of the color.</param>
 		/// <param name="color">When this method returns, contains the RDColor instance created from the color name, if the conversion succeeded, or the default value if the conversion failed.</param>
 		/// <returns>true if the color name was converted successfully; otherwise, false.</returns>
+#if NETSTANDARD
+		public static bool TryFromName(string name, out RDColor color)
+#else
 		public static bool TryFromName(string name, [MaybeNullWhen(false)] out RDColor color)
+#endif
 		{
 			RDColor? color2 = name.ToLower() switch
 			{
@@ -527,7 +558,7 @@ namespace RhythmBase.Global.Components
 		/// <remarks>
 		/// For colors with multiple names, the CMYK name is preferred.
 		/// </remarks>
-		public readonly bool TryGetName([NotNullWhen(true)] out string[] names)
+		public readonly bool TryGetName(out string[] names)
 		{
 			names = color switch
 			{
@@ -687,7 +718,11 @@ namespace RhythmBase.Global.Components
 		/// <inheritdoc/>
 		public readonly bool Equals(RDColor other) => color == other.color;
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDColor e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDColor e && Equals(e);
+#endif
 		/// <inheritdoc/>
 		public override readonly int GetHashCode() => color.GetHashCode();
 		/// <inheritdoc/>

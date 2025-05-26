@@ -152,9 +152,25 @@ namespace RhythmBase.Global.Components
 		/// <inheritdoc/>
 		public static bool operator !=(RDRectE rect1, RDRectE rect2) => !rect1.Equals(rect2);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDRectE e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDRectE e && Equals(e);
+#endif
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + (Left?.GetHashCode() ?? 0);
+			hash = hash * 31 + (Top?.GetHashCode() ?? 0);
+			hash = hash * 31 + (Right?.GetHashCode() ?? 0);
+			hash = hash * 31 + (Bottom?.GetHashCode() ?? 0);
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(Left, Top, Right, Bottom);
+#endif
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"{{Location=[{Left},{Bottom}],Size=[{Width},{Height}]}}";
 		/// <inheritdoc/>

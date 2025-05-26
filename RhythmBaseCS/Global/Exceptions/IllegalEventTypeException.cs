@@ -1,5 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Extensions;
-namespace RhythmBase.Global.Exceptions
+﻿namespace RhythmBase.Global.Exceptions
 {
 	/// <summary>
 	/// Exception thrown when an illegal event type is encountered.
@@ -13,7 +12,7 @@ namespace RhythmBase.Global.Exceptions
 		{
 			get
 			{
-				return string.Format("Illegal type: \"{0}\"{1}", IllegalTypeName, ExtraMessage.IsNullOrEmpty() ? "." : string.Format(", {0}", ExtraMessage));
+				return string.Format("Illegal type: \"{0}\"{1}", IllegalTypeName, string.IsNullOrEmpty(ExtraMessage) ? "." : string.Format(", {0}", ExtraMessage));
 			}
 		}
 		/// <summary>

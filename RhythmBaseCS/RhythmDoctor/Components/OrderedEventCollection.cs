@@ -79,7 +79,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="arrayIndex">The zero-based index in the array at which copying begins.</param>
 		public void CopyTo(IBaseEvent[] array, int arrayIndex)
 		{
-			ArgumentNullException.ThrowIfNull(array);
 			if (arrayIndex < 0 || arrayIndex > array.Length)
 				throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 			if (array.Length - arrayIndex < Count)

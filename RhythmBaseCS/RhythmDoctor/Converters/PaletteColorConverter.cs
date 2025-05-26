@@ -39,7 +39,7 @@ namespace RhythmBase.Converters
 			}
 			JToken token = JToken.Load(reader);
 			string? JString = token.Value<string>();
-			if (JString.IsNullOrEmpty())
+			if (string.IsNullOrEmpty(JString))
 			{
 				throw new ConvertingException(token, new Exception($"Unreadable color: \"{token}\". path \"{reader.Path}\""));
 			}
@@ -59,7 +59,7 @@ namespace RhythmBase.Converters
 #if NET7_0_OR_GREATER
 		[GeneratedRegex("pal(\\d+)")]
 		private static partial Regex PaletteColorRegex();
-#elif NETSTANDARD2_1
+#elif NETSTANDARD
 		private static Regex PaletteColorRegex() => new("pal(\\d+)", RegexOptions.Compiled);
 #endif
 	}

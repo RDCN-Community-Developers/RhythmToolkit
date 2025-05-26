@@ -145,7 +145,11 @@ namespace RhythmBase.Global.Components.Easing
 					}
 				}
 			}
+#if NETSTANDARD
+			EaseNode[] ns = new EaseNode[steps.Last()];
+#else
 			EaseNode[] ns = new EaseNode[steps[^1]];
+#endif
 			int k = values.Length - 1;
 			while (k != 0)
 			{
@@ -175,6 +179,6 @@ namespace RhythmBase.Global.Components.Easing
 			}
 			return s;
 		}
-		private static readonly EaseType[] eases = Enum.GetValues<EaseType>();
+		private static readonly EaseType[] eases = (EaseType[])Enum.GetValues(typeof(EaseType));
 	}
 }

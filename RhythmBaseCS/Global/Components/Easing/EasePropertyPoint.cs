@@ -12,6 +12,10 @@ namespace RhythmBase.Global.Components.Easing
 	{
 		private EaseValue _x;
 		private EaseValue _y;
+#if NETSTANDARD
+		/// <inheritdoc/>
+		public Type Type => typeof(RDPointN);
+#endif
 		/// <inheritdoc/>
 		public RDPointN GetValue(RDBeat beat) => new(_x.GetValue(beat.BeatOnly), _y.GetValue(beat.BeatOnly));
 		/// <inheritdoc/>

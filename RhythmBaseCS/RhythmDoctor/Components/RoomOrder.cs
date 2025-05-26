@@ -37,8 +37,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
+#if NET7_0_OR_GREATER
 				(byte id1, byte rm1) = byte.DivRem(_id, 6);
 				(byte id2, byte rm2) = byte.DivRem(rm1, 2);
+#else
+				byte id1 = (byte)Math.DivRem(_id, 6, out int rm1);
+				byte id2 = (byte)Math.DivRem(rm1, 2, out int rm2);
+#endif
 				List<byte> l = [0, 1, 2, 3];
 				byte o1 = l[id1];
 				l.RemoveAt(id1);

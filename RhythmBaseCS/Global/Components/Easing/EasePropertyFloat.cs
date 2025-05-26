@@ -11,6 +11,10 @@ namespace RhythmBase.Global.Components.Easing
 	public class EasePropertyFloat : IEaseProperty<float>
 	{
 		private EaseValue _value;
+#if NETSTANDARD
+		/// <inheritdoc/>
+		public Type Type => typeof(float);
+#endif
 		/// <inheritdoc/>
 		public float GetValue(RDBeat beat) => _value.GetValue(beat.BeatOnly);
 		/// <inheritdoc/>

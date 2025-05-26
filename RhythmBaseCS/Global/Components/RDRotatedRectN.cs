@@ -162,12 +162,28 @@ namespace RhythmBase.Global.Components
 		/// </summary>
 		/// <param name="obj">The object to compare with the current object.</param>
 		/// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDRotatedRectN e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDRotatedRectN e && Equals(e);
+#endif
 		/// <summary>
 		/// Serves as the default hash function.
 		/// </summary>
 		/// <returns>A hash code for the current object.</returns>
+#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + Location.GetHashCode();
+			hash = hash * 31 + Size.GetHashCode();
+			hash = hash * 31 + Pivot.GetHashCode() ;
+			hash = hash * 31 + Angle.GetHashCode();
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(Location, Size, Pivot, Angle);
+#endif
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

@@ -6,6 +6,7 @@
 	/// <typeparam name="TStyle">The type of the style applied to the rich text.</typeparam>
 	public interface IRDRichTextLine<TStyle> where TStyle : IRDRichStringStyle<TStyle>, new()
 	{
+#if NETCOREAPP3_0_OR_GREATER
 		/// <summary>
 		/// Gets or sets the <see cref="RDLine{TStyle}"/> at the specified index.
 		/// </summary>
@@ -18,6 +19,7 @@
 		/// <param name="range">The range of the rich text lines.</param>
 		/// <returns>The rich text lines within the specified range.</returns>
 		RDLine<TStyle> this[Range range] { get; set; }
+#endif
 		/// <summary>
 		/// Gets the length of the rich text line.
 		/// </summary>

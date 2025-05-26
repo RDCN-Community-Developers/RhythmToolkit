@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
 using System.Reflection;
 namespace RhythmBase.RhythmDoctor.Converters
 {
@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					nameof(Row.RowToMimic) => i => ((Row)i).RowToMimic >= 0,
 					_ => null
 				};
-			if (p.DeclaringType?.IsAssignableTo(typeof(BaseEvent)) == true)
+			if (typeof(BaseEvent).IsAssignableFrom(p.DeclaringType) == true)
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
 					nameof(BaseEvent.Active) => i => !((BaseEvent)i).Active,

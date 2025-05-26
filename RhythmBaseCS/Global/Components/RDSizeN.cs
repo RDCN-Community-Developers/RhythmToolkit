@@ -44,7 +44,17 @@ namespace RhythmBase.Global.Components
 		/// <returns>The result of subtracting the second size from the first size.</returns>
 		public static RDSizeN Subtract(RDSizeN sz1, RDSizeN sz2) => new(sz1.Width - sz2.Width, sz1.Height - sz2.Height);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 23 + Width.GetHashCode();
+			hash = hash * 23 + Height.GetHashCode();
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(Width, Height);
+#endif
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"[{Width},{Height}]";
 		/// <inheritdoc/>
@@ -60,7 +70,11 @@ namespace RhythmBase.Global.Components
 		/// <returns>A new <see cref="RDPointN"/> instance with the width as the X coordinate and the height as the Y coordinate.</returns>
 		public readonly RDPointN ToPoint() => new(Width, Height);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDSizeN e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDSizeN e && Equals(e);
+#endif
 		/// <inheritdoc/>
 		public static RDSizeN operator +(RDSizeN sz1, RDSizeN sz2) => Add(sz1, sz2);
 		/// <inheritdoc/>

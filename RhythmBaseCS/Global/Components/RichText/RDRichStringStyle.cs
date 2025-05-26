@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
 namespace RhythmBase.Global.Components.RichText
 {
@@ -23,7 +24,7 @@ namespace RhythmBase.Global.Components.RichText
 		public string GetXmlTag(RDRichStringStyle before, RDRichStringStyle after)
 		{
 			string tag = "";
-			IRDRichStringStyle<RDRichStringStyle>.TryAddTag(ref tag, "color",
+			TryAddTag(ref tag, "color",
 				before.Color?.TryGetName(out string[] namesbefore) == true
 				? namesbefore[0].ToLower()
 				: before.Color?.ToString(before.Color?.A == 255 ? "#RRGGBB" : "#RRGGBBAA"),
@@ -35,7 +36,11 @@ namespace RhythmBase.Global.Components.RichText
 		/// <inheritdoc/>
 		public readonly bool Equals(RDRichStringStyle other) => this == other;
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public readonly override bool Equals(object? obj) => obj is RDRichStringStyle e && Equals(e);
+#else
 		public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is RDRichStringStyle e && Equals(e);
+#endif
 		/// <inheritdoc/>
 		public bool ResetProperty(string name)
 		{
@@ -67,6 +72,12 @@ namespace RhythmBase.Global.Components.RichText
 			}
 			return true;
 		}
+#if NETSTANDARD
+		/// <inheritdoc/>
+		public readonly string GetCloseTag(string name) => $"</{name}>";
+		/// <inheritdoc/>
+		public readonly string GetOpenTag(string name, string? arg = null) => arg is null ? $"<{name}>" : $"<{name}={arg}>";
+#endif
 		/// <inheritdoc/>
 		public static bool operator ==(RDRichStringStyle left, RDRichStringStyle right) => left.Color == right.Color;
 		/// <inheritdoc/>

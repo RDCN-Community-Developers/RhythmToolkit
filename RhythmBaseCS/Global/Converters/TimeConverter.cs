@@ -28,9 +28,6 @@ namespace RhythmBase.Global.Converters
 				case TimeType.MiliSecond:
 					writer.WriteRawValue(((int)value.TotalMilliseconds).ToString());
 					break;
-				case TimeType.Microsecond:
-					writer.WriteRawValue(((int)value.TotalMicroseconds).ToString());
-					break;
 				default:
 					break;
 			}
@@ -44,7 +41,6 @@ namespace RhythmBase.Global.Converters
 				TimeType.Minute => TimeSpan.FromMinutes((double)value),
 				TimeType.Second => TimeSpan.FromSeconds((double)value),
 				TimeType.MiliSecond => TimeSpan.FromMilliseconds((int)value),
-				TimeType.Microsecond => TimeSpan.FromMicroseconds((int)value),
 				_ => throw new NotImplementedException()
 			};
 		}

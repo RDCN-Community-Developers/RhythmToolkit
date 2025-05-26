@@ -19,6 +19,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// The length of the string.
 		/// </summary>
 		public readonly int Length => texts.Sum(i => i.Length);
+#if NETCOREAPP3_0_OR_GREATER
 		/// <summary>
 		/// Gets or sets the <see cref="RDLine{RDPhraseStyle}"/> at the specified index.
 		/// </summary>
@@ -104,6 +105,7 @@ namespace RhythmBase.Global.Components.RichText
 				texts = Concat([this[..start], value, this[end..]]).texts;
 			}
 		}
+#endif
 		/// <inheritdoc/>
 		public
 #if NET7_0_OR_GREATER
@@ -112,9 +114,26 @@ namespace RhythmBase.Global.Components.RichText
 			RDLine<TStyle> Concat(params RDLine<TStyle>[] lines)
 		{
 			RDPhrase<TStyle>[] texts = [.. lines[0].texts];
+#if NETSTANDARD2_0
+			foreach (RDLine<TStyle> line in lines.Skip(1))
+			{
+				if (texts.Last().Style.Equals(line.texts[0].Style))
+				{
+					RDPhrase<TStyle> before = texts.Last(), after = line.texts[0];
+					RDPhrase<TStyle> richString = new(before.Text + after.Text)
+					{
+						Style = before.Style,
+						Events = [.. before.Events, .. after.Events.Select(i => new RDDialogueTone(i.Type, i.Index + before.Length) { Pause = i.Pause })]
+					};
+					texts = [.. texts.Take(texts.Length - 1), richString, .. line.texts.Skip(1)];
+				}
+				else
+					texts = [.. texts, .. line.texts];
+			}
+#else
 			foreach (RDLine<TStyle> line in lines[1..])
 			{
-				if (texts[^1].Style == line.texts[0].Style)
+				if (texts[^1].Style.Equals(line.texts[0].Style))
 				{
 					RDPhrase<TStyle> before = texts[^1], after = line.texts[0];
 					RDPhrase<TStyle> richString = new(before.Text + after.Text)
@@ -127,6 +146,7 @@ namespace RhythmBase.Global.Components.RichText
 				else
 					texts = [.. texts, .. line.texts];
 			}
+#endif
 			return new() { texts = texts };
 		}
 		/// <summary>
@@ -169,23 +189,40 @@ namespace RhythmBase.Global.Components.RichText
 				int end = text.IndexOf('<', start);
 				if (end == -1)
 				{
+#if NETSTANDARD2_0
+					line += DeserializeStringPart(text.Substring(start), tempStyle);
+#else
 					line += DeserializeStringPart(text[start..], tempStyle);
+#endif
 					break;
 				}
 				int start2 = text.IndexOf('>', end);
 				int end2 = text.IndexOf('<', end + 1);
 				if (start2 == -1)
 					break;
-				if (end2 != -1 && end2 < start2)
-				{
-					line += DeserializeStringPart(text[start..end2], tempStyle);
-					start = end2;
-					continue;
-				}
+#if NETSTANDARD2_0
+				line += DeserializeStringPart(text.Substring(start, end2 - start), tempStyle);
+#else
+				line += DeserializeStringPart(text[start..end2], tempStyle);
+#endif
+
+#if NETSTANDARD2_0
+				string textpart = text.Substring(start, end - start);
+#else
 				string textpart = text[start..end];
-				line += DeserializeStringPart(textpart, tempStyle);
+#endif
+
+#if NETSTANDARD2_0
+				string[] keyvalue = text.Substring(end + 1, start2 - (end + 1)).Split(new char[] { '=' }, 2);
+#else
 				string[] keyvalue = text[(end + 1)..start2].Split('=', 2);
+#endif
+
+#if NETSTANDARD2_0
+				if (keyvalue[0].StartsWith("/") && style.ResetProperty(keyvalue[0].Substring(1)))
+#else
 				if (keyvalue[0].StartsWith('/') && style.ResetProperty(keyvalue[0][1..]))
+#endif
 					start = start2 + 1;
 				else if (style.SetProperty(keyvalue[0], keyvalue.Length == 2 ? keyvalue[1] : "true"))
 					start = start2 + 1;
@@ -199,7 +236,7 @@ namespace RhythmBase.Global.Components.RichText
 			if (!
 #if NET7_0_OR_GREATER
 				TStyle
-#elif NETSTANDARD2_1
+#else
 				style
 #endif
 				.HasPhrase)
@@ -222,10 +259,18 @@ namespace RhythmBase.Global.Components.RichText
 					pstart = pend2 + 1;
 					continue;
 				}
+#if NETSTANDARD2_0
+				string btag = text.Substring(pend + 1, pstart2 - (pend + 1));
+#else
 				string btag = text[(pend + 1)..pstart2];
+#endif
 				if (RDDialogueTone.Create(btag, pend, out RDDialogueTone? e) && e is RDDialogueTone ei)
-					events = [.. events, ei];
+					events = events.Concat(new[] { ei }).ToArray();
+#if NETSTANDARD2_0
+				text = text.Substring(0, pend) + text.Substring(pstart2 + 1);
+#else
 				text = text[..pend] + text[(pstart2 + 1)..];
+#endif
 			}
 			return new RDPhrase<TStyle>(text) { Style = style, Events = events };
 		}
@@ -246,9 +291,9 @@ namespace RhythmBase.Global.Components.RichText
 				sb.Append(
 #if NET7_0_OR_GREATER
 					TStyle
-#elif NETSTANDARD2_1
+#else
 					str.Style
-					#endif
+#endif
 					.GetXmlTag(style, str.Style));
 				string part = str.Text;
 				int offset = 0;
@@ -265,7 +310,7 @@ namespace RhythmBase.Global.Components.RichText
 			sb.Append(
 #if NET7_0_OR_GREATER
 				TStyle
-#elif NETSTANDARD2_1
+#else
 								style
 #endif
 .GetXmlTag(style, new()));
@@ -278,7 +323,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// <param name="right">The right <see cref="RDLine{RDPhraseStyle}"/>.</param>
 		/// <returns>A new <see cref="RDLine{RDPhraseStyle}"/> that is the result of concatenating the two specified instances.</returns>
 		public static RDLine<TStyle> operator +(RDLine<TStyle> left, RDLine<TStyle> right) =>
-#if NETSTANDARD2_1
+#if NETSTANDARD2_0
 			left.
 #endif
 			Concat([.. left.texts, .. right.texts]);

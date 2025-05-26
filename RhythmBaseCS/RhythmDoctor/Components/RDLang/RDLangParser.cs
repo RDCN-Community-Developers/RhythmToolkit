@@ -69,9 +69,9 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		{
 			return variableToken.TokenID switch
 			{
-				RDExpressionToken.VariableInt => Variables.i[int.Parse(variableToken.Value[1..])],
-				RDExpressionToken.VariableFloat => Variables.f[int.Parse(variableToken.Value[1..])],
-				RDExpressionToken.VariableBoolean => Variables.b[int.Parse(variableToken.Value[1..])] ? 1.0f : 0.0f,
+				RDExpressionToken.VariableInt => Variables.i[int.Parse(variableToken.Value[1].ToString())],
+				RDExpressionToken.VariableFloat => Variables.f[int.Parse(variableToken.Value[1].ToString())],
+				RDExpressionToken.VariableBoolean => Variables.b[int.Parse(variableToken.Value[1].ToString())] ? 1.0f : 0.0f,
 				RDExpressionToken.PlainString => (float)Variables[variableToken.Value],
 				_ => throw new InvalidOperationException("Invalid variable type"),
 			};
@@ -80,6 +80,22 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		[Production("argument: String")]
 		public static float String(Token<RDExpressionToken> stringToken)
 		{
+#if NETSTANDARD
+			string value;
+			if (stringToken.Value.StartsWith("str:"))
+			{
+				value = stringToken.Value.Substring(4);
+			}
+			else if (stringToken.Value.StartsWith("\"") && stringToken.Value.EndsWith("\""))
+			{
+				value = stringToken.Value.Substring(1, stringToken.Value.Length - 2);
+			}
+			else
+			{
+				value = stringToken.Value;
+			}
+		TokenStack.Push(new(RDExpressionToken.String, value, new()));
+#else
 			TokenStack.Push(new(RDExpressionToken.String,
 				stringToken.Value switch
 				{
@@ -88,6 +104,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 					_ => stringToken.Value,
 				},
 				new()));
+#endif
 			return 1;
 		}
 		[NodeName("compare")]
@@ -118,13 +135,13 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 			switch (variableName[0])
 			{
 				case 'i':
-					Variables.i[int.Parse(variableName[1..])] = (int)expression;
+					Variables.i[int.Parse(variableName[1].ToString())] = (int)expression;
 					break;
 				case 'f':
-					Variables.f[int.Parse(variableName[1..])] = expression;
+					Variables.f[int.Parse(variableName[1].ToString())] = expression;
 					break;
 				case 'b':
-					Variables.b[int.Parse(variableName[1..])] = expression != 0.0f;
+					Variables.b[int.Parse(variableName[1].ToString())] = expression != 0.0f;
 					break;
 				default:
 					Variables[variableName] = expression;

@@ -15,12 +15,24 @@ namespace RhythmBase.Global.Components.Easing
 		private EaseValue _g;
 		private EaseValue _b;
 		private EaseValue _a;
+#if NETSTANDARD
+		/// <inheritdoc/>
+		public Type Type => typeof(RDColor);
+		private static byte Clamp(byte value, byte min, byte max) => value < min ? min : value > max ? max : value;
+#endif
 		/// <inheritdoc/>
 		public RDColor GetValue(RDBeat beat) => RDColor.FromRgba(
-			(byte)Math.Clamp(_r.GetValue(beat.BeatOnly), 0, 255),
-			(byte)Math.Clamp(_g.GetValue(beat.BeatOnly), 0, 255),
-			(byte)Math.Clamp(_b.GetValue(beat.BeatOnly), 0, 255),
-			(byte)Math.Clamp(_a.GetValue(beat.BeatOnly), 0, 255));
+#if NETSTANDARD
+			Clamp((byte)_r.GetValue(beat.BeatOnly), 0, 255),
+			Clamp((byte)_g.GetValue(beat.BeatOnly), 0, 255),
+			Clamp((byte)_b.GetValue(beat.BeatOnly), 0, 255),
+			Clamp((byte)_a.GetValue(beat.BeatOnly), 0, 255));
+#else
+			byte.Clamp((byte)_r.GetValue(beat.BeatOnly), 0, 255),
+			byte.Clamp((byte)_g.GetValue(beat.BeatOnly), 0, 255),
+			byte.Clamp((byte)_b.GetValue(beat.BeatOnly), 0, 255),
+			byte.Clamp((byte)_a.GetValue(beat.BeatOnly), 0, 255));
+#endif
 		/// <inheritdoc/>
 #if NET7_0_OR_GREATER
 		static

@@ -229,9 +229,23 @@ namespace RhythmBase.Adofai.Components
 		/// <inheritdoc/>
 		public override readonly bool Equals(object? obj) => obj is ADBeat b && Equals((ADBeat)obj);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public readonly bool Equals(ADBeat other) => this == other;
+#else
 		public readonly bool Equals([NotNull] ADBeat other) => this == other;
+#endif
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 23 + BeatOnly.GetHashCode();
+			hash = hash * 23 + (baseLevel?.GetHashCode() ?? 0);
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(BeatOnly, baseLevel);
+#endif
 		internal ADBeatCalculator? _calculator;
 		private bool _isBeatLoaded;
 		private bool _isTimeSpanLoaded;

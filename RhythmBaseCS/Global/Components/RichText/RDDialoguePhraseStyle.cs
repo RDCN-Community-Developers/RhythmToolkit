@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
 namespace RhythmBase.Global.Components.RichText
 {
@@ -77,7 +78,7 @@ namespace RhythmBase.Global.Components.RichText
 		public bool Whisper { get; set; }
 		/// <inheritdoc/>
 		public
-#if NET7_0_OR_GREATER
+#if !NETSTANDARD
 			static
 #endif
 			bool HasPhrase => true;
@@ -219,35 +220,35 @@ namespace RhythmBase.Global.Components.RichText
 		}
 		/// <inheritdoc/>
 		public
-#if NET7_0_OR_GREATER
+#if !NETSTANDARD
 			static
 #endif
 			string GetXmlTag(RDDialoguePhraseStyle before, RDDialoguePhraseStyle after)
 		{
 			string tag = "";
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "color",
+			TryAddTag(ref tag, "color",
 				before.Color?.TryGetName(out string[] namesbefore) == true
 				? namesbefore[0].ToLower()
 				: before.Color?.ToString(before.Color?.A == 255 ? "#RRGGBB" : "#RRGGBBAA"),
 				after.Color?.TryGetName(out string[] namesafter) == true
 				? namesafter[0].ToLower()
 				: after.Color?.ToString(after.Color?.A == 255 ? "#RRGGBB" : "#RRGGBBAA"));
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "speed", before.Speed?.ToString(), after.Speed?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "volume", before.Volume?.ToString(), after.Volume?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "pitch", before.Pitch?.ToString(), after.Pitch?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "pitchRange", before.PitchRange?.ToString(), after.PitchRange?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "shake", before.Shake, after.Shake);
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "shakeRadius", before.ShakeRadius?.ToString(), after.ShakeRadius?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "wave", before.Wave, after.Wave);
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "waveHeight", before.WaveHeight?.ToString(), after.WaveHeight?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "waveSpeed", before.WaveSpeed?.ToString(), after.WaveSpeed?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "swirl", before.Swirl, after.Swirl);
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "swirlRadius", before.SwirlRadius?.ToString(), after.SwirlRadius?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "swirlSpeed", before.SwirlSpeed?.ToString(), after.SwirlSpeed?.ToString());
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "sticky", before.Sticky, after.Sticky);
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "loud", before.Loud, after.Loud);
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "bold", before.Bold, after.Bold);
-			IRDRichStringStyle<RDDialoguePhraseStyle>.TryAddTag(ref tag, "whisper", before.Whisper, after.Whisper);
+			TryAddTag(ref tag, "speed", before.Speed?.ToString(), after.Speed?.ToString());
+			TryAddTag(ref tag, "volume", before.Volume?.ToString(), after.Volume?.ToString());
+			TryAddTag(ref tag, "pitch", before.Pitch?.ToString(), after.Pitch?.ToString());
+			TryAddTag(ref tag, "pitchRange", before.PitchRange?.ToString(), after.PitchRange?.ToString());
+			TryAddTag(ref tag, "shake", before.Shake, after.Shake);
+			TryAddTag(ref tag, "shakeRadius", before.ShakeRadius?.ToString(), after.ShakeRadius?.ToString());
+			TryAddTag(ref tag, "wave", before.Wave, after.Wave);
+			TryAddTag(ref tag, "waveHeight", before.WaveHeight?.ToString(), after.WaveHeight?.ToString());
+			TryAddTag(ref tag, "waveSpeed", before.WaveSpeed?.ToString(), after.WaveSpeed?.ToString());
+			TryAddTag(ref tag, "swirl", before.Swirl, after.Swirl);
+			TryAddTag(ref tag, "swirlRadius", before.SwirlRadius?.ToString(), after.SwirlRadius?.ToString());
+			TryAddTag(ref tag, "swirlSpeed", before.SwirlSpeed?.ToString(), after.SwirlSpeed?.ToString());
+			TryAddTag(ref tag, "sticky", before.Sticky, after.Sticky);
+			TryAddTag(ref tag, "loud", before.Loud, after.Loud);
+			TryAddTag(ref tag, "bold", before.Bold, after.Bold);
+			TryAddTag(ref tag, "whisper", before.Whisper, after.Whisper);
 			return tag;
 		}
 		/// <inheritdoc/>
@@ -272,7 +273,11 @@ namespace RhythmBase.Global.Components.RichText
 		/// <inheritdoc/>
 		public static bool operator !=(RDDialoguePhraseStyle left, RDDialoguePhraseStyle right) => !(left == right);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public readonly override bool Equals(object? obj) => obj is RDDialoguePhraseStyle e && base.Equals(e);
+#else
 		public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is RDDialoguePhraseStyle e && base.Equals(e);
+#endif
 		/// <inheritdoc/>
 		public readonly bool Equals(RDDialoguePhraseStyle other) => this == other;
 		/// <inheritdoc/>
@@ -280,5 +285,6 @@ namespace RhythmBase.Global.Components.RichText
 		{
 			return base.GetHashCode();
 		}
+
 	}
 }

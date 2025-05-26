@@ -75,9 +75,23 @@ namespace RhythmBase.Global.Components
 		/// <returns>A <see cref="RDPointNI"/> with the same width and height as the current size.</returns>
 		public readonly RDPointNI ToPoint() => new(Width, Height);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDSizeNI e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDSizeNI e && Equals(e);
+#endif
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + Width.GetHashCode();
+			hash = hash * 31 + Height.GetHashCode();
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(Width, Height);
+#endif
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"[{Width},{Height}]";
 		/// <inheritdoc/>

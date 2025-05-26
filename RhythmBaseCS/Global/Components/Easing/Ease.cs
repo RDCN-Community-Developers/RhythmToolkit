@@ -206,9 +206,9 @@
 			private const double c2 = 1.70158;
 			public static double None(double x) => 0;
 			public static double Linear(double x) => x;
-			public static double InSine(double x) => 1 - Math.Cos(x * double.Pi / 2);
-			public static double OutSine(double x) => Math.Sin(x * double.Pi / 2);
-			public static double InOutSine(double x) => -(Math.Cos(x * double.Pi) - 1) / 2;
+			public static double InSine(double x) => 1 - Math.Cos(x * Math.PI / 2);
+			public static double OutSine(double x) => Math.Sin(x * Math.PI / 2);
+			public static double InOutSine(double x) => -(Math.Cos(x * Math.PI) - 1) / 2;
 			public static double InQuad(double x) => Math.Pow(x, 2);
 			public static double OutQuad(double x) => 1 - Math.Pow(1 - x, 2);
 			public static double InOutQuad(double x) => x < 0.5 ? 2 * Math.Pow(x, 2) : 1 - Math.Pow(-2 * x + 2, 2) / 2;
@@ -238,19 +238,19 @@
 				  ? 0
 				  : x == 1
 				  ? 1
-				  : -Math.Pow(2, 10 * x - 10) * Math.Sin((x * 10 - 10.75) * (2 * double.Pi / 3));
+				  : -Math.Pow(2, 10 * x - 10) * Math.Sin((x * 10 - 10.75) * (2 * Math.PI / 3));
 			public static double OutElastic(double x) => x == 0
 				  ? 0
 				  : x == 1
 				  ? 1
-				  : Math.Pow(2, -10 * x) * Math.Sin((x * 10 - 0.75) * (2 * double.Pi / 3)) + 1;
+				  : Math.Pow(2, -10 * x) * Math.Sin((x * 10 - 0.75) * (2 * Math.PI / 3)) + 1;
 			public static double InOutElastic(double x) => x == 0
 				  ? 0
 				  : x == 1
 				  ? 1
 				  : x < 0.5
-				  ? -(Math.Pow(2, 20 * x - 10) * Math.Sin((20 * x - 11.125) * (2 * double.Pi / 4.5))) / 2
-				  : Math.Pow(2, -20 * x + 10) * Math.Sin((20 * x - 11.125) * (2 * double.Pi / 4.5)) / 2 + 1;
+				  ? -(Math.Pow(2, 20 * x - 10) * Math.Sin((20 * x - 11.125) * (2 * Math.PI / 4.5))) / 2
+				  : Math.Pow(2, -20 * x + 10) * Math.Sin((20 * x - 11.125) * (2 * Math.PI / 4.5)) / 2 + 1;
 			public static double InBack(double x) => (c2 + 1) * x * x * x - c2 * x * x;
 			public static double OutBack(double x) => 1 + (c2 + 1) * Math.Pow(x - 1, 3) + c2 * Math.Pow(x - 1, 2);
 			public static double InOutBack(double x) => x < 0.5
