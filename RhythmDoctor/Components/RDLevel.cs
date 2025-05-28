@@ -610,93 +610,110 @@ namespace RhythmBase.RhythmDoctor.Components
 				this.AddRange(group);
 			this.RemoveRange(groups);
 		}
-		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item)
+		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item, bool keepCpb = true)
 		{
-			SetCrotchetsPerBar? frt = item.FrontOrDefault();
-			SetCrotchetsPerBar? nxt = item.NextOrDefault();
-			//更新拍号
-			RefreshCPBs(item._beat);
-			//添加事件
-			base.Add(item);
-			//更新计算器
-			Calculator.Refresh();
-			if (nxt != null)
+			if (keepCpb)
 			{
-				BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
-					i.Type != EventType.SetCrotchetsPerBar &&
-					i._beat < nxt._beat);
-				float interval = (nxtE != null ? nxtE._beat.BeatOnly : nxt._beat.BeatOnly) - item._beat.BeatOnly;
-				float c = interval % item.CrotchetsPerBar;
-				if (c > 0f)
+				SetCrotchetsPerBar? frt = item.FrontOrDefault();
+				SetCrotchetsPerBar? nxt = item.NextOrDefault();
+				//更新拍号
+				//RefreshCPBs(item._beat);
+				//添加事件
+				base.Add(item);
+				//更新计算器
+				Calculator.Refresh();
+				if (nxt != null)
 				{
-					c = c < 2f ? c + item.CrotchetsPerBar : c;
-					base.Add(new SetCrotchetsPerBar
+					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
+						i.Type != EventType.SetCrotchetsPerBar &&
+						i._beat < nxt._beat);
+					float interval = (nxtE != null ? nxtE._beat.BeatOnly : nxt._beat.BeatOnly) - item._beat.BeatOnly;
+					float c = interval % item.CrotchetsPerBar;
+					if (c > 0f)
 					{
-						_beat = item._beat + interval - c,
-						_crotchetsPerBar = checked((uint)Math.Round((double)unchecked(c - 1f)))
-					});
+						c = c < 2f ? c + item.CrotchetsPerBar : c;
+						base.Add(new SetCrotchetsPerBar
+						{
+							_beat = item._beat + interval - c,
+							_crotchetsPerBar = checked((uint)Math.Round((double)unchecked(c - 1f)))
+						});
+					}
+					else if (nxt.CrotchetsPerBar == item.CrotchetsPerBar)
+						base.Remove(nxt);
+					if (nxtE != null)
+						base.Add(new SetCrotchetsPerBar
+						{
+							_beat = nxtE._beat,
+							_crotchetsPerBar = frt?.CrotchetsPerBar ?? 8 - 1
+						});
 				}
-				else if (nxt.CrotchetsPerBar == item.CrotchetsPerBar)
-					base.Remove(nxt);
-				if (nxtE != null)
-					base.Add(new SetCrotchetsPerBar
-					{
-						_beat = nxtE._beat,
-						_crotchetsPerBar = frt?.CrotchetsPerBar ?? 8 - 1
-					});
+			}
+			else
+			{
+				//RefreshCPBs(item._beat);
+				base.Add(item);
 			}
 			// 更新计算器
 			Calculator.Refresh();
 		}
-		private bool RemoveSetCrotchetsPerBar(SetCrotchetsPerBar item)
+		private bool RemoveSetCrotchetsPerBar(SetCrotchetsPerBar item, bool keepCpb = true)
 		{
-			SetCrotchetsPerBar? frt = item.FrontOrDefault();
-			SetCrotchetsPerBar? nxt = item.NextOrDefault();
-			if (nxt != null)
+			if (keepCpb)
 			{
-				BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
-					i.Type != EventType.SetCrotchetsPerBar &&
-					i._beat < nxt._beat);
-				uint cpb = item.CrotchetsPerBar;
-				int interval = (int)((nxtE ?? nxt)._beat.BeatOnly - item._beat.BeatOnly);
-				long c = interval % frt?.CrotchetsPerBar ?? 8;
-				if (c > 0)
+				SetCrotchetsPerBar? frt = item.FrontOrDefault();
+				SetCrotchetsPerBar? nxt = item.NextOrDefault();
+				if (nxt != null)
 				{
-					c = c < 2 ? c + item.CrotchetsPerBar : c;
-					if (c == nxt.CrotchetsPerBar)
-						base.Remove(nxt);
-					base.Add(new SetCrotchetsPerBar()
+					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
+						i.Type != EventType.SetCrotchetsPerBar &&
+						i._beat < nxt._beat);
+					uint cpb = item.CrotchetsPerBar;
+					int interval = (int)((nxtE ?? nxt)._beat.BeatOnly - item._beat.BeatOnly);
+					long c = interval % frt?.CrotchetsPerBar ?? 8;
+					if (c > 0)
 					{
-						_beat = item._beat + interval - c,
-						_crotchetsPerBar = (uint)(c - 1)
-					});
-				}
-				else
-				{
-					if (nxtE != null && nxt.CrotchetsPerBar == (frt?.CrotchetsPerBar ?? 8))
-					{
-						base.Remove(nxt);
+						c = c < 2 ? c + item.CrotchetsPerBar : c;
+						if (c == nxt.CrotchetsPerBar)
+							base.Remove(nxt);
+						base.Add(new SetCrotchetsPerBar()
+						{
+							_beat = item._beat + interval - c,
+							_crotchetsPerBar = (uint)(c - 1)
+						});
 					}
-				}
-				if (nxtE != null)
-					base.Add(new SetCrotchetsPerBar
+					else
 					{
-						_beat = nxtE._beat,
-						_crotchetsPerBar = frt != null ? frt.CrotchetsPerBar : 8u - 1u
-					});
+						if (nxtE != null && nxt.CrotchetsPerBar == (frt?.CrotchetsPerBar ?? 8))
+						{
+							base.Remove(nxt);
+						}
+					}
+					if (nxtE != null)
+						base.Add(new SetCrotchetsPerBar
+						{
+							_beat = nxtE._beat,
+							_crotchetsPerBar = frt != null ? frt.CrotchetsPerBar : 8u - 1u
+						});
+					Calculator.Refresh();
+				}
+				//更新计算器
 				Calculator.Refresh();
+				bool result = base.Remove(item);
+				item._beat._calculator = null;
+				Calculator.Refresh();
+				return result;
 			}
-			//更新计算器
-			Calculator.Refresh();
-			bool result = base.Remove(item);
-			RefreshCPBs(item.Beat);
-			item._beat._calculator = null;
-			Calculator.Refresh();
-			return result;
+			else
+			{
+				bool result = base.Remove(item);
+				item._beat._calculator = null;
+				Calculator.Refresh();
+				return result;
+			}
 		}
 		private void AddBaseBeatsPerMinute(BaseBeatsPerMinute item)
 		{
-			RefreshBPMs(item.Beat);
+			//RefreshBPMs(item.Beat);
 			base.Add(item);
 			Calculator.Refresh();
 		}
@@ -704,7 +721,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			bool result = base.Remove(item);
 			Calculator.Refresh();
-			RefreshBPMs(item.Beat);
+			//RefreshBPMs(item.Beat);
 			item._beat._calculator = null;
 			return result;
 		}
