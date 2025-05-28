@@ -1,4 +1,4 @@
-[English](RhythmBaseTutorial_en.md) | 中文
+[English](README.md) | 中文
 
 # RhythmBase 使用教程
 
@@ -77,8 +77,6 @@ using RhythmBase.RhythmDoctor.Settings;
 // 编写自定义读写设置
 LevelReadOrWriteSettings settings = new()
 {
-    // 预加载素材（目前未实现）
-	PreloadAssets = true,
     // 对未激活事件的处理方式
 	InactiveEventsHandling = InactiveEventsHandling.Store,
     // 对读取出现异常的事件的处理方式
@@ -94,6 +92,7 @@ using RDLevel rdlevel1 = RDLevel.Read(@"your\level.rdlevel", settings);
 也可以生成 json 对象或 json 字符串以进行进一步操作。  
 
 ```cs
+using Newtonsoft.Json.Linq;
 using RhythmBase.RhythmDoctor.Components;
 
 JObject jobject = rdlevel.ToJObject();
@@ -299,7 +298,7 @@ using RDLevel rdlevel = RDLevel.Default;
 MoveRow tr = new();
 Console.WriteLine(rdlevel); // "" Count = 3
 
-rdlevel.Add(tint); // RhythmBase.Exceptions.UnreadableEventException: The Parent property of this event should not be null. Call RowEventCollection.Add() instead.
+rdlevel.Add(tint); // "" Count = 3
 
 rdlevel.Rows[0].Add(tr);
 Console.WriteLine(rdlevel); // "" Count = 4

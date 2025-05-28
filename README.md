@@ -1,4 +1,4 @@
-English | [中文](RhythmBaseTutorial_zh.md)
+English | [中文](README_zh.md)
 
 # RhythmBase Tutorial
 
@@ -28,7 +28,7 @@ To install the RhythmBase NuGet package, follow these steps:
 ## Coding
 ### Creating a Level
 
-A level is a collection of events. If you are using C# 12 or later, you can use a [collection expression](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/collection-expressions) to create an empty level.
+A level is a collection of events.
 
 ```cs
 using RhythmBase.RhythmDoctor.Components;
@@ -38,7 +38,7 @@ Console.WriteLine(emptyLevel); // "" Count = 0
 ```
 
 You can also use the built-in template to create a level with basic events.  
-This template is the same as the default level template created by the Rhythm Doctor editor.
+This template is the same as the default level template created by the Rhythm Doctor Level Editor.
 
 ```cs
 using RhythmBase.RhythmDoctor.Components;
@@ -50,7 +50,7 @@ Console.WriteLine(defaultLevel); // "" Count = 3
 ### Reading and Writing
 
 You can directly import and export files using file paths. The default read/write settings will be used.  
-Exporting does not package the level as a level pack.
+Exporting does not package the level as a `.rdzip` file.
 
 ```cs
 using RhythmBase.RhythmDoctor.Components;
@@ -77,8 +77,6 @@ using RhythmBase.RhythmDoctor.Settings;
 // Create custom read/write settings
 LevelReadOrWriteSettings settings = new()
 {
-    // Preload assets (not implemented yet)
-    PreloadAssets = true,
     // Handling of inactive events
     InactiveEventsHandling = InactiveEventsHandling.Store,
     // Handling of unreadable events
@@ -94,6 +92,7 @@ using RDLevel rdlevel1 = RDLevel.Read(@"your\level.rdlevel", settings);
 You can also generate a JSON object or JSON string for further operations.
 
 ```cs
+using Newtonsoft.Json.Linq;
 using RhythmBase.RhythmDoctor.Components;
 
 JObject jobject = rdlevel.ToJObject();
@@ -140,13 +139,13 @@ var list = rdlevel.Where<MoveRow>(
 );
 ```
 
-`Row` and `Decoration` also inherit from `OrderedEventCollection`, so tracks and sprites also support these extension methods.
+`Row` and `Decoration` also inherit from `OrderedEventCollection`, so rows and decorations also support these extension methods.
 
 ```cs
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 
-// Find the AddClassicBeat event in the row decoration between beat (11,1) and (13,1)
+// Find the AddClassicBeat event in the decoration between beat (11,1) and (13,1)
 var list = rdlevel.Decorations[0].Where<Tint>(
     new Beat(11, 1), // Start searching from bar 11, beat 1
     new Beat(13, 1)  // End searching at bar 13, beat 1
@@ -284,7 +283,7 @@ Console.WriteLine(comment); // [11,?,?] Comment My_comment.
 
 In particular, adding, modifying, or removing a `SetCrotchetsPerBar` event will update the timeline after this event, so you don't need to worry about changes affecting the order or arrangement of events; they will remain fixed at their absolute beat positions. The level will also attempt to add new `SetCrotchetsPerBar` events or remove adjacent events with the same `CrotchetsPerBar` property to maintain the stability of other segments.
 
-Track and sprite events need to be added using `Add()` on the corresponding track or sprite, while removal can be done from the track, sprite, or level using the `Remove()` method.  
+Row and decoration events need to be added using `Add()` on the corresponding row or decoration, while removal can be done from the row, decoration, or level using the `Remove()` method.  
 Repeated additions have no effect.  
 The event types `Comment` and `TintRows` are not subject to this restriction.
 
@@ -297,7 +296,7 @@ using RDLevel rdlevel = RDLevel.Default;
 MoveRow tr = new();
 Console.WriteLine(rdlevel); // "" Count = 3
 
-rdlevel.Add(tint); // RhythmBase.Exceptions.UnreadableEventException: The Parent property of this event should not be null. Call RowEventCollection.Add() instead.
+rdlevel.Add(tint); // "" Count = 3
 
 rdlevel.Rows[0].Add(tr);
 Console.WriteLine(rdlevel); // "" Count = 4
@@ -424,7 +423,7 @@ The rich text components are located in the `RhythmBase.Components.RichText` nam
 `RDPhrase<>` is a style fragment of rich text, which follows a single style.  
 You can use a struct that implements `IRDRichStringStyle<>` to specify the style rules for the rich text. In the example below, `RDRichStringStyle` is a rich text style that only includes color.
 
-Both can be implicitly converted from a string. Note that the converted text will be plain rich text without any style.
+All can be implicitly converted from a string. Note that the converted text will be plain rich text without any style.
 
 ```cs
 using RhythmBase.RhythmDoctor.Components;
@@ -620,7 +619,7 @@ Since this library does not support dynamic level playback, you can use the foll
     Use the `RDVariables.SimulateAtLeastNPerfectsSuccessRate` property to change the simulated percentage of perfect hits.  
     When the expression accesses the `atLeastNPerfects()` method, this value will be used for simulation.
 
-    ### Event Groups
+### Event Groups
 
 Declare and use it like a new event, and it will generate level events according to your specifications!
 
