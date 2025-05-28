@@ -132,7 +132,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Adds an item to the row safely.
 		/// </summary>
 		/// <param name="item">The row event to add.</param>
-		internal void AddSafely(BaseRowAction item) => base.Add(item);
+		internal void AddInternal(BaseRowAction item) => base.Add(item);
 		/// <summary>
 		/// Removes an item from the row.
 		/// </summary>
@@ -144,7 +144,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="item">The row event to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
-		internal bool RemoveSafely(BaseRowAction item) => base.Remove(item);
+		internal bool RemoveInternal(BaseRowAction item) => base.Remove(item);
 		private RowType _rowType;
 		[JsonIgnore]
 		internal RDLevel? Parent = null;

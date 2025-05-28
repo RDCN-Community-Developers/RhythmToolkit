@@ -163,7 +163,11 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 	/// Represents a token in the RDLang parser.
 	/// </summary>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+#if NETSTANDARD
+	public struct Token
+#else
 	public readonly struct Token
+#endif
 	{
 		/// <summary>
 		/// Gets the name of the token based on its type and value.
@@ -179,22 +183,37 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		/// <summary>
 		/// Gets or sets the value of the token.
 		/// </summary>
+#if NETSTANDARD
+		public object Value { get; internal set; }
+#else
 		public object Value { get; internal init; }
-
+#endif
 		/// <summary>
 		/// Gets or sets the type of the token.
 		/// </summary>
+#if NETSTANDARD
+		public TokenType TokenID { get; internal set; }
+#else
 		public TokenType TokenID { get; internal init; }
+#endif
 
 		/// <summary>
 		/// Gets or sets the line number where the token is located.
 		/// </summary>
+#if NETSTANDARD
+		public int Line { get; internal set; }
+#else
 		public int Line { get; internal init; }
+#endif
 
 		/// <summary>
 		/// Gets or sets the column number where the token is located.
 		/// </summary>
+#if NETSTANDARD
+		public int Column { get; internal set; }
+#else
 		public int Column { get; internal init; }
+#endif
 
 		///<inherit />
 		public readonly override string ToString() => $"{Name} [{TokenID}] at {Line}:{Column}";
@@ -219,9 +238,15 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 				{
 					error = new Error($"{error?.Message} At line {error?.Line}, column {error?.Column}.")
 					{
+#if NETSTANDARD
+						Line = tokens[tokens.Length - 1].Line,
+						Column = tokens[tokens.Length - 1].Column,
+						Name = tokens[tokens.Length - 1].Name
+#else
 						Line = tokens[^1].Line,
 						Column = tokens[^1].Column,
 						Name = tokens[^1].Name
+#endif
 					};
 				}
 				throw new SyntaxErrorException($"{error?.Message} At line {error?.Line}, column {error?.Column}.")

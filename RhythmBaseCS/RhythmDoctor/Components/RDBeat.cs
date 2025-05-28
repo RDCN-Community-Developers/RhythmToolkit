@@ -319,9 +319,6 @@ namespace RhythmBase.RhythmDoctor.Components
 			__ = BarBeat;
 			__ = TimeSpan;
 		}
-		/// <summary>
-		///
-		/// </summary>
 		internal void ResetBPM()
 		{
 			if (!_isBeatLoaded)

@@ -69,13 +69,13 @@ namespace RhythmBase.RhythmDoctor.Components
 			item._parent = this;
 			Parent?.Add(item);
 		}
-		internal void AddSafely(BaseDecorationAction item) => base.Add(item);
+		internal void AddInternal(BaseDecorationAction item) => base.Add(item);
 		/// <summary>
 		/// Remove an event from decoration.
 		/// </summary>
 		/// <param name="item">A decoration event.</param>
 		public override bool Remove(BaseDecorationAction item) => Parent?.Remove(item) ?? throw new RhythmBaseException();
-		internal bool RemoveSafely(BaseDecorationAction item) => base.Remove(item);
+		internal bool RemoveInternal(BaseDecorationAction item) => base.Remove(item);
 		/// <inheritdoc/>
 		public override string ToString() => string.Format("{0}, {1}, {2}, {3}",
 			[

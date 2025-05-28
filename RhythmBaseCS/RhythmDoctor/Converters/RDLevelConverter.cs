@@ -235,8 +235,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 									}
 									else if (ev is Comment comment && Group.TryParse(comment, out string[]? type, out JObject[]? data))
 									{
-										typel = type;
-										datal = data;
+										typel = type!;
+										datal = data!;
 										handled = true;
 									}
 								}
@@ -254,8 +254,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 							outLevel.RemoveAll(i => (
 								(i is TagAction tag && Group.MatchTag(tag.ActionTag, out int type, out _, out _)) ||
 								Group.MatchTag(i.Tag, out type, out _, out _)) &&
-								type == group.DataId);
-							group._data = datal[group.DataId < datal.Length ? group.DataId : throw new IndexOutOfRangeException()] ?? [];
+								type == group!.DataId);
+							group!._data = datal[group.DataId < datal.Length ? group.DataId : throw new IndexOutOfRangeException()] ?? [];
 							group.Flush();
 							outLevel.Add(group);
 						}

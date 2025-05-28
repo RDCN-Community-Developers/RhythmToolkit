@@ -90,7 +90,7 @@ namespace RhythmBase.Adofai.Components
 #if !NETSTANDARD
 		[NotNull]
 #endif
-		public Tile? Next { get; internal set; }
+		public Tile Next { get; internal set; }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class with a specified mid-spin state and a collection of tile events.
 		/// </summary>

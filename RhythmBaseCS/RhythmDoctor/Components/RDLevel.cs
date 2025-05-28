@@ -485,7 +485,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				//添加至对应轨道
 				Row? parent = rowAction.Parent ?? (rowAction.Index < Rows.Count ? Rows[rowAction.Index] : null);
 				if (parent == null) Rows._unhandledRowEvents.Add(rowAction);
-				else parent.AddSafely(rowAction);
+				else parent.AddInternal(rowAction);
 				base.Add(item);
 			}
 			else if (item is BaseDecorationAction decoAction)
@@ -493,7 +493,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				//添加至对应精灵
 				Decoration? parent = decoAction.Parent ?? Decorations[decoAction._decoId];
 				if (parent == null) Decorations._unhandledRowEvents.Add(decoAction);
-				else parent.AddSafely(decoAction);
+				else parent.AddInternal(decoAction);
 				base.Add(item);
 			}
 			//BPM 和 CPB
@@ -523,14 +523,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			bool Remove;
 			if (EventTypeUtils.RowTypes.Contains(item.Type)
-				&& Rows.Any((i) => i.RemoveSafely((BaseRowAction)item)))
+				&& Rows.Any((i) => i.RemoveInternal((BaseRowAction)item)))
 			{
 				base.Remove(item);
 				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
 			else if (EventTypeUtils.DecorationTypes.Contains(item.Type)
-					&& Decorations.Any((i) => i.RemoveSafely((BaseDecorationAction)item)))
+					&& Decorations.Any((i) => i.RemoveInternal((BaseDecorationAction)item)))
 			{
 				base.Remove(item);
 				((BaseEvent)item)._beat._calculator = null;

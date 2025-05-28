@@ -20,17 +20,17 @@ namespace RhythmBase.RhythmDoctor.Converters
 			RDCharacter ReadJson;
 			if (value.StartsWith("custom:"))
 			{
-#if NETSTANDARD
-				string name = value.Substring(7);
-#else
+#if NETCOREAPP3_0_OR_GREATER
 				string name = value[7..];
+#else
+				string name = value.Substring(7);
 #endif
 				ReadJson = name;
 			}
 			else
 			{
 #if NETSTANDARD
-				ReadJson = (RDCharacters)Enum.Parse(typeof(RDCharacter), value);
+				ReadJson = (RDCharacters)Enum.Parse(typeof(RDCharacters), value);
 #else
 				ReadJson = Enum.Parse<RDCharacters>(value);
 #endif

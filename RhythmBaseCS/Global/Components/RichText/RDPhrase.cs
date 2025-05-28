@@ -23,15 +23,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// <summary>
 		/// Gets or sets the events associated with the rich string.
 		/// </summary>
-		public RDDialogueTone[] Events
-		{
-			get;
-#if NET5_0_OR_GREATER
-			init;
-#else
-			internal set;
-#endif
-		} = [];
+		public RDDialogueTone[] Events { get; set; } = [];
 		/// <summary>
 		/// Gets the length of the text content.
 		/// </summary>

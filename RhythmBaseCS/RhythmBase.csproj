@@ -7,34 +7,24 @@
     <AssemblyName>RhythmBase</AssemblyName>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>RhythmToolkit</Title>
-    <Version>1.2.0-rc2</Version>
+    <Version>1.2.0-rc3</Version>
     <Authors>obugs</Authors>
     <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels.</Description>
-    <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RadiationTherapy</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit</PackageProjectUrl>
     <PackageIcon>RhythmToolkit.png</PackageIcon>
     <RepositoryUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit.git</RepositoryUrl>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	  <LangVersion>Preview</LangVersion>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Assets\**" />
-    <EmbeddedResource Remove="Assets\**" />
-    <None Remove="Assets\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Global\Components\LimitedList.2.cs" />
-    <Compile Remove="Global\Components\LimitedList.cs" />
-    <Compile Remove="RhythmDoctor\Extensions\ImageExtension.cs" />
-    <Compile Remove="RhythmDoctor\Utils\WaveDataUtils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="C:\Users\30698\.nuget\packages\naudio.vorbis\1.5.0\contentFiles\any\netstandard2.0\README.md" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="sly" Version="3.7.3" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="RhythmToolkit.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

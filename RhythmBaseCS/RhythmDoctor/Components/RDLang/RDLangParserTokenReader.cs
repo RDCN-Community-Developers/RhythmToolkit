@@ -217,6 +217,12 @@
 						}
 						else
 						{
+#if NETSTANDARD
+							if (str3.StartsWith("str:"))
+								tokens.Add(NewToken(TokenType.String, str3.Substring(4)));
+							else
+								tokens.Add(NewToken(TokenType.String, str3));
+#else
 							switch (str3)
 							{
 								case ['s', 't', 'r', ':']:
@@ -226,6 +232,7 @@
 									tokens.Add(NewToken(TokenType.String, str3));
 									break;
 							}
+#endif
 						}
 						break;
 				}

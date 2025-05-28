@@ -189,10 +189,10 @@ namespace RhythmBase.Global.Components.RichText
 				int end = text.IndexOf('<', start);
 				if (end == -1)
 				{
-#if NETSTANDARD2_0
-					line += DeserializeStringPart(text.Substring(start), tempStyle);
-#else
+#if NETCOREAPP3_0_OR_GREATER
 					line += DeserializeStringPart(text[start..], tempStyle);
+#else
+					line += DeserializeStringPart(text.Substring(start), tempStyle);
 #endif
 					break;
 				}
@@ -200,28 +200,18 @@ namespace RhythmBase.Global.Components.RichText
 				int end2 = text.IndexOf('<', end + 1);
 				if (start2 == -1)
 					break;
-#if NETSTANDARD2_0
-				line += DeserializeStringPart(text.Substring(start, end2 - start), tempStyle);
-#else
+				if (end2 == -1)
+					end2 = text.Length;
+#if NETCOREAPP3_0_OR_GREATER
 				line += DeserializeStringPart(text[start..end2], tempStyle);
-#endif
-
-#if NETSTANDARD2_0
-				string textpart = text.Substring(start, end - start);
-#else
 				string textpart = text[start..end];
-#endif
-
-#if NETSTANDARD2_0
-				string[] keyvalue = text.Substring(end + 1, start2 - (end + 1)).Split(new char[] { '=' }, 2);
-#else
 				string[] keyvalue = text[(end + 1)..start2].Split('=', 2);
-#endif
-
-#if NETSTANDARD2_0
-				if (keyvalue[0].StartsWith("/") && style.ResetProperty(keyvalue[0].Substring(1)))
-#else
 				if (keyvalue[0].StartsWith('/') && style.ResetProperty(keyvalue[0][1..]))
+#else
+				line += DeserializeStringPart(text.Substring(start, end2 - start), tempStyle);
+				string textpart = text.Substring(start, end - start);
+				string[] keyvalue = text.Substring(end + 1, start2 - (end + 1)).Split(['='], 2);
+				if (keyvalue[0].StartsWith("/") && style.ResetProperty(keyvalue[0].Substring(1)))
 #endif
 					start = start2 + 1;
 				else if (style.SetProperty(keyvalue[0], keyvalue.Length == 2 ? keyvalue[1] : "true"))

@@ -117,8 +117,13 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 				return new()
 				{
 					ActionType = ActionType.Both,
+#if NETSTANDARD
+					ShiftTo = int.Parse(parts[0].Substring(1)),
+					ReduceTo = int.Parse(parts[1].Substring(1)),
+#else
 					ShiftTo = int.Parse(parts[0][1..]),
 					ReduceTo = int.Parse(parts[1][1..]),
+#endif
 				};
 			}
 			else
@@ -127,8 +132,13 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 					return new() { ActionType = ActionType.Error, ErrorInfo = s };
 				return s[0] switch
 				{
+#if NETSTANDARD
+					's' => new() { ActionType = ActionType.Shift, ShiftTo = int.Parse(s.Substring(1)) },
+					'r' => new() { ActionType = ActionType.Reduce, ReduceTo = int.Parse(s.Substring(1)) },
+#else
 					's' => new() { ActionType = ActionType.Shift, ShiftTo = int.Parse(s[1..]) },
 					'r' => new() { ActionType = ActionType.Reduce, ReduceTo = int.Parse(s[1..]) },
+#endif
 					_ => new() { ErrorInfo = s, ActionType = ActionType.Error },
 				};
 			}
@@ -190,9 +200,21 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 				//Console.WriteLine($"Symbol: {string.Join(", ", symbolStack.Select(i => i.ToString()).Reverse())}");
 				//Console.WriteLine();
 				int state = stateStack.Peek();
+#if NETSTANDARD
+				Action action;
+				PatternValue peekPattern = default;
+				if (inputStack.Count > 0)
+				{
+					peekPattern = inputStack.Peek();
+					action = GetAction(state, peekPattern.TokenType, type);
+				}
+				else
+					action = GetLastAction(state, type);
+#else
 				Action action = inputStack.TryPeek(out PatternValue peekPattern)
 					? GetAction(state, peekPattern.TokenType, type)
 					: GetLastAction(state, type);
+#endif
 				switch (action.ActionType)
 				{
 					case ActionType.Shift:
@@ -209,7 +231,11 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 							var peak = symbolStack.Pop();
 							ptargs.Push(peak);
 							stateStack.Pop();
+#if NETSTANDARD
+							if (peak.GetType() != ps.Patterns[ps.Patterns.Length - i - 1].GetType())
+#else
 							if (peak.GetType() != ps.Patterns[^(i + 1)].GetType())
+#endif
 								throw new Exception($"Pattern mismatch at state {state}: expected {ps.Patterns[i].GetType()}, got {peak.GetType()}");
 						}
 						Calculate(ref ps, [.. ptargs], variables);
@@ -231,7 +257,11 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						else
 							goto reduce;
 					case ActionType.Error:
+#if NETSTANDARD
+						if (inputStack.Count > 0 && inputStack.Peek() is PatternValue pv2)
+#else
 						if (inputStack.TryPeek(out PatternValue pv2))
+#endif
 						{
 							Token token = pv2.Value;
 							error = new(action.ErrorInfo, token);

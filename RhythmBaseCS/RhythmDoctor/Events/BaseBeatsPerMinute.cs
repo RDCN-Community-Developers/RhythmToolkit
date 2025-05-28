@@ -1,5 +1,5 @@
-﻿using RhythmBase.RhythmDoctor.Extensions;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -55,7 +55,7 @@ namespace RhythmBase.RhythmDoctor.Events
 											where i.Beat > Beat
 											select i)
 				{
-					item.Beat.ResetBPM();
+					((BaseEvent)item)._beat.ResetBPM();
 				}
 			}
 		}
