@@ -73,7 +73,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			_ => throw new ArgumentException("Invalid rank"),
 		};
 		public static bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => numberOfPerfects / (float)hitsToCheck > SimulateAtLeastNPerfectsSuccessRate;
-		public object this[string variableName]
+		public object? this[string variableName]
 		{
 #if NETSTANDARD
 			get
@@ -129,7 +129,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			['i', char ii] => i[ii - '0'],
 			['f', char fi] => f[fi - '0'],
 			['b', char bi] => b[bi - '0'],
-				_ => GetType().GetField(variableName)?.GetValue(this)!,
+				_ => GetType().GetField(variableName)?.GetValue(this),
 			};
 			set
 			{
@@ -139,10 +139,10 @@ namespace RhythmBase.RhythmDoctor.Components
 						i[ii - '0'] = value is int v1 ? v1 : throw new ArgumentException("Value is not an integer.");
 						break;
 					case ['f', char fi]:
-						f[fi] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
+						f[fi - '0'] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
 						break;
 					case ['b', char bi]:
-						b[bi] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
+						b[bi - '0'] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
 						break;
 					default:
 						FieldInfo? field = GetType().GetField(variableName);

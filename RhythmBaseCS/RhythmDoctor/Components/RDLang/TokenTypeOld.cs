@@ -2,7 +2,7 @@
 
 namespace RhythmBase.RhythmDoctor.Components.RDLang
 {
-	internal enum RDExpressionToken
+	internal enum TokenTypeOld
 	{
 		[Lexeme(@"[0-9]+(\.[0-9]+)?")]
 		Number,
