@@ -29,7 +29,7 @@ namespace RhythmBase.Adofai.Components
 		/// Gets a value indicating whether the tile is a hairpin.  
 		/// A tile is considered a hairpin if the absolute difference between its angle and the previous tile's angle is exactly 180 degrees.  
 		/// </summary>  
-		public bool IsHairPin => float.Abs(_angle - (Previous?._angle ?? 0)) == 180f;
+		public bool IsHairPin => Math.Abs(_angle - (Previous?._angle ?? 0)) == 180f;
 		/// <summary>  
 		/// Gets the tick value of the tile.  
 		/// The tick is calculated based on the relationship between the current tile, the previous tile, and the next tile.  
@@ -87,7 +87,9 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the next tile in the sequence.  
 		/// This property is set internally and represents the tile that comes after the current tile.  
 		/// </summary>  
+#if !NETSTANDARD
 		[NotNull]
+#endif
 		public Tile? Next { get; internal set; }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class with a specified mid-spin state and a collection of tile events.

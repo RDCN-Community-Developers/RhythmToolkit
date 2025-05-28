@@ -6,6 +6,7 @@
 	/// <typeparam name="TStyle">The type of the style applied to the rich text.</typeparam>
 	public interface IRDRichTextLine<TStyle> where TStyle : IRDRichStringStyle<TStyle>, new()
 	{
+#if NETCOREAPP3_0_OR_GREATER
 		/// <summary>
 		/// Gets or sets the <see cref="RDLine{TStyle}"/> at the specified index.
 		/// </summary>
@@ -18,6 +19,7 @@
 		/// <param name="range">The range of the rich text lines.</param>
 		/// <returns>The rich text lines within the specified range.</returns>
 		RDLine<TStyle> this[Range range] { get; set; }
+#endif
 		/// <summary>
 		/// Gets the length of the rich text line.
 		/// </summary>
@@ -27,13 +29,19 @@
 		/// </summary>
 		/// <param name="lines">The rich text lines to concatenate.</param>
 		/// <returns>A new <see cref="RDLine{TStyle}"/> containing the concatenated content.</returns>
-		static abstract RDLine<TStyle> Concat(params RDLine<TStyle>[] lines);
+#if NET7_0_OR_GREATER
+		static
+#endif
+		abstract RDLine<TStyle> Concat(params RDLine<TStyle>[] lines);
 		/// <summary>
 		/// Deserializes a string into an <see cref="RDLine{TStyle}"/>.
 		/// </summary>
 		/// <param name="text">The string to deserialize.</param>
 		/// <returns>A new <see cref="RDLine{TStyle}"/> containing the deserialized content.</returns>
-		static abstract RDLine<TStyle> Deserialize(string text);
+#if NET7_0_OR_GREATER
+		static
+#endif
+		abstract RDLine<TStyle> Deserialize(string text);
 		/// <summary>
 		/// Serializes the current <see cref="RDLine{TStyle}"/> instance to a string.
 		/// </summary>

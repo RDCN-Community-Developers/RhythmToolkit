@@ -14,7 +14,7 @@ namespace RhythmBase.Adofai.Converters
 		public override void WriteJson(JsonWriter writer, TEvent? value, JsonSerializer serializer)
 		{
 			if (value == null)
-				throw new ConvertingException(($"Event is null"));
+				throw new ConvertingException($"Event is null");
 			serializer.Formatting = Formatting.None;
 			writer.WriteRawValue(JsonConvert.SerializeObject(SetSerializedObject(value, serializer)));
 			serializer.Formatting = Formatting.Indented;

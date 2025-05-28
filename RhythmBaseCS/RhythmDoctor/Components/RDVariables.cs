@@ -6,6 +6,9 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// </summary>
 	public sealed class RDVariables
 	{
+#if !NET6_0_OR_GREATER
+		private static Random _random = new();
+#endif
 		/// <summary>
 		/// Enumeration representing different ranks.
 		/// </summary>
@@ -50,8 +53,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		public static int Rand(int value) =>
 			(value > 0
+#if NET6_0_OR_GREATER
 				? Random.Shared.Next(1, value)
 				: -Random.Shared.Next(1, -value)
+#else
+				? _random.Next(1, value)
+				: -_random.Next(1, -value)
+#endif
 			) + 1;
 		public static bool atLeastRank(string rank) => rank switch
 		{
@@ -67,6 +75,55 @@ namespace RhythmBase.RhythmDoctor.Components
 		public static bool atLeastNPerfects(int hitsToCheck, int numberOfPerfects) => numberOfPerfects / (float)hitsToCheck > SimulateAtLeastNPerfectsSuccessRate;
 		public object this[string variableName]
 		{
+#if NETSTANDARD
+			get
+			{
+				switch (variableName[0])
+				{
+					case 'i':
+						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
+							goto default;
+						return i[variableName[1] - '0'];
+					case 'f':
+						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
+							goto default;
+						return f[variableName[1] - '0'];
+					case 'b':
+						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
+							goto default;
+						return b[variableName[1] - '0'];
+					default:
+						FieldInfo? field = GetType().GetField(variableName) ?? throw new ArgumentException($"Variable '{variableName}' does not exist.");
+						return field.GetValue(this) ?? throw new NullReferenceException($"Variable '{variableName}' is null.");
+				}
+			}
+
+			set
+			{
+				switch (variableName[0])
+				{
+					case 'i':
+						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
+							goto default;
+						i[variableName[1] - '0'] = value is int v1 ? v1 : throw new ArgumentException("Value is not an integer.");
+						break;
+					case 'f':
+						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
+							goto default;
+						f[variableName[1] - '0'] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
+						break;
+					case 'b':
+						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
+							goto default;
+						b[variableName[1] - '0'] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
+						break;
+					default:
+						FieldInfo? field = GetType().GetField(variableName) ?? throw new ArgumentException($"Variable '{variableName}' does not exist.");
+						field.SetValue(this, value ?? throw new ArgumentNullException($"Value for variable '{variableName}' cannot be null."));
+						break;
+				}
+			}
+#else
 			get => variableName switch
 			{
 			['i', char ii] => i[ii - '0'],
@@ -93,6 +150,7 @@ namespace RhythmBase.RhythmDoctor.Components
 						break;
 				}
 			}
+#endif
 		}
 		/// <summary>
 		/// Integer variables.

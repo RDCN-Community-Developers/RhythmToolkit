@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Converters
@@ -15,7 +14,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			else
 			{
-				if (value.ExpressionValue.IsNullOrEmpty())
+				if (string.IsNullOrEmpty(value.ExpressionValue))
 				{
 					writer.WriteNull();
 				}

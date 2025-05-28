@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>RhythmBase</RootNamespace>
@@ -35,7 +35,7 @@
     <PackageReference Include="sly" Version="3.7.3" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="RhythmToolkit.png">
+    <None Include="RhythmToolkit.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

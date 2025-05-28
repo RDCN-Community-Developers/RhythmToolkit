@@ -65,12 +65,12 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>
 		/// <param name="degree">The angle in degrees.</param>
 		/// <returns>The angle in radians.</returns>
-		public static float DegreeToRadius(float degree) => float.Pi * degree / 180f;
+		public static float DegreeToRadius(float degree) => (float)Math.PI * degree / 180f;
 		/// <summary>
 		/// Converts radians to degrees.
 		/// </summary>
 		/// <param name="radius">The angle in radians.</param>
 		/// <returns>The angle in degrees.</returns>
-		public static float RadiusToDegree(float radius) => radius * 180f / float.Pi;
+		public static float RadiusToDegree(float radius) => radius * 180f / (float)Math.PI;
 	}
 }

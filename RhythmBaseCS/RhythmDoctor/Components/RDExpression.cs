@@ -9,7 +9,10 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// An Expression
 	/// </summary>
 	[JsonConverter(typeof(ExpressionConverter))]
-	public struct RDExpression : INumber<RDExpression>
+	public struct RDExpression
+#if NET7_0_OR_GREATER
+		: INumber<RDExpression>
+#endif
 	{
 		/// <summary>
 		/// Gets the numeric value of the expression.
@@ -39,14 +42,18 @@ namespace RhythmBase.RhythmDoctor.Components
 				return result;
 			return 0;
 		}
+#if NET7_0_OR_GREATER
 		static RDExpression INumberBase<RDExpression>.One => 1;
 		static int INumberBase<RDExpression>.Radix => 10;
+#endif
 		/// <summary>
 		/// Gets the additive identity for the <see cref="RDExpression"/> type.
 		/// </summary>
 		public static RDExpression Zero => 0;
+#if NET7_0_OR_GREATER
 		static RDExpression IAdditiveIdentity<RDExpression, RDExpression>.AdditiveIdentity => 0;
 		static RDExpression IMultiplicativeIdentity<RDExpression, RDExpression>.MultiplicativeIdentity => 1;
+#endif
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDExpression"/> struct with a numeric value.
 		/// </summary>
@@ -61,7 +68,11 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Initializes a new instance of the <see cref="RDExpression"/> struct with a string value.
 		/// </summary>
 		/// <param name="value">The string value of the expression.</param>
+#if NETSTANDARD
+		public RDExpression(string value)
+#else
 		public RDExpression([AllowNull] string value)
+#endif
 		{
 			IsNumeric = float.TryParse(value, out float numeric);
 			if (IsNumeric)
@@ -70,16 +81,29 @@ namespace RhythmBase.RhythmDoctor.Components
 				_exp = value ?? "";
 		}
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDExpression e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDExpression e && Equals(e);
+#endif
 		/// <inheritdoc/>
 		public readonly bool Equals(RDExpression other) => IsNumeric == other.IsNumeric && NumericValue == other.NumericValue || _exp == other._exp;
 		/// <inheritdoc/>
+#if NETCOREAPP2_1_OR_GREATER
 		public override readonly int GetHashCode()
 		{
 			HashCode hash = default;
 			hash.Add(ExpressionValue);
 			return hash.ToHashCode();
 		}
+#else
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + ExpressionValue.GetHashCode();
+			return hash;
+		}
+#endif
 		/// <inheritdoc/>
 		public override readonly string ToString() => ExpressionValue;
 		/// <summary>
@@ -88,6 +112,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="s">The string to convert.</param>
 		/// <returns>A nullable RDExpression if the string is not null or empty; otherwise, null.</returns>
 		public static RDExpression? Nullable(string s) => s != null && s.Length != 0 ? new RDExpression?(new RDExpression(s)) : null;
+
+#if NET7_0_OR_GREATER
 		readonly int IComparable.CompareTo(object? obj)
 		{
 			if (obj is RDExpression other)
@@ -96,6 +122,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			throw new ArgumentException("Object is not a RDExpression");
 		}
+#endif
 		/// <inheritdoc/>
 		public readonly int CompareTo(RDExpression other)
 		{
@@ -105,6 +132,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			return string.Compare(ExpressionValue, other.ExpressionValue, StringComparison.Ordinal);
 		}
+#if NET7_0_OR_GREATER
 		static RDExpression INumberBase<RDExpression>.Abs(RDExpression value)
 		{
 			return value.IsNumeric ? new RDExpression(Math.Abs(value.NumericValue)) : value;
@@ -293,6 +321,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			result = default;
 			return false;
 		}
+#endif
 		/// <inheritdoc/>
 		public static RDExpression operator +(RDExpression left, float right) => left.IsNumeric
 				? new RDExpression(left.NumericValue + right)
@@ -349,6 +378,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public static implicit operator RDExpression(float v) => new(v);
 		/// <inheritdoc/>
 		public static implicit operator RDExpression(string v) => new(v);
+#if NET7_0_OR_GREATER
 		static bool IComparisonOperators<RDExpression, RDExpression, bool>.operator >(RDExpression left, RDExpression right)
 		{
 			return left.CompareTo(right) > 0;
@@ -401,6 +431,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			return value;
 		}
+#endif
 		private readonly string _exp = "";
 		/// <summary>
 		/// 

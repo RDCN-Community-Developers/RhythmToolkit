@@ -135,7 +135,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>An enumerator for the events in the group.</returns>
 		IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<BaseEvent>)this).GetEnumerator();
+#if NETSTANDARD
+		internal static bool TryParse(Comment comment, out string[]? types, out JObject[]? data)
+#else
 		internal static bool TryParse(Comment comment, [NotNullWhen(true)] out string[]? types, [NotNullWhen(true)] out JObject[]? data)
+#endif
 		{
 			if (string.IsNullOrEmpty(comment.Text))
 			{
@@ -154,8 +158,13 @@ namespace RhythmBase.RhythmDoctor.Events
 			List<JObject> datal = [];
 			for (int i = 2; i < lines.Length; i++)
 			{
+#if NETSTANDARD
+				if (lines[i].StartsWith("@"))
+					typel.Add(lines[i].Substring(1));
+#else
 				if (lines[i].StartsWith('@'))
 					typel.Add(lines[i][1..]);
+#endif
 				else
 					datal.Add(JObject.Parse(lines[i]));
 			}
@@ -163,7 +172,11 @@ namespace RhythmBase.RhythmDoctor.Events
 			data = [.. datal];
 			return true;
 		}
+#if NETSTANDARD
+		internal static bool TryParse(TagAction tagAction, string[] types, out Group? result)
+#else
 		internal static bool TryParse(TagAction tagAction, string[] types, [NotNullWhen(true)] out Group? result)
+#endif
 		{
 			if (!TryMatch(tagAction))
 			{
@@ -171,8 +184,13 @@ namespace RhythmBase.RhythmDoctor.Events
 				return false;
 			}
 			string info = tagAction.ActionTag.Substring(RhythmBaseGroupEventHeader.Length, 16);
+#if NETSTANDARD
+			int typeIndex = Convert.ToInt32(info.Substring(0, 8), 16);
+			int id = Convert.ToInt32(info.Substring(8), 16);
+#else
 			int typeIndex = Convert.ToInt32(info[..8], 16);
 			int id = Convert.ToInt32(info[8..], 16);
+#endif
 			if (typeIndex < 0 || typeIndex >= types.Length)
 			{
 				result = null;
@@ -199,6 +217,15 @@ namespace RhythmBase.RhythmDoctor.Events
 			{
 				if (tag.StartsWith(RhythmBaseGroupEventHeader))
 				{
+#if NETSTANDARD
+					tag = tag.Substring(RhythmBaseGroupEventHeader.Length);
+					type = Convert.ToInt32(tag.Substring(0, 8), 16);
+					id = Convert.ToInt32(tag.Substring(8, 8), 16);
+					if (tag.Length > 17 && tag[16] == '_')
+						tagstag = tag.Substring(17);
+					else
+						tagstag = "";
+#else
 					tag = tag[RhythmBaseGroupEventHeader.Length..];
 					type = Convert.ToInt32(tag[..8], 16);
 					id = Convert.ToInt32(tag[8..16], 16);
@@ -206,6 +233,7 @@ namespace RhythmBase.RhythmDoctor.Events
 						tagstag = tag[17..];
 					else
 						tagstag = "";
+#endif
 					return true;
 				}
 			}

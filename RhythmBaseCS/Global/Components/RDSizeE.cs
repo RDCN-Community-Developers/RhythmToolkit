@@ -133,7 +133,17 @@ namespace RhythmBase.Global.Components
 		/// <returns>The result of the subtraction.</returns>
 		public static RDSizeE Subtract(RDSizeE sz1, RDSizeE sz2) => new(sz1.Width - sz2.Width, sz1.Height - sz2.Height);
 		/// <inheritdoc/>
+	#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + (Width?.GetHashCode() ?? 0);
+			hash = hash * 31 + (Height?.GetHashCode() ?? 0);
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(Width, Height);
+#endif
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"[{Width},{Height}]";
 		/// <inheritdoc/>
@@ -141,7 +151,11 @@ namespace RhythmBase.Global.Components
 		/// <inheritdoc/>
 		public readonly RDPointE ToRDPointE() => new(Width, Height);
 		/// <inheritdoc/>
+		#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDSize e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDSize e && Equals(e);
+#endif
 		/// <inheritdoc/>
 		public static RDSizeE operator +(RDSizeE sz1, RDSizeI sz2) => Add(sz1, sz2);
 		/// <inheritdoc/>

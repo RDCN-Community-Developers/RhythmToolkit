@@ -9,8 +9,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 	{
 		public override RoomOrder ReadJson(JsonReader reader, Type objectType, RoomOrder existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
-			byte[]? order = JToken.ReadFrom(reader).ToObject<byte[]>();
-			ArgumentNullException.ThrowIfNull(order);
+			byte[] order = JToken.ReadFrom(reader).ToObject<byte[]>() ?? [];
 			if (order.Length != 4)
 				throw new ConvertingException($"Invalid room order: {string.Join(",", order)}");
 			return new RoomOrder(order[0], order[1], order[2], order[3]);

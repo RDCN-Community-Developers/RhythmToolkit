@@ -88,7 +88,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => BackgroundType == BackgroundTypes.Color
 		? base.ToString() + $" {Color}"
+#if NETSTANDARD
+		: base.ToString() + $" {string.Join(",", Image)}";
+#else
 		: base.ToString() + $" {string.Join(',', Image)}";
+#endif
 		/// <summary>
 		/// Specifies the types of backgrounds.
 		/// </summary>

@@ -9,7 +9,7 @@ namespace RhythmBase.Adofai.Converters
 	{
 		public override void WriteJson(JsonWriter writer, Tile? value, JsonSerializer serializer)
 		{
-			writer.WriteValue((value?.IsMidSpin == true ? Utils.Utils.MidSpinAngle : value?.Angle ?? 0));
+			writer.WriteValue(value?.IsMidSpin == true ? Utils.Utils.MidSpinAngle : value?.Angle ?? 0);
 		}
 
 		public override Tile ReadJson(JsonReader reader, Type objectType, Tile? existingValue, bool hasExistingValue, JsonSerializer serializer)

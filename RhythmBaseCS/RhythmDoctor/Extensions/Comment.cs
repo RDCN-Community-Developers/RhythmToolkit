@@ -12,7 +12,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		public static class Shared
 		{
 #pragma warning disable CS1591
+#if NETSTANDARD
+			private static Comment FunctionCalling(string name, params object[] @params) => new() { Text = $"()=>{name.ToLowerCamelCase()}({string.Join(",", @params.Select(i => i.ToString()))})" };
+#else
 			private static Comment FunctionCalling(string name, params object[] @params) => new() { Text = $"()=>{name.ToLowerCamelCase()}({string.Join(',', @params.Select(i => i.ToString()))})" };
+#endif
 			public static Comment TrueCameraMove(int RoomID, RDPointN p, float AnimationDuration, EaseType Ease) => FunctionCalling("TrueCameraMove", (byte)RoomID, p.X, p.Y, AnimationDuration, Ease);
 			public static Comment Create(Particle particleName, RDPointN p) => FunctionCalling("Create", $"CustomParticles/{particleName}", p.X, p.Y);
 			public static Comment Shockwave(ShockWaveType type, float value) => FunctionCalling("Shockwave", type, value);

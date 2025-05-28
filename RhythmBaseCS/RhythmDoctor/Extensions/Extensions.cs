@@ -1,20 +1,24 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using RhythmBase.Global.Components;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 namespace RhythmBase.RhythmDoctor.Extensions
 {
 	/// <summary>
 	/// Extensions
 	/// </summary>
-	[StandardModule]
 	public static partial class Extensions
 	{
+#if NETSTANDARD
+		internal static T FirstOrDefault<T>(this IEnumerable<T> e, T defaultValue) => e.FirstOrDefault(defaultValue);
+		internal static T FirstOrDefault<T>(this IEnumerable<T> e, Func<T, bool> predicate, T defaultValue) => e.FirstOrDefault(predicate, defaultValue);
+		internal static T LastOrDefault<T>(this IEnumerable<T> e, T defaultValue) => e.LastOrDefault(defaultValue);
+		internal static T LastOrDefault<T>(this IEnumerable<T> e, Func<T, bool> predicate, T defaultValue) => e.LastOrDefault(predicate, defaultValue);
+#endif
+#if !NETSTANDARD
 		private static (float start, float end) GetRange(OrderedEventCollection e, Index index)
 		{
 			(float, float) GetRange;
@@ -41,12 +45,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			{
 				IBaseEvent firstEvent = e.First<IBaseEvent>();
 				IBaseEvent lastEvent = e.Last<IBaseEvent>();
-				GetRange = ((range.Start.IsFromEnd
-							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(((ulong)lastEvent.Beat.BarBeat.bar) - (ulong)((long)range.Start.Value)), 1f)
+				GetRange = (range.Start.IsFromEnd
+							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(lastEvent.Beat.BarBeat.bar - (ulong)(long)range.Start.Value), 1f)
 							: firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)Math.Max(range.Start.Value, 1), 1f),
 						range.End.IsFromEnd
-							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(((ulong)lastEvent.Beat.BarBeat.bar) - (ulong)((long)range.End.Value) + 1UL), 1f)
-							: firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(range.End.Value + 1), 1f)));
+							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(lastEvent.Beat.BarBeat.bar - (ulong)(long)range.End.Value + 1UL), 1f)
+							: firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(range.End.Value + 1), 1f));
 			}
 			catch
 			{
@@ -54,6 +58,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			}
 			return GetRange;
 		}
+#endif
 		/// <summary>
 		/// Null or equal.
 		/// </summary>
@@ -66,12 +71,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <item>when both are empty,<br />Returns false.</item>
 		/// </list>
 		/// </returns>
-		public static bool NullableEquals(this float? e, float? obj) => ((e != null && obj != null) && e.Value == obj.Value) || (e == null && obj == null);
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="e"></param>
-		public static bool IsNullOrEmpty([NotNullWhen(false)] this string? e) => e == null || e.Length == 0;
+		public static bool NullableEquals(this float? e, float? obj) => (e != null && obj != null && e.Value == obj.Value) || (e == null && obj == null);
 		/// <summary>
 		/// Make strings follow the Upper Camel Case.
 		/// </summary>
@@ -79,7 +79,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static string ToUpperCamelCase(this string e)
 		{
 			char[] S = [.. e];
-			S[0] = (S[0].ToString().ToUpper()[0]);
+			S[0] = S[0].ToString().ToUpper()[0];
 			return string.Join("", [new string(S)]);
 		}
 		/// <summary>
@@ -98,7 +98,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static string ToLowerCamelCase(this string e)
 		{
 			char[] S = [.. e];
-			S[0] = (S[0].ToString().ToLower()[0]);
+			S[0] = S[0].ToString().ToLower()[0];
 			return string.Join("", [new string(S)]);
 		}
 		/// <summary>
@@ -201,6 +201,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			.TakeWhile(i => i.Key < endBeat)
 			.SkipWhile(i => i.Key < startBeat)
 			.SelectMany(i => i.Value.OfType<TEvent>());
+#if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events located at a bar.
 		/// </summary>
@@ -214,6 +215,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			.SkipWhile(i => i.Key.BeatOnly < start)
 			.SelectMany(i => i.Value.OfType<TEvent>());
 		}
+#endif
 		/// <summary>
 		/// Filters a sequence of events located at a range of beat.
 		/// </summary>
@@ -225,6 +227,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			.TakeWhile(i => range.End == null || i.Key < range.End)
 			.SkipWhile(i => range.Start != null && i.Key < range.Start)
 			.SelectMany(i => i.Value);
+#if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events located at a range of bar.
 		/// </summary>
@@ -238,6 +241,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			.SkipWhile(i => i.Key.BeatOnly < start)
 			.SelectMany(i => i.Value.OfType<TEvent>());
 		}
+#endif
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified beat.
 		/// </summary>
@@ -260,6 +264,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.Where(range).Where(predicate);
+#if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified bar.
 		/// </summary>
@@ -274,6 +279,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bars">Specified bar range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.Where(bars).Where(predicate);
+#endif
 		/// <summary>
 		/// Filters a sequence of events in specified event type.
 		/// </summary>
@@ -309,6 +315,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 					.TakeWhile(i => i.Key < endBeat)
 					.SkipWhile(i => i.Key < startBeat)
 					.SelectMany(i => i.Value.OfType<TEvent>());
+#if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events located at a bar in specified event type.
 		/// </summary>
@@ -323,6 +330,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				.SkipWhile((KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> i) => i.Key.BeatOnly < rg.Item1)
 				.SelectMany(i => i.Value.OfType<TEvent>());
 		}
+#endif
 		/// <summary>
 		/// Filters a sequence of events located at a range of beat in specified event type.
 		/// </summary>
@@ -333,6 +341,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			.TakeWhile(i => range.End == null || i.Key < range.End)
 			.SkipWhile(i => range.Start != null && i.Key < range.Start)
 			.SelectMany(i => i.Value.OfType<TEvent>());
+#if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events located at a range of bar in specified event type.
 		/// </summary>
@@ -347,6 +356,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 							.SkipWhile(i => i.Key.BeatOnly < start)
 							.SelectMany(i => i.Value.OfType<TEvent>());
 		}
+#endif
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a range of bar in specified event type.
 		/// </summary>
@@ -379,6 +389,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.Where<TEvent>(range).Where(predicate);
+#if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events based on a predicate located at a bar in specified event type.
 		/// </summary>
@@ -395,6 +406,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bars">Specified bar range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.Where<TEvent>(bars).Where(predicate);
+#endif
 		/// <summary>
 		/// Remove a sequence of events based on a predicate.
 		/// </summary>
@@ -414,12 +426,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
 		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(startBeat, endBeat)));
+#if !NETSTANDARD
 		/// <summary>
 		/// Remove a sequence of events located at a bar.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
 		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(bar)));
+#endif
 		/// <summary>
 		/// Remove a sequence of events located at a range of beat.
 		/// </summary>
@@ -427,12 +441,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="range">Specified beat range.</param>
 		/// <returns></returns>
 		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(range)));
+#if !NETSTANDARD
 		/// <summary>
 		/// Remove a sequence of events located at a range of bar.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="bars">Specified bar range.</param>
 		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(bars)));
+#endif
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified beat.
 		/// </summary>
@@ -455,7 +471,8 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
 		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, range)));
-		/// <summary>
+#if !NETSTANDARD
+		/// <summary>                 
 		/// Remove a sequence of events based on a predicate in specified bar.
 		/// </summary>
 		/// <param name="e">Collection</param>
@@ -469,6 +486,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bars">Specified bar range.</param>
 		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bars)));
+#endif
 		/// <summary>
 		/// Returns the first element of the collection.
 		/// </summary>
@@ -636,6 +654,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				if (item.Beat <= beat) yield return item;
 				else break;
 		}
+#if !NETSTANDARD
 		/// <summary>
 		/// Returns events from a collection as long as it less than or equal to <paramref name="bar" />.
 		/// </summary>
@@ -646,9 +665,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			TEvent firstEvent = e.First();
 			TEvent lastEvent = e.Last();
 			return e.TakeWhile(checked(bar.IsFromEnd
-				? lastEvent.Beat._calculator!.BeatOf((uint)(lastEvent.Beat.BarBeat.bar - (uint)bar.Value + 1U), 1f)
+				? lastEvent.Beat._calculator!.BeatOf(lastEvent.Beat.BarBeat.bar - (uint)bar.Value + 1U, 1f)
 				: firstEvent.Beat._calculator!.BeatOf((uint)(bar.Value + 1), 1f)));
 		}
+#endif
 		/// <summary>
 		/// Returns events from a collection as long as a specified condition is true.
 		/// </summary>
@@ -665,13 +685,15 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.TakeWhile(beat).TakeWhile(predicate);
-		/// <summary>
+#if !NETSTANDARD
+		/// <summary>                 
 		/// Returns events from a collection as long as a specified condition is true and also less than or equal to <paramref name="bar" />.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.TakeWhile(bar).TakeWhile(predicate);
+#endif
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as it less than or equal to <paramref name="beat" />.
 		/// </summary>
@@ -684,6 +706,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				if (item.Beat <= beat) yield return item;
 				else break;
 		}
+#if !NETSTANDARD
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as it less than or in <paramref name="bar" />.
 		/// </summary>
@@ -698,6 +721,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				? lastEvent.Beat._calculator!.BeatOf((uint)(lastEvent.Beat.BarBeat.bar - (ulong)bar.Value + 1U), 1f)
 				: firstEvent.Beat._calculator!.BeatOf((uint)(bar.Value + 1), 1f)));
 		}
+#endif
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as a specified condition is true.
 		/// </summary>
@@ -713,6 +737,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">Specified condition.</param>
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.TakeWhile<TEvent>(beat).TakeWhile(predicate);
+#if !NETSTANDARD
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as a specified condition is true and its beat less than or equal to <paramref name="bar" />.
 		/// </summary>
@@ -721,6 +746,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">Specified condition.</param>
 		/// <param name="bar">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.TakeWhile<TEvent>(bar).TakeWhile(predicate);
+#endif
 		/// <summary>
 		/// Remove a range of events.
 		/// </summary>
@@ -761,7 +787,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <returns>An <see cref="T:System.Linq.IGrouping`2" />, categorized by tag name.</returns>
 		public static IEnumerable<IGrouping<string, TEvent>> GetTaggedEvents<TEvent>(this OrderedEventCollection<TEvent> e, string name, bool strict) where TEvent : IBaseEvent
 		{
-			if (name.IsNullOrEmpty())
+			if (string.IsNullOrEmpty(name))
 				return [];
 			if (strict)
 				return e
@@ -945,6 +971,40 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				return copy;
 			}
 			throw new NullReferenceException();
+		}
+		/// <inheritdoc/>
+		public static string GetCloseTag(string name) => $"</{name}>";
+		/// <inheritdoc/>
+		public static string GetOpenTag(string name, string? arg = null) => arg is null ? $"<{name}>" : $"<{name}={arg}>";
+		/// <summary>
+		/// Tries to add a tag to the specified string based on the provided name and boolean values.
+		/// </summary>
+		/// <param name="tag">The string to which the tag will be added.</param>
+		/// <param name="name">The name of the tag.</param>
+		/// <param name="before">A boolean value indicating whether the tag is before.</param>
+		/// <param name="after">A boolean value indicating whether the tag is after.</param>
+		public static void TryAddTag(ref string tag, string name, bool before, bool after)
+		{
+			if (before != after)
+				tag += after
+				? GetOpenTag(name)
+				: GetCloseTag(name);
+		}
+		/// <summary>
+		/// Tries to add a tag to the specified string based on the provided name and optional string values.
+		/// </summary>
+		/// <param name="tag">The string to which the tag will be added.</param>
+		/// <param name="name">The name of the tag.</param>
+		/// <param name="before">An optional string value indicating the tag before.</param>
+		/// <param name="after">An optional string value indicating the tag after.</param>
+		public static void TryAddTag(ref string tag, string name, string? before, string? after)
+		{
+			if (before != after)
+				tag += after is null
+				? GetCloseTag(name)
+				: before is null
+				? GetOpenTag(name, after)
+				: GetCloseTag(name) + GetOpenTag(name, after);
 		}
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 		public enum Wavetype

@@ -60,7 +60,16 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <inheritdoc/>
 		public override readonly bool Equals(object? obj) => obj is RDSingleRoom e && Equals(e);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + _data.GetHashCode();
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(_data);
+#endif
 		/// <inheritdoc/>
 		public readonly bool Equals(RDSingleRoom other) => _data == other._data;
 		private RDRoomIndex _data = index;

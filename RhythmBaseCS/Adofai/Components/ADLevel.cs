@@ -6,6 +6,7 @@ using RhythmBase.Adofai.Extensions;
 using RhythmBase.Adofai.Utils;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.Global.Settings;
+using System.Text;
 
 namespace RhythmBase.Adofai.Components
 {
@@ -147,7 +148,11 @@ namespace RhythmBase.Adofai.Components
 		/// Use default output settings.
 		/// </summary>
 		/// <param name="stream">The stream to write the level to.</param>
+#if NET7_0_OR_GREATER
 		public void Write(Stream stream) => Write(new StreamWriter(stream, leaveOpen: true), new LevelReadOrWriteSettings());
+#else
+		public void Write(Stream stream) => Write(new StreamWriter(stream, Encoding.UTF8, 1024, leaveOpen: true), new LevelReadOrWriteSettings());
+#endif
 		/// <summary>
 		/// Save the level to a stream.
 		/// </summary>

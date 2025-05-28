@@ -30,7 +30,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 			return new Bookmark
 			{
 				Beat = calculator?.BeatOf(bar, beat) ?? new(bar, beat),
+#if NETSTANDARD
+				Color = (Bookmark.BookmarkColors)Enum.Parse(typeof(Bookmark.BookmarkColors), (string)jobj["color"]!)
+#else
 				Color = Enum.Parse<Bookmark.BookmarkColors>((string)jobj["color"]!)
+#endif
 			};
 		}
 		private readonly BeatCalculator? calculator = calculator;

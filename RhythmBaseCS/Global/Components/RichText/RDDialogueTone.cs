@@ -66,7 +66,15 @@ namespace RhythmBase.Global.Components.RichText
 		/// <summary>
 		/// Gets the pause duration for the dialogue event.
 		/// </summary>
-		public int? Pause { get; init; }
+		public int? Pause
+		{
+			get;
+#if NET5_0_OR_GREATER
+			init;
+#else
+			internal set;
+#endif
+		}
 		/// <summary>
 		/// Serializes the rich string event type to its corresponding string representation.
 		/// </summary>
@@ -95,7 +103,11 @@ namespace RhythmBase.Global.Components.RichText
 		/// <param name="index">The index of the event.</param>
 		/// <param name="result">The created <see cref="RDDialogueTone"/> instance if successful, otherwise null.</param>
 		/// <returns>True if the event was successfully created, otherwise false.</returns>
+#if NETSTANDARD
+		public static bool Create(string type, int index, out RDDialogueTone? result)
+#else
 		public static bool Create(string type, int index, [NotNullWhen(true)] out RDDialogueTone? result)
+#endif
 		{
 			RDDialogueToneType? eventType = type switch
 			{

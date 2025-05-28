@@ -158,7 +158,11 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="sprite">The sprite referenced by this decoration.</param>
 		/// <returns>Decoration that created and added to the level.</returns>
 		[Obsolete("Use `new Decoration()` instead. This method will be removed in the future.")]
+#if NETSTANDARD
+		public Decoration CreateDecoration(RDSingleRoom room, string sprite)
+#else
 		public Decoration CreateDecoration(RDSingleRoom room, [NotNull] string sprite)
+#endif
 		{
 			Decoration temp = new(room)
 			{
@@ -306,7 +310,32 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="filepath">The path to the zip file.</param>
 		/// <param name="settings">The settings for reading the level.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
-		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings) => ReadFromZip(File.OpenRead(filepath), settings);
+		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings)
+#if !NET7_0_OR_GREATER
+		{
+			DirectoryInfo tempDirectory = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RhythmBaseTemp_" + System.IO.Path.GetRandomFileName()));
+			tempDirectory.Create();
+			RDLevel ReadFromZip;
+			try
+			{
+				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+				ReadFromZip = Read(tempDirectory.GetFiles().Single(i => i.Extension == ".rdlevel").FullName, settings);
+				ReadFromZip.isZip = true;
+			}
+			catch (InvalidOperationException ex)
+			{
+				tempDirectory.Delete(true);
+				throw new RhythmBaseException("More than one RDLevel file has been found.", ex);
+			}
+			catch (Exception ex2)
+			{
+				tempDirectory.Delete(true);
+				throw new RhythmBaseException("Cannot extract the file.", ex2);
+			}
+			return ReadFromZip;
+		}
+#else
+			=> ReadFromZip(File.OpenRead(filepath), settings);
 		/// <summary>
 		/// Read from a zip file as a level.
 		/// </summary>
@@ -342,6 +371,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			return ReadFromZip;
 		}
+#endif
 		private JsonSerializer Serializer(LevelReadOrWriteSettings settings) => new()
 		{
 			Converters = { new RDLevelConverter(_path, settings) }
@@ -387,7 +417,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Use default output settings.
 		/// </summary>
 		/// <param name="stream">The stream to write the level to.</param>
-		public void Write(Stream stream) => Write(new StreamWriter(stream, leaveOpen: true), new LevelReadOrWriteSettings());
+		public void Write(Stream stream) => Write(new StreamWriter(stream, System.Text.Encoding.UTF8, 1024, leaveOpen: true), new LevelReadOrWriteSettings());
 		/// <summary>
 		/// Save the level to a stream.
 		/// </summary>
@@ -474,7 +504,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			// 其他
 			else
 				base.Add(item);
-			if(item is FloatingText floatingText)
+			if (item is FloatingText floatingText)
 				_floatingTexts.Add(floatingText);
 		}
 		/// <summary>
@@ -521,7 +551,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			else
 				Remove = false;
-			if(item is FloatingText floatingText)
+			if (item is FloatingText floatingText)
 				_floatingTexts.Remove(floatingText);
 			return Remove;
 		}

@@ -10,7 +10,11 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// Represents a room that can be applied to multiple rooms.
 	/// </summary>
 	[JsonConverter(typeof(RoomConverter))]
-	public struct RDRoom : IEqualityOperators<RDRoom, RDRoom, bool>, IEquatable<RDRoom>
+	public struct RDRoom :
+#if NET7_0_OR_GREATER
+		IEqualityOperators<RDRoom, RDRoom, bool>,
+#endif
+		IEquatable<RDRoom>
 	{
 		/// <summary>
 		/// Indicates if the top room can be applied.
@@ -134,7 +138,15 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <inheritdoc/>
 		public override readonly bool Equals(object? obj) => obj is RDRoom e && Equals(e);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly int GetHashCode(){
+			int hash = 17;
+			hash = hash * 31 + _data.GetHashCode();
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(_data);
+#endif
 		/// <inheritdoc/>
 		public readonly bool Equals(RDRoom other) => this == other;
 		private RDRoomIndex _data;

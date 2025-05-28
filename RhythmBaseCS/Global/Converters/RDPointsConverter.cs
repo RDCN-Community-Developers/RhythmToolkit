@@ -106,9 +106,9 @@ namespace RhythmBase.Global.Converters
 			else if (objectType == typeof(RDPoint) || objectType == typeof(RDPoint?))
 				ReadJson = new RDPoint(ja[0]?.ToObject<float?>(), ja[1]?.ToObject<float?>());
 			else if (objectType == typeof(RDPointE) || objectType == typeof(RDPointE?))
-				ReadJson = new RDPointE(new RDExpression?(ja[0]!.ToString().IsNullOrEmpty()
+				ReadJson = new RDPointE(new RDExpression?(string.IsNullOrEmpty(ja[0]!.ToString())
 		? default
-		: ja[0]!.ToObject<RDExpression>()), new RDExpression?(ja[1]!.ToString().IsNullOrEmpty()
+		: ja[0]!.ToObject<RDExpression>()), new RDExpression?(string.IsNullOrEmpty(ja[1]!.ToString())
 			? default
 			: ja[1]!.ToObject<RDExpression>()));
 			else if (objectType == typeof(RDSizeNI) || objectType == typeof(RDSizeNI?))
@@ -120,9 +120,9 @@ namespace RhythmBase.Global.Converters
 			else if (objectType == typeof(RDSize) || objectType == typeof(RDSize?))
 				ReadJson = new RDSize(ja[0]?.ToObject<float?>(), ja[1]?.ToObject<float?>());
 			else if (objectType == typeof(RDSizeE) || objectType == typeof(RDSizeE?))
-				ReadJson = new RDSizeE(new RDExpression?(ja[0]!.ToString().IsNullOrEmpty()
+				ReadJson = new RDSizeE(new RDExpression?(string.IsNullOrEmpty(ja[0]!.ToString())
 		? default
-		: ja[0]!.ToObject<RDExpression>()), new RDExpression?(ja[1]!.ToString().IsNullOrEmpty()
+		: ja[0]!.ToObject<RDExpression>()), new RDExpression?(string.IsNullOrEmpty(ja[1]!.ToString())
 			? default
 			: ja[1]!.ToObject<RDExpression>()));
 			else

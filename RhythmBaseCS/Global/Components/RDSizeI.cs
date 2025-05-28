@@ -74,9 +74,23 @@ namespace RhythmBase.Global.Components
 				new int?((int)Math.Round(value.Width == null ? 0.0 : Math.Round((double)value.Width.Value))),
 				new int?((int)Math.Round(value.Height == null ? 0.0 : Math.Round((double)value.Height.Value))));
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDSizeI e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDSizeI e && Equals(e);
+#endif
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 23 + (Width?.GetHashCode() ?? 0);
+			hash = hash * 23 + (Height?.GetHashCode() ?? 0);
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(Width, Height);
+#endif
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"[{Width},{Height}]";
 		/// <inheritdoc/>

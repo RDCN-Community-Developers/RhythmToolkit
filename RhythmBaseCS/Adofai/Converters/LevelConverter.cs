@@ -59,7 +59,7 @@ namespace RhythmBase.Adofai.Converters
 						break;
 					case "angleData":
 						JArray jobj2 = JArray.Load(reader);
-						var s = (jobj2.ToObject<List<Tile>>(AllInOneSerializer)!);
+						var s = jobj2.ToObject<List<Tile>>(AllInOneSerializer)!;
 						foreach (Tile item in s)
 						{
 							item.Parent = outLevel;

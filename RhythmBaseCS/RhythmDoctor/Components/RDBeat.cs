@@ -8,13 +8,18 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <summary>
 	/// A beat.
 	/// </summary>
-	public struct RDBeat : IComparable<RDBeat>, IEquatable<RDBeat>, IComparisonOperators<RDBeat, RDBeat, bool>
+	public struct RDBeat : IComparable<RDBeat>, IEquatable<RDBeat>
+#if NET7_0_OR_GREATER
+		, IComparisonOperators<RDBeat, RDBeat, bool>
+#endif
 	{
 		internal readonly RDLevel? BaseLevel => _calculator?.Collection;
 		/// <summary>
 		/// Whether this beat cannot be calculated.
 		/// </summary>
+#if NET7_0_OR_GREATER
 		[MemberNotNullWhen(false, nameof(_calculator))]
+#endif
 		public readonly bool IsEmpty => _calculator == null || !_isBeatLoaded && !_isBarBeatLoaded && !_isTimeSpanLoaded;
 		/// <summary>
 		/// The total number of beats from this moment to the beginning of the level.
@@ -258,7 +263,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
+#if NET7_0_OR_GREATER
 		[MemberNotNullWhen(true)]
+#endif
 		public readonly bool FromSameLevel(RDBeat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.
@@ -474,11 +481,30 @@ namespace RhythmBase.RhythmDoctor.Components
 			return ToString;
 		}
 		///  <inheritdoc/>
+		#if NETSTANDARD
+		public readonly override bool Equals(object? obj) => obj is RDBeat e && Equals(e);
+#else
 		public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is RDBeat e && Equals(e);
+#endif
 		///  <inheritdoc/>
 		public readonly bool Equals(RDBeat other) => this == other;
 		///  <inheritdoc/>
+	#if NETSTANDARD
+		public override int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + (_calculator?.GetHashCode() ?? 0);
+			hash = hash * 31 + _isBeatLoaded.GetHashCode();
+			hash = hash * 31 + _isBarBeatLoaded.GetHashCode();
+			hash = hash * 31 + _isTimeSpanLoaded.GetHashCode();
+			hash = hash * 31 + _beat.GetHashCode();
+			hash = hash * 31 + _BarBeat.GetHashCode();
+			hash = hash * 31 + _TimeSpan.GetHashCode();
+			return hash;
+		}
+#else
 		public override int GetHashCode() => HashCode.Combine(BeatOnly, BaseLevel);
+#endif
 		///  <inheritdoc/>
 		public readonly int CompareTo(RDBeat other) => this > other ? 1 : this == other ? 0 : -1;
 		internal BeatCalculator? _calculator;

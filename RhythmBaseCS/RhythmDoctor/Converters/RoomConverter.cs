@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
@@ -47,16 +46,12 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					enableTop = true;
 				}
-				existingValue = new RDRoom(enableTop);
+				RDRoom room = new(enableTop);
 				foreach (byte item in J)
 				{
-					NewLateBinding.LateIndexSet(existingValue,
-					[
-						item,
-						true
-					], null);
+					room[item] = true;
 				}
-				ReadJson = existingValue;
+				ReadJson = room;
 			}
 			else
 			{

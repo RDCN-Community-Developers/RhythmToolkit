@@ -43,31 +43,51 @@ namespace RhythmBase.Global.Components
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
+#if NETSTANDARD
+		public RDPointE(string x, float y) : this(x ?? default(RDExpression?), (RDExpression)y) { }
+#else
 		public RDPointE([AllowNull] string x, float y) : this(x ?? default(RDExpression?), (RDExpression)y) { }
+#endif
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
+#if NETSTANDARD
+		public RDPointE(float x, string y) : this((RDExpression)x, y ?? default(RDExpression?)) { }
+#else
 		public RDPointE(float x, [AllowNull] string y) : this((RDExpression)x, y ?? default(RDExpression?)) { }
+#endif
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
+#if NETSTANDARD
+		public RDPointE(string x, RDExpression? y) : this(x ?? default(RDExpression?), y) { }
+#else
 		public RDPointE([AllowNull] string x, RDExpression? y) : this(x ?? default(RDExpression?), y) { }
+#endif
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
+#if NETSTANDARD
+		public RDPointE(RDExpression? x, string y) : this(x, y ?? default(RDExpression?)) { }
+#else
 		public RDPointE(RDExpression? x, [AllowNull] string y) : this(x, y ?? default(RDExpression?)) { }
+#endif
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified x-coordinate and y-coordinate.
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
+#if NETSTANDARD
+		public RDPointE(string x, string y) : this(x ?? default(RDExpression?), y ?? default(RDExpression?)) { }
+#else
 		public RDPointE([AllowNull] string x, [AllowNull] string y) : this(x ?? default(RDExpression?), y ?? default(RDExpression?)) { }
+#endif
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified point.
 		/// </summary>
@@ -138,9 +158,23 @@ namespace RhythmBase.Global.Components
 		pt.X - sz.Width, pt.Y - sz.Height
 		);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDPointE e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDPointE e && Equals(e);
+#endif
 		/// <inheritdoc/>
+#if NETCOREAPP2_1_OR_GREATER
 		public override readonly int GetHashCode() => HashCode.Combine(X, Y);
+#else
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + (X?.GetHashCode() ?? 0);
+			hash = hash * 31 + (Y?.GetHashCode() ?? 0);
+			return hash;
+		}
+#endif
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"[{(X?.ExpressionValue) ?? "null"},{(Y?.ExpressionValue) ?? "null"}]";
 		/// <inheritdoc/>

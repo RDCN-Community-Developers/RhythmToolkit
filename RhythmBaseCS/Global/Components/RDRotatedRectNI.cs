@@ -150,9 +150,25 @@ namespace RhythmBase.Global.Components
 		/// <inheritdoc/>
 		public static bool operator !=(RDRotatedRectNI rect1, RDRotatedRectNI rect2) => !rect1.Equals(rect2);
 		/// <inheritdoc/>
+		#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDRotatedRectNI e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDRotatedRectNI e && Equals(e);
+#endif
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly int GetHashCode()
+		{
+			int hash = 17;
+			hash = hash * 31 + Location.GetHashCode();
+			hash = hash * 31 + Size.GetHashCode();
+			hash = hash * 31 + Pivot.GetHashCode();
+			hash = hash * 31 + Angle.GetHashCode();
+			return hash;
+		}
+#else
 		public override readonly int GetHashCode() => HashCode.Combine(Location, Size, Pivot, Angle);
+#endif
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"{{Location=[{Location}],Size=[{Size}],Pivot[{Pivot}],Angle=[{Angle}]}}";
 		/// <inheritdoc/>

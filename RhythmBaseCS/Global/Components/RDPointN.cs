@@ -132,14 +132,25 @@ namespace RhythmBase.Global.Components
 		/// <returns></returns>
 		public readonly RDPointN Rotate(RDPointN pivot, float angle) => (this - new RDSizeN(pivot)).Rotate(angle) + new RDSizeN(pivot);
 		/// <inheritdoc/>
+#if NETSTANDARD
+		public override readonly bool Equals(object? obj) => obj is RDPointN e && Equals(e);
+#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDPointN e && Equals(e);
+#endif
 		/// <inheritdoc/>
 		public override readonly int GetHashCode()
 		{
+#if NETSTANDARD
+			int hash = 17;
+			hash = hash * 23 + X.GetHashCode();
+			hash = hash * 23 + Y.GetHashCode();
+			return hash;
+#else
 			HashCode h = default;
 			h.Add(X);
 			h.Add(Y);
 			return h.ToHashCode();
+#endif
 		}
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"[{X}, {Y}]";
