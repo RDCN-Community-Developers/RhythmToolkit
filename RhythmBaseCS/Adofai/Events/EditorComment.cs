@@ -1,14 +1,0 @@
-﻿namespace RhythmBase.Adofai.Events
-{
-	/// <summary>  
-	/// Represents an editor comment event in ADOFAI.  
-	/// </summary>  
-	public class EditorComment : BaseTileEvent, IStartEvent
-	{
-		/// <inheritdoc/>
-		public override EventType Type => EventType.EditorComment;		/// <summary>  
-		/// Gets or sets the comment associated with this event.  
-		/// </summary>  
-		public string Comment { get; set; } = string.Empty;
-	}
-}
