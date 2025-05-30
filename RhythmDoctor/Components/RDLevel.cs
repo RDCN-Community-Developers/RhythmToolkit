@@ -460,7 +460,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="item">Event to be added.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException"></exception>
-		public override void Add(IBaseEvent item)
+		public override void Add (IBaseEvent item) => Add(item, true);
+		public void Add(IBaseEvent item, bool keepPos = true)
 		{
 			//添加默认节拍
 			((BaseEvent)item)._beat._calculator = Calculator;
@@ -498,7 +499,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			//BPM 和 CPB
 			else if (item is SetCrotchetsPerBar setCrochetsPerBar)
-				AddSetCrotchetsPerBar(setCrochetsPerBar);
+				AddSetCrotchetsPerBar(setCrochetsPerBar, keepPos);
 			else if (item is BaseBeatsPerMinute baseBeatsPerMinute)
 				AddBaseBeatsPerMinute(baseBeatsPerMinute);
 			// 其他
@@ -519,7 +520,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="item">Event to be removed.</param>
 		/// <returns></returns>
-		public override bool Remove(IBaseEvent item)
+		public override bool Remove(IBaseEvent item) => Remove(item, true);
+		public bool Remove(IBaseEvent item, bool keepPos)
 		{
 			bool Remove;
 			if (EventTypeUtils.RowTypes.Contains(item.Type)
@@ -539,7 +541,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			else if (Contains(item))
 			{
 				if (item.Type == EventType.SetCrotchetsPerBar)
-					Remove = RemoveSetCrotchetsPerBar((SetCrotchetsPerBar)item);
+					Remove = RemoveSetCrotchetsPerBar((SetCrotchetsPerBar)item, keepPos);
 				else if (EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 					Remove = RemoveBaseBeatsPerMinute((BaseBeatsPerMinute)item);
 				else
