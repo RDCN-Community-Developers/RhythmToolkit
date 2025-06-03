@@ -124,7 +124,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			this = default;
 			if (beatOnly < 1)
-				throw new OverflowException(string.Format("The beat must not be less than 1, but {0} is given", beatOnly));
+				beatOnly = 1;
 			_beat = beatOnly - 1f;
 			_isBeatLoaded = true;
 		}
@@ -138,9 +138,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			this = default;
 			if (bar < 1)
-				throw new OverflowException(string.Format("The bar must not be less than 1, but {0} is given", bar));
+				bar = 1;
 			if (beat < 1)
-				throw new OverflowException(string.Format("The beat must not be less than 1, but {0} is given", beat));
+				beat = 1;
 			_BarBeat = new ValueTuple<uint, float>(bar, beat);
 			_isBarBeatLoaded = true;
 		}
@@ -153,7 +153,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			this = default;
 			if (timeSpan < TimeSpan.Zero)
-				throw new OverflowException(string.Format("The time must not be less than zero, but {0} is given", timeSpan));
+				timeSpan = TimeSpan.Zero;
 			_TimeSpan = timeSpan;
 			_isTimeSpanLoaded = true;
 		}
