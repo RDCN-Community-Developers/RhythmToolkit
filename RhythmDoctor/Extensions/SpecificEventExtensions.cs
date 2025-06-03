@@ -362,7 +362,7 @@ e.IsHitable()
 			else
 			{
 				Patterns[] T = new Patterns[6];
-				AddClassicBeat.ClassicBeatPatterns? setXs = e.SetXs;
+				ClassicBeatPatterns? setXs = e.SetXs;
 				int? num = (setXs != null) ? new int?((int)setXs.GetValueOrDefault()) : null;
 				if (((num != null) ? new bool?(num.GetValueOrDefault() == 0) : null).GetValueOrDefault())
 				{
@@ -389,7 +389,7 @@ e.IsHitable()
 		/// Get the special tag of the tag event.
 		/// </summary>
 		/// <returns>special tags.</returns>
-		public static TagAction.SpecialTag[] SpetialTags(this TagAction e) => (TagAction.SpecialTag[])(from i in (TagAction.SpecialTag[])Enum.GetValues(typeof(TagAction.SpecialTag))
+		public static SpecialTags[] SpetialTags(this TagAction e) => (SpecialTags[])(from i in (SpecialTags[])Enum.GetValues(typeof(SpecialTags))
 																									   where e.ActionTag.Contains(string.Format("[{0}]", i))
 																									   select i);
 		/// <summary>
@@ -397,35 +397,35 @@ e.IsHitable()
 		/// </summary>
 		public static IEnumerable<SayReadyGetSetGo> Split(this SayReadyGetSetGo e) => e.PhraseToSay switch
 		{
-			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayReaDyGetSetGoNew => [
-e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayRea),
-e.SplitCopy(e.Tick, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayDy),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
-e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
-e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGo)
+			SayReaDyGetSetGoWords.SayReaDyGetSetGoNew => [
+e.SplitCopy(0f, SayReaDyGetSetGoWords.JustSayRea),
+e.SplitCopy(e.Tick, SayReaDyGetSetGoWords.JustSayDy),
+e.SplitCopy(e.Tick * 2f, SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick * 3f, SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 4f, SayReaDyGetSetGoWords.JustSayGo)
 								],
-			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayGetSetGo => [
-e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
-e.SplitCopy(e.Tick, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGo)
+			SayReaDyGetSetGoWords.SayGetSetGo => [
+e.SplitCopy(0f, SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick, SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 2f, SayReaDyGetSetGoWords.JustSayGo)
 								],
-			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayReaDyGetSetOne => [
-e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayRea),
-e.SplitCopy(e.Tick, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayDy),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
-e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
-e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.SayReaDyGetSetGoWords.Count1)
+				SayReaDyGetSetGoWords.SayReaDyGetSetOne => [
+e.SplitCopy(0f, SayReaDyGetSetGoWords.JustSayRea),
+e.SplitCopy(e.Tick, SayReaDyGetSetGoWords.JustSayDy),
+e.SplitCopy(e.Tick * 2f, SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick * 3f, SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 4f, SayReaDyGetSetGoWords.Count1)
 								],
-			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayGetSetOne => [
-e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
-e.SplitCopy(e.Tick, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.Count1)
+			SayReaDyGetSetGoWords.SayGetSetOne => [
+e.SplitCopy(0f, SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick, SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 2f, SayReaDyGetSetGoWords.Count1)
 								],
-			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayReadyGetSetGo => [
-e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayReady),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
-e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
-e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGo)
+			SayReaDyGetSetGoWords.SayReadyGetSetGo => [
+e.SplitCopy(0f, SayReaDyGetSetGoWords.JustSayReady),
+e.SplitCopy(e.Tick * 2f, SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick * 3f, SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 4f, SayReaDyGetSetGoWords.JustSayGo)
 								],
 			_ => [e],
 		};
@@ -578,7 +578,7 @@ e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGo)
 		/// <param name="e">The Move event.</param>
 		/// <returns>A rotated rectangle representing the position, scale, pivot, and angle.</returns>
 		public static RDRotatedRectE RotatedRect(this Move e) => new(e.Position, e.Scale, e.Pivot, e.Angle);
-		private static SayReadyGetSetGo SplitCopy(this SayReadyGetSetGo e, float extraBeat, SayReadyGetSetGo.SayReaDyGetSetGoWords word)
+		private static SayReadyGetSetGo SplitCopy(this SayReadyGetSetGo e, float extraBeat, SayReaDyGetSetGoWords word)
 		{
 			SayReadyGetSetGo Temp = e.Clone<SayReadyGetSetGo>();
 			Temp.Beat += extraBeat;

@@ -32,7 +32,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			if (p.DeclaringType == typeof(MoveRow))
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
-					nameof(MoveRow.CustomPosition) => i => ((MoveRow)i).Target == MoveRow.MoveRowTarget.WholeRow,
+					nameof(MoveRow.CustomPosition) => i => ((MoveRow)i).Target == MoveRowTargets.WholeRow,
 					_ => null
 				};
 			if (p.DeclaringType == typeof(SetVFXPreset))

@@ -116,8 +116,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			if (item is not BaseBeat ||
 				item is BaseBeat && (
-				EventTypeEnumsForRowClassic.Contains(item.Type) && RowType is RowTypes.Classic ||
-				EventTypeEnumsForRowOneshot.Contains(item.Type) && RowType is RowTypes.Oneshot
+				EventTypeEnumsForRowClassic.Contains(item.Type) && RowType is Events.RowTypes.Classic ||
+				EventTypeEnumsForRowOneshot.Contains(item.Type) && RowType is Events.RowTypes.Oneshot
 				)
 				)
 			{

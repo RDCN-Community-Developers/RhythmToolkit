@@ -108,7 +108,7 @@ record struct RoomStatus
 #if NET7_0_OR_GREATER
 	required
 #endif
-		public SetTheme.Theme Theme
+		public Themes Theme
 		{
 			get;
 #if NET5_0_OR_GREATER

@@ -5,12 +5,12 @@ using RhythmBase.RhythmDoctor.Events;
 using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
-	internal partial class AnchorStyleConverter : JsonConverter<FloatingText.FloatingTextAnchorStyle>
+	internal partial class AnchorStyleConverter : JsonConverter<FloatingTextAnchorStyles>
 	{
-		public override void WriteJson(JsonWriter writer, FloatingText.FloatingTextAnchorStyle value, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, FloatingTextAnchorStyles value, JsonSerializer serializer)
 		{
-			var horizontal = value & (FloatingText.FloatingTextAnchorStyle.Left | FloatingText.FloatingTextAnchorStyle.Right);
-			var vertical = value & (FloatingText.FloatingTextAnchorStyle.Upper | FloatingText.FloatingTextAnchorStyle.Lower);
+			var horizontal = value & (FloatingTextAnchorStyles.Left | FloatingTextAnchorStyles.Right);
+			var vertical = value & (FloatingTextAnchorStyles.Upper | FloatingTextAnchorStyles.Lower);
 			writer.WriteValue(
 				(vertical == 0 ?
 					"Middle"
@@ -18,24 +18,24 @@ namespace RhythmBase.Converters
 				+ horizontal.ToString()
 			);
 		}
-		public override FloatingText.FloatingTextAnchorStyle ReadJson(JsonReader reader, Type objectType, FloatingText.FloatingTextAnchorStyle existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override FloatingTextAnchorStyles ReadJson(JsonReader reader, Type objectType, FloatingTextAnchorStyles existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken token = JToken.ReadFrom(reader);
 			string JString = token.ToObject<string>() ?? throw new ConvertingException("Cannot read the anchor.");
 			Match match = AnchorStyleRegex().Match(JString);
 			if (!match.Success)
 				throw new ConvertingException(token, $"Illegal Anchor: {JString}");
-			FloatingText.FloatingTextAnchorStyle result = FloatingText.FloatingTextAnchorStyle.Center;
+			FloatingTextAnchorStyles result = FloatingTextAnchorStyles.Center;
 			result |= match.Groups[1].Value switch
 			{
-				"Upper" => FloatingText.FloatingTextAnchorStyle.Upper,
-				"Lower" => FloatingText.FloatingTextAnchorStyle.Lower,
+				"Upper" => FloatingTextAnchorStyles.Upper,
+				"Lower" => FloatingTextAnchorStyles.Lower,
 				_ => 0,
 			};
 			result |= match.Groups[2].Value switch
 			{
-				"Left" => FloatingText.FloatingTextAnchorStyle.Left,
-				"Right" => FloatingText.FloatingTextAnchorStyle.Right,
+				"Left" => FloatingTextAnchorStyles.Left,
+				"Right" => FloatingTextAnchorStyles.Right,
 				_ => 0,
 			};
 			return result;
