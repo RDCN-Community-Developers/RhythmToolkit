@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Specifies the type of row in the rhythm base.
 	/// </summary>
-	public enum RowType
+	public enum RowTypes
 	{
 		/// <summary>
 		/// Represents a classic row type.

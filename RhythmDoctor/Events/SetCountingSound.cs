@@ -3,6 +3,108 @@
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
+	/// Represents the different voice sources for the counting sound.
+	/// </summary>
+	public enum CountingSoundVoiceSources
+	{
+		/// <summary>
+		/// Jyi Count
+		/// </summary>
+		JyiCount,
+		/// <summary>
+		/// Jyi Count Fast
+		/// </summary>
+		JyiCountFast,
+		/// <summary>
+		/// Jyi Count Calm
+		/// </summary>
+		JyiCountCalm,
+		/// <summary>
+		/// Jyi Count Tired
+		/// </summary>
+		JyiCountTired,
+		/// <summary>
+		/// Jyi Count Very Tired
+		/// </summary>
+		JyiCountVeryTired,
+		/// <summary>
+		/// Jyi Count Japanese
+		/// </summary>
+		JyiCountJapanese,
+		/// <summary>
+		/// Ian Count
+		/// </summary>
+		IanCount,
+		/// <summary>
+		/// Ian Count Fast
+		/// </summary>
+		IanCountFast,
+		/// <summary>
+		/// Ian Count Calm
+		/// </summary>
+		IanCountCalm,
+		/// <summary>
+		/// Ian Count Slow
+		/// </summary>
+		IanCountSlow,
+		/// <summary>
+		/// Ian Count Slower
+		/// </summary>
+		IanCountSlower,
+		/// <summary>
+		/// Whistle Count
+		/// </summary>
+		WhistleCount,
+		/// <summary>
+		/// Bird Count
+		/// </summary>
+		BirdCount,
+		/// <summary>
+		/// Parrot Count
+		/// </summary>
+		ParrotCount,
+		/// <summary>
+		/// Owl Count
+		/// </summary>
+		OwlCount,
+		/// <summary>
+		/// Oriole Count
+		/// </summary>
+		OrioleCount,
+		/// <summary>
+		/// Wren Count
+		/// </summary>
+		WrenCount,
+		/// <summary>
+		/// Canary Count
+		/// </summary>
+		CanaryCount,
+		/// <summary>
+		/// Jyi Count Legacy
+		/// </summary>
+		JyiCountLegacy,
+		/// <summary>
+		/// Jyi Count English
+		/// </summary>
+		JyiCountEnglish,
+		/// <summary>
+		/// Ian Count English
+		/// </summary>
+		IanCountEnglish,
+		/// <summary>
+		/// Ian Count English Calm
+		/// </summary>
+		IanCountEnglishCalm,
+		/// <summary>
+		/// Ian Count English Slow
+		/// </summary>
+		IanCountEnglishSlow,
+		/// <summary>
+		/// Custom
+		/// </summary>
+		Custom
+	}
+	/// <summary>
 	/// Represents an action to set the counting sound in the rhythm base.
 	/// </summary>
 	public class SetCountingSound : BaseRowAction
@@ -16,7 +118,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the voice source for the counting sound.
 		/// </summary>
-		public VoiceSources VoiceSource { get; set; }
+		public CountingSoundVoiceSources VoiceSource { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="SetCountingSound"/> is enabled.
 		/// </summary>
@@ -49,107 +151,5 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; } = Tabs.Sounds;
-		/// <summary>
-		/// Represents the different voice sources for the counting sound.
-		/// </summary>
-		public enum VoiceSources
-		{
-			/// <summary>
-			/// Jyi Count
-			/// </summary>
-			JyiCount,
-			/// <summary>
-			/// Jyi Count Fast
-			/// </summary>
-			JyiCountFast,
-			/// <summary>
-			/// Jyi Count Calm
-			/// </summary>
-			JyiCountCalm,
-			/// <summary>
-			/// Jyi Count Tired
-			/// </summary>
-			JyiCountTired,
-			/// <summary>
-			/// Jyi Count Very Tired
-			/// </summary>
-			JyiCountVeryTired,
-			/// <summary>
-			/// Jyi Count Japanese
-			/// </summary>
-			JyiCountJapanese,
-			/// <summary>
-			/// Ian Count
-			/// </summary>
-			IanCount,
-			/// <summary>
-			/// Ian Count Fast
-			/// </summary>
-			IanCountFast,
-			/// <summary>
-			/// Ian Count Calm
-			/// </summary>
-			IanCountCalm,
-			/// <summary>
-			/// Ian Count Slow
-			/// </summary>
-			IanCountSlow,
-			/// <summary>
-			/// Ian Count Slower
-			/// </summary>
-			IanCountSlower,
-			/// <summary>
-			/// Whistle Count
-			/// </summary>
-			WhistleCount,
-			/// <summary>
-			/// Bird Count
-			/// </summary>
-			BirdCount,
-			/// <summary>
-			/// Parrot Count
-			/// </summary>
-			ParrotCount,
-			/// <summary>
-			/// Owl Count
-			/// </summary>
-			OwlCount,
-			/// <summary>
-			/// Oriole Count
-			/// </summary>
-			OrioleCount,
-			/// <summary>
-			/// Wren Count
-			/// </summary>
-			WrenCount,
-			/// <summary>
-			/// Canary Count
-			/// </summary>
-			CanaryCount,
-			/// <summary>
-			/// Jyi Count Legacy
-			/// </summary>
-			JyiCountLegacy,
-			/// <summary>
-			/// Jyi Count English
-			/// </summary>
-			JyiCountEnglish,
-			/// <summary>
-			/// Ian Count English
-			/// </summary>
-			IanCountEnglish,
-			/// <summary>
-			/// Ian Count English Calm
-			/// </summary>
-			IanCountEnglishCalm,
-			/// <summary>
-			/// Ian Count English Slow
-			/// </summary>
-			IanCountEnglishSlow,
-			/// <summary>
-			/// Custom
-			/// </summary>
-			Custom
-		}
 	}
 }

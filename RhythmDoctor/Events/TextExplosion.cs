@@ -31,11 +31,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the direction of the text explosion.
 		/// </summary>
-		public Directions Direction { get; set; }
+		public TextExplosionDirections Direction { get; set; }
 		/// <summary>
 		/// Gets or sets the mode of the text explosion.
 		/// </summary>
-		public Modes Mode { get; set; }
+		public TextExplosionModes Mode { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
@@ -49,33 +49,33 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
+	}
+	/// <summary>
+	/// Specifies the direction of the text explosion.
+	/// </summary>
+	public enum TextExplosionDirections
+	{
 		/// <summary>
-		/// Specifies the direction of the text explosion.
+		/// The text explodes to the left.
 		/// </summary>
-		public enum Directions
-		{
-			/// <summary>
-			/// The text explodes to the left.
-			/// </summary>
-			Left,
-			/// <summary>
-			/// The text explodes to the right.
-			/// </summary>
-			Right
-		}
+		Left,
 		/// <summary>
-		/// Specifies the mode of the text explosion.
+		/// The text explodes to the right.
 		/// </summary>
-		public enum Modes
-		{
-			/// <summary>
-			/// The text explosion uses one color.
-			/// </summary>
-			OneColor,
-			/// <summary>
-			/// The text explosion uses random colors.
-			/// </summary>
-			Random
-		}
+		Right
+	}
+	/// <summary>
+	/// Specifies the mode of the text explosion.
+	/// </summary>
+	public enum TextExplosionModes
+	{
+		/// <summary>
+		/// The text explosion uses one color.
+		/// </summary>
+		OneColor,
+		/// <summary>
+		/// The text explosion uses random colors.
+		/// </summary>
+		Random
 	}
 }

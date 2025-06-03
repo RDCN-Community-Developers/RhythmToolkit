@@ -30,23 +30,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[JsonIgnore]
 		public RDSingleRoom Room => _parent?.Rooms ?? RDSingleRoom.Default;
-		/// <inheritdoc/>
-		/// <summary>
-		/// Gets or sets the beat associated with this action.
-		/// </summary>
-		[JsonIgnore]
-		public override RDBeat Beat
-		{
-			get => _beat;
-			set
-			{
-				_beat = _beat.BaseLevel == null
-					? value.BaseLevel == null
-						? value
-						: value.WithoutLink()
-					: new(_beat.BaseLevel.Calculator, value);
-			}
-		}
 		/// <summary>
 		/// Gets the index of the row in the parent collection.
 		/// </summary>

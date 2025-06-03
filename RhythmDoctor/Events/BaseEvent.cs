@@ -38,15 +38,13 @@ namespace RhythmBase.RhythmDoctor.Events
 			get => _beat;
 			set
 			{
-				if (_beat.BaseLevel == null)
-					_beat = value.BaseLevel == null ? value : value.WithoutLink();
-				else
-				{
-					value = new RDBeat(_beat.BaseLevel.Calculator, value);
-					_beat.BaseLevel.Remove(this);
-					value.BaseLevel?.Add(this);
-					_beat = value;
-				}
+				_beat.BaseLevel?.Remove(this);
+				_beat = _beat.BaseLevel == null ?
+							value.BaseLevel == null ?
+								value :
+								value.WithoutLink() :
+							new(_beat.BaseLevel.Calculator, value);
+				_beat.BaseLevel?.Add(this);
 			}
 		}
 		/// <summary>

@@ -3,6 +3,48 @@
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
+	/// Represents the sources of the voice.
+	/// </summary>
+	public enum SatReaDyGetSetGoVoiceSources
+	{
+		/// <summary>
+		/// Represents the voice source "Nurse".
+		/// </summary>
+		Nurse,
+		/// <summary>
+		/// Represents the voice source "Nurse Tired".
+		/// </summary>
+		NurseTired,
+		/// <summary>
+		/// Represents the voice source "Nurse Swing".
+		/// </summary>
+		NurseSwing,
+		/// <summary>
+		/// Represents the voice source "Nurse Swing Calm".
+		/// </summary>
+		NurseSwingCalm,
+		/// <summary>
+		/// Represents the voice source "Ian Excited".
+		/// </summary>
+		IanExcited,
+		/// <summary>
+		/// Represents the voice source "Ian Calm".
+		/// </summary>
+		IanCalm,
+		/// <summary>
+		/// Represents the voice source "Ian Slow".
+		/// </summary>
+		IanSlow,
+		/// <summary>
+		/// Represents the voice source "None Bottom".
+		/// </summary>
+		NoneBottom,
+		/// <summary>
+		/// Represents the voice source "None Top".
+		/// </summary>
+		NoneTop
+	}
+	/// <summary>
 	/// Represents an event that says "Ready, Get Set, Go" with various voice sources and phrases.
 	/// </summary>
 	public class SayReadyGetSetGo : BaseEvent
@@ -18,11 +60,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the phrase to say.
 		/// </summary>
-		public Words PhraseToSay { get; set; }
+		public SayReaDyGetSetGoWords PhraseToSay { get; set; }
 		/// <summary>
 		/// Gets or sets the voice source.
 		/// </summary>
-		public VoiceSources VoiceSource { get; set; } = VoiceSources.Nurse;
+		public SatReaDyGetSetGoVoiceSources VoiceSource { get; set; } = SatReaDyGetSetGoVoiceSources.Nurse;
 		/// <summary>
 		/// Gets or sets the tick value.
 		/// </summary>
@@ -47,7 +89,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		{
 			get
 			{
-				return PhraseToSay == Words.SayReaDyGetSetGoNew || PhraseToSay == Words.SayGetSetGo || PhraseToSay == Words.SayReaDyGetSetOne || PhraseToSay == Words.SayGetSetOne || PhraseToSay == Words.SayReadyGetSetGo;
+				return PhraseToSay == SayReaDyGetSetGoWords.SayReaDyGetSetGoNew || PhraseToSay == SayReaDyGetSetGoWords.SayGetSetGo || PhraseToSay == SayReaDyGetSetGoWords.SayReaDyGetSetOne || PhraseToSay == SayReaDyGetSetGoWords.SayGetSetOne || PhraseToSay == SayReaDyGetSetGoWords.SayReadyGetSetGo;
 			}
 		}
 		/// <summary>
@@ -55,149 +97,107 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + string.Format(" {0}: {1}", VoiceSource, PhraseToSay);
+	}
+	/// <summary>
+	/// Represents the phrases that can be said.
+	/// </summary>
+	public enum SayReaDyGetSetGoWords
+	{
 		/// <summary>
-		/// Represents the phrases that can be said.
+		/// Represents the phrase "Ready, Get Set, Go New".
 		/// </summary>
-		public enum Words
-		{
-			/// <summary>
-			/// Represents the phrase "Ready, Get Set, Go New".
-			/// </summary>
-			SayReaDyGetSetGoNew,
-			/// <summary>
-			/// Represents the phrase "Get Set, Go".
-			/// </summary>
-			SayGetSetGo,
-			/// <summary>
-			/// Represents the phrase "Ready, Get Set, One".
-			/// </summary>
-			SayReaDyGetSetOne,
-			/// <summary>
-			/// Represents the phrase "Get Set, One".
-			/// </summary>
-			SayGetSetOne,
-			/// <summary>
-			/// Represents the phrase "Rea".
-			/// </summary>
-			JustSayRea,
-			/// <summary>
-			/// Represents the phrase "Dy".
-			/// </summary>
-			JustSayDy,
-			/// <summary>
-			/// Represents the phrase "Get".
-			/// </summary>
-			JustSayGet,
-			/// <summary>
-			/// Represents the phrase "Set".
-			/// </summary>
-			JustSaySet,
-			/// <summary>
-			/// Represents the phrase "And".
-			/// </summary>
-			JustSayAnd,
-			/// <summary>
-			/// Represents the phrase "Go".
-			/// </summary>
-			JustSayGo,
-			/// <summary>
-			/// Represents the phrase "Stop".
-			/// </summary>
-			JustSayStop,
-			/// <summary>
-			/// Represents the phrase "And Stop".
-			/// </summary>
-			JustSayAndStop,
-			/// <summary>
-			/// Represents the count "1".
-			/// </summary>
-			Count1,
-			/// <summary>
-			/// Represents the count "2".
-			/// </summary>
-			Count2,
-			/// <summary>
-			/// Represents the count "3".
-			/// </summary>
-			Count3,
-			/// <summary>
-			/// Represents the count "4".
-			/// </summary>
-			Count4,
-			/// <summary>
-			/// Represents the count "5".
-			/// </summary>
-			Count5,
-			/// <summary>
-			/// Represents the count "6".
-			/// </summary>
-			Count6,
-			/// <summary>
-			/// Represents the count "7".
-			/// </summary>
-			Count7,
-			/// <summary>
-			/// Represents the count "8".
-			/// </summary>
-			Count8,
-			/// <summary>
-			/// Represents the count "9".
-			/// </summary>
-			Count9,
-			/// <summary>
-			/// Represents the count "10".
-			/// </summary>
-			Count10,
-			/// <summary>
-			/// Represents the phrase "Ready, Get Set, Go".
-			/// </summary>
-			SayReadyGetSetGo,
-			/// <summary>
-			/// Represents the phrase "Ready".
-			/// </summary>
-			JustSayReady
-		}
+		SayReaDyGetSetGoNew,
 		/// <summary>
-		/// Represents the sources of the voice.
+		/// Represents the phrase "Get Set, Go".
 		/// </summary>
-		public enum VoiceSources
-		{
-			/// <summary>
-			/// Represents the voice source "Nurse".
-			/// </summary>
-			Nurse,
-			/// <summary>
-			/// Represents the voice source "Nurse Tired".
-			/// </summary>
-			NurseTired,
-			/// <summary>
-			/// Represents the voice source "Nurse Swing".
-			/// </summary>
-			NurseSwing,
-			/// <summary>
-			/// Represents the voice source "Nurse Swing Calm".
-			/// </summary>
-			NurseSwingCalm,
-			/// <summary>
-			/// Represents the voice source "Ian Excited".
-			/// </summary>
-			IanExcited,
-			/// <summary>
-			/// Represents the voice source "Ian Calm".
-			/// </summary>
-			IanCalm,
-			/// <summary>
-			/// Represents the voice source "Ian Slow".
-			/// </summary>
-			IanSlow,
-			/// <summary>
-			/// Represents the voice source "None Bottom".
-			/// </summary>
-			NoneBottom,
-			/// <summary>
-			/// Represents the voice source "None Top".
-			/// </summary>
-			NoneTop
-		}
+		SayGetSetGo,
+		/// <summary>
+		/// Represents the phrase "Ready, Get Set, One".
+		/// </summary>
+		SayReaDyGetSetOne,
+		/// <summary>
+		/// Represents the phrase "Get Set, One".
+		/// </summary>
+		SayGetSetOne,
+		/// <summary>
+		/// Represents the phrase "Rea".
+		/// </summary>
+		JustSayRea,
+		/// <summary>
+		/// Represents the phrase "Dy".
+		/// </summary>
+		JustSayDy,
+		/// <summary>
+		/// Represents the phrase "Get".
+		/// </summary>
+		JustSayGet,
+		/// <summary>
+		/// Represents the phrase "Set".
+		/// </summary>
+		JustSaySet,
+		/// <summary>
+		/// Represents the phrase "And".
+		/// </summary>
+		JustSayAnd,
+		/// <summary>
+		/// Represents the phrase "Go".
+		/// </summary>
+		JustSayGo,
+		/// <summary>
+		/// Represents the phrase "Stop".
+		/// </summary>
+		JustSayStop,
+		/// <summary>
+		/// Represents the phrase "And Stop".
+		/// </summary>
+		JustSayAndStop,
+		/// <summary>
+		/// Represents the count "1".
+		/// </summary>
+		Count1,
+		/// <summary>
+		/// Represents the count "2".
+		/// </summary>
+		Count2,
+		/// <summary>
+		/// Represents the count "3".
+		/// </summary>
+		Count3,
+		/// <summary>
+		/// Represents the count "4".
+		/// </summary>
+		Count4,
+		/// <summary>
+		/// Represents the count "5".
+		/// </summary>
+		Count5,
+		/// <summary>
+		/// Represents the count "6".
+		/// </summary>
+		Count6,
+		/// <summary>
+		/// Represents the count "7".
+		/// </summary>
+		Count7,
+		/// <summary>
+		/// Represents the count "8".
+		/// </summary>
+		Count8,
+		/// <summary>
+		/// Represents the count "9".
+		/// </summary>
+		Count9,
+		/// <summary>
+		/// Represents the count "10".
+		/// </summary>
+		Count10,
+		/// <summary>
+		/// Represents the phrase "Ready, Get Set, Go".
+		/// </summary>
+		SayReadyGetSetGo,
+		/// <summary>
+		/// Represents the phrase "Ready".
+		/// </summary>
+		JustSayReady
 	}
 }

@@ -32,7 +32,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the border style of the hands.
 		/// </summary>
-		public Borders Border { get; set; }
+		public PaintHandBorders Border { get; set; }
 		/// <summary>
 		/// Gets or sets the border color of the hands.
 		/// </summary>
@@ -67,23 +67,23 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab category of the event.
 		/// </summary>
 		public override Tabs Tab { get; }
+	}
+	/// <summary>
+	/// Specifies the border styles available for the hands.
+	/// </summary>
+	public enum PaintHandBorders
+	{
 		/// <summary>
-		/// Specifies the border styles available for the hands.
+		/// No border.
 		/// </summary>
-		public enum Borders
-		{
-			/// <summary>
-			/// No border.
-			/// </summary>
-			None,
-			/// <summary>
-			/// Outline border.
-			/// </summary>
-			Outline,
-			/// <summary>
-			/// Glow border.
-			/// </summary>
-			Glow
-		}
+		None,
+		/// <summary>
+		/// Outline border.
+		/// </summary>
+		Outline,
+		/// <summary>
+		/// Glow border.
+		/// </summary>
+		Glow
 	}
 }

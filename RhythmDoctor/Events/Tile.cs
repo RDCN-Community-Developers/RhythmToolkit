@@ -62,19 +62,5 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the duration of the event.
 		/// </summary>
 		public float Duration { get; set; }
-		/// <summary>
-		/// Defines the types of tiling available.
-		/// </summary>
-		public enum TilingTypes
-		{
-			/// <summary>
-			/// Represents a scrolling tiling type.
-			/// </summary>
-			Scroll,
-			/// <summary>
-			/// Represents a pulsing tiling type.
-			/// </summary>
-			Pulse
-		}
 	}
 }

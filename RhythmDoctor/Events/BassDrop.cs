@@ -21,30 +21,30 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the strength of the BassDrop event.  
 		/// </summary>  
-		public StrengthType Strength { get; set; }
+		public BassDropStrengthTypes Strength { get; set; }
 		/// <inheritdoc/>
 		public override EventType Type { get; }
 		/// <inheritdoc/>
 		public override Tabs Tab { get; }
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {Strength}";
+	}
+	/// <summary>  
+	/// Defines the strength levels for the BassDrop event.  
+	/// </summary>  
+	public enum BassDropStrengthTypes
+	{
 		/// <summary>  
-		/// Defines the strength levels for the BassDrop event.  
+		/// Low strength.  
 		/// </summary>  
-		public enum StrengthType
-		{
-			/// <summary>  
-			/// Low strength.  
-			/// </summary>  
-			Low,
-			/// <summary>  
-			/// Medium strength.  
-			/// </summary>  
-			Medium,
-			/// <summary>  
-			/// High strength.  
-			/// </summary>  
-			High
-		}
+		Low,
+		/// <summary>  
+		/// Medium strength.  
+		/// </summary>  
+		Medium,
+		/// <summary>  
+		/// High strength.  
+		/// </summary>  
+		High
 	}
 }

@@ -30,7 +30,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the row type for the event.
 		/// </summary>
-		public RowType RowType { get; set; }
+		public RowTypes RowType { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>

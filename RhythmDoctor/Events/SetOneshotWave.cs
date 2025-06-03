@@ -15,7 +15,7 @@
 		/// <summary>  
 		/// Gets or sets the type of wave.  
 		/// </summary>  
-		public Waves WaveType { get; set; }
+		public OneshotWaveShapeTypes WaveType { get; set; }
 		/// <summary>  
 		/// Gets or sets the height of the wave.  
 		/// </summary>  
@@ -28,35 +28,35 @@
 		/// Gets the type of the event.  
 		/// </summary>  
 		public override EventType Type { get; }
+	}
+	/// <summary>  
+	/// Defines the types of waves.  
+	/// </summary>  
+	public enum OneshotWaveShapeTypes
+	{
 		/// <summary>  
-		/// Defines the types of waves.  
+		/// Boom and rush wave.  
 		/// </summary>  
-		public enum Waves
-		{
-			/// <summary>  
-			/// Boom and rush wave.  
-			/// </summary>  
-			BoomAndRush,
-			/// <summary>  
-			/// Ball wave.  
-			/// </summary>  
-			Ball,
-			/// <summary>  
-			/// Spring wave.  
-			/// </summary>  
-			Spring,
-			/// <summary>  
-			/// Spike wave.  
-			/// </summary>  
-			Spike,
-			/// <summary>  
-			/// Huge spike wave.  
-			/// </summary>  
-			SpikeHuge,
-			/// <summary>  
-			/// Single wave.  
-			/// </summary>  
-			Single
-		}
+		BoomAndRush,
+		/// <summary>  
+		/// Ball wave.  
+		/// </summary>  
+		Ball,
+		/// <summary>  
+		/// Spring wave.  
+		/// </summary>  
+		Spring,
+		/// <summary>  
+		/// Spike wave.  
+		/// </summary>  
+		Spike,
+		/// <summary>  
+		/// Huge spike wave.  
+		/// </summary>  
+		SpikeHuge,
+		/// <summary>  
+		/// Single wave.  
+		/// </summary>  
+		Single
 	}
 }

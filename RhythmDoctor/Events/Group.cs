@@ -119,7 +119,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				Tag = Tag,
 				Condition = Condition,
 				Active = Active,
-				Action = TagAction.Actions.Run,
+				Action = TagActions.Run,
 				ActionTag = $"{RhythmBaseGroupEventHeader}{EventTypeUtils.GroupTypes.IndexOf(GetType()):X8}{DataId:X8}",
 			};
 		}

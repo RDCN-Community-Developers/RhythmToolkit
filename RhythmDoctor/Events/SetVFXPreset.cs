@@ -6,6 +6,77 @@ using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
+	/// Enum representing various VFX presets.
+	/// </summary>
+	public enum VFXPresets
+	{
+#pragma warning disable CS1591
+		SilhouettesOnHBeat,
+		Vignette,
+		VignetteFlicker,
+		ColourfulShockwaves,
+		BassDropOnHit,
+		ShakeOnHeartBeat,
+		ShakeOnHit,
+		WavyRows,
+		LightStripVert,
+		VHS,
+		CutsceneMode,
+		HueShift,
+		Brightness,
+		Contrast,
+		Saturation,
+		Noise,
+		GlitchObstruction,
+		Rain,
+		Matrix,
+		Confetti,
+		FallingPetals,
+		FallingPetalsInstant,
+		FallingPetalsSnow,
+		Snow,
+		Bloom,
+		OrangeBloom,
+		BlueBloom,
+		HallOfMirrors,
+		TileN,
+		Sepia,
+		CustomScreenScroll,
+		JPEG,
+		NumbersAbovePulses,
+		Mosaic,
+		ScreenWaves,
+		Funk,
+		Grain,
+		Blizzard,
+		Drawing,
+		Aberration,
+		Blur,
+		RadialBlur,
+		Dots,
+		DisableAll,
+		Diamonds,
+		Tutorial,
+		Balloons,
+
+		BlackAndWhite,
+		Blackout,
+		ScreenScrollX,
+		ScreenScroll,
+		ScreenScrollXSansVHS,
+		ScreenScrollSansVHS,
+		RowGlowWhite,
+		RowAllWhite,
+		RowOutline,
+		RowShadow,
+		RowSilhouetteGlow,
+		RowPlain,
+		Tile2,
+		Tile3,
+		Tile4
+#pragma warning restore CS1591
+	}
+	/// <summary>
 	/// Represents an event to set a VFX preset.
 	/// </summary>
 	public class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
@@ -27,7 +98,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the VFX preset.
 		/// </summary>
-		public Presets Preset { get; set; }
+		public VFXPresets Preset { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether the VFX is enabled.
 		/// </summary>
@@ -79,76 +150,5 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => $"{base.ToString()} {Preset}";
-		/// <summary>
-		/// Enum representing various VFX presets.
-		/// </summary>
-		public enum Presets
-		{
-#pragma warning disable CS1591
-			SilhouettesOnHBeat,
-			Vignette,
-			VignetteFlicker,
-			ColourfulShockwaves,
-			BassDropOnHit,
-			ShakeOnHeartBeat,
-			ShakeOnHit,
-			WavyRows,
-			LightStripVert,
-			VHS,
-			CutsceneMode,
-			HueShift,
-			Brightness,
-			Contrast,
-			Saturation,
-			Noise,
-			GlitchObstruction,
-			Rain,
-			Matrix,
-			Confetti,
-			FallingPetals,
-			FallingPetalsInstant,
-			FallingPetalsSnow,
-			Snow,
-			Bloom,
-			OrangeBloom,
-			BlueBloom,
-			HallOfMirrors,
-			TileN,
-			Sepia,
-			CustomScreenScroll,
-			JPEG,
-			NumbersAbovePulses,
-			Mosaic,
-			ScreenWaves,
-			Funk,
-			Grain,
-			Blizzard,
-			Drawing,
-			Aberration,
-			Blur,
-			RadialBlur,
-			Dots,
-			DisableAll,
-			Diamonds,
-			Tutorial,
-			Balloons,
-
-			BlackAndWhite,
-			Blackout,
-			ScreenScrollX,
-			ScreenScroll,
-			ScreenScrollXSansVHS,
-			ScreenScrollSansVHS,
-			RowGlowWhite,
-			RowAllWhite,
-			RowOutline,
-			RowShadow,
-			RowSilhouetteGlow,
-			RowPlain,
-			Tile2,
-			Tile3,
-			Tile4
-#pragma warning restore CS1591
-		}
 	}
 }

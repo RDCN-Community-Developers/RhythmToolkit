@@ -27,7 +27,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the target of the move row event.
 		/// </summary>
-		public Targets Target { get; set; }
+		public MoveRowTargets Target { get; set; }
 		/// <summary>
 		/// Gets or sets the row position.
 		/// </summary>
@@ -64,23 +64,23 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab of the event.
 		/// </summary>
 		public override Tabs Tab { get; }
+	}
+	/// <summary>
+	/// Specifies the targets for the move row event.
+	/// </summary>
+	public enum MoveRowTargets
+	{
 		/// <summary>
-		/// Specifies the targets for the move row event.
+		/// Target the whole row.
 		/// </summary>
-		public enum Targets
-		{
-			/// <summary>
-			/// Target the whole row.
-			/// </summary>
-			WholeRow,
-			/// <summary>
-			/// Target the heart.
-			/// </summary>
-			Heart,
-			/// <summary>
-			/// Target the character.
-			/// </summary>
-			Character
-		}
+		WholeRow,
+		/// <summary>
+		/// Target the heart.
+		/// </summary>
+		Heart,
+		/// <summary>
+		/// Target the character.
+		/// </summary>
+		Character
 	}
 }

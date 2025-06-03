@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the duration of the flash event.
 		/// </summary>
-		public Durations Duration { get; set; }
+		public DurationType Duration { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
@@ -37,23 +37,23 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + string.Format(" {0}", Duration);
+	}
+	/// <summary>
+	/// Specifies the possible durations for a flash event.
+	/// </summary>
+	public enum DurationType
+	{
 		/// <summary>
-		/// Specifies the possible durations for a flash event.
+		/// A short duration.
 		/// </summary>
-		public enum Durations
-		{
-			/// <summary>
-			/// A short duration.
-			/// </summary>
-			Short,
-			/// <summary>
-			/// A medium duration.
-			/// </summary>
-			Medium,
-			/// <summary>
-			/// A long duration.
-			/// </summary>
-			Long
-		}
+		Short,
+		/// <summary>
+		/// A medium duration.
+		/// </summary>
+		Medium,
+		/// <summary>
+		/// A long duration.
+		/// </summary>
+		Long
 	}
 }

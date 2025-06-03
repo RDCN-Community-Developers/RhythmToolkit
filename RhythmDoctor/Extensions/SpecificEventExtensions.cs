@@ -24,7 +24,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <summary>
 		/// Getting controlled events.
 		/// </summary>
-		public static IEnumerable<IGrouping<string, IBaseEvent>> ControllingEvents(this TagAction e) => e.Beat.BaseLevel?.GetTaggedEvents(e.ActionTag, e.Action.HasFlag(TagAction.Actions.All)) ?? [];
+		public static IEnumerable<IGrouping<string, IBaseEvent>> ControllingEvents(this TagAction e) => e.Beat.BaseLevel?.GetTaggedEvents(e.ActionTag, e.Action.HasFlag(TagActions.All)) ?? [];
 		/// <summary>
 		/// Creates a new <see cref="T:RhythmBase.Events.AdvanceText" /> subordinate to <see cref="T:RhythmBase.Events.FloatingText" /> at the specified beat. The new event created will be attempted to be added to the <see cref="T:RhythmBase.Events.FloatingText" />'s source level.
 		/// </summary>
@@ -85,19 +85,19 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			{
 				switch (item.Action)
 				{
-					case PulseFreeTimeBeat.ActionType.Increment:
+					case PulseActions.Increment:
 						pulse += 1;
 						yield return item;
 						break;
-					case PulseFreeTimeBeat.ActionType.Decrement:
+					case PulseActions.Decrement:
 						pulse = (byte)((pulse > 0b1) ? (pulse - 0b1) : 0b1);
 						yield return item;
 						break;
-					case PulseFreeTimeBeat.ActionType.Custom:
+					case PulseActions.Custom:
 						pulse = (byte)item.CustomPulse;
 						yield return item;
 						break;
-					case PulseFreeTimeBeat.ActionType.Remove:
+					case PulseActions.Remove:
 						yield return item;
 						break;
 				}
@@ -234,27 +234,27 @@ e.IsHitable()
 							PulseFreeTimeBeat Temp = (PulseFreeTimeBeat)item;
 							switch (Temp.Action)
 							{
-								case PulseFreeTimeBeat.ActionType.Increment:
+								case PulseActions.Increment:
 									if (PulseIndexMin > 0)
 										PulseIndexMin--;
 									if (!(PulseIndexMax > 0))
 										return false;
 									PulseIndexMax--;
 									break;
-								case PulseFreeTimeBeat.ActionType.Decrement:
+								case PulseActions.Decrement:
 									if (PulseIndexMin > 0)
 										PulseIndexMin++;
 									if (!(PulseIndexMax < 6))
 										return false;
 									PulseIndexMax++;
 									break;
-								case PulseFreeTimeBeat.ActionType.Custom:
+								case PulseActions.Custom:
 									if (!(PulseIndexMin <= Temp.CustomPulse & Temp.CustomPulse <= PulseIndexMax))
 										return false;
 									PulseIndexMin = 0;
 									PulseIndexMax = 5;
 									break;
-								case PulseFreeTimeBeat.ActionType.Remove:
+								case PulseActions.Remove:
 									return false;
 							}
 							if (PulseIndexMin > PulseIndexMax)
@@ -397,35 +397,35 @@ e.IsHitable()
 		/// </summary>
 		public static IEnumerable<SayReadyGetSetGo> Split(this SayReadyGetSetGo e) => e.PhraseToSay switch
 		{
-			SayReadyGetSetGo.Words.SayReaDyGetSetGoNew => [
-e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayRea),
-e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSayDy),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.JustSayGet),
-e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.Words.JustSaySet),
-e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
+			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayReaDyGetSetGoNew => [
+e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayRea),
+e.SplitCopy(e.Tick, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayDy),
+e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGo)
 								],
-			SayReadyGetSetGo.Words.SayGetSetGo => [
-e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayGet),
-e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSaySet),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.JustSayGo)
+			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayGetSetGo => [
+e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGo)
 								],
-			SayReadyGetSetGo.Words.SayReaDyGetSetOne => [
-e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayRea),
-e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSayDy),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.JustSayGet),
-e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.Words.JustSaySet),
-e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.Count1)
+			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayReaDyGetSetOne => [
+e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayRea),
+e.SplitCopy(e.Tick, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayDy),
+e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.SayReaDyGetSetGoWords.Count1)
 								],
-			SayReadyGetSetGo.Words.SayGetSetOne => [
-e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayGet),
-e.SplitCopy(e.Tick, SayReadyGetSetGo.Words.JustSaySet),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.Count1)
+			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayGetSetOne => [
+e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.Count1)
 								],
-			SayReadyGetSetGo.Words.SayReadyGetSetGo => [
-e.SplitCopy(0f, SayReadyGetSetGo.Words.JustSayReady),
-e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.Words.JustSayGet),
-e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.Words.JustSaySet),
-e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
+			SayReadyGetSetGo.SayReaDyGetSetGoWords.SayReadyGetSetGo => [
+e.SplitCopy(0f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayReady),
+e.SplitCopy(e.Tick * 2f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGet),
+e.SplitCopy(e.Tick * 3f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSaySet),
+e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.SayReaDyGetSetGoWords.JustSayGo)
 								],
 			_ => [e],
 		};
@@ -478,7 +478,7 @@ e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
 					if (i % 2 == 1)
 						(pulseFreeTimeBeat = Pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));
 					Pulse.Hold = e.Hold;
-					Pulse.Action = PulseFreeTimeBeat.ActionType.Increment;
+					Pulse.Action = PulseActions.Increment;
 					L.Add(Pulse);
 				}
 				i++;
@@ -493,12 +493,12 @@ e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
 		/// <returns>An RDRange representing the duration of the VFX effect.</returns>
 		public static RDRange VFXDuration(this SetVFXPreset e)
 		{
-			if (e.Preset != SetVFXPreset.Presets.DisableAll && e.Enable)
+			if (e.Preset != VFXPresets.DisableAll && e.Enable)
 			{
 				SetVFXPreset? close = e.After().FirstOrDefault(i =>
 					i.Rooms.Contains(e.Rooms) && (
 						i.Preset == e.Preset ||
-						i.Preset == SetVFXPreset.Presets.DisableAll
+						i.Preset == VFXPresets.DisableAll
 				));
 				return new(e.Beat, close?.Beat);
 			}
@@ -578,7 +578,7 @@ e.SplitCopy(e.Tick * 4f, SayReadyGetSetGo.Words.JustSayGo)
 		/// <param name="e">The Move event.</param>
 		/// <returns>A rotated rectangle representing the position, scale, pivot, and angle.</returns>
 		public static RDRotatedRectE RotatedRect(this Move e) => new(e.Position, e.Scale, e.Pivot, e.Angle);
-		private static SayReadyGetSetGo SplitCopy(this SayReadyGetSetGo e, float extraBeat, SayReadyGetSetGo.Words word)
+		private static SayReadyGetSetGo SplitCopy(this SayReadyGetSetGo e, float extraBeat, SayReadyGetSetGo.SayReaDyGetSetGoWords word)
 		{
 			SayReadyGetSetGo Temp = e.Clone<SayReadyGetSetGo>();
 			Temp.Beat += extraBeat;

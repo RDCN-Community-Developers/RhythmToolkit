@@ -459,7 +459,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Add event to the level.
 		/// </summary>
 		/// <param name="item">Event to be added.</param>
-		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException"></exception>
 		public override void Add (IBaseEvent item) => Add(item, true);
 		public void Add(IBaseEvent item, bool keepPos = true)
 		{

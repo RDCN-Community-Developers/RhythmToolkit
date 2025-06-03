@@ -34,7 +34,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the filter mode for the event.
 		/// </summary>
-		public FilterModes Filter { get; set; }
+		public BackgroundFilterModes Filter { get; set; }
 		/// <summary>
 		/// Gets or sets the color for the background.
 		/// </summary>
@@ -93,29 +93,29 @@ namespace RhythmBase.RhythmDoctor.Events
 #else
 		: base.ToString() + $" {string.Join(',', Image)}";
 #endif
+	}
+	/// <summary>
+	/// Specifies the types of backgrounds.
+	/// </summary>
+	public enum BackgroundTypes
+	{
 		/// <summary>
-		/// Specifies the types of backgrounds.
+		/// Background is a color.
 		/// </summary>
-		public enum BackgroundTypes
-		{
-			/// <summary>
-			/// Background is a color.
-			/// </summary>
-			Color,
-			/// <summary>
-			/// Background is an image.
-			/// </summary>
-			Image
-		}
+		Color,
 		/// <summary>
-		/// Specifies the filter modes.
+		/// Background is an image.
 		/// </summary>
-		public enum FilterModes
-		{
-			/// <summary>
-			/// Nearest neighbor filtering.
-			/// </summary>
-			NearestNeighbor
-		}
+		Image
+	}
+	/// <summary>
+	/// Specifies the filter modes.
+	/// </summary>
+	public enum BackgroundFilterModes
+	{
+		/// <summary>
+		/// Nearest neighbor filtering.
+		/// </summary>
+		NearestNeighbor
 	}
 }

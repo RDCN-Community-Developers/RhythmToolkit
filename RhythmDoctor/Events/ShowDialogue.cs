@@ -46,11 +46,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the side of the panel where the dialogue will be shown.
 		/// </summary>
-		public Sides PanelSide { get; set; }
+		public DialogueSides PanelSide { get; set; }
 		/// <summary>
 		/// Gets or sets the side of the portrait in the dialogue.
 		/// </summary>
-		public PortraitSides PortraitSide { get; set; }
+		public DialoguePortraitSides PortraitSide { get; set; }
 		/// <summary>
 		/// Gets or sets the speed of the dialogue display.
 		/// </summary>
@@ -72,33 +72,33 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
+	}
+	/// <summary>
+	/// Specifies the sides where the dialogue panel can be shown.
+	/// </summary>
+	public enum DialogueSides
+	{
 		/// <summary>
-		/// Specifies the sides where the dialogue panel can be shown.
+		/// The bottom side.
 		/// </summary>
-		public enum Sides
-		{
-			/// <summary>
-			/// The bottom side.
-			/// </summary>
-			Bottom,
-			/// <summary>
-			/// The top side.
-			/// </summary>
-			Top
-		}
+		Bottom,
 		/// <summary>
-		/// Specifies the sides where the portrait can be shown.
+		/// The top side.
 		/// </summary>
-		public enum PortraitSides
-		{
-			/// <summary>
-			/// The left side.
-			/// </summary>
-			Left,
-			/// <summary>
-			/// The right side.
-			/// </summary>
-			Right
-		}
+		Top
+	}
+	/// <summary>
+	/// Specifies the sides where the portrait can be shown.
+	/// </summary>
+	public enum DialoguePortraitSides
+	{
+		/// <summary>
+		/// The left side.
+		/// </summary>
+		Left,
+		/// <summary>
+		/// The right side.
+		/// </summary>
+		Right
 	}
 }
