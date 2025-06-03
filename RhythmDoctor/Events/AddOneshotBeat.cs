@@ -15,7 +15,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the type of pulse.
 		/// </summary>
-		public Pulse PulseType { get; set; }
+		public OneshotPulseShapeTypes PulseType { get; set; }
 		/// <summary>
 		/// Gets or sets the number of subdivisions.
 		/// </summary>
@@ -43,67 +43,68 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the freeze burn mode.
 		/// </summary>
-		public FreezeBurn? FreezeBurnMode { get; set; }
+		public OneshotTypes? FreezeBurnMode { get; set; }
 		/// <summary>
 		/// Gets or sets the delay value.
 		/// </summary>
 		public float Delay
 		{
 			get => _delay;
-			set => _delay = FreezeBurnMode != FreezeBurn.Freezeshot
+			set => _delay = FreezeBurnMode != OneshotTypes.Freezeshot
 					? 0f : value <= 0f
 					? 0.5f : value;
 		}
 		/// <inheritdoc/>
-		public override EventType Type => EventType.AddOneshotBeat;		/// <inheritdoc/>
+		public override EventType Type => EventType.AddOneshotBeat;
+		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {FreezeBurnMode} {PulseType}";
 		private float _delay = 0f;
-		/// <summary>
-		/// Represents the type of pulse.
-		/// </summary>
-		/// <remarks>
-		/// The pulse type determines the shape of the beat's waveform.
-		/// </remarks>
-		public enum Pulse
-		{
-			/// <summary>
-			/// A wave pulse.
-			/// </summary>
-			Wave,
-			/// <summary>
-			/// A square pulse.
-			/// </summary>
-			Square,
-			/// <summary>
-			/// A triangle pulse.
-			/// </summary>
-			Triangle,
-			/// <summary>
-			/// A heart-shaped pulse.
-			/// </summary>
-			Heart
-		}
-		/// <summary>
-		/// Represents the freeze burn mode.
-		/// </summary>
-		/// <remarks>
-		/// The freeze burn mode determines the effect applied to the beat.
-		/// </remarks>
-		public enum FreezeBurn
-		{
-			/// <summary>
-			/// A wave freeze burn mode.
-			/// </summary>
-			Wave,
-			/// <summary>
-			/// A freeze shot mode.
-			/// </summary>
-			Freezeshot,
-			/// <summary>
-			/// A burn shot mode.
-			/// </summary>
-			Burnshot
-		}
 		private string GetDebuggerDisplay() => ToString();
+	}
+	/// <summary>
+	/// Represents the freeze burn mode.
+	/// </summary>
+	/// <remarks>
+	/// The freeze burn mode determines the effect applied to the beat.
+	/// </remarks>
+	public enum OneshotTypes
+	{
+		/// <summary>
+		/// A wave freeze burn mode.
+		/// </summary>
+		Wave,
+		/// <summary>
+		/// A freeze shot mode.
+		/// </summary>
+		Freezeshot,
+		/// <summary>
+		/// A burn shot mode.
+		/// </summary>
+		Burnshot
+	}
+	/// <summary>
+	/// Represents the type of pulse.
+	/// </summary>
+	/// <remarks>
+	/// The pulse type determines the shape of the beat's waveform.
+	/// </remarks>
+	public enum OneshotPulseShapeTypes
+	{
+		/// <summary>
+		/// A wave pulse.
+		/// </summary>
+		Wave,
+		/// <summary>
+		/// A square pulse.
+		/// </summary>
+		Square,
+		/// <summary>
+		/// A triangle pulse.
+		/// </summary>
+		Triangle,
+		/// <summary>
+		/// A heart-shaped pulse.
+		/// </summary>
+		Heart
 	}
 }

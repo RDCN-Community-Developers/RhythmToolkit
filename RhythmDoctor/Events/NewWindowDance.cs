@@ -6,6 +6,32 @@ using RhythmBase.Global.Events;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
+	/// Represents the presets.
+	/// </summary>
+	public enum WindowDancePresets
+	{
+		/// <summary>
+		/// Move preset.
+		/// </summary>
+		Move,
+		/// <summary>
+		/// Sway preset.
+		/// </summary>
+		Sway,
+		/// <summary>
+		/// Wrap preset.
+		/// </summary>
+		Wrap,
+		/// <summary>
+		/// Ellipse preset.
+		/// </summary>
+		Ellipse,
+		/// <summary>
+		/// Shake per preset.
+		/// </summary>
+		ShakePer
+	}
+	/// <summary>
 	/// Represents a new window dance event.
 	/// </summary>
 	public class NewWindowDance : BaseEvent, IEaseEvent
@@ -22,7 +48,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the preset.
 		/// </summary>
-		public Presets Preset { get; set; }
+		public WindowDancePresets Preset { get; set; }
 		/// <summary>
 		/// Gets or sets the same preset behavior.
 		/// </summary>
@@ -36,7 +62,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the reference.
 		/// </summary>
-		public References Reference { get; set; }
+		public WindowDanceReferences Reference { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether to use a circle.
 		/// </summary>
@@ -76,7 +102,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the ease type.
 		/// </summary>
-		public EaseTypes EaseType { get; set; }
+		public WindowDanceEaseTypes EaseType { get; set; }
 		/// <summary>
 		/// Gets or sets the sub ease type.
 		/// </summary>
@@ -98,73 +124,47 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab.
 		/// </summary>
 		public override Tabs Tab { get; }
+	}
+	/// <summary>
+	/// Represents the same preset behaviors.
+	/// </summary>
+	public enum SamePresetBehaviors
+	{
 		/// <summary>
-		/// Represents the presets.
+		/// Reset behavior.
 		/// </summary>
-		public enum Presets
-		{
-			/// <summary>
-			/// Move preset.
-			/// </summary>
-			Move,
-			/// <summary>
-			/// Sway preset.
-			/// </summary>
-			Sway,
-			/// <summary>
-			/// Wrap preset.
-			/// </summary>
-			Wrap,
-			/// <summary>
-			/// Ellipse preset.
-			/// </summary>
-			Ellipse,
-			/// <summary>
-			/// Shake per preset.
-			/// </summary>
-			ShakePer
-		}
+		Reset,
 		/// <summary>
-		/// Represents the same preset behaviors.
+		/// Keep behavior.
 		/// </summary>
-		public enum SamePresetBehaviors
-		{
-			/// <summary>
-			/// Reset behavior.
-			/// </summary>
-			Reset,
-			/// <summary>
-			/// Keep behavior.
-			/// </summary>
-			Keep
-		}
+		Keep
+	}
+	/// <summary>
+	/// Represents the references.
+	/// </summary>
+	public enum WindowDanceReferences
+	{
 		/// <summary>
-		/// Represents the references.
+		/// Center reference.
 		/// </summary>
-		public enum References
-		{
-			/// <summary>
-			/// Center reference.
-			/// </summary>
-			Center,
-			/// <summary>
-			/// Edge reference.
-			/// </summary>
-			Edge
-		}
+		Center,
 		/// <summary>
-		/// Represents the ease types.
+		/// Edge reference.
 		/// </summary>
-		public enum EaseTypes
-		{
-			/// <summary>
-			/// Repeat ease type.
-			/// </summary>
-			Repeat,
-			/// <summary>
-			/// Mirror ease type.
-			/// </summary>
-			Mirror,
-		}
+		Edge
+	}
+	/// <summary>
+	/// Represents the ease types.
+	/// </summary>
+	public enum WindowDanceEaseTypes
+	{
+		/// <summary>
+		/// Repeat ease type.
+		/// </summary>
+		Repeat,
+		/// <summary>
+		/// Mirror ease type.
+		/// </summary>
+		Mirror,
 	}
 }

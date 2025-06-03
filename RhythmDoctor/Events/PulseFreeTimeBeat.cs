@@ -1,6 +1,28 @@
 ﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
+	/// Defines the action types for the pulse free time beat.
+	/// </summary>
+	public enum PulseActions
+	{
+		/// <summary>
+		/// Increment action.
+		/// </summary>
+		Increment,
+		/// <summary>
+		/// Decrement action.
+		/// </summary>
+		Decrement,
+		/// <summary>
+		/// Custom action.
+		/// </summary>
+		Custom,
+		/// <summary>
+		/// Remove action.
+		/// </summary>
+		Remove
+	}
+	/// <summary>
 	/// Represents a pulse free time beat event.
 	/// </summary>
 	public class PulseFreeTimeBeat : BaseBeat
@@ -26,13 +48,13 @@
 			get => customPulse; set
 			{
 				customPulse = value;
-				Action = ActionType.Custom;
+				Action = PulseActions.Custom;
 			}
 		}
 		/// <summary>
 		/// Gets or sets the action type.
 		/// </summary>
-		public ActionType Action { get; set; }
+		public PulseActions Action { get; set; }
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
@@ -46,42 +68,20 @@
 			string Out = "";
 			switch (Action)
 			{
-				case ActionType.Increment:
+				case PulseActions.Increment:
 					Out = ">";
 					break;
-				case ActionType.Decrement:
+				case PulseActions.Decrement:
 					Out = "<";
 					break;
-				case ActionType.Custom:
+				case PulseActions.Custom:
 					Out = (CustomPulse + 1).ToString();
 					break;
-				case ActionType.Remove:
+				case PulseActions.Remove:
 					Out = "X";
 					break;
 			}
 			return base.ToString() + $"{Out}";
-		}
-		/// <summary>
-		/// Defines the action types for the pulse free time beat.
-		/// </summary>
-		public enum ActionType
-		{
-			/// <summary>
-			/// Increment action.
-			/// </summary>
-			Increment,
-			/// <summary>
-			/// Decrement action.
-			/// </summary>
-			Decrement,
-			/// <summary>
-			/// Custom action.
-			/// </summary>
-			Custom,
-			/// <summary>
-			/// Remove action.
-			/// </summary>
-			Remove
 		}
 	}
 }

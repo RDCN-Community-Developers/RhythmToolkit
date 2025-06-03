@@ -3,6 +3,28 @@
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
+	/// Defines the possible actions for the event.
+	/// </summary>
+	public enum ShowHandsActions
+	{
+		/// <summary>
+		/// Show the hands.
+		/// </summary>
+		Show,
+		/// <summary>
+		/// Hide the hands.
+		/// </summary>
+		Hide,
+		/// <summary>
+		/// Raise the hands.
+		/// </summary>
+		Raise,
+		/// <summary>
+		/// Lower the hands.
+		/// </summary>
+		Lower
+	}
+	/// <summary>
 	/// Represents an event to show hands in a room.
 	/// </summary>
 	public class ShowHands : BaseEvent, IRoomEvent
@@ -23,7 +45,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the action to be performed.
 		/// </summary>
-		public Actions Action { get; set; }
+		public ShowHandsActions Action { get; set; }
 		/// <summary>
 		/// Gets or sets the hand of the player.
 		/// </summary>
@@ -39,7 +61,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the extent of the action.
 		/// </summary>
-		public Extents Extent { get; set; }
+		public ShowHandsExtents Extent { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
@@ -48,41 +70,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }
+	}
+	/// <summary>
+	/// Defines the possible extents for the action.
+	/// </summary>
+	public enum ShowHandsExtents
+	{
 		/// <summary>
-		/// Defines the possible actions for the event.
+		/// Full extent.
 		/// </summary>
-		public enum Actions
-		{
-			/// <summary>
-			/// Show the hands.
-			/// </summary>
-			Show,
-			/// <summary>
-			/// Hide the hands.
-			/// </summary>
-			Hide,
-			/// <summary>
-			/// Raise the hands.
-			/// </summary>
-			Raise,
-			/// <summary>
-			/// Lower the hands.
-			/// </summary>
-			Lower
-		}
+		Full,
 		/// <summary>
-		/// Defines the possible extents for the action.
+		/// Short extent.
 		/// </summary>
-		public enum Extents
-		{
-			/// <summary>
-			/// Full extent.
-			/// </summary>
-			Full,
-			/// <summary>
-			/// Short extent.
-			/// </summary>
-			Short
-		}
+		Short
 	}
 }

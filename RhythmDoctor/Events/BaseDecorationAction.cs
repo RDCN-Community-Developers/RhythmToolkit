@@ -24,20 +24,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public virtual string Target => Parent?.Id ?? _decoId;
 		/// <summary>
-		/// Gets or sets the beat associated with this action.
-		/// </summary>
-		/// <inheritdoc/>
-		[JsonIgnore]
-		public override RDBeat Beat
-		{
-			get => _beat;
-			set => _beat = _beat.BaseLevel == null ?
-							value.BaseLevel == null ?
-								value :
-								value.WithoutLink() :
-							new(_beat.BaseLevel.Calculator, value);
-		}
-		/// <summary>
 		/// Clones this event and its basic properties. The clone will be added to the level.
 		/// </summary>
 		/// <typeparam name="TEvent">The type of event that will be generated.</typeparam>

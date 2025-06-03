@@ -16,7 +16,7 @@
 		/// <summary>
 		/// Gets or sets the type of interval.
 		/// </summary>
-		public IntervalTypes IntervalType { get; set; }
+		public HeartExplodeIntervalTypes IntervalType { get; set; }
 		/// <summary>
 		/// Gets or sets the interval value.
 		/// </summary>
@@ -29,27 +29,27 @@
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }
+	}
+	/// <summary>
+	/// Defines the types of intervals.
+	/// </summary>
+	public enum HeartExplodeIntervalTypes
+	{
 		/// <summary>
-		/// Defines the types of intervals.
+		/// Interval of one beat after.
 		/// </summary>
-		public enum IntervalTypes
-		{
-			/// <summary>
-			/// Interval of one beat after.
-			/// </summary>
-			OneBeatAfter,
-			/// <summary>
-			/// Instant interval.
-			/// </summary>
-			Instant,
-			/// <summary>
-			/// Gather without ceiling.
-			/// </summary>
-			GatherNoCeil,
-			/// <summary>
-			/// Gather and ceiling.
-			/// </summary>
-			GatherAndCeil
-		}
+		OneBeatAfter,
+		/// <summary>
+		/// Instant interval.
+		/// </summary>
+		Instant,
+		/// <summary>
+		/// Gather without ceiling.
+		/// </summary>
+		GatherNoCeil,
+		/// <summary>
+		/// Gather and ceiling.
+		/// </summary>
+		GatherAndCeil
 	}
 }

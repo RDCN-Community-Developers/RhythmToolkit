@@ -42,31 +42,31 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + $" {(IsCustom ? Sound?.ToString() : CustomSoundType.ToString())}";
+	}
+	/// <summary>
+	/// Defines the types of custom sounds.
+	/// </summary>
+	public enum CustomSoundTypes
+	{
 		/// <summary>
-		/// Defines the types of custom sounds.
+		/// Cue sound type.
 		/// </summary>
-		public enum CustomSoundTypes
-		{
-			/// <summary>
-			/// Cue sound type.
-			/// </summary>
-			CueSound,
-			/// <summary>
-			/// Music sound type.
-			/// </summary>
-			MusicSound,
-			/// <summary>
-			/// Beat sound type.
-			/// </summary>
-			BeatSound,
-			/// <summary>
-			/// Hit sound type.
-			/// </summary>
-			HitSound,
-			/// <summary>
-			/// Other sound type.
-			/// </summary>
-			OtherSound
-		}
+		CueSound,
+		/// <summary>
+		/// Music sound type.
+		/// </summary>
+		MusicSound,
+		/// <summary>
+		/// Beat sound type.
+		/// </summary>
+		BeatSound,
+		/// <summary>
+		/// Hit sound type.
+		/// </summary>
+		HitSound,
+		/// <summary>
+		/// Other sound type.
+		/// </summary>
+		OtherSound
 	}
 }

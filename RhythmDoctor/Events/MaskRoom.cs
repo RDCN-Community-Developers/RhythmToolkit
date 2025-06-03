@@ -20,11 +20,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the type of the mask.
 		/// </summary>
-		public MaskTypes MaskType { get; set; }
+		public RoomMaskTypes MaskType { get; set; }
 		/// <summary>
 		/// Gets or sets the alpha mode.
 		/// </summary>
-		public AlphaModes AlphaMode { get; set; }
+		public MaskAlphaModes AlphaMode { get; set; }
 		/// <summary>
 		/// Gets or sets the source room.
 		/// </summary>
@@ -66,51 +66,41 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[JsonIgnore]
 		public RDRoom Room => new RDSingleRoom(checked((byte)Y));
+	}
+	/// <summary>
+	/// Defines the types of masks available.
+	/// </summary>
+	public enum RoomMaskTypes
+	{
 		/// <summary>
-		/// Defines the types of masks available.
+		/// Uses an image as the mask.
 		/// </summary>
-		public enum MaskTypes
-		{
-			/// <summary>
-			/// Uses an image as the mask.
-			/// </summary>
-			Image,
-			/// <summary>
-			/// Uses a room as the mask.
-			/// </summary>
-			Room,
-			/// <summary>
-			/// Uses a color as the mask.
-			/// </summary>
-			Color,
-			/// <summary>
-			/// No mask is applied.
-			/// </summary>
-			None
-		}
+		Image,
 		/// <summary>
-		/// Defines the alpha modes available.
+		/// Uses a room as the mask.
 		/// </summary>
-		public enum AlphaModes
-		{
-			/// <summary>
-			/// Normal alpha mode.
-			/// </summary>
-			Normal,
-			/// <summary>
-			/// Inverted alpha mode.
-			/// </summary>
-			Inverted
-		}
+		Room,
 		/// <summary>
-		/// Defines the content modes available.
+		/// Uses a color as the mask.
 		/// </summary>
-		public enum ContentModes
-		{
-			/// <summary>
-			/// Scales the content to fill the area.
-			/// </summary>
-			ScaleToFill
-		}
+		Color,
+		/// <summary>
+		/// No mask is applied.
+		/// </summary>
+		None
+	}
+	/// <summary>
+	/// Defines the alpha modes available.
+	/// </summary>
+	public enum MaskAlphaModes
+	{
+		/// <summary>
+		/// Normal alpha mode.
+		/// </summary>
+		Normal,
+		/// <summary>
+		/// Inverted alpha mode.
+		/// </summary>
+		Inverted
 	}
 }

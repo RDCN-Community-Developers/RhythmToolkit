@@ -809,11 +809,11 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static IEnumerable<RDHit> HitBeats(this Row e)
 		{
-			RowType rowType = e.RowType;
+			RowTypes rowType = e.RowType;
 			IEnumerable<RDHit> HitBeats;
-			if (rowType != RowType.Classic)
+			if (rowType != RowTypes.Classic)
 			{
-				if (rowType != RowType.Oneshot)
+				if (rowType != RowTypes.Oneshot)
 					throw new RhythmBaseException("How?");
 				HitBeats = e.OneshotBeats().SelectMany((BaseBeat i) => i.HitTimes());
 			}
@@ -850,10 +850,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static SortedDictionary<float, int[]> GetRowBeatStatus(this Row e)
 		{
 			SortedDictionary<float, int[]> L = [];
-			RowType rowType = e.RowType;
+			RowTypes rowType = e.RowType;
 			switch (rowType)
 			{
-				case RowType.Classic:
+				case RowTypes.Classic:
 					int[] value = new int[7];
 					L.Add(0f, value);
 					foreach (IBaseEvent beat in e)
@@ -878,7 +878,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 								throw new NotImplementedException();
 						}
 					break;
-				case RowType.Oneshot:
+				case RowTypes.Oneshot:
 					throw new NotImplementedException();
 				default:
 					throw new RhythmBaseException("How");
@@ -890,11 +890,11 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static IEnumerable<BaseBeat> Beats(this Row e)
 		{
-			RowType rowType = e.RowType;
+			RowTypes rowType = e.RowType;
 			IEnumerable<BaseBeat> Beats;
-			if (rowType != RowType.Classic)
+			if (rowType != RowTypes.Classic)
 			{
-				if (rowType != RowType.Oneshot)
+				if (rowType != RowTypes.Oneshot)
 					throw new RhythmBaseException("How?");
 				Beats = e.OneshotBeats();
 			}

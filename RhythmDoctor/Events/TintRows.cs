@@ -53,7 +53,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the row effect.
 		/// </summary>
-		public RowEffect Effect { get; set; }
+		public TintRowEffects Effect { get; set; }
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
@@ -80,24 +80,24 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + string.Format(" {0}{1}", Border, Border == Borders.None ? "" : ":" + BorderColor.ToString());
+	}
 
+	/// <summary>
+	/// Specifies the row effects.
+	/// </summary>
+	public enum TintRowEffects
+	{
 		/// <summary>
-		/// Specifies the row effects.
+		/// No effect.
 		/// </summary>
-		public enum RowEffect
-		{
-			/// <summary>
-			/// No effect.
-			/// </summary>
-			None,
-			/// <summary>
-			/// Electric effect.
-			/// </summary>
-			Electric,
-			/// <summary>
-			/// Smoke effect.
-			/// </summary>
-			Smoke
-		}
+		None,
+		/// <summary>
+		/// Electric effect.
+		/// </summary>
+		Electric,
+		/// <summary>
+		/// Smoke effect.
+		/// </summary>
+		Smoke
 	}
 }

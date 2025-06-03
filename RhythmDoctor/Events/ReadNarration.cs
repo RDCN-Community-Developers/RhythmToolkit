@@ -26,7 +26,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the category of the narration.
 		/// </summary>
-		public NarrationCategory Category { get; set; }
+		public NarrationCategorys Category { get; set; }
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
@@ -36,39 +36,5 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
-		/// <summary>
-		/// Specifies the category of the narration.
-		/// </summary>
-		public enum NarrationCategory
-		{
-			/// <summary>
-			/// Fallback category.
-			/// </summary>
-			Fallback,
-			/// <summary>
-			/// Navigation category.
-			/// </summary>
-			Navigation,
-			/// <summary>
-			/// Instruction category.
-			/// </summary>
-			Instruction,
-			/// <summary>
-			/// Notification category.
-			/// </summary>
-			Notification,
-			/// <summary>
-			/// Dialogue category.
-			/// </summary>
-			Dialogue,
-			/// <summary>
-			/// Description category.
-			/// </summary>
-			Description = 6,
-			/// <summary>
-			/// Subtitles category.
-			/// </summary>
-			Subtitles
-		}
 	}
 }

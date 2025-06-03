@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -20,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the mode of the room content.
 		/// </summary>
-		public Modes Mode { get; set; }
+		public RoomContentModes Mode { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
@@ -40,19 +39,19 @@ namespace RhythmBase.RhythmDoctor.Events
 				return new RDSingleRoom(checked((byte)Y));
 			}
 		}
-		/// <summary>
-		/// Defines the modes for room content.
-		/// </summary>
-		public enum Modes
-		{
+	}
+	/// <summary>
+	/// Defines the modes for room content.
+	/// </summary>
+	public enum RoomContentModes
+	{
 #pragma warning disable CS1591
-			Center,
-			ScaleToFill,
-			AspectFit,
-			AspectFill,
-			Tiled,
-			Real
+		Center,
+		ScaleToFill,
+		AspectFit,
+		AspectFill,
+		Tiled,
+		Real
 #pragma warning restore CS1591
-		}
 	}
 }

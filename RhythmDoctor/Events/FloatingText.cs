@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Specifies the category of the narration.  
 	/// </summary>  
-	public enum NarrationCategory
+	public enum NarrationCategorys
 	{
 		/// <summary>  
 		/// Fallback category, used as a default when no other category applies.  
@@ -96,7 +96,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the anchor style of the text.
 		/// </summary>
-		public AnchorStyle Anchor { get; set; }
+		public FloatingTextAnchorStyles Anchor { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether to narrate the text.
 		/// </summary>
@@ -104,39 +104,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the narration category of the text.
 		/// </summary>
-		public NarrationCategory NarrationCategory { get; set; }
-		/// <summary>
-		/// Specifies the anchor style of the text.
-		/// </summary>
-		[JsonConverter(typeof(AnchorStyleConverter))]
-		[Flags]
-		public enum AnchorStyle
-		{
-			/// <summary>
-			/// The lower anchor style.
-			/// </summary>
-			Lower = 1,
-			/// <summary>
-			/// The upper anchor style.
-			/// </summary>
-			Upper = 2,
-			/// <summary>
-			/// The left anchor style.
-			/// </summary>
-			Left = 4,
-			/// <summary>
-			/// The right anchor style.
-			/// </summary>
-			Right = 8,
-			/// <summary>
-			/// The center anchor style.
-			/// </summary>
-			Center = 0
-		}
+		public NarrationCategorys NarrationCategory { get; set; }
 		/// <summary>
 		/// Gets or sets the mode of the text.
 		/// </summary>
-		public OutMode Mode { get; set; } = OutMode.FadeOut;
+		public FloatingTextFadeOutModes Mode { get; set; } = FloatingTextFadeOutModes.FadeOut;
 		/// <summary>
 		/// Gets or sets a value indicating whether to show child texts.
 		/// </summary>
@@ -155,20 +127,48 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + $" {Text}";
 		private readonly List<AdvanceText> _children = [];
+	}
+	/// <summary>
+	/// Specifies the mode of the text.
+	/// </summary>
+	[Flags]
+	public enum FloatingTextFadeOutModes
+	{
 		/// <summary>
-		/// Specifies the mode of the text.
+		/// The text will fade out gradually.
 		/// </summary>
-		[Flags]
-		public enum OutMode
-		{
-			/// <summary>
-			/// The text will fade out gradually.
-			/// </summary>
-			FadeOut = 0,
-			/// <summary>
-			/// The text will hide abruptly.
-			/// </summary>
-			HideAbruptly = 1
-		}
+		FadeOut = 0,
+		/// <summary>
+		/// The text will hide abruptly.
+		/// </summary>
+		HideAbruptly = 1
+	}
+	/// <summary>
+	/// Specifies the anchor style of the text.
+	/// </summary>
+	[JsonConverter(typeof(AnchorStyleConverter))]
+	[Flags]
+	public enum FloatingTextAnchorStyles
+	{
+		/// <summary>
+		/// The lower anchor style.
+		/// </summary>
+		Lower = 1,
+		/// <summary>
+		/// The upper anchor style.
+		/// </summary>
+		Upper = 2,
+		/// <summary>
+		/// The left anchor style.
+		/// </summary>
+		Left = 4,
+		/// <summary>
+		/// The right anchor style.
+		/// </summary>
+		Right = 8,
+		/// <summary>
+		/// The center anchor style.
+		/// </summary>
+		Center = 0
 	}
 }

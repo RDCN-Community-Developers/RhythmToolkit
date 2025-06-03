@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -29,7 +28,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the type of narration information.
 		/// </summary>
-		public NarrateInfoType InfoType { get; set; }
+		public NarrateInfoTypes InfoType { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether the narration is sound only.
 		/// </summary>
@@ -53,49 +52,49 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + string.Format(" {0}:{1}", InfoType, NarrateSkipBeat);
+	}
+	/// <summary>
+	/// Specifies the type of narration information.
+	/// </summary>
+	public enum NarrateInfoTypes
+	{
 		/// <summary>
-		/// Specifies the type of narration information.
+		/// Indicates a connection event.
 		/// </summary>
-		public enum NarrateInfoType
-		{
-			/// <summary>
-			/// Indicates a connection event.
-			/// </summary>
-			Connect,
-			/// <summary>
-			/// Indicates an update event.
-			/// </summary>
-			Update,
-			/// <summary>
-			/// Indicates a disconnection event.
-			/// </summary>
-			Disconnect,
-			/// <summary>
-			/// Indicates an online event.
-			/// </summary>
-			Online,
-			/// <summary>
-			/// Indicates an offline event.
-			/// </summary>
-			Offline
-		}
+		Connect,
 		/// <summary>
-		/// Specifies the beats to skip during narration.
+		/// Indicates an update event.
 		/// </summary>
-		public enum NarrateSkipBeats
-		{
-			/// <summary>
-			/// Skip beats is on.
-			/// </summary>
-			On,
-			/// <summary>
-			/// Custom skip beats.
-			/// </summary>
-			Custom,
-			/// <summary>
-			/// Skip beats is off.
-			/// </summary>
-			Off,
-		}
+		Update,
+		/// <summary>
+		/// Indicates a disconnection event.
+		/// </summary>
+		Disconnect,
+		/// <summary>
+		/// Indicates an online event.
+		/// </summary>
+		Online,
+		/// <summary>
+		/// Indicates an offline event.
+		/// </summary>
+		Offline
+	}
+	/// <summary>
+	/// Specifies the beats to skip during narration.
+	/// </summary>
+	public enum NarrateSkipBeats
+	{
+		/// <summary>
+		/// Skip beats is on.
+		/// </summary>
+		On,
+		/// <summary>
+		/// Custom skip beats.
+		/// </summary>
+		Custom,
+		/// <summary>
+		/// Skip beats is off.
+		/// </summary>
+		Off,
 	}
 }

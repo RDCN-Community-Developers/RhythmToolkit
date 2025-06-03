@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -19,7 +18,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the execution time of the method.
 		/// </summary>
-		public ExecutionTimeOptions ExecutionTime { get; set; }
+		public EventExecutionTimeOptions ExecutionTime { get; set; }
 		/// <summary>
 		/// Gets or sets the sort offset for the event.
 		/// </summary>
@@ -33,19 +32,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		public override Tabs Tab => Tabs.Actions;
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {MethodName}";
+	}
+	/// <summary>
+	/// Specifies the execution time options for the method.
+	/// </summary>
+	public enum EventExecutionTimeOptions
+	{
 		/// <summary>
-		/// Specifies the execution time options for the method.
+		/// Execute the method on prebar.
 		/// </summary>
-		public enum ExecutionTimeOptions
-		{
-			/// <summary>
-			/// Execute the method on prebar.
-			/// </summary>
-			OnPrebar,
-			/// <summary>
-			/// Execute the method on bar.
-			/// </summary>
-			OnBar
-		}
+		OnPrebar,
+		/// <summary>
+		/// Execute the method on bar.
+		/// </summary>
+		OnBar
 	}
 }

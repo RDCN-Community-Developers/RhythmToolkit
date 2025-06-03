@@ -19,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the play style.
 		/// </summary>
 		[JsonProperty(nameof(PlayStyle))]
-		public PlayStyles PlayStyle { get; set; }
+		public PlayStyleTypes PlayStyle { get; set; }
 		/// <summary>
 		/// Gets or sets the next bar.
 		/// </summary>
@@ -38,35 +38,35 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }
+	}
+	/// <summary>
+	/// Defines the play styles.
+	/// </summary>
+	public enum PlayStyleTypes
+	{
 		/// <summary>
-		/// Defines the play styles.
+		/// Normal play style.
 		/// </summary>
-		public enum PlayStyles
-		{
-			/// <summary>
-			/// Normal play style.
-			/// </summary>
-			Normal,
-			/// <summary>
-			/// Loop play style.
-			/// </summary>
-			Loop,
-			/// <summary>
-			/// Prolong play style.
-			/// </summary>
-			Prolong,
-			/// <summary>
-			/// Immediate play style.
-			/// </summary>
-			Immediately,
-			/// <summary>
-			/// Extra immediate play style.
-			/// </summary>
-			ExtraImmediately,
-			/// <summary>
-			/// Prolong one bar play style.
-			/// </summary>
-			ProlongOneBar
-		}
+		Normal,
+		/// <summary>
+		/// Loop play style.
+		/// </summary>
+		Loop,
+		/// <summary>
+		/// Prolong play style.
+		/// </summary>
+		Prolong,
+		/// <summary>
+		/// Immediate play style.
+		/// </summary>
+		Immediately,
+		/// <summary>
+		/// Extra immediate play style.
+		/// </summary>
+		ExtraImmediately,
+		/// <summary>
+		/// Prolong one bar play style.
+		/// </summary>
+		ProlongOneBar
 	}
 }

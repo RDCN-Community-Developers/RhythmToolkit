@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		public SetTheme()
 		{
-			Preset = Theme.None;
+			Preset = Themes.None;
 			Type = EventType.SetTheme;
 			Tab = Tabs.Actions;
 			Rooms = new RDRoom(false, [0]);
@@ -20,7 +20,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the theme preset.  
 		/// </summary>  
-		public Theme Preset { get; set; }
+		public Themes Preset { get; set; }
 		/// <summary>  
 		/// Gets or sets the variant of the theme.  
 		/// </summary>  
@@ -46,65 +46,65 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		/// <returns>A string that represents the current object.</returns>  
 		public override string ToString() => base.ToString() + string.Format(" {0}", Preset);
-		/// <summary>  
-		/// Represents the available themes.  
-		/// </summary>  
-		public enum Theme
-		{
+	}
+	/// <summary>  
+	/// Represents the available themes.  
+	/// </summary>  
+	public enum Themes
+	{
 #pragma warning disable CS1591
-			None,
-			Intimate,
-			IntimateSimple,
-			InsomniacDay,
-			InsomniacNight,
-			Matrix,
-			NeonMuseum,
-			CrossesStraight,
-			CrossesFalling,
-			CubesFalling,
-			CubesFallingNiceBlue,
-			OrientalTechno,
-			Kaleidoscope,
-			PoliticiansRally,
-			Rooftop,
-			RooftopSummer,
-			RooftopAutumn,
-			BackAlley,
-			Sky,
-			NightSky,
-			HallOfMirrors,
-			CoffeeShop,
-			CoffeeShopNight,
-			Garden,
-			GardenNight,
-			TrainDay,
-			TrainNight,
-			DesertDay,
-			DesertNight,
-			HospitalWard,
-			HospitalWardNight,
-			PaigeOffice,
-			Basement,
-			ColeWardNight,
-			ColeWardSunrise,
-			BoyWard,
-			GirlWard,
-			Skyline,
-			SkylineBlue,
-			FloatingHeart,
-			FloatingHeartWithCubes,
-			FloatingHeartBroken,
-			FloatingHeartBrokenWithCubes,
-			ZenGarden,
-			Space,
-			Vaporwave,
-			RollerDisco,
-			Stadium,
-			StadiumStormy,
-			AthleteWard,
-			AthleteWardNight,
-			ProceduralTree
+		None,
+		Intimate,
+		IntimateSimple,
+		InsomniacDay,
+		InsomniacNight,
+		Matrix,
+		NeonMuseum,
+		CrossesStraight,
+		CrossesFalling,
+		CubesFalling,
+		CubesFallingNiceBlue,
+		OrientalTechno,
+		Kaleidoscope,
+		PoliticiansRally,
+		Rooftop,
+		RooftopSummer,
+		RooftopAutumn,
+		BackAlley,
+		Sky,
+		NightSky,
+		HallOfMirrors,
+		CoffeeShop,
+		CoffeeShopNight,
+		Garden,
+		GardenNight,
+		TrainDay,
+		TrainNight,
+		DesertDay,
+		DesertNight,
+		HospitalWard,
+		HospitalWardNight,
+		PaigeOffice,
+		Basement,
+		ColeWardNight,
+		ColeWardSunrise,
+		BoyWard,
+		GirlWard,
+		Skyline,
+		SkylineBlue,
+		FloatingHeart,
+		FloatingHeartWithCubes,
+		FloatingHeartBroken,
+		FloatingHeartBrokenWithCubes,
+		ZenGarden,
+		Space,
+		Vaporwave,
+		RollerDisco,
+		Stadium,
+		StadiumStormy,
+		AthleteWard,
+		AthleteWardNight,
+		ProceduralTree
 #pragma warning restore CS1591
-		}
 	}
 }

@@ -32,18 +32,18 @@ namespace RhythmBase.RhythmDoctor.Converters
 			if (p.DeclaringType == typeof(MoveRow))
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
-					nameof(MoveRow.CustomPosition) => i => ((MoveRow)i).Target == MoveRow.Targets.WholeRow,
+					nameof(MoveRow.CustomPosition) => i => ((MoveRow)i).Target == MoveRowTargets.WholeRow,
 					_ => null
 				};
 			if (p.DeclaringType == typeof(SetVFXPreset))
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
-					nameof(SetVFXPreset.Enable) => i => i is SetVFXPreset e && e.Preset is not SetVFXPreset.Presets.DisableAll,
-					nameof(SetVFXPreset.Threshold) => i => i is SetVFXPreset e && e.Enable && e.Preset == SetVFXPreset.Presets.Bloom,
-					nameof(SetVFXPreset.Intensity) => i => i is SetVFXPreset e && e.Enable && durationPresets.Contains(e.Preset) && e.Preset is not (SetVFXPreset.Presets.TileN or SetVFXPreset.Presets.CustomScreenScroll),
-					nameof(SetVFXPreset.Color) => i => i is SetVFXPreset e && e.Enable && e.Preset is SetVFXPreset.Presets.Bloom or SetVFXPreset.Presets.Tutorial,
+					nameof(SetVFXPreset.Enable) => i => i is SetVFXPreset e && e.Preset is not VFXPresets.DisableAll,
+					nameof(SetVFXPreset.Threshold) => i => i is SetVFXPreset e && e.Enable && e.Preset == VFXPresets.Bloom,
+					nameof(SetVFXPreset.Intensity) => i => i is SetVFXPreset e && e.Enable && durationPresets.Contains(e.Preset) && e.Preset is not (VFXPresets.TileN or VFXPresets.CustomScreenScroll),
+					nameof(SetVFXPreset.Color) => i => i is SetVFXPreset e && e.Enable && e.Preset is	VFXPresets.Bloom or VFXPresets.Tutorial,
 					nameof(SetVFXPreset.FloatX) or
-					nameof(SetVFXPreset.FloatY) => i => i is SetVFXPreset e && e.Enable && e.Preset is SetVFXPreset.Presets.TileN or SetVFXPreset.Presets.CustomScreenScroll,
+					nameof(SetVFXPreset.FloatY) => i => i is SetVFXPreset e && e.Enable && e.Preset is VFXPresets.TileN or VFXPresets.CustomScreenScroll,
 					nameof(SetVFXPreset.Ease) => i => i is SetVFXPreset e && e.Enable && durationPresets.Contains(e.Preset),
 					nameof(SetVFXPreset.Duration) => i => i is SetVFXPreset e && e.Enable && durationPresets.Contains(e.Preset),
 					_ => null
@@ -64,7 +64,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
 					nameof(Tile.TilingType) => i => i is Tile e && e.Speed is not null,
-					nameof(Tile.Interval) => i => i is Tile e && e.TilingType == Tile.TilingTypes.Pulse,
+					nameof(Tile.Interval) => i => i is Tile e && e.TilingType == TilingTypes.Pulse,
 					_ => null
 				};
 			if (p.DeclaringType == typeof(SoundSubType))
@@ -102,8 +102,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 			if (p.DeclaringType == typeof(SetCountingSound))
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
-					nameof(SetCountingSound.VoiceSource) => i => i is SetCountingSound e && e.VoiceSource != SetCountingSound.VoiceSources.Custom,
-					nameof(SetCountingSound.Sounds) => i => i is SetCountingSound e && e.VoiceSource == SetCountingSound.VoiceSources.Custom,
+					nameof(SetCountingSound.VoiceSource) => i => i is SetCountingSound e && e.VoiceSource != CountingSoundVoiceSources.Custom,
+					nameof(SetCountingSound.Sounds) => i => i is SetCountingSound e && e.VoiceSource == CountingSoundVoiceSources.Custom,
 					_ => null
 				};
 			if (p.DeclaringType == typeof(AddOneshotBeat))
@@ -123,27 +123,27 @@ namespace RhythmBase.RhythmDoctor.Converters
 				p.ShouldSerialize = f;
 			return p;
 		}
-		private static readonly SetVFXPreset.Presets[] durationPresets =
+		private static readonly VFXPresets[] durationPresets =
 		[
-			SetVFXPreset.Presets.HueShift,
-			SetVFXPreset.Presets.Brightness,
-			SetVFXPreset.Presets.Contrast,
-			SetVFXPreset.Presets.Saturation,
-			SetVFXPreset.Presets.Rain,
-			SetVFXPreset.Presets.Bloom,
-			SetVFXPreset.Presets.TileN,
-			SetVFXPreset.Presets.CustomScreenScroll,
-			SetVFXPreset.Presets.JPEG,
-			SetVFXPreset.Presets.Mosaic,
-			SetVFXPreset.Presets.ScreenWaves,
-			SetVFXPreset.Presets.Grain,
-			SetVFXPreset.Presets.Blizzard,
-			SetVFXPreset.Presets.Drawing,
-			SetVFXPreset.Presets.Aberration,
-			SetVFXPreset.Presets.Blur,
-			SetVFXPreset.Presets.RadialBlur,
-			SetVFXPreset.Presets.Dots,
-			SetVFXPreset.Presets.Tutorial,
+			VFXPresets.HueShift,
+			VFXPresets.Brightness,
+			VFXPresets.Contrast,
+			VFXPresets.Saturation,
+			VFXPresets.Rain,
+			VFXPresets.Bloom,
+			VFXPresets.TileN,
+			VFXPresets.CustomScreenScroll,
+			VFXPresets.JPEG,
+			VFXPresets.Mosaic,
+			VFXPresets.ScreenWaves,
+			VFXPresets.Grain,
+			VFXPresets.Blizzard,
+			VFXPresets.Drawing,
+			VFXPresets.Aberration,
+			VFXPresets.Blur,
+			VFXPresets.RadialBlur,
+			VFXPresets.Dots,
+			VFXPresets.Tutorial,
 		];
 	}
 }

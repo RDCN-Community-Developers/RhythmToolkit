@@ -35,24 +35,24 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() +
 			$" {Utils.Utils.GetPatternString(this.RowXs())} {((Swing is 0.5f or 0f) ? "" : " Swing")}";
-		/// <summary>
-		/// Defines the classic beat patterns.
-		/// </summary>
-		public enum ClassicBeatPatterns
-		{
-			/// <summary>
-			/// No change in the beat pattern.
-			/// </summary>
-			NoChange,
-			/// <summary>
-			/// Three beat pattern.
-			/// </summary>
-			ThreeBeat,
-			/// <summary>
-			/// Four beat pattern.
-			/// </summary>
-			FourBeat
-		}
 		private string GetDebuggerDisplay() => ToString();
+	}
+	/// <summary>
+	/// Defines the classic beat patterns.
+	/// </summary>
+	public enum ClassicBeatPatterns
+	{
+		/// <summary>
+		/// No change in the beat pattern.
+		/// </summary>
+		NoChange,
+		/// <summary>
+		/// Three beat pattern.
+		/// </summary>
+		ThreeBeat,
+		/// <summary>
+		/// Four beat pattern.
+		/// </summary>
+		FourBeat
 	}
 }

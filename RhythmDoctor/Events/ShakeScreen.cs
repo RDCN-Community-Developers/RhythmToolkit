@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the shake level of the event.
 		/// </summary>
-		public ShakeLevels ShakeLevel { get; set; }
+		public ScreenShakeLevels ShakeLevel { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
@@ -37,23 +37,23 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() + string.Format(" {0}", ShakeLevel);
+	}
+	/// <summary>
+	/// Defines the levels of screen shake.
+	/// </summary>
+	public enum ScreenShakeLevels
+	{
 		/// <summary>
-		/// Defines the levels of screen shake.
+		/// Low level of screen shake.
 		/// </summary>
-		public enum ShakeLevels
-		{
-			/// <summary>
-			/// Low level of screen shake.
-			/// </summary>
-			Low,
-			/// <summary>
-			/// Medium level of screen shake.
-			/// </summary>
-			Medium,
-			/// <summary>
-			/// High level of screen shake.
-			/// </summary>
-			High
-		}
+		Low,
+		/// <summary>
+		/// Medium level of screen shake.
+		/// </summary>
+		Medium,
+		/// <summary>
+		/// High level of screen shake.
+		/// </summary>
+		High
 	}
 }

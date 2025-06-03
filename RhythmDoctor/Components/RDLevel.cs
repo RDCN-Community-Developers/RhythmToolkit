@@ -142,7 +142,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				PlaySong playsong = new();
 				SetTheme settheme = new();
 				playsong.Song = new RDAudio() { Filename = "sndOrientalTechno" };
-				settheme.Preset = SetTheme.Theme.OrientalTechno;
+				settheme.Preset = Themes.OrientalTechno;
 				rdlevel.AddRange([playsong, settheme]);
 				Row samurai = new() { Rooms = RDRoomIndex.Room1, Character = RDCharacters.Samurai };
 				rdlevel.Rows.Add(samurai);
@@ -459,7 +459,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Add event to the level.
 		/// </summary>
 		/// <param name="item">Event to be added.</param>
-		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException"></exception>
 		public override void Add (IBaseEvent item) => Add(item, true);
 		public void Add(IBaseEvent item, bool keepPos = true)
 		{
@@ -585,7 +584,7 @@ namespace RhythmBase.RhythmDoctor.Components
 							Foreground = this.Where<SetForeground>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
 							Shake = this.Where<ShakeScreen>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
 							Stutter = this.Where<Stutter>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
-							Theme = this.Where<SetTheme>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault()?.Preset ?? SetTheme.Theme.None,
+							Theme = this.Where<SetTheme>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault()?.Preset ?? Themes.None,
 						}
 					)
 				],

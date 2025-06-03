@@ -16,10 +16,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 			{
 				string action = jobj["Action"]?.ToObject<string>() ?? "Run";
 				ev.Action = (
-					action.StartsWith("Run") ? TagAction.Actions.Run :
-					action.StartsWith("Enable") ? TagAction.Actions.Enable :
-					action.StartsWith("Disable") ? TagAction.Actions.Disable : 0) |
-					(action.EndsWith("All") ? TagAction.Actions.All : 0);
+					action.StartsWith("Run") ? TagActions.Run :
+					action.StartsWith("Enable") ? TagActions.Enable :
+					action.StartsWith("Disable") ? TagActions.Disable : 0) |
+					(action.EndsWith("All") ? TagActions.All : 0);
 			}
 			return ev;
 		}
@@ -35,7 +35,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				jobj["tag"] = value.Tag;
 			}
 			jobj["Tag"] = value.ActionTag;
-			jobj["Action"] = (value.Action & (TagAction.Actions)0b110).ToString() + (value.Action.HasFlag(TagAction.Actions.All) ? "All" : "");
+			jobj["Action"] = (value.Action & (TagActions)0b110).ToString() + (value.Action.HasFlag(TagActions.All) ? "All" : "");
 			return jobj;
 		}
 	}

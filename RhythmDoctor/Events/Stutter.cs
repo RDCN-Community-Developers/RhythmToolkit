@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -37,7 +36,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the action of the stutter event.
 		/// </summary>
-		public Actions Action { get; set; }
+		public StutterActions Action { get; set; }
 		/// <summary>
 		/// Gets or sets the number of loops for the stutter event.
 		/// </summary>
@@ -50,19 +49,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }
+	}
+	/// <summary>
+	/// Defines the possible actions for the stutter event.
+	/// </summary>
+	public enum StutterActions
+	{
 		/// <summary>
-		/// Defines the possible actions for the stutter event.
+		/// Add action.
 		/// </summary>
-		public enum Actions
-		{
-			/// <summary>
-			/// Add action.
-			/// </summary>
-			Add,
-			/// <summary>
-			/// Cancel action.
-			/// </summary>
-			Cancel
-		}
+		Add,
+		/// <summary>
+		/// Cancel action.
+		/// </summary>
+		Cancel
 	}
 }
