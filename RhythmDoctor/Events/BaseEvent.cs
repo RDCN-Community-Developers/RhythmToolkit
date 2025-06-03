@@ -38,13 +38,21 @@ namespace RhythmBase.RhythmDoctor.Events
 			get => _beat;
 			set
 			{
-				_beat.BaseLevel?.Remove(this);
-				_beat = _beat.BaseLevel == null ?
-							value.BaseLevel == null ?
-								value :
-								value.WithoutLink() :
-							new(_beat.BaseLevel.Calculator, value);
-				_beat.BaseLevel?.Add(this);
+				if (_beat == value)
+					return;
+				if (_beat.BaseLevel?._isEnumerating ?? false)
+				{
+					_beat.BaseLevel?._modifyingEvents.Enqueue((this, value));
+				}
+				else
+				{
+					BeatCalculator? c = _beat.BaseLevel?.Calculator;
+					_beat.BaseLevel?.Remove(this);
+					_beat = c == null ?
+							value.WithoutLink() :
+							new(c, value);
+					_beat.BaseLevel?.Add(this);
+				}
 			}
 		}
 		/// <summary>

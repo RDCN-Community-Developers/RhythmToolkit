@@ -114,22 +114,12 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>An enumerator for the collection.</returns>
-		public IEnumerator<IBaseEvent> GetEnumerator()
-		{
-			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> pair in eventsBeatOrder)
-				foreach (IBaseEvent item in pair.Value)
-					yield return item;
-		}
+		public IEnumerator<IBaseEvent> GetEnumerator() => new EventEnumerator(this);
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>An enumerator for the collection.</returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> pair in eventsBeatOrder)
-				foreach (IBaseEvent item in pair.Value)
-					yield return item;
-		}
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
@@ -145,5 +135,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// The dictionary that maintains the order of events based on their beats.
 		/// </summary>
 		internal SortedDictionary<RDBeat, TypedEventCollection<IBaseEvent>> eventsBeatOrder;
+		internal bool _isEnumerating = false;
+		internal Queue<(IBaseEvent e, RDBeat b)> _modifyingEvents = [];
 	}
 }

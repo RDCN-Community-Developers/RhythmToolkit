@@ -4,6 +4,7 @@ namespace RhythmBase.RhythmDoctor.Components
 {
 	internal class TypedEventCollection<TEvent> : IEnumerable<TEvent> where TEvent : IBaseEvent
 	{
+		public int Count => list.Count;
 		public TypedEventCollection()
 		{
 			list = [];
