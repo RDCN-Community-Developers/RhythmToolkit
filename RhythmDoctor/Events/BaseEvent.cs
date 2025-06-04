@@ -40,9 +40,9 @@ namespace RhythmBase.RhythmDoctor.Events
 			{
 				if (_beat == value)
 					return;
-				if (_beat.BaseLevel?._isEnumerating ?? false)
+				if (_beat.BaseLevel?._currentModifier is not null)
 				{
-					_beat.BaseLevel?._modifyingEvents.Enqueue((this, value));
+					_beat.BaseLevel?._modifierInstances[_beat.BaseLevel._currentModifier].Enqueue((this, value));
 				}
 				else
 				{

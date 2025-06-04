@@ -17,8 +17,12 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		public bool Remove(TEvent item)
 		{
-			_types.Remove(item.Type);
-			return list.Remove(item);
+			bool result = list.Remove(item);
+			if (!result)
+				return result;
+			if (!list.Any(i => i.Type == item.Type))
+				_types.Remove(item.Type);
+			return result;
 		}
 		public bool BeforeThan(IBaseEvent item1, IBaseEvent item2) =>
 			list.IndexOf((TEvent)(object)item1) < list.IndexOf((TEvent)(object)item2);

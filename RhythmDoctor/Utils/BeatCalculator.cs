@@ -1,7 +1,7 @@
-﻿using RhythmBase.RhythmDoctor.Extensions;
-using RhythmBase.Global.Components;
+﻿using RhythmBase.Global.Components;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Utils
 {
 	/// <summary>
@@ -12,17 +12,25 @@ namespace RhythmBase.RhythmDoctor.Utils
 		internal BeatCalculator(RDLevel level)
 		{
 			Collection = level;
-			Refresh();
+			Refresh(true);
 		}
 		/// <summary>
 		/// Refresh the cache.
 		/// </summary>
-		public void Refresh()
+		public void Refresh(bool init = false)
 		{
-			_BPMList = Collection.Where<BaseBeatsPerMinute>()
-						.ToList();
-			_CPBList = Collection.Where<SetCrotchetsPerBar>()
-						.ToList();
+			if (init)
+			{
+				_BPMList = [];
+				_CPBList = [];
+			}
+			else
+			{
+				_BPMList = Collection.Where<BaseBeatsPerMinute>()
+							.ToList();
+				_CPBList = Collection.Where<SetCrotchetsPerBar>()
+							.ToList();
+			}
 		}
 		/// <summary>
 		/// Convert beat data.

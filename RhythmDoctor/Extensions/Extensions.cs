@@ -3,7 +3,6 @@ using RhythmBase.Global.Components;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
-using RhythmBase.RhythmDoctor.Utils;
 using System.Reflection;
 namespace RhythmBase.RhythmDoctor.Extensions
 {
@@ -130,11 +129,19 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		/// <param name="beat">The float number.</param>
 		/// <param name="splitBase">Indicate what fraction this is.</param>
-		/// <returns></returns>
 		public static float FixFraction(this float beat, uint splitBase) => (float)(Math.Round((double)(beat * splitBase)) / splitBase);
 		/// <summary>
 		/// Calculate the fraction of <paramref name="splitBase" /> equal to the nearest floating point number.
+		/// <example>
+		/// <code>
+		/// 2.236f.FixFraction(4) == 2.25f
+		/// float.Pi.FixFraction(5) == 3.2f
+		/// float.E.Fixfraction(2) == 2.5f
+		/// </code>
+		/// </example>
 		/// </summary>
+		/// <param name="beat">The beat.</param>
+		/// <param name="splitBase">Indicate what fraction this is.</param>
 		public static RDBeat FixFraction(this RDBeat beat, uint splitBase) => new(beat.BeatOnly.FixFraction(splitBase));
 		/// <summary>
 		/// Converting enumeration constants to in-game colors。
@@ -159,7 +166,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			foreach (TEvent item in items)
 				e.Add(item);
 		}
-		/// <summary>  
+		/// <summary>
 		/// Adds a range of items to the specified <see cref="LevelElementCollection{TCollection}"/>.  
 		/// </summary>  
 		/// <typeparam name="TCollection">The type of elements in the collection, constrained to <see cref="OrderedEventCollection"/>.</typeparam>  
@@ -175,9 +182,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent =>
-			((IEnumerable<TEvent>)e.eventsBeatOrder
-			.SelectMany(i => i.Value)).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+				yield return enumerator.Current;
+		}
 		/// <summary>
 		/// Filters a sequence of events located at a time.
 		/// </summary>
@@ -185,10 +195,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			IEnumerable<TEvent> Where = [];
-			if (e.eventsBeatOrder.TryGetValue(beat, out TypedEventCollection<IBaseEvent>? value))
-				Where = value.Cast<TEvent>().AsEnumerable();
-			return Where;
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(beat, null);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a range of time.
@@ -196,11 +205,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent =>
-			e.eventsBeatOrder
-			.TakeWhile(i => i.Key < endBeat)
-			.SkipWhile(i => i.Key < startBeat)
-			.SelectMany(i => i.Value.OfType<TEvent>());
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(startBeat, endBeat);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
+		}
 #if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events located at a bar.
@@ -210,10 +220,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : IBaseEvent
 		{
 			var (start, end) = GetRange(e, bar);
-			return e.eventsBeatOrder
-			.TakeWhile(i => i.Key.BeatOnly < end)
-			.SkipWhile(i => i.Key.BeatOnly < start)
-			.SelectMany(i => i.Value.OfType<TEvent>());
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(start, end);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #endif
 		/// <summary>
@@ -222,11 +231,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="range">Specified beat range.</param>
 		/// <returns></returns>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : IBaseEvent =>
-			(IEnumerable<TEvent>)e.eventsBeatOrder
-			.TakeWhile(i => range.End == null || i.Key < range.End)
-			.SkipWhile(i => range.Start != null && i.Key < range.Start)
-			.SelectMany(i => i.Value);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(range.Start, range.End);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
+		}
 #if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events located at a range of bar.
@@ -236,10 +246,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : IBaseEvent
 		{
 			var (start, end) = GetRange(e, bars);
-			return e.eventsBeatOrder
-			.TakeWhile(i => i.Key.BeatOnly < end)
-			.SkipWhile(i => i.Key.BeatOnly < start)
-			.SelectMany(i => i.Value.OfType<TEvent>());
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat((uint)start, 1), new RDBeat((uint)end, 1));
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #endif
 		/// <summary>
@@ -248,7 +257,13 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.Where(beat).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(beat, null);
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+					yield return enumerator.Current;
+		}
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified range of beat.
 		/// </summary>
@@ -256,14 +271,26 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.Where(startBeat, endBeat).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(startBeat, endBeat);
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+					yield return enumerator.Current;
+		}
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified range of beat.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.Where(range).Where(predicate);
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(range.Start, range.End);
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+					yield return enumerator.Current;
+		}
 #if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified bar.
@@ -287,11 +314,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
 		{
-			EventType[] enums = EventTypeUtils.ToEnums<TEvent>();
-			return e.eventsBeatOrder
-							.Where(i => i.Value._types
-								.Any(enums.Contains))
-							.SelectMany(i => i.Value).OfType<TEvent>();
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a beat in specified event type.
@@ -301,8 +326,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			TypedEventCollection<IBaseEvent> value;
-			return (e.eventsBeatOrder.TryGetValue(beat, out value!) ? value.OfType<TEvent>() : []) ?? [];
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(beat, null);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a range of beat in specified event type.
@@ -311,10 +337,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.eventsBeatOrder
-					.TakeWhile(i => i.Key < endBeat)
-					.SkipWhile(i => i.Key < startBeat)
-					.SelectMany(i => i.Value.OfType<TEvent>());
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(startBeat, endBeat);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
+		}
 #if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events located at a bar in specified event type.
@@ -324,11 +352,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="bar">Specified bar.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : IBaseEvent
 		{
-			(float, float) rg = GetRange(e, bar);
-			return e.eventsBeatOrder
-				.TakeWhile((KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> i) => i.Key.BeatOnly < rg.Item2)
-				.SkipWhile((KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> i) => i.Key.BeatOnly < rg.Item1)
-				.SelectMany(i => i.Value.OfType<TEvent>());
+			(float start, float end) = GetRange(e, bar);
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(start, end);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #endif
 		/// <summary>
@@ -337,10 +364,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="e">Collection</param>
 		/// <param name="range">Specified beat range.</param>
-		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDRange range) where TEvent : IBaseEvent => e.eventsBeatOrder
-			.TakeWhile(i => range.End == null || i.Key < range.End)
-			.SkipWhile(i => range.Start != null && i.Key < range.Start)
-			.SelectMany(i => i.Value.OfType<TEvent>());
+		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDRange range) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(range.Start, range.End);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
+		}
 #if !NETSTANDARD
 		/// <summary>
 		/// Filters a sequence of events located at a range of bar in specified event type.
@@ -351,10 +380,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Range bars) where TEvent : IBaseEvent
 		{
 			(float start, float end) = GetRange(e, bars);
-			return e.eventsBeatOrder
-							.TakeWhile(i => i.Key.BeatOnly < end)
-							.SkipWhile(i => i.Key.BeatOnly < start)
-							.SelectMany(i => i.Value.OfType<TEvent>());
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(start, end);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #endif
 		/// <summary>
@@ -412,27 +440,27 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(predicate)]);
 		/// <summary>
 		/// Remove a sequence of events located at a time.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(beat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(beat)]);
 		/// <summary>
 		/// Remove a sequence of events located at a range of time.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(startBeat, endBeat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(startBeat, endBeat)]);
 #if !NETSTANDARD
 		/// <summary>
 		/// Remove a sequence of events located at a bar.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(bar)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(bar)]);
 #endif
 		/// <summary>
 		/// Remove a sequence of events located at a range of beat.
@@ -440,14 +468,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="range">Specified beat range.</param>
 		/// <returns></returns>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(range)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(range)]);
 #if !NETSTANDARD
 		/// <summary>
 		/// Remove a sequence of events located at a range of bar.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(bars)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(bars)]);
 #endif
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified beat.
@@ -455,7 +483,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="beat">Specified beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, beat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(predicate, beat)]);
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified range of beat.
 		/// </summary>
@@ -463,14 +491,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="startBeat">Specified start beat.</param>
 		/// <param name="endBeat">Specified end beat.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, startBeat, endBeat)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(predicate, startBeat, endBeat)]);
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified range of beat.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="range">Specified beat range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, range)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(predicate, range)]);
 #if !NETSTANDARD
 		/// <summary>                 
 		/// Remove a sequence of events based on a predicate in specified bar.
@@ -478,37 +506,73 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bar">Specified bar.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bar)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(predicate, bar)]);
 		/// <summary>
 		/// Remove a sequence of events based on a predicate in specified range of bar.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="bars">Specified bar range.</param>
-		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.RemoveRange(new List<TEvent>(e.Where(predicate, bars)));
+		public static int RemoveAll<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Range bars) where TEvent : IBaseEvent => e.RemoveRange([.. e.Where(predicate, bars)]);
 #endif
 		/// <summary>
 		/// Returns the first element of the collection.
 		/// </summary>
 		/// <param name="e">Collection</param>
-		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent => (TEvent)e.eventsBeatOrder.First().Value.First();
+		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			if (enumerator.MoveNext())
+			{
+				var result = enumerator.Current;
+				return result;
+			}
+			throw new InvalidOperationException("The source sequence is empty.");
+		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.ConcatAll().First(predicate);
+		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			throw new InvalidOperationException("No element satisfies the condition in predicate. -or- The source sequence is empty.");
+		}
 		/// <summary>
 		/// Returns the first element of the collection in specified event type.
 		/// </summary>
 		/// <param name="e">Collection</param>
-		public static TEvent First<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.Where<TEvent>().First();
+		public static TEvent First<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			if (enumerator.MoveNext())
+			{
+				var result = enumerator.Current;
+				return result;
+			}
+			throw new InvalidOperationException("The source sequence is empty.");
+		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent First<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().First(predicate);
+		public static TEvent First<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			throw new InvalidOperationException("No element satisfies the condition in predicate. -or- The source sequence is empty.");
+		}
 		/// <summary>
 		/// Returns the first event in the collection or the default value if the collection is empty.
 		/// </summary>
@@ -517,48 +581,107 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <returns>The first event in the collection or the default value if the collection is empty.</returns>
 		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent
 		{
-			TypedEventCollection<IBaseEvent> value = e.eventsBeatOrder.FirstOrDefault().Value;
-			return (TEvent?)(value?.FirstOrDefault());
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			if (enumerator.MoveNext())
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			return default;
 		}
 		/// <summary>
 		/// Returns the first element of the collection, or <paramref name="defaultValue" /> if collection contains no elements.
 		/// </summary>
 		/// <param name="defaultValue">The default value to return if contains no elements.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : IBaseEvent => e.ConcatAll().FirstOrDefault(defaultValue);
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			if (enumerator.MoveNext())
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			return defaultValue;
+		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.ConcatAll().OfType<TEvent>().FirstOrDefault(predicate);
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			return default;
+		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent => e.ConcatAll().FirstOrDefault(predicate, defaultValue);
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			return defaultValue;
+		}
 		/// <summary>
 		/// Returns the first element of the collection in specified event type, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.Where<TEvent>().FirstOrDefault();
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			if (enumerator.MoveNext())
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			return default;
+		}
 		/// <summary>
 		/// Returns the first element of the collection in specified event type, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : IBaseEvent => e.Where<TEvent>().FirstOrDefault(defaultValue);
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			if (enumerator.MoveNext())
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			return defaultValue;
+		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().FirstOrDefault(predicate);
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			if (enumerator.MoveNext() && predicate(enumerator.Current))
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			return default;
+		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
@@ -566,75 +689,181 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent => e.Where<TEvent>().FirstOrDefault(predicate, defaultValue);
+		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			if (enumerator.MoveNext() && predicate(defaultValue))
+			{
+				TEvent result = enumerator.Current;
+				return result;
+			}
+			return defaultValue;
+		}
 		/// <summary>
 		/// Returns the last element of the collection.
 		/// </summary>
-		public static TEvent Last<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent => (TEvent)e.eventsBeatOrder.Last().Value.Last();
+		public static TEvent Last<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			bool hasElements = false;
+			TEvent? last = default;
+			while (enumerator.MoveNext())
+			{
+				hasElements = true;
+				last = enumerator.Current;
+			}
+			if (hasElements)
+				return last!;
+			throw new InvalidOperationException("The source sequence is empty.");
+		}
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent Last<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.ConcatAll().Last(predicate);
+		public static TEvent Last<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			bool hasElements = false;
+			TEvent? last = default;
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			{
+				hasElements = true;
+				last = enumerator.Current;
+			}
+			if (hasElements)
+				return last!;
+			throw new InvalidOperationException("The source sequence is empty.");
+		}
 		/// <summary>
 		/// Returns the last element of the collection in specified event type.
 		/// </summary>
 		/// <param name="e">Collection</param>
-		public static TEvent Last<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.Where<TEvent>().Last();
+		public static TEvent Last<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			bool hasElements = false;
+			TEvent? last = default;
+			while (enumerator.MoveNext())
+			{
+				hasElements = true;
+				last = enumerator.Current;
+			}
+			if (hasElements)
+				return last!;
+			throw new InvalidOperationException("The source sequence is empty.");
+		}
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition in specified event type.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent Last<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().Last(predicate);
+		public static TEvent Last<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			bool hasElements = false;
+			TEvent? last = default;
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			{
+				hasElements = true;
+				last = enumerator.Current;
+			}
+			if (hasElements)
+				return last!;
+			throw new InvalidOperationException("The source sequence is empty.");
+		}
 		/// <summary>
 		/// Returns the last element of the collection, or <see langword="null" /> if collection contains no elements.
 		/// </summary>
 		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent
 		{
-			IEnumerable<IBaseEvent> value = e.eventsBeatOrder.LastOrDefault().Value.AsEnumerable();
-			return (TEvent?)(value?.LastOrDefault());
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? last = default;
+			while (enumerator.MoveNext())
+				last = enumerator.Current;
+			return last;
 		}
 		/// <summary>
 		/// Returns the last element of the collection, or <paramref name="defaultValue" /> if collection contains no elements.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="defaultValue">The default value to return if contains no elements.</param>
-		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : IBaseEvent => e.ConcatAll().LastOrDefault(defaultValue);
+		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? last = defaultValue;
+			while (enumerator.MoveNext())
+				last = enumerator.Current;
+			return last;
+		}
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.ConcatAll().LastOrDefault(predicate);
+		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? last = default;
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+				last = enumerator.Current;
+			return last;
+		}
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent => e.ConcatAll().LastOrDefault(predicate, defaultValue);
+		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? last = defaultValue;
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+				last = enumerator.Current;
+			return last;
+		}
 		/// <summary>
 		/// Returns the last element of the collection in specified event type, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="e">Collection</param>
-		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent => e.Where<TEvent>().LastOrDefault();
+		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? last = default;
+			while (enumerator.MoveNext())
+				last = enumerator.Current;
+			return last;
+		}
 		/// <summary>
 		/// Returns the last element of the collection in specified event type, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="e">Collection</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : IBaseEvent => e.Where<TEvent>().LastOrDefault(defaultValue);
+		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? last = defaultValue;
+			while (enumerator.MoveNext())
+				last = enumerator.Current;
+			return last;
+		}
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition in specified event type, or <see langword="null" /> if matches no elements.
 		/// </summary>
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().LastOrDefault(predicate);
+		public static TEvent? LastOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? last = default;
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+				last = enumerator.Current;
+			return last;
+		}
 		/// <summary>
 		/// Returns the last element of the collection that satisfies a specified condition in specified event type, or <paramref name="defaultValue" /> if matches no elements.
 		/// </summary>
@@ -642,7 +871,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
-		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent => e.Where<TEvent>().LastOrDefault(predicate, defaultValue);
+		public static TEvent LastOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? last = defaultValue;
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+				last = enumerator.Current;
+			return last;
+		}
 		/// <summary>
 		/// Returns events from a collection as long as it less than or equal to <paramref name="beat" />.
 		/// </summary>
@@ -650,9 +886,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			foreach (TEvent item in e.Where<TEvent>())
-				if (item.Beat <= beat) yield return item;
-				else break;
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, beat);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -662,11 +898,27 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="bar">Specified bar.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Index bar) where TEvent : IBaseEvent
 		{
-			TEvent firstEvent = e.First();
-			TEvent lastEvent = e.Last();
-			return e.TakeWhile(checked(bar.IsFromEnd
-				? lastEvent.Beat._calculator!.BeatOf(lastEvent.Beat.BarBeat.bar - (uint)bar.Value + 1U, 1f)
-				: firstEvent.Beat._calculator!.BeatOf((uint)(bar.Value + 1), 1f)));
+			if (e.Count == 0)
+				yield break;
+			if (bar.IsFromEnd)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+				Queue<TEvent> queue = [];
+				while (enumerator.MoveNext())
+				{
+					TEvent current = enumerator.Current;
+					queue.Enqueue(current);
+					uint currentBar = current.Beat.BarBeat.bar;
+					while (queue.TryPeek(out TEvent? peek) && peek.Beat.BarBeat.bar < currentBar - (uint)bar.Value)
+						yield return queue.Dequeue();
+				}
+			}
+			else
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat((uint)bar.Value, 1));
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #endif
 		/// <summary>
@@ -674,17 +926,30 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">A function to test each event for a condition.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent =>
-			(IEnumerable<TEvent>)e.eventsBeatOrder
-			.SelectMany(i => i.Value)
-			.TakeWhile((Func<IBaseEvent, bool>)(object)predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+					yield return enumerator.Current;
+				else
+					break;
+		}
 		/// <summary>
 		/// Returns events from a collection as long as a specified condition is true and also less than or equal to <paramref name="beat" />.
 		/// </summary>
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
 		/// <param name="beat">Specified beat.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent => e.TakeWhile(beat).TakeWhile(predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, beat);
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+					yield return enumerator.Current;
+				else
+					break;
+		}
 #if !NETSTANDARD
 		/// <summary>                 
 		/// Returns events from a collection as long as a specified condition is true and also less than or equal to <paramref name="bar" />.
@@ -692,7 +957,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="e">Collection</param>
 		/// <param name="bar">Specified bar.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent => e.TakeWhile(bar).TakeWhile(predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, Index bar) where TEvent : IBaseEvent
+		{
+			return e.TakeWhile(bar).TakeWhile(predicate);
+		}
 #endif
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as it less than or equal to <paramref name="beat" />.
@@ -702,9 +970,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			foreach (TEvent item in e.Where<TEvent>())
-				if (item.Beat <= beat) yield return item;
-				else break;
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, beat);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -715,11 +983,28 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="bar">Specified bar.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : IBaseEvent
 		{
-			IBaseEvent firstEvent = e.First<IBaseEvent>();
-			IBaseEvent lastEvent = e.Last<IBaseEvent>();
-			return e.TakeWhile<TEvent>(checked(bar.IsFromEnd
-				? lastEvent.Beat._calculator!.BeatOf((uint)(lastEvent.Beat.BarBeat.bar - (ulong)bar.Value + 1U), 1f)
-				: firstEvent.Beat._calculator!.BeatOf((uint)(bar.Value + 1), 1f)));
+
+			if (e.Count == 0)
+				yield break;
+			if (bar.IsFromEnd)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+				Queue<TEvent> queue = [];
+				while (enumerator.MoveNext())
+				{
+					TEvent current = enumerator.Current;
+					queue.Enqueue(current);
+					uint currentBar = current.Beat.BarBeat.bar;
+					while (queue.TryPeek(out TEvent? peek) && peek.Beat.BarBeat.bar < currentBar - (uint)bar.Value)
+						yield return queue.Dequeue();
+				}
+			}
+			else
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat((uint)bar.Value, 1));
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #endif
 		/// <summary>
@@ -728,7 +1013,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="e">Collection</param>
 		/// <param name="predicate">Specified condition.</param>
-		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent => e.Where<TEvent>().TakeWhile(predicate);
+		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
+		{
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			while (enumerator.MoveNext() && predicate(enumerator.Current))
+				yield return enumerator.Current;
+		}
 		/// <summary>
 		/// Returns events from a collection in specified event type as long as a specified condition is true and its beat less than or equal to <paramref name="beat" />.
 		/// </summary>
@@ -765,12 +1055,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static IEnumerable<RDHit> GetHitBeat(this RDLevel e)
 		{
-			List<RDHit> L = [];
 			foreach (Row item in e.Rows)
-			{
-				L.AddRange(item.HitBeats());
-			}
-			return L;
+				foreach (RDHit hit in item.HitBeats())
+					yield return hit;
 		}
 		/// <summary>
 		/// Get all the hit event of the level.

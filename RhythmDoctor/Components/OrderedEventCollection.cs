@@ -23,8 +23,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <returns>The beat of the last event.</returns>
 		[JsonIgnore]
-		public RDBeat Length => eventsBeatOrder.LastOrDefault().Value.FirstOrDefault()?.Beat ?? new();
-
+		public RDBeat Length => eventsBeatOrder.Keys.LastOrDefault();
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OrderedEventCollection"/> class.
 		/// </summary>
@@ -44,11 +43,6 @@ namespace RhythmBase.RhythmDoctor.Components
 			foreach (IBaseEvent item in items)
 				Add(item);
 		}
-		/// <summary>
-		/// Concatenates all events in the collection.
-		/// </summary>
-		/// <returns>A list of all events in the collection.</returns>
-		public IEnumerable<IBaseEvent> ConcatAll() => eventsBeatOrder.SelectMany(i => i.Value).ToList();
 		/// <summary>
 		/// Adds an event to the collection.
 		/// </summary>
@@ -102,7 +96,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (Contains(item))
 			{
 				bool result = eventsBeatOrder[item.Beat].Remove(item);
-				if (!eventsBeatOrder[item.Beat].Any())
+				if (eventsBeatOrder[item.Beat].Count == 0)
 					eventsBeatOrder.Remove(item.Beat);
 				Remove = result;
 			}
@@ -115,6 +109,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <returns>An enumerator for the collection.</returns>
 		public IEnumerator<IBaseEvent> GetEnumerator() => new EventEnumerator(this);
+		internal IEnumerator<TEvent> GetEnumerator<TEvent>(RDBeat? start, RDBeat? end) where TEvent : IBaseEvent => new EventEnumerator<TEvent>(this, start, end);
+		internal IEnumerator<TEvent> GetEnumerator<TEvent>(float? start, float? end) where TEvent : IBaseEvent => new EventEnumerator<TEvent>(this, start, end);
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
@@ -135,7 +131,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// The dictionary that maintains the order of events based on their beats.
 		/// </summary>
 		internal SortedDictionary<RDBeat, TypedEventCollection<IBaseEvent>> eventsBeatOrder;
-		internal bool _isEnumerating = false;
-		internal Queue<(IBaseEvent e, RDBeat b)> _modifyingEvents = [];
+		internal Dictionary<EventEnumerator, Queue<(IBaseEvent e, RDBeat b)>> _modifierInstances = [];
+		internal EventEnumerator? _currentModifier;
+		//internal Queue<(IBaseEvent e, RDBeat b)> _modifyingEvents = [];
 	}
 }
