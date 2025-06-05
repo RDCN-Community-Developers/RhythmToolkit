@@ -124,9 +124,6 @@ namespace RhythmBase.RhythmDoctor.Components
 				}
 			}
 #else
-		public static float IIf(bool condition , float trueResult, float falseResult) => condition ? trueResult : falseResult;
-		public object this[string variableName]
-		{
 			get => variableName switch
 			{
 			['i', char ii] => i[ii - '0'],
@@ -155,6 +152,8 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 #endif
 		}
+		public static float IIf(bool condition , float trueResult, float falseResult) => condition ? trueResult : falseResult;
+		
 		/// <summary>
 		/// Integer variables.
 		/// </summary>
