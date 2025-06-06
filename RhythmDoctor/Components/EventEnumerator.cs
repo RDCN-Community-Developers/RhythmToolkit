@@ -67,9 +67,9 @@ namespace RhythmBase.RhythmDoctor.Components
 			enumerateStart = start;
 			enumerateEnd = end;
 			while (beats.MoveNext())
-				if (start == null || beats.Current.BeatOnly >= start)
+				if ((start == null || beats.Current.BeatOnly >= start) && collection.eventsBeatOrder[beats.Current]._types.Any(types.Contains))
 				{
-					if (beats.Current.BeatOnly < end)
+					if (end == null || beats.Current.BeatOnly < end)
 						events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
 					break;
 				}
