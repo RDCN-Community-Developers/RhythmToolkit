@@ -73,7 +73,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		public override bool MoveNext()
 		{
 			collection._currentModifier = this;
-			bool result = events?.MoveNext() ?? false;
+			bool result;
+			while (result = (events?.MoveNext() ?? false))
+				if (types.Contains(events!.Current.Type))
+					return true;
 			if (!result)
 			{
 				while (beats.MoveNext())
