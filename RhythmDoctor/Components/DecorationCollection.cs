@@ -21,6 +21,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if(_items.Contains(decoration))
 				return;
 			decoration.Parent = parent;
+			decoration.calculator = parent.Calculator;
 			foreach (var i in decoration)
 				parent.Add(i);
 			_items.Add(decoration);
@@ -38,6 +39,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			foreach (var i in item)
 				parent.Remove(i);
 			item.Parent = null;
+			item.calculator = null;
 			return _items.Remove(item);
 		}
 		/// <summary>

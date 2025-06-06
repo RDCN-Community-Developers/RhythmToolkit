@@ -61,13 +61,21 @@ namespace RhythmBase.RhythmDoctor.Components
 		internal float? enumerateStart;
 		internal float? enumerateEnd;
 		private readonly EventType[] types;
-		public EventEnumerator(OrderedEventCollection collection, RDBeat? start, RDBeat? end) : this(collection, start?.BeatOnly, end?.BeatOnly) { }
+		public EventEnumerator(OrderedEventCollection collection, RDBeat? start, RDBeat? end) : this(collection,
+			start is RDBeat startb ? (new RDBeat(collection.calculator!, startb)).BeatOnly : null,
+			end is RDBeat endb ? (new RDBeat(collection.calculator!, endb)).BeatOnly : null)
+		{ }
 		public EventEnumerator(OrderedEventCollection collection, float? start, float? end) : base(collection)
 		{
 			types = EventTypeUtils.ToEnums(typeof(TEvent));
 			enumerateStart = start;
 			enumerateEnd = end;
-			while ((start != null && beats.Current.BeatOnly < start) && beats.MoveNext()) { }
+			while (beats.MoveNext())
+				if (start == null || beats.Current.BeatOnly >= start)
+				{
+					events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
+					break;
+				}
 		}
 		public new TEvent Current => (TEvent)base.Current;
 		public override bool MoveNext()

@@ -21,6 +21,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (_items.Contains(row))
 				return;
 			row.Parent = parent;
+			row.calculator = parent.Calculator;
 			foreach (var i in row)
 				parent.Add(i);
 			foreach(var e in _unhandledRowEvents.Where(i=>i.Index == Count))
@@ -40,6 +41,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			foreach (var i in item)
 				parent.Remove(i);
 			item.Parent = null;
+			item.calculator = null;
 			return _items.Remove(item);
 		}
 		/// <summary>  

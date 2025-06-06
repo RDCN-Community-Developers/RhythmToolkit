@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
 namespace RhythmBase.RhythmDoctor.Components
 {
@@ -133,6 +134,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		internal SortedDictionary<RDBeat, TypedEventCollection<IBaseEvent>> eventsBeatOrder;
 		internal Dictionary<EventEnumerator, Queue<(IBaseEvent e, RDBeat b)>> _modifierInstances = [];
 		internal EventEnumerator? _currentModifier;
-		//internal Queue<(IBaseEvent e, RDBeat b)> _modifyingEvents = [];
+		internal BeatCalculator? calculator;
 	}
 }

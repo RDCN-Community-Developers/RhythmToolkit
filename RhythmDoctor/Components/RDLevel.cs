@@ -83,6 +83,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			ColorPalette = new RDColor[21];
 			Rows = new(this);
 			Decorations = new(this);
+			calculator = Calculator;
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDLevel"/> class with the specified items.
