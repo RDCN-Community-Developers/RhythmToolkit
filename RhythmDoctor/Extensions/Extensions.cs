@@ -3,6 +3,7 @@ using RhythmBase.Global.Components;
 using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Utils;
 using System.Reflection;
 namespace RhythmBase.RhythmDoctor.Extensions
 {
@@ -195,9 +196,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(beat, null);
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat(c, beat).BeatOnly, null);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a range of time.
@@ -207,9 +211,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="endBeat">Specified end beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(startBeat, endBeat);
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat(c, startBeat).BeatOnly, new RDBeat(c, endBeat).BeatOnly);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -233,9 +240,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <returns></returns>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, RDRange range) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(range.Start, range.End);
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(
+					range.Start is RDBeat bs ? new RDBeat(c, bs).BeatOnly : null,
+					range.End is RDBeat be ? new RDBeat(c, be).BeatOnly : null);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -245,10 +257,13 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="bars">Specified bar range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : IBaseEvent
 		{
-			var (start, end) = GetRange(e, bars);
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat((uint)start, 1), new RDBeat((uint)end, 1));
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				var (start, end) = GetRange(e, bars);
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat(c, (uint)start, 1).BeatOnly, new RDBeat(c, (uint)end, 1).BeatOnly);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #endif
 		/// <summary>
@@ -259,10 +274,13 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(beat, null);
-			while (enumerator.MoveNext())
-				if (predicate(enumerator.Current))
-					yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat(c, beat).BeatOnly, null);
+				while (enumerator.MoveNext())
+					if (predicate(enumerator.Current))
+						yield return enumerator.Current;
+			}
 		}
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified range of beat.
@@ -273,10 +291,13 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="endBeat">Specified end beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(startBeat, endBeat);
-			while (enumerator.MoveNext())
-				if (predicate(enumerator.Current))
-					yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat(c, startBeat).BeatOnly, new RDBeat(c, endBeat).BeatOnly);
+				while (enumerator.MoveNext())
+					if (predicate(enumerator.Current))
+						yield return enumerator.Current;
+			}
 		}
 		/// <summary>
 		/// Filters a sequence of events based on a predicate in specified range of beat.
@@ -286,10 +307,15 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="range">Specified beat range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDRange range) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(range.Start, range.End);
-			while (enumerator.MoveNext())
-				if (predicate(enumerator.Current))
-					yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(
+					range.Start is RDBeat bs ? new RDBeat(c, bs).BeatOnly : null,
+					range.End is RDBeat be ? new RDBeat(c, be).BeatOnly : null);
+				while (enumerator.MoveNext())
+					if (predicate(enumerator.Current))
+						yield return enumerator.Current;
+			}
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -326,9 +352,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(beat, null);
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat(c, beat).BeatOnly, null);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a range of beat in specified event type.
@@ -339,9 +368,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="endBeat">Specified end beat.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDBeat startBeat, RDBeat endBeat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(startBeat, endBeat);
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat(c, startBeat).BeatOnly, new RDBeat(c, endBeat).BeatOnly);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -366,9 +398,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="range">Specified beat range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, RDRange range) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(range.Start, range.End);
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(
+					range.Start is RDBeat bs ? new RDBeat(c, bs).BeatOnly : null,
+					range.End is RDBeat be ? new RDBeat(c, be).BeatOnly : null);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -886,9 +923,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, beat);
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat(c, beat).BeatOnly);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -909,15 +949,18 @@ namespace RhythmBase.RhythmDoctor.Extensions
 					TEvent current = enumerator.Current;
 					queue.Enqueue(current);
 					uint currentBar = current.Beat.BarBeat.bar;
-					while (queue.TryPeek(out TEvent? peek) && peek.Beat.BarBeat.bar < currentBar - (uint)bar.Value)
+					while (queue.TryPeek(out TEvent? peek) && peek.Beat.BarBeat.bar < currentBar - (uint)bar.Value + 1)
 						yield return queue.Dequeue();
 				}
 			}
 			else
 			{
-				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat((uint)bar.Value, 1));
-				while (enumerator.MoveNext())
-					yield return enumerator.Current;
+				if (e.calculator is BeatCalculator c)
+				{
+					using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat(c, (uint)bar.Value + 1, 1).BeatOnly);
+					while (enumerator.MoveNext())
+						yield return enumerator.Current;
+				}
 			}
 		}
 #endif
@@ -943,12 +986,15 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, RDBeat beat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, beat);
-			while (enumerator.MoveNext())
-				if (predicate(enumerator.Current))
-					yield return enumerator.Current;
-				else
-					break;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat(c, beat).BeatOnly);
+				while (enumerator.MoveNext())
+					if (predicate(enumerator.Current))
+						yield return enumerator.Current;
+					else
+						break;
+			}
 		}
 #if !NETSTANDARD
 		/// <summary>                 
@@ -970,9 +1016,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">Specified beat.</param>
 		public static IEnumerable<TEvent> TakeWhile<TEvent>(this OrderedEventCollection e, RDBeat beat) where TEvent : IBaseEvent
 		{
-			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, beat);
-			while (enumerator.MoveNext())
-				yield return enumerator.Current;
+			if (e.calculator is BeatCalculator c)
+			{
+				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat(c, beat).BeatOnly);
+				while (enumerator.MoveNext())
+					yield return enumerator.Current;
+			}
 		}
 #if !NETSTANDARD
 		/// <summary>
@@ -1001,9 +1050,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			}
 			else
 			{
-				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat((uint)bar.Value, 1));
-				while (enumerator.MoveNext())
-					yield return enumerator.Current;
+				if (e.calculator is BeatCalculator c)
+				{
+					using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat(c, (uint)bar.Value, 1).BeatOnly);
+					while (enumerator.MoveNext())
+						yield return enumerator.Current;
+				}
 			}
 		}
 #endif
