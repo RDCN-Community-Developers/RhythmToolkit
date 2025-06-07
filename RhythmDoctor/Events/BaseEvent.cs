@@ -38,7 +38,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			get => _beat;
 			set
 			{
-				if (!value.IsEmpty || _beat == value)
+				if (!value.IsEmpty && _beat == value)
 					return;
 				if (_beat.BaseLevel?._currentModifier is not null)
 				{
