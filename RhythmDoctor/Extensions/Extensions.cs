@@ -21,42 +21,32 @@ namespace RhythmBase.RhythmDoctor.Extensions
 #if !NETSTANDARD
 		private static (float start, float end) GetRange(OrderedEventCollection e, Index index)
 		{
-			(float, float) GetRange;
-			try
+			if (e.calculator is BeatCalculator c)
 			{
-				IBaseEvent firstEvent = e.First<IBaseEvent>();
-				IBaseEvent lastEvent = e.Last<IBaseEvent>();
-				GetRange = index.IsFromEnd
-							? (lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(lastEvent.Beat.BarBeat.bar - index.Value), 1f),
-						lastEvent.Beat._calculator.BarBeatToBeatOnly((uint)(lastEvent.Beat.BarBeat.bar - index.Value + 1), 1f))
-							: (firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)index.Value, 1f),
-						firstEvent.Beat._calculator.BarBeatToBeatOnly((uint)(index.Value + 1), 1f));
+				float start = index.IsFromEnd
+					? c.BarBeatToBeatOnly(e.Length.BarBeat.bar - index.Value, 1f)
+					: c.BarBeatToBeatOnly(index.Value, 1f);
+				float end = index.IsFromEnd
+					? c.BarBeatToBeatOnly(e.Length.BarBeat.bar - index.Value + 1, 1f)
+					: c.BarBeatToBeatOnly(index.Value + 1, 1f);
+				return (start, end);
 			}
-			catch
-			{
-				throw new ArgumentOutOfRangeException(nameof(index));
-			}
-			return GetRange;
+			return (1, 1);
+
 		}
 		private static (float start, float end) GetRange(OrderedEventCollection e, Range range)
 		{
-			(float start, float end) GetRange;
-			try
+			if (e.calculator is BeatCalculator c)
 			{
-				IBaseEvent firstEvent = e.First<IBaseEvent>();
-				IBaseEvent lastEvent = e.Last<IBaseEvent>();
-				GetRange = (range.Start.IsFromEnd
-							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(lastEvent.Beat.BarBeat.bar - (ulong)(long)range.Start.Value), 1f)
-							: firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)Math.Max(range.Start.Value, 1), 1f),
-						range.End.IsFromEnd
-							? lastEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(lastEvent.Beat.BarBeat.bar - (ulong)(long)range.End.Value + 1UL), 1f)
-							: firstEvent.Beat._calculator!.BarBeatToBeatOnly((uint)(range.End.Value + 1), 1f));
+				float start = range.Start.IsFromEnd
+					? c.BarBeatToBeatOnly(e.Length.BarBeat.bar - range.Start.Value, 1f)
+					: c.BarBeatToBeatOnly(range.Start.Value, 1f);
+				float end = range.End.IsFromEnd
+					? c.BarBeatToBeatOnly(e.Length.BarBeat.bar - range.End.Value + 1, 1f)
+					: c.BarBeatToBeatOnly(range.End.Value + 1, 1f);
+				return (start, end);
 			}
-			catch
-			{
-				throw new ArgumentOutOfRangeException(nameof(range));
-			}
-			return GetRange;
+			return (1, 1);
 		}
 #endif
 		/// <summary>
@@ -257,13 +247,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="bars">Specified bar range.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Range bars) where TEvent : IBaseEvent
 		{
-			if (e.calculator is BeatCalculator c)
-			{
-				var (start, end) = GetRange(e, bars);
-				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(new RDBeat(c, (uint)start, 1).BeatOnly, new RDBeat(c, (uint)end, 1).BeatOnly);
-				while (enumerator.MoveNext())
-					yield return enumerator.Current;
-			}
+			var (start, end) = GetRange(e, bars);
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(start, end);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #endif
 		/// <summary>
@@ -384,7 +371,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="bar">Specified bar.</param>
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection e, Index bar) where TEvent : IBaseEvent
 		{
-			(float start, float end) = GetRange(e, bar);
+			var (start, end) = GetRange(e, bar);
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(start, end);
 			while (enumerator.MoveNext())
 				yield return enumerator.Current;
@@ -940,28 +927,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		{
 			if (e.Count == 0)
 				yield break;
-			if (bar.IsFromEnd)
-			{
-				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-				Queue<TEvent> queue = [];
-				while (enumerator.MoveNext())
-				{
-					TEvent current = enumerator.Current;
-					queue.Enqueue(current);
-					uint currentBar = current.Beat.BarBeat.bar;
-					while (queue.TryPeek(out TEvent? peek) && peek.Beat.BarBeat.bar < currentBar - (uint)bar.Value + 1)
-						yield return queue.Dequeue();
-				}
-			}
-			else
-			{
-				if (e.calculator is BeatCalculator c)
-				{
-					using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat(c, (uint)bar.Value + 1, 1).BeatOnly);
-					while (enumerator.MoveNext())
-						yield return enumerator.Current;
-				}
-			}
+			var (_, end) = GetRange(e, bar);
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, end);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #endif
 		/// <summary>
@@ -1035,28 +1004,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 
 			if (e.Count == 0)
 				yield break;
-			if (bar.IsFromEnd)
-			{
-				using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-				Queue<TEvent> queue = [];
-				while (enumerator.MoveNext())
-				{
-					TEvent current = enumerator.Current;
-					queue.Enqueue(current);
-					uint currentBar = current.Beat.BarBeat.bar;
-					while (queue.TryPeek(out TEvent? peek) && peek.Beat.BarBeat.bar < currentBar - (uint)bar.Value)
-						yield return queue.Dequeue();
-				}
-			}
-			else
-			{
-				if (e.calculator is BeatCalculator c)
-				{
-					using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, new RDBeat(c, (uint)bar.Value, 1).BeatOnly);
-					while (enumerator.MoveNext())
-						yield return enumerator.Current;
-				}
-			}
+			var (_, end) = GetRange(e, bar);
+			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(null, end);
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
 		}
 #endif
 		/// <summary>
@@ -1172,7 +1123,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">RDLevel</param>
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
-		public static RDBeat BeatOf(this RDLevel e, uint bar, float beat) => e.Calculator.BeatOf(bar, beat);
+		public static RDBeat BeatOf(this RDLevel e, int bar, float beat) => e.Calculator.BeatOf(bar, beat);
 		/// <summary>
 		/// Get an instance of the beat associated with the level.
 		/// </summary>

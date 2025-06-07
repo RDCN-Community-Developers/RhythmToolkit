@@ -38,20 +38,20 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
 		/// <returns>Total 1-based beats.</returns>
-		public float BarBeatToBeatOnly(uint bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
+		public float BarBeatToBeatOnly(int bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
 		/// <returns>Total time span.</returns>
-		public TimeSpan BarBeatToTimeSpan(uint bar, float beat) => BeatOnlyToTimeSpan(BarBeatToBeatOnly(bar, beat));
+		public TimeSpan BarBeatToTimeSpan(int bar, float beat) => BeatOnlyToTimeSpan(BarBeatToBeatOnly(bar, beat));
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
-		public (uint bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
+		public (int bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
@@ -69,22 +69,22 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>
 		/// <param name="timeSpan">Total time span.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
-		public (uint bar, float beat) TimeSpanToBarBeat(TimeSpan timeSpan) => BeatOnlyToBarBeat(TimeSpanToBeatOnly(timeSpan));
-		private static float BarBeatToBeatOnly(uint bar, float beat, IEnumerable<SetCrotchetsPerBar> Collection)
+		public (int bar, float beat) TimeSpanToBarBeat(TimeSpan timeSpan) => BeatOnlyToBarBeat(TimeSpanToBeatOnly(timeSpan));
+		private static float BarBeatToBeatOnly(int bar, float beat, IEnumerable<SetCrotchetsPerBar> Collection)
 		{
-			(float BeatOnly, uint Bar, uint CPB) foreCPB = new(1f, 1U, 8U);
+			(float BeatOnly, int Bar, int CPB) foreCPB = new(1f, 1, 8);
 			SetCrotchetsPerBar? LastCPB = Collection.LastOrDefault((i) => i.Active && i.Beat.BarBeat.bar < bar);
 			if (LastCPB != null)
 				foreCPB = new(LastCPB.Beat.BeatOnly, LastCPB.Beat.BarBeat.bar, LastCPB.CrotchetsPerBar);
 			return foreCPB.BeatOnly + (bar - foreCPB.Bar) * foreCPB.CPB + beat - 1f;
 		}
-		private static (uint bar, float beat) BeatOnlyToBarBeat(float beat, IEnumerable<SetCrotchetsPerBar> Collection)
+		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, IEnumerable<SetCrotchetsPerBar> Collection)
 		{
-			(float BeatOnly, uint Bar, uint CPB) foreCPB = new(1f, 1U, 8U);
+			(float BeatOnly, int Bar, int CPB) foreCPB = new(1f, 1, 8);
 			SetCrotchetsPerBar? LastCPB = Collection.LastOrDefault((i) => i.Active && i.Beat.BeatOnly < beat);
 			if (LastCPB != null)
 				foreCPB = new(LastCPB.Beat.BeatOnly, LastCPB.Beat.BarBeat.bar, LastCPB.CrotchetsPerBar);
-			(uint bar, float beat) result = ((uint)Math.Round(foreCPB.Bar + Math.Floor((double)((beat - foreCPB.BeatOnly) / foreCPB.CPB))), (beat - foreCPB.BeatOnly) % foreCPB.CPB + 1f);
+			(int bar, float beat) result = ((int)Math.Round(foreCPB.Bar + Math.Floor((double)((beat - foreCPB.BeatOnly) / foreCPB.CPB))), (beat - foreCPB.BeatOnly) % foreCPB.CPB + 1f);
 			return result;
 		}
 		private static TimeSpan BeatOnlyToTimeSpan(float beatOnly, IEnumerable<BaseBeatsPerMinute> BPMCollection)
@@ -123,7 +123,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <summary>
 		/// Creates a beat instance.
 		/// </summary>
-		public RDBeat BeatOf(uint bar, float beat) => new(this, bar, beat);
+		public RDBeat BeatOf(int bar, float beat) => new(this, bar, beat);
 		/// <summary>
 		/// Creates a beat instance.
 		/// </summary>
@@ -141,7 +141,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <param name="beat1">The first beat specified by bar and beat.</param>
 		/// <param name="beat2">The second beat specified by bar and beat.</param>
 		/// <returns>An RDRange representing the interval between the two beats.</returns>
-		public RDRange IntervalOf((uint bar, float beat) beat1, (uint bar, float beat) beat2) => IntervalOf(BeatOf(beat1.bar, beat1.beat), BeatOf(beat2.bar, beat2.beat));
+		public RDRange IntervalOf((int bar, float beat) beat1, (int bar, float beat) beat2) => IntervalOf(BeatOf(beat1.bar, beat1.beat), BeatOf(beat2.bar, beat2.beat));
 		/// <summary>
 		/// Creates an interval between two beats specified by time spans.
 		/// </summary>

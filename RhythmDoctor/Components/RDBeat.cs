@@ -42,7 +42,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// The actual bar and beat of this moment.
 		/// </summary>
-		public (uint bar, float beat) BarBeat
+		public (int bar, float beat) BarBeat
 		{
 			get
 			{
@@ -95,7 +95,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				if (!_isBPMLoaded)
 				{
-					_BPM = _calculator?.BeatsPerMinuteOf(this) ?? throw new InvalidRDBeatException();
+					_BPM = _calculator?.BeatsPerMinuteOf(this) ?? 0;
 					_isBPMLoaded = true;
 				}
 				return _BPM;
@@ -104,13 +104,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// The number of beats per bar followed at this moment.
 		/// </summary>
-		public float CPB
+		public int CPB
 		{
 			get
 			{
 				if (!_isCPBLoaded)
 				{
-					_CPB = (uint)Math.Round(_calculator?.CrotchetsPerBarOf(this) ?? throw new InvalidRDBeatException());
+					_CPB = (int)Math.Round(_calculator?.CrotchetsPerBarOf(this) ?? -1);
 					_isCPBLoaded = true;
 				}
 				return _CPB;
@@ -133,22 +133,20 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="bar">The actual bar of this moment. Must be greater than or equal to 1.</param>
 		/// <param name="beat">The actual beat of this moment. Must be greater than or equal to 1.</param>
-		/// <exception cref="OverflowException">Thrown when the bar or beat is less than 1.</exception>
-		public RDBeat(uint bar, float beat)
+		public RDBeat(int bar, float beat)
 		{
 			this = default;
 			if (bar < 1)
 				bar = 1;
 			if (beat < 1)
 				beat = 1;
-			_BarBeat = new ValueTuple<uint, float>(bar, beat);
+			_BarBeat = (bar, beat);
 			_isBarBeatLoaded = true;
 		}
 		/// <summary>
 		/// Constructs an instance of RDBeat with the specified time span.
 		/// </summary>
 		/// <param name="timeSpan">The total amount of time from the start of the level to the moment.</param>
-		/// <exception cref="OverflowException">Thrown when the time span is less than zero.</exception>
 		public RDBeat(TimeSpan timeSpan)
 		{
 			this = default;
@@ -173,7 +171,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="calculator">Specified calculator.</param>
 		/// <param name="bar">The actual bar of this moment.</param>
 		/// <param name="beat">The actual beat of this moment.</param>
-		public RDBeat(BeatCalculator calculator, uint bar, float beat)
+		public RDBeat(BeatCalculator calculator, int bar, float beat)
 		{
 			this = new RDBeat(bar, beat);
 			_calculator = calculator;
@@ -200,28 +198,20 @@ namespace RhythmBase.RhythmDoctor.Components
 			this = default;
 			if (beat._isBeatLoaded)
 			{
-				if (beat._beat < 0f)
-					throw new OverflowException(string.Format("The beat must not be less than 1, but {0} is given", beat._beat));
-				_beat = beat._beat;
+				_beat = Math.Max(beat._beat, 0f);
 				_isBeatLoaded = true;
 				_calculator = calculator;
 			}
 			else if (beat._isBarBeatLoaded)
 			{
-				if (beat._BarBeat.Bar < 1)
-					throw new OverflowException(string.Format("The bar must not be less than 1, but {0} is given", beat._BarBeat.Bar));
-				if (beat._BarBeat.Beat < 1)
-					throw new OverflowException(string.Format("The beat must not be less than 1, but {0} is given", beat._BarBeat.Beat));
-				_BarBeat = beat._BarBeat;
+				_BarBeat = (Math.Max(beat._BarBeat.Bar, 1), Math.Max(beat._BarBeat.Beat, 1));
 				_isBarBeatLoaded = true;
 				_calculator = calculator;
 				_beat = _calculator.BarBeatToBeatOnly(beat._BarBeat.Bar, beat._BarBeat.Beat) - 1f;
 			}
 			else if (beat._isTimeSpanLoaded)
 			{
-				if (beat._TimeSpan < TimeSpan.Zero)
-					throw new OverflowException(string.Format("The time must not be less than zero, but {0} is given", beat._TimeSpan));
-				_TimeSpan = beat._TimeSpan;
+				_TimeSpan = beat._TimeSpan > TimeSpan.Zero ? beat._TimeSpan : TimeSpan.Zero;
 				_isTimeSpanLoaded = true;
 				_calculator = calculator;
 				_beat = _calculator.TimeSpanToBeatOnly(TimeSpan) - 1f;
@@ -478,7 +468,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			return ToString;
 		}
 		///  <inheritdoc/>
-		#if NETSTANDARD
+#if NETSTANDARD
 		public readonly override bool Equals(object? obj) => obj is RDBeat e && Equals(e);
 #else
 		public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is RDBeat e && Equals(e);
@@ -486,7 +476,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		///  <inheritdoc/>
 		public readonly bool Equals(RDBeat other) => this == other;
 		///  <inheritdoc/>
-	#if NETSTANDARD
+#if NETSTANDARD
 		public override int GetHashCode()
 		{
 			int hash = 17;
@@ -511,9 +501,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		private bool _isBPMLoaded;
 		private bool _isCPBLoaded;
 		private float _beat;
-		private (uint Bar, float Beat) _BarBeat;
+		private (int Bar, float Beat) _BarBeat;
 		private TimeSpan _TimeSpan;
 		private float _BPM;
-		private uint _CPB;
+		private int _CPB;
 	}
 }

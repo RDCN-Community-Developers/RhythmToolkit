@@ -53,7 +53,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		{
 			Data = data ?? [];
 			Tab = Tabs.Unknown;
-			Beat = new RDBeat(Data["bar"]?.ToObject<uint>() ?? 1, Data["beat"]?.ToObject<float>() ?? 1f);
+			Beat = new RDBeat(Data["bar"]?.ToObject<int>() ?? 1, Data["beat"]?.ToObject<float>() ?? 1f);
 			Tag = Data["tag"]?.ToObject<string>() ?? "";
 			Condition = Data["condition"] == null
 				? null

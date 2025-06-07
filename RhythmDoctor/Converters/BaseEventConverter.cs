@@ -43,7 +43,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			existingValue = (TEvent?)jobj.ToObject(SubClassType, serializer)
 				?? throw new ConvertingException(jobj, new Exception($"Cannot convert this event: \"{jobj}\". path \"{jobj.Path}\""));
 			_canread = true;
-			uint bar = uint.Parse((string?)jobj["bar"]
+			int bar = int.Parse((string?)jobj["bar"]
 				?? throw new Exception($"Missing property \"{jobj["bar"]}\".path \"{jobj.Path}\""));
 			float beat = float.Parse((string?)jobj["beat"] ?? 1.ToString());
 			RDBeat rdbeat = level?.Calculator.BeatOf(bar, beat) ?? new(bar, beat);
@@ -56,7 +56,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			JObject JObj = JObject.FromObject(value, serializer);
 			_canwrite = true;
 			JObj.Remove("type");
-			ValueTuple<uint, float> b = value.Beat.BarBeat;
+			(int, float)b = value.Beat.BarBeat;
 			JToken s = JObj.First ?? throw new ConvertingException($"Internal error: Missing properties. path \"{JObj.Path}\"");
 			s.AddBeforeSelf(new JProperty("bar", b.Item1));
 			if (value is not IBarBeginningEvent)

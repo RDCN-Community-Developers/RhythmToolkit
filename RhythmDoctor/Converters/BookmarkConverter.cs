@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		public override Bookmark ReadJson(JsonReader reader, Type objectType, Bookmark? existingValue, bool hasExistingValue, JsonSerializer serializer)
 		{
 			JToken jobj = JToken.ReadFrom(reader);
-			uint bar = jobj["bar"]?.ToObject<uint>()
+			int bar = jobj["bar"]?.ToObject<int>()
 				?? throw new ConvertingException(jobj, new Exception($"Missing property \"{jobj["bar"]}\". path \"{jobj.Path}\""));
 			float beat = jobj["beat"]?.ToObject<float>()
 				?? throw new ConvertingException(jobj, new Exception($"Missing property \"{jobj["beat"]}\". path \"{jobj.Path}\""));

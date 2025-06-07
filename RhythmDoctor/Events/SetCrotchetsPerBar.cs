@@ -10,7 +10,7 @@
 		/// </summary>
 		public SetCrotchetsPerBar()
 		{
-			_crotchetsPerBar = 7U;
+			_crotchetsPerBar = 7;
 			Type = EventType.SetCrotchetsPerBar;
 			Tab = Tabs.Sounds;
 		}
@@ -30,12 +30,12 @@
 		/// <summary>
 		/// Gets or sets the number of crotchets per bar.
 		/// </summary>
-		public uint CrotchetsPerBar
+		public int CrotchetsPerBar
 		{
 			get => _crotchetsPerBar + 1;
 			set
 			{
-				_crotchetsPerBar = checked((uint)(unchecked(value) - 1UL));
+				_crotchetsPerBar = Math.Max(1, value - 1);
 				if (_beat._calculator != null)
 				{
 					Beat += 0f;
@@ -50,6 +50,6 @@
 		/// <summary>
 		/// The number of crotchets per bar.
 		/// </summary>
-		protected internal uint _crotchetsPerBar;
+		protected internal int _crotchetsPerBar;
 	}
 }

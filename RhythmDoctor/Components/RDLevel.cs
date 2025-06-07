@@ -637,7 +637,7 @@ namespace RhythmBase.RhythmDoctor.Components
 						base.Add(new SetCrotchetsPerBar
 						{
 							_beat = item._beat + interval - c,
-							_crotchetsPerBar = checked((uint)Math.Round((double)unchecked(c - 1f)))
+							_crotchetsPerBar = checked((int)Math.Round((double)unchecked(c - 1f)))
 						});
 					}
 					else if (nxt.CrotchetsPerBar == item.CrotchetsPerBar)
@@ -669,9 +669,9 @@ namespace RhythmBase.RhythmDoctor.Components
 					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
 						i.Type != EventType.SetCrotchetsPerBar &&
 						i._beat < nxt._beat);
-					uint cpb = item.CrotchetsPerBar;
+					int cpb = item.CrotchetsPerBar;
 					int interval = (int)((nxtE ?? nxt)._beat.BeatOnly - item._beat.BeatOnly);
-					long c = interval % frt?.CrotchetsPerBar ?? 8;
+					int c = interval % frt?.CrotchetsPerBar ?? 8;
 					if (c > 0)
 					{
 						c = c < 2 ? c + item.CrotchetsPerBar : c;
@@ -680,7 +680,7 @@ namespace RhythmBase.RhythmDoctor.Components
 						base.Add(new SetCrotchetsPerBar()
 						{
 							_beat = item._beat + interval - c,
-							_crotchetsPerBar = (uint)(c - 1)
+							_crotchetsPerBar = (c - 1)
 						});
 					}
 					else
@@ -694,7 +694,7 @@ namespace RhythmBase.RhythmDoctor.Components
 						base.Add(new SetCrotchetsPerBar
 						{
 							_beat = nxtE._beat,
-							_crotchetsPerBar = frt != null ? frt.CrotchetsPerBar : 8u - 1u
+							_crotchetsPerBar = frt != null ? frt.CrotchetsPerBar : 8 - 1
 						});
 					Calculator.Refresh();
 				}

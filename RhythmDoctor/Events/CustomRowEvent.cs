@@ -42,7 +42,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			Type = EventType.CustomRowEvent;
 			Tab = Tabs.Rows;
 			Data = data;
-			Beat = new RDBeat(Data["bar"]?.ToObject<uint>() ?? 1, Data["beat"]?.ToObject<float>() ?? 1f);
+			Beat = new RDBeat(Data["bar"]?.ToObject<int>() ?? 1, Data["beat"]?.ToObject<float>() ?? 1f);
 			Tag = Data["tag"]?.ToObject<string>() ?? "";
 			Condition = Data["condition"] == null
 				? null
