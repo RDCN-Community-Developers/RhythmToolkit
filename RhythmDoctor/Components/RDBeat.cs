@@ -330,7 +330,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			RDBeat result;
 			if (!a.IsEmpty)
-				result = new RDBeat(a._calculator, a.BeatOnly + b);
+				result = new RDBeat(a._calculator!, a.BeatOnly + b);
 			else
 			{
 				result = new RDBeat();
@@ -355,7 +355,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			RDBeat result;
 			if (!a.IsEmpty)
-				result = new RDBeat(a._calculator, a.TimeSpan + b);
+				result = new RDBeat(a._calculator!, a.TimeSpan + b);
 			else
 			{
 				result = new RDBeat();
@@ -375,7 +375,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			RDBeat result;
 			if (!a.IsEmpty)
-				result = new RDBeat(a._calculator, a.BeatOnly - b);
+				result = new RDBeat(a._calculator!, a.BeatOnly - b);
 			else
 			{
 				result = new RDBeat();
@@ -400,7 +400,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			RDBeat result;
 			if (!a.IsEmpty)
-				result = new RDBeat(a._calculator, a.TimeSpan - b);
+				result = new RDBeat(a._calculator!, a.TimeSpan - b);
 			else
 			{
 				result = new RDBeat();
