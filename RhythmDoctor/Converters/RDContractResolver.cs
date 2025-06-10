@@ -41,7 +41,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					nameof(SetVFXPreset.Enable) => i => i is SetVFXPreset e && e.Preset is not VFXPresets.DisableAll,
 					nameof(SetVFXPreset.Threshold) => i => i is SetVFXPreset e && e.Enable && e.Preset == VFXPresets.Bloom,
 					nameof(SetVFXPreset.Intensity) => i => i is SetVFXPreset e && e.Enable && durationPresets.Contains(e.Preset) && e.Preset is not (VFXPresets.TileN or VFXPresets.CustomScreenScroll),
-					nameof(SetVFXPreset.Color) => i => i is SetVFXPreset e && e.Enable && e.Preset is	VFXPresets.Bloom or VFXPresets.Tutorial,
+					nameof(SetVFXPreset.Color) => i => i is SetVFXPreset e && e.Enable && e.Preset is VFXPresets.Bloom or VFXPresets.Tutorial,
 					nameof(SetVFXPreset.FloatX) or
 					nameof(SetVFXPreset.FloatY) => i => i is SetVFXPreset e && e.Enable && e.Preset is VFXPresets.TileN or VFXPresets.CustomScreenScroll,
 					nameof(SetVFXPreset.Ease) => i => i is SetVFXPreset e && e.Enable && durationPresets.Contains(e.Preset),
@@ -117,6 +117,29 @@ namespace RhythmBase.RhythmDoctor.Converters
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{
 					nameof(Comment.Target) => i => i is Comment e && e.Tab == Tabs.Decorations,
+					_ => null
+				};
+			if (p.DeclaringType == typeof(MaskRoom))
+				f = p.PropertyName!.ToUpperCamelCase() switch
+				{
+					nameof(MaskRoom.Image) => i => i is MaskRoom e && e.MaskType == RoomMaskTypes.Image,
+					nameof(MaskRoom.SourceRoom) => i => i is MaskRoom e && e.MaskType == RoomMaskTypes.Room,
+					nameof(MaskRoom.KeyColor) => i => i is MaskRoom e && e.MaskType == RoomMaskTypes.Color,
+					nameof(MaskRoom.ColorCutoff) => i => i is MaskRoom e && e.MaskType == RoomMaskTypes.Color,
+					nameof(MaskRoom.ColorFeathering) => i => i is MaskRoom e && e.MaskType == RoomMaskTypes.Color,
+					nameof(MaskRoom.AlphaMode) => i => i is MaskRoom e && e.MaskType != RoomMaskTypes.None,
+					_ => null
+				};
+			if (p.DeclaringType == typeof(SetGameSound))
+				f = p.PropertyName!.ToUpperCamelCase() switch
+				{
+					nameof(SetGameSound.SoundSubtypes) => i => i is SetGameSound e && e.SoundType
+						is SoundTypes.ClapSoundHold
+						or SoundTypes.ClapSoundHoldP2
+						or SoundTypes.PulseSoundHold
+						or SoundTypes.PulseSoundHoldP2
+						or SoundTypes.BurnshotSound
+						or SoundTypes.FreezeshotSound,
 					_ => null
 				};
 			if (f != null)

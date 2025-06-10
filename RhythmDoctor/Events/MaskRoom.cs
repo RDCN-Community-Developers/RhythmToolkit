@@ -50,10 +50,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public int ColorFeathering { get; set; }
 		/// <summary>
-		/// Gets or sets the content mode.
-		/// </summary>
-		public ContentModes ContentMode { get; set; }
-		/// <summary>
 		/// Gets the event type.
 		/// </summary>
 		public override EventType Type { get; }

@@ -41,14 +41,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		[JsonProperty]
 		public int Volume
 		{
-			get
-			{
-				return Audio.Volume;
-			}
-			set
-			{
-				Audio.Volume = value;
-			}
+			get => Audio.Volume;
+			set => Audio.Volume = value;
 		}
 		/// <summary>
 		/// Gets or sets the pitch of the audio.
@@ -56,14 +50,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		[JsonProperty]
 		public int Pitch
 		{
-			get
-			{
-				return Audio.Pitch;
-			}
-			set
-			{
-				Audio.Pitch = value;
-			}
+			get => Audio.Pitch;
+			set => Audio.Pitch = value;
 		}
 		/// <summary>
 		/// Gets or sets the pan of the audio.
@@ -71,14 +59,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		[JsonProperty]
 		public int Pan
 		{
-			get
-			{
-				return Audio.Pan;
-			}
-			set
-			{
-				Audio.Pan = value;
-			}
+			get => Audio.Pan;
+			set => Audio.Pan = value;
 		}
 		/// <summary>
 		/// Gets or sets the offset of the audio.
@@ -86,14 +68,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		[JsonConverter(typeof(MilliSecondConverter))]
 		public TimeSpan Offset
 		{
-			get
-			{
-				return Audio.Offset;
-			}
-			set
-			{
-				Audio.Offset = value;
-			}
+			get => Audio.Offset;
+			set => Audio.Offset = value;
 		}
 	}
 }

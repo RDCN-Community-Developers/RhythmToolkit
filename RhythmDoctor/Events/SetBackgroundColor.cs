@@ -43,7 +43,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the interval for the event.
 		/// </summary>
-		public float Interval { get; set; }
+		public float Interval
+		{
+			get => field > 0.01f ? field : 0.01f;
+			set => field = value > 0.01f ? value : 0.01f;
+		}
 		/// <summary>
 		/// Gets or sets the background type for the event.
 		/// </summary>

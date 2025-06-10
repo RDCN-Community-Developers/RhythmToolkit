@@ -61,7 +61,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the interval between frames.  
 		/// </summary>  
-		public float Interval { get; set; }
+		public float Interval
+		{
+			get => field;
+			set => field = value > 0.01f ? value : 0.01f;
+		}
 		/// <summary>  
 		/// Gets or sets the easing type for the event.  
 		/// </summary>  
