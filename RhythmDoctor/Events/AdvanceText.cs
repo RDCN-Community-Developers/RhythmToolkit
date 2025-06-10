@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 namespace RhythmBase.RhythmDoctor.Events
@@ -34,7 +35,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public float FadeOutDuration { get; set; }
-		float IDurationEvent.Duration => FadeOutDuration;
+		float IDurationEvent.Duration { get => FadeOutDuration; set => FadeOutDuration = value; }
 		/// <summary>
 		/// Gets the ID of the parent floating text.
 		/// </summary>

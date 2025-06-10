@@ -176,8 +176,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> Where<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
-				yield return enumerator.Current;
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+					yield return enumerator.Current;
 		}
 		/// <summary>
 		/// Filters a sequence of events located at a time.
@@ -546,12 +547,11 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? result = default;
 			if (enumerator.MoveNext())
-			{
-				var result = enumerator.Current;
-				return result;
-			}
-			throw new InvalidOperationException("The source sequence is empty.");
+				result = enumerator.Current;
+			return result ??
+				throw new InvalidOperationException("The source sequence is empty.");
 		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition.
@@ -561,12 +561,15 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent First<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			throw new InvalidOperationException("No element satisfies the condition in predicate. -or- The source sequence is empty.");
+			TEvent? result = default;
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+				{
+					result = enumerator.Current;
+					break;
+				}
+			return result ??
+				throw new InvalidOperationException("No element satisfies the condition in predicate. -or- The source sequence is empty.");
 		}
 		/// <summary>
 		/// Returns the first element of the collection in specified event type.
@@ -575,12 +578,11 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent First<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? result = default;
 			if (enumerator.MoveNext())
-			{
-				var result = enumerator.Current;
-				return result;
-			}
-			throw new InvalidOperationException("The source sequence is empty.");
+				result = enumerator.Current;
+			return result ??
+				throw new InvalidOperationException("The source sequence is empty.");
 		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type.
@@ -590,12 +592,15 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent First<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			throw new InvalidOperationException("No element satisfies the condition in predicate. -or- The source sequence is empty.");
+			TEvent? result = default;
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+				{
+					result = enumerator.Current;
+					break;
+				}
+			return result ??
+				throw new InvalidOperationException("No element satisfies the condition in predicate. -or- The source sequence is empty.");
 		}
 		/// <summary>
 		/// Returns the first event in the collection or the default value if the collection is empty.
@@ -606,12 +611,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? result = default;
 			if (enumerator.MoveNext())
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			return default;
+				result = enumerator.Current;
+			return result;
 		}
 		/// <summary>
 		/// Returns the first element of the collection, or <paramref name="defaultValue" /> if collection contains no elements.
@@ -621,12 +624,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, TEvent defaultValue) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent result = defaultValue;
 			if (enumerator.MoveNext())
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			return defaultValue;
+				result = enumerator.Current;
+			return result;
 		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition, or <see langword="null" /> if matches no elements.
@@ -636,12 +637,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			return default;
+			TEvent? result = default;
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+				{
+					result = enumerator.Current;
+					break;
+				}
+			return result;
 		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition, or <paramref name="defaultValue" /> if matches no elements.
@@ -649,15 +652,17 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="predicate">A function to test each event for a condition.</param>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent
+		public static TEvent FirstOrDefault<TEvent>(this OrderedEventCollection<TEvent> e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			return defaultValue;
+			TEvent result = defaultValue;
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+				{
+					result = enumerator.Current;
+					break;
+				}
+			return result;
 		}
 		/// <summary>
 		/// Returns the first element of the collection in specified event type, or <see langword="null" /> if matches no elements.
@@ -667,12 +672,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent? result = default;
 			if (enumerator.MoveNext())
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			return default;
+				result = enumerator.Current;
+			return result;
 		}
 		/// <summary>
 		/// Returns the first element of the collection in specified event type, or <paramref name="defaultValue" /> if matches no elements.
@@ -680,15 +683,13 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <typeparam name="TEvent">Specified event type.</typeparam>
 		/// <param name="defaultValue">The default value to return if matches no elements.</param>
 		/// <param name="e">Collection</param>
-		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : IBaseEvent
+		public static TEvent FirstOrDefault<TEvent>(this OrderedEventCollection e, TEvent defaultValue) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
+			TEvent result = defaultValue;
 			if (enumerator.MoveNext())
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			return defaultValue;
+				result = enumerator.Current;
+			return result;
 		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type, or <see langword="null" /> if matches no elements.
@@ -699,12 +700,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-			if (enumerator.MoveNext() && predicate(enumerator.Current))
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			return default;
+			TEvent? result = default;
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+				{
+					result = enumerator.Current;
+					break;
+				}
+			return result;
 		}
 		/// <summary>
 		/// Returns the first element of the collection that satisfies a specified condition in specified event type, or <paramref name="defaultValue" /> if matches no elements.
@@ -716,12 +719,13 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FirstOrDefault<TEvent>(this OrderedEventCollection e, Func<TEvent, bool> predicate, TEvent defaultValue) where TEvent : IBaseEvent
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
-			if (enumerator.MoveNext() && predicate(defaultValue))
-			{
-				TEvent result = enumerator.Current;
-				return result;
-			}
-			return defaultValue;
+			TEvent? result = defaultValue;
+			while (enumerator.MoveNext()) if (predicate(enumerator.Current))
+				{
+					result = enumerator.Current;
+					break;
+				}
+			return result;
 		}
 		/// <summary>
 		/// Returns the last element of the collection.
@@ -750,11 +754,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
 			bool hasElements = false;
 			TEvent? last = default;
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
-			{
-				hasElements = true;
-				last = enumerator.Current;
-			}
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+				{
+					hasElements = true;
+					last = enumerator.Current;
+				}
 			if (hasElements)
 				return last!;
 			throw new InvalidOperationException("The source sequence is empty.");
@@ -787,11 +792,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
 			bool hasElements = false;
 			TEvent? last = default;
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
-			{
-				hasElements = true;
-				last = enumerator.Current;
-			}
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+				{
+					hasElements = true;
+					last = enumerator.Current;
+				}
 			if (hasElements)
 				return last!;
 			throw new InvalidOperationException("The source sequence is empty.");
@@ -829,8 +835,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
 			TEvent? last = default;
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
-				last = enumerator.Current;
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
+					last = enumerator.Current;
 			return last;
 		}
 		/// <summary>
@@ -843,7 +850,8 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
 			TEvent? last = defaultValue;
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
 				last = enumerator.Current;
 			return last;
 		}
@@ -884,7 +892,8 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
 			TEvent? last = default;
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
 				last = enumerator.Current;
 			return last;
 		}
@@ -899,7 +908,8 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		{
 			using IEnumerator<TEvent> enumerator = e.GetEnumerator<TEvent>(0, null);
 			TEvent? last = defaultValue;
-			while (enumerator.MoveNext() && predicate(enumerator.Current))
+			while (enumerator.MoveNext())
+				if (predicate(enumerator.Current))
 				last = enumerator.Current;
 			return last;
 		}

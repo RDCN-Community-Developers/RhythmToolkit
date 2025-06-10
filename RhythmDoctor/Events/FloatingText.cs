@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Converters;
 using RhythmBase.Global.Components;
+using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -65,7 +66,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the fade out rate of the text.
 		/// </summary>
 		public float FadeOutRate { get; set; }
-		float IDurationEvent.Duration => FadeOutRate;
+		float IDurationEvent.Duration { get => FadeOutRate; set => FadeOutRate = value; }
 		/// <summary>
 		/// Gets or sets the color of the text.
 		/// </summary>

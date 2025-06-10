@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.Global.Events
 {
 	/// <summary>  
 	/// Interface representing a duration event.  
@@ -8,6 +8,6 @@
 		/// <summary>  
 		/// Gets or sets the duration of the ease event.  
 		/// </summary>  
-		float Duration { get; }
+		float Duration { get; set; }
 	}
 }
