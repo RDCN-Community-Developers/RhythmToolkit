@@ -273,7 +273,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		}
 		internal override void Flush()
 		{
-			_instance = _data.ToObject<T>(JsonSerializer.Create(GetSerializer())) ?? new();
+			_instance = _data.ToObject<T>(JsonSerializer.Create(GetSerializer())) ?? new T();
 			_data = JObject.FromObject(_instance, JsonSerializer.Create(GetSerializer()));
 		}
 		/// <summary>  

@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 
 namespace RhythmBase.Global.Converters
 {
@@ -14,8 +12,10 @@ namespace RhythmBase.Global.Converters
 		}
 		public override void WriteJson(JsonWriter writer, float value, JsonSerializer serializer)
 		{
-			var formatted = value.ToString();
-			writer.WriteRawValue(formatted);
+			if (value % 1 == 0)
+				writer.WriteValue((int)value);
+			else
+				writer.WriteValue(value);
 		}
 	}
 }

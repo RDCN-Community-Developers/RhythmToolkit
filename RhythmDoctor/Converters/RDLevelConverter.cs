@@ -176,8 +176,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			reader.Close();
 			RDLevel ReadJson;
+#if !DEBUG
 			try
 			{
+#endif
 				List<(FloatingText @event, int id)> FloatingTextCollection = [];
 				List<(AdvanceText @event, int id)> AdvanceTextCollection = [];
 				List<TagAction> GroupTagCollection = [];
@@ -263,12 +265,16 @@ namespace RhythmBase.RhythmDoctor.Converters
 				}
 				foreach (var (@event, id) in AdvanceTextCollection)
 				{
-					FloatingText Parent = FloatingTextCollection.First((i) => i.id == id).@event;
-					Parent.Children.Add(@event);
-					@event.Parent = Parent;
+					FloatingText? Parent = FloatingTextCollection.FirstOrDefault((i) => i.id == id).@event;
+					if (Parent != null)
+					{
+						Parent.Children.Add(@event);
+						@event.Parent = Parent;
+					}
 				}
 				outLevel.Bookmarks.AddRange(JBookmarks.ToObject<List<Bookmark>>(AllInOneSerializer)!);
 				ReadJson = outLevel;
+#if !DEBUG
 			}
 			catch (Exception ex)
 			{
@@ -276,6 +282,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					throw new VersionTooLowException(outLevel.Settings.Version, ex);
 				throw new ConvertingException(ex);
 			}
+#endif
 			return ReadJson;
 		}
 		private readonly string fileLocation = "";
