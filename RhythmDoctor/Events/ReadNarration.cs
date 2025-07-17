@@ -1,6 +1,4 @@
-﻿using RhythmBase.Global.Components;
-
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents an event for reading narration.
@@ -8,17 +6,9 @@ namespace RhythmBase.RhythmDoctor.Events
 	public class ReadNarration : BaseEvent
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ReadNarration"/> class.
-		/// </summary>
-		public ReadNarration()
-		{
-			Type = EventType.ReadNarration;
-			Tab = Tabs.Actions;
-		}
-		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type => EventType.ReadNarration;
 		/// <summary>
 		/// Gets or sets the text of the narration.
 		/// </summary>
@@ -30,7 +20,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab => Tabs.Sounds;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

@@ -29,6 +29,16 @@ namespace RhythmBase.RhythmDoctor.Converters
 					nameof(BaseEvent.Active) => i => !((BaseEvent)i).Active,
 					_ => null
 				};
+			if (p.DeclaringType == typeof(Row))
+				f = p.PropertyName!.ToUpperCamelCase() switch
+				{
+					nameof(Row.PulseSoundVolume) => i => ((Row)i).PulseSoundVolume != 100,
+					nameof(Row.PulseSoundPitch) => i => ((Row)i).PulseSoundPitch != 100,
+					nameof(Row.PulseSoundPan) => i => ((Row)i).PulseSoundPan != 0,
+					nameof(Row.PulseSoundOffset) => i => ((Row)i).PulseSoundOffset != TimeSpan.Zero,
+					nameof(Row.RowToMimic) => i => ((Row)i).RowToMimic >= 0,
+					_ => null
+				};
 			if (p.DeclaringType == typeof(MoveRow))
 				f = p.PropertyName!.ToUpperCamelCase() switch
 				{

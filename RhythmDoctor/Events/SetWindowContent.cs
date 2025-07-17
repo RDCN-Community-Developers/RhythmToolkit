@@ -7,7 +7,7 @@
 	public class SetWindowContent : BaseWindowEvent
 	{
 		/// <inheritdoc/>
-		public override EventType Type => throw new NotImplementedException();
+		public override EventType Type => EventType.SetWindowContent;
 
 		/// <summary>  
 		/// Gets or sets the mode for displaying the content.  

@@ -152,6 +152,18 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		JustSayAndStop,
 		/// <summary>
+		/// Represents the phrase "Switch".
+		/// </summary>
+		SaySwitch,
+		/// <summary>
+		/// Represents the phrase "Watch".
+		/// </summary>
+		SayWatch,
+		/// <summary>
+		/// Represents the phrase "Listen".
+		/// </summary>
+		SayListen,
+		/// <summary>
 		/// Represents the count "1".
 		/// </summary>
 		Count1,

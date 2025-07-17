@@ -18,7 +18,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		BassDropOnHit,
 		ShakeOnHeartBeat,
 		ShakeOnHit,
-		WavyRows,
 		LightStripVert,
 		VHS,
 		CutsceneMode,
@@ -54,6 +53,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		Blur,
 		RadialBlur,
 		Dots,
+		FishEye,
 		DisableAll,
 		Diamonds,
 		Tutorial,
@@ -73,7 +73,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		RowPlain,
 		Tile2,
 		Tile3,
-		Tile4
+		Tile4,
+		WavyRows,
 #pragma warning restore CS1591
 	}
 	/// <summary>

@@ -9,22 +9,13 @@ namespace RhythmBase.RhythmDoctor.Events
 	public class NarrateRowInfo : BaseRowAction
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NarrateRowInfo"/> class.
-		/// </summary>
-		public NarrateRowInfo()
-		{
-			Type = EventType.NarrateRowInfo;
-			Tab = Tabs.Actions;
-			CustomPattern = new Patterns[6];
-		}
-		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type => EventType.NarrateRowInfo;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab => Tabs.Sounds;
 		/// <summary>
 		/// Gets or sets the type of narration information.
 		/// </summary>
@@ -37,16 +28,20 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the beats to skip during narration.
 		/// </summary>
 		[JsonProperty("narrateSkipBeats")]
-		public NarrateSkipBeats NarrateSkipBeat { get; set; } = NarrateSkipBeats.On;
+		public NarrateSkipBeat NarrateSkipBeat { get; set; } = NarrateSkipBeat.On;
 		/// <summary>
 		/// Gets or sets the custom pattern for the narration.
 		/// </summary>
 		[JsonConverter(typeof(PatternConverter))]
-		public Patterns[] CustomPattern { get; set; }
+		public Patterns[] CustomPattern { get; } = new Patterns[6];
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip unstable beats.
 		/// </summary>
 		public bool SkipsUnstable { get; set; }
+		/// <summary>  
+		/// Gets or sets the custom player option for narrating row information.  
+		/// </summary>  
+		public NarrateRowInfoCustomPlayer CustomPlayer { get; set; }
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
@@ -82,7 +77,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the beats to skip during narration.
 	/// </summary>
-	public enum NarrateSkipBeats
+	public enum NarrateSkipBeat
 	{
 		/// <summary>
 		/// Skip beats is on.
@@ -96,5 +91,25 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Skip beats is off.
 		/// </summary>
 		Off,
+	}
+	/// <summary>  
+	/// Specifies the custom player options for narrating row information.  
+	/// </summary>  
+	public enum NarrateRowInfoCustomPlayer
+	{
+		/// <summary>  
+		/// Automatically detect the player.  
+		/// </summary>  
+		AutoDetect,
+
+		/// <summary>  
+		/// Player 1.  
+		/// </summary>  
+		P1,
+
+		/// <summary>  
+		/// Player 2.  
+		/// </summary>  
+		P2,
 	}
 }

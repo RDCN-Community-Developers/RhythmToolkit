@@ -16,17 +16,17 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the type of the event, which is specific to reordering sprites.
 		/// </summary>
 		/// <inheritdoc />
-		public override EventType Type => throw new NotImplementedException();
+		public override EventType Type => EventType.ReorderSprite;
 
 		/// <summary>
 		/// Gets the tab where this action is categorized in the editor.
 		/// </summary>
 		/// <inheritdoc />
-		public override Tabs Tab => throw new NotImplementedException();
+		public override Tabs Tab => Tabs.Decorations;
 
 		/// <summary>
 		/// Gets or sets the new room to which the sprite will be moved.
 		/// </summary>
-		public RDSingleRoom NewRoom { get; set; } = RDRoomIndex.Room1;
+		public int NewRoom { get; set; } = 0;
 	}
 }

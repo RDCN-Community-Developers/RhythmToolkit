@@ -30,9 +30,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 			else
 			{
 #if NETSTANDARD
-				ReadJson = (RDCharacters)Enum.Parse(typeof(RDCharacters), value);
+				ReadJson = string.IsNullOrEmpty(value) ? new() : (RDCharacters)Enum.Parse(typeof(RDCharacters), value);
 #else
-				ReadJson = Enum.Parse<RDCharacters>(value);
+				ReadJson = string.IsNullOrEmpty(value) ? new() : Enum.Parse<RDCharacters>(value);
 #endif
 			}
 			return ReadJson;

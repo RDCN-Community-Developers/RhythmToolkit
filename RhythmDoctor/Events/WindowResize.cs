@@ -10,6 +10,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// </summary>
 	public class WindowResize : BaseEvent, IEaseEvent
 	{
+		private Tabs tab = Tabs.Actions;
 		/// <inheritdoc/>
 		public override EventType Type => EventType.WindowResize;
 		/// <inheritdoc/>
@@ -30,12 +31,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		[JsonProperty("tab")]
 		public Tabs CustomTab
 		{
-			get; set
-			{
-				if (CustomTab is Tabs.Actions or Tabs.Windows)
-					field = value;
-				throw new InvalidOperationException();
-			}
+			get => tab; set => tab = CustomTab is Tabs.Actions or Tabs.Windows ? value : throw new InvalidOperationException();
 		}
 		/// <inheritdoc/>
 		public EaseType Ease { get; set; }

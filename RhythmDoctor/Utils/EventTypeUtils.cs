@@ -149,6 +149,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			EventType.CustomEvent,
 			EventType.CustomRowEvent,
 			EventType.CustomDecorationEvent,
+			EventType.Group,
 		]);
 		/// <summary>  
 		/// Event types for gameplay.  

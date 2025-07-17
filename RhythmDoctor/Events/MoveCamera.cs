@@ -29,7 +29,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the camera position.
 		/// </summary>
 		[EaseProperty]
-		public RDPointE? CameraPosition { get; set; }
+		public RDPoint? CameraPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the zoom level.
 		/// </summary>

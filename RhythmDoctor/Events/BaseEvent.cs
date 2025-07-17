@@ -65,6 +65,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public string Tag { get; set; } = "";
 		/// <summary>
+		/// Gets or sets a value indicating whether the tag should be executed.
+		/// </summary>
+		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+		public bool RunTag { get; set; } = false;
+		/// <summary>
 		/// Event conditions.
 		/// </summary>
 		[JsonProperty("if", DefaultValueHandling = DefaultValueHandling.Ignore)]
