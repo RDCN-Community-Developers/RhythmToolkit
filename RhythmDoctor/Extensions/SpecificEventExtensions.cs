@@ -3,10 +3,8 @@ using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
-using RhythmBase.RhythmDoctor.Utils;
-using static RhythmBase.RhythmDoctor.Utils.Utils;
-using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 using System.Text.RegularExpressions;
+using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
 namespace RhythmBase.RhythmDoctor.Extensions
 {
@@ -354,35 +352,17 @@ e.IsHitable()
 		/// <returns>The actual beat pattern.</returns>
 		public static Patterns[] RowXs(this AddClassicBeat e)
 		{
-			if (e.SetXs == null)
+			switch (e.SetXs)
 			{
-				SetRowXs X = e.Parent?.LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i)) ?? new();
-				return X.Pattern;
-			}
-			else
-			{
-				Patterns[] T = new Patterns[6];
-				ClassicBeatPatterns? setXs = e.SetXs;
-				int? num = (setXs != null) ? new int?((int)setXs.GetValueOrDefault()) : null;
-				if (((num != null) ? new bool?(num.GetValueOrDefault() == 0) : null).GetValueOrDefault())
-				{
-					T[1] = Patterns.X;
-					T[2] = Patterns.X;
-					T[4] = Patterns.X;
-					T[5] = Patterns.X;
-				}
-				else
-				{
-					num = (setXs != null) ? new int?((int)setXs.GetValueOrDefault()) : null;
-					if (!((num != null) ? new bool?(num.GetValueOrDefault() == 1) : null).GetValueOrDefault())
-					{
-						throw new RhythmBaseException("How?");
-					}
-					T[1] = Patterns.X;
-					T[3] = Patterns.X;
-					T[5] = Patterns.X;
-				}
-				return T;
+				case ClassicBeatPatterns.ThreeBeat:
+					return [Patterns.None, Patterns.X, Patterns.X, Patterns.None, Patterns.X, Patterns.X];
+				case ClassicBeatPatterns.FourBeat:
+					return [Patterns.None, Patterns.X, Patterns.None, Patterns.X, Patterns.None, Patterns.X];
+				case ClassicBeatPatterns.NoChange:
+					return e.FrontOrDefault()?.RowXs() ??
+						[Patterns.None, Patterns.None, Patterns.None, Patterns.None, Patterns.None, Patterns.None];
+				case null or _:
+					return [Patterns.None, Patterns.None, Patterns.None, Patterns.None, Patterns.None, Patterns.None];
 			}
 		}
 		/// <summary>
@@ -390,8 +370,8 @@ e.IsHitable()
 		/// </summary>
 		/// <returns>special tags.</returns>
 		public static SpecialTags[] SpetialTags(this TagAction e) => (SpecialTags[])(from i in (SpecialTags[])Enum.GetValues(typeof(SpecialTags))
-																									   where e.ActionTag.Contains(string.Format("[{0}]", i))
-																									   select i);
+																					 where e.ActionTag.Contains(string.Format("[{0}]", i))
+																					 select i);
 		/// <summary>
 		/// Generate split event instances.
 		/// </summary>
@@ -409,13 +389,13 @@ e.SplitCopy(0f, SayReaDyGetSetGoWords.JustSayGet),
 e.SplitCopy(e.Tick, SayReaDyGetSetGoWords.JustSaySet),
 e.SplitCopy(e.Tick * 2f, SayReaDyGetSetGoWords.JustSayGo)
 								],
-				SayReaDyGetSetGoWords.SayReaDyGetSetOne => [
+			SayReaDyGetSetGoWords.SayReaDyGetSetOne => [
 e.SplitCopy(0f, SayReaDyGetSetGoWords.JustSayRea),
 e.SplitCopy(e.Tick, SayReaDyGetSetGoWords.JustSayDy),
 e.SplitCopy(e.Tick * 2f, SayReaDyGetSetGoWords.JustSayGet),
 e.SplitCopy(e.Tick * 3f, SayReaDyGetSetGoWords.JustSaySet),
 e.SplitCopy(e.Tick * 4f, SayReaDyGetSetGoWords.Count1)
-								],
+							],
 			SayReaDyGetSetGoWords.SayGetSetOne => [
 e.SplitCopy(0f, SayReaDyGetSetGoWords.JustSayGet),
 e.SplitCopy(e.Tick, SayReaDyGetSetGoWords.JustSaySet),

@@ -107,6 +107,10 @@ namespace RhythmBase.RhythmDoctor.Events
 				};
 			return temp;
 		}
+		public virtual IBaseEvent Clone()
+		{
+			return (BaseEvent)MemberwiseClone();
+		}
 		internal virtual TEvent Clone<TEvent>(RDLevel level) where TEvent : IBaseEvent, new()
 		{
 			TEvent temp = new()

@@ -35,10 +35,17 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the Y coordinate of the event.
 		/// </summary>
 		int Y { get; set; }
-		/// <summary>
-		/// Returns a string that represents the current object.
-		/// </summary>
-		/// <returns>A string that represents the current object.</returns>
-		string ToString();
+		/// <summary>  
+		/// Creates a deep copy of the current event instance.  
+		/// </summary>  
+		/// <typeparam name="TEvent">The type of the event to clone, which must implement <see cref="IBaseEvent"/> and have a parameterless constructor.</typeparam>  
+		/// <returns>A new instance of <typeparamref name="TEvent"/> that is a copy of the current event.</returns>  
+		TEvent Clone<TEvent>() where TEvent : IBaseEvent, new();
+
+		/// <summary>  
+		/// Creates a deep copy of the current event instance as an <see cref="IBaseEvent"/>.  
+		/// </summary>  
+		/// <returns>A new instance of <see cref="IBaseEvent"/> that is a copy of the current event.</returns>  
+		IBaseEvent Clone();
 	}
 }

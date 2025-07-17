@@ -28,10 +28,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <typeparam name="TEvent">The type of event that will be generated.</typeparam>
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
-		public new TEvent Clone<TEvent>() where TEvent : BaseDecorationAction, new()
+		public override TEvent Clone<TEvent>()
 		{
 			TEvent Temp = base.Clone<TEvent>();
-			Temp._parent = Parent;
+			if (Temp is BaseDecorationAction TempAction)
+				TempAction._parent = Parent;
 			return Temp;
 		}
 		/// <summary>
