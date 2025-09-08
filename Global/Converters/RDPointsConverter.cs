@@ -1,134 +1,179 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Components;
-using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Extensions;
+﻿using RhythmBase.RhythmDoctor.Components;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Converters
 {
-	internal class RDPointsConverter : JsonConverter
+	internal class RDPointsConverter : JsonConverter<IRDVortex>
 	{
-		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+		public RDPointsConverter() : base()
+		{
+
+		}
+		public override void Write(Utf8JsonWriter writer, IRDVortex? value, JsonSerializerOptions serializer)
 		{
 			writer.WriteStartArray();
 			if (value is RDPointNI v1)
 			{
-				writer.WriteValue(v1.X);
-				writer.WriteValue(v1.Y);
+				writer.WriteNumberValue(v1.X);
+				writer.WriteNumberValue(v1.Y);
 			}
 			else if (value is RDPointN v2)
 			{
-				writer.WriteValue(v2.X);
-				writer.WriteValue(v2.Y);
+				writer.WriteNumberValue(v2.X);
+				writer.WriteNumberValue(v2.Y);
 			}
 			else if (value is RDPointI v3)
 			{
-				writer.WriteValue(v3.X);
-				writer.WriteValue(v3.Y);
+				if (v3.X is null)
+					writer.WriteNullValue();
+				else
+					writer.WriteNumberValue(v3.X.Value);
+				if (v3.Y is null)
+					writer.WriteNullValue();
+				else
+					writer.WriteNumberValue(v3.Y.Value);
 			}
 			else if (value is RDPoint v4)
 			{
-				writer.WriteValue(v4.X);
-				writer.WriteValue(v4.Y);
+				if (v4.X is null)
+					writer.WriteNullValue();
+				else
+					writer.WriteNumberValue(v4.X.Value);
+				if (v4.Y is null)
+					writer.WriteNullValue();
+				else
+					writer.WriteNumberValue(v4.Y.Value);
 			}
 			else if (value is RDPointE v5)
 			{
 				if (v5.X != null)
 					if (v5.X.Value.IsNumeric)
-						writer.WriteRawValue(v5.X.Value.NumericValue.ToString("G"));
+						writer.WriteNumberValue(v5.X.Value.NumericValue);
 					else
-						writer.WriteValue(v5.X.Value.ExpressionValue);
+						writer.WriteStringValue(v5.X.Value.ExpressionValue);
 				else
-					writer.WriteNull();
+					writer.WriteNullValue();
 				if (v5.Y != null)
 					if (v5.Y.Value.IsNumeric)
-						writer.WriteRawValue(v5.Y.Value.NumericValue.ToString("G"));
+						writer.WriteNumberValue(v5.Y.Value.NumericValue);
 					else
-						writer.WriteValue(v5.Y.Value.ExpressionValue);
+						writer.WriteStringValue(v5.Y.Value.ExpressionValue);
 				else
-					writer.WriteNull();
+					writer.WriteNullValue();
 			}
 			else if (value is RDSizeNI v6)
 			{
-				writer.WriteValue(v6.Width);
-				writer.WriteValue(v6.Height);
+				writer.WriteNumberValue(v6.Width);
+				writer.WriteNumberValue(v6.Height);
 			}
 			else if (value is RDSizeN v7)
 			{
-				writer.WriteValue(v7.Width);
-				writer.WriteValue(v7.Height);
+				writer.WriteNumberValue(v7.Width);
+				writer.WriteNumberValue(v7.Height);
 			}
 			else if (value is RDSizeI v8)
 			{
-				writer.WriteValue(v8.Width);
-				writer.WriteValue(v8.Height);
+				if (v8.Width is null)
+					writer.WriteNullValue();
+				else
+					writer.WriteNumberValue(v8.Width.Value);
+				if (v8.Height is null)
+					writer.WriteNullValue();
+				else
+					writer.WriteNumberValue(v8.Height.Value);
 			}
 			else if (value is RDSize v9)
 			{
-				writer.WriteValue(v9.Width);
-				writer.WriteValue(v9.Height);
+				if (v9.Width is null)
+					writer.WriteNullValue();
+				else
+					writer.WriteNumberValue(v9.Width.Value);
+				if (v9.Height is null)
+					writer.WriteNullValue();
+				else
+					writer.WriteNumberValue(v9.Height.Value);
 			}
 			else if (value is RDSizeE v10)
 			{
-				RDSizeE temp2 = value != null ? v10 : default;
-				if (temp2.Width != null)
-					if (temp2.Width.Value.IsNumeric)
-						writer.WriteRawValue(temp2.Width.Value.NumericValue.ToString("G"));
+				if (v10.Width != null)
+					if (v10.Width.Value.IsNumeric)
+						writer.WriteNumberValue(v10.Width.Value.NumericValue);
 					else
-						writer.WriteValue(temp2.Width.Value.ExpressionValue);
+						writer.WriteStringValue(v10.Width.Value.ExpressionValue);
 				else
-					writer.WriteNull();
-				if (temp2.Height != null)
-					if (temp2.Height.Value.IsNumeric)
-						writer.WriteRawValue(temp2.Height.Value.NumericValue.ToString("G"));
+					writer.WriteNullValue();
+				if (v10.Height != null)
+					if (v10.Height.Value.IsNumeric)
+						writer.WriteNumberValue(v10.Height.Value.NumericValue);
 					else
-						writer.WriteValue(temp2.Height.Value.ExpressionValue);
+						writer.WriteStringValue(v10.Height.Value.ExpressionValue);
 				else
-					writer.WriteNull();
+					writer.WriteNullValue();
 			}
 			else
 				throw new NotImplementedException();
 			writer.WriteEndArray();
 		}
-		public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+		public override IRDVortex Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
-			if(reader.TokenType == JsonToken.Raw)
-			{
-
-			}
-			JArray ja = (JArray)JToken.ReadFrom(reader);
-			object ReadJson;
+			if (reader.TokenType != JsonTokenType.StartArray)
+				throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
+			reader.Read();//read start array
+			IRDVortex ReadJson;
 			if (objectType == typeof(RDPointNI) || objectType == typeof(RDPointNI?))
-				ReadJson = new RDPointNI(ja[0]!.ToObject<int>(), ja[1]!.ToObject<int>());
+				ReadJson = new RDPointNI(reader.GetInt32(), reader.Read() ? reader.GetInt32() : 0);
 			else if (objectType == typeof(RDPointN) || objectType == typeof(RDPointN?))
-				ReadJson = new RDPointN(ja[0]!.ToObject<float>(), ja[1]!.ToObject<float>());
+				ReadJson = new RDPointN(reader.GetSingle(), reader.Read() ? reader.GetSingle() : 0);
 			else if (objectType == typeof(RDPointI) || objectType == typeof(RDPointI?))
-				ReadJson = new RDPointI(ja[0]?.ToObject<int?>(), ja[1]?.ToObject<int?>());
+				ReadJson = new RDPointI(
+					reader.TokenType == JsonTokenType.Number ? reader.GetInt32() : null,
+					reader.Read() && reader.TokenType == JsonTokenType.Number ? reader.GetInt32() : null);
 			else if (objectType == typeof(RDPoint) || objectType == typeof(RDPoint?))
-				ReadJson = new RDPoint(ja[0]?.ToObject<float?>(), ja[1]?.ToObject<float?>());
+				ReadJson = new RDPoint(
+					reader.TokenType == JsonTokenType.Number ? reader.GetSingle() : null,
+					reader.Read() && reader.TokenType == JsonTokenType.Number ? reader.GetSingle() : null);
 			else if (objectType == typeof(RDPointE) || objectType == typeof(RDPointE?))
-				ReadJson = new RDPointE(new RDExpression?(string.IsNullOrEmpty(ja[0]!.ToString())
-		? default
-		: ja[0]!.ToObject<RDExpression>()), new RDExpression?(string.IsNullOrEmpty(ja[1]!.ToString())
-			? default
-			: ja[1]!.ToObject<RDExpression>()));
+				ReadJson = new RDPointE(
+					reader.TokenType == JsonTokenType.Number ? new RDExpression(reader.GetSingle()) :
+					reader.TokenType == JsonTokenType.String ? new RDExpression(reader.GetString() ?? string.Empty) :
+					(RDExpression?)null,
+					reader.Read() ?
+					reader.TokenType == JsonTokenType.Number ? new RDExpression(reader.GetSingle()) :
+					reader.TokenType == JsonTokenType.String ? new RDExpression(reader.GetString() ?? string.Empty) :
+					(RDExpression?)null :
+					null
+					);
 			else if (objectType == typeof(RDSizeNI) || objectType == typeof(RDSizeNI?))
-				ReadJson = new RDSizeNI(ja[0]!.ToObject<int>(), ja[1]!.ToObject<int>());
+				ReadJson = new RDSizeNI(reader.GetInt32(), reader.Read() ? reader.GetInt32() : 0);
 			else if (objectType == typeof(RDSizeN) || objectType == typeof(RDSizeN?))
-				ReadJson = new RDSizeN(ja[0]!.ToObject<float>(), ja[1]!.ToObject<float>());
+				ReadJson = new RDSizeN(reader.GetSingle(), reader.Read() ? reader.GetSingle() : 0);
 			else if (objectType == typeof(RDSizeI) || objectType == typeof(RDSizeI?))
-				ReadJson = new RDSizeI(ja[0]?.ToObject<int?>(), ja[1]?.ToObject<int?>());
+				ReadJson = new RDSizeI(
+					reader.TokenType == JsonTokenType.Number ? reader.GetInt32() : null,
+					reader.Read() && reader.TokenType == JsonTokenType.Number ? reader.GetInt32() : null
+					);
 			else if (objectType == typeof(RDSize) || objectType == typeof(RDSize?))
-				ReadJson = new RDSize(ja[0]?.ToObject<float?>(), ja[1]?.ToObject<float?>());
+				ReadJson = new RDSize(
+					reader.TokenType == JsonTokenType.Number ? reader.GetSingle() : null,
+					reader.Read()&&reader.TokenType == JsonTokenType.Number ? reader.GetSingle() : null
+					);
 			else if (objectType == typeof(RDSizeE) || objectType == typeof(RDSizeE?))
-				ReadJson = new RDSizeE(new RDExpression?(string.IsNullOrEmpty(ja[0]!.ToString())
-		? default
-		: ja[0]!.ToObject<RDExpression>()), new RDExpression?(string.IsNullOrEmpty(ja[1]!.ToString())
-			? default
-			: ja[1]!.ToObject<RDExpression>()));
+				ReadJson = new RDSizeE(
+					reader.TokenType == JsonTokenType.Number ? new RDExpression(reader.GetSingle()) :
+					reader.TokenType == JsonTokenType.String ? new RDExpression(reader.GetString() ?? string.Empty) :
+					(RDExpression?)null,
+					reader.Read() ?
+					reader.TokenType == JsonTokenType.Number ? new RDExpression(reader.GetSingle()) :
+					reader.TokenType == JsonTokenType.String ? new RDExpression(reader.GetString() ?? string.Empty) :
+					(RDExpression?)null : 
+					null
+					);
 			else
 				throw new NotImplementedException();
+			if(reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+				throw new JsonException("Expected end array token.");
 			return ReadJson;
 		}
-		public override bool CanConvert(Type objectType) => throw new NotImplementedException();
+		public override bool CanConvert(Type objectType) => typeof(IRDVortex).IsAssignableFrom(objectType);
 	}
 }

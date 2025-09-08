@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Components
+﻿namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Represents the different styles of tracks available in the game.

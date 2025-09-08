@@ -46,6 +46,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the types of custom sounds.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum CustomSoundTypes
 	{
 		/// <summary>

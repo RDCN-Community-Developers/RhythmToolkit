@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Converters;
+﻿using RhythmBase.RhythmDoctor.Converters;
+using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Components
 {

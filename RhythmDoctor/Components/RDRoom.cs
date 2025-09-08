@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Converters;
+﻿using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Extensions;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
@@ -16,10 +15,10 @@ namespace RhythmBase.RhythmDoctor.Components
 #endif
 		IEquatable<RDRoom>
 	{
-		/// <summary>
-		/// Indicates if the top room can be applied.
-		/// </summary>
-		public bool EnableTop { get; }
+		///// <summary>
+		///// Indicates if the top room can be applied.
+		///// </summary>
+		//public bool EnableTop { get; }
 		/// <summary>
 		/// Gets or sets whether the specified room is enabled.
 		/// </summary>
@@ -31,7 +30,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			readonly get => _data.HasFlag((RDRoomIndex)(1 << Index));
 			set
 			{
-				if (!(Index >= 4 && !EnableTop))
+				if (Index <= 4)
 					_data = value ? _data | (RDRoomIndex)(1 << Index) : _data & (RDRoomIndex)(1 << Index);
 			}
 		}
@@ -56,24 +55,24 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns an instance with only room 1 enabled.
 		/// </summary>
 		/// <returns>An instance with only room 1 enabled.</returns>
-		public static RDRoom Default() => new(false, [])
+		public static RDRoom Default() => new([])
 		{
 			_data = RDRoomIndex.Room1
 		};
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RDRoom"/> struct.
-		/// </summary>
-		/// <param name="enableTop">Indicates if the top room can be applied.</param>
-		public RDRoom(bool enableTop) => EnableTop = enableTop;
+		///// <summary>
+		///// Initializes a new instance of the <see cref="RDRoom"/> struct.
+		///// </summary>
+		///// <param name="enableTop">Indicates if the top room can be applied.</param>
+		//public RDRoom(bool enableTop) => EnableTop = enableTop;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDRoom"/> struct with specified rooms.
 		/// </summary>
 		/// <param name="enableTop">Indicates if the top room can be applied.</param>
 		/// <param name="rooms">The rooms to be enabled.</param>
-		public RDRoom(bool enableTop, params byte[] rooms)
+		public RDRoom(params byte[] rooms)
 		{
 			this = default;
-			EnableTop = enableTop;
+			//EnableTop = enableTop;
 			int num = rooms.Length;
 			if (num != 0)
 				if (num != 1)
@@ -123,7 +122,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="room">The SingleRoom instance to convert.</param>
 		/// <returns>A Room instance.</returns>
-		public static implicit operator RDRoom(RDSingleRoom room) => new(room.EnableTop, [0, ((byte)room.Room)]);
+		public static implicit operator RDRoom(RDSingleRoom room) => new([((byte)room.Room)]);
 		/// <summary>
 		/// Explicitly converts a Room to a SingleRoom.
 		/// </summary>

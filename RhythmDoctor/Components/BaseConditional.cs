@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
+using RhythmBase.RhythmDoctor.Converters;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Represents a base class for different types of conditions.
 	/// </summary>
+	[JsonConverter(typeof(ConditionalConverter))]
 	public abstract class BaseConditional
 	{
 		/// <summary>
@@ -35,6 +37,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Specifies the type of condition.
 		/// </summary>
+		[RDJsonEnumSerializable]
 		public enum ConditionType
 		{
 			/// <summary>

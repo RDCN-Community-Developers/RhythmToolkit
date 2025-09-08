@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -18,20 +16,14 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the height configuration for the room.  
 		/// </summary>  
-		[JsonIgnore]
+		//[JsonIgnore]
+		[RDJsonProperty("heights")]
 		public RoomHeight Height { get => _height; set => _height = value; }
 		/// <summary>  
 		/// Gets or sets the room configuration associated with the height.  
 		/// </summary>  
-		[JsonIgnore]
-		public RDRoom Rooms
-		{
-			get => _height.Room;
-			set
-			{
-				_height.Room = value;
-			}
-		}
+		//[JsonIgnore]
+		public RDRoom Rooms { get; set; }
 		/// <summary>  
 		/// Gets or sets the ease type for the event.  
 		/// </summary>  
@@ -39,7 +31,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the duration of the transition.  
 		/// </summary>  
-		[JsonProperty("transitionTime")]
+		[RDJsonProperty("transitionTime")]
 		public float Duration { get; set; }
 		/// <summary>  
 		/// Gets the type of the event.  

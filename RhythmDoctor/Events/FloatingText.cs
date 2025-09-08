@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Converters;
-using RhythmBase.Global.Components;
-using RhythmBase.Global.Events;
+﻿using RhythmBase.Converters;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -9,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Specifies the category of the narration.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum NarrationCategorys
 	{
 		/// <summary>  
@@ -43,6 +41,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents a floating text event in a room.
 	/// </summary>
+	//[RDJsonObjectNotSerializable]
 	public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	{
 		/// <summary>
@@ -56,12 +55,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the list of child advance texts.
 		/// </summary>
-		[JsonIgnore]
+		[RDJsonIgnore]
 		public List<AdvanceText> Children => _children;
 		/// <summary>
 		/// Gets or sets the room associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; } = new RDRoom(true, [0]);
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets the fade out rate of the text.
 		/// </summary>
@@ -70,7 +69,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the color of the text.
 		/// </summary>
-		[JsonProperty]
 		public PaletteColor Color { get; internal set; } = new PaletteColor(true) { Color = RDColor.White, };
 		/// <summary>
 		/// Gets or sets the angle of the text.
@@ -83,12 +81,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the outline color of the text.
 		/// </summary>
-		[JsonProperty]
 		public PaletteColor OutlineColor { get; internal set; } = new PaletteColor(true) { Color = RDColor.Black, };
 		/// <summary>
 		/// Gets the ID of the event.
 		/// </summary>
-		[JsonProperty]
+		[RDJsonNotIgnore]
 		internal int Id => _beat.BaseLevel?._floatingTexts.IndexOf(this) ?? -1;
 		/// <summary>
 		/// Gets or sets the position of the text.
@@ -97,6 +94,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the anchor style of the text.
 		/// </summary>
+		[RDJsonDefaultSerializer]
 		public FloatingTextAnchorStyles Anchor { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether to narrate the text.
@@ -133,6 +131,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Specifies the mode of the text.
 	/// </summary>
 	[Flags]
+	[RDJsonEnumSerializable]
 	public enum FloatingTextFadeOutModes
 	{
 		/// <summary>
@@ -147,7 +146,6 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the anchor style of the text.
 	/// </summary>
-	[JsonConverter(typeof(AnchorStyleConverter))]
 	[Flags]
 	public enum FloatingTextAnchorStyles
 	{

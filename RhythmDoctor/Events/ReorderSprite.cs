@@ -1,11 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents an action to reorder a sprite in the Rhythm Doctor game.

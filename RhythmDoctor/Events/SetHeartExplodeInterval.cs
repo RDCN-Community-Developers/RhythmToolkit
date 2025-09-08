@@ -33,6 +33,7 @@
 	/// <summary>
 	/// Defines the types of intervals.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum HeartExplodeIntervalTypes
 	{
 		/// <summary>

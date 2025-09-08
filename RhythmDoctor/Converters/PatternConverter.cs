@@ -1,22 +1,22 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Events;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class PatternConverter : JsonConverter<Patterns[]>
 	{
-		public override void WriteJson(JsonWriter writer, Patterns[]? value, JsonSerializer serializer) => writer.WriteValue(Utils.Utils.GetPatternString(value ?? throw new ConvertingException($"Pattern cannot be null.")));
-
-		public override Patterns[] ReadJson(JsonReader reader, Type objectType, Patterns[]? existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override Patterns[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			string? pattern = JToken.ReadFrom(reader).ToObject<string>();
-			if (pattern == null || pattern.Length != 6)
-				throw new ConvertingException($"Invalid pattern: {pattern}");
-			existingValue ??= new Patterns[6];
-			for (int i = 0; i < 6; i++)
+			if (reader.TokenType != JsonTokenType.String)
+				throw new JsonException($"Expected String token, but got {reader.TokenType}.");
+			string s = reader.GetString() ?? "";
+			reader.Read();
+			Patterns[] patterns = new Patterns[s.Length];
+			for (int i = 0; i < s.Length; i++)
 			{
-				existingValue[i] = pattern[i] switch
+				char c = s[i];
+				patterns[i] = c switch
 				{
 					'x' => Patterns.X,
 					'u' => Patterns.Up,
@@ -24,10 +24,30 @@ namespace RhythmBase.RhythmDoctor.Converters
 					'b' => Patterns.Banana,
 					'r' => Patterns.Return,
 					'-' => Patterns.None,
-					_ => throw new ConvertingException($"Invalid pattern character: {pattern[i]}")
+					_ => throw new ConvertingException($"Invalid pattern character: '{c}'.")
 				};
 			}
-			return existingValue;
+			return patterns;
+		}
+
+		public override void Write(Utf8JsonWriter writer, Patterns[] value, JsonSerializerOptions options)
+		{
+			StringBuilder sb = new();
+			foreach (var pattern in value)
+			{
+				char c = pattern switch
+				{
+					Patterns.X => 'x',
+					Patterns.Up => 'u',
+					Patterns.Down => 'd',
+					Patterns.Banana => 'b',
+					Patterns.Return => 'r',
+					Patterns.None => '-',
+					_ => throw new ConvertingException($"Invalid pattern value: '{pattern}'.")
+				};
+				sb.Append(c);
+			}
+			writer.WriteStringValue(sb.ToString());
 		}
 	}
 }

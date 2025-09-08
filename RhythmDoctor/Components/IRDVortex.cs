@@ -2,6 +2,9 @@
 
 namespace RhythmBase.RhythmDoctor.Components
 {
+	public interface IRDVortex
+	{
+}
 	/// <summary>
 	/// Represents a vortex interface that supports various mathematical operations.
 	/// </summary>
@@ -9,6 +12,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <typeparam name="TRight">The type of the right operand in addition and subtraction operations.</typeparam>
 	/// <typeparam name="TValue">The type of the value in multiplication and division operations.</typeparam>
 	public interface IRDVortex<TSelf, TRight, TValue> :
+		IRDVortex,
 		IEquatable<TSelf>
 #if NET7_0_OR_GREATER
 		,

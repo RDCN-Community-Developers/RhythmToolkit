@@ -1,24 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>RhythmBase</RootNamespace>
-    <AssemblyName>RhythmBase</AssemblyName>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Title>RhythmToolkit</Title>
-    <Version>1.2.1-pre1</Version>
-    <Authors>obugs</Authors>
-    <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels.</Description>
-    <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit</PackageProjectUrl>
-    <PackageIcon>RhythmBase.png</PackageIcon>
-    <RepositoryUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit.git</RepositoryUrl>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<RootNamespace>RhythmBase</RootNamespace>
+	<AssemblyName>RhythmBase</AssemblyName>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	<Title>RhythmToolkit</Title>
+	<Version>1.2.1-pre1</Version>
+	<Authors>obugs</Authors>
+	<Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels.</Description>
+	<PackageProjectUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit</PackageProjectUrl>
+	<PackageIcon>RhythmBase.png</PackageIcon>
+	<RepositoryUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit.git</RepositoryUrl>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	  <LangVersion>Preview</LangVersion>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="System.Text.Json" Version="10.0.0-preview.6.25358.103" />
   </ItemGroup>
   <ItemGroup>
 	<None Include="README.md">
@@ -31,8 +32,6 @@
 	</None>
   </ItemGroup>
   <ItemGroup>
-	<ProjectReference Include="..\RhythmBase.Generator\RhythmBase.Generator.csproj"
-					  OutputItemType="Analyzer"
-					  ReferenceOutputAssembly="false"/>
+	<ProjectReference Include="..\RhythmBase.Generator\RhythmBase.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

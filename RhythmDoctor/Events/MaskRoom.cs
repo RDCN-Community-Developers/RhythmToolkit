@@ -66,6 +66,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the types of masks available.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum RoomMaskTypes
 	{
 		/// <summary>
@@ -88,6 +89,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the alpha modes available.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum MaskAlphaModes
 	{
 		/// <summary>

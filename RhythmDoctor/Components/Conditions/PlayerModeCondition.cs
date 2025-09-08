@@ -1,6 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-
-namespace RhythmBase.RhythmDoctor.Components.Conditions
+﻿namespace RhythmBase.RhythmDoctor.Components.Conditions
 {
 	/// <summary>
 	/// Represents a condition based on the player mode.

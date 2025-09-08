@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
 	/// Specifies the reference point for the camera in the game.

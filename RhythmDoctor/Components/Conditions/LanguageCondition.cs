@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Components.Conditions
 {
 	/// <summary>
@@ -30,6 +29,7 @@ namespace RhythmBase.RhythmDoctor.Components.Conditions
 		/// <summary>
 		/// Represents the supported game languages.
 		/// </summary>
+		[RDJsonEnumSerializable]
 		public enum Languages
 		{
 			/// <summary>

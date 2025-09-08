@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
 	/// Specifies the reference point for decoration placement in the game.

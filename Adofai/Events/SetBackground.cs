@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Components;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to set the background properties in the Adofai event system.  

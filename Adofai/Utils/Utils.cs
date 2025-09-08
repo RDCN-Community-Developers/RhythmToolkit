@@ -3,9 +3,6 @@ using Newtonsoft.Json.Converters;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Events;
-using RhythmBase.Global.Converters;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.Global.Settings;
 using System.Collections.ObjectModel;
 namespace RhythmBase.Adofai.Utils
 {
@@ -122,7 +119,7 @@ namespace RhythmBase.Adofai.Utils
 			};
 			IList<JsonConverter> converters = EventsSerializer.Converters;
 			converters.Add(new StringEnumConverter());
-			converters.Add(new ColorConverter());
+			//converters.Add(new ColorConverter());
 			converters.Add(new TileConverter(adlevel));
 			converters.Add(new CustomTileEventConverter(adlevel, settings));
 			converters.Add(new CustomEventConverter(adlevel, settings));

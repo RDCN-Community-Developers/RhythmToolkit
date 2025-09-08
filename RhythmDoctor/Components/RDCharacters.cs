@@ -3,6 +3,7 @@
 	/// <summary>
 	/// In-game character.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum RDCharacters
 	{
 #pragma warning disable CS1591

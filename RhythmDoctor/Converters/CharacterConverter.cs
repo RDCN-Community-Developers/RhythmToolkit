@@ -1,22 +1,25 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class CharacterConverter : JsonConverter<RDCharacter>
 	{
-		public override void WriteJson(JsonWriter writer, RDCharacter value, JsonSerializer serializer)
+		public override void Write(Utf8JsonWriter writer, RDCharacter value, JsonSerializerOptions serializer)
 		{
-			writer.WriteValue(
+			writer.WriteStringValue(
 				value.IsCustom
 				? value.CustomCharacter == null
 					? ""
 					: $"custom:{value.CustomCharacter}"
 				: value.Character.ToString());
 		}
-		public override RDCharacter ReadJson(JsonReader reader, Type objectType, RDCharacter existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override RDCharacter Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
-			string value = JToken.ReadFrom(reader).ToObject<string>()!;
+			string value = reader.GetString();
+			if (string.IsNullOrEmpty(value))
+				return default;
 			RDCharacter ReadJson;
 			if (value.StartsWith("custom:"))
 			{
@@ -28,9 +31,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 				ReadJson = name;
 			}
 			else
-			{
+			{ 
+				EnumConverter.TryParse(value, out RDCharacters character);
 #if NETSTANDARD
-				ReadJson = string.IsNullOrEmpty(value) ? new() : (RDCharacters)Enum.Parse(typeof(RDCharacters), value);
+				ReadJson = string.IsNullOrEmpty(value) ? new() : character;
 #else
 				ReadJson = string.IsNullOrEmpty(value) ? new() : Enum.Parse<RDCharacters>(value);
 #endif

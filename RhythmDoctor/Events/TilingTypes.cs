@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the types of tiling that can be applied.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum TilingTypes
 	{
 		/// <summary>

@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Converters;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace RhythmBase.Global.Components
 {
@@ -272,7 +271,7 @@ namespace RhythmBase.Global.Components
 #if NETSTANDARD
 		public static bool TryFromArgb(string hex, out RDColor color)
 #else
-		public static bool TryFromArgb(string hex, [MaybeNullWhen(false)]  out RDColor color)
+		public static bool TryFromArgb(string hex, [MaybeNullWhen(false)] out RDColor color)
 #endif
 		{
 			hex = hex.Trim();

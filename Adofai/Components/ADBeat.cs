@@ -1,5 +1,4 @@
 ﻿using RhythmBase.Adofai.Utils;
-using RhythmBase.Global.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Adofai.Components
 {

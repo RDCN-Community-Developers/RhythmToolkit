@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Exceptions;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace RhythmBase.RhythmDoctor.Components.RDLang
 {

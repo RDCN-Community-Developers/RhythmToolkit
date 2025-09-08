@@ -36,7 +36,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the duration of the status sign as a <see cref="TimeSpan"/>.
 		/// </summary>
-		[JsonIgnore]
+		[RDJsonIgnore]
 		public TimeSpan TimeDuration
 		{
 			get

@@ -76,6 +76,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the sides where the dialogue panel can be shown.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum DialogueSides
 	{
 		/// <summary>
@@ -90,6 +91,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the sides where the portrait can be shown.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum DialoguePortraitSides
 	{
 		/// <summary>

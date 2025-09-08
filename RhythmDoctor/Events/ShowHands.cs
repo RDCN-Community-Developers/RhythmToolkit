@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the possible actions for the event.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum ShowHandsActions
 	{
 		/// <summary>
@@ -34,7 +35,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public ShowHands()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			Type = EventType.ShowHands;
 			Tab = Tabs.Actions;
 		}
@@ -74,6 +75,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the possible extents for the action.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum ShowHandsExtents
 	{
 		/// <summary>

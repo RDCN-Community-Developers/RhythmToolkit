@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Enum representing default audio events in the RhythmBase application.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum DefaultAudios
 	{
 		/// <summary>

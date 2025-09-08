@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Rhythm Doctor event types.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum EventType
 	{
 		/// <summary>

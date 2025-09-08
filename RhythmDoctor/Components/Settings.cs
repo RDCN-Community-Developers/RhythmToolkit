@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Converters;
-using RhythmBase.Global.Exceptions;
+using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>  
@@ -153,73 +152,78 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>  
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public List<string> Mods { get; set; } = [];
+		public Dictionary<string, JsonElement> ExtraData = [];
+	}
+	/// <summary>  
+	/// Difficulty level of the level.  
+	/// </summary>  
+	[RDJsonEnumSerializable]
+	public enum DifficultyLevel
+	{
 		/// <summary>  
-		/// Difficulty level of the level.  
+		/// Easy difficulty.  
 		/// </summary>  
-		public enum DifficultyLevel
-		{
-			/// <summary>  
-			/// Easy difficulty.  
-			/// </summary>  
-			Easy,
-			/// <summary>  
-			/// Medium difficulty.  
-			/// </summary>  
-			Medium,
-			/// <summary>  
-			/// Tough difficulty.  
-			/// </summary>  
-			Tough,
-			/// <summary>  
-			/// Very tough difficulty.  
-			/// </summary>  
-			VeryTough
-		}
+		Easy,
 		/// <summary>  
-		/// Play mode of the level.  
+		/// Medium difficulty.  
 		/// </summary>  
-		public enum LevelPlayedMode
-		{
-			/// <summary>  
-			/// Can be played by one player only.  
-			/// </summary>  
-			OnePlayerOnly,
-			/// <summary>  
-			/// Can be played by two players only.  
-			/// </summary>  
-			TwoPlayerOnly,
-			/// <summary>  
-			/// Can be played in both one-player and two-player modes.  
-			/// </summary>  
-			BothModes
-		}
+		Medium,
 		/// <summary>  
-		/// Behavior of the first beat of the level.  
+		/// Tough difficulty.  
 		/// </summary>  
-		public enum FirstBeatBehaviors
-		{
-			/// <summary>  
-			/// Run normally.  
-			/// </summary>  
-			RunNormally,
-			/// <summary>  
-			/// Run events on prebar.  
-			/// </summary>  
-			RunEventsOnPrebar
-		}
+		Tough,
 		/// <summary>  
-		/// Appearance of the level in multiplayer mode.  
+		/// Very tough difficulty.  
 		/// </summary>  
-		public enum MultiplayerAppearances
-		{
-			/// <summary>  
-			/// Horizontal strips appearance.  
-			/// </summary>  
-			HorizontalStrips,
-			/// <summary>  
-			/// No special appearance.  
-			/// </summary>  
-			Nothing
-		}
+		VeryTough
+	}
+	/// <summary>  
+	/// Play mode of the level.  
+	/// </summary>  
+	[RDJsonEnumSerializable]
+	public enum LevelPlayedMode
+	{
+		/// <summary>  
+		/// Can be played by one player only.  
+		/// </summary>  
+		OnePlayerOnly,
+		/// <summary>  
+		/// Can be played by two players only.  
+		/// </summary>  
+		TwoPlayerOnly,
+		/// <summary>  
+		/// Can be played in both one-player and two-player modes.  
+		/// </summary>  
+		BothModes
+	}
+	/// <summary>  
+	/// Behavior of the first beat of the level.  
+	/// </summary>  
+	[RDJsonEnumSerializable]
+	public enum FirstBeatBehaviors
+	{
+		/// <summary>  
+		/// Run normally.  
+		/// </summary>  
+		RunNormally,
+		/// <summary>  
+		/// Run events on prebar.  
+		/// </summary>  
+		RunEventsOnPrebar
+	}
+	/// <summary>  
+	/// Appearance of the level in multiplayer mode.  
+	/// </summary>  
+	[RDJsonEnumSerializable]
+	public enum MultiplayerAppearances
+	{
+		/// <summary>  
+		/// Horizontal strips appearance.  
+		/// </summary>  
+		HorizontalStrips,
+		/// <summary>  
+		/// No special appearance.  
+		/// </summary>  
+		Nothing
 	}
 }

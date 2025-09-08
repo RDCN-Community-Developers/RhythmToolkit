@@ -1,19 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-using RhythmBase.Global.Components.RichText;
+﻿using RhythmBase.Global.Components.RichText;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class DialogueListConverter : JsonConverter<RDDialogueExchange>
 	{
-		public override RDDialogueExchange? ReadJson(JsonReader reader, Type objectType, RDDialogueExchange? existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override RDDialogueExchange? Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
-			throw new NotImplementedException();
+			string? s = reader.GetString();
+			if (string.IsNullOrEmpty(s))
+				return null;
+			try
+			{
+				return RDDialogueExchange.Deserialize(s);
+			}
+			catch (Exception ex)
+			{
+				throw new JsonException($"Failed to deserialize RDDialogueExchange: {ex.Message}", ex);
+			}
 		}
-		public override void WriteJson(JsonWriter writer, RDDialogueExchange? value, JsonSerializer serializer) => writer.WriteRawValue(value?.Serialize());
+		public override void Write(Utf8JsonWriter writer, RDDialogueExchange? value, JsonSerializerOptions serializer) => writer.WriteStringValue(value?.Serialize());
 	}
 }

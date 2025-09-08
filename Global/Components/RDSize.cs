@@ -1,6 +1,4 @@
-﻿
-using Newtonsoft.Json;
-using RhythmBase.Global.Converters;
+﻿using System.Text.Json.Serialization;
 using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;

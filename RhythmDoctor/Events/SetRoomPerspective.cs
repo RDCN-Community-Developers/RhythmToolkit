@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
-using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -10,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Represents an event to set the room perspective.  
 	/// </summary>  
+	//[RDJsonObjectNotSerializable]
 	public class SetRoomPerspective : BaseEvent, IEaseEvent
 	{
 		private RDPointE?[] cornerPositions = [
@@ -30,7 +28,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the corner positions of the room.  
 		/// </summary>  
 		[EaseProperty]
-		public RDPointE?[] CornerPositions { get => cornerPositions; set => cornerPositions = value.Length == 4 ? value : throw new RhythmBaseException(); }
+		[RDJsonCondition("$&.CornerPositions is not null")]
+		public RDPointE?[] CornerPositions { get => cornerPositions; set => cornerPositions = value?.Length == 4 ? value : throw new RhythmBaseException(); }
 
 		/// <summary>  
 		/// Gets or sets the duration of the event.  

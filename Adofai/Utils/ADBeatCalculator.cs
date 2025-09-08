@@ -1,6 +1,4 @@
 ﻿using RhythmBase.Adofai.Components;
-using RhythmBase.Adofai.Events;
-using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.Adofai.Utils
 {
 	/// <summary>

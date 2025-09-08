@@ -3,6 +3,7 @@
 	/// <summary>  
 	/// Defines the types of sounds.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum SoundTypes
 	{
 #pragma warning disable CS1591

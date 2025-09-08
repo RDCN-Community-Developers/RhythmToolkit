@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event that plays a sound in the Adofai level.  

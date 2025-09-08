@@ -1,66 +1,36 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.RhythmDoctor.Extensions;
-using RhythmBase.Global.Components;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Components;
-using System.Text.RegularExpressions;
-namespace RhythmBase.Converters
+﻿using RhythmBase.RhythmDoctor.Components;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal partial class PaletteColorConverter : JsonConverter<PaletteColor>
+	internal class PaletteColorConverter : JsonConverter<PaletteColor>
 	{
-		internal PaletteColorConverter(RDColor[] list)
+		public override PaletteColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			parent = list;
-		}
-		public override void WriteJson(JsonWriter writer, PaletteColor? value, JsonSerializer serializer)
-		{
-			if (value?.EnablePanel ?? throw new NotImplementedException())
-			{
-				writer.WriteValue(string.Format("pal{0}", value.PaletteIndex));
-			}
-			else
-			{
-				if (value.EnableAlpha)
-				{
-					writer.WriteValue(value.Value.ToString("RRGGBBAA"));
-				}
-				else
-				{
-					writer.WriteValue(value.Value.ToString("RRGGBB"));
-				}
-			}
-		}
-		public override PaletteColor ReadJson(JsonReader reader, Type objectType, PaletteColor? existingValue, bool hasExistingValue, JsonSerializer serializer)
-		{
-			if (existingValue == null)
-			{
-				throw new ConvertingException(new Exception($"PaletteColorConverter: Inner exception: Property has no default value."));
-			}
-			JToken token = JToken.Load(reader);
-			string? JString = token.Value<string>();
-			if (string.IsNullOrEmpty(JString))
-			{
-				throw new ConvertingException(token, new Exception($"Unreadable color: \"{token}\". path \"{reader.Path}\""));
-			}
-			Match reg = PaletteColorRegex().Match(JString);
-			existingValue.parent = parent;
-			if (reg.Success)
-			{
-				existingValue.PaletteIndex = int.Parse(reg.Groups[1].Value);
-			}
-			else
-			{
-				existingValue.Color = RDColor.FromRgba(JString);
-			}
-			return existingValue;
-		}
-		private readonly RDColor[] parent;
-#if NET7_0_OR_GREATER
-		[GeneratedRegex("pal(\\d+)")]
-		private static partial Regex PaletteColorRegex();
-#elif NETSTANDARD
-		private static Regex PaletteColorRegex() => new("pal(\\d+)", RegexOptions.Compiled);
+			var s = reader.GetString();
+			if (string.IsNullOrEmpty(s)) return default;
+			return s.StartsWith("pal")
+#if NETSTANDARD
+				? new() { PaletteIndex = int.Parse(s.Substring(3)) }
+#else
+				? new() { PaletteIndex = int.Parse(s[3..]) }
 #endif
+				: new() { Color = RDColor.FromRgba(s) };
+		}
+
+		public override void Write(Utf8JsonWriter writer, PaletteColor value, JsonSerializerOptions options)
+		{
+			if (value.EnablePanel)
+			{
+				writer.WriteStringValue($"pal{value.PaletteIndex}");
+			}
+			else
+			{
+				writer.WriteStringValue(value.EnableAlpha
+					? value.Value.ToString("RRGGBBAA")
+					: value.Value.ToString("RRGGBB"));
+			}
+		}
 	}
 }

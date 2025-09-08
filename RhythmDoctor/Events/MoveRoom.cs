@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -24,21 +22,25 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the position of the room.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition("$&.RoomPosition is not null")]
 		public RDPointE? RoomPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the scale of the room.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition("$&.Scale is not null")]
 		public RDSizeE? Scale { get; set; }
 		/// <summary>
 		/// Gets or sets the angle of the room.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition("$&.Angle is not null")]
 		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the pivot point of the room.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition("$&.Pivot is not null")]
 		public RDPointE? Pivot { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the move event.

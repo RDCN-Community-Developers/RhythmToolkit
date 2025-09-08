@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents the Free Roam Twirl event in the ADOFAI editor.  

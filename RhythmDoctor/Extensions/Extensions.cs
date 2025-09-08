@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Components;
-using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;

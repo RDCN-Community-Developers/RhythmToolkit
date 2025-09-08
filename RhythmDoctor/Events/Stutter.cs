@@ -13,7 +13,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public Stutter()
 		{
-			Rooms = new RDRoom(false, [0]);
+			Rooms = new RDRoom([0]);
 			Type = EventType.Stutter;
 			Tab = Tabs.Actions;
 		}
@@ -53,6 +53,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the possible actions for the stutter event.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum StutterActions
 	{
 		/// <summary>

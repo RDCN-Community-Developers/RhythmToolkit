@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -45,7 +43,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether this event is a tint.
 		/// </summary>
-		[JsonProperty("tint")]
+		[RDJsonProperty("tint")]
 		public bool IsTint { get; set; }
 		/// <summary>
 		/// Gets or sets the tint color for the tint event.

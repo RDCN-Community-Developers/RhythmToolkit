@@ -18,17 +18,14 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the play style.
 		/// </summary>
-		[JsonProperty(nameof(PlayStyle))]
 		public PlayStyleTypes PlayStyle { get; set; }
 		/// <summary>
 		/// Gets or sets the next bar.
 		/// </summary>
-		[JsonProperty(nameof(NextBar))]
 		public int NextBar { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether the play style is relative.
 		/// </summary>
-		[JsonProperty(nameof(Relative))]
 		public bool Relative { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
@@ -42,6 +39,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the play styles.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum PlayStyleTypes
 	{
 		/// <summary>

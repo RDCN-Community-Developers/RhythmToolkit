@@ -1,6 +1,4 @@
-﻿using RhythmBase.Global.Components;
-
-namespace RhythmBase.RhythmDoctor.Utils
+﻿namespace RhythmBase.RhythmDoctor.Utils
 {
 	/// <summary>
 	/// Visual utils.

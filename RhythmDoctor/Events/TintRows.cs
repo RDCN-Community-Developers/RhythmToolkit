@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -22,7 +21,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the tint color.
 		/// </summary>
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public PaletteColor TintColor { get; set; }
 		/// <summary>
 		/// Gets or sets the easing type for the animation.
@@ -63,11 +61,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public override Tabs Tab { get; }
 		/// <inheritdoc/>
-		public RDRoom Rooms { get; set; } = new RDRoom(true, [0]);
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets a value indicating whether to tint all rows.
 		/// </summary>
-		[JsonIgnore]
+		[RDJsonIgnore]
 		public bool TintAll
 		{
 			get
@@ -85,6 +83,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the row effects.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum TintRowEffects
 	{
 		/// <summary>

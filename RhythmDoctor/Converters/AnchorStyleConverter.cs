@@ -1,30 +1,28 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Exceptions;
+﻿using System.Text.Json.Serialization;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text.RegularExpressions;
+using System.Text.Json;
 namespace RhythmBase.Converters
 {
 	internal partial class AnchorStyleConverter : JsonConverter<FloatingTextAnchorStyles>
 	{
-		public override void WriteJson(JsonWriter writer, FloatingTextAnchorStyles value, JsonSerializer serializer)
+		public override void Write(Utf8JsonWriter writer, FloatingTextAnchorStyles value, JsonSerializerOptions serializer)
 		{
 			var horizontal = value & (FloatingTextAnchorStyles.Left | FloatingTextAnchorStyles.Right);
 			var vertical = value & (FloatingTextAnchorStyles.Upper | FloatingTextAnchorStyles.Lower);
-			writer.WriteValue(
+			writer.WriteStringValue(
 				(vertical == 0 ?
 					"Middle"
 					: vertical.ToString())
 				+ horizontal.ToString()
 			);
 		}
-		public override FloatingTextAnchorStyles ReadJson(JsonReader reader, Type objectType, FloatingTextAnchorStyles existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override FloatingTextAnchorStyles Read(ref Utf8JsonReader reader, Type objectType,  JsonSerializerOptions serializer)
 		{
-			JToken token = JToken.ReadFrom(reader);
-			string JString = token.ToObject<string>() ?? throw new ConvertingException("Cannot read the anchor.");
+			string JString = reader.GetString() ?? throw new ConvertingException("Cannot read the anchor.");
 			Match match = AnchorStyleRegex().Match(JString);
 			if (!match.Success)
-				throw new ConvertingException(token, $"Illegal Anchor: {JString}");
+				return FloatingTextAnchorStyles.Left | FloatingTextAnchorStyles.Upper;
 			FloatingTextAnchorStyles result = FloatingTextAnchorStyles.Center;
 			result |= match.Groups[1].Value switch
 			{

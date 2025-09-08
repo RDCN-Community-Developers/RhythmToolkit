@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -17,7 +15,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public MoveCamera()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			Type = EventType.MoveCamera;
 			Tab = Tabs.Actions;
 		}
@@ -29,16 +27,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the camera position.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition("$&.CameraPosition is not null")]
 		public RDPoint? CameraPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the zoom level.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition("$&.Zoom is not null")]
 		public int? Zoom { get; set; }
 		/// <summary>
 		/// Gets or sets the angle of the camera.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition("$&.Angle is not null")]
 		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the event.

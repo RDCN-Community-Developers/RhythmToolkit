@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -32,21 +30,25 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the row position.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(CustomPosition)} is true && $&.{nameof(RowPosition)} is not null")]
 		public RDPointE? RowPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the scale.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
 		public RDSizeE? Scale { get; set; }
 		/// <summary>
 		/// Gets or sets the angle.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
 		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the pivot.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Pivot)} is not null")]
 		public float? Pivot { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the move row event.
@@ -68,6 +70,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the targets for the move row event.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum MoveRowTargets
 	{
 		/// <summary>

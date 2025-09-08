@@ -26,7 +26,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <inheritdoc/>
 		public override EventType Type => EventType.CallCustomMethod;
 		/// <inheritdoc/>
-		[JsonIgnore]
+		[RDJsonIgnore]
 		public RDRoom Rooms { get; set; } = RDRoom.Default();
 		/// <inheritdoc/>
 		public override Tabs Tab => Tabs.Actions;
@@ -36,6 +36,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the execution time options for the method.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum EventExecutionTimeOptions
 	{
 		/// <summary>

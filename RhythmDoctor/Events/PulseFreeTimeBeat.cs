@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Defines the action types for the pulse free time beat.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum PulseActions
 	{
 		/// <summary>

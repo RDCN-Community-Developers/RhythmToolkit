@@ -1,34 +1,27 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class ExpressionConverter : JsonConverter<RDExpression>
 	{
-		public override void WriteJson(JsonWriter writer, RDExpression value, JsonSerializer serializer)
+		public override void Write(Utf8JsonWriter writer, RDExpression value, JsonSerializerOptions serializer)
 		{
 			if (value.IsNumeric)
-			{
 				writer.WriteRawValue(value.NumericValue.ToString());
-			}
+			else if (string.IsNullOrEmpty(value.ExpressionValue))
+				writer.WriteNullValue();
 			else
-			{
-				if (string.IsNullOrEmpty(value.ExpressionValue))
-				{
-					writer.WriteNull();
-				}
-				else
-				{
-					writer.WriteValue(string.Format("{{{0}}}", value.ExpressionValue));
-				}
-			}
+				writer.WriteStringValue($"{{{value.ExpressionValue}}}");
 		}
-		public override RDExpression ReadJson(JsonReader reader, Type objectType, RDExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override RDExpression Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
-			string js = JToken.ReadFrom(reader).ToObject<string>() ?? throw new ConvertingException("Cannot read the expression.");
-			RDExpression ReadJson = new(js.TrimStart('{').TrimEnd('}'));
-			return ReadJson;
+			if (reader.TokenType == JsonTokenType.Number)
+				return new RDExpression(reader.GetSingle());
+			else if (reader.TokenType == JsonTokenType.String)
+				return new RDExpression(reader.GetString()?.TrimStart('{').TrimEnd('}') ?? string.Empty);
+			else
+				return default;
 		}
 	}
 }

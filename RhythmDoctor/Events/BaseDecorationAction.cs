@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -12,12 +11,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the parent decoration event collection.
 		/// </summary>
-		[JsonIgnore]
 		public Decoration? Parent => _parent;
 		/// <summary>
 		/// Gets or sets the Y coordinate.
 		/// </summary>
-		[JsonIgnore]
 		public override int Y { get => base.Y; set => base.Y = value; }
 		/// <summary>
 		/// Gets the target identifier.
@@ -50,7 +47,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the room associated with this action.
 		/// </summary>
-		[JsonIgnore]
 		public RDSingleRoom Room => Parent?.Room ?? RDSingleRoom.Default;
 		/// <summary>
 		/// The parent decoration event collection.

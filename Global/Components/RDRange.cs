@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.Global.Components
 {
 	/// <summary>

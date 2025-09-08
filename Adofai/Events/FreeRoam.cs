@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>

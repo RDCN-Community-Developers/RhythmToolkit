@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the type of player in the game.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum PlayerType
 	{
 		/// <summary>

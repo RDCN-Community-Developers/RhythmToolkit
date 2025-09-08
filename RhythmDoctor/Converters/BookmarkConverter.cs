@@ -1,42 +1,56 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Utils;
+﻿using RhythmBase.RhythmDoctor.Components;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class BookmarkConverter(BeatCalculator? calculator = default) : JsonConverter<Bookmark>
+	internal class BookmarkConverter() : JsonConverter<Bookmark>
 	{
-		public override void WriteJson(JsonWriter writer, Bookmark? value, JsonSerializer serializer)
+		public override void Write(Utf8JsonWriter writer, Bookmark? value, JsonSerializerOptions serializer)
 		{
 			var beat = value?.Beat.BarBeat ?? throw new ConvertingException("Cannot write the bookmark.");
 			writer.WriteStartObject();
-			writer.WritePropertyName("bar");
-			writer.WriteValue(beat.bar);
-			writer.WritePropertyName("beat");
-			writer.WriteValue(beat.beat);
-			writer.WritePropertyName("color");
-			writer.WriteValue((int)value.Color);
+			writer.WriteNumber("bar", beat.bar);
+			writer.WriteNumber("beat", beat.beat);
+			writer.WriteNumber("color", (int)value.Color);
 			writer.WriteEndObject();
 		}
-		public override Bookmark ReadJson(JsonReader reader, Type objectType, Bookmark? existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override Bookmark Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
-			JToken jobj = JToken.ReadFrom(reader);
-			int bar = jobj["bar"]?.ToObject<int>()
-				?? throw new ConvertingException(jobj, new Exception($"Missing property \"{jobj["bar"]}\". path \"{jobj.Path}\""));
-			float beat = jobj["beat"]?.ToObject<float>()
-				?? throw new ConvertingException(jobj, new Exception($"Missing property \"{jobj["beat"]}\". path \"{jobj.Path}\""));
+			int bar = 1;
+			float beat = 1;
+			Bookmark.BookmarkColors color = Bookmark.BookmarkColors.Blue;
+			while (reader.Read())
+			{
+				if (reader.TokenType == JsonTokenType.EndObject)
+					break;
+				if (reader.TokenType == JsonTokenType.PropertyName)
+				{
+					var propertyName = reader.ValueSpan;
+					reader.Read();
+					switch (propertyName)
+					{
+						case var p when p.SequenceEqual("bar"u8):
+							bar = reader.GetInt32();
+							break;
+						case var p when p.SequenceEqual("beat"u8):
+							beat = reader.GetSingle();
+							break;
+						case var p when p.SequenceEqual("color"u8):
+							// Color is stored as an integer in the JSON
+							color = (Bookmark.BookmarkColors)reader.GetInt32();
+							break;
+						default:
+							reader.Skip();
+							break;
+					}
+				}
+			}
 			return new Bookmark
 			{
-				Beat = calculator?.BeatOf(bar, beat) ?? new(bar, beat),
-#if NETSTANDARD
-				Color = (Bookmark.BookmarkColors)Enum.Parse(typeof(Bookmark.BookmarkColors), (string)jobj["color"]!)
-#else
-				Color = Enum.Parse<Bookmark.BookmarkColors>((string)jobj["color"]!)
-#endif
+				Beat = new(bar, beat),
+				Color = color,
 			};
 		}
-		private readonly BeatCalculator? calculator = calculator;
 	}
 }

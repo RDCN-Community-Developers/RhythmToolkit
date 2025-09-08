@@ -5,6 +5,7 @@
 	/// The EaseType enumeration represents various types of easing functions.
 	/// These functions are used to create smooth transitions in animations.
 	///</summary>
+	[RDJsonEnumSerializable]
 	public enum EaseType
 	{
 		/// <summary>

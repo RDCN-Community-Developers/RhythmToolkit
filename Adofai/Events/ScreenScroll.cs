@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Components;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents a screen scroll action in the Adofai event system.  

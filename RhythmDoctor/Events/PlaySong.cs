@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
+using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -19,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the beats per minute (BPM) for the song.
 		/// </summary>
-		[JsonProperty("bpm")]
+		[RDJsonProperty("bpm")]
 		public override float BeatsPerMinute
 		{
 			get => base.BeatsPerMinute;
@@ -28,7 +28,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the offset time for the song.
 		/// </summary>
-		[JsonIgnore]
+		[RDJsonTime("milliseconds")]
 		public TimeSpan Offset
 		{
 			get => Song.Offset;
@@ -54,6 +54,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the song to be played.
 		/// </summary>
-		public RDAudio Song = new();
+		public RDAudio Song { get; set; } = new();
 	}
 }

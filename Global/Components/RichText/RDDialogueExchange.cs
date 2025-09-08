@@ -1,8 +1,12 @@
-﻿namespace RhythmBase.Global.Components.RichText
+﻿using RhythmBase.RhythmDoctor.Converters;
+using System.Text.Json.Serialization;
+
+namespace RhythmBase.Global.Components.RichText
 {
 	/// <summary>
 	/// Represents a list of dialogue lines.
 	/// </summary>
+	[JsonConverter(typeof(DialogueListConverter))]
 	public class RDDialogueExchange : List<RDDialogueBlock>
 	{
 		/// <summary>

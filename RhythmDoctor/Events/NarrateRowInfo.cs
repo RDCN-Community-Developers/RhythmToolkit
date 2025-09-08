@@ -27,7 +27,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the beats to skip during narration.
 		/// </summary>
-		[JsonProperty("narrateSkipBeats")]
+		[RDJsonProperty("narrateSkipBeats")]
 		public NarrateSkipBeat NarrateSkipBeat { get; set; } = NarrateSkipBeat.On;
 		/// <summary>
 		/// Gets or sets the custom pattern for the narration.
@@ -51,6 +51,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the type of narration information.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum NarrateInfoTypes
 	{
 		/// <summary>
@@ -77,6 +78,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the beats to skip during narration.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum NarrateSkipBeat
 	{
 		/// <summary>
@@ -95,6 +97,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Specifies the custom player options for narrating row information.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum NarrateRowInfoCustomPlayer
 	{
 		/// <summary>  

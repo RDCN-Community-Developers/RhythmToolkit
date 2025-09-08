@@ -11,19 +11,20 @@
 
 		/// <summary>  
 		/// Gets or sets the mode for displaying the content.  
-		/// Defaults to <see cref="ContentModes.OnTop"/>.  
+		/// Defaults to <see cref="WindowContentModes.OnTop"/>.  
 		/// </summary>  
-		public ContentModes ContentMode { get; set; } = ContentModes.OnTop;
+		public WindowContentModes ContentMode { get; set; } = WindowContentModes.OnTop;
+	}
 
+	/// <summary>  
+	/// Specifies the available modes for displaying content in the window.  
+	/// </summary>  
+	[RDJsonEnumSerializable]
+	public enum WindowContentModes
+	{
 		/// <summary>  
-		/// Specifies the available modes for displaying content in the window.  
+		/// Displays the content on top of other elements.  
 		/// </summary>  
-		public enum ContentModes
-		{
-			/// <summary>  
-			/// Displays the content on top of other elements.  
-			/// </summary>  
-			OnTop,
-		}
+		OnTop,
 	}
 }

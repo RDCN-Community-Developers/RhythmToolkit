@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
@@ -16,6 +15,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// This class provides functionality for managing and processing collections of events,  
 	/// including tagging, parent association, and event generation.  
 	/// </remarks>
+	[RDJsonObjectNotSerializable]
 	public abstract partial class Group : BaseEvent, IEnumerable<BaseEvent>
 	{
 		/// <summary>
@@ -260,7 +260,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		{
 			get
 			{
-				T ins = _loaded ? (T)_instance : _data.ToObject<T>(JsonSerializer.Create(GetSerializer())) ?? new();
+				T ins = _loaded ? (T)_instance : _data.ToObject<T>(JsonSerializer.Create(GetSerializerOld())) ?? new();
 				_instance = ins;
 				_loaded = true;
 				return ins;
@@ -273,8 +273,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		}
 		internal override void Flush()
 		{
-			_instance = _data.ToObject<T>(JsonSerializer.Create(GetSerializer())) ?? new T();
-			_data = JObject.FromObject(_instance, JsonSerializer.Create(GetSerializer()));
+			_instance = _data.ToObject<T>(JsonSerializer.Create(GetSerializerOld())) ?? new T();
+			_data = JObject.FromObject(_instance, JsonSerializer.Create(GetSerializerOld()));
 		}
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="Group{T}"/> class.  

@@ -1,16 +1,20 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Components;
-using RhythmBase.Global.Exceptions;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace RhythmBase.Global.Converters
 {
 	internal class ColorConverter : JsonConverter<RDColor>
 	{
-		public override void WriteJson(JsonWriter writer, RDColor value, JsonSerializer serializer) => writer.WriteValue(value.ToString("rrggbbaa"));
-		public override RDColor ReadJson(JsonReader reader, Type objectType, RDColor existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override RDColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			string JString = JToken.Load(reader).Value<string>() ?? throw new ConvertingException("Cannot read the color.");
-			return RDColor.FromRgba(JString);
+			var s = reader.GetString();
+			if (string.IsNullOrEmpty(s)) return default;
+			return RDColor.FromRgba(s);
+		}
+
+		public override void Write(Utf8JsonWriter writer, RDColor value, JsonSerializerOptions options)
+		{
+			writer.WriteStringValue(value.ToString("RRGGBBAA"));
 		}
 	}
 }

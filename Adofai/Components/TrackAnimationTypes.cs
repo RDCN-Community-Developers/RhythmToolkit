@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Components
+﻿namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Represents the types of track animations available in the ADTrack system.

@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents the sources of the voice.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum SatReaDyGetSetGoVoiceSources
 	{
 		/// <summary>
@@ -101,6 +102,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents the phrases that can be said.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum SayReaDyGetSetGoWords
 	{
 		/// <summary>

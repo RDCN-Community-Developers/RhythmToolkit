@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Components
+﻿namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Represents the types of animations used for track disappearance.

@@ -1,69 +1,67 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class RoomConverter : JsonConverter
+	internal class RoomConverter : JsonConverter<RDRoom>
 	{
-		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+		public override RDRoom Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			Type type = value!.GetType();
-			if (type == typeof(RDRoom))
+			if (reader.TokenType != JsonTokenType.StartArray)
+				throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
+			List<byte> rooms = [];
+			while (reader.Read())
 			{
-				writer.WriteStartArray();
-				foreach (int item in ((RDRoom?)value ?? default).Rooms)
-					writer.WriteValue(item);
-				writer.WriteEndArray();
+				if(reader.TokenType != JsonTokenType.EndArray)
+				{
+					byte room = reader.GetByte();
+					rooms.Add(room);
+				}
 			}
-			else if (type == typeof(RDSingleRoom))
+			if (reader.TokenType != JsonTokenType.EndArray)
+				throw new JsonException($"Expected EndArray token, but got {reader.TokenType}.");
+			reader.Read();
+			RDRoom result = new();
+			foreach(byte room in rooms)
 			{
-				writer.WriteStartArray();
-				writer.WriteValue(((RDSingleRoom?)value ?? default).Value);
-				writer.WriteEndArray();
+				result[room] = true;
 			}
-			else
-				throw new NotImplementedException();
+			return result;
 		}
-		public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-		{
-			JToken token = JArray.Load(reader);
-			byte[]? J = token.ToObject<byte[]>();
-			if (J == null)
-				throw new ConvertingException(token, new Exception($"Unreadable room: \"{J}\". path \"{reader.Path}\""));
 
-			bool flag = objectType == typeof(RDRoom);
-			object ReadJson;
-			if (flag)
-			{
-				bool enableTop;
-				if (existingValue != null)
-				{
-					object obj = existingValue;
-					enableTop = (obj != null ? (RDRoom)obj : default).EnableTop;
-				}
-				else
-				{
-					enableTop = true;
-				}
-				RDRoom room = new(enableTop);
-				foreach (byte item in J)
-				{
-					room[item] = true;
-				}
-				ReadJson = room;
-			}
-			else
-			{
-				flag = objectType == typeof(RDSingleRoom);
-				if (!flag)
-				{
-					throw new NotImplementedException();
-				}
-				ReadJson = new RDSingleRoom(J.Single());
-			}
-			return ReadJson;
+		public override void Write(Utf8JsonWriter writer, RDRoom value, JsonSerializerOptions options)
+		{
+			writer.WriteStartArray();
+			foreach (byte item in value.Rooms)
+				writer.WriteNumberValue(item);
+			writer.WriteEndArray();
 		}
-		public override bool CanConvert(Type objectType) => objectType == typeof(RDRoom) || objectType == typeof(RDSingleRoom);
+	}
+	internal class SingleRoomConverter : JsonConverter<RDSingleRoom>
+	{
+		public override RDSingleRoom Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			if(reader.TokenType != JsonTokenType.StartArray)
+				throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
+			reader.Read();
+			byte index = reader.GetByte();
+			RDSingleRoom result = new(index);
+			reader.Read();
+			if (reader.TokenType != JsonTokenType.EndArray)
+				throw new JsonException($"Expected EndArray token, but got {reader.TokenType}.");
+			reader.Read();
+			return result;
+		}
+
+		public override void Write(Utf8JsonWriter writer, RDSingleRoom value, JsonSerializerOptions options)
+		{
+			writer.WriteStartArray();
+			writer.WriteNumberValue(value.Value);
+			writer.WriteEndArray();
+		}
 	}
 }

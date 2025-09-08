@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Specifies the type of row in the rhythm base.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum RowTypes
 	{
 		/// <summary>

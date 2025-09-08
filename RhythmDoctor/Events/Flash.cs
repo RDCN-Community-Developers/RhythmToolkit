@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public Flash()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			Type = EventType.Flash;
 			Tab = Tabs.Actions;
 		}
@@ -41,6 +41,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the possible durations for a flash event.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum DurationType
 	{
 		/// <summary>

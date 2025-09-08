@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -11,7 +10,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the parent row event collection.
 		/// </summary>
-		[JsonIgnore]
 		public Row? Parent
 		{
 			get => _parent;
@@ -28,12 +26,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the room associated with this action.
 		/// </summary>
-		[JsonIgnore]
 		public RDSingleRoom Room => _parent?.Rooms ?? RDSingleRoom.Default;
 		/// <summary>
 		/// Gets the index of the row in the parent collection.
 		/// </summary>
-		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
 		public int Index => Parent?.Index ?? _row;
 		/// <summary>
 		/// Clones this event and its basic properties. Clone will be added to the level.

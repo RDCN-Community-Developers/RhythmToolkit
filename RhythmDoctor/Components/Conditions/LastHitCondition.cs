@@ -1,6 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-
-namespace RhythmBase.RhythmDoctor.Components.Conditions
+﻿namespace RhythmBase.RhythmDoctor.Components.Conditions
 {
 	/// <summary>
 	/// Represents a condition based on the last hit in a rhythm game.
@@ -30,6 +28,7 @@ namespace RhythmBase.RhythmDoctor.Components.Conditions
 		/// Defines the possible results of a hit.
 		/// </summary>
 		[Flags]
+		[RDJsonEnumSerializable]
 		public enum HitResult
 		{
 			/// <summary>

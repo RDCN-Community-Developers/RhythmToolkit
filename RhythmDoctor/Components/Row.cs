@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Converters;
-using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Events;
 using static RhythmBase.RhythmDoctor.Utils.EventTypeUtils;
 namespace RhythmBase.RhythmDoctor.Components
@@ -132,7 +130,12 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Adds an item to the row safely.
 		/// </summary>
 		/// <param name="item">The row event to add.</param>
-		internal void AddInternal(BaseRowAction item) => base.Add(item);
+		internal void AddInternal(BaseRowAction item)
+		{
+			item._parent = this;
+			base.Add(item);
+		}
+
 		/// <summary>
 		/// Removes an item from the row.
 		/// </summary>
@@ -145,8 +148,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="item">The row event to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
 		internal bool RemoveInternal(BaseRowAction item) => base.Remove(item);
+
 		private RowTypes _rowType;
-		[JsonIgnore]
+		[RDJsonIgnore]
 		internal RDLevel? Parent = null;
 	}
 }

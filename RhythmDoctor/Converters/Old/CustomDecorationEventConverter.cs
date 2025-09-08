@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
-namespace RhythmBase.RhythmDoctor.Converters
+namespace RhythmBase.RhythmDoctor.Converters.Old
 {
 	internal class CustomDecorationEventConverter(RDLevel? level, LevelReadOrWriteSettings inputSettings) : BaseDecorationActionConverter<CustomDecorationEvent>(level, inputSettings)
 	{
@@ -12,13 +11,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			CustomDecorationEvent? result = base.GetDeserializedObject(jobj, objectType, existingValue, hasExistingValue, serializer);
 			if (result != null)
-				result.Data = jobj;
+				result.ExtraData = jobj;
 			return result;
 		}
 		public override JObject SetSerializedObject(CustomDecorationEvent value, JsonSerializer serializer)
 		{
 			JObject jobj = base.SetSerializedObject(value, serializer);
-			JToken data = value.Data.DeepClone();
+			JToken data = value.ExtraData.DeepClone();
 			foreach (KeyValuePair<string, JToken?> item in jobj)
 			{
 				data[item.Key] = item.Value;

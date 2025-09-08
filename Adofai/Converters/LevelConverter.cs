@@ -3,8 +3,6 @@ using Newtonsoft.Json.Linq;
 using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
-using RhythmBase.Global.Converters;
-using RhythmBase.Global.Settings;
 namespace RhythmBase.Adofai.Converters
 {
 	internal class LevelConverter : JsonConverter<ADLevel>

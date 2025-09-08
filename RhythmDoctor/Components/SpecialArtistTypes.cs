@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Enum representing special types of artists.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum SpecialArtistTypes
 	{
 		/// <summary>

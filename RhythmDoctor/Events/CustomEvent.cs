@@ -1,67 +1,68 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using RhythmBase.RhythmDoctor.Extensions;
-using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
+using System.Collections.Generic;
+
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents a custom event in the rhythm base system.
 	/// </summary>
-	public class CustomEvent : BaseEvent
+	[RDJsonObjectNotSerializable]
+	public class CustomEvent : BaseEvent, ICustomEvent
 	{
 		/// <inheritdoc/>
-		[JsonIgnore]
 		public override EventType Type => EventType.CustomEvent;
-		/// <summary>
-		/// Gets or sets the actual type of the custom event.
-		/// </summary>
-		[JsonIgnore]
-		public string ActureType
-		{
-			get => Data["Type".ToLowerCamelCase()]?.ToObject<string>() ?? "";
 
-#if NET5_0_OR_GREATER
-			init
-#else
-			set
-#endif
- => Data["Type".ToLowerCamelCase()] = value;
-		}
 		/// <inheritdoc/>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Unknown;
+
 		/// <inheritdoc/>
 		public override int Y
 		{
-			get => (int)(Data["Y".ToLowerCamelCase()] ?? 0);
-			set => Data["Y".ToLowerCamelCase()] = value;
+			get => _y;
+			set => _y = value;
 		}
+
+		/// <summary>
+		/// Gets or sets the actual type of the custom event.
+		/// </summary>
+		public string ActureType
+		{
+			get => _type ?? "";
+			set => _type = value;
+		}
+
+		// 常用字段直接属性化
+		public int Bar { get; set; } = 1;
+		public float BeatValue { get; set; } = 1f;
+		public string Tag { get; set; } = "";
+		public bool Active { get; set; } = true;
+		public string? ConditionRaw { get; set; }
+		[JsonIgnore]
+		public Condition? Condition
+		{
+			get => string.IsNullOrEmpty(ConditionRaw) ? null : Condition.Load(ConditionRaw);
+			set => ConditionRaw = value?.ToString();
+		}
+
+		// 其余动态字段
+		[JsonExtensionData]
+		public Dictionary<string, JsonElement> ExtraData { get => _extraData ??= []; set => _extraData = value; }
+
+		// 内部字段
+		private string? _type;
+		private int _y;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CustomEvent"/> class.
 		/// </summary>
-		public CustomEvent()
-		{
-			Data = [];
-			Tab = Tabs.Unknown;
-		}
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CustomEvent"/> class with the specified data.
-		/// </summary>
-		/// <param name="data">The data for the custom event.</param>
-		public CustomEvent(JObject data)
-		{
-			Data = data ?? [];
-			Tab = Tabs.Unknown;
-			Beat = new RDBeat(Data["bar"]?.ToObject<int>() ?? 1, Data["beat"]?.ToObject<float>() ?? 1f);
-			Tag = Data["tag"]?.ToObject<string>() ?? "";
-			Condition = Data["condition"] == null
-				? null
-				: Condition.Load(Data["condition"]?.ToObject<string>() ?? "");
-			Active = Data["active"]?.ToObject<bool>() ?? true;
-		}
+		public CustomEvent() { }
 		/// <inheritdoc/>
-		public override string ToString() => $"{Beat} *{ActureType}";
+		public override string ToString() => $"{Bar}:{BeatValue} *{ActureType}";
+
 		/// <summary>
 		/// Tries to convert the current custom event to a base event.
 		/// </summary>
@@ -69,6 +70,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <param name="type">The type of the event.</param>
 		/// <returns>True if the conversion was successful; otherwise, false.</returns>
 		public virtual bool TryConvert(ref BaseEvent? value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
+
 		/// <summary>
 		/// Tries to convert the current custom event to a base event with the specified settings.
 		/// </summary>
@@ -78,32 +80,33 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns>True if the conversion was successful; otherwise, false.</returns>
 		public virtual bool TryConvert(ref BaseEvent? value, ref EventType? type, LevelReadOrWriteSettings settings)
 		{
-			JsonSerializer serializer = JsonSerializer.Create(_beat.BaseLevel?.GetSerializer(settings));
-			Type eventType = EventTypeUtils.ToType(Data["type"]?.ToObject<string>() ?? "");
-			bool TryConvert;
+			// 只用 ExtraData 作为动态数据源
+			var json = JsonSerializer.Serialize(this);
+			Type? eventType = EventTypeUtils.ToType(_type ?? "");
+			bool TryConvertResult;
 			if (eventType == null)
 			{
-				if (Data["target"] != null)
-					value = Data.ToObject<CustomDecorationEvent>(serializer);
-				else if (Data["row"] != null)
-					value = Data.ToObject<CustomRowEvent>(serializer);
+				if (ExtraData.ContainsKey("target"))
+					value = JsonSerializer.Deserialize<CustomDecorationEvent>(json);
+				else if (ExtraData.ContainsKey("row"))
+					value = JsonSerializer.Deserialize<CustomRowEvent>(json);
 				else
-					value = Data.ToObject<CustomEvent>(serializer);
+					value = JsonSerializer.Deserialize<CustomEvent>(json);
 				type = null;
-				TryConvert = value is not null;
+				TryConvertResult = value is not null;
 			}
 			else
 			{
-				value = (BaseEvent?)Data.ToObject(eventType, serializer);
+				value = (BaseEvent?)JsonSerializer.Deserialize(json, eventType);
 				type = value?.Type;
-				TryConvert = true;
+				TryConvertResult = value is not null;
 			}
-			return TryConvert;
+			return TryConvertResult;
 		}
-		/// <summary>
-		/// Gets or sets the data for the custom event.
-		/// </summary>
-		[JsonIgnore]
-		public JObject Data { get; set; }
 	}
+
+	//// 高性能自定义序列化器
+	//public class CustomEventConverter : JsonConverter<ICustomEvent>
+	//{
+	//}
 }

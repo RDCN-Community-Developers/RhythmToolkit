@@ -4,8 +4,6 @@ using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Extensions;
 using RhythmBase.Adofai.Utils;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.Global.Settings;
 using System.Text;
 
 namespace RhythmBase.Adofai.Components

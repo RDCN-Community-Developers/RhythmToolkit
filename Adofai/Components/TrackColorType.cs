@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Components
+﻿namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Represents the different types of track colors available in the application.

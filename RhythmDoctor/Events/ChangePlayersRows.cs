@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.RhythmDoctor.Events
+﻿using RhythmBase.RhythmDoctor.Components;
+
+namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <inheritdoc />
 	public class ChangePlayersRows : BaseEvent
@@ -6,15 +8,15 @@
 		/// <inheritdoc />
 		public ChangePlayersRows()
 		{
-			Players = new List<PlayerType>(16);
-			CpuMarkers = new List<CpuTypes>(16);
+			Players = new PlayerTypeGroup();
+			CpuMarkers = new CpuTypeGroup();
 			Type = EventType.ChangePlayersRows;
 			Tab = Tabs.Actions;
 		}
 		/// <summary>
 		/// Gets or sets the list of players.
 		/// </summary>
-		public List<PlayerType> Players { get; set; }
+		public PlayerTypeGroup Players { get; set; }
 		/// <summary>
 		/// Gets or sets the player mode.
 		/// </summary>
@@ -22,7 +24,7 @@
 		/// <summary>
 		/// Gets or sets the list of CPU markers.
 		/// </summary>
-		public List<CpuTypes> CpuMarkers { get; set; }
+		public CpuTypeGroup CpuMarkers { get; set; }
 		/// <inheritdoc />
 		public override EventType Type { get; }
 		/// <inheritdoc />
@@ -31,7 +33,8 @@
 	/// <summary>
 	/// Represents the types of CPUs.
 	/// </summary>
-	public enum CpuTypes
+	[RDJsonEnumSerializable]
+	public enum CpuType
 	{
 		/// <summary>
 		/// No CPU.
@@ -65,6 +68,7 @@
 	/// <summary>
 	/// Represents the modes of players.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum PlayingModes
 	{
 		/// <summary>

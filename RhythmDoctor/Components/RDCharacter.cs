@@ -1,8 +1,12 @@
-﻿namespace RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Converters;
+using System.Text.Json.Serialization;
+
+namespace RhythmBase.RhythmDoctor.Components;
 
 /// <summary>
 /// A Character.
 /// </summary>
+[JsonConverter(typeof(CharacterConverter))]
 public readonly struct RDCharacter
 {
 	/// <summary>

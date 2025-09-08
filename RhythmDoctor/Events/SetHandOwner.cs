@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public SetHandOwner()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			Type = EventType.SetHandOwner;
 			Tab = Tabs.Actions;
 		}

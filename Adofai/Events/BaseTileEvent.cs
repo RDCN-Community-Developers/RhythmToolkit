@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RhythmBase.Adofai.Components;
 namespace RhythmBase.Adofai.Events
 {

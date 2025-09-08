@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Exceptions;
 using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Components
 {
@@ -69,7 +68,12 @@ namespace RhythmBase.RhythmDoctor.Components
 			item._parent = this;
 			Parent?.Add(item);
 		}
-		internal void AddInternal(BaseDecorationAction item) => base.Add(item);
+		internal void AddInternal(BaseDecorationAction item)
+		{
+			item._parent = this;
+			base.Add(item);
+		}
+
 		/// <summary>
 		/// Remove an event from decoration.
 		/// </summary>

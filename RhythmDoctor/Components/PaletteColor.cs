@@ -1,5 +1,5 @@
-﻿using RhythmBase.Global.Components;
-using RhythmBase.Global.Exceptions;
+﻿using RhythmBase.RhythmDoctor.Converters;
+using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Components
 {
@@ -10,16 +10,17 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// 
 	/// </remarks>
 	/// <param name="enableAlpha">Specifies whether this object supports alpha channel.</param>
-	public class PaletteColor(bool enableAlpha)
+	[JsonConverter(typeof(PaletteColorConverter))]
+	public struct PaletteColor(bool enableAlpha)
 	{
 		/// <summary>
 		/// Get or set a custom color.
 		/// </summary>
-		public RDColor? Color
+		public RDColor Color
 		{
 			get
 			{
-				RDColor? Color = new RDColor?(EnablePanel ? parent[_panel] : default);
+				RDColor Color = EnablePanel ? _color : default;
 				return Color;
 			}
 			set
@@ -27,9 +28,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				_panel = -1;
 				_color = EnableAlpha
 					? value
-					: value == null
-					? null
-					: new RDColor?(value.GetValueOrDefault().WithAlpha(byte.MaxValue));
+					: value.WithAlpha(byte.MaxValue);
 			}
 		}
 		/// <summary>
@@ -42,7 +41,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				if (value >= 0)
 				{
-					_color = null;
+					_color = default;
 					_panel = value;
 				}
 			}
@@ -51,7 +50,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Specifies whether this object supports alpha channel.
 		/// </summary>
 		/// <returns></returns>
-		public bool EnableAlpha => enableAlpha;
+		public readonly bool EnableAlpha => enableAlpha;
 		/// <summary>
 		/// Specifies whether this object is used for this color.
 		/// </summary>
@@ -67,26 +66,39 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// If comes from a palette, it's a palette color.
 		/// If not, it's a custom color.
 		/// </summary>
-		public RDColor Value => EnablePanel ? parent[_panel] : _color ?? throw new RhythmBaseException();
+		public RDColor Value => EnablePanel ? default : _color;
 		/// <inheritdoc/>
 		public override string ToString() => EnablePanel ? $"[{_panel}]{Value:#AARRGGBB}" : "[-]" + Value.ToString();
+		public void Deserialize(string value)
+		{
+			if(value.StartsWith("pal"))
+			{
+				_panel = int.Parse(value.Substring(3));
+				_color = default;
+			}
+			else
+			{
+				_color = RDColor.FromRgba(value);
+				_panel = -1;
+			}
+		}
+		public string Serialize() => EnablePanel ? $"pal{_panel}" : EnableAlpha ? Value.ToString("RRGGBBAA") : Value.ToString("RRGGBB");
 		/// <summary>  
 		/// Implicitly converts a <see cref="PaletteColor"/> instance to an <see cref="RDColor"/>.  
 		/// </summary>  
 		/// <param name="paletteColor">The <see cref="PaletteColor"/> instance to convert.</param>  
 		/// <returns>The <see cref="RDColor"/> value of the <see cref="PaletteColor"/>.</returns>  
 		public static implicit operator RDColor(PaletteColor paletteColor) => paletteColor.Value;
-		/// <summary>  
-		/// Implicitly converts an <see cref="RDColor"/> to a <see cref="PaletteColor"/> instance.  
-		/// </summary>  
-		/// <param name="color">The <see cref="RDColor"/> to convert.</param>  
-		/// <returns>A new <see cref="PaletteColor"/> instance with the specified <see cref="RDColor"/>.</returns>  
-		public static implicit operator PaletteColor(RDColor color) => new PaletteColor(color.A != byte.MaxValue)
-		{
-			Color = color
-		};
+		///// <summary>  
+		///// Implicitly converts an <see cref="RDColor"/> to a <see cref="PaletteColor"/> instance.  
+		///// </summary>  
+		///// <param name="color">The <see cref="RDColor"/> to convert.</param>  
+		///// <returns>A new <see cref="PaletteColor"/> instance with the specified <see cref="RDColor"/>.</returns>  
+		//public static implicit operator PaletteColor(RDColor color) => new PaletteColor(color.A != byte.MaxValue)
+		//{
+		//	Color = color
+		//};
 		private int _panel;
-		private RDColor? _color;
-		internal RDColor[] parent = [];
+		private RDColor _color;
 	}
 }

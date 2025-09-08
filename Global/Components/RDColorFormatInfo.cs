@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace RhythmBase.Global.Components
+﻿namespace RhythmBase.Global.Components
 {
 	/// <summary>
 	/// Provides a custom format provider for RDColor.

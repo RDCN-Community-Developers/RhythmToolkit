@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public ShakeScreen()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			Type = EventType.ShakeScreen;
 			Tab = Tabs.Actions;
 		}
@@ -41,6 +41,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the levels of screen shake.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum ScreenShakeLevels
 	{
 		/// <summary>

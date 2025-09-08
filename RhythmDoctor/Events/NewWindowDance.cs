@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents the presets.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum WindowDancePresets
 	{
 		/// <summary>
@@ -110,7 +109,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the duration.
 		/// </summary>
-		[JsonProperty("easingDuration")]
+		[RDJsonProperty("easingDuration")]
 		public float Duration { get; set; }
 		/// <summary>
 		/// Gets or sets the ease.
@@ -128,6 +127,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents the same preset behaviors.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum SamePresetBehaviors
 	{
 		/// <summary>
@@ -142,6 +142,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents the references.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum WindowDanceReferences
 	{
 		/// <summary>
@@ -156,6 +157,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents the ease types.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum WindowDanceEaseTypes
 	{
 		/// <summary>

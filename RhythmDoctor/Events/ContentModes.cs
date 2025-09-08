@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Specifies the different modes for content display.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum ContentModes
 	{
 		/// <summary>

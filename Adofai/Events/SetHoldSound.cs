@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event that sets the hold sound properties for a tile in the ADOFAI editor.  

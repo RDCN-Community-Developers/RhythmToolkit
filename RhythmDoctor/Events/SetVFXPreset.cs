@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -8,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Enum representing various VFX presets.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum VFXPresets
 	{
 #pragma warning disable CS1591
@@ -87,7 +87,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public SetVFXPreset()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			Color = new PaletteColor(false);
 			Type = EventType.SetVFXPreset;
 			Tab = Tabs.Actions;

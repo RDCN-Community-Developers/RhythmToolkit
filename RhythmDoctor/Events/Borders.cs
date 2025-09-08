@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Specifies the types of borders that can be applied.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum Borders
 	{
 		/// <summary>

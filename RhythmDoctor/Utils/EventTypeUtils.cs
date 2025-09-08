@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Exceptions;
+﻿using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Events;
 using System.Collections.ObjectModel;
 
@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 	/// <summary>  
 	/// Utility class for converting between event types and enumerations.  
 	/// </summary>  
-	public static class EventTypeUtils
+	public static partial class EventTypeUtils
 	{
 		/// <summary>  
 		/// Converts a type to its corresponding EventType enumeration.  
@@ -64,13 +64,13 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// Converts a generic event type to an array of corresponding EventType enumerations.  
 		/// </summary>  
 		/// <typeparam name="TEvent">The generic event type to convert.</typeparam>  
-		/// <returns>An array of corresponding EventType enumerations.</returns>  
+		/// <returns>An array of corresponding EventType enumerations.</returns>
 		public static EventType[] ToEnums<TEvent>() where TEvent : IBaseEvent => ToEnums(typeof(TEvent));
 		/// <summary>  
 		/// Converts a string representation of an event type to its corresponding Type.  
 		/// </summary>  
 		/// <param name="type">The string representation of the event type.</param>  
-		/// <returns>The corresponding Type.</returns>  
+		/// <returns>The corresponding Type.</returns>
 		public static Type ToType(string type)
 		{
 			Type ConvertToType;
@@ -89,7 +89,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>  
 		/// <param name="type">The EventType enumeration to convert.</param>  
 		/// <returns>The corresponding Type.</returns>  
-		/// <exception cref="IllegalEventTypeException">Thrown when the value does not exist in the EventType enumeration.</exception>  
+		/// <exception cref="IllegalEventTypeException">Thrown when the value does not exist in the EventType enumeration.</exception>
 		public static Type ToType(this EventType type)
 		{
 			Type ConvertToType;

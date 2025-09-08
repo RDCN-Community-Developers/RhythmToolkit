@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the hands of a player.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum PlayerHands
 	{
 		/// <summary>

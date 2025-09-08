@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Converters;
+﻿using RhythmBase.RhythmDoctor.Converters;
+using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Represents a single room that can be applied to one room only.
 	/// </summary>
-	[JsonConverter(typeof(RoomConverter))]
+	[JsonConverter(typeof(SingleRoomConverter))]
 	public struct RDSingleRoom(RDRoomIndex index) : IEquatable<RDSingleRoom>
 	{
 		/// <summary>

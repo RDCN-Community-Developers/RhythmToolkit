@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Defines the possible actions for a tag.
 	/// </summary>
 	[Flags]
+	[RDJsonEnumSerializable]
 	public enum TagActions
 	{
 		/// <summary>
@@ -36,12 +37,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the action associated with the tag.
 		/// </summary>
-		[JsonIgnore]
 		public TagActions Action { get; set; } = TagActions.Run;
 		/// <summary>
 		/// Gets or sets the action tag.
 		/// </summary>
-		[JsonProperty("Tag")]
+		[RDJsonProperty("Tag")]
 		public string ActionTag { get; set; } = "";
 		/// <summary>
 		/// Gets the type of the event.

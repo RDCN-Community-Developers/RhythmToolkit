@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Components;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
@@ -28,7 +25,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			if (value == null)
 				throw new RhythmBaseException("Cannot write a null level.");
-			JsonSerializerSettings AllInOneSerializer = value!.GetSerializer(settings);
+			JsonSerializerSettings AllInOneSerializer = value!.GetSerializerOld(settings);
 
 			List<BaseEvent> groupExtractEvents = [];
 			List<Group> groups = value.Where<Group>().ToList();
@@ -119,7 +116,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			{
 				_path = fileLocation
 			};
-			JsonSerializer AllInOneSerializer = JsonSerializer.Create(outLevel.GetSerializer(settings));
+			JsonSerializer AllInOneSerializer = JsonSerializer.Create(outLevel.GetSerializerOld(settings));
 			JArray JEvents = [];
 			JArray JBookmarks = [];
 			while (reader.Read())

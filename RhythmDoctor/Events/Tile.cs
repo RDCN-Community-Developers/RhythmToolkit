@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -51,11 +49,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		public float Interval { get; set; }
 		/// <summary>
 		/// Gets or sets the Y coordinate. Always returns 0.
-		/// </summary>
-		[JsonIgnore]
-		public override int Y => 0;
-		/// <summary>
-		/// Gets or sets the easing type for the event.
 		/// </summary>
 		public EaseType Ease { get; set; }
 		/// <summary>

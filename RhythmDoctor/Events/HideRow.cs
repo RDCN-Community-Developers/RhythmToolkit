@@ -1,5 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents an event to hide a row with specific transitions and visibility options.
@@ -34,6 +33,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the possible transition types for hiding the row.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum ObjectTransitionTypes
 	{
 		/// <summary>
@@ -52,6 +52,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Defines the possible visibility states of the row.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum ShowTargetTypes
 	{
 		/// <summary>

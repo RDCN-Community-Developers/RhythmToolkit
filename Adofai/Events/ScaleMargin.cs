@@ -1,5 +1,4 @@
-﻿using System;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
 	/// Represents the ScaleMargin event, which adjusts the margin scaling in the level.

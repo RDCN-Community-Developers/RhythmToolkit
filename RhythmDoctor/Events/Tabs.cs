@@ -5,7 +5,8 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Specifies the different tabs available in the RhythmBase application.  
 	/// </summary>  
-	[JsonConverter(typeof(TabsConverter))]
+	//[RDJsonEnumSerializable]
+	//[JsonConverter(typeof(TabsConverter))]
 	public enum Tabs
 	{
 		/// <summary>  

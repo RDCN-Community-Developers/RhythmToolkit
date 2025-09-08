@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
+using System.Text.Json;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -22,17 +23,14 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Event type.
 		/// </summary>
-		[JsonIgnore]
 		public abstract EventType Type { get; }
 		/// <summary>
 		/// Column to which the event belongs.
 		/// </summary>
-		[JsonIgnore]
 		public abstract Tabs Tab { get; }
 		/// <summary>
 		/// The beat of the event.
 		/// </summary>
-		[JsonIgnore]
 		public virtual RDBeat Beat
 		{
 			get => _beat;
@@ -62,22 +60,36 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Event tag.
 		/// </summary>
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public string Tag { get; set; } = "";
 		/// <summary>
 		/// Gets or sets a value indicating whether the tag should be executed.
 		/// </summary>
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public bool RunTag { get; set; } = false;
 		/// <summary>
 		/// Event conditions.
 		/// </summary>
-		[JsonProperty("if", DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public Condition? Condition { get; set; }
 		/// <summary>
 		/// Indicates whether this event is activated.
 		/// </summary>
 		public bool Active { get; set; }
+		public JsonElement this[string propertyName]
+		{
+			get
+			{
+				if (_extraData.TryGetValue(propertyName, out var value))
+					return value;
+				return default;
+			}
+			set
+			{
+				if (value.ValueKind == JsonValueKind.Undefined)
+					_extraData.Remove(propertyName);
+				else
+					_extraData[propertyName] = value;
+			}
+		}
+		internal Dictionary<string, JsonElement> _extraData = [];
 		/// <summary>
 		/// Clone this event and its basic properties.
 		/// If it is of the same type as the source event, then it will be cloned.

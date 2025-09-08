@@ -1,6 +1,4 @@
-﻿
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Utils;
+﻿using RhythmBase.RhythmDoctor.Utils;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 namespace RhythmBase.RhythmDoctor.Components

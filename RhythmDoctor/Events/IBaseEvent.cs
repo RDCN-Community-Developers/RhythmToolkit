@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
+using System.Text.Json;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -28,6 +29,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		string Tag { get; set; }
 		/// <summary>
+		/// Gets or sets the run tag associated with the event.
+		/// </summary>
+		bool RunTag { get; set; }
+		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
 		EventType Type { get; }
@@ -35,6 +40,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the Y coordinate of the event.
 		/// </summary>
 		int Y { get; set; }
+		JsonElement this[string propertyName] { get; set; }
 		/// <summary>  
 		/// Creates a deep copy of the current event instance.  
 		/// </summary>  

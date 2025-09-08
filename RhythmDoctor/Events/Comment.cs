@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters.Events;
+using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <inheritdoc />
+	[JsonConverter(typeof(BaseEventConverter))]
 	public partial class Comment : BaseDecorationAction, IColorEvent
 	{
 		/// <summary>
@@ -28,10 +29,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the custom tab.
 		/// </summary>
-		[JsonProperty("tab")]
+		[RDJsonProperty(name: "tab")]
+		[RDJsonDefaultSerializer]
 		public Tabs CustomTab { get; set; }
 		/// <inheritdoc />
-		[JsonIgnore]
 		public override Tabs Tab => CustomTab;
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Comment"/> is shown.

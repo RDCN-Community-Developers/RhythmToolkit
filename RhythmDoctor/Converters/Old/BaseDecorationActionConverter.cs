@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
-namespace RhythmBase.RhythmDoctor.Converters
+namespace RhythmBase.RhythmDoctor.Converters.Old
 {
 	internal class BaseDecorationActionConverter<TEvent>(RDLevel? level, LevelReadOrWriteSettings inputSettings) : BaseEventConverter<TEvent>(level, inputSettings) where TEvent : BaseDecorationAction
 	{

@@ -11,7 +11,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public TextExplosion()
 		{
-			Rooms = new RDRoom(false, [0]);
+			Rooms = new RDRoom([0]);
 			Color = new PaletteColor(false);
 			Type = EventType.TextExplosion;
 			Tab = Tabs.Actions;
@@ -53,6 +53,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the direction of the text explosion.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum TextExplosionDirections
 	{
 		/// <summary>
@@ -67,6 +68,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the mode of the text explosion.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum TextExplosionModes
 	{
 		/// <summary>

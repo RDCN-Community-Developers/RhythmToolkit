@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components;
-using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
+﻿using RhythmBase.Global.Components.Easing;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -28,7 +25,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the custom tab.
 		/// </summary>
-		[JsonProperty("tab")]
+		[RDJsonProperty("tab")]
+		[RDJsonDefaultSerializer]
 		public Tabs CustomTab
 		{
 			get => tab; set => tab = CustomTab is Tabs.Actions or Tabs.Windows ? value : throw new InvalidOperationException();

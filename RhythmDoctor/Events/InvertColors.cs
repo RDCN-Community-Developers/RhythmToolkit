@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public InvertColors()
 		{
-			Rooms = new RDRoom(false, [0]);
+			Rooms = new RDRoom([0]);
 			Type = EventType.InvertColors;
 			Tab = Tabs.Actions;
 		}

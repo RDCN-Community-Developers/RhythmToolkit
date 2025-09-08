@@ -15,7 +15,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			Preset = Themes.None;
 			Type = EventType.SetTheme;
 			Tab = Tabs.Actions;
-			Rooms = new RDRoom(false, [0]);
+			Rooms = new RDRoom([0]);
 		}
 		/// <summary>  
 		/// Gets or sets the theme preset.  
@@ -50,6 +50,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Represents the available themes.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum Themes
 	{
 #pragma warning disable CS1591

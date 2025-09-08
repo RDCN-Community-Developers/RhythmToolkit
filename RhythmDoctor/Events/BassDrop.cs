@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		public BassDrop()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			Type = EventType.BassDrop;
 			Tab = Tabs.Actions;
 		}
@@ -32,6 +32,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Defines the strength levels for the BassDrop event.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum BassDropStrengthTypes
 	{
 		/// <summary>  

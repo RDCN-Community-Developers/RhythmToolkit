@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
 namespace RhythmBase.Global.Components.RichText
 {

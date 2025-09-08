@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿//using System.Text.Json;
+//using System.Text.Json.Serialization;
 using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.Global.Settings;
+using Newtonsoft.Json;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
@@ -9,8 +9,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class BaseEventConverter<TEvent>(RDLevel? level, LevelReadOrWriteSettings inputSettings) : JsonConverter<TEvent> where TEvent : IBaseEvent
 	{
-		public override bool CanRead => _canread;
-		public override bool CanWrite => _canwrite;
+		public virtual bool CanRead => _canread;
+		public virtual bool CanWrite => _canwrite;
 		public BaseEventConverter(LevelReadOrWriteSettings inputSettings) : this(null, inputSettings) { }
 		public override void WriteJson(JsonWriter writer, TEvent? value, JsonSerializer serializer)
 		{

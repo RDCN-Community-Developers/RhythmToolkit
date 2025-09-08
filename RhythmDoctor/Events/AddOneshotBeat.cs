@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Represents an event to add a one-shot beat.
 	/// </summary>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+	//[RDJsonObjectNotSerializable]
 	public class AddOneshotBeat : BaseBeat
 	{
 		/// <summary>
@@ -77,6 +78,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <remarks>
 	/// The freeze burn mode determines the effect applied to the beat.
 	/// </remarks>
+	[RDJsonEnumSerializable]
 	public enum OneshotTypes
 	{
 		/// <summary>
@@ -98,6 +100,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <remarks>
 	/// The pulse type determines the shape of the beat's waveform.
 	/// </remarks>
+	[RDJsonEnumSerializable]
 	public enum OneshotPulseShapeTypes
 	{
 		/// <summary>

@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Components;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to add a decoration to a tile in the game.  

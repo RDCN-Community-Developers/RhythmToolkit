@@ -16,8 +16,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets the target window for this event.  
 		/// This is derived from the <see cref="BaseEvent.Y"/> property.  
-		/// </summary>  
-		[JsonIgnore]
+		/// </summary>
 		public RDSingleRoom TargetWindow => new((byte)Y);
 	}
 }

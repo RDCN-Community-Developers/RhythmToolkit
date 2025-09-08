@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Converters
 {
 	internal abstract class TimeConverter : JsonConverter<TimeSpan>
@@ -12,7 +12,7 @@ namespace RhythmBase.Global.Converters
 		{
 			_timeType = type;
 		}
-		public override void WriteJson(JsonWriter writer, TimeSpan value, JsonSerializer serializer)
+		public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions serializer)
 		{
 			switch (_timeType)
 			{
@@ -32,15 +32,14 @@ namespace RhythmBase.Global.Converters
 					break;
 			}
 		}
-		public override TimeSpan ReadJson(JsonReader reader, Type objectType, TimeSpan existingValue, bool hasExistingValue, JsonSerializer serializer)
+		public override TimeSpan Read(ref Utf8JsonReader reader, Type objectType,  JsonSerializerOptions serializer)
 		{
-			float value = JToken.ReadFrom(reader).ToObject<float>();
 			return _timeType switch
 			{
-				TimeType.Hour => TimeSpan.FromHours((double)value),
-				TimeType.Minute => TimeSpan.FromMinutes((double)value),
-				TimeType.Second => TimeSpan.FromSeconds((double)value),
-				TimeType.MiliSecond => TimeSpan.FromMilliseconds((int)value),
+				TimeType.Hour => TimeSpan.FromHours(reader.GetDouble()),
+				TimeType.Minute => TimeSpan.FromMinutes(reader.GetDouble()),
+				TimeType.Second => TimeSpan.FromSeconds(reader.GetDouble()),
+				TimeType.MiliSecond => TimeSpan.FromMilliseconds(reader.GetInt32()),
 				_ => throw new NotImplementedException()
 			};
 		}

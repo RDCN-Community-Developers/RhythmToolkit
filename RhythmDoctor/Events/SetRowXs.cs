@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.RhythmDoctor.Extensions;
-using RhythmBase.RhythmDoctor.Converters;
+﻿using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <inheritdoc />
+	//[RDJsonObjectNotSerializable]
 	public class SetRowXs : BaseBeat
 	{
 		/// <inheritdoc />
@@ -14,12 +12,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the pattern.
 		/// </summary>
-		[JsonConverter(typeof(PatternConverter))]
-		public Patterns[] Pattern
-		{
-			get => _pattern;
-			set => _pattern = value.Length == 6 ? value : throw new RhythmBaseException();
-		}
+		//[JsonConverter(typeof(PatternConverter))]
+		public Patterns[] Pattern { get; set; } = new Patterns[6];
 		/// <summary>
 		/// Gets or sets the synco beat.
 		/// </summary>

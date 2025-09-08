@@ -3,6 +3,8 @@
 	/// <summary>
 	/// Specifies the type of render filter to be used.
 	/// </summary>
+	/// 
+	[RDJsonEnumSerializable]
 	public enum Filters
 	{
 		/// <summary>

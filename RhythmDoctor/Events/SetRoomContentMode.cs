@@ -19,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the mode of the room content.
 		/// </summary>
-		public RoomContentModes Mode { get; set; }
+		public ContentModes Mode { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
@@ -31,7 +31,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>
-		[JsonIgnore]
+		[RDJsonIgnore]
 		public RDRoom Room
 		{
 			get
@@ -39,19 +39,5 @@ namespace RhythmBase.RhythmDoctor.Events
 				return new RDSingleRoom(checked((byte)Y));
 			}
 		}
-	}
-	/// <summary>
-	/// Defines the modes for room content.
-	/// </summary>
-	public enum RoomContentModes
-	{
-#pragma warning disable CS1591
-		Center,
-		ScaleToFill,
-		AspectFit,
-		AspectFill,
-		Tiled,
-		Real
-#pragma warning restore CS1591
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -14,7 +13,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public SetBackgroundColor()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			Color = new PaletteColor(true);
 			Type = EventType.SetBackgroundColor;
 			Tab = Tabs.Actions;
@@ -101,6 +100,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the types of backgrounds.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum BackgroundTypes
 	{
 		/// <summary>
@@ -115,6 +115,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Specifies the filter modes.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum BackgroundFilterModes
 	{
 		/// <summary>

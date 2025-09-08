@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RhythmBase.RhythmDoctor.Components;
-using System.Text.RegularExpressions;
-namespace RhythmBase.Converters
+namespace RhythmBase.RhythmDoctor.Converters.Old
 {
 	internal partial class ConditionConverter(List<BaseConditional> Conditionals) : JsonConverter<Condition>
 	{

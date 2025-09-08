@@ -1,5 +1,4 @@
 ﻿using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -14,7 +13,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public CustomFlash()
 		{
-			Rooms = new RDRoom(true, [0]);
+			Rooms = new RDRoom([0]);
 			StartColor = new PaletteColor(false);
 			EndColor = new PaletteColor(false);
 			StartOpacity = 100;

@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
-using RhythmBase.Global.Converters;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Subtypes of sound effects.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public class SoundSubType
 	{
 		/// <summary>

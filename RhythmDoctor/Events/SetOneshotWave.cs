@@ -32,6 +32,7 @@
 	/// <summary>  
 	/// Defines the types of waves.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum OneshotWaveShapeTypes
 	{
 		/// <summary>  

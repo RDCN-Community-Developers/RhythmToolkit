@@ -1,16 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.Adofai.Extensions;
-using RhythmBase.Global.Components;
-using RhythmBase.Global.Exceptions;
-using RhythmBase.Global.Settings;
+﻿using RhythmBase.Adofai.Extensions;
 using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
-using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
@@ -57,12 +52,12 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Level file path.
 		/// </summary>
 		[JsonIgnore]
-		public string Path => _path;
+		public string? Filepath => _path;
 		/// <summary>
 		/// Level directory path.
 		/// </summary>
 		[JsonIgnore]
-		public string Directory => System.IO.Path.GetDirectoryName(_path)!;
+		public string? Directory => System.IO.Path.GetDirectoryName(_path);
 		/// <summary>
 		/// Default beats with levels.
 		/// The beat is 1.
@@ -153,100 +148,154 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 		}
 		/// <summary>
-		/// Create a decoration and add it to the level.
+		/// Reads a level from a file.
+		/// Supports .rdlevel, .rdzip, and .zip file extensions.
 		/// </summary>
-		/// <param name="room">The room where this decoration is in.</param>
-		/// <param name="sprite">The sprite referenced by this decoration.</param>
-		/// <returns>Decoration that created and added to the level.</returns>
-		[Obsolete("Use `new Decoration()` instead. This method will be removed in the future.")]
-#if NETSTANDARD
-		public Decoration CreateDecoration(RDSingleRoom room, string sprite)
-#else
-		public Decoration CreateDecoration(RDSingleRoom room, [NotNull] string sprite)
+		/// <param name="filepath">The path to the file to read.</param>
+		/// <param name="settings">Optional settings for reading the level.</param>
+		/// <exception cref="T:RhythmBase.Exceptions.VersionTooLowException">Thrown if the level version is below the minimum supported (54).</exception>
+		/// <exception cref="T:RhythmBase.Exceptions.ConvertingException">Thrown if a conversion error occurs.</exception>
+		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">Thrown if the file is not supported or cannot be extracted.</exception>
+		/// <returns>An <see cref="RDLevel"/> instance loaded from the specified file.</returns>
+		public static RDLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+			string extension = Path.GetExtension(filepath);
+			RDLevel? level;
+			if (extension != ".rdzip" && extension != ".zip")
+			{
+				if (extension != ".rdlevel")
+					throw new RhythmBaseException("File not supported.");
+				settings.OnBeforeReading();
+				using FileStream stream = File.Open(filepath, FileMode.Open);
+				level = JsonSerializer.Deserialize<RDLevel>(stream, options);
+				level?._path = filepath;
+				settings.OnAfterReading();
+			}
+			else
+			{
+				DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
+				tempDirectory.Create();
+				try
+				{
+#if NET8_0_OR_GREATER
+					using Stream stream = File.OpenRead(filepath);
+					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName);
+#elif NETSTANDARD2_0_OR_GREATER
+                    ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
-		{
-			Decoration temp = new(room)
-			{
-				Parent = this,
-				Filename = sprite
-			};
-			Decorations.Add(temp);
-			return temp;
-		}
-		/// <summary>
-		/// Clone the decoration and add it to the level.
-		/// </summary>
-		/// <param name="decoration">Decoration that was copied.</param>
-		/// <returns></returns>
-		[Obsolete("Use `Decoration.Clone()` instead. This method will be removed in the future.")]
-		public Decoration CloneDecoration(Decoration decoration)
-		{
-			Decoration temp = decoration.Clone();
-			Decorations.Add(temp);
-			return temp;
-		}
-		/// <summary>
-		/// Remove the decoration from the level.
-		/// </summary>
-		/// <param name="decoration">The decoration to be removed.</param>
-		/// <returns></returns>
-		[Obsolete("Use `RDLevel.Decorations.Remove()` instead. This method will be removed in the future.")]
-		public bool RemoveDecoration(Decoration decoration)
-		{
-			if (Decorations.Contains(decoration))
-			{
-				this.RemoveRange(decoration);
-				return Decorations.Remove(decoration);
+					level = FromFile(tempDirectory.GetFiles().Single(i => i.Extension == ".rdlevel").FullName, settings);
+					level.isZip = true;
+				}
+				catch (InvalidOperationException ex)
+				{
+					tempDirectory.Delete(true);
+					throw new RhythmBaseException("No or more than one RDLevel file has been found.", ex);
+				}
+				catch (Exception ex2)
+				{
+					tempDirectory.Delete(true);
+					throw new RhythmBaseException("Cannot extract the file.", ex2);
+				}
 			}
-			else
-				return false;
+			return level ?? [];
 		}
 		/// <summary>
-		/// Create a row and add it to the level.
+		/// Reads a level from a stream.
 		/// </summary>
-		/// <param name="room">The room where this row is in.</param>
-		/// <param name="character">The character used by this row.</param>
-		/// <returns>Row that created and added to the level.</returns>
-		[Obsolete("Use `new Row()` instead. This method will be removed in the future.")]
-		public Row CreateRow(RDSingleRoom room, RDCharacter character)
+		/// <param name="rdlevelStream">The stream containing the level data.</param>
+		/// <param name="settings">Optional settings for reading the level.</param>
+		/// <returns>An <see cref="RDLevel"/> instance loaded from the stream.</returns>
+		public static RDLevel FromStream(Stream rdlevelStream, LevelReadOrWriteSettings? settings = null)
 		{
-			Row temp = new()
-			{
-				Character = character,
-				Rooms = room,
-				Parent = this
-			};
-			temp.Parent = this;
-			Rows.Add(temp);
-			return temp;
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			RDLevel? level;
+			settings.OnBeforeReading();
+			level = JsonSerializer.Deserialize<RDLevel>(rdlevelStream, options);
+			settings.OnAfterReading();
+			return level ?? [];
 		}
 		/// <summary>
-		/// Remove the row from the level.
+		/// Reads a level from a JSON string.
 		/// </summary>
-		/// <param name="row">The row to be removed.</param>
-		/// <returns></returns>
-		[Obsolete("Use `RDLevel.Rows.Remove()` instead. This method will be removed in the future.")]
-		public bool RemoveRow(Row row)
+		/// <param name="json">The JSON string containing the level data.</param>
+		/// <param name="settings">Optional settings for reading the level.</param>
+		/// <returns>An <see cref="RDLevel"/> instance loaded from the JSON string.</returns>
+		public static RDLevel FromJson(string json, LevelReadOrWriteSettings? settings = null)
 		{
-			if (Rows.Contains(row))
-			{
-				this.RemoveRange(row);
-				return Rows.Remove(row);
-			}
-			else
-				return false;
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			RDLevel? level;
+			settings.OnBeforeWriting();
+			level = JsonSerializer.Deserialize<RDLevel>(json, options);
+			settings.OnAfterWriting();
+			return level ?? [];
 		}
 		/// <summary>
-		/// Read from file as level.
-		/// Use default input settings.
-		/// Supports .rdlevel, .rdzip, .zip file extension.
+		/// Saves the current level to the specified stream in JSON format.
 		/// </summary>
-		/// <param name="filepath">File path.</param>
-		/// <exception cref="T:RhythmBase.Exceptions.VersionTooLowException">The minimum level version number supported by this library is 54.</exception>
-		/// <exception cref="T:RhythmBase.Exceptions.ConvertingException"></exception>
-		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">File not supported.</exception>
-		/// <returns>An instance of a level that reads from a file.</returns>
-		public static RDLevel Read(string filepath) => Read(filepath, new LevelReadOrWriteSettings());
+		/// <param name="stream">The stream to which the level will be saved.</param>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		public void SaveToStream(Stream stream, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			settings.OnBeforeWriting();
+			JsonSerializer.Serialize(stream, this, options);
+			settings.OnAfterWriting();
+		}
+		/// <summary>
+		/// Saves the current level to a file in JSON format.
+		/// </summary>
+		/// <param name="filepath">The file path where the level will be saved.</param>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		public void SaveToFile(string filepath, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+			settings.OnBeforeWriting();
+			using FileStream stream = File.Create(filepath);
+			JsonSerializer.Serialize(stream, this, options);
+			settings.OnAfterWriting();
+			_path = filepath;
+		}
+		/// <summary>
+		/// Serializes the current level to a JSON string.
+		/// </summary>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		/// <returns>A JSON string representing the current level.</returns>
+		public string ToJson(LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			string json;
+			settings.OnBeforeWriting();
+			json = JsonSerializer.Serialize(this, options);
+			settings.OnAfterWriting();
+			return json;
+		}
+		/// <summary>
+		/// Serializes the current level to a <see cref="JsonDocument"/>.
+		/// </summary>
+		/// <param name="settings">
+		/// Optional settings for writing the level. If <c>null</c>, default settings are used.
+		/// </param>
+		/// <returns>
+		/// A <see cref="JsonDocument"/> representing the current level in JSON format.
+		/// </returns>
+		public JsonDocument ToJsonDocument(LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			string json;
+			settings.OnBeforeWriting();
+			json = JsonSerializer.Serialize(this, options);
+			settings.OnAfterWriting();
+			return JsonDocument.Parse(json);
+		}
+		#region obsolete
 		/// <summary>
 		/// Read from file as level.
 		/// Supports .rdlevel, .rdzip, .zip file extension.
@@ -257,233 +306,137 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <exception cref="T:RhythmBase.Exceptions.ConvertingException"></exception>
 		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">File not supported.</exception>
 		/// <returns>An instance of a level that reads from a file.</returns>
-		public static RDLevel Read(string filepath, LevelReadOrWriteSettings settings)
-		{
-			JsonSerializer LevelSerializer = new();
-			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
-			string extension = System.IO.Path.GetExtension(filepath);
-			RDLevel? Read;
-			if (extension != ".rdzip" && extension != ".zip")
-			{
-				if (extension != ".rdlevel")
-					throw new RhythmBaseException("File not supported.");
-				settings.OnBeforeReading();
-				Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(File.OpenText(filepath)));
-				settings.OnAfterReading();
-			}
-			else
-				Read = ReadFromZip(filepath, settings);
-			return Read ?? [];
-		}
-		/// <summary>
-		/// Reads an RDLevel from a TextReader with the specified filepath and settings.
-		/// </summary>
-		/// <param name="reader">The TextReader to read from.</param>
-		/// <param name="filepath">The filepath of the RDLevel.</param>
-		/// <param name="settings">The settings to use for reading the RDLevel.</param>
-		/// <returns>The deserialized RDLevel object.</returns>
-		/// <exception cref="RhythmBaseException">Thrown when the file cannot be read.</exception>
-		public static RDLevel Read(TextReader reader, string filepath, LevelReadOrWriteSettings settings)
-		{
-			JsonSerializer LevelSerializer = new();
-			LevelSerializer.Converters.Add(new RDLevelConverter(filepath, settings));
-			RDLevel Read;
-			Read = LevelSerializer.Deserialize<RDLevel>(new JsonTextReader(reader)) ?? throw new RhythmBaseException("Cannot read the file.");
-			return Read;
-		}
-		/// <summary>
-		/// Reads an RDLevel from a TextReader with the specified settings.
-		/// </summary>
-		/// <param name="reader">The TextReader to read from.</param>
-		/// <param name="settings">The settings to use for reading the RDLevel.</param>
-		/// <returns>The deserialized RDLevel object.</returns>
-		/// <exception cref="RhythmBaseException">Thrown when the file cannot be read.</exception>
-		public static RDLevel Read(TextReader reader, LevelReadOrWriteSettings settings) => Read(reader, "", settings);
+		[Obsolete("Use FromFile instead.", false)]
+		public static RDLevel Read(string filepath, LevelReadOrWriteSettings? settings = null) => FromFile(filepath, settings);
 		/// <summary>
 		/// Read from a zip file as a level.
 		/// </summary>
 		/// <param name="filepath">The path to the zip file.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file.</returns>
-		public static RDLevel ReadFromZip(string filepath) => ReadFromZip(filepath, new LevelReadOrWriteSettings());
+		[Obsolete("Use FromFile instead.", true)]
+		public static RDLevel ReadFromZip(string filepath) => throw new NotImplementedException();
 		/// <summary>
 		/// Read from a zip file as a level with specific settings.
 		/// </summary>
 		/// <param name="filepath">The path to the zip file.</param>
 		/// <param name="settings">The settings for reading the level.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
-		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings)
-#if !NET7_0_OR_GREATER
-		{
-			DirectoryInfo tempDirectory = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RhythmBaseTemp_" + System.IO.Path.GetRandomFileName()));
-			tempDirectory.Create();
-			RDLevel ReadFromZip;
-			try
-			{
-				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
-				ReadFromZip = Read(tempDirectory.GetFiles().Single(i => i.Extension == ".rdlevel").FullName, settings);
-				ReadFromZip.isZip = true;
-			}
-			catch (InvalidOperationException ex)
-			{
-				tempDirectory.Delete(true);
-				throw new RhythmBaseException("More than one RDLevel file has been found.", ex);
-			}
-			catch (Exception ex2)
-			{
-				tempDirectory.Delete(true);
-				throw new RhythmBaseException("Cannot extract the file.", ex2);
-			}
-			return ReadFromZip;
-		}
-#else
-			=> ReadFromZip(File.OpenRead(filepath), settings);
+		[Obsolete("Use FromFile instead.", true)]
+		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings)=> throw new NotImplementedException();
 		/// <summary>
 		/// Read from a zip file as a level.
 		/// </summary>
 		/// <param name="stream">The stream of the zip file.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file.</returns>
-		public static RDLevel ReadFromZip(Stream stream) => ReadFromZip(stream, new LevelReadOrWriteSettings());
+		[Obsolete("This method is not implemented. Use FromFile instead.", true)]
+		public static RDLevel ReadFromZip(Stream stream) => throw new NotImplementedException();
 		/// <summary>
 		/// Read from a zip file as a level with specific settings.
 		/// </summary>
 		/// <param name="stream">The stream of the zip file.</param>
 		/// <param name="settings">The settings for reading the level.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
-		public static RDLevel ReadFromZip(Stream stream, LevelReadOrWriteSettings settings)
-		{
-			DirectoryInfo tempDirectory = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RhythmBaseTemp_" + System.IO.Path.GetRandomFileName()));
-			tempDirectory.Create();
-			RDLevel ReadFromZip;
-			try
-			{
-				ZipFile.ExtractToDirectory(stream, tempDirectory.FullName);
-				ReadFromZip = Read(tempDirectory.GetFiles().Single(i => i.Extension == ".rdlevel").FullName, settings);
-				ReadFromZip.isZip = true;
-			}
-			catch (InvalidOperationException ex)
-			{
-				tempDirectory.Delete(true);
-				throw new RhythmBaseException("More than one RDLevel file has been found.", ex);
-			}
-			catch (Exception ex2)
-			{
-				tempDirectory.Delete(true);
-				throw new RhythmBaseException("Cannot extract the file.", ex2);
-			}
-			return ReadFromZip;
-		}
-#endif
-		private JsonSerializer Serializer(LevelReadOrWriteSettings settings) => new()
-		{
-			Converters = { new RDLevelConverter(_path, settings) }
-		};
+		[Obsolete("This method is not implemented. Use FromFile instead.", true)]
+		public static RDLevel ReadFromZip(Stream stream, LevelReadOrWriteSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Save the level.
 		/// Use default output settings.
 		/// </summary>
 		/// <param name="filepath">File path.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
-		public void Write(string filepath) => Write(filepath, new LevelReadOrWriteSettings());
+		[Obsolete("Use SaveToFile instead.", false)]	
+		public void Write(string filepath) => SaveToFile(filepath);
 		/// <summary>
 		/// Save the level.
 		/// </summary>
 		/// <param name="filepath">File path.</param>
 		/// <param name="settings">Output settings.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
-		public void Write(string filepath, LevelReadOrWriteSettings settings)
-		{
-			using StreamWriter file = File.CreateText(filepath);
-			Write(file, settings);
-		}
+		[Obsolete("Use SaveToFile instead.", false)]
+		public void Write(string filepath, LevelReadOrWriteSettings settings) => SaveToFile(filepath, settings);
 		/// <summary>
 		/// Save the level to a text writer.
 		/// Use default output settings.
 		/// </summary>
 		/// <param name="stream">The text writer to write the level to.</param>
-		public void Write(TextWriter stream) => Write(stream, new LevelReadOrWriteSettings());
+		[Obsolete("Use SaveToStream instead.", false)]
+		public void Write(TextWriter stream) => throw new NotImplementedException();
 		/// <summary>
 		/// Save the level to a text writer.
 		/// </summary>
 		/// <param name="stream">The text writer to write the level to.</param>
 		/// <param name="settings">The settings for writing the level.</param>
-		public void Write(TextWriter stream, LevelReadOrWriteSettings settings)
-		{
-			using JsonTextWriter writer = new(stream);
-			settings.OnBeforeWriting();
-			Serializer(settings).Serialize(writer, this);
-			settings.OnAfterWriting();
-		}
+		[Obsolete("Use SaveToStream instead.", false)]
+		public void Write(TextWriter stream, LevelReadOrWriteSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Save the level to a stream.
 		/// Use default output settings.
 		/// </summary>
-		/// <param name="stream">The stream to write the level to.</param>
-		public void Write(Stream stream) => Write(new StreamWriter(stream, System.Text.Encoding.UTF8, 1024, leaveOpen: true), new LevelReadOrWriteSettings());
+		/// <param name = "stream" > The stream to write the level to.</param>
+		[Obsolete("Use SaveToStream instead.", false)]
+		public void Write(Stream stream) => throw new NotImplementedException();
 		/// <summary>
 		/// Save the level to a stream.
 		/// </summary>
-		/// <param name="stream">The stream to write the level to.</param>
-		/// <param name="settings">The settings for writing the level.</param>
-		public void Write(Stream stream, LevelReadOrWriteSettings settings) => Write(new StreamWriter(stream), settings);
+		/// <param name = "stream" > The stream to write the level to.</param>
+		/// <param name = "settings" > The settings for writing the level.</param>
+		[Obsolete("Use SaveToStream instead.", false)]
+		public void Write(Stream stream, LevelReadOrWriteSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Convert to JObject type.
 		/// </summary>
 		/// <returns>A JObject type that stores all the data for the level.</returns>
-		public JObject ToJObject() => ToJObject(new LevelReadOrWriteSettings());
+		[Obsolete("Use ToJsonDocument instead.", true)]
+		public void ToJObject() => throw new NotImplementedException();
 		/// <summary>
 		/// Convert to JObject type.
 		/// </summary>
 		/// <returns>A JObject type that stores all the data for the level.</returns>
-		public JObject ToJObject(LevelReadOrWriteSettings settings) => JObject.FromObject(this, new JsonSerializer
-		{
-			Converters = { new RDLevelConverter(Path, settings) }
-		});
+		[Obsolete("Use ToJsonDocument instead.", true)]
+		public void ToJObject(LevelReadOrWriteSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Convert to a string that can be read by the game.
 		/// Use default output settings.
 		/// </summary>
 		/// <returns>Level string.</returns>
-		public string ToRDLevelJson() => ToRDLevelJson(new LevelReadOrWriteSettings());
+		[Obsolete("Use ToJson instead.", true)]
+		public string ToRDLevelJson() => throw new NotImplementedException();
 		/// <summary>
 		/// Convert to a string that can be read by the game.
 		/// </summary>
-		/// <param name="settings">Output settings.</param>
+		/// <param name = "settings" > Output settings.</param>
 		/// <returns>Level string.</returns>
-		public string ToRDLevelJson(LevelReadOrWriteSettings settings)
-		{
-			StringWriter file = new();
-			Write(file, settings);
-			file.Close();
-			return file.ToString();
-		}
+		[Obsolete("Use ToJson instead.", true)]
+		public string ToRDLevelJson(LevelReadOrWriteSettings settings) => throw new NotImplementedException();
+		#endregion
 		/// <summary>
-		/// Add event to the level.
+		/// Adds an event to the level.
 		/// </summary>
-		/// <param name="item">Event to be added.</param>
+		/// <param name="item">The event to be added.</param>
 		public override void Add(IBaseEvent item) => Add(item, true);
+		/// <summary>
+		/// Adds an event to the level, with an option to keep the event's position.
+		/// </summary>
+		/// <param name="item">The event to be added.</param>
+		/// <param name="keepPos">Whether to keep the event's position (default is true).</param>
 		public void Add(IBaseEvent item, bool keepPos = true)
 		{
-			//添加默认节拍
+			// Set the default beat calculator
 			((BaseEvent)item)._beat._calculator = Calculator;
-			//部分事件只能在小节的开头
+			// Some events can only be at the beginning of a bar
 			if (item is IBarBeginningEvent @event && ((BaseEvent)item)._beat.BarBeat.beat != 1f)
 				throw new IllegalBeatException(@event);
-			//更改节拍的关联关卡
+			// Update the beat's associated level
 			((BaseEvent)item)._beat._calculator = Calculator;
 			((BaseEvent)item)._beat.ResetCache();
-			//重置调色板关联
-			if (item is IColorEvent colorEvent)
-				foreach (PropertyInfo info in item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
-					if (info.PropertyType == typeof(PaletteColor))
-						typeof(PaletteColor).GetField(nameof(PaletteColor.parent), BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(info.GetValue(colorEvent), ColorPalette);
 			if (item is Comment comment && comment.Parent == null)
-				//注释事件可能在精灵板块，也可能不在
+				// Comment events may or may not be in the decoration section
 				base.Add(item);
 			else if (item is TintRows tintRows && tintRows.Parent == null)
 				base.Add(item);
 			else if (item is BaseRowAction rowAction)
 			{
-				//添加至对应轨道
+				// Add to the corresponding row
 				Row? parent = rowAction.Parent ?? (rowAction.Index < Rows.Count ? Rows[rowAction.Index] : null);
 				if (parent == null) Rows._unhandledRowEvents.Add(rowAction);
 				else parent.AddInternal(rowAction);
@@ -491,36 +444,42 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			else if (item is BaseDecorationAction decoAction)
 			{
-				//添加至对应精灵
+				// Add to the corresponding decoration
 				Decoration? parent = decoAction.Parent ?? Decorations[decoAction._decoId];
 				if (parent == null) Decorations._unhandledRowEvents.Add(decoAction);
 				else parent.AddInternal(decoAction);
 				base.Add(item);
 			}
-			//BPM 和 CPB
+			// BPM and CPB
 			else if (item is SetCrotchetsPerBar setCrochetsPerBar)
 				AddSetCrotchetsPerBar(setCrochetsPerBar, keepPos);
 			else if (item is BaseBeatsPerMinute baseBeatsPerMinute)
 				AddBaseBeatsPerMinute(baseBeatsPerMinute);
-			// 其他
+			// Other events
 			else
 				base.Add(item);
 			if (item is FloatingText floatingText)
 				_floatingTexts.Add(floatingText);
 		}
 		/// <summary>
-		/// Determine if the level contains this event.
+		/// Determines whether the level contains the specified event.
 		/// </summary>
-		/// <param name="item">Event.</param>
-		/// <returns></returns>
+		/// <param name="item">The event to check for.</param>
+		/// <returns>True if the event is contained in the level; otherwise, false.</returns>
 		public override bool Contains(IBaseEvent item) => EventTypeUtils.RowTypes.Contains(item.Type)
 			&& Rows.Any((i) => i.Contains(item)) || EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((i) => i.Contains(item)) || base.Contains(item);
 		/// <summary>
-		/// Remove event from the level.
+		/// Removes an event from the level.
 		/// </summary>
-		/// <param name="item">Event to be removed.</param>
-		/// <returns></returns>
+		/// <param name="item">The event to be removed.</param>
+		/// <returns>True if the event was successfully removed; otherwise, false.</returns>
 		public override bool Remove(IBaseEvent item) => Remove(item, true);
+		/// <summary>
+		/// Removes an event from the level, with an option to keep the event's position.
+		/// </summary>
+		/// <param name="item">The event to be removed.</param>
+		/// <param name="keepPos">Whether to keep the event's position (default is true).</param>
+		/// <returns>True if the event was successfully removed; otherwise, false.</returns>
 		public bool Remove(IBaseEvent item, bool keepPos)
 		{
 			bool Remove;
@@ -756,7 +715,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		/// <inheritdoc/>
 		public override string ToString() => $"\"{Settings.Song}\" Count = {Count}";
-		internal string _path;
+		internal string? _path;
 		private bool isZip = false;
 		private RDColor[] colorPalette = new RDColor[21];
 		internal List<FloatingText> _floatingTexts = [];

@@ -1,5 +1,4 @@
-﻿using RhythmBase.Global.Events;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 using System.Reflection;
 
 namespace RhythmBase.Global.Components.Easing

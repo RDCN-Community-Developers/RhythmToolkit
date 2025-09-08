@@ -1,6 +1,4 @@
-﻿using RhythmBase.Global.Components;
-using RhythmBase.Global.Components.Easing;
-using RhythmBase.Global.Events;
+﻿using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  

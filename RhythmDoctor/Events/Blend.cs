@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Represents a blend decoration action in the rhythm base.  
@@ -26,15 +20,16 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		public BlendTypes BlendType { get; set; } = BlendTypes.None;
 
+	}
+	/// <summary>  
+	/// Specifies the different types of blend effects available.  
+	/// </summary>  
+	[RDJsonEnumSerializable]
+	public enum BlendTypes
+	{
 		/// <summary>  
-		/// Specifies the different types of blend effects available.  
+		/// No blend effect.  
 		/// </summary>  
-		public enum BlendTypes
-		{
-			/// <summary>  
-			/// No blend effect.  
-			/// </summary>  
-			None,
-		}
+		None,
 	}
 }
