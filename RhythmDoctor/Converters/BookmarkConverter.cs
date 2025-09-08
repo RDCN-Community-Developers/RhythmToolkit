@@ -37,7 +37,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 							beat = reader.GetSingle();
 							break;
 						case var p when p.SequenceEqual("color"u8):
-							// Color is stored as an integer in the JSON
 							color = (Bookmark.BookmarkColors)reader.GetInt32();
 							break;
 						default:

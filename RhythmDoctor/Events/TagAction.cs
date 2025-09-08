@@ -37,6 +37,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the action associated with the tag.
 		/// </summary>
+		[RDJsonProperty("Action")]
 		public TagActions Action { get; set; } = TagActions.Run;
 		/// <summary>
 		/// Gets or sets the action tag.

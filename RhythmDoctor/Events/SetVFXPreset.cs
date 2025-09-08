@@ -103,40 +103,125 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether the VFX is enabled.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.Preset is not RhythmBase.RhythmDoctor.Events.VFXPresets.DisableAll
+			""")]
 		public bool Enable { get; set; }
 		/// <summary>
 		/// Gets or sets the threshold value for the VFX.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.Enable && $&.Preset
+			is RhythmBase.RhythmDoctor.Events.VFXPresets.Bloom
+			""")]
 		public float Threshold { get; set; }
 		/// <summary>
 		/// Gets or sets the intensity of the VFX.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.Enable && $&.Preset 
+			is RhythmBase.RhythmDoctor.Events.VFXPresets.HueShift
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Brightness
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Contrast
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Saturation
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Rain
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Bloom
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.JPEG
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Mosaic
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.ScreenWaves
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Grain
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Blizzard
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Drawing
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Aberration
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Blur
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.RadialBlur
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Dots
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Tutorial
+			""")]
 		public float Intensity { get; set; }
 		/// <summary>
 		/// Gets or sets the color of the VFX.
 		/// </summary>
 		[EaseProperty]
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
+		[RDJsonCondition($"""
+			$&.Enable && $&.Preset
+			is RhythmBase.RhythmDoctor.Events.VFXPresets.Bloom
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Tutorial
+			""")]
 		public PaletteColor Color { get; set; }
 		/// <summary>
 		/// Gets or sets the X coordinate for the VFX.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.Enable && $&.Preset
+			is RhythmBase.RhythmDoctor.Events.VFXPresets.TileN
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.CustomScreenScroll
+			""")]
 		public float FloatX { get; set; }
 		/// <summary>
 		/// Gets or sets the Y coordinate for the VFX.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.Enable && $&.Preset
+			is RhythmBase.RhythmDoctor.Events.VFXPresets.TileN
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.CustomScreenScroll
+			""")]
 		public float FloatY { get; set; }
 		/// <summary>
 		/// Gets or sets the easing type for the VFX.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.Enable && $&.Preset 
+			is RhythmBase.RhythmDoctor.Events.VFXPresets.HueShift
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Brightness
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Contrast
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Saturation
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Rain
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Bloom
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.TileN
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.CustomScreenScroll
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.JPEG
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Mosaic
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.ScreenWaves
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Grain
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Blizzard
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Drawing
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Aberration
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Blur
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.RadialBlur
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Dots
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Tutorial
+			""")]
 		public EaseType Ease { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the VFX.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.Enable && $&.Preset 
+			is RhythmBase.RhythmDoctor.Events.VFXPresets.HueShift
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Brightness
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Contrast
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Saturation
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Rain
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Bloom
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.TileN
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.CustomScreenScroll
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.JPEG
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Mosaic
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.ScreenWaves
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Grain
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Blizzard
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Drawing
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Aberration
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Blur
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.RadialBlur
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Dots
+			or RhythmBase.RhythmDoctor.Events.VFXPresets.Tutorial
+			""")]
 		public float Duration { get; set; }
 		/// <summary>
 		/// Gets the type of the event.

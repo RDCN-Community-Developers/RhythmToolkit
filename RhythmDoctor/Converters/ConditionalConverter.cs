@@ -15,23 +15,26 @@ namespace RhythmBase.RhythmDoctor.Converters
 				return;
 			writer.WriteStartObject();
 			writer.WriteString("type", value.Type.ToEnumString());
+			writer.WriteString("name"u8, value.Name);
+			writer.WriteString("tag"u8, value.Tag);
+			writer.WriteNumber("id"u8, value.Id);
 			switch (value.Type)
 			{
 				case BaseConditional.ConditionType.LastHit:
-					writer.WriteNumber("row", ((LastHitCondition)value).Row);
-					writer.WriteString("result", ((LastHitCondition)value).Result.ToEnumString());
+					writer.WriteNumber("row"u8, ((LastHitCondition)value).Row);
+					writer.WriteString("result"u8, ((LastHitCondition)value).Result.ToEnumString());
 					break;
 				case BaseConditional.ConditionType.Custom:
-					writer.WriteString("expression", ((CustomCondition)value).Expression);
+					writer.WriteString("expression"u8, ((CustomCondition)value).Expression);
 					break;
 				case BaseConditional.ConditionType.TimesExecuted:
-					writer.WriteNumber("time", ((TimesExecutedCondition)value).MaxTimes);
+					writer.WriteNumber("time"u8, ((TimesExecutedCondition)value).MaxTimes);
 					break;
 				case BaseConditional.ConditionType.Language:
-					writer.WriteString("language", ((LanguageCondition)value).Language.ToEnumString());
+					writer.WriteString("language"u8, ((LanguageCondition)value).Language.ToEnumString());
 					break;
 				case BaseConditional.ConditionType.PlayerMode:
-					writer.WriteBoolean("twoPlayerMode", ((PlayerModeCondition)value).TwoPlayerMode);
+					writer.WriteBoolean("twoPlayerMode"u8, ((PlayerModeCondition)value).TwoPlayerMode);
 					break;
 				default:
 					break;
@@ -42,9 +45,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			if (reader.TokenType != JsonTokenType.StartObject)
 				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
-
 			ReadOnlySpan<byte> type = default;
-
+			string tag = "";
+			string name = "";
 			Utf8JsonReader checkpoint = reader;
 			while (reader.Read())
 			{
@@ -61,6 +64,16 @@ namespace RhythmBase.RhythmDoctor.Converters
 							return null;
 						break;
 					}
+					else if (propertyName.SequenceEqual("name"u8))
+						{
+						reader.Read();
+						name = reader.GetString() ?? "";
+					}
+					else if (propertyName.SequenceEqual("tag"u8))
+					{
+						reader.Read();
+						tag = reader.GetString() ?? "";
+					}
 					else
 					{
 						reader.Skip();
@@ -68,19 +81,22 @@ namespace RhythmBase.RhythmDoctor.Converters
 				}
 			}
 			reader = checkpoint;
-
+			BaseConditional conditional;
 			if (type.SequenceEqual("Custom"u8))
-				return ReadCustom(ref reader, serializer);
+				conditional = ReadCustom(ref reader, serializer);
 			else if (type.SequenceEqual("Language"u8))
-				return ReadLanguage(ref reader, serializer);
+				conditional = ReadLanguage(ref reader, serializer);
 			else if (type.SequenceEqual("LastHit"u8))
-				return ReadLastHit(ref reader, serializer);
+				conditional = ReadLastHit(ref reader, serializer);
 			else if (type.SequenceEqual("PlayerMode"u8))
-				return ReadPlayerMode(ref reader, serializer);
+				conditional = ReadPlayerMode(ref reader, serializer);
 			else if (type.SequenceEqual("TimeExecuted"u8))
-				return ReadTimesExecuted(ref reader, serializer);
+				conditional = ReadTimesExecuted(ref reader, serializer);
 			else
 				return null;
+			conditional.Name = name;
+			conditional.Tag = tag;
+			return conditional;
 		}
 		private static CustomCondition ReadCustom(ref Utf8JsonReader reader, JsonSerializerOptions options)
 		{
@@ -110,7 +126,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					var propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName == "language"u8 && EnumConverter.TryParse(reader.GetString(), out LanguageCondition.Languages languages))
+					if (propertyName == "language"u8 && TryParse(reader.GetString(), out LanguageCondition.Languages languages))
 						condition.Language = languages;
 					break;
 				}

@@ -25,10 +25,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the easing type for the event.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+			""")]
 		public EaseType Ease { get; set; }
 		/// <summary>
 		/// Gets or sets the content mode for the event.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
 		public ContentModes ContentMode { get; set; }
 		/// <summary>
 		/// Gets or sets the filter mode for the event.
@@ -42,6 +47,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the interval for the event.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+			$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.Events.TilingTypes.Pulse
+			""")]
 		public float Interval
 		{
 			get => field > 0.01f ? field : 0.01f;
@@ -54,28 +64,49 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+			""")]
 		public float Duration { get; set; }
 		/// <summary>
 		/// Gets or sets the frames per second for the event.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+			$&.{nameof(Image)}.Count > 1
+			""")]
 		public int Fps { get; set; }
 		/// <summary>
 		/// Gets or sets the list of images for the background.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
 		public List<string> Image { get; set; } = [];
 		/// <summary>
 		/// Gets or sets the horizontal scroll value.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+			""")]
 		public int ScrollX { get; set; }
 		/// <summary>
 		/// Gets or sets the vertical scroll value.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+			""")]
 		public int ScrollY { get; set; }
 		/// <summary>
 		/// Gets or sets the tiling type for the background.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+			""")]
 		public TilingTypes TilingType { get; set; }
 		/// <summary>
 		/// Gets the event type.

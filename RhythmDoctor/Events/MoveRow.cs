@@ -21,6 +21,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether a custom position is used.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)}")]
 		public bool CustomPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the target of the move row event.
@@ -53,10 +54,18 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the duration of the move row event.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(Target)} is not RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&
+			$&.{nameof(CustomPosition)}
+			""")]
 		public float Duration { get; set; }
 		/// <summary>
 		/// Gets or sets the easing type of the move row event.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(Target)} is not RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&
+			$&.{nameof(CustomPosition)}
+			""")]
 		public EaseType Ease { get; set; }
 		/// <summary>
 		/// Gets the type of the event.

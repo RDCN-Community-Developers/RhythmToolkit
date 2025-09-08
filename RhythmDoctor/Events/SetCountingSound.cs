@@ -120,6 +120,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the voice source for the counting sound.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(VoiceSource)} != RhythmBase.RhythmDoctor.Events.CountingSoundVoiceSources.Custom")]
 		public CountingSoundVoiceSources VoiceSource { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="SetCountingSound"/> is enabled.
@@ -136,6 +137,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the list of sounds for the counting sound.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(VoiceSource)} == RhythmBase.RhythmDoctor.Events.CountingSoundVoiceSources.Custom")]
 		public RDAudio[] Sounds { get; set; } = [
 			new RDAudio(){Filename = "Jyi - ChineseCount1" },
 			new RDAudio(){Filename = "Jyi - ChineseCount2" },

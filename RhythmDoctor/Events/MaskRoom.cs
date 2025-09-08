@@ -24,30 +24,37 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the alpha mode.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(MaskType)} != RhythmBase.RhythmDoctor.Events.RoomMaskTypes.None")]
 		public MaskAlphaModes AlphaMode { get; set; }
 		/// <summary>
 		/// Gets or sets the source room.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Room")]
 		public byte SourceRoom { get; set; }
 		/// <summary>
 		/// Gets or sets the list of image assets.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Image")]
 		public List<string> Image { get; set; } = [];
 		/// <summary>
 		/// Gets or sets the frames per second.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Image)}.Count > 1")]
 		public uint Fps { get; set; }
 		/// <summary>
 		/// Gets or sets the key color.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
 		public PaletteColor KeyColor { get; set; }
 		/// <summary>
 		/// Gets or sets the color cutoff value.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
 		public int ColorCutoff { get; set; }
 		/// <summary>
 		/// Gets or sets the color feathering value.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
 		public int ColorFeathering { get; set; }
 		/// <summary>
 		/// Gets the event type.

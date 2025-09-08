@@ -32,7 +32,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the custom pattern for the narration.
 		/// </summary>
-		[JsonConverter(typeof(PatternConverter))]
+		[RDJsonCondition($"$&.{nameof(NarrateSkipBeat)} is RhythmBase.RhythmDoctor.Events.NarrateInfoTypes.{nameof(NarrateSkipBeat.Custom)}")]
 		public Patterns[] CustomPattern { get; } = new Patterns[6];
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip unstable beats.

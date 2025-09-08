@@ -15,7 +15,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		public SetSpeed()
 		{
 			Type = EventType.SetSpeed;
-			Rooms = RDRoom.Default();
 			Tab = Tabs.Actions;
 		}
 		/// <summary>
@@ -35,11 +34,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the type of the event.
 		/// </summary>
 		public override EventType Type { get; }
-		/// <summary>
-		/// Gets or sets the rooms associated with the event.
-		/// </summary>
-		[JsonIgnore]
-		public RDRoom Rooms { get; set; }
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>

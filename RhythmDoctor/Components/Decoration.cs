@@ -43,7 +43,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// The initial visibility of this decoration.
 		/// </summary>
-		public bool Visible { get; set; }
+		public bool Visible { get; set; } = true;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Decoration"/> class.
 		/// </summary>

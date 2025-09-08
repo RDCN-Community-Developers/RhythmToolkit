@@ -78,7 +78,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 							else if (e is AdvanceText at)
 								advanceTexts.Add(at);
 						}
-						foreach(var at in advanceTexts)
+						foreach (var at in advanceTexts)
 						{
 							int targetId = at["id"].GetInt32();
 							if (floatingTexts.TryGetValue(targetId, out var ft))
@@ -152,6 +152,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 
 		public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
 		{
+			JsonSerializerOptions localOptions = new(options)
+			{
+				WriteIndented = false,
+			};
 			writer.WriteStartObject();
 			writer.WritePropertyName("settings");
 			JsonSerializer.Serialize(writer, value.Settings, options);
@@ -159,28 +163,32 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartArray();
 			foreach (Row row in value.Rows)
 			{
-				JsonSerializer.Serialize(writer, row, options);
+				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
+					JsonSerializer.Serialize(row, localOptions));
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("decorations");
 			writer.WriteStartArray();
 			foreach (Decoration decoration in value.Decorations)
 			{
-				JsonSerializer.Serialize(writer, decoration, options);
+				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) + 
+					JsonSerializer.Serialize(decoration, localOptions));
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
 			writer.WriteStartArray();
 			foreach (IBaseEvent e in value)
 			{
-				JsonSerializer.Serialize(writer, e, options);
+				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
+					JsonSerializer.Serialize(e, localOptions));
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("bookmarks");
 			writer.WriteStartArray();
 			foreach (Bookmark bookmark in value.Bookmarks)
 			{
-				JsonSerializer.Serialize(writer, bookmark, options);
+				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
+					JsonSerializer.Serialize(bookmark, localOptions));
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("colorPalette");
@@ -194,7 +202,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartArray();
 			foreach (BaseConditional conditional in value.Conditionals)
 			{
-				JsonSerializer.Serialize(writer, conditional, options);
+				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
+					JsonSerializer.Serialize(conditional, localOptions));
 			}
 			writer.WriteEndArray();
 			writer.WriteEndObject();

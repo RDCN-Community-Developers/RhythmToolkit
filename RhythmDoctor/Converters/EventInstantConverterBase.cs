@@ -63,6 +63,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 			TEvent v = (TEvent)value;
 			writer.WriteStartObject();
 			Write(writer, ref v, options);
+			foreach(var kv in ((BaseEvent)(IBaseEvent)v)._extraData)
+			{
+				writer.WritePropertyName(kv.Key);
+				writer.WriteRawValue(kv.Value.GetRawText());
+			}
 			writer.WriteEndObject();
 		}
 		protected virtual bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)

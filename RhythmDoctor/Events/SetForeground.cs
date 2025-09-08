@@ -29,6 +29,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the tiling type for the event.  
 		/// </summary>  
+		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public TilingTypes TilingType { get; set; }
 		/// <summary>  
 		/// Gets or sets the color for the foreground.  
@@ -42,24 +43,29 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the frames per second for the foreground animation.  
 		/// </summary>  
+		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public float Fps { get; set; }
 		/// <summary>  
 		/// Gets or sets the horizontal scroll value.  
 		/// </summary>  
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public float ScrollX { get; set; }
 		/// <summary>  
 		/// Gets or sets the vertical scroll value.  
 		/// </summary>  
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public float ScrollY { get; set; }
 		/// <summary>  
 		/// Gets or sets the duration of the event.  
 		/// </summary>  
+		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public float Duration { get; set; }
 		/// <summary>  
 		/// Gets or sets the interval between frames.  
 		/// </summary>  
+		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public float Interval
 		{
 			get => field;
@@ -68,10 +74,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the easing type for the event.  
 		/// </summary>  
+		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public EaseType Ease { get; set; }
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
+		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public override EventType Type { get; }
 		/// <summary>  
 		/// Gets the tab associated with the event.  

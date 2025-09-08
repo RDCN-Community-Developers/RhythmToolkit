@@ -23,6 +23,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the tint color of the hands.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Tint)}")]
 		public PaletteColor TintColor { get; set; }
 		/// <summary>
 		/// Gets or sets the easing type for the event.
@@ -31,11 +32,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the border style of the hands.
 		/// </summary>
-		public PaintHandBorders Border { get; set; }
+		public Borders Border { get; set; }
 		/// <summary>
 		/// Gets or sets the border color of the hands.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
 		public PaletteColor BorderColor { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity of the hands.
@@ -66,24 +68,5 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab category of the event.
 		/// </summary>
 		public override Tabs Tab { get; }
-	}
-	/// <summary>
-	/// Specifies the border styles available for the hands.
-	/// </summary>
-	[RDJsonEnumSerializable]
-	public enum PaintHandBorders
-	{
-		/// <summary>
-		/// No border.
-		/// </summary>
-		None,
-		/// <summary>
-		/// Outline border.
-		/// </summary>
-		Outline,
-		/// <summary>
-		/// Glow border.
-		/// </summary>
-		Glow
 	}
 }

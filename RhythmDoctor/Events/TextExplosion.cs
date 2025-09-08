@@ -28,6 +28,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the text to be displayed in the explosion.
 		/// </summary>
 		public string Text { get; set; } = "";
+		public float Speed { get; set => field = value > 1f ? value : 1f; } = 100f;
 		/// <summary>
 		/// Gets or sets the direction of the text explosion.
 		/// </summary>

@@ -21,10 +21,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the tint color.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Tint)}")]
 		public PaletteColor TintColor { get; set; }
 		/// <summary>
 		/// Gets or sets the easing type for the animation.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
 		public EaseType Ease { get; set; }
 		/// <summary>
 		/// Gets or sets the border style.
@@ -34,6 +36,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the border color.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
 		public PaletteColor BorderColor { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity level.
@@ -47,6 +50,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the duration of the tint effect.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
 		public float Duration { get; set; }
 		/// <summary>
 		/// Gets or sets the row effect.

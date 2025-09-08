@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.RhythmDoctor.Utils.EventTypeUtils;
 
-namespace RhythmBase.RhythmDoctor.Converters.Events
+namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class BaseEventConverter : JsonConverter<IBaseEvent>
 	{

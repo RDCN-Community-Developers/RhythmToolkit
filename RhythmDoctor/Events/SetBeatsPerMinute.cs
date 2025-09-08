@@ -14,6 +14,8 @@
 			Tab = Tabs.Sounds;
 		}
 		/// <inheritdoc/>
+		public override float BeatsPerMinute { get => base.BeatsPerMinute; set => base.BeatsPerMinute = value; }
+		/// <inheritdoc/>
 		public override EventType Type { get; }
 		/// <inheritdoc/>
 		public override Tabs Tab { get; }

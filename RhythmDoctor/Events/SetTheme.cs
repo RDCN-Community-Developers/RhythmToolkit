@@ -24,6 +24,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the variant of the theme.  
 		/// </summary>  
+		#warning 需要细致区分
 		public byte Variant { get; set; }
 		/// <summary>  
 		/// Gets the type of the event.  

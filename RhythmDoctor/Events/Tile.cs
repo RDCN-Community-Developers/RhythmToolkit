@@ -28,25 +28,30 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the position of the tile.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
 		public RDPoint? Position { get; set; }
 		/// <summary>
 		/// Gets or sets the tiling of the tile.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Tiling)} is not null")]
 		public RDPoint? Tiling { get; set; }
 		/// <summary>
 		/// Gets or sets the speed of the tile.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
 		public RDPoint? Speed { get; set; }
 		/// <summary>
 		/// Gets or sets the type of tiling.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
 		public TilingTypes TilingType { get; set; }
 		/// <summary>
 		/// Gets or sets the interval for the tiling.
 		/// </summary>
-		public float Interval { get; set; }
+		[RDJsonCondition($"$&.{nameof(TilingType)} is RhythmBase.RhythmDoctor.Events.TilingTypes.Pulse")]
+		public float Interval { get; set; } = 0.01f;
 		/// <summary>
 		/// Gets or sets the Y coordinate. Always returns 0.
 		/// </summary>

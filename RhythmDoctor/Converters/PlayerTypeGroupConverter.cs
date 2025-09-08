@@ -13,7 +13,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			if (reader.TokenType != JsonTokenType.StartArray)
 				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
 			reader.Read();
-			PlayerTypeGroup group = new PlayerTypeGroup();
+			PlayerTypeGroup group = new();
 			for (int i = 0; i < 16; i++)
 			{
 				if (reader.TokenType == JsonTokenType.String)
@@ -35,7 +35,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			writer.WriteStartArray();
 			for (int i = 0; i < 16; i++)
-				writer.WriteNumberValue((int)value[i]);
+				writer.WriteStringValue(EnumConverter.ToEnumString(value[i]));
 			writer.WriteEndArray();
 		}
 	}

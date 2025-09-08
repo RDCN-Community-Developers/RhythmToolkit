@@ -2,6 +2,13 @@
 
 namespace RhythmBase.RhythmDoctor.Events
 {
+	[RDJsonEnumSerializable]
+	public enum ShakeType
+	{
+		Normal,
+		Smooth,
+		Rotate,
+	}
 	/// <summary>
 	/// Represents an event that shakes the screen.
 	/// </summary>
@@ -24,9 +31,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the shake level of the event.
 		/// </summary>
 		public ScreenShakeLevels ShakeLevel { get; set; }
+		public ShakeType ShakeType { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
-		/// </summary>
+		/// </summary>		
 		public override EventType Type { get; }
 		/// <summary>
 		/// Gets the tab associated with the event.

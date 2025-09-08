@@ -25,6 +25,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the ease type for the tint event.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
 		public EaseType Ease { get; set; }
 		/// <summary>
 		/// Gets or sets the border type for the tint event.
@@ -34,6 +35,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the border color for the tint event.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
 		public PaletteColor BorderColor { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity for the tint event.
@@ -49,10 +51,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the tint color for the tint event.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"$&.{nameof(IsTint)}")]
 		public PaletteColor TintColor { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the tint event.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
 		public float Duration { get; set; }
 		/// <summary>
 		/// Gets the type of the event.

@@ -28,7 +28,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		public SoundTypes SoundType { get; set; }
 		/// <summary>  
 		/// Gets or sets the filename of the audio.  
-		/// </summary>  
+		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(SoundType)} is not
+			(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+			""")]
 		public string Filename
 		{
 			get => Audio.Filename;
@@ -37,6 +43,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the volume of the audio.  
 		/// </summary>  
+		[RDJsonCondition($"""
+			$&.{nameof(SoundType)} is not
+			(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+			&& $&.{nameof(Volume)} != 100
+			""")]
 		public int Volume
 		{
 			get => Audio.Volume;
@@ -45,6 +58,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the pitch of the audio.  
 		/// </summary>  
+		[RDJsonCondition($"""
+			$&.{nameof(SoundType)} is not
+			(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+			&& $&.{nameof(Pitch)} != 100
+			""")]
 		public int Pitch
 		{
 			get => Audio.Pitch;
@@ -53,6 +73,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the pan of the audio.  
 		/// </summary>  
+		[RDJsonCondition($"""
+			$&.{nameof(SoundType)} is not
+			(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+			&& $&.{nameof(Pan)} != 0
+			""")]
 		public int Pan
 		{
 			get => Audio.Pan;
@@ -61,7 +88,14 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the offset time of the audio.  
 		/// </summary>  
-		[JsonConverter(typeof(MilliSecondConverter))]
+		[RDJsonTime("milliseconds")]
+		[RDJsonCondition($"""
+			$&.{nameof(SoundType)} is not
+			(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+			&& $&.{nameof(Offset)} != TimeSpan.Zero
+			""")]
 		public TimeSpan Offset
 		{
 			get => Audio.Offset;
@@ -70,6 +104,16 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the list of sound subtypes.  
 		/// </summary>  
+#warning 这里的序列化逻辑需要重新考虑
+		[RDJsonCondition($"""
+			$&.{nameof(SoundType)}
+			is RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHoldP2
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.PulseSoundHold
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.PulseSoundHoldP2
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound
+			or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
+			""")]
 		public List<SoundSubType> SoundSubtypes { get; set; } = [];
 		/// <summary>  
 		/// Gets the type of the event.  

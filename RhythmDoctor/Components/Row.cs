@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Events;
 using static RhythmBase.RhythmDoctor.Utils.EventTypeUtils;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// A collection of row events.
 	/// </summary>
-	[JsonObject]
 	public class Row : OrderedEventCollection<BaseRowAction>
 	{
 		/// <summary>
@@ -31,7 +29,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the index of the row.
 		/// </summary>
-		[JsonProperty("row", DefaultValueHandling = DefaultValueHandling.Include)]
 		public sbyte Index => (sbyte)(Parent?.Rows.IndexOf(this) ?? throw new RhythmBaseException());
 		/// <summary>
 		/// Gets or sets the rooms associated with the row.
@@ -40,7 +37,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets a value indicating whether the row is hidden at the start.
 		/// </summary>
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public bool HideAtStart { get; set; }
 		/// <summary>
 		/// Gets or sets the initial player mode for the row.
@@ -49,17 +45,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the initial beat sound for the row.
 		/// </summary>
-		[JsonIgnore]
 		public RDAudio Sound { get; set; } = new RDAudio();
 		/// <summary>
 		/// Gets or sets a value indicating whether the beats are muted.
 		/// </summary>
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public bool MuteBeats { get; set; }
 		/// <summary>
 		/// Gets or sets the row to mimic.
 		/// </summary>
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public sbyte RowToMimic { get; set; } = -1;
 		/// <summary>
 		/// Gets or sets the name of the pulse sound.
@@ -96,7 +89,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the offset of the pulse sound.
 		/// </summary>
-		[JsonConverter(typeof(MilliSecondConverter))]
 		public TimeSpan PulseSoundOffset
 		{
 			get => Sound.Offset;

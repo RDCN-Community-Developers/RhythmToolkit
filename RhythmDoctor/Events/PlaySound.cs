@@ -27,8 +27,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the audio sound.
 		/// </summary>
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public RDAudio? Sound { get; set; }
+		[RDJsonCondition($"$&.{nameof(Sound)} is not null")]
+		public RDAudio? Sound { get; set; } = new() { Filename = "Shaker" };
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>

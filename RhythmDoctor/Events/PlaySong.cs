@@ -29,6 +29,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the offset time for the song.
 		/// </summary>
 		[RDJsonTime("milliseconds")]
+		[RDJsonCondition($"$&.{nameof(Offset)} != TimeSpan.Zero")]
 		public TimeSpan Offset
 		{
 			get => Song.Offset;

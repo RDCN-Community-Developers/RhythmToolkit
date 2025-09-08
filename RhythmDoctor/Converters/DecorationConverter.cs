@@ -63,7 +63,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 			JsonSerializer.Serialize(writer, value.Room, options);
 			writer.WriteString("filename"u8, value.Filename);
 			writer.WriteNumber("depth"u8, value.Depth);
-			writer.WriteString("filter"u8, EnumConverter.ToEnumString(value.Filter));
+			if (value.Filter is not Filters.NearestNeighbor)
+				writer.WriteString("filter"u8, EnumConverter.ToEnumString(value.Filter));
 			if (!value.Visible)
 				writer.WriteBoolean("visible"u8, value.Visible);
 			writer.WriteEndObject();

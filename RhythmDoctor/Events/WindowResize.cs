@@ -27,9 +27,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[RDJsonProperty("tab")]
 		[RDJsonDefaultSerializer]
+		[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.Tabs.Windows")]
 		public Tabs CustomTab
 		{
-			get => tab; set => tab = CustomTab is Tabs.Actions or Tabs.Windows ? value : throw new InvalidOperationException();
+			get => tab;
+			set => tab = CustomTab is Tabs.Actions or Tabs.Windows ? value : throw new InvalidOperationException();
 		}
 		/// <inheritdoc/>
 		public EaseType Ease { get; set; }

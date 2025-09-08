@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using static RhythmBase.RhythmDoctor.Utils.Utils;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -136,9 +136,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns>An enumerator for the events in the group.</returns>
 		IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<BaseEvent>)this).GetEnumerator();
 #if NETSTANDARD
-		internal static bool TryParse(Comment comment, out string[]? types, out JObject[]? data)
+		internal static bool TryParse(Comment comment, out string[]? types, out JsonDocument[]? data)
 #else
-		internal static bool TryParse(Comment comment, [NotNullWhen(true)] out string[]? types, [NotNullWhen(true)] out JObject[]? data)
+		internal static bool TryParse(Comment comment, [NotNullWhen(true)] out string[]? types, [NotNullWhen(true)] out JsonDocument[]? data)
 #endif
 		{
 			if (string.IsNullOrEmpty(comment.Text))
@@ -155,7 +155,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				return false;
 			}
 			List<string> typel = [];
-			List<JObject> datal = [];
+			List<JsonDocument> datal = [];
 			for (int i = 2; i < lines.Length; i++)
 			{
 #if NETSTANDARD
@@ -166,7 +166,7 @@ namespace RhythmBase.RhythmDoctor.Events
 					typel.Add(lines[i][1..]);
 #endif
 				else
-					datal.Add(JObject.Parse(lines[i]));
+					datal.Add(JsonDocument.Parse(lines[i]));
 			}
 			types = [.. typel];
 			data = [.. datal];
@@ -242,7 +242,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			id = 0;
 			return false;
 		}
-		internal JObject _data = [];
+		internal JsonDocument? _data;
 		internal bool _loaded = false;
 		internal object _instance = new();
 		internal abstract int DataId { get; set; }
@@ -260,7 +260,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		{
 			get
 			{
-				T ins = _loaded ? (T)_instance : _data.ToObject<T>(JsonSerializer.Create(GetSerializerOld())) ?? new();
+				T ins =
+					_loaded ? (T)_instance :
+					_data is null ? new() :
+					_data.Deserialize<T>(GetJsonSerializerOptions()) ?? new();
 				_instance = ins;
 				_loaded = true;
 				return ins;
@@ -273,10 +276,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		}
 		internal override void Flush()
 		{
-			_instance = _data.ToObject<T>(JsonSerializer.Create(GetSerializerOld())) ?? new T();
-			_data = JObject.FromObject(_instance, JsonSerializer.Create(GetSerializerOld()));
+			_instance = _data.Deserialize<T>(GetJsonSerializerOptions()) ?? new T();
+			_data = JsonDocument.Parse(JsonSerializer.Serialize(_instance));
 		}
-		/// <summary>  
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Group{T}"/> class.  
 		/// </summary>  
 		/// <remarks>  

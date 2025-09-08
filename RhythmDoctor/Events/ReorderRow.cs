@@ -21,6 +21,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the transition type for reordering the row.  
 		/// </summary>  
-		public Transitions Transition = Transitions.Smooth;
+		public Transitions Transition { get; set; } = Transitions.Smooth;
 	}
 }

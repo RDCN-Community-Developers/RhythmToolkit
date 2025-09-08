@@ -18,6 +18,11 @@
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="RhythmDoctor\Converters\Old\**" />
+    <EmbeddedResource Remove="RhythmDoctor\Converters\Old\**" />
+    <None Remove="RhythmDoctor\Converters\Old\**" />
+  </ItemGroup>
+  <ItemGroup>
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	<PackageReference Include="System.Text.Json" Version="10.0.0-preview.6.25358.103" />
   </ItemGroup>
@@ -33,5 +38,8 @@
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\RhythmBase.Generator\RhythmBase.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="RhythmDoctor\Converters\Events\" />
   </ItemGroup>
 </Project>

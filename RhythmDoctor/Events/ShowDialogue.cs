@@ -1,12 +1,12 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.RichText;
+﻿using RhythmBase.Global.Components.RichText;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents an event to show a dialogue in the game.
 	/// </summary>
-	public class ShowDialogue : BaseEvent
+	public class ShowDialogue : BaseEvent, IRoomEvent
 	{
 		private RDDialogueExchange dialogueList = [];
 		private string text = "";
@@ -34,7 +34,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the dialogue list. When set, the Text property is updated with the serialized value of the dialogue list.
 		/// </summary>
 		/// <value>The dialogue list.</value>
-		[JsonIgnore]
+		[RDJsonIgnore]
 		public RDDialogueExchange DialogueList
 		{
 			get => dialogueList; set
@@ -67,6 +67,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab where the event is categorized.
 		/// </summary>
 		public override Tabs Tab { get; }
+		public RDRoom Rooms { get; set; }
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

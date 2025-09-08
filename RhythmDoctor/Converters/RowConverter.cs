@@ -41,8 +41,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 					else if (reader.ValueSpan.SequenceEqual("player"u8))
 					{
 						reader.Read();
-						if(EnumConverter.TryParse(reader.ValueSpan, out PlayerType value))
-						result.Player = value;
+						if (EnumConverter.TryParse(reader.ValueSpan, out PlayerType value))
+							result.Player = value;
 					}
 					else if (reader.ValueSpan.SequenceEqual("muteBeats"u8))
 					{
@@ -74,6 +74,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 						reader.Read();
 						result.PulseSoundPan = reader.GetInt32();
 					}
+					else if (reader.ValueSpan.SequenceEqual("pulseSoundOffset"u8))
+					{
+						reader.Read();
+						result.PulseSoundOffset = TimeSpan.FromMilliseconds(reader.GetDouble());
+					}
 				}
 			}
 			return result;
@@ -92,9 +97,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WritePropertyName("rooms"u8);
 			JsonSerializer.Serialize(writer, value.Rooms, options);
 
-			writer.WriteBoolean("hideAtStart"u8, value.HideAtStart);
+			if(value.HideAtStart)
+				writer.WriteBoolean("hideAtStart"u8, value.HideAtStart);
 			writer.WriteString("player"u8, EnumConverter.ToEnumString(value.Player));
-			writer.WriteBoolean("muteBeats"u8, value.MuteBeats);
+			if (value.MuteBeats)
+				writer.WriteBoolean("muteBeats"u8, value.MuteBeats);
 
 			if (value.RowToMimic >= 0)
 				writer.WriteNumber("rowToMimic"u8, value.RowToMimic);

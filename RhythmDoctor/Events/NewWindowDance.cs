@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RhythmBase.Global.Components.Easing;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -51,60 +52,102 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the same preset behavior.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move")]
 		public SamePresetBehaviors SamePresetBehavior { get; set; }
 		/// <summary>
 		/// Gets or sets the position.
 		/// </summary>
 		[EaseProperty]
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public RDPointE Position { get; set; }
 		/// <summary>
 		/// Gets or sets the reference.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move")]
 		public WindowDanceReferences Reference { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether to use a circle.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Ellipse &&
+			$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+			""")]
 		public bool UseCircle { get; set; }
 		/// <summary>
 		/// Gets or sets the speed.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)}
+				is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Wrap
+				or RhythmBase.RhythmDoctor.Events.WindowDancePresets.Ellipse
+				&&
+			$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+			""")]
 		public float Speed { get; set; }
 		/// <summary>
 		/// Gets or sets the amplitude.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)}
+			is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move
+			or RhythmBase.RhythmDoctor.Events.WindowDancePresets.Sway
+			""")]
 		public float Amplitude { get; set; }
 		/// <summary>
 		/// Gets or sets the amplitude vector.
 		/// </summary>
 		[EaseProperty]
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)}
+			is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Ellipse
+			or RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer
+			""")]
 		public RDPointE AmplitudeVector { get; set; }
 		/// <summary>
 		/// Gets or sets the angle.
 		/// </summary>
 		[EaseProperty]
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+		[RDJsonCondition($"$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move")]
 		public float? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the frequency.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)}
+				is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Wrap
+				or RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer
+				&&
+			$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+			""")]
 		public float Frequency { get; set; }
 		/// <summary>
 		/// Gets or sets the period.
 		/// </summary>
 		[EaseProperty]
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer &&
+			$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+			""")]
 		public float Period { get; set; }
 		/// <summary>
 		/// Gets or sets the ease type.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Sway &&
+			$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+			""")]
 		public WindowDanceEaseTypes EaseType { get; set; }
 		/// <summary>
 		/// Gets or sets the sub ease type.
 		/// </summary>
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)}
+				is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Sway
+				or RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer &&
+			$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+			""")]
 		public EaseType SubEase { get; set; }
 		/// <summary>
 		/// Gets or sets the duration.
@@ -115,6 +158,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the ease.
 		/// </summary>
 		public EaseType Ease { get; set; }
+		/// <summary>
+		/// Gets or sets the room.
+		/// </summary>
+		public RDRoom Rooms { get; set; }
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
