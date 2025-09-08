@@ -53,6 +53,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 				WriteCustomEvent(writer, ce, options);
 				return;
 			}
+			else if(value is Group group)
+			{
+				throw new NotSupportedException("Group should be handled in GroupConverter. It will be fixed in the next version.");
+			}
 			else
 			{
 				converters[value.Type].WriteProperties(writer, value, options);

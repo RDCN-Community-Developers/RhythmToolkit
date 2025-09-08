@@ -117,7 +117,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 						{
 							if (reader.TokenType == JsonTokenType.EndArray)
 							{
-
 								break;
 							}
 							string? e = JsonSerializer.Deserialize<string>(ref reader, options);
@@ -179,6 +178,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartArray();
 			foreach (IBaseEvent e in value)
 			{
+				if(e is Group group)
+				{
+
+				}
 				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
 					JsonSerializer.Serialize(e, localOptions));
 			}
