@@ -80,7 +80,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			else if (propertyName.SequenceEqual("runTag"u8))
 				value.RunTag = reader.GetBoolean();
 			else if (propertyName.SequenceEqual("if"u8))
-				value.Condition = Condition.Load(reader.GetString() ?? string.Empty);
+				value.Condition = Condition.Deserialize(reader.GetString() ?? string.Empty);
 			else if (propertyName.SequenceEqual("active"u8))
 				value.Active = reader.GetBoolean();
 			else

@@ -1,5 +1,7 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Utils;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -8,6 +10,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 	internal class LevelConverter : JsonConverter<RDLevel>
 	{
 		internal string? Filepath { get; set; }
+		internal LevelReadOrWriteSettings Settings { get; set; } = new();
 		public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			RDLevel level = [];
@@ -62,6 +65,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 							throw new JsonException($"Expected StartArray token for 'events', but got {reader.TokenType}.");
 						Dictionary<int, FloatingText> floatingTexts = [];
 						List<AdvanceText> advanceTexts = [];
+						Dictionary<int, List<IBaseEvent>> maybeGeneratedEvents = [];
+						List<TagAction> maybeMacroEvents = [];
+						string[]? types = [];
+						JsonElement[]? data = [];
+						Comment? maybeDataComment = null;
 						while (reader.Read())
 						{
 							if (reader.TokenType == JsonTokenType.EndArray)
@@ -69,7 +77,30 @@ namespace RhythmBase.RhythmDoctor.Converters
 							IBaseEvent? e = JsonSerializer.Deserialize<IBaseEvent>(ref reader, options);
 							if (e == null)
 								continue;
-							level.Add(e);
+							if (Settings.EnableMacroEvent)
+							{
+								if (e is Comment c && MacroEvent.TryGetTypeData(c, out types, out data))
+								{
+									maybeDataComment ??= c;
+									continue;
+								}
+								else if (e is TagAction ta && MacroEvent.TryMatch(ta))
+								{
+									maybeMacroEvents.Add(ta);
+								}
+								else if (e is TagAction ta1 && MacroEvent.MatchTag(ta1.ActionTag, out int type, out _, out _)
+									|| MacroEvent.MatchTag(e.Tag, out type, out _, out _))
+								{
+									if (maybeGeneratedEvents.TryGetValue(type, out var list))
+										list.Add(e);
+									else
+										maybeGeneratedEvents[type] = [e];
+								}
+								else
+									level.Add(e);
+							}
+							else
+								level.Add(e);
 							if (e is FloatingText ft)
 							{
 								floatingTexts[ft["id"].GetInt32()] = ft;
@@ -77,6 +108,25 @@ namespace RhythmBase.RhythmDoctor.Converters
 							}
 							else if (e is AdvanceText at)
 								advanceTexts.Add(at);
+						}
+						HashSet<int> matchedIds = [];
+						foreach (var mm in maybeMacroEvents)
+						{
+							if (MacroEvent.TryParse(mm, types, out MacroEvent? result))
+							{
+								matchedIds.Add(result.DataId);
+								result._data = data[(
+										result.DataId < data.Length ? result.DataId : throw new IndexOutOfRangeException($"DataId {result.DataId} is out of range.")
+									)];
+								result.Flush();
+								level.Add(result);
+							}
+						}
+						foreach (var mms in maybeGeneratedEvents)
+						{
+							if (!matchedIds.Contains(mms.Key))
+								foreach (var e in mms.Value)
+									level.Add(e);
 						}
 						foreach (var at in advanceTexts)
 						{
@@ -148,7 +198,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 			level._path = Filepath;
 			return level;
 		}
-
 		public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
 		{
 			JsonSerializerOptions localOptions = new(options)
@@ -162,7 +211,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartArray();
 			foreach (Row row in value.Rows)
 			{
-				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
+				writer.WriteRawValue((options.WriteIndented ? "\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) : "") +
 					JsonSerializer.Serialize(row, localOptions));
 			}
 			writer.WriteEndArray();
@@ -170,27 +219,90 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartArray();
 			foreach (Decoration decoration in value.Decorations)
 			{
-				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) + 
+				writer.WriteRawValue((options.WriteIndented ? "\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) : "") +
 					JsonSerializer.Serialize(decoration, localOptions));
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
 			writer.WriteStartArray();
-			foreach (IBaseEvent e in value)
+			if (Settings.EnableMacroEvent)
 			{
-				if(e is Group group)
+				JsonSerializerOptions dataOptions = new()
 				{
-
+					WriteIndented = false,
+				};
+				List<MacroEvent> macros = [];
+				List<IBaseEvent> normalEvents = [];
+				List<string> data = [];
+				int id = 0;
+				foreach (IBaseEvent e in value)
+				{
+					if (e is MacroEvent macro)
+					{
+						macro.Flush();
+						string rawData = JsonSerializer.Serialize(macro._data, dataOptions);
+						if (!data.Contains(rawData))
+						{
+							data.Add(rawData);
+							macro.DataId = id;
+							id++;
+							macros.Add(macro);
+							foreach (IBaseEvent e2 in macro.GenerateTaggedEvents(
+								$"{Utils.Utils.RhythmBaseMacroEventHeader}{EventTypeUtils.GroupTypes.IndexOf(macro.GetType()):X8}{macro.DataId:X8}"
+							))
+							{
+								if (e2 is MacroEvent)
+									throw new ConvertingException("MacroEvent cannot contain another MacroEvent.");
+								if (e2 is SetCrotchetsPerBar)
+									throw new RhythmBaseException("SetCrotchetsPerBar events are not allowed within a MacroEvent.");
+								normalEvents.Add(e2);
+							}
+						}
+						normalEvents.Add(macro.GenerateTagAction());
+					}
+					else
+						writer.WriteRawValue((options.WriteIndented ? "\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) : "") +
+							JsonSerializer.Serialize(e, localOptions));
 				}
-				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
-					JsonSerializer.Serialize(e, localOptions));
+				StringBuilder sb = new() { };
+				sb.AppendLine(Utils.Utils.RhythmBaseMacroEventDataHeader);
+				sb.AppendLine("# Generated by RhythmBase #");
+				for (int i = 0; i < EventTypeUtils.GroupTypes.Count; i++)
+				{
+					Type t = EventTypeUtils.GroupTypes[i];
+					sb.AppendLine($"@{t.FullName}");
+				}
+				for (int i = 0; i < data.Count; i++)
+				{
+					if (i > 0)
+						sb.AppendLine();
+					sb.AppendLine(data[i]);
+				}
+				sb.Replace("\r\n", "\n");
+				normalEvents.Add(new Comment() { Y = -1, Text = sb.ToString() });
+				foreach (IBaseEvent e in normalEvents)
+				{
+					writer.WriteRawValue((options.WriteIndented ? "\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) : "") +
+						JsonSerializer.Serialize(e, localOptions));
+				}
+			}
+			else
+			{
+				foreach (IBaseEvent e in value)
+				{
+					if (e is MacroEvent macro)
+						throw new ConvertingException("MacroEvent found, but EnableMacroEvent is false in LevelReadOrWriteSettings.");
+					else
+						writer.WriteRawValue((options.WriteIndented ? "\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) : "") +
+							JsonSerializer.Serialize(e, localOptions));
+				}
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("bookmarks");
 			writer.WriteStartArray();
 			foreach (Bookmark bookmark in value.Bookmarks)
 			{
-				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
+				writer.WriteRawValue((options.WriteIndented ? "\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) : "") +
 					JsonSerializer.Serialize(bookmark, localOptions));
 			}
 			writer.WriteEndArray();
@@ -205,7 +317,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartArray();
 			foreach (BaseConditional conditional in value.Conditionals)
 			{
-				writer.WriteRawValue("\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) +
+				writer.WriteRawValue((options.WriteIndented ? "\n" + new string(options.IndentCharacter, writer.CurrentDepth * options.IndentSize) : "") +
 					JsonSerializer.Serialize(conditional, localOptions));
 			}
 			writer.WriteEndArray();

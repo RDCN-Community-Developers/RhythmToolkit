@@ -1,9 +1,7 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
-using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using static RhythmBase.RhythmDoctor.Utils.Utils;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -16,20 +14,20 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// including tagging, parent association, and event generation.  
 	/// </remarks>
 	[RDJsonObjectNotSerializable]
-	public abstract partial class Group : BaseEvent, IEnumerable<BaseEvent>
+	public abstract partial class MacroEvent : BaseEvent
 	{
 		/// <summary>
-		/// Gets the type of the event, which is always <see cref="EventType.Group"/> for this class.
+		/// Gets the type of the event, which is always <see cref="EventType.MacroEvent"/> for this class.
 		/// </summary>
-		public override EventType Type => EventType.Group;
+		public override EventType Type => EventType.MacroEvent;
 		/// <summary>
 		/// Gets the tab associated with this event, which is <see cref="Tabs.Unknown"/> by default.
 		/// </summary>
 		public override Tabs Tab => Tabs.Unknown;
 		/// <summary>  
-		/// Initializes a new instance of the <see cref="Group"/> class.  
+		/// Initializes a new instance of the <see cref="MacroEvent"/> class.  
 		/// </summary>  
-		internal Group() { }
+		internal MacroEvent() { }
 		/// <summary>
 		/// Retrieves the collection of events contained within this group.
 		/// </summary>
@@ -75,7 +73,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// If the base level is null, the property will return null.  
 		/// </remarks>  
 		protected DecorationCollection? Decorations => _beat.BaseLevel?.Decorations;
-		private IEnumerable<BaseEvent> GenerateTaggedEvents(string tag)
+		internal IEnumerable<BaseEvent> GenerateTaggedEvents(string tag)
 		{
 			BaseEvent[] events = [.. GenerateEvents().OrderBy(i => {
 				i._beat._calculator = _beat._calculator; return i.Beat;
@@ -120,25 +118,13 @@ namespace RhythmBase.RhythmDoctor.Events
 				Condition = Condition,
 				Active = Active,
 				Action = TagActions.Run,
-				ActionTag = $"{RhythmBaseGroupEventHeader}{EventTypeUtils.GroupTypes.IndexOf(GetType()):X8}{DataId:X8}",
+				ActionTag = $"{RhythmBaseMacroEventHeader}{EventTypeUtils.GroupTypes.IndexOf(GetType()):X8}{DataId:X8}",
 			};
 		}
-		/// <summary>
-		/// Returns an enumerator that iterates through the events in the group.
-		/// </summary>
-		/// <returns>An enumerator for the events in the group.</returns>
-		IEnumerator<BaseEvent> IEnumerable<BaseEvent>.GetEnumerator() => GenerateTaggedEvents(
-			$"{RhythmBaseGroupEventHeader}{EventTypeUtils.GroupTypes.IndexOf(GetType()):X8}{DataId:X8}"
-			).GetEnumerator();
-		/// <summary>
-		/// Returns an enumerator that iterates through the events in the group.
-		/// </summary>
-		/// <returns>An enumerator for the events in the group.</returns>
-		IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<BaseEvent>)this).GetEnumerator();
 #if NETSTANDARD
-		internal static bool TryParse(Comment comment, out string[]? types, out JsonDocument[]? data)
+		internal static bool TryGetTypeData(Comment comment, out string[]? types, out JsonElement[]? data)
 #else
-		internal static bool TryParse(Comment comment, [NotNullWhen(true)] out string[]? types, [NotNullWhen(true)] out JsonDocument[]? data)
+		internal static bool TryGetTypeData(Comment comment, [NotNullWhen(true)] out string[]? types, [NotNullWhen(true)] out JsonElement[]? data)
 #endif
 		{
 			if (string.IsNullOrEmpty(comment.Text))
@@ -148,34 +134,35 @@ namespace RhythmBase.RhythmDoctor.Events
 				return false;
 			}
 			string[] lines = comment.Text.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
-			if (lines.Length < 3 || lines[0] != RhythmBaseGroupDataHeader)
+			if (lines.Length == 0 || lines[0] != RhythmBaseMacroEventDataHeader)
 			{
 				types = null;
 				data = null;
 				return false;
 			}
 			List<string> typel = [];
-			List<JsonDocument> datal = [];
+			List<JsonElement> datal = [];
 			for (int i = 2; i < lines.Length; i++)
 			{
 #if NETSTANDARD
 				if (lines[i].StartsWith("@"))
 					typel.Add(lines[i].Substring(1));
+				else if (lines[i].StartsWith("{"))
 #else
 				if (lines[i].StartsWith('@'))
 					typel.Add(lines[i][1..]);
+				else if (lines[i].StartsWith('{'))
 #endif
-				else
-					datal.Add(JsonDocument.Parse(lines[i]));
+					datal.Add(JsonElement.Parse(lines[i]));
 			}
 			types = [.. typel];
 			data = [.. datal];
 			return true;
 		}
 #if NETSTANDARD
-		internal static bool TryParse(TagAction tagAction, string[] types, out Group? result)
+		internal static bool TryParse(TagAction tagAction, string[] types, out MacroEvent? result)
 #else
-		internal static bool TryParse(TagAction tagAction, string[] types, [NotNullWhen(true)] out Group? result)
+		internal static bool TryParse(TagAction tagAction, string[] types, [NotNullWhen(true)] out MacroEvent? result)
 #endif
 		{
 			if (!TryMatch(tagAction))
@@ -183,7 +170,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				result = null;
 				return false;
 			}
-			string info = tagAction.ActionTag.Substring(RhythmBaseGroupEventHeader.Length, 16);
+			string info = tagAction.ActionTag.Substring(RhythmBaseMacroEventHeader.Length, 16);
 #if NETSTANDARD
 			int typeIndex = Convert.ToInt32(info.Substring(0, 8), 16);
 			int id = Convert.ToInt32(info.Substring(8), 16);
@@ -198,7 +185,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			}
 			Type? type = EventTypeUtils.GroupTypes.FirstOrDefault(i => i.FullName == types[typeIndex])
 				?? throw new IllegalEventTypeException(types[typeIndex], "This value does not exist in the EventType enumeration.");
-			Group group = (Group)Activator.CreateInstance(type)!;
+			MacroEvent group = (MacroEvent)Activator.CreateInstance(type)!;
 			group.DataId = id;
 			group.Beat = tagAction.Beat;
 			group.Y = tagAction.Y;
@@ -208,17 +195,17 @@ namespace RhythmBase.RhythmDoctor.Events
 			return true;
 		}
 		internal static bool TryMatch(TagAction tagAction) => !string.IsNullOrEmpty(tagAction.ActionTag) &&
-				tagAction.ActionTag.StartsWith(RhythmBaseGroupEventHeader) &&
-				tagAction.ActionTag.Length >= RhythmBaseGroupEventHeader.Length + 16;
+				tagAction.ActionTag.StartsWith(RhythmBaseMacroEventHeader) &&
+				tagAction.ActionTag.Length >= RhythmBaseMacroEventHeader.Length + 16;
 		internal abstract void Flush();
 		internal static bool MatchTag(string tag, out int type, out int id, out string tagstag)
 		{
 			if (!string.IsNullOrEmpty(tag))
 			{
-				if (tag.StartsWith(RhythmBaseGroupEventHeader))
+				if (tag.StartsWith(RhythmBaseMacroEventHeader))
 				{
 #if NETSTANDARD
-					tag = tag.Substring(RhythmBaseGroupEventHeader.Length);
+					tag = tag.Substring(RhythmBaseMacroEventHeader.Length);
 					type = Convert.ToInt32(tag.Substring(0, 8), 16);
 					id = Convert.ToInt32(tag.Substring(8, 8), 16);
 					if (tag.Length > 17 && tag[16] == '_')
@@ -226,7 +213,7 @@ namespace RhythmBase.RhythmDoctor.Events
 					else
 						tagstag = "";
 #else
-					tag = tag[RhythmBaseGroupEventHeader.Length..];
+					tag = tag[RhythmBaseMacroEventHeader.Length..];
 					type = Convert.ToInt32(tag[..8], 16);
 					id = Convert.ToInt32(tag[8..16], 16);
 					if (tag.Length > 17 && tag[16] == '_')
@@ -242,15 +229,15 @@ namespace RhythmBase.RhythmDoctor.Events
 			id = 0;
 			return false;
 		}
-		internal JsonDocument? _data;
-		internal bool _loaded = false;
+		internal JsonElement _data;
+		internal bool _instanceLoaded = false;
 		internal object _instance = new();
 		internal abstract int DataId { get; set; }
 	}
 	/// <summary>
 	/// Represents a group of events in Rhythm Doctor.
 	/// </summary>
-	public abstract partial class Group<T> : Group where T : new()
+	public abstract partial class MacroEvent<T> : MacroEvent where T : new()
 	{
 		/// <summary>
 		/// Retrieves the events in the group with additional tagging and comments.
@@ -261,31 +248,31 @@ namespace RhythmBase.RhythmDoctor.Events
 			get
 			{
 				T ins =
-					_loaded ? (T)_instance :
-					_data is null ? new() :
+					_instanceLoaded ? (T)_instance :
+					_data.ValueKind == JsonValueKind.Undefined ? new() :
 					_data.Deserialize<T>(GetJsonSerializerOptions()) ?? new();
 				_instance = ins;
-				_loaded = true;
+				_instanceLoaded = true;
 				return ins;
 			}
 			set
 			{
 				_instance = value ?? new();
-				_loaded = true;
+				_instanceLoaded = true;
 			}
 		}
 		internal override void Flush()
 		{
-			_instance = _data.Deserialize<T>(GetJsonSerializerOptions()) ?? new T();
-			_data = JsonDocument.Parse(JsonSerializer.Serialize(_instance));
+			_instance = _instanceLoaded ? _instance : _data.Deserialize<T>(GetJsonSerializerOptions()) ?? new();
+			_data = JsonSerializer.SerializeToElement(_instance, GetJsonSerializerOptions());
 		}
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Group{T}"/> class.  
+		/// Initializes a new instance of the <see cref="MacroEvent{T}"/> class.  
 		/// </summary>  
 		/// <remarks>  
 		/// This constructor initializes the <see cref="Data"/> property with a new instance of type <typeparamref name="T"/>.  
 		/// </remarks>  
-		public Group() { }
+		public MacroEvent() { }
 		internal override int DataId { get; set; }
 	}
 }

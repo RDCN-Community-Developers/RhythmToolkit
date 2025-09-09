@@ -71,7 +71,7 @@ namespace RhythmBase.Global.Settings
 		/// Indicates whether group events are enabled.  
 		/// Defaults to <see langword="false" />.  
 		/// </summary>  
-		public bool EnableGroupEvent { get; set; } = false;
+		public bool EnableMacroEvent { get; set; } = false;
 		internal void OnBeforeReading()
 		{
 			BeforeReading?.Invoke(this, EventArgs.Empty);

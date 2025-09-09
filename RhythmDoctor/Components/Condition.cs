@@ -27,7 +27,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="text">The text to load the condition from.</param>
 		/// <returns>A new instance of the <see cref="Condition"/> class.</returns>
 		/// <exception cref="RhythmBaseException">Thrown when the condition is illegal.</exception>
-		internal static Condition Load(string text)
+		internal static Condition Deserialize(string text)
 		{
 			Condition @out = new();
 			MatchCollection Matches = Regex.Matches(text, "(~?\\d+)(?=[&d])");

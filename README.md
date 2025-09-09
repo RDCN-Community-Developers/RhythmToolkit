@@ -14,16 +14,16 @@ To install the RhythmBase NuGet package, follow these steps:
 2. In Visual Studio, go to **Tools** > **NuGet Package Manager** > **Package Manager Console**.
 3. In the console, enter the following command:
 
-    ```
-    Install-Package RhythmBase -Version 1.2.0-rc2
-    ```
+	```
+	Install-Package RhythmBase -Version 1.2.0-rc2
+	```
 
 4. Wait for the installation to complete and ensure your project references the required NuGet package.
 5. To install using the .NET CLI, use:
 
-    ```
-    dotnet add package RhythmBase -version 1.2.0-rc2
-    ```
+	```
+	dotnet add package RhythmBase -version 1.2.0-rc2
+	```
 
 ## Coding
 ### Creating a Level
@@ -56,16 +56,16 @@ Exporting does not package the level as a `.rdzip` file.
 using RhythmBase.RhythmDoctor.Components;
 
 // Directly read a level file
-using RDLevel rdlevel1 = RDLevel.Read(@"your\level.rdlevel");
+using RDLevel rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel");
 
 // Read a level pack file
-using RDLevel rdlevel2 = RDLevel.Read(@"your\level.rdzip");
+using RDLevel rdlevel2 = RDLevel.FromFile(@"your\level.rdzip");
 
 // Read a compressed level pack
-using RDLevel rdlevel3 = RDLevel.Read(@"your\level.zip");
+using RDLevel rdlevel3 = RDLevel.FromFile(@"your\level.zip");
 
 // Write a level file
-rdlevel1.Write(@"your\outLevel.rdlevel");
+rdlevel1.SaveToFile(@"your\outLevel.rdlevel");
 ```
 
 You can add custom read/write settings with `LevelReadOrWriteSettings` when reading or writing levels.
@@ -77,26 +77,29 @@ using RhythmBase.RhythmDoctor.Settings;
 // Create custom read/write settings
 LevelReadOrWriteSettings settings = new()
 {
-    // Handling of inactive events
-    InactiveEventsHandling = InactiveEventsHandling.Store,
-    // Handling of unreadable events
-    // Common when sprite events are not bound to sprite tracks, etc.
-    UnreadableEventsHandling = UnreadableEventHandling.Store,
-    // Enable indentation
-    Indented = true,
+	// Handling of inactive events
+	InactiveEventsHandling = InactiveEventsHandling.Store,
+	// Handling of unreadable events
+	// Common when sprite events are not bound to sprite tracks, etc.
+	UnreadableEventsHandling = UnreadableEventHandling.Store,
+	// Enable indentation
+	Indented = true,
 };
 
-using RDLevel rdlevel1 = RDLevel.Read(@"your\level.rdlevel", settings);
+using RDLevel rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel", settings);
 ```
 
 You can also generate a JSON object or JSON string for further operations.
 
 ```cs
-using Newtonsoft.Json.Linq;
 using RhythmBase.RhythmDoctor.Components;
 
-JObject jobject = rdlevel.ToJObject();
-string json = rdlevel.ToRDLevelJson(settings);
+LevelReadOrWriteSettings settings = new();
+
+JsonDocument jobject = rdlevel.ToJsonDocument();
+string json = rdlevel.ToJsonString(settings);
+Console.WriteLine(jobject);
+Console.WriteLine(json);
 ```
 
 `LevelReadOrWriteSettings` provides `BeforeReading`, `AfterReading`, `BeforeWriting`, and `AfterWriting` events, which are triggered before/after reading or writing a level.  
@@ -110,7 +113,7 @@ settings.AfterWriting += Settings_AfterReading;
 // This will be triggered after writing is finished
 void Settings_AfterReading(object? sender, EventArgs e)
 {
-    throw new NotImplementedException();
+	throw new NotImplementedException();
 }
 
 rdlevel.Write(@"your\outLevel.rdlevel", settings);
@@ -134,8 +137,8 @@ using RhythmBase.RhythmDoctor.Components;
 
 // Find MoveRow events between measures 3 and 5, and in event rows 0 to 2
 var list = rdlevel.Where<MoveRow>(
-    i => 0 <= i.Y && i.Y < 3,  // In event rows 0 to 2
-    3..5 // From bar 3 to 5
+	i => 0 <= i.Y && i.Y < 3,  // In event rows 0 to 2
+	3..5 // From bar 3 to 5
 );
 ```
 
@@ -147,8 +150,8 @@ using RhythmBase.RhythmDoctor.Components;
 
 // Find the AddClassicBeat event in the decoration between beat (11,1) and (13,1)
 var list = rdlevel.Decorations[0].Where<Tint>(
-    new Beat(11, 1), // Start searching from bar 11, beat 1
-    new Beat(13, 1)  // End searching at bar 13, beat 1
+	new Beat(11, 1), // Start searching from bar 11, beat 1
+	new Beat(13, 1)  // End searching at bar 13, beat 1
 );
 ```
 ### Creating a Beat
@@ -202,7 +205,7 @@ using RhythmBase.RhythmDoctor.Components;
 RDBeat beat1 = rdlevel.BeatOf(1);
 RDBeat beat2 = beat1.WithoutLink();
 
-Console.WriteLine(beat1.FromSameLevel(beat2));       // False
+Console.WriteLine(beat1.FromSameLevel(beat2));	   // False
 Console.WriteLine(beat1.FromSameLevelOrNull(beat2)); // True
 ```
 
@@ -305,9 +308,9 @@ rdlevel.Remove(tr);
 Console.WriteLine(rdlevel); // "" Count = 3
 ```
 
-### Custom Events
+### Forward Events
 
-If the required event type is not available in this assembly, you can implement your own by inheriting from `CustomEvent`, `CustomRowEvent`, or `CustomDecorationEvent`.
+If the required event type is not available in this assembly, you can implement your own by inheriting from `ForwardEvent`, `ForwardRowEvent`, or `ForwardDecorationEvent`.
 
 ```cs
 using Newtonsoft.RhythmDoctor.Json.Linq;
@@ -315,62 +318,65 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Components;
   
 // Create a MyEvent type  
-//   Inherit from CustomEvent  
-public class MyEvent : CustomEvent
+//   Inherit from ForwardEvent  
+public class MyEvent : ForwardEvent
 {
-    // Override property  
-    public override Tabs Tab => Tabs.Actions;
+	// Override property  
+	public override Tabs Tab => Tabs.Actions;
 
-    // All implemented properties need to be bound to and checked for null in the CustomEvent.Data field.  
+	// All implemented properties need to be bound to and checked for null in the CustomEvent.Data field.  
 
-    // Implement an RDPointE type property  
-    public RDPointE? MyProperty
-    {
-        get
-        {
-            // Get the required content from the Data field and check for null  
-            var value = Data["myProperty"];
-            return value?.ToObject<RDPointE?>() ?? new RDPointE(0, 0);
-        }
-        set
-        {
-            // Save the content in the Data field  
-            Data["myProperty"] =
-                value.HasValue ?
-                new JArray(
-                    value?.X ?? null,
-                    value?.Y ?? null) :
-                null;
-        }
-    }
+	// Implement an RDPointE type property  
+	public RDPointE? MyProperty
+	{
+		get
+		{
+			// Get the required content from the Data field and check for null  
+			return ExtraData.TryGetValue("myProperty", out var jsonElement)
+				? jsonElement.Deserialize<RDPointE>()
+				: null;
+		}
+		set
+		{
+			// Save the content in the Data field  
+			ExtraData["myProperty"] =
+				value.HasValue ?
+				JsonElement.Parse(
+					JsonSerializer.Serialize(value, Utils.GetJsonSerializerOptions())
+				) :
+				default;
+		}
+	}
 
-    // Initialize the type in the constructor  
-    public MyEvent()
-    {
-        // Initialize the ActureType property.
-        ActureType = nameof(MyEvent);
-    }
+	// Initialize the type in the constructor  
+	public MyEvent()
+	{
+		// Initialize the ActureType property.
+		ActureType = nameof(MyEvent);
+	}
 }
 ```
 
 After writing your type, it can be read and written like a normal event.  
-Note that `Type` is still `EventType.CustomEvent`, while `ActureType` is the custom type name.
+Note that `Type` is still `EventType.ForwardEvent`, while `ActureType` is the custom type name.
 
 ```cs
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Components;
 
-MyEvent myEvent = new();  
-  
-rdlevel.Add(myEvent);  
-  
-myEvent.Beat = new(8);  
-  
-Console.WriteLine(myEvent.Type);        // CustomEvent  
+MyEvent myEvent = new();
+
+myEvent.MyProperty = new(2, "i3+1");
+
+rdlevel.Add(myEvent);
+
+myEvent.Beat = new(8);
+
+Console.WriteLine(myEvent.Type);		// ForwardEvent  
 Console.WriteLine(myEvent.ActureType);  // MyEvent  
 ```
 
-Additionally, if an unknown event type is encountered when reading a level, it will also be read as the corresponding `CustomEvent`, `CustomRowEvent`, or `CustomDecorationEvent` type event.
+If an unknown event type is encountered when reading a level, it will also be read as the corresponding `ForwardEvent`, `ForwardRowEvent`, or `ForwardDecorationEvent` type event.
 
 ### Event Types and Enums
 
@@ -381,12 +387,12 @@ using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 
-Console.WriteLine(EventType.Tint.ToType());                                               // RhythmBase.Events.Tint
-Console.WriteLine(EventTypeUtils.ToType("Tint"));                                         // RhythmBase.Events.Tint
-Console.WriteLine(EventTypeUtils.ToEnum(typeof(Tint)));                                   // Tint
-Console.WriteLine(EventTypeUtils.ToEnum<Tint>());                                         // Tint
+Console.WriteLine(EventType.Tint.ToType());											   // RhythmBase.Events.Tint
+Console.WriteLine(EventTypeUtils.ToType("Tint"));										 // RhythmBase.Events.Tint
+Console.WriteLine(EventTypeUtils.ToEnum(typeof(Tint)));								   // Tint
+Console.WriteLine(EventTypeUtils.ToEnum<Tint>());										 // Tint
 Console.WriteLine(string.Join(", ", EventTypeUtils.ToEnums(typeof(IBarBeginningEvent))));  // PlaySong,SetCrotchetsPerBar, SetHeartExplodeVolume
-Console.WriteLine(string.Join(", ", EventTypeUtils.ToEnums<IBarBeginningEvent>()));        // PlaySong,SetCrotchetsPerBar, SetHeartExplodeVolume
+Console.WriteLine(string.Join(", ", EventTypeUtils.ToEnums<IBarBeginningEvent>()));		// PlaySong,SetCrotchetsPerBar, SetHeartExplodeVolume
 ```
 
 `EventTypeUtils` also includes some event type classifications, such as:
@@ -435,14 +441,14 @@ Console.WriteLine(line.ToString()); // Hello
 Console.WriteLine(line.Serialize()); // Hel<color=lime>lo</color>
 
 line +=
-    new RDPhrase<RDRichStringStyle>(" Rhythm")
-    {
-        Style = new()
-        {
-            Color = RDColor.Lime
-        }
-    };
-    
+	new RDPhrase<RDRichStringStyle>(" Rhythm")
+	{
+		Style = new()
+		{
+			Color = RDColor.Lime
+		}
+	};
+	
 line += " Doctor!";
 
 Console.WriteLine(line.ToString()); // Hello Rhythm Doctor!
@@ -474,35 +480,35 @@ using RhythmBase.Global.Components.RichText;
 
 RDDialogueExchange exchange = 
 [
-    new RDDialogueBlock()
-    {
-        Character = "Paige",
-        Expression = "neutral",
-        Content = RDLine<RDDialoguePhraseStyle>.Deserialize("Hel<color=#00FF00>lo [2]<shake>Rhythm</color> Doctor</shake>!"),
-    },
-    new RDDialogueBlock()
-    {
-        Character = "Ian",
-        Content = "Hello Paige!",
-    },
-    new RDDialogueBlock()
-    {
-        Character = "Paige",
-        Expression = "happy",
-        Content = new RDPhrase<RDDialoguePhraseStyle>("What a good day!")
-        {
-            Events =
-            [
-                new RDDialogueTone(RDDialogueToneType.VerySlow,6),
-                new RDDialogueTone(RDDialogueToneType.Static,11),
-            ],
-            Style = new RDDialoguePhraseStyle()
-            {
-                Volume = 0.5f,
-                Bold = true,
-            },
-        }
-    }
+	new RDDialogueBlock()
+	{
+		Character = "Paige",
+		Expression = "neutral",
+		Content = RDLine<RDDialoguePhraseStyle>.Deserialize("Hel<color=#00FF00>lo [2]<shake>Rhythm</color> Doctor</shake>!"),
+	},
+	new RDDialogueBlock()
+	{
+		Character = "Ian",
+		Content = "Hello Paige!",
+	},
+	new RDDialogueBlock()
+	{
+		Character = "Paige",
+		Expression = "happy",
+		Content = new RDPhrase<RDDialoguePhraseStyle>("What a good day!")
+		{
+			Events =
+			[
+				new RDDialogueTone(RDDialogueToneType.VerySlow,6),
+				new RDDialogueTone(RDDialogueToneType.Static,11),
+			],
+			Style = new RDDialoguePhraseStyle()
+			{
+				Volume = 0.5f,
+				Bold = true,
+			},
+		}
+	}
 ];
 
 Console.WriteLine(exchange.Serialize());
@@ -533,13 +539,13 @@ using RhythmBase.Global.Components.Easing;
 
 // Fit using a set of points and a threshold
 EaseValue data1 = EaseValue.Fit([
-    (0, 0),
-    (1, 1)
+	(0, 0),
+	(1, 1)
 ], 3f);
 // Fit using an initial value, a set of points, an optional list of ease types, and a threshold
 EaseValue data2 = EaseValue.Fit(0, [
-    (0, 0),
-    (1, 1)
+	(0, 0),
+	(1, 1)
 ], [EaseType.Linear, EaseType.InSine], 3f);
 // Get the value at a specific time from the easing data
 float value = data1.GetValue(2.5f);
@@ -557,15 +563,15 @@ var deco = level.Decorations[0];
 
 Move[] moves =
 [
-    new(){ Beat = level.BeatOf(1), Position = new(0, (RDExpression?)null), Duration = 1, Ease = EaseType.Linear, Angle = "2" },
-    new(){ Beat = level.BeatOf(2.1f), Position = new(10, 90), Duration = 1, Ease = EaseType.Linear },
-    new(){ Beat = level.BeatOf(2.2f), Position = new(90, 10), Duration = 1, Ease = EaseType.Linear },
-    new(){ Beat = level.BeatOf(3), Position = new(10, 70), Duration = 1, Ease = EaseType.Linear },
-    new(){ Beat = level.BeatOf(3.5f), Position = new(10, 10), Duration = 1, Ease = EaseType.Linear },
-    new(){ Beat = level.BeatOf(3.8f), Position = new(30, 50), Duration = 1, Ease = EaseType.Linear },
-    new(){ Beat = level.BeatOf(3.9f), Position = new(20, (RDExpression?)null), Duration = 1, Ease = EaseType.Linear },
-    new(){ Beat = level.BeatOf(4.1f), Position = new(70, 20), Duration = 1, Ease = EaseType.Linear },
-    new(){ Beat = level.BeatOf(4.4f), Position = new((RDExpression?)null, 0), Duration = 1, Ease = EaseType.Linear },
+	new(){ Beat = level.BeatOf(1), Position = new(0, (RDExpression?)null), Duration = 1, Ease = EaseType.Linear, Angle = "2" },
+	new(){ Beat = level.BeatOf(2.1f), Position = new(10, 90), Duration = 1, Ease = EaseType.Linear },
+	new(){ Beat = level.BeatOf(2.2f), Position = new(90, 10), Duration = 1, Ease = EaseType.Linear },
+	new(){ Beat = level.BeatOf(3), Position = new(10, 70), Duration = 1, Ease = EaseType.Linear },
+	new(){ Beat = level.BeatOf(3.5f), Position = new(10, 10), Duration = 1, Ease = EaseType.Linear },
+	new(){ Beat = level.BeatOf(3.8f), Position = new(30, 50), Duration = 1, Ease = EaseType.Linear },
+	new(){ Beat = level.BeatOf(3.9f), Position = new(20, (RDExpression?)null), Duration = 1, Ease = EaseType.Linear },
+	new(){ Beat = level.BeatOf(4.1f), Position = new(70, 20), Duration = 1, Ease = EaseType.Linear },
+	new(){ Beat = level.BeatOf(4.4f), Position = new((RDExpression?)null, 0), Duration = 1, Ease = EaseType.Linear },
 ];
 
 deco.AddRange(moves);
@@ -573,7 +579,7 @@ deco.AddRange(moves);
 var eases = EasePropertyExtensions.GetEaseProperties(moves);
 
 foreach(var e in eases)
-    Console.WriteLine(e);
+	Console.WriteLine(e);
 // [Position, RhythmBase.Components.Easing.EasePropertyPoint]
 // [Scale, RhythmBase.Components.Easing.EasePropertySize]
 // [Angle, RhythmBase.Components.Easing.EasePropertyFloat]
@@ -613,18 +619,18 @@ RDLang.TryRun("atLeastRank(A)", out result); // 1
 ```
 Since this library does not support dynamic level playback, you can use the following fields to simulate the effects of the last two functions:
 - `atLeastRank()`  
-    Use the `RDVariables.SimulateCurrentRank` property to change the simulated level rank state.  
-    When the expression accesses the `atLeastRank()` method, this value will be used for simulation.
+	Use the `RDVariables.SimulateCurrentRank` property to change the simulated level rank state.  
+	When the expression accesses the `atLeastRank()` method, this value will be used for simulation.
 - `atLeastNPerfects()`
-    Use the `RDVariables.SimulateAtLeastNPerfectsSuccessRate` property to change the simulated percentage of perfect hits.  
-    When the expression accesses the `atLeastNPerfects()` method, this value will be used for simulation.
+	Use the `RDVariables.SimulateAtLeastNPerfectsSuccessRate` property to change the simulated percentage of perfect hits.  
+	When the expression accesses the `atLeastNPerfects()` method, this value will be used for simulation.
 
-### Event Groups
+### Macro Events
 
 Declare and use it like a new event, and it will generate level events according to your specifications!
 
-By inheriting from the `Group` class and implementing new logic as shown below, you can freely manipulate it just like other events.  
-Unlike `CustomEvent`, it writes the specified sequence of events into the level instead of itself.
+By inheriting from the `MacroEvent` class and implementing new logic as shown below, you can freely manipulate it just like other events.  
+Unlike `ForwardEvent`, it writes the specified sequence of events into the level instead of itself.
 
 ```cs
 using Newtonsoft.Json.Linq;
@@ -632,35 +638,35 @@ using RhythmBase.RhythmDoctor.Events;
 
 public class GroupData1
 {
-    public RDSize Size;
-    public int RowIndex;
+	public RDSize Size { get; set; }
+	public int RowIndex { get; set; }
 }
 
-public class MoveCameraRectangle : Group<GroupData1>
+public class MoveCameraRectangle : MacroEvent<GroupData1>
 {
-    public RDSize Size
-    {
-        get => Data.Size;
-        set => Data.Size = value;
-    }
-    public Row Row
-    {
-        get => Rows?[Data.RowIndex] ?? [];
-        set => Data.RowIndex = value.Index;
-    }
-    public MoveCameraRectangle() { }
-    public override IEnumerable<BaseEvent> GenerateEvents()
-    {
-        yield return new MoveCamera() { Beat = new(1), Rooms = new(true, 0), CameraPosition = new(50 - Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
-        yield return new MoveCamera() { Beat = new(2), Rooms = new(true, 0), CameraPosition = new(50 + Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
-        yield return new MoveCamera() { Beat = new(3), Rooms = new(true, 0), CameraPosition = new(50 + Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
-        yield return new MoveCamera() { Beat = new(4), Rooms = new(true, 0), CameraPosition = new(50 - Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
-        yield return SetParent(new MoveRow() { Beat = new(1), RowPosition = new(50, 50), CustomPosition = true, Duration = 0 }, Row);
-        yield return SetParent(new MoveRow() { Beat = new(1.001f), RowPosition = new(50 - Size.Width / 2, 50 - Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
-        yield return SetParent(new MoveRow() { Beat = new(2), RowPosition = new(50 + Size.Width / 2, 50 - Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
-        yield return SetParent(new MoveRow() { Beat = new(3), RowPosition = new(50 + Size.Width / 2, 50 + Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
-        yield return SetParent(new MoveRow() { Beat = new(4), RowPosition = new(50 - Size.Width / 2, 50 + Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
-    }
+	public RDSize Size
+	{
+		get => Data.Size;
+		set => Data.Size = value;
+	}
+	public Row Row
+	{
+		get => Rows?[Data.RowIndex] ?? [];
+		set => Data.RowIndex = value.Index;
+	}
+	public MoveCameraRectangle() { }
+	public override IEnumerable<BaseEvent> GenerateEvents()
+	{
+		yield return new MoveCamera() { Beat = new(1), Rooms = new(0), CameraPosition = new(50 - Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
+		yield return new MoveCamera() { Beat = new(2), Rooms = new(0), CameraPosition = new(50 + Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
+		yield return new MoveCamera() { Beat = new(3), Rooms = new(0), CameraPosition = new(50 + Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
+		yield return new MoveCamera() { Beat = new(4), Rooms = new(0), CameraPosition = new(50 - Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
+		yield return SetParent(new MoveRow() { Beat = new(1), RowPosition = new(50, 50), CustomPosition = true, Duration = 0 }, Row);
+		yield return SetParent(new MoveRow() { Beat = new(1.001f), RowPosition = new(50 - Size.Width / 2, 50 - Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
+		yield return SetParent(new MoveRow() { Beat = new(2), RowPosition = new(50 + Size.Width / 2, 50 - Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
+		yield return SetParent(new MoveRow() { Beat = new(3), RowPosition = new(50 + Size.Width / 2, 50 + Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
+		yield return SetParent(new MoveRow() { Beat = new(4), RowPosition = new(50 - Size.Width / 2, 50 + Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
+	}
 }
 ```
 
@@ -673,9 +679,9 @@ using RhythmBase.RhythmDoctor.Components;
 
 LevelReadOrWriteSettings settings = new()
 {
-    EnableGroupEvent = true,
-    InactiveEventsHandling = InactiveEventsHandling.Retain,
-    Indented = true
+	EnableMacroEvent = true,
+	InactiveEventsHandling = InactiveEventsHandling.Retain,
+	Indented = true
 };
 
 using RDLevel level = RDLevel.Default;
@@ -684,30 +690,34 @@ var re1 = new MoveCameraRectangle() { Beat = new(4), Size = new RDSize(80, 80) }
 var re2 = new MoveCameraRectangle() { Beat = new(9), Y = 2, Size = new RDSize(20, 20) };
 level.Add(re1);
 level.Add(re2);
-level.Write(dstPath, settings);
+string levelJson = level.ToJsonString(settings);
+Console.WriteLine(levelJson);
+using RDLevel level2 = RDLevel.FromJsonString(levelJson, settings);
 
-// The following events will be generated:
-// {"bar":1,"beat":1,"type":"MoveCamera","rooms":[0],"cameraPosition":[10,10],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":1,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[50,50],"duration":0,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":1.001,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[10,10],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":2,"type":"MoveCamera","rooms":[0],"cameraPosition":[90,10],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":2,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[90,10],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":3,"type":"MoveCamera","rooms":[0],"cameraPosition":[90,90],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":3,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[90,90],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":4,"type":"MoveCamera","rooms":[0],"cameraPosition":[10,90],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":4,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[10,90],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":1,"type":"MoveCamera","rooms":[0],"cameraPosition":[40,40],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":1,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[50,50],"duration":0,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":1.001,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[40,40],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":2,"type":"MoveCamera","rooms":[0],"cameraPosition":[60,40],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":2,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[60,40],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":3,"type":"MoveCamera","rooms":[0],"cameraPosition":[60,60],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":3,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[60,60],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":4,"type":"MoveCamera","rooms":[0],"cameraPosition":[40,60],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":4,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[40,60],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":1,"type":"Comment","tab":"Song","show":false,"text":"$RhythmBase_GroupData$\r\n/* Generated by RhythmBase */\r\n@MoveCameraRectangle\r\n@MoveCameraRectangle2\r\n@RhythmBase.RhythmDoctor.Events.Group\r\n@RhythmBase.RhythmDoctor.Events.Group`1\r\n{\"size\":[80.0,80.0],\"rowIndex\":0}\r\n{\"size\":[20.0,20.0],\"rowIndex\":0}\r\n","color":"F2E644","y":-1},
-// {"bar":1,"beat":4,"type":"TagAction","Tag":"$RhythmBase_GroupEvent$0000000000000000","y":0,"tag":"","Action":"Run"},
-// {"bar":2,"beat":1,"type":"TagAction","Tag":"$RhythmBase_GroupEvent$0000000000000001","y":2,"tag":"","Action":"Run"},
+/* Will generate these events:
+ * The following events will be generated:
+ * {"bar":1,"beat":1,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","rooms":[0],"cameraPosition":[10,10],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":1,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[50,50]},
+ * {"bar":1,"beat":1.001,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[10,10]},
+ * {"bar":1,"beat":2,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","rooms":[0],"cameraPosition":[90,10],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":2,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[90,10]},
+ * {"bar":1,"beat":3,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","rooms":[0],"cameraPosition":[90,90],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":3,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[90,90]},
+ * {"bar":1,"beat":4,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","rooms":[0],"cameraPosition":[10,90],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":4,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[10,90]},
+ * {"bar":1,"beat":4,"type":"TagAction","y":0,"Action":"Run","Tag":"$RhythmBase_MacroEvent$0000000000000000"},
+ * {"bar":1,"beat":1,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","rooms":[0],"cameraPosition":[40,40],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":1,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[50,50]},
+ * {"bar":1,"beat":1.001,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[40,40]},
+ * {"bar":1,"beat":2,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","rooms":[0],"cameraPosition":[60,40],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":2,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[60,40]},
+ * {"bar":1,"beat":3,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","rooms":[0],"cameraPosition":[60,60],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":3,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[60,60]},
+ * {"bar":1,"beat":4,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","rooms":[0],"cameraPosition":[40,60],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":4,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[40,60]},
+ * {"bar":2,"beat":1,"type":"TagAction","y":2,"Action":"Run","Tag":"$RhythmBase_MacroEvent$0000000000000001"},
+ * {"bar":0,"beat":0,"type":"Comment","y":-1,"tab":"Song","show":false,"text":"$RhythmBase_MacroData$\n# Generated by RhythmBase #\n@RhythmBase.Test.Tutorial\u002BMoveCameraRectangle\n{\u0022Size\u0022:[80,80],\u0022RowIndex\u0022:0}\n\n{\u0022Size\u0022:[20,20],\u0022RowIndex\u0022:0}\n","color":"F2E644"}
+ */
 ```
 
 ## Examples
@@ -719,44 +729,44 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 
 // Read the visual effects level file
-using RDLevel vfxLevel = RDLevel.Read(@"vfx.rdlevel");
+using RDLevel vfxLevel = RDLevel.FromFile(@"vfx.rdlevel");
 // Read the audio level file
-using RDLevel audioLevel = RDLevel.Read(@"beat.rdlevel");
+using RDLevel audioLevel = RDLevel.FromFile(@"beat.rdlevel");
 
 // Remove all rows from the visual effects level
 RowEventCollection[] vfxrows = [.. vfxLevel.Rows];
 foreach (var row in vfxrows)
-    vfxLevel.Rows.Remove(row);
+	vfxLevel.Rows.Remove(row);
 
 // Copy all rows from the audio level into the new level
 foreach (var row in audioLevel.Rows)
 {
-    // Copy row information
-    Row row2 = new()
-    {
-        Rooms = row.Rooms,
-        Character = row.Character,
-        Sound = row.Sound,
-        RowType = row.RowType
-    };
-    vfxLevel.Rows.Add(row2);
+	// Copy row information
+	Row row2 = new()
+	{
+		Rooms = row.Rooms,
+		Character = row.Character,
+		Sound = row.Sound,
+		RowType = row.RowType
+	};
+	vfxLevel.Rows.Add(row2);
 
-    // Copy events within the row
-    BaseBeat[] evts = [.. row.Where<BaseBeat>()];
-    foreach (var evt in evts)
-        row2.Add(evt);
+	// Copy events within the row
+	BaseBeat[] evts = [.. row.Where<BaseBeat>()];
+	foreach (var evt in evts)
+		row2.Add(evt);
 }
 
 // Copy necessary sound events
 foreach (var sound in audioLevel.Where(e =>
-    e.Tab == Tabs.Sounds &&       // Event is in the Sounds tab
-    e is not BaseRowAction &&     // Sound events contain row events; adding row events here would cause reference errors
-    e is not PlaySong &&          // No need to copy PlaySong if the music is the same
-    e is not SetCrotchetsPerBar)) // The timing of these events is independent of the number of crotchets per bar, so they don't need to be added
+	e.Tab == Tabs.Sounds &&	   // Event is in the Sounds tab
+	e is not BaseRowAction &&	 // Sound events contain row events; adding row events here would cause reference errors
+	e is not PlaySong &&		  // No need to copy PlaySong if the music is the same
+	e is not SetCrotchetsPerBar)) // The timing of these events is independent of the number of crotchets per bar, so they don't need to be added
 {
-    vfxLevel.Add(sound);
+	vfxLevel.Add(sound);
 }
 
 // Write to a new level file
-vfxLevel.Write(@"result.rdlevel");
+vfxLevel.SaveToFile(@"result.rdlevel");
 ```

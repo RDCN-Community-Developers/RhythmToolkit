@@ -54,8 +54,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <exception cref="IllegalEventTypeException">Thrown when an unexpected exception occurs.</exception>  
 		public static EventType[] ToEnums(Type type)
 		{
-			if (typeof(Group).IsAssignableFrom(type))
-				return [EventType.Group];
+			if (typeof(MacroEvent).IsAssignableFrom(type))
+				return [EventType.MacroEvent];
 			EventType[] ConvertToEnums;
 			ConvertToEnums = EventType_Enums[type];
 			return ConvertToEnums;
@@ -80,7 +80,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			}
 			else
 			{
-				ConvertToType = EventType.CustomEvent.ToType();
+				ConvertToType = EventType.ForwardEvent.ToType();
 			}
 			return ConvertToType;
 		}
@@ -124,7 +124,10 @@ namespace RhythmBase.RhythmDoctor.Utils
 																																	  select ToEnum(j))
 			.ToArray()));
 		internal static readonly ReadOnlyCollection<Type> GroupTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
-																		where typeof(Group).IsAssignableFrom(i)
+																		where
+																			typeof(MacroEvent).IsAssignableFrom(i) &&
+																			i != typeof(MacroEvent) &&
+																			i != typeof(MacroEvent<>)
 																		select i)
 			.ToList()
 			.AsReadOnly();
@@ -146,10 +149,10 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>  
 		public static ReadOnlyCollection<EventType> CustomTypes => new(
 		[
-			EventType.CustomEvent,
-			EventType.CustomRowEvent,
-			EventType.CustomDecorationEvent,
-			EventType.Group,
+			EventType.ForwardEvent,
+			EventType.ForwardRowEvent,
+			EventType.ForwardDecorationEvent,
+			EventType.MacroEvent,
 		]);
 		/// <summary>  
 		/// Event types for gameplay.  

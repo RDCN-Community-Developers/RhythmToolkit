@@ -28,7 +28,7 @@
 ## 编写
 ### 创建关卡
 
-关卡是一个事件集合, 如果使用 C# 12 或更高版本, 可以使用[集合表达式](https://learn.microsoft.com/zh-cn/dotnet/csharp/language-reference/operators/collection-expressions)以创建空关卡。
+关卡是一个事件集合。
 
 ```cs
 using RhythmBase.RhythmDoctor.Components;
@@ -56,16 +56,16 @@ Console.WriteLine(defaultLevel); // "" Count = 3
 using RhythmBase.RhythmDoctor.Components;
 
 // 直接读取关卡文件
-using RDLevel rdlevel1 = RDLevel.Read(@"your\level.rdlevel");
+using RDLevel rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel");
 
 // 读取关卡包文件
-using RDLevel rdlevel2 = RDLevel.Read(@"your\level.rdzip");
+using RDLevel rdlevel2 = RDLevel.FromFile(@"your\level.rdzip");
 
 // 读取关卡压缩包
-using RDLevel rdlevel3 = RDLevel.Read(@"your\level.zip");
+using RDLevel rdlevel3 = RDLevel.FromFile(@"your\level.zip");
 
 // 写入关卡文件
-rdlevel1.Write(@"your\outLevel.rdlevel");
+rdlevel1.SaveToFile(@"your\outLevel.rdlevel");
 ```
 
 可以添加自定义读写设置 `LevelReadOrWriteSettings` 以读写关卡。
@@ -86,17 +86,20 @@ LevelReadOrWriteSettings settings = new()
 	Indented = true,
 };
 
-using RDLevel rdlevel1 = RDLevel.Read(@"your\level.rdlevel", settings);
+using RDLevel rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel", settings);
 ```
 
 也可以生成 json 对象或 json 字符串以进行进一步操作。  
 
 ```cs
-using Newtonsoft.Json.Linq;
 using RhythmBase.RhythmDoctor.Components;
 
-JObject jobject = rdlevel.ToJObject();
-string json = rdlevel.ToRDLevelJson(settings);
+LevelReadOrWriteSettings settings = new();
+
+JsonDocument jobject = rdlevel.ToJsonDocument();
+string json = rdlevel.ToJsonString(settings);
+Console.WriteLine(jobject);
+Console.WriteLine(json);
 ```
 
 `LevelReadOrWriteSettings` 添加了 `BeforeReading`, `AfterReading`, `BeforeWriting`, `AfterWriting` 事件，分别会在关卡读取之前、之后，写入之前、之后触发。  
@@ -307,9 +310,9 @@ rdlevel.Remove(tr);
 Console.WriteLine(rdlevel); // "" Count = 3
 ```
 
-### 自定义事件
+### 向前兼容事件
 
-如果此程序集没有需要的事件类型，可以继承 `CustomEvent`, `CustomRowEvent` 或 `CustomDecorationEvent` 以实现类型。
+如果此程序集没有需要的事件类型，可以继承 `ForwardEvent`, `ForwardRowEvent` 或 `ForwardDecorationEvent` 以实现类型。
 
 ```cs
 using Newtonsoft.RhythmDoctor.Json.Linq;
@@ -317,8 +320,8 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Components;
   
 // 创建 MyEvent 类型  
-//   继承自 CustomEvent 类型  
-public class MyEvent : CustomEvent
+//   继承自 ForwardEvent 类型  
+public class MyEvent : ForwardEvent
 {
 	// 重写属性  
 	public override Tabs Tab => Tabs.Actions;
@@ -331,18 +334,19 @@ public class MyEvent : CustomEvent
 		get
 		{
 			// 在 Data 字段内获取所需要的内容并判空  
-			var value = Data["myProperty"];
-			return value?.ToObject<RDPointE?>() ?? new RDPointE(0, 0);
+            return ExtraData.TryGetValue("myProperty", out var jsonElement)
+                ? jsonElement.Deserialize<RDPointE>()
+                : null;
 		}
 		set
 		{
 			// 将内容保存在 Data 字段内  
-			Data["myProperty"] =
-				value.HasValue ?
-				new JArray(
-					value?.X ?? null,
-					value?.Y ?? null) :
-				null;
+            ExtraData["myProperty"] =
+                value.HasValue ?
+                JsonElement.Parse(
+                    JsonSerializer.Serialize(value, Utils.GetJsonSerializerOptions())
+                ) :
+                default;
 		}
 	}
 
@@ -368,11 +372,11 @@ rdlevel.Add(myEvent);
   
 myEvent.Beat = new(8);  
   
-Console.WriteLine(myEvent.Type);        // CustomEvent  
+Console.WriteLine(myEvent.Type);        // ForwardEvent  
 Console.WriteLine(myEvent.ActureType);  // MyEvent  
 ```
 
-另外，如果读取关卡时意外出现未知事件类型，其也会被读取为相应的 `CustomEvent`, `CustomRowEvent` 或 `CustomDecorationEvent` 类型事件。
+如果读取关卡时意外出现未知事件类型，其也会被读取为相应的 `ForwardEvent`, `ForwardRowEvent` 或 `ForwardDecorationEvent` 类型事件。
 
 ### 事件类型与枚举
 
@@ -522,7 +526,7 @@ Console.WriteLine(exchange.Serialize());
 using RhythmBase.Global.Components.Easing;
 
 double var1 = EaseType.InSine.Calculate(0.25);
-double var2 = EaseType.Linear.Calculate(0.5,4,9);
+double var2 = EaseType.Linear.Calculate(0.5, 4, 9);
 
 Console.WriteLine(var1); // 0.07612046748871326
 Console.WriteLine(var2); // 6.5
@@ -621,12 +625,12 @@ RDLang.TryRun("atLeastRank(A)", out result); // 1
 	使用 `RDVariables.SimulateAtLeastNPerfectsSuccessRate` 属性更改模拟成功击拍百分比。  
 	当表达式访问 `atLeastNPerfects()` 方法时使用此值进行模拟。
 
-### 事件组
+### 宏事件
 
 像一个新事件一样声明并使用它，它会按照您指定的方式生成关卡事件！
 
-像下面这样继承 `Group` 类，实现新的逻辑后，您可以像其他事件一样自由地操纵它。  
-这与 `CustomEvent` 不同，它会用指定的事件序列写入关卡，而不是它本身。
+像下面这样继承 `MacroEvent` 类，实现新的逻辑后，您可以像其他事件一样自由地操纵它。  
+这与 `ForwardEvent` 不同，它会用指定的事件序列写入关卡，而不是它本身。
 
 ```cs
 using Newtonsoft.Json.Linq;
@@ -634,11 +638,11 @@ using RhythmBase.RhythmDoctor.Events;
 
 public class GroupData1
 {
-	public RDSize Size;
-	public int RowIndex;
+    public RDSize Size { get; set; }
+    public int RowIndex { get; set; }
 }
 
-public class MoveCameraRectangle : Group<GroupData1>
+public class MoveCameraRectangle : MacroEvent<GroupData1>
 {
 	public RDSize Size
 	{
@@ -653,10 +657,10 @@ public class MoveCameraRectangle : Group<GroupData1>
 	public MoveCameraRectangle() { }
 	public override IEnumerable<BaseEvent> GenerateEvents()
 	{
-		yield return new MoveCamera() { Beat = new(1), Rooms = new(true, 0), CameraPosition = new(50 - Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
-		yield return new MoveCamera() { Beat = new(2), Rooms = new(true, 0), CameraPosition = new(50 + Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
-		yield return new MoveCamera() { Beat = new(3), Rooms = new(true, 0), CameraPosition = new(50 + Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
-		yield return new MoveCamera() { Beat = new(4), Rooms = new(true, 0), CameraPosition = new(50 - Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
+		yield return new MoveCamera() { Beat = new(1), Rooms = new(0), CameraPosition = new(50 - Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
+		yield return new MoveCamera() { Beat = new(2), Rooms = new(0), CameraPosition = new(50 + Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
+		yield return new MoveCamera() { Beat = new(3), Rooms = new(0), CameraPosition = new(50 + Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
+		yield return new MoveCamera() { Beat = new(4), Rooms = new(0), CameraPosition = new(50 - Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
 		yield return SetParent(new MoveRow() { Beat = new(1), RowPosition = new(50, 50), CustomPosition = true, Duration = 0 }, Row);
 		yield return SetParent(new MoveRow() { Beat = new(1.001f), RowPosition = new(50 - Size.Width / 2, 50 - Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
 		yield return SetParent(new MoveRow() { Beat = new(2), RowPosition = new(50 + Size.Width / 2, 50 - Size.Height / 2), CustomPosition = true, Duration = 1 }, Row);
@@ -673,11 +677,9 @@ public class MoveCameraRectangle : Group<GroupData1>
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 
-Console.WriteLine(level);
-
 LevelReadOrWriteSettings settings = new()
 {
-	EnableGroupEvent = true,
+	EnableMacroEvent = true,
 	InactiveEventsHandling = InactiveEventsHandling.Retain,
 	Indented = true
 };
@@ -688,30 +690,34 @@ var re1 = new MoveCameraRectangle() { Beat = new(4), Size = new RDSize(80, 80) }
 var re2 = new MoveCameraRectangle() { Beat = new(9), Y = 2, Size = new RDSize(20, 20) };
 level.Add(re1);
 level.Add(re2);
-level.Write(dstPath, settings);
+string levelJson = level.ToJsonString(settings);
+Console.WriteLine(levelJson);
+using RDLevel level2 = RDLevel.FromJsonString(levelJson, settings);
 
-// 会生成这些事件：
-// {"bar":1,"beat":1,"type":"MoveCamera","rooms":[0],"cameraPosition":[10,10],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":1,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[50,50],"duration":0,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":1.001,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[10,10],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":2,"type":"MoveCamera","rooms":[0],"cameraPosition":[90,10],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":2,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[90,10],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":3,"type":"MoveCamera","rooms":[0],"cameraPosition":[90,90],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":3,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[90,90],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":4,"type":"MoveCamera","rooms":[0],"cameraPosition":[10,90],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":4,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[10,90],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-// {"bar":1,"beat":1,"type":"MoveCamera","rooms":[0],"cameraPosition":[40,40],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":1,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[50,50],"duration":0,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":1.001,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[40,40],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":2,"type":"MoveCamera","rooms":[0],"cameraPosition":[60,40],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":2,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[60,40],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":3,"type":"MoveCamera","rooms":[0],"cameraPosition":[60,60],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":3,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[60,60],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":4,"type":"MoveCamera","rooms":[0],"cameraPosition":[40,60],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":4,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[40,60],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-// {"bar":1,"beat":1,"type":"Comment","tab":"Song","show":false,"text":"$RhythmBase_GroupData$\r\n/* Generated by RhythmBase */\r\n@MoveCameraRectangle\r\n@MoveCameraRectangle2\r\n@RhythmBase.RhythmDoctor.Events.Group\r\n@RhythmBase.RhythmDoctor.Events.Group`1\r\n{\"size\":[80.0,80.0],\"rowIndex\":0}\r\n{\"size\":[20.0,20.0],\"rowIndex\":0}\r\n","color":"F2E644","y":-1},
-// {"bar":1,"beat":4,"type":"TagAction","Tag":"$RhythmBase_GroupEvent$0000000000000000","y":0,"tag":"","Action":"Run"},
-// {"bar":2,"beat":1,"type":"TagAction","Tag":"$RhythmBase_GroupEvent$0000000000000001","y":2,"tag":"","Action":"Run"},
+/* 会生成这些事件：
+ * The following events will be generated:
+ * {"bar":1,"beat":1,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","rooms":[0],"cameraPosition":[10,10],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":1,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[50,50]},
+ * {"bar":1,"beat":1.001,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[10,10]},
+ * {"bar":1,"beat":2,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","rooms":[0],"cameraPosition":[90,10],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":2,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[90,10]},
+ * {"bar":1,"beat":3,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","rooms":[0],"cameraPosition":[90,90],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":3,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[90,90]},
+ * {"bar":1,"beat":4,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","rooms":[0],"cameraPosition":[10,90],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":4,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000000","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[10,90]},
+ * {"bar":1,"beat":4,"type":"TagAction","y":0,"Action":"Run","Tag":"$RhythmBase_MacroEvent$0000000000000000"},
+ * {"bar":1,"beat":1,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","rooms":[0],"cameraPosition":[40,40],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":1,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[50,50]},
+ * {"bar":1,"beat":1.001,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[40,40]},
+ * {"bar":1,"beat":2,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","rooms":[0],"cameraPosition":[60,40],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":2,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[60,40]},
+ * {"bar":1,"beat":3,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","rooms":[0],"cameraPosition":[60,60],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":3,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[60,60]},
+ * {"bar":1,"beat":4,"type":"MoveCamera","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","rooms":[0],"cameraPosition":[40,60],"duration":1,"ease":"Linear"},
+ * {"bar":1,"beat":4,"type":"MoveRow","y":-1,"tag":"$RhythmBase_MacroEvent$0000000000000001","row":0,"customPosition":true,"target":"WholeRow","rowPosition":[40,60]},
+ * {"bar":2,"beat":1,"type":"TagAction","y":2,"Action":"Run","Tag":"$RhythmBase_MacroEvent$0000000000000001"},
+ * {"bar":0,"beat":0,"type":"Comment","y":-1,"tab":"Song","show":false,"text":"$RhythmBase_MacroData$\n# Generated by RhythmBase #\n@RhythmBase.Test.Tutorial\u002BMoveCameraRectangle\n{\u0022Size\u0022:[80,80],\u0022RowIndex\u0022:0}\n\n{\u0022Size\u0022:[20,20],\u0022RowIndex\u0022:0}\n","color":"F2E644"}
+ */
 ```
 
 
@@ -724,9 +730,9 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 
 // 读取视效关卡文件
-using RDLevel vfxLevel = RDLevel.Read(@"vfx.rdlevel");
+using RDLevel vfxLevel = RDLevel.FromFile(@"vfx.rdlevel");
 // 读取采音关卡文件
-using RDLevel audioLevel = RDLevel.Read(@"beat.rdlevel");
+using RDLevel audioLevel = RDLevel.FromFile(@"beat.rdlevel");
 
 // 移除视效关卡内所有轨道
 RowEventCollection[] vfxrows = [.. vfxLevel.Rows];
@@ -764,5 +770,5 @@ foreach (var sound in audioLevel.Where(e =>
 }
 
 // 写入到新的关卡文件中
-vfxLevel.Write(@"result.rdlevel");
+vfxLevel.SaveToFile(@"result.rdlevel");
 ```

@@ -41,19 +41,19 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			reader = checkpoint; IBaseEvent e;
 			if (!EnumConverter.TryParse(type, out EventType typeEnum))
-				e = ReadCustomEvent(ref reader, typeToConvert, options) ?? new CustomEvent() { ActureType = type.ToString() ?? "" };
+				e = ReadForwardEvent(ref reader, typeToConvert, options) ?? new ForwardEvent() { ActureType = type.ToString() ?? "" };
 			else
 				e = converters[typeEnum].ReadProperties(ref reader, options);
 			return e;
 		}
 		public override void Write(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options)
 		{
-			if (value is ICustomEvent ce)
+			if (value is IForwardEvent ce)
 			{
-				WriteCustomEvent(writer, ce, options);
+				WriteForwardEvent(writer, ce, options);
 				return;
 			}
-			else if(value is Group group)
+			else if (value is MacroEvent group)
 			{
 				throw new NotSupportedException("Group should be handled in GroupConverter. It will be fixed in the next version.");
 			}
@@ -62,7 +62,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				converters[value.Type].WriteProperties(writer, value, options);
 			}
 		}
-		public ICustomEvent? ReadCustomEvent(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		public IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			using var doc = JsonDocument.ParseValue(ref reader);
 			var root = doc.RootElement;
@@ -76,48 +76,30 @@ namespace RhythmBase.RhythmDoctor.Converters
 				else if (prop.NameEquals("target"))
 					hasTarget = true;
 			}
-			// 默认 CustomEvent
-			ICustomEvent ce = new CustomEvent();
-
-			if (hasRow)
-				ce = new CustomRowEvent();
-			if (hasTarget)
-				ce = new CustomDecorationEvent();
-
-			foreach (var prop in root.EnumerateObject())
-			{
-				switch (prop.Name)
-				{
-					case "type": ce.ActureType = prop.Value.GetString() ?? ""; break;
-					case "bar": ce.Bar = prop.Value.GetInt32(); break;
-					case "beat": ce.BeatValue = prop.Value.GetSingle(); break;
-					case "tag": ce.Tag = prop.Value.GetString() ?? ""; break;
-					case "active": ce.Active = prop.Value.GetBoolean(); break;
-					case "condition": ce.ConditionRaw = prop.Value.GetString(); break;
-					case "y": ce.Y = prop.Value.GetInt32(); break;
-					default: ce.ExtraData[prop.Name] = prop.Value.Clone(); break;
-				}
-			}
-			return ce;
+			if (hasRow) return new ForwardRowEvent(doc);
+			else if (hasTarget) return new ForwardDecorationEvent(doc);
+			else return new ForwardEvent(doc);
 		}
 
-		public void WriteCustomEvent(Utf8JsonWriter writer, ICustomEvent value, JsonSerializerOptions options)
+		public void WriteForwardEvent(Utf8JsonWriter writer, IForwardEvent value, JsonSerializerOptions options)
 		{
 			writer.WriteStartObject();
 			if (!string.IsNullOrEmpty(value.ActureType))
 				writer.WriteString("type", value.ActureType);
-			writer.WriteNumber("bar", value.Bar);
-			writer.WriteNumber("beat", value.BeatValue);
+			writer.WriteNumber("bar", value.Beat.BarBeat.bar);
+			writer.WriteNumber("beat", value.Beat.BarBeat.beat);
 			if (!string.IsNullOrEmpty(value.Tag))
 				writer.WriteString("tag", value.Tag);
+			if(value.RunTag)
+				writer.WriteBoolean("runTag", value.RunTag);
 			if (!value.Active)
 				writer.WriteBoolean("active", value.Active);
-			if (!string.IsNullOrEmpty(value.ConditionRaw))
-				writer.WriteString("condition", value.ConditionRaw);
+			if (value.Condition is not null)
+				writer.WriteString("condition", value.Condition.Serialize());
 			if (value.Y != 0)
 				writer.WriteNumber("y", value.Y);
 
-			foreach (var kv in value.ExtraData)
+			foreach (var kv in ((BaseEvent)value)._extraData)
 			{
 				writer.WritePropertyName(kv.Key);
 				kv.Value.WriteTo(writer);

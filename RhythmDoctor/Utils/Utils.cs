@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Converters;
+﻿using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Utils
@@ -12,10 +9,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 	public static class Utils
 	{
 		private static JsonSerializerOptions options;
-		private static LevelConverter levelConverter;
 		static Utils()
 		{
-			levelConverter = new();
 			options = new()
 			{
 				WriteIndented = true,
@@ -39,7 +34,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 					new SingleRoomConverter(),
 					new ExpressionConverter(),
 					new RDPointsConverter(),
-					levelConverter,
 				}
 			};
 		}
@@ -68,15 +62,20 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <returns>
 		/// A <see cref="JsonSerializerOptions"/> instance configured with converters and indentation settings.
 		/// </returns>
-		public static JsonSerializerOptions GetJsonSerializerOptions(LevelReadOrWriteSettings? settings = default)
+		public static JsonSerializerOptions GetJsonSerializerOptions(LevelReadOrWriteSettings? settings = null)
 		{
-			settings ??= new LevelReadOrWriteSettings();
-			options = new(options);
+			settings ??= new();
+			JsonSerializerOptions options = new(Utils.options);
 			if (settings.Indented)
 				options.WriteIndented = true;
 			else
 				options.WriteIndented = false;
-			levelConverter.Filepath = null;
+			LevelConverter levelConverter = new()
+			{
+				Settings = settings,
+				Filepath = null
+			};
+			options.Converters.Add(levelConverter);
 			return options;
 		}
 
@@ -92,10 +91,20 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <returns>
 		/// A <see cref="JsonSerializerOptions"/> instance configured with converters, indentation settings, and file path.
 		/// </returns>
-		public static JsonSerializerOptions GetJsonSerializerOptions(string filepath, LevelReadOrWriteSettings? settings = default)
+		public static JsonSerializerOptions GetJsonSerializerOptions(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
-			GetJsonSerializerOptions(settings);
-			levelConverter.Filepath = filepath;
+			settings ??= new();
+			JsonSerializerOptions options = new(Utils.options);
+			if (settings.Indented)
+				options.WriteIndented = true;
+			else
+				options.WriteIndented = false;
+			LevelConverter levelConverter = new()
+			{
+				Settings = settings,
+				Filepath = filepath
+			};
+			options.Converters.Add(levelConverter);
 			return options;
 		}
 		/// <summary>
@@ -106,7 +115,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// The default crotchets per bar.
 		/// </summary>
 		public const int DefaultCPB = 8;
-		internal const string RhythmBaseGroupDataHeader = "$RhythmBase_GroupData$";
-		internal const string RhythmBaseGroupEventHeader = "$RhythmBase_GroupEvent$";
+		internal const string RhythmBaseMacroEventDataHeader = "$RhythmBase_MacroData$";
+		internal const string RhythmBaseMacroEventHeader = "$RhythmBase_MacroEvent$";
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using RhythmBase.Adofai.Extensions;
-using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
@@ -168,7 +167,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				if (extension != ".rdlevel")
 					throw new RhythmBaseException("File not supported.");
 				settings.OnBeforeReading();
-				using FileStream stream = File.Open(filepath, FileMode.Open);
+				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
 				level = JsonSerializer.Deserialize<RDLevel>(stream, options);
 				level?._path = filepath;
 				settings.OnAfterReading();
@@ -223,7 +222,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="json">The JSON string containing the level data.</param>
 		/// <param name="settings">Optional settings for reading the level.</param>
 		/// <returns>An <see cref="RDLevel"/> instance loaded from the JSON string.</returns>
-		public static RDLevel FromJson(string json, LevelReadOrWriteSettings? settings = null)
+		public static RDLevel FromJsonString(string json, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
@@ -256,8 +255,10 @@ namespace RhythmBase.RhythmDoctor.Components
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
 			settings.OnBeforeWriting();
-			using FileStream stream = File.Create(filepath);
-			JsonSerializer.Serialize(stream, this, options);
+			using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
+			{
+				JsonSerializer.Serialize(stream, this, options);
+			}
 			settings.OnAfterWriting();
 			_path = filepath;
 		}
@@ -266,7 +267,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
 		/// <returns>A JSON string representing the current level.</returns>
-		public string ToJson(LevelReadOrWriteSettings? settings = null)
+		public string ToJsonString(LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
@@ -322,7 +323,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="settings">The settings for reading the level.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
 		[Obsolete("Use FromFile instead.", true)]
-		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings)=> throw new NotImplementedException();
+		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Read from a zip file as a level.
 		/// </summary>
@@ -344,7 +345,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="filepath">File path.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
-		[Obsolete("Use SaveToFile instead.", false)]	
+		[Obsolete("Use SaveToFile instead.", false)]
 		public void Write(string filepath) => SaveToFile(filepath);
 		/// <summary>
 		/// Save the level.
@@ -557,20 +558,20 @@ namespace RhythmBase.RhythmDoctor.Components
 				]
 			};
 		}
-		/// <summary>  
-		/// Extracts all group events from the level and adds their individual events to the level.  
-		/// </summary>  
-		/// <remarks>  
-		/// This method iterates through all group events in the level, adds their individual events to the level,  
-		/// and then removes the original group events.  
-		/// </remarks>  
-		public void ExtractGroups()
-		{
-			IEnumerable<Group> groups = this.Where<Group>();
-			foreach (var group in groups)
-				this.AddRange(group);
-			this.RemoveRange(groups);
-		}
+		///// <summary>  
+		///// Extracts all group events from the level and adds their individual events to the level.  
+		///// </summary>  
+		///// <remarks>  
+		///// This method iterates through all group events in the level, adds their individual events to the level,  
+		///// and then removes the original group events.  
+		///// </remarks>  
+		//public void ExtractGroups()
+		//{
+		//	IEnumerable<MacroEvent> groups = this.Where<MacroEvent>();
+		//	foreach (var group in groups)
+		//		this.AddRange(group);
+		//	this.RemoveRange(groups);
+		//}
 		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item, bool keepCpb = true)
 		{
 			if (keepCpb)

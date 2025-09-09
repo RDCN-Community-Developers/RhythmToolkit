@@ -47,18 +47,6 @@
 		/// </summary>
 		Comment,
 		/// <summary>
-		/// Custom decoration event, from unknown event in the level or user-defined event.
-		/// </summary>
-		CustomDecorationEvent,
-		/// <summary>
-		/// Custom event, from unknown event in the level or user-defined event.
-		/// </summary>
-		CustomEvent,
-		/// <summary>
-		/// Custom row event, from unknown event in the level or user-defined event.
-		/// </summary>
-		CustomRowEvent,
-		/// <summary>
 		/// Custom flash event.
 		/// </summary>
 		CustomFlash,
@@ -83,9 +71,20 @@
 		/// </summary>
 		FloatingText,
 		/// <summary>
-		/// A group of events, from user-defined event.
+		/// Represents a decoration event that is not natively recognized by the engine,
+		/// used to preserve unknown or user-defined decoration event data during serialization and deserialization.
 		/// </summary>
-		Group,
+		ForwardDecorationEvent,
+		/// <summary>
+		/// Represents a general event that is not natively recognized by the engine,
+		/// used to preserve unknown or user-defined event data during serialization and deserialization.
+		/// </summary>
+		ForwardEvent,
+		/// <summary>
+		/// Represents a row event that is not natively recognized by the engine,
+		/// used to preserve unknown or user-defined row event data during serialization and deserialization.
+		/// </summary>
+		ForwardRowEvent,
 		/// <summary>
 		/// Hide the row.
 		/// </summary>
@@ -94,6 +93,10 @@
 		/// Invert the colors.
 		/// </summary>
 		InvertColors,
+		/// <summary>
+		/// A group of events, from user-defined event.
+		/// </summary>
+		MacroEvent,
 		/// <summary>
 		/// Mask the room.
 		/// </summary>
