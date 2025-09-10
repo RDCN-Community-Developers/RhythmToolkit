@@ -471,12 +471,12 @@ e.SplitCopy(e.Tick * 4f, SayReaDyGetSetGoWords.JustSayGo)
 		/// <returns>An RDRange representing the duration of the VFX effect.</returns>
 		public static RDRange VFXDuration(this SetVFXPreset e)
 		{
-			if (e.Preset != VFXPresets.DisableAll && e.Enable)
+			if (e.Preset != VFXPreset.DisableAll && e.Enable)
 			{
 				SetVFXPreset? close = e.After().FirstOrDefault(i =>
 					i.Rooms.Contains(e.Rooms) && (
 						i.Preset == e.Preset ||
-						i.Preset == VFXPresets.DisableAll
+						i.Preset == VFXPreset.DisableAll
 				));
 				return new(e.Beat, close?.Beat);
 			}

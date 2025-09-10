@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components.Snapshots;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Reflection;
@@ -850,7 +851,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			TEvent? last = defaultValue;
 			while (enumerator.MoveNext())
 				if (predicate(enumerator.Current))
-				last = enumerator.Current;
+					last = enumerator.Current;
 			return last;
 		}
 		/// <summary>
@@ -892,7 +893,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			TEvent? last = default;
 			while (enumerator.MoveNext())
 				if (predicate(enumerator.Current))
-				last = enumerator.Current;
+					last = enumerator.Current;
 			return last;
 		}
 		/// <summary>
@@ -908,7 +909,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			TEvent? last = defaultValue;
 			while (enumerator.MoveNext())
 				if (predicate(enumerator.Current))
-				last = enumerator.Current;
+					last = enumerator.Current;
 			return last;
 		}
 		/// <summary>
@@ -1138,6 +1139,25 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">RDLevel</param>
 		/// <param name="timeSpan">Total time span of the beat.</param>
 		public static RDBeat BeatOf(this RDLevel e, TimeSpan timeSpan) => e.Calculator.BeatOf(timeSpan);
+		public static RDSnapshot GetSnapshot(this RDLevel e, RDBeat beat)
+		{
+			return new(e, beat);
+		}
+		public static TEvent GetSnapshot<TEvent>(this RDLevel e, RDBeat beat) where TEvent : IBaseEvent, new()
+		{
+			return new()
+			{
+				Beat = beat
+			};
+		}
+		public static RDRowSnapshot GetSnapshot(this Row e, RDBeat beat)
+		{
+			return new(e, beat);
+		}
+		public static RDDecorationSnapshot GetSnapshot(this Decoration e, RDBeat beat)
+		{
+			return new(e, beat);
+		}
 		/// <summary>
 		/// Get the row beat status
 		/// </summary>
