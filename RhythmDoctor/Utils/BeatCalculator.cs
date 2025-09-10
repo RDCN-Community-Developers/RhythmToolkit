@@ -25,9 +25,9 @@ namespace RhythmBase.RhythmDoctor.Utils
 			}
 			else
 			{
-				_BPMList = Collection.Where<BaseBeatsPerMinute>()
+				_BPMList = Collection.OfEvent<BaseBeatsPerMinute>()
 							.ToList();
-				_CPBList = Collection.Where<SetCrotchetsPerBar>()
+				_CPBList = Collection.OfEvent<SetCrotchetsPerBar>()
 							.ToList();
 			}
 		}

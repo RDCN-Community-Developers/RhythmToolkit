@@ -1,13 +1,15 @@
 ﻿using Newtonsoft.Json;
+using RhythmBase.RhythmDoctor.Components.Linq;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
+using System.Collections.Specialized;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// A collection of events that maintains the sequence of events.
 	/// </summary>
-	public abstract class OrderedEventCollection : ICollection<IBaseEvent>
+	public abstract class OrderedEventCollection : ICollection<IBaseEvent>, IEventEnumerable<IBaseEvent>
 	{
 		/// <summary>
 		/// Gets the total count of events in the collection.
@@ -109,9 +111,11 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>An enumerator for the collection.</returns>
-		public IEnumerator<IBaseEvent> GetEnumerator() => new EventEnumerator(this);
+		public IEnumerator<IBaseEvent> GetEnumerator() => new EventEnumerator<IBaseEvent>(this);
 		//internal IEnumerator<TEvent> GetEnumerator<TEvent>(RDBeat? start, RDBeat? end) where TEvent : IBaseEvent => new EventEnumerator<TEvent>(this, start, end);
-		internal IEnumerator<TEvent> GetEnumerator<TEvent>(float? start, float? end) where TEvent : IBaseEvent => new EventEnumerator<TEvent>(this, start, end);
+		internal IEnumerator<TEvent> GetEnumerator<TEvent>(float? start, float? end) where TEvent : IBaseEvent => new EventEnumerator<TEvent>(this, new RDRange(
+			start is null ? null : new(start.Value),
+			end is null ? null : new(end.Value)));
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
