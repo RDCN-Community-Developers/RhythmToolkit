@@ -1,22 +1,64 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Components.Linq;
+using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
 
 namespace RhythmBase.RhythmDoctor.Components
 {
-	internal class EventEnumerator : IEnumerator<IBaseEvent>
+	internal class EventEnumerator { }
+	internal class EventEnumerator<TEvent> : EventEnumerator, IEventEnumerable<TEvent>, IEnumerator<TEvent> where TEvent : IBaseEvent
 	{
 		protected readonly IEnumerator<RDBeat> beats;
 		protected IEnumerator<IBaseEvent>? events;
 		protected readonly OrderedEventCollection collection;
-		public EventEnumerator(OrderedEventCollection collection)
+		private EventType[] types;
+		private RDRange range;
+		public EventEnumerator(OrderedEventCollection collection) : this(collection, RDRange.Infinite) { }
+		public EventEnumerator(OrderedEventCollection collection, RDRange range) : this(collection, EventTypeUtils.ToEnums(typeof(TEvent)), range) { }
+		public EventEnumerator(OrderedEventCollection collection, EventType[] types, RDRange range)
 		{
 			collection._modifierInstances[this] = [];
 			this.collection = collection;
 			beats = collection.eventsBeatOrder.Keys.GetEnumerator();
+			this.types = types;
+			this.range = range;
+			while (beats.MoveNext())
+				if ((range.Start is null || beats.Current >= range.Start) && collection.eventsBeatOrder[beats.Current]._types.Any(types.Contains))
+				{
+					if (range.End is null || beats.Current < range.End)
+						events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
+					break;
+				}
 		}
-		public IBaseEvent Current => events!.Current;
+		public TEvent Current => (TEvent)(events?.Current ?? throw new InvalidOperationException());
 		object IEnumerator.Current => Current;
+		public bool MoveNext()
+		{
+			collection._currentModifier = this;
+			bool result;
+			while (result = (events?.MoveNext() ?? false))
+				if (types.Contains(events!.Current.Type))
+					return true;
+			if (!result)
+			{
+				while (beats.MoveNext())
+				{
+					if (!collection.eventsBeatOrder[beats.Current]._types.Any(types.Contains))
+					{
+						continue;
+					}
+					if (range.End is not null && range.End <= beats.Current)
+						return false;
+					events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
+					while (events.MoveNext())
+					{
+						if (types.Contains(events.Current.Type))
+							return true;
+					}
+				}
+			}
+			return result;
+		}
 		public void Dispose()
 		{
 			if (collection._currentModifier == this)
@@ -36,71 +78,14 @@ namespace RhythmBase.RhythmDoctor.Components
 					throw new InvalidOperationException("Cannot dispose an enumerator while there are modifying events in the queue.");
 			}
 		}
-		public virtual bool MoveNext()
+		public void Reset() => throw new NotSupportedException();
+		public EventEnumerator<TEvent2> OfEvent<TEvent2>() where TEvent2 : IBaseEvent
 		{
-			collection._currentModifier = this;
-			bool result = events?.MoveNext() ?? false;
-			if (!result)
-			{
-				while (beats.MoveNext())
-				{
-					events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
-					if (events?.MoveNext() ?? false)
-						return true;
-				}
-			}
-			return result;
+			EventType[] types = [.. this.types.Intersect(EventTypeUtils.ToEnums(typeof(TEvent2)))];
+			return new EventEnumerator<TEvent2>(collection, types, range);
 		}
-		public void Reset()
-		{
-			throw new NotSupportedException();
-		}
-	}
-	internal class EventEnumerator<TEvent> : EventEnumerator, IEnumerator<TEvent> where TEvent : IBaseEvent
-	{
-		internal float? enumerateStart;
-		internal float? enumerateEnd;
-		private readonly EventType[] types;
-		public EventEnumerator(OrderedEventCollection collection, float? start, float? end) : base(collection)
-		{
-			types = EventTypeUtils.ToEnums(typeof(TEvent));
-			enumerateStart = start;
-			enumerateEnd = end;
-			while (beats.MoveNext())
-				if ((start == null || beats.Current.BeatOnly >= start) && collection.eventsBeatOrder[beats.Current]._types.Any(types.Contains))
-				{
-					if (end == null || beats.Current.BeatOnly < end)
-						events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
-					break;
-				}
-		}
-		public new TEvent Current => (TEvent)base.Current;
-		public override bool MoveNext()
-		{
-			collection._currentModifier = this;
-			bool result;
-			while (result = (events?.MoveNext() ?? false))
-				if (types.Contains(events!.Current.Type))
-					return true;
-			if (!result)
-			{
-				while (beats.MoveNext())
-				{
-					if (!collection.eventsBeatOrder[beats.Current]._types.Any(types.Contains))
-					{
-						continue;
-					}
-					if (enumerateEnd is not null && enumerateEnd <= beats.Current.BeatOnly)
-						return false;
-					events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
-					while (events.MoveNext())
-					{
-						if (types.Contains(events.Current.Type))
-							return true;
-					}
-				}
-			}
-			return result;
-		}
+		public EventEnumerator<TEvent> InRange(RDRange range) => new EventEnumerator<TEvent>(collection, types, this.range.Intersect(range));
+		public IEnumerator<TEvent> GetEnumerator() => this;
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

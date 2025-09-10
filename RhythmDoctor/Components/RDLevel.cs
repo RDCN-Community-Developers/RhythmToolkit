@@ -517,47 +517,47 @@ namespace RhythmBase.RhythmDoctor.Components
 				_floatingTexts.Remove(floatingText);
 			return Remove;
 		}
-		/// <summary>
-		/// Gets the status of the level at the specified beat.
-		/// </summary>
-		/// <param name="beat">The beat at which to get the status.</param>
-		/// <returns>A new instance of <see cref="RDStatus"/> representing the status at the specified beat.</returns>
-		internal RDStatus GetStatus(RDBeat beat)
-		{
-			return new()
-			{
-				Beat = beat,
-				RoomStatus = [
-					..new RDRoomIndex[] {
-						RDRoomIndex.Room1,
-						RDRoomIndex.Room2,
-						RDRoomIndex.Room3,
-						RDRoomIndex.Room4,
-						RDRoomIndex.RoomTop,
-					}.Select(room=>
-						new RoomStatus(){
-							Beat = beat,
-							RunningVFXs =[.. this.Where<SetVFXPreset>(vfx=>vfx.Rooms.Contains(room)&& vfx.VFXDuration().Contains(beat), new RDRange(null,beat))],
-							Background = this.Where<SetBackgroundColor>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
-							BassDrop = this.Where<BassDrop>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
-							Flash = this.Where<Flash>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
-							Flip = this.Where<FlipScreen>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
-							Foreground = this.Where<SetForeground>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
-							Shake = this.Where<ShakeScreen>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
-							Stutter = this.Where<Stutter>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
-							Theme = this.Where<SetTheme>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault()?.Preset ?? Themes.None,
-						}
-					)
-				],
-				RowStatus = [..Rows.Select(i=>new RowStatus(){
-					Beat = beat,
-					ParentRow = i,
-					PlayerType = this.LastOrDefault<ChangePlayersRows>(j => j.Players[i.Index] != PlayerType.NoChange)?.Players[i.Index]??i.Player,
-					Sound = this.LastOrDefault<SetBeatSound>()?.Sound??i.Sound
-				})
-				]
-			};
-		}
+		///// <summary>
+		///// Gets the status of the level at the specified beat.
+		///// </summary>
+		///// <param name="beat">The beat at which to get the status.</param>
+		///// <returns>A new instance of <see cref="RDStatus"/> representing the status at the specified beat.</returns>
+		//internal RDStatus GetStatus(RDBeat beat)
+		//{
+		//	return new()
+		//	{
+		//		Beat = beat,
+		//		RoomStatus = [
+		//			..new RDRoomIndex[] {
+		//				RDRoomIndex.Room1,
+		//				RDRoomIndex.Room2,
+		//				RDRoomIndex.Room3,
+		//				RDRoomIndex.Room4,
+		//				RDRoomIndex.RoomTop,
+		//			}.Select(room=>
+		//				new RoomStatus(){
+		//					Beat = beat,
+		//					RunningVFXs =[.. this.Where<SetVFXPreset>(vfx=>vfx.Rooms.Contains(room)&& vfx.VFXDuration().Contains(beat), new RDRange(null,beat))],
+		//					Background = this.Where<SetBackgroundColor>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+		//					BassDrop = this.Where<BassDrop>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+		//					Flash = this.Where<Flash>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+		//					Flip = this.Where<FlipScreen>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+		//					Foreground = this.Where<SetForeground>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+		//					Shake = this.Where<ShakeScreen>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+		//					Stutter = this.Where<Stutter>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault(),
+		//					Theme = this.Where<SetTheme>(j=>j.Rooms.Contains(room),new RDRange(null,beat)).LastOrDefault()?.Preset ?? Themes.None,
+		//				}
+		//			)
+		//		],
+		//		RowStatus = [..Rows.Select(i=>new RowStatus(){
+		//			Beat = beat,
+		//			ParentRow = i,
+		//			PlayerType = this.LastOrDefault<ChangePlayersRows>(j => j.Players[i.Index] != PlayerType.NoChange)?.Players[i.Index]??i.Player,
+		//			Sound = this.LastOrDefault<SetBeatSound>()?.Sound??i.Sound
+		//		})
+		//		]
+		//	};
+		//}
 		///// <summary>  
 		///// Extracts all group events from the level and adds their individual events to the level.  
 		///// </summary>  

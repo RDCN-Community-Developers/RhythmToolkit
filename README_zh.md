@@ -121,13 +121,13 @@ rdlevel.Write(@"your\outLevel.rdlevel", settings);
 
 > 在读取关卡压缩包文件时请使用 `using` 语句或主动调用 `RDLevel.Dispose()` 方法以保证被解压的临时文件被及时销毁。
 
-### 查找和获取事件
+### Linq 查询
 
 `OrderedEventCollection` 类型用于存储事件集合, `RDLevel` 继承此类型。  
 
 可以使用针对节奏医生关卡事件的查询操作的扩展方法, 用以简化查询操作。  
 例如通过事件类型及其父类型、事件实现的接口、节拍范围、自定义谓词等。  
-提供 `AddRange()`, `RemoveRange()`, `Where()`, `RemoveAll()`, `First()`, `FirstOrDefault()`, `Last()`, `LastOrDefault()`, `TakeWhile()` 等扩展方法。  
+提供 `AddRange()`, `RemoveRange()`, `OfEvent()`, `RemoveAll()`, `InRange` 等扩展方法。  
 
 推荐使用这些经过效率优化的方法。
 
@@ -136,10 +136,10 @@ using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 
 // 查找在第 3 到第 5 小节、在事件栏的第 0 到第 2 行的移动轨道事件
-var list = rdlevel.Where<MoveRow>(
-	i => 0 <= i.Y && i.Y < 3,  // 在事件栏的第 0 到第 2 行
-	3..5 // 第 3 到第 5 小节
-);
+var list = rdlevel
+	.OfEvent<MoveRow>()
+	.InRange(new(3, 1), new(5, 1)) // 第 3 到第 5 小节
+	.Where(i => 0 <= i.Y && i.Y < 3);  // 在事件栏的第 0 到第 2 行
 ```
 
 `Row` 和 `Decoration` 也继承 `OrderedEventCollection`, 所以轨道和精灵也支持这些扩展方法。
@@ -149,10 +149,12 @@ using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 
 // 查找在第 11 小节第 1 拍到第 13 小节第 1 拍的普通拍子事件
-var list = rdlevel.Decorations[0].Where<Tint>(
-	new Beat(11, 1), // 查找起点为第 11 小节第 1 拍
-	new Beat(13, 1)  // 查找终点为第 13 小节第 1 拍
-);
+var list = rdlevel.Decorations[0]
+	.OfEvent<AddClassicBeat>()
+	.InRange(
+		new Beat(11, 1), // 查找起点为第 11 小节第 1 拍
+		new Beat(13, 1)  // 查找终点为第 13 小节第 1 拍
+	);
 ```
 
 ### 创建节拍
@@ -234,7 +236,7 @@ RDBeat @default = RDLevel.DefaultBeat;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extension;
 
-var result = rdlevel.Where(new RDRange(rdlevel.DefaultBeat + 10, null));
+var result = rdlevel.InRange(new RDRange(rdlevel.DefaultBeat + 10, null));
 ```
 
 ### 扩展数据类型
@@ -753,10 +755,9 @@ foreach (var row in audioLevel.Rows)
 	vfxLevel.Rows.Add(row2);
 
 	// 复制轨道内的事件
-	BaseBeat[] evts = [.. row.Where<BaseBeat>()];
+	BaseBeat[] evts = [.. row.OfEvent<BaseBeat>()];
 	foreach (var evt in evts)
 		row2.Add(evt);
-	i++;
 }
 
 // 复制需要的音效事件

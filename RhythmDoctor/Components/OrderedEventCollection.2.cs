@@ -1,11 +1,12 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Components.Linq;
+using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>  
 	/// Represents a collection of ordered events.  
 	/// </summary>  
 	/// <typeparam name="TEvent">The type of event.</typeparam>  
-	public class OrderedEventCollection<TEvent> : OrderedEventCollection, ICollection<TEvent> where TEvent : IBaseEvent
+	public class OrderedEventCollection<TEvent> : OrderedEventCollection, ICollection<TEvent>, IEventEnumerable<TEvent> where TEvent : IBaseEvent
 	{
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="OrderedEventCollection{TEvent}"/> class.  

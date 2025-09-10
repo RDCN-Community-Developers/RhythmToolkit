@@ -14,7 +14,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <returns>The sound effect of row beat event.</returns>
 		public static RDAudio BeatSound(this BaseBeat e)
 		{
-			SetBeatSound? setBeatSound = e.Parent?.LastOrDefault((SetBeatSound i) => i.Beat < e.Beat && i.Active);
+			SetBeatSound? setBeatSound = e.Parent?.OfEvent<SetBeatSound>().LastOrDefault((SetBeatSound i) => i.Beat < e.Beat && i.Active);
 			return (setBeatSound?.Sound) ?? e.Parent?.Sound ?? throw new NotImplementedException();
 		}
 		/// <summary>
@@ -45,7 +45,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <exception cref="InvalidRDBeatException"></exception>
 		public static RDBeat DurationOffset(this RDBeat beat, float duration)
 		{
-			SetBeatsPerMinute setBPM = beat.BaseLevel?.First((SetBeatsPerMinute i) => i.Beat > beat) ?? throw new InvalidRDBeatException();
+			SetBeatsPerMinute setBPM = beat.BaseLevel?.OfEvent<SetBeatsPerMinute>().First(i => i.Beat > beat) ?? throw new InvalidRDBeatException();
 			RDBeat DurationOffset =
 				beat.BarBeat.bar == setBPM.Beat.BarBeat.bar
 				? beat + duration
@@ -58,7 +58,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">THIS IS 7TH BEAT GAMES!</exception>
 		public static RDBeat GetBeat(this AddClassicBeat e, byte index)
 		{
-			SetRowXs x = e.Parent?.LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i)) ?? new();
+			SetRowXs x = e.Parent?.OfEvent<SetRowXs>().LastOrDefault(i => i.Active && e.IsBehind(i)) ?? new();
 			float Synco = 0 <= x.SyncoBeat && x.SyncoBeat < (sbyte)index ? (float)((x.SyncoSwing == 0f) ? 0.5 : ((double)x.SyncoSwing)) : 0f;
 			if (index >= 7)
 				throw new RhythmBaseException("THIS IS 7TH BEAT GAMES!");
@@ -77,7 +77,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			byte pulse = e.Pulse;
 			if (e.Parent == null)
 				yield break;
-			foreach (PulseFreeTimeBeat item in e.Parent.Where<PulseFreeTimeBeat>(i => i.Active && e.IsInFrontOf(i)))
+			foreach (PulseFreeTimeBeat item in e.Parent.OfEvent<PulseFreeTimeBeat>().Where(i => i.Active && e.IsInFrontOf(i)))
 			{
 				switch (item.Action)
 				{
@@ -120,19 +120,19 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			{
 				case PlayerType.P1:
 					{
-						SetClapSounds? setClapSounds = e.Beat.BaseLevel?.LastOrDefault((SetClapSounds i) => i.Active && i.P1Sound != null);
+						SetClapSounds? setClapSounds = e.Beat.BaseLevel?.OfEvent<SetClapSounds>().LastOrDefault(i => i.Active && i.P1Sound != null);
 						HitSound = (setClapSounds?.P1Sound) ?? DefaultAudio;
 						break;
 					}
 				case PlayerType.P2:
 					{
-						SetClapSounds? setClapSounds2 = e.Beat.BaseLevel?.LastOrDefault((SetClapSounds i) => i.Active && i.P2Sound != null);
+						SetClapSounds? setClapSounds2 = e.Beat.BaseLevel?.OfEvent<SetClapSounds>().LastOrDefault(i => i.Active && i.P2Sound != null);
 						HitSound = (setClapSounds2?.P2Sound) ?? DefaultAudio;
 						break;
 					}
 				case PlayerType.CPU:
 					{
-						SetClapSounds? setClapSounds3 = e.Beat.BaseLevel?.LastOrDefault((SetClapSounds i) => i.Active && i.CpuSound != null);
+						SetClapSounds? setClapSounds3 = e.Beat.BaseLevel?.OfEvent<SetClapSounds>().LastOrDefault(i => i.Active && i.CpuSound != null);
 						HitSound = (setClapSounds3?.CpuSound) ?? DefaultAudio;
 						break;
 					}
@@ -212,7 +212,9 @@ e.IsHitable()
 			if (e.Parent is null)
 				return false;
 			foreach (BaseBeat item in ((IEnumerable<BaseBeat>)e.Parent
-			.Where(e.IsBehind, new RDRange(e.Beat, null)))
+			.OfEvent<BaseBeat>()
+			.InRange(new RDRange(e.Beat, null))
+			.Where(e.IsBehind))
 			.Reverse())
 			{
 				EventType type = item.Type;
@@ -297,7 +299,7 @@ e.IsHitable()
 		/// <returns></returns>
 		public static float Length(this AddClassicBeat e)
 		{
-			float SyncoSwing = e.Parent?.LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i))?.SyncoSwing ?? 0;
+			float SyncoSwing = e.Parent?.OfEvent<SetRowXs>().LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i))?.SyncoSwing ?? 0;
 			return (float)((double)(e.Tick * 6f) - ((SyncoSwing == 0f) ? 0.5 : ((double)SyncoSwing)) * (double)e.Tick);
 		}
 		/// <summary>
@@ -339,7 +341,7 @@ e.IsHitable()
 		/// <returns></returns>
 		public static PlayerType Player(this BaseBeat e)
 		{
-			ChangePlayersRows? changePlayersRows = e.Beat.BaseLevel?.LastOrDefault((ChangePlayersRows i) => i.Active && i.Players[e.Index] != PlayerType.NoChange);
+			ChangePlayersRows? changePlayersRows = e.Beat.BaseLevel?.OfEvent<ChangePlayersRows>().LastOrDefault(i => i.Active && i.Players[e.Index] != PlayerType.NoChange);
 			return (changePlayersRows != null)
 					? changePlayersRows.Players[e.Index]
 					: e.Parent?.Player ?? throw new NotImplementedException();
@@ -430,7 +432,7 @@ e.SplitCopy(e.Tick * 4f, SayReaDyGetSetGoWords.JustSayGo)
 		/// </summary>
 		public static IEnumerable<BaseBeat> Split(this AddClassicBeat e)
 		{
-			SetRowXs x = e.Parent?.LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i)) ?? new();
+			SetRowXs x = e.Parent?.OfEvent<SetRowXs>().LastOrDefault(i => i.Active && e.IsBehind(i)) ?? new();
 			return e.Split(x);
 		}
 		/// <summary>

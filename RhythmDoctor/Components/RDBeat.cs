@@ -1,6 +1,7 @@
 ﻿using RhythmBase.RhythmDoctor.Utils;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
@@ -113,6 +114,16 @@ namespace RhythmBase.RhythmDoctor.Components
 				}
 				return _CPB;
 			}
+		}
+		public RDBeat()
+		{
+			this = default;
+			_beat = 1f;
+			_BarBeat = (1, 1f);
+			_TimeSpan = TimeSpan.Zero;
+			_isBeatLoaded = true;
+			_isBarBeatLoaded = true;
+			_isTimeSpanLoaded = true;
 		}
 		/// <summary>
 		/// Construct an instance without specifying a calculator.
@@ -244,7 +255,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
-		public static bool FromSameLevelOrNull(RDBeat a, RDBeat b, bool @throw = false) => a._calculator == null || b._calculator == null || FromSameLevel(a, b, @throw);
+		public static bool FromSameLevelOrNull(RDBeat? a, RDBeat? b, bool @throw = false) => a?._calculator == null || b?._calculator == null || FromSameLevel(a.Value, b.Value, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.
 		/// </summary>
@@ -414,47 +425,55 @@ namespace RhythmBase.RhythmDoctor.Components
 			return result;
 		}
 		///  <inheritdoc/>
-		public static bool operator >(RDBeat a, RDBeat b) => FromSameLevel(a, b, false)
-			? a.BeatOnly > b.BeatOnly
-			: a._isBeatLoaded && b._isBeatLoaded || a._isBarBeatLoaded && b._isBarBeatLoaded || a._isTimeSpanLoaded && b._isTimeSpanLoaded
-			? a._isBeatLoaded && b._isBeatLoaded && a._beat > b._beat
-			|| a._isBarBeatLoaded && b._isBarBeatLoaded && a._BarBeat.Bar > b._BarBeat.Bar
-			|| a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._TimeSpan > b._TimeSpan
-			 : throw new RhythmBaseException("The beat cannot be compared.");
+		public static bool operator >(RDBeat a, RDBeat b) => CompareInternal(a, b) > 0;
 		///  <inheritdoc/>
-		public static bool operator <(RDBeat a, RDBeat b) => FromSameLevel(a, b, false)
-			? a.BeatOnly < b.BeatOnly
-			: a._isBeatLoaded && b._isBeatLoaded || a._isBarBeatLoaded && b._isBarBeatLoaded || a._isTimeSpanLoaded && b._isTimeSpanLoaded
-			? a._isBeatLoaded && b._isBeatLoaded && a._beat < b._beat
-			|| a._isBarBeatLoaded && b._isBarBeatLoaded && a._BarBeat.Bar < b._BarBeat.Bar
-			|| a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._TimeSpan < b._TimeSpan
-			 : throw new RhythmBaseException("The beat cannot be compared.");
+		public static bool operator <(RDBeat a, RDBeat b) => CompareInternal(a, b) < 0;
 		///  <inheritdoc/>
-		public static bool operator >=(RDBeat a, RDBeat b) => FromSameLevel(a, b, false)
-			? a.BeatOnly >= b.BeatOnly
-			: a._isBeatLoaded && b._isBeatLoaded || a._isBarBeatLoaded && b._isBarBeatLoaded || a._isTimeSpanLoaded && b._isTimeSpanLoaded
-			? a._isBeatLoaded && b._isBeatLoaded && a._beat >= b._beat
-			|| a._isBarBeatLoaded && b._isBarBeatLoaded && a._BarBeat.Bar >= b._BarBeat.Bar
-			|| a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._TimeSpan >= b._TimeSpan
-			 : throw new RhythmBaseException("The beat cannot be compared.");
+		public static bool operator >=(RDBeat a, RDBeat b) => CompareInternal(a, b) >= 0;
 		///  <inheritdoc/>
-		public static bool operator <=(RDBeat a, RDBeat b) => FromSameLevel(a, b, false)
-			? a.BeatOnly <= b.BeatOnly
-			: a._isBeatLoaded && b._isBeatLoaded || a._isBarBeatLoaded && b._isBarBeatLoaded || a._isTimeSpanLoaded && b._isTimeSpanLoaded
-			? a._isBeatLoaded && b._isBeatLoaded && a._beat <= b._beat
-			|| a._isBarBeatLoaded && b._isBarBeatLoaded && a._BarBeat.Bar <= b._BarBeat.Bar
-			|| a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._TimeSpan <= b._TimeSpan
-			 : throw new RhythmBaseException("The beat cannot be compared.");
+		public static bool operator <=(RDBeat a, RDBeat b) => CompareInternal(a, b) <= 0;
 		///  <inheritdoc/>
-		public static bool operator ==(RDBeat a, RDBeat b) => FromSameLevel(a, b, false)
-			? a.BeatOnly == b.BeatOnly
-			: a._isBeatLoaded && b._isBeatLoaded || a._isBarBeatLoaded && b._isBarBeatLoaded || a._isTimeSpanLoaded && b._isTimeSpanLoaded
-			? a._isBeatLoaded && b._isBeatLoaded && a._beat == b._beat
-			|| a._isBarBeatLoaded && b._isBarBeatLoaded && a._BarBeat.Bar == b._BarBeat.Bar
-			|| a._isTimeSpanLoaded && b._isTimeSpanLoaded && a._TimeSpan == b._TimeSpan
-			 : throw new RhythmBaseException("The beat cannot be compared.");
+		public static bool operator ==(RDBeat a, RDBeat b) => CompareInternal(a, b) == 0;
 		///  <inheritdoc/>
-		public static bool operator !=(RDBeat a, RDBeat b) => !(a == b);
+		public static bool operator !=(RDBeat a, RDBeat b) => CompareInternal(a, b) != 0;
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static int CompareInternal((int bar, float beat) left, (int bar, float beat) right)
+		{
+			int barComparison = left.bar.CompareTo(right.bar);
+			if (barComparison != 0)
+				return barComparison;
+			return left.beat.CompareTo(right.beat);
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static int CompareInternal(RDBeat left, RDBeat right)
+		{
+			if (left._isBarBeatLoaded && right._isBarBeatLoaded)
+				return CompareInternal(left._BarBeat, right._BarBeat);
+			if (left._isBeatLoaded && right._isBeatLoaded)
+				return left._beat.CompareTo(right._beat);
+			if (left._isTimeSpanLoaded && right._isTimeSpanLoaded)
+				return left._TimeSpan.CompareTo(right._TimeSpan);
+
+			if (left._calculator != null)
+			{
+				// 用 left 的单位比较
+				return (right._isBeatLoaded ? left.BeatOnly.CompareTo(right._beat)
+					: right._isBarBeatLoaded ? CompareInternal(left.BarBeat, right._BarBeat)
+					: right._isTimeSpanLoaded ? left.BeatOnly.CompareTo(left._calculator.TimeSpanToBeatOnly(right.TimeSpan))
+					: throw new RhythmBaseException("The beat cannot be compared."));
+			}
+
+			if (right._calculator != null)
+			{
+				// 用 right 的单位比较
+				return (left._isBeatLoaded ? left._beat.CompareTo(right.BeatOnly)
+					: left._isBarBeatLoaded ? CompareInternal(left._BarBeat, right.BarBeat)
+					: left._isTimeSpanLoaded ? right.BeatOnly.CompareTo(right._calculator.TimeSpanToBeatOnly(left.TimeSpan))
+					: throw new RhythmBaseException("The beat cannot be compared."));
+			}
+
+			throw new RhythmBaseException("The beat cannot be compared.");
+		}
 		/// <inheritdoc/>
 		public override string ToString()
 		{

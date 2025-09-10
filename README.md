@@ -127,7 +127,7 @@ The `OrderedEventCollection` type is used to store collections of events, and `R
 
 You can use extension methods designed for querying Rhythm Doctor level events to simplify your queries.  
 For example, you can filter by event type and its base types, interfaces implemented by events, beat ranges, custom predicates, and more.  
-Methods such as `AddRange()`, `RemoveRange()`, `Where()`, `RemoveAll()`, `First()`, `FirstOrDefault()`, `Last()`, `LastOrDefault()`, and `TakeWhile()` are provided.
+Methods such as `AddRange()`, `RemoveRange()`, `OfEvent()`, `RemoveAll()`, `InRange` are provided.
 
 It is recommended to use these optimized methods for better performance.
 
@@ -136,10 +136,10 @@ using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 
 // Find MoveRow events between measures 3 and 5, and in event rows 0 to 2
-var list = rdlevel.Where<MoveRow>(
-	i => 0 <= i.Y && i.Y < 3,  // In event rows 0 to 2
-	3..5 // From bar 3 to 5
-);
+var list = rdlevel
+	.OfEvent<MoveRow>()
+	.InRange(new(3, 1), new(5, 1))// From Bar 3 to 5
+	.Where(i => 0 <= i.Y && i.Y < 3);  // In event rows 0 to 2
 ```
 
 `Row` and `Decoration` also inherit from `OrderedEventCollection`, so rows and decorations also support these extension methods.
@@ -149,10 +149,12 @@ using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 
 // Find the AddClassicBeat event in the decoration between beat (11,1) and (13,1)
-var list = rdlevel.Decorations[0].Where<Tint>(
-	new Beat(11, 1), // Start searching from bar 11, beat 1
-	new Beat(13, 1)  // End searching at bar 13, beat 1
-);
+var list = rdlevel.Decorations[0]
+	.OfEvent<AddClassicBeat>()
+	.InRange(
+		new RDBeat(11, 1), // Start searching from bar 11, beat 1
+		new RDBeat(13, 1)  // End searching at bar 13, beat 1
+	);
 ```
 ### Creating a Beat
 
@@ -233,7 +235,7 @@ It is commonly used for querying events.
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extension;
 
-var result = rdlevel.Where(new RDRange(rdlevel.DefaultBeat + 10, null));
+var result = rdlevel.InRange(new RDRange(rdlevel.DefaultBeat + 10, null));
 ```
 ### Extended Data Types
 
@@ -752,7 +754,7 @@ foreach (var row in audioLevel.Rows)
 	vfxLevel.Rows.Add(row2);
 
 	// Copy events within the row
-	BaseBeat[] evts = [.. row.Where<BaseBeat>()];
+	BaseBeat[] evts = [.. row.OfEvent<BaseBeat>()];
 	foreach (var evt in evts)
 		row2.Add(evt);
 }
