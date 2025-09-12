@@ -1,17 +1,14 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// A decoration.
 	/// </summary>
-	[JsonObject]
 	public class Decoration : OrderedEventCollection<BaseDecorationAction>
 	{
 		/// <summary>
 		/// Decorated ID.
 		/// </summary>
-		[JsonProperty("id")]
 		public string Id
 		{
 			get => _id;
@@ -20,17 +17,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Decoration index.
 		/// </summary>
-		[JsonProperty("row")]
 		public int Index => Parent?.Decorations.ToList().IndexOf(this) ?? throw new RhythmBaseException();
 		/// <summary>
 		/// Room.
 		/// </summary>
-		[JsonProperty("rooms")]
 		public RDSingleRoom Room { get; set; }
 		/// <summary>
 		/// The file reference used by the decoration.
 		/// </summary>
-		[JsonProperty("filename")]
 		public string Filename { get; set; } = "";
 		/// <summary>
 		/// Decoration depth.
@@ -99,7 +93,6 @@ namespace RhythmBase.RhythmDoctor.Components
 			return s;
 		}
 		private string _id = "";
-		[JsonIgnore]
 		internal RDLevel? Parent = null;
 	}
 }

@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using RhythmBase.Adofai.Components;
-using RhythmBase.Adofai.Converters;
-using RhythmBase.Adofai.Events;
+﻿using RhythmBase.Adofai.Events;
 using System.Collections.ObjectModel;
 namespace RhythmBase.Adofai.Utils
 {
@@ -105,28 +101,28 @@ namespace RhythmBase.Adofai.Utils
 				}
 			return ConvertToType;
 		}
-		/// <summary>
-		/// Gets a JsonSerializer configured with the necessary converters for the given ADLevel and settings.
-		/// </summary>
-		/// <param name="adlevel">The ADLevel instance.</param>
-		/// <param name="settings">The LevelReadOrWriteSettings instance.</param>
-		/// <returns>A configured JsonSerializer instance.</returns>
-		public static JsonSerializerSettings GetSerializer(this ADLevel adlevel, LevelReadOrWriteSettings settings)
-		{
-			JsonSerializerSettings EventsSerializer = new()
-			{
-				ContractResolver = new ContractResolver()
-			};
-			IList<JsonConverter> converters = EventsSerializer.Converters;
-			converters.Add(new StringEnumConverter());
-			//converters.Add(new ColorConverter());
-			converters.Add(new TileConverter(adlevel));
-			converters.Add(new CustomTileEventConverter(adlevel, settings));
-			converters.Add(new CustomEventConverter(adlevel, settings));
-			converters.Add(new BaseTileEventConverter<BaseTileEvent>(adlevel, settings));
-			converters.Add(new BaseEventConverter<BaseEvent>(adlevel, settings));
-			return EventsSerializer;
-		}
+		///// <summary>
+		///// Gets a JsonSerializer configured with the necessary converters for the given ADLevel and settings.
+		///// </summary>
+		///// <param name="adlevel">The ADLevel instance.</param>
+		///// <param name="settings">The LevelReadOrWriteSettings instance.</param>
+		///// <returns>A configured JsonSerializer instance.</returns>
+		//public static JsonSerializerSettings GetSerializer(this ADLevel adlevel, LevelReadOrWriteSettings settings)
+		//{
+		//	JsonSerializerSettings EventsSerializer = new()
+		//	{
+		//		ContractResolver = new ContractResolver()
+		//	};
+		//	IList<JsonConverter> converters = EventsSerializer.Converters;
+		//	converters.Add(new StringEnumConverter());
+		//	//converters.Add(new ColorConverter());
+		//	converters.Add(new TileConverter(adlevel));
+		//	converters.Add(new CustomTileEventConverter(adlevel, settings));
+		//	converters.Add(new CustomEventConverter(adlevel, settings));
+		//	converters.Add(new BaseTileEventConverter<BaseTileEvent>(adlevel, settings));
+		//	converters.Add(new BaseEventConverter<BaseEvent>(adlevel, settings));
+		//	return EventsSerializer;
+		//}
 		private static readonly ReadOnlyCollection<Type> ADETypes = (from i in typeof(BaseEvent).Assembly.GetTypes()
 																	 where typeof(BaseEvent).IsAssignableFrom(i)
 																	 select i).ToList().AsReadOnly();

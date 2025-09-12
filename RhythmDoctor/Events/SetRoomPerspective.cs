@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -27,7 +26,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the corner positions of the room.  
 		/// </summary>  
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.CornerPositions is not null")]
 		public RDPointE?[] CornerPositions { get => cornerPositions; set => cornerPositions = value?.Length == 4 ? value : throw new RhythmBaseException(); }
 
@@ -50,7 +49,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets the room associated with the event.  
 		/// </summary>  
-		[JsonIgnore]
 		public RDRoom Room => new RDSingleRoom(checked((byte)Y));
 	}
 }

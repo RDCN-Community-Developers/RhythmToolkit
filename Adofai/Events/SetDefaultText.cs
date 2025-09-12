@@ -1,11 +1,9 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to set default text properties in the Adofai editor.  
 	/// </summary>  
-	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class SetDefaultText : BaseTaggedTileAction, IEaseEvent, IStartEvent
 	{
 		/// <inheritdoc/>

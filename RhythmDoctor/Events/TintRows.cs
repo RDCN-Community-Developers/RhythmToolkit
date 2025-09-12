@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -35,13 +34,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the border color.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
 		public PaletteColor BorderColor { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity level.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public int Opacity { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether to apply tint.

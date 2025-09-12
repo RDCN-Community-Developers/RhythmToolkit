@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-
+﻿
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -26,7 +25,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the expression for the animation.
 		/// </summary>
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
 		public string Expression { get; set; } = "";
 		/// <summary>
 		/// Returns a string that represents the current object.

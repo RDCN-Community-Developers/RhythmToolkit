@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -7,7 +6,6 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event to move a room with easing properties.
 	/// </summary>
-	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class MoveRoom : BaseEvent, IEaseEvent
 	{
 		/// <summary>
@@ -21,25 +19,25 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the position of the room.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.RoomPosition is not null")]
 		public RDPointE? RoomPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the scale of the room.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.Scale is not null")]
 		public RDSizeE? Scale { get; set; }
 		/// <summary>
 		/// Gets or sets the angle of the room.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.Angle is not null")]
 		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the pivot point of the room.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.Pivot is not null")]
 		public RDPointE? Pivot { get; set; }
 		/// <summary>
@@ -61,7 +59,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>
-		[JsonIgnore]
 		public RDRoom Rooms => new RDSingleRoom(checked((byte)Y));
 	}
 }

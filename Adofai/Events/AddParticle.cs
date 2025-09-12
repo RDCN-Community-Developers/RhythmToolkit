@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Adofai.Converters;
-
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 
 	/// <summary>
@@ -350,7 +347,6 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>
 	/// Represents a range of values with a minimum and maximum.
 	/// </summary>
-	[JsonConverter(typeof(ValueRangeConverter))]
 	public struct ValueRange
 	{
 		/// <summary>
@@ -387,7 +383,6 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ValueRangePair"/> struct with the specified X and Y value ranges.
 	/// </summary>
-	[JsonConverter(typeof(ValueRangePairConverter))]
 	public struct ValueRangePair(ValueRange x, ValueRange y)
 	{
 		/// <summary>

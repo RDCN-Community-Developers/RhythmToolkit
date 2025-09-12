@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public EventEnumerator(OrderedEventCollection collection, RDRange range) : this(collection, EventTypeUtils.ToEnums(typeof(TEvent)), range) { }
 		public EventEnumerator(OrderedEventCollection collection, EventType[] types, RDRange range)
 		{
-			collection._modifierInstances[this] = [];
+			//collection._modifierInstances[this] = [];
 			this.collection = collection;
 			beats = collection.eventsBeatOrder.Keys.GetEnumerator();
 			this.types = types;
@@ -34,7 +34,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		object IEnumerator.Current => Current;
 		public bool MoveNext()
 		{
-			collection._currentModifier = this;
+			//collection._currentModifier = this;
 			bool result;
 			while (result = (events?.MoveNext() ?? false))
 				if (types.Contains(events!.Current.Type))
@@ -61,30 +61,36 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		public void Dispose()
 		{
-			if (collection._currentModifier == this)
-			{
-				collection._currentModifier = null;
-				var values = collection._modifierInstances[this];
-				while (values.Count > 0)
-				{
-					(IBaseEvent e, RDBeat b) = values.Dequeue();
-					e.Beat = b;
-				}
-				collection._modifierInstances.Remove(this);
-			}
-			else
-			{
-				if (collection._modifierInstances[this].Count > 0)
-					throw new InvalidOperationException("Cannot dispose an enumerator while there are modifying events in the queue.");
-			}
+			//if (collection._currentModifier == this)
+			//{
+			//	collection._currentModifier = null;
+			//	var values = collection._modifierInstances[this];
+			//	while (values.Count > 0)
+			//	{
+			//		(IBaseEvent e, RDBeat b) = values.Dequeue();
+			//		e.Beat = b;
+			//	}
+			//	collection._modifierInstances.Remove(this);
+			//}
+			//else
+			//{
+			//	if (collection._modifierInstances[this].Count > 0)
+			//		throw new InvalidOperationException("Cannot dispose an enumerator while there are modifying events in the queue.");
+			//}
 		}
 		public void Reset() => throw new NotSupportedException();
 		public EventEnumerator<TEvent2> OfEvent<TEvent2>() where TEvent2 : IBaseEvent
 		{
 			EventType[] types = [.. this.types.Intersect(EventTypeUtils.ToEnums(typeof(TEvent2)))];
-			return new EventEnumerator<TEvent2>(collection, types, range);
+			this.types = types;
+			return this as EventEnumerator<TEvent2> ?? new(collection, types, range);
 		}
-		public EventEnumerator<TEvent> InRange(RDRange range) => new EventEnumerator<TEvent>(collection, types, this.range.Intersect(range));
+		public EventEnumerator<TEvent> InRange(RDRange range)
+		{
+			this.range = this.range.Intersect(range);
+			return this;
+		}
+
 		public IEnumerator<TEvent> GetEnumerator() => this;
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

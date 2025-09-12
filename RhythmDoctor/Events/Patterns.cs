@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Converters;
+﻿using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Enum representing different rhythm patterns.  
 	/// </summary>  
-	[JsonConverter(typeof(PatternConverter))]
 	public enum Patterns
 	{
 		/// <summary>  

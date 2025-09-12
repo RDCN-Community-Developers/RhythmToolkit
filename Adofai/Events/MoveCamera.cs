@@ -1,11 +1,9 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to move the camera in the Adofai game.  
 	/// </summary>  
-	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class MoveCamera : BaseTaggedTileAction, IEaseEvent, IStartEvent
 	{
 		/// <inheritdoc/>

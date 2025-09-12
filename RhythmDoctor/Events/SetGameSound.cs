@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -20,7 +19,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the audio associated with the event.  
 		/// </summary>  
-		[JsonIgnore]
 		private RDAudio Audio { get; set; }
 		/// <summary>  
 		/// Gets or sets the type of the sound.  

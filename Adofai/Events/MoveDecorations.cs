@@ -1,12 +1,9 @@
-﻿
-using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to move decorations in the Adofai editor.  
 	/// </summary>  
-	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class MoveDecorations : BaseTaggedTileAction, IEaseEvent, IStartEvent
 	{
 		/// <inheritdoc/>

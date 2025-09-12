@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.RhythmDoctor.Events
+﻿using RhythmBase.RhythmDoctor.Components;
+
+namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents an action to reorder a sprite in the Rhythm Doctor game.
@@ -20,6 +22,8 @@
 		/// <summary>
 		/// Gets or sets the new room to which the sprite will be moved.
 		/// </summary>
-		public int NewRoom { get; set; } = 0;
+		[RDJsonDefaultSerializer]
+		public RDRoomIndex NewRoom { get; set; } = 0;
+		public int Depth { get; set; } = 0;
 	}
 }

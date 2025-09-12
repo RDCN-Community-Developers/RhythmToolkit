@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-namespace RhythmBase.RhythmDoctor.Components
+﻿namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Subtypes of sound effects.
@@ -29,7 +28,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the filename of the audio.
 		/// </summary>
-		[JsonProperty]
 		public string Filename
 		{
 			get => Audio.Filename;
@@ -38,7 +36,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the volume of the audio.
 		/// </summary>
-		[JsonProperty]
 		public int Volume
 		{
 			get => Audio.Volume;
@@ -47,7 +44,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the pitch of the audio.
 		/// </summary>
-		[JsonProperty]
 		public int Pitch
 		{
 			get => Audio.Pitch;
@@ -56,7 +52,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the pan of the audio.
 		/// </summary>
-		[JsonProperty]
 		public int Pan
 		{
 			get => Audio.Pan;
@@ -65,7 +60,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the offset of the audio.
 		/// </summary>
-		[JsonConverter(typeof(MilliSecondConverter))]
 		public TimeSpan Offset
 		{
 			get => Audio.Offset;

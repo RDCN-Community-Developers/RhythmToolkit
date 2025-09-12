@@ -22,7 +22,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the tint color of the hands.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Tint)}")]
 		public PaletteColor TintColor { get; set; }
 		/// <summary>
@@ -36,13 +36,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the border color of the hands.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
 		public PaletteColor BorderColor { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity of the hands.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public int Opacity { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether the hands should be tinted.

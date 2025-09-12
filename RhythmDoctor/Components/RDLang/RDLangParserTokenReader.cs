@@ -141,8 +141,13 @@
 						{
 							ReadChar();
 							float floatValue = value;
-							while (char.IsDigit(PeekChar))
+							int decimalPlace = 0;
+							while (char.IsDigit(PeekChar)){
 								floatValue = floatValue * 10 + (ReadChar() - '0');
+								decimalPlace++;
+							}
+							while(decimalPlace-- > 0)
+								floatValue /= 10;
 							tokens.Add(NewToken(TokenType.Float, floatValue));
 						}
 						else
@@ -225,7 +230,7 @@
 #else
 							switch (str3)
 							{
-								case ['s', 't', 'r', ':']:
+								case ['s', 't', 'r', ':', ..]:
 									tokens.Add(NewToken(TokenType.String, str3[4..]));
 									break;
 								default:

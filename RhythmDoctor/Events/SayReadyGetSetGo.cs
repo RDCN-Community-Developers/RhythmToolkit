@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-
+﻿
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -85,7 +84,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets a value indicating whether the phrase is splitable.
 		/// </summary>
-		[JsonIgnore]
 		public bool Splitable
 		{
 			get

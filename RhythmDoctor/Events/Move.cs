@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -7,7 +6,6 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents a move event in the rhythm base system.
 	/// </summary>
-	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class Move : BaseDecorationAction, IEaseEvent
 	{
 		/// <summary>
@@ -29,25 +27,25 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the position of the move event.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.Position is not null")]
 		public RDPointE? Position { get; set; }
 		/// <summary>
 		/// Gets or sets the scale of the move event.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.Scale is not null")]
 		public RDSizeE? Scale { get; set; }
 		/// <summary>
 		/// Gets or sets the angle of the move event.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.Angle is not null")]
 		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the pivot point of the move event.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition("$&.Pivot is not null")]
 		public RDPointE? Pivot { get; set; }
 		/// <summary>

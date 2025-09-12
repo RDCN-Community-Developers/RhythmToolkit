@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents an event to show a status sign.

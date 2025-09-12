@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extensions;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -8,7 +7,6 @@ namespace RhythmBase.Global.Components
 	/// <summary>
 	/// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float" />
 	/// </summary>
-	[JsonConverter(typeof(RDPointsConverter))]
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public struct RDPoint(float? x, float? y) : IRDVortex<RDPoint, RDSize, float?>, IRDVortex<RDPoint, RDSizeI, float?>
 	{

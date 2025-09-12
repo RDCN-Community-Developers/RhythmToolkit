@@ -707,6 +707,17 @@ namespace RhythmBase.Global.Components
 				return false;
 			return true;
 		}
+		public static RDColor Lerp(RDColor a, RDColor b, float t)
+		{
+			t = t < 0 ? 0 : t > 1 ? 1 : t;
+			byte aA = a.A, aR = a.R, aG = a.G, aB = a.B;
+			byte bA = b.A, bR = b.R, bG = b.G, bB = b.B;
+			byte rA = (byte)(aA + (bA - aA) * t);
+			byte rR = (byte)(aR + (bR - aR) * t);
+			byte rG = (byte)(aG + (bG - aG) * t);
+			byte rB = (byte)(aB + (bB - aB) * t);
+			return FromArgb(rA, rR, rG, rB);
+		}
 		/// <inheritdoc/>
 		public static bool operator ==(RDColor left, RDColor right) => left.color == right.color;
 		/// <inheritdoc/>

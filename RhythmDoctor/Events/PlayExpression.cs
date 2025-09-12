@@ -21,6 +21,8 @@
 		/// Gets or sets a value indicating whether to replace the current expression.
 		/// </summary>
 		public bool Replace { get; set; }
+		[RDJsonCondition($"$&.{nameof(Replace)}")]
+		public string Target { get; set; }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extensions;
 using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Events
@@ -22,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			}
 			set
 			{
-				_extraData["type"] = JsonDocument.Parse(JsonConvert.SerializeObject(value)).RootElement;
+				_extraData["type"] = JsonSerializer.SerializeToElement(value);
 			}
 		}
 		/// <inheritdoc />

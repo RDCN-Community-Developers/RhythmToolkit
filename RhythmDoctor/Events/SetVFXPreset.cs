@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -110,7 +109,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the threshold value for the VFX.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)}
 			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Bloom)}
@@ -119,7 +118,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the intensity of the VFX.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)} 
 			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.HueShift)}
@@ -144,7 +143,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the color of the VFX.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)}
 			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Bloom)}
@@ -154,7 +153,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the X coordinate for the VFX.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)}
 			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
@@ -164,7 +163,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the Y coordinate for the VFX.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{(nameof(Enable))} && $&.{nameof(Preset)}
 			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}

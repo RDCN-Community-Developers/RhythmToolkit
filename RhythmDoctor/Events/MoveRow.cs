@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -7,7 +6,6 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event to move a row with various properties such as position, scale, angle, and pivot.
 	/// </summary>
-	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class MoveRow : BaseRowAnimation, IEaseEvent
 	{
 		/// <summary>
@@ -30,26 +28,27 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the row position.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(CustomPosition)} is true && $&.{nameof(RowPosition)} is not null")]
 		public RDPointE? RowPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the scale.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
 		public RDSizeE? Scale { get; set; }
 		/// <summary>
 		/// Gets or sets the angle.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
 		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the pivot.
 		/// </summary>
-		[EaseProperty]
-		[RDJsonCondition($"$&.{nameof(Pivot)} is not null")]
+		[Tween]
+		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&" +
+			$"$&.{nameof(Pivot)} is not null")]
 		public float? Pivot { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the move row event.

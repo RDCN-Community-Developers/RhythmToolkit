@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Components.Snapshots;
+﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Reflection;
@@ -72,15 +70,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			return string.Join("", [new string(S)]);
 		}
 		/// <summary>
-		/// Make a specific key of a JObject follow the Upper Camel Case.
-		/// </summary>
-		internal static void ToUpperCamelCase(this JObject e, string key)
-		{
-			JToken token = e[key] ?? throw new NullReferenceException();
-			e.Remove(key);
-			e[key.ToUpperCamelCase()] = token;
-		}
-		/// <summary>
 		/// Make strings follow the Lower Camel Case.
 		/// </summary>
 		/// <returns>The result.</returns>
@@ -89,15 +78,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			char[] S = [.. e];
 			S[0] = S[0].ToString().ToLower()[0];
 			return string.Join("", [new string(S)]);
-		}
-		/// <summary>
-		/// Make a specific key of a JObject follow the Lower Camel Case.
-		/// </summary>
-		internal static void ToLowerCamelCase(this JObject e, string key)
-		{
-			JToken token = e[key] ?? throw new NullReferenceException();
-			e.Remove(key);
-			e[key.ToLowerCamelCase()] = token;
 		}
 		/// <summary>
 		/// Convert color format from RGBA to ARGB
@@ -255,25 +235,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">RDLevel</param>
 		/// <param name="timeSpan">Total time span of the beat.</param>
 		public static RDBeat BeatOf(this RDLevel e, TimeSpan timeSpan) => e.Calculator.BeatOf(timeSpan);
-		public static RDSnapshot GetSnapshot(this RDLevel e, RDBeat beat)
-		{
-			return new(e, beat);
-		}
-		public static TEvent GetSnapshot<TEvent>(this RDLevel e, RDBeat beat) where TEvent : IBaseEvent, new()
-		{
-			return new()
-			{
-				Beat = beat
-			};
-		}
-		public static RDRowSnapshot GetSnapshot(this Row e, RDBeat beat)
-		{
-			return new(e, beat);
-		}
-		public static RDDecorationSnapshot GetSnapshot(this Decoration e, RDBeat beat)
-		{
-			return new(e, beat);
-		}
+		public static int DepthOf(this Decoration e, RDBeat beat) => e.InRange(new(), beat).OfEvent<ReorderSprite>().LastOrDefault()?.Depth ?? e.Depth;
+		public static RDRoomIndex RoomOf(this Decoration e, RDBeat beat) => e.InRange(new(), beat).OfEvent<ReorderSprite>().LastOrDefault()?.NewRoom ?? e.Room.Room;
+		public static RDRoomIndex RoomOf(this Row e, RDBeat beat) => e.InRange(new(), beat).OfEvent<ReorderRow>().LastOrDefault()?.NewRoom ?? e.Rooms.Room;
 		/// <summary>
 		/// Get the row beat status
 		/// </summary>
@@ -339,11 +303,11 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <summary>
 		/// Returns all previous events of the same type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.InRange(e.Beat.BaseLevel.DefaultBeat, e.Beat).OfEvent<TEvent>().AsEnumerable() ?? [];
+		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.InRange(new(), e.Beat).OfEvent<TEvent>().AsEnumerable() ?? [];
 		/// <summary>
 		/// Returns all previous events of the specified type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static IEnumerable<TEvent> Before<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.InRange(e.Beat.BaseLevel.DefaultBeat, e.Beat).OfEvent<TEvent>().AsEnumerable() ?? [];
+		public static IEnumerable<TEvent> Before<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.InRange(new(), e.Beat).OfEvent<TEvent>().AsEnumerable() ?? [];
 		/// <summary>
 		/// Returns all events of the same type that follow, including events of the same beat but executed after itself.
 		/// </summary>

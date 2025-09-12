@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Adofai.Components;
+﻿using RhythmBase.Adofai.Components;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
@@ -10,7 +9,6 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>
 		/// Gets or sets the parent tile associated with this event.
 		/// </summary>
-		[JsonIgnore]
 		public Tile? Parent { get; set; }
 		/// <summary>  
 		/// Gets or sets a value indicating whether the event is active.  

@@ -105,17 +105,25 @@ namespace RhythmBase.RhythmDoctor.Components
 					case 'i':
 						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
 							goto default;
-						i[variableName[1] - '0'] = value is int v1 ? v1 : throw new ArgumentException("Value is not an integer.");
+						i[variableName[1] - '0'] =
+							value is int v1 ? v1 :
+							value is float v1f ? (int)Math.Round(v1f) :
+							throw new ArgumentException("Value is not an integer.");
 						break;
 					case 'f':
 						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
 							goto default;
-						f[variableName[1] - '0'] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
+						f[variableName[1] - '0'] =
+							value is float v2 ? v2 :
+							throw new ArgumentException("Value is not a float.");
 						break;
 					case 'b':
 						if (variableName.Length != 2 || !char.IsDigit(variableName[1]))
 							goto default;
-						b[variableName[1] - '0'] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
+						b[variableName[1] - '0'] =
+							value is bool v3 ? v3 :
+							value is float v3f ? v3f != 0 :
+							throw new ArgumentException("Value is not a boolean.");
 						break;
 					default:
 						FieldInfo? field = GetType().GetField(variableName) ?? throw new ArgumentException($"Variable '{variableName}' does not exist.");
@@ -126,9 +134,9 @@ namespace RhythmBase.RhythmDoctor.Components
 #else
 			get => variableName switch
 			{
-			['i', char ii] => i[ii - '0'],
-			['f', char fi] => f[fi - '0'],
-			['b', char bi] => b[bi - '0'],
+				['i', char ii] => i[ii - '0'],
+				['f', char fi] => f[fi - '0'],
+				['b', char bi] => b[bi - '0'],
 				_ => GetType().GetField(variableName)?.GetValue(this),
 			};
 			set
@@ -136,13 +144,21 @@ namespace RhythmBase.RhythmDoctor.Components
 				switch (variableName)
 				{
 					case ['i', char ii]:
-						i[ii - '0'] = value is int v1 ? v1 : throw new ArgumentException("Value is not an integer.");
+						i[ii - '0'] =
+							value is int v1 ? v1 :
+							value is float v1f ? (int)float.Round(v1f) :
+							throw new ArgumentException("Value is not an integer.");
 						break;
 					case ['f', char fi]:
-						f[fi - '0'] = value is float v2 ? v2 : throw new ArgumentException("Value is not a float.");
+						f[fi - '0'] =
+							value is float v2 ? v2 :
+							throw new ArgumentException("Value is not a float.");
 						break;
 					case ['b', char bi]:
-						b[bi - '0'] = value is bool v3 ? v3 : throw new ArgumentException("Value is not a boolean.");
+						b[bi - '0'] =
+							value is bool v3 ? v3 :
+							value is float v3f ? v3f != 0 :
+							throw new ArgumentException("Value is not a boolean.");
 						break;
 					default:
 						FieldInfo? field = GetType().GetField(variableName);
@@ -152,8 +168,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 #endif
 		}
-		public static float IIf(bool condition , float trueResult, float falseResult) => condition ? trueResult : falseResult;
-		
+		public static float IIf(bool condition, float trueResult, float falseResult) => condition ? trueResult : falseResult;
 		/// <summary>
 		/// Integer variables.
 		/// </summary>

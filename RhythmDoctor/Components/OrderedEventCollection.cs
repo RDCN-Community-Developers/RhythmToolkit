@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Components.Linq;
+﻿using RhythmBase.RhythmDoctor.Components.Linq;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
@@ -14,18 +13,15 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the total count of events in the collection.
 		/// </summary>
-		[JsonIgnore]
 		public virtual int Count => eventsBeatOrder.Sum((i) => i.Value.Count());
 		/// <summary>
 		/// Gets a value indicating whether the collection is read-only.
 		/// </summary>
-		[JsonIgnore]
 		public bool IsReadOnly { get; }
 		/// <summary>
 		/// Returns the beat of the last event.
 		/// </summary>
 		/// <returns>The beat of the last event.</returns>
-		[JsonIgnore]
 		public RDBeat Length => eventsBeatOrder.Keys.LastOrDefault();
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OrderedEventCollection"/> class.

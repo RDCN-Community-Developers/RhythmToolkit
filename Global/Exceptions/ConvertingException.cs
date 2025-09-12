@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
 
 namespace RhythmBase.Global.Exceptions
 {
@@ -8,7 +8,7 @@ namespace RhythmBase.Global.Exceptions
 	public class ConvertingException : RhythmBaseException
 	{
 #pragma warning disable IDE0052 // 删除未读的私有成员
-		private readonly JToken? _convertingEvent;
+		private readonly JsonElement? _convertingEvent;
 #pragma warning restore IDE0052 // 删除未读的私有成员
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConvertingException"/> class with a specified inner exception.
@@ -27,7 +27,7 @@ namespace RhythmBase.Global.Exceptions
 		/// </summary>
 		/// <param name="event">The event that caused the exception.</param>
 		/// <param name="innerException">The exception that is the cause of the current exception.</param>
-		public ConvertingException(JToken @event, Exception innerException)
+		public ConvertingException(JsonElement @event, Exception innerException)
 			: base($"An exception was thrown on reading the event. \"{innerException}\"")
 		{
 			_convertingEvent = @event;
@@ -37,7 +37,7 @@ namespace RhythmBase.Global.Exceptions
 		/// </summary>
 		/// <param name="event">The event that caused the exception.</param>
 		/// <param name="message">The exception that is the cause of the current exception.</param>
-		public ConvertingException(JToken @event, string message)
+		public ConvertingException(JsonElement @event, string message)
 			: base($"An exception was thrown on reading the event: {message}")
 		{
 			_convertingEvent = @event;

@@ -29,6 +29,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						values[2] is PatternGroup { GroupType: GroupType.Expression } pg03)
 					{
 						FieldAssignment(pg02.AssignableToken, pg03.FloatValue, variables);
+						pattern.FloatValue = pg03.FloatValue;
 					}
 					else if (values.Length == 1 &&
 						values[0] is PatternGroup { GroupType: GroupType.Expression } pg04)
@@ -56,6 +57,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 								PatternGroup { GroupType: GroupType.Expression } pg1
 							]:
 							FieldAssignment(pg0.AssignableToken, pg1.FloatValue, variables);
+							pattern.FloatValue = pg1.FloatValue;
 							break;
 						case [PatternGroup { GroupType: GroupType.Expression } pg0,]:
 							pattern.FloatValue = pg0.FloatValue;
@@ -351,14 +353,21 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 				case GroupType.Number:
 #if NETSTANDARD
 					if (values.Length == 1 &&
-						values[0] is PatternValue { TokenType: TokenType.Integer } pg40)
+						values[0] is PatternGroup { GroupType: GroupType.Identifier } pg40)
 					{
-						pattern.FloatValue = (int)pg40.Value.Value;
+						pattern.FloatValue = (int)pg40.FloatValue;
+						pattern.StringValue = pg40.StringValue;
+						pattern.AssignableToken = pg40.AssignableToken;
 					}
 					else if (values.Length == 1 &&
-						values[0] is PatternValue { TokenType: TokenType.Float } pg41)
+						values[0] is PatternValue { TokenType: TokenType.Integer } pg41)
 					{
-						pattern.FloatValue = (float)pg41.Value.Value;
+						pattern.FloatValue = (int)pg41.Value.Value;
+					}
+					else if (values.Length == 1 &&
+						values[0] is PatternValue { TokenType: TokenType.Float } pg42)
+					{
+						pattern.FloatValue = (float)pg42.Value.Value;
 					}
 					else if (values.Length == 1 &&
 						values[0] is PatternValue { TokenType: TokenType.True })
@@ -373,6 +382,11 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 #else
 					switch (values)
 					{
+						case [PatternGroup { GroupType: GroupType.Identifier} pg0,]:
+							pattern.FloatValue = pg0.FloatValue;
+							pattern.StringValue = pg0.StringValue;
+							pattern.AssignableToken = pg0.AssignableToken;
+							break;
 						case [PatternValue { TokenType: TokenType.Integer } pg0,]:
 							pattern.FloatValue = (int)pg0.Value.Value;
 							break;

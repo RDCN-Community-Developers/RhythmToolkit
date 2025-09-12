@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -34,13 +33,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the border color for the tint event.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
 		public PaletteColor BorderColor { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity for the tint event.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public int Opacity { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether this event is a tint.
@@ -50,7 +49,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the tint color for the tint event.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(IsTint)}")]
 		public PaletteColor TintColor { get; set; }
 		/// <summary>

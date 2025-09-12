@@ -1,14 +1,12 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Converters;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
+
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// An Expression
 	/// </summary>
-	[JsonConverter(typeof(ExpressionConverter))]
 	public struct RDExpression
 #if NET7_0_OR_GREATER
 		: INumber<RDExpression>

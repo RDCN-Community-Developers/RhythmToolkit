@@ -19,7 +19,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the scale factor for the planets.  
 		/// </summary>  
-		[EaseProperty]
+		[Tween]
 		public int Scale { get; set; }
 		/// <summary>  
 		/// Gets or sets the easing type for the scaling transition.  

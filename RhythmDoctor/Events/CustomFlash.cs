@@ -36,7 +36,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the end color of the flash.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public PaletteColor EndColor { get; set; }
 		/// <inheritdoc />
 		public float Duration { get; set; }
@@ -47,7 +47,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the end opacity of the flash.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public int EndOpacity { get; set; }
 		/// <inheritdoc />
 		public override EventType Type { get; }

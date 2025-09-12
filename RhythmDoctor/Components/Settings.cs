@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Text.Json;
+﻿using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>  
@@ -86,17 +85,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>  
 		/// Start time of preview music.  
 		/// </summary>  
-		[JsonConverter(typeof(SecondConverter))]
 		public TimeSpan PreviewSongStartTime { get; set; }
 		/// <summary>  
 		/// Duration of preview music.  
 		/// </summary>  
-		[JsonConverter(typeof(SecondConverter))]
 		public TimeSpan PreviewSongDuration { get; set; }
 		/// <summary>  
 		/// Hue offset or grayscale of the level name on the syringe.  
 		/// </summary>  
-		[JsonProperty("songNameHue")]
 		public float SongNameHueOrGrayscale { get; set; }
 		/// <summary>  
 		/// Whether grayscale is enabled.  
@@ -150,7 +146,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>  
 		/// Mods enabled for the level.  
 		/// </summary>  
-		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public List<string> Mods { get; set; } = [];
 		public Dictionary<string, JsonElement> ExtraData = [];
 	}

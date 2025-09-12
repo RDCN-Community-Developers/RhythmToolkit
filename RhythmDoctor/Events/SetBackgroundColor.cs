@@ -42,7 +42,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the color for the background.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public PaletteColor Color { get; set; }
 		/// <summary>
 		/// Gets or sets the interval for the event.
@@ -85,7 +85,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the horizontal scroll value.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
@@ -94,7 +94,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the vertical scroll value.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled

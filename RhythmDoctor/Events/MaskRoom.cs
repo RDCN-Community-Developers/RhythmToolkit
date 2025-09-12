@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -67,7 +66,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>
-		[JsonIgnore]
 		public RDRoom Room => new RDSingleRoom(checked((byte)Y));
 	}
 	/// <summary>

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Events;
+using System.Text.Json;
 namespace RhythmBase.Global.Settings
 {
 	/// <summary>
@@ -56,7 +56,7 @@ namespace RhythmBase.Global.Settings
 		/// Stores unreadable event data when the <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.UnreadableEventsHandling" /> is <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.Store" />.
 		/// </summary>
 		/// <returns></returns>
-		public List<(JObject item, string reason)> UnreadableEvents { get; set; } = [];
+		public List<(JsonDocument item, string reason)> UnreadableEvents { get; set; } = [];
 		/// <summary>  
 		/// Indicates whether the level elements' associated information are interlinked.  
 		/// Defaults to <see langword="true" />.  

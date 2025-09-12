@@ -16,7 +16,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the new room to which the row will be moved.  
 		/// </summary>  
-		public int NewRoom { get; set; } = 0;
+		[RDJsonDefaultSerializer]
+		public RDRoomIndex NewRoom { get; set; } = 0;
 
 		/// <summary>  
 		/// Gets or sets the transition type for reordering the row.  

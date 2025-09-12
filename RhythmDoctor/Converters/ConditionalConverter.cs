@@ -62,7 +62,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 						type = reader.ValueSpan;
 						if (type.IsEmpty)
 							return null;
-						break;
 					}
 					else if (propertyName.SequenceEqual("name"u8))
 						{
@@ -90,10 +89,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 				conditional = ReadLastHit(ref reader, serializer);
 			else if (type.SequenceEqual("PlayerMode"u8))
 				conditional = ReadPlayerMode(ref reader, serializer);
-			else if (type.SequenceEqual("TimeExecuted"u8))
+			else if (type.SequenceEqual("TimesExecuted"u8))
 				conditional = ReadTimesExecuted(ref reader, serializer);
 			else
 				return null;
+			reader.Read();
 			conditional.Name = name;
 			conditional.Tag = tag;
 			return conditional;

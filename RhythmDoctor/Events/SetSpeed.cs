@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
-using RhythmBase.RhythmDoctor.Components;
-
+﻿using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -24,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the speed for the event.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public float Speed { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the event.

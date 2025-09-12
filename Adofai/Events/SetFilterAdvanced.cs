@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
+using System.Text.Json;
 
 namespace RhythmBase.Adofai.Events
 {
@@ -54,7 +54,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>
 		/// Gets or sets the properties of the filter as a JSON object.
 		/// </summary>
-		public JObject FilterProperties { get; set; } = [];
+		public JsonDocument[] FilterProperties { get; set; } = [];
 		/// <summary>
 		/// Represents the target type for the filter effect.
 		/// </summary>

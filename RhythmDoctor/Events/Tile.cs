@@ -1,11 +1,9 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents a tile event in the rhythm base system.
 	/// </summary>
-	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class Tile : BaseDecorationAction, IEaseEvent
 	{
 		/// <summary>
@@ -27,19 +25,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the position of the tile.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
 		public RDPoint? Position { get; set; }
 		/// <summary>
 		/// Gets or sets the tiling of the tile.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Tiling)} is not null")]
 		public RDPoint? Tiling { get; set; }
 		/// <summary>
 		/// Gets or sets the speed of the tile.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
 		public RDPoint? Speed { get; set; }
 		/// <summary>

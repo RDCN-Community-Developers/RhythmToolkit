@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Defines the possible actions for a tag.

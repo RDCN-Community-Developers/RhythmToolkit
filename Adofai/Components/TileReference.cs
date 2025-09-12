@@ -1,12 +1,8 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Adofai.Converters;
-
-namespace RhythmBase.Adofai.Components
+﻿namespace RhythmBase.Adofai.Components
 {
 	/// <summary>  
 	/// Represents a reference to a tile, including its type and offset.  
 	/// </summary>  
-	[JsonConverter(typeof(TileReferenceConverter))]
 	public struct TileReference
 	{
 		/// <summary>  

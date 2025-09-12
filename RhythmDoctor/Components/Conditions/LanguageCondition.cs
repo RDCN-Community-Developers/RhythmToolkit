@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-namespace RhythmBase.RhythmDoctor.Components.Conditions
+﻿namespace RhythmBase.RhythmDoctor.Components.Conditions
 {
 	/// <summary>
 	/// Represents a condition based on the game language.
@@ -16,7 +15,6 @@ namespace RhythmBase.RhythmDoctor.Components.Conditions
 		/// <summary>
 		/// Gets or sets the game language.
 		/// </summary>
-		[JsonProperty(nameof(Language))]
 		public Languages Language
 		{
 			get;

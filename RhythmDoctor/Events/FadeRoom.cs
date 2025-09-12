@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -20,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the opacity level for the fade effect.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public uint Opacity { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the fade effect.
@@ -37,7 +36,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>
-		[JsonIgnore]
 		public RDRoom Room => new RDSingleRoom((byte)Y);
 	}
 }

@@ -95,23 +95,6 @@ namespace RhythmBase.RhythmDoctor.Components
 			get => Sound.Offset;
 			set => Sound.Offset = value;
 		}
-		internal RowStatus GetStatus(RDBeat beat)
-		{
-			MoveRow? moveRow = Parent?.Where<MoveRow>(i => i.Target == MoveRow.Targets.WholeRow, new RDRange(null, beat)).LastOrDefault();
-			return new RowStatus()
-			{
-				Beat = beat,
-				ParentRow = this,
-				PlayerType = Player,
-				Sound = Sound,
-				Position = new RDRotatedRectE()
-				{
-					Size = moveRow?.Scale,
-					Pivot = new(moveRow?.Pivot, 50),
-					Angle = moveRow?.Angle,
-				}
-			};
-		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Row"/> class.
 		/// </summary>

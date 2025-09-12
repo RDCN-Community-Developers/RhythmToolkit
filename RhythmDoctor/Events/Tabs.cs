@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.RhythmDoctor.Converters;
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Specifies the different tabs available in the RhythmBase application.  

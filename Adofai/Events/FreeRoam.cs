@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
@@ -28,7 +27,6 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>
 		/// Gets or sets the easing type for the Free Roam event.
 		/// </summary>
-		[JsonProperty("OutEase")]
 		public EaseType Ease { get; set; }
 		/// <summary>
 		/// Gets or sets the hitsound to be played on beats during the Free Roam event.

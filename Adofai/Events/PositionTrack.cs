@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Adofai.Components;
+﻿using RhythmBase.Adofai.Components;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
@@ -40,7 +39,6 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets a value indicating whether the track should stick to floors.  
 		/// </summary>  
-		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public bool? StickToFloors { get; set; }
 	}
 }

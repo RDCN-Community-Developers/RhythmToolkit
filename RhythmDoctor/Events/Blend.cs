@@ -31,5 +31,8 @@
 		/// No blend effect.  
 		/// </summary>  
 		None,
+		Additive,
+		Multipy,
+		Invert,
 	}
 }

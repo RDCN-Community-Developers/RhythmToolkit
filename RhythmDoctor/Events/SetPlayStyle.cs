@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Represents an event to set the play style.

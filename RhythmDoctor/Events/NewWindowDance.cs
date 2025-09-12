@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RhythmBase.Global.Components.Easing;
+﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -57,7 +56,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the position.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		public RDPointE Position { get; set; }
 		/// <summary>
 		/// Gets or sets the reference.
@@ -75,7 +74,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the speed.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Preset)}
 				is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Wrap
@@ -87,7 +86,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the amplitude.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Preset)}
 			is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move
@@ -97,7 +96,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the amplitude vector.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Preset)}
 			is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Ellipse
@@ -107,13 +106,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the angle.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move")]
 		public float? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the frequency.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Preset)}
 				is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Wrap
@@ -125,7 +124,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the period.
 		/// </summary>
-		[EaseProperty]
+		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer &&
 			$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset

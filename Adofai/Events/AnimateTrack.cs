@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to animate a track in the game.  
 	/// </summary>  
-	[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 	public class AnimateTrack : BaseTileEvent
 	{
 		/// <inheritdoc/>
