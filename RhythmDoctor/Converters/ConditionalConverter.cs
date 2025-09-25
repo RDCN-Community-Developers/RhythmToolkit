@@ -1,6 +1,7 @@
 ﻿using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.Conditions;
+using System.Buffers.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.Global.Extensions.EnumConverter;
@@ -64,7 +65,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 							return null;
 					}
 					else if (propertyName.SequenceEqual("name"u8))
-						{
+					{
 						reader.Read();
 						name = reader.GetString() ?? "";
 					}
@@ -109,7 +110,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					var propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName == "expression"u8)
+					if (propertyName.SequenceEqual("expression"u8))
 						condition.Expression = reader.GetString() ?? string.Empty;
 				}
 			}
@@ -126,9 +127,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					var propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName == "language"u8 && TryParse(reader.GetString(), out LanguageCondition.Languages languages))
+					if (propertyName.SequenceEqual("Language"u8) && TryParse(reader.ValueSpan, out LanguageCondition.Languages languages))
 						condition.Language = languages;
-					break;
 				}
 			}
 			return condition;
@@ -144,9 +144,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					var propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName == "row"u8)
+					if (propertyName.SequenceEqual("row"u8))
 						condition.Row = reader.GetSByte();
-					else if (propertyName == "result"u8 && EnumConverter.TryParse(reader.ValueSpan, out LastHitCondition.HitResult result))
+					else if (propertyName.SequenceEqual("result"u8) && TryParse(reader.ValueSpan, out LastHitCondition.HitResult result))
 						condition.Result = result;
 				}
 			}
@@ -163,7 +163,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					var propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName == "twoPlayerMode"u8)
+					if (propertyName.SequenceEqual("twoPlayerMode"u8))
 						condition.TwoPlayerMode = reader.GetBoolean();
 				}
 			}
@@ -180,7 +180,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					var propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName == "time"u8)
+					if (propertyName.SequenceEqual("time"u8))
 						condition.MaxTimes = reader.GetInt32();
 				}
 			}

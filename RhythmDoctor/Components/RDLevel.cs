@@ -2,11 +2,138 @@
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
+using System.Buffers;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Components
 {
+	internal class EscapeNewLineStream : Stream
+	{
+		private readonly Stream _inner;
+		private readonly byte[] _buffer;
+		private bool _inQuotes = false;
+		private bool _prevIsEscape = false;
+		private int _peeked = -1; // 用于缓存下一个字节
+
+		public EscapeNewLineStream(Stream inner)
+		{
+			_inner = inner;
+			_buffer = new byte[1];
+		}
+		public override bool CanRead => true;
+		public override bool CanSeek => false;
+		public override bool CanWrite => false;
+		public override long Length => throw new NotSupportedException();
+		public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+		public override void Flush() { }
+		public override int Read(byte[] buffer, int offset, int count) => ReadAsync(buffer, offset, count).GetAwaiter().GetResult();
+		public override async Task<int> ReadAsync(byte[] buffer,
+			int offset,
+			int count,
+			CancellationToken ct = default)
+		{
+			if (count == 0) return 0;
+			int written = 0;
+
+			static bool IsQuote(byte b) => b == (byte)'"';
+			static bool IsEscape(byte b) => b == (byte)'\\';
+			static bool IsCR(byte b) => b == 0x0D;
+			static bool IsLF(byte b) => b == 0x0A;
+
+			while (written < count)
+			{
+				byte b;
+				if (_peeked >= 0)
+				{
+					b = (byte)_peeked;
+					_peeked = -1;
+				}
+				else
+				{
+					int read = await _inner.ReadAsync(_buffer, 0, 1, ct);
+					if (read == 0) break; // EOF
+					b = _buffer[0];
+				}
+				//if (written < 10)
+				//	Console.BackgroundColor = ConsoleColor.DarkBlue;
+				//else
+				//	Console.BackgroundColor = ConsoleColor.Black;
+				//if (_inQuotes)
+				//	Console.ForegroundColor = ConsoleColor.Blue;
+				//else
+				//	Console.ForegroundColor = ConsoleColor.White;
+				//Console.Write((char)b);
+
+				if (IsQuote(b) && !_prevIsEscape)
+				{
+					_inQuotes = !_inQuotes;
+					_prevIsEscape = false;
+					buffer[offset + written++] = b;
+				}
+				else if (IsEscape(b) && _inQuotes)
+				{
+					_prevIsEscape = !_prevIsEscape;
+					buffer[offset + written++] = b;
+				}
+				else if (_inQuotes && IsCR(b))
+				{
+					// 可能是 \r\n
+					int read = await _inner.ReadAsync(_buffer, 0, 1, ct);
+					if (read > 0 && IsLF(_buffer[0]))
+					{
+						// \r\n -> \\r\\n
+						if (written + 4 > count)
+						{
+							_peeked = _buffer[0];
+							break;
+						}
+						buffer[offset + written++] = (byte)'\\';
+						buffer[offset + written++] = (byte)'r';
+						buffer[offset + written++] = (byte)'\\';
+						buffer[offset + written++] = (byte)'n';
+					}
+					else
+					{
+						// 只有 \r
+						if (written + 2 > count)
+						{
+							if (read > 0) _peeked = _buffer[0];
+							break;
+						}
+						buffer[offset + written++] = (byte)'\\';
+						buffer[offset + written++] = (byte)'r';
+						if (read > 0) _peeked = _buffer[0];
+					}
+					_prevIsEscape = false;
+				}
+				else if (_inQuotes && IsLF(b))
+				{
+					// \n -> \\n
+					if (written + 2 > count)
+						break;
+					buffer[offset + written++] = (byte)'\\';
+					buffer[offset + written++] = (byte)'n';
+					_prevIsEscape = false;
+				}
+				else
+				{
+					buffer[offset + written++] = b;
+					_prevIsEscape = false;
+				}
+			}
+			return written == 0 ? 0 : written;
+		}
+		public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+		public override void SetLength(long value) => throw new NotSupportedException();
+		public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+				_inner.Dispose();
+			base.Dispose(disposing);
+		}
+	}
 	/// <summary>
 	/// Rhythm Doctor level.
 	/// </summary>
@@ -159,7 +286,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public static RDLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+			//JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
 			string extension = Path.GetExtension(filepath);
 			RDLevel? level;
 			if (extension != ".rdzip" && extension != ".zip")
@@ -168,7 +295,7 @@ namespace RhythmBase.RhythmDoctor.Components
 					throw new RhythmBaseException("File not supported.");
 				settings.OnBeforeReading();
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-				level = JsonSerializer.Deserialize<RDLevel>(stream, options);
+				level = FromStream(stream, settings);// JsonSerializer.Deserialize<RDLevel>(stream, options);
 				level?._path = filepath;
 				settings.OnAfterReading();
 			}
@@ -182,7 +309,7 @@ namespace RhythmBase.RhythmDoctor.Components
 					using Stream stream = File.OpenRead(filepath);
 					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName);
 #elif NETSTANDARD2_0_OR_GREATER
-                    ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+					ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
 					level = FromFile(tempDirectory.GetFiles().Single(i => i.Extension == ".rdlevel").FullName, settings);
 					level.isZip = true;
@@ -212,7 +339,8 @@ namespace RhythmBase.RhythmDoctor.Components
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
 			RDLevel? level;
 			settings.OnBeforeReading();
-			level = JsonSerializer.Deserialize<RDLevel>(rdlevelStream, options);
+			using EscapeNewLineStream stream = new(rdlevelStream);
+			level = JsonSerializer.Deserialize<RDLevel>(stream, options);
 			settings.OnAfterReading();
 			return level ?? [];
 		}

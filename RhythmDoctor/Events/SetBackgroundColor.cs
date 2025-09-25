@@ -76,7 +76,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(Image)}.Count > 1
 			""")]
-		public int Fps { get; set; }
+		public float Fps { get; set; }
 		/// <summary>
 		/// Gets or sets the list of images for the background.
 		/// </summary>

@@ -174,6 +174,12 @@ namespace RhythmBase.Global.Components
 				return color;
 			throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
 		}
+		public static RDColor FromRgba(ReadOnlySpan<byte> hex)
+		{
+			if (TryFromRgba(hex, out RDColor color))
+				return color;
+			throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
+		}
 		/// <summary>
 		/// Tries to create an RDColor instance from a hexadecimal string.
 		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
@@ -181,39 +187,115 @@ namespace RhythmBase.Global.Components
 		/// <param name="hex">The hexadecimal string representing the color.</param>
 		/// <param name="color">When this method returns, contains the RDColor instance created from the hexadecimal string, if the conversion succeeded, or the default value if the conversion failed.</param>
 		/// <returns>true if the hexadecimal string was converted successfully; otherwise, false.</returns>
-#if NETSTANDARD
 		public static bool TryFromRgba(string hex, out RDColor color)
-#else
-		public static bool TryFromRgba(string hex, [MaybeNullWhen(false)] out RDColor color)
-#endif
 		{
 			hex = hex.Trim();
-#if NETSTANDARD
-			if (hex.StartsWith("#"))
-				hex = hex.Substring(1);
-#else
-			if (hex.StartsWith('#'))
-				hex = hex[1..];
-#endif
-			string? hex2 = hex.Length switch
-			{
-				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
-				4 => $"{hex[3]}{hex[3]}{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
-				6 => $"FF{hex}",
-#if NETSTANDARD
-				8 => $"{hex.Substring(6, 2)}{hex.Substring(0, 6)}",
-#else
-				8 => $"{hex[6..8]}{hex[0..6]}",
-#endif
-				_ => null,
-			};
-			if (hex2 is null)
+			if (hex.Length == 0)
 			{
 				color = default;
 				return false;
 			}
-			color = new RDColor(Convert.ToUInt32(hex2, 16));
-			return true;
+			if (hex[0] == '#')
+#if NETSTANDARD
+				hex = hex.Substring(1);
+#else
+				hex = hex[1..];
+#endif
+			byte a, r, g, b;
+			switch (hex.Length)
+			{
+				case 3:
+					color = new RDColor(
+						(uint)(255 << 24 |
+						(Convert.ToByte(new string(hex[0], 2), 16) << 16) |
+						Convert.ToByte(new string(hex[1], 2), 16) << 8 |
+						Convert.ToByte(new string(hex[2], 2), 16)));
+					return true;
+				case 4:
+					color = new RDColor(
+						(uint)(Convert.ToByte(new string(hex[3], 2), 16) << 24 |
+						(Convert.ToByte(new string(hex[0], 2), 16) << 16) |
+						Convert.ToByte(new string(hex[1], 2), 16) << 8 |
+						Convert.ToByte(new string(hex[2], 2), 16)));
+					return true;
+				case 6:
+					color = new RDColor(
+						(uint)(255 << 24 |
+						(Convert.ToByte(hex.Substring(0, 2), 16) << 16) |
+						Convert.ToByte(hex.Substring(2, 2), 16) << 8 |
+						Convert.ToByte(hex.Substring(4, 2), 16)));
+					return true;
+				case 8:
+					color = new RDColor(
+						(uint)(Convert.ToByte(hex.Substring(6, 2), 16) << 24 |
+						(Convert.ToByte(hex.Substring(0, 2), 16) << 16) |
+						Convert.ToByte(hex.Substring(2, 2), 16) << 8 |
+						Convert.ToByte(hex.Substring(4, 2), 16)));
+					return true;
+				default:
+					color = default;
+					return false;
+			}
+		}
+		private static byte FromChar(byte b)
+		{
+			return b switch
+			{
+				>= (byte)'0' and <= (byte)'9' => (byte)(b - (byte)'0'),
+				>= (byte)'a' and <= (byte)'f' => (byte)(b - (byte)'a' + 10),
+				>= (byte)'A' and <= (byte)'F' => (byte)(b - (byte)'A' + 10),
+				_ => throw new ArgumentException("Invalid hex character."),
+			};
+		}
+		public static bool TryFromRgba(ReadOnlySpan<byte> hex, out RDColor color)
+		{
+			if (hex.Length == 0)
+			{
+				color = default;
+				return false;
+			}
+			if (hex[0] == '#')
+				hex = hex.Slice(1);
+			byte a, r, g, b;
+			switch (hex.Length)
+			{
+				case 3:
+					color = new RDColor(
+						(uint)(
+						255 << 24 |
+						((FromChar(hex[0]) * 17) << 16) |
+						((FromChar(hex[1]) * 17) << 8) |
+						(FromChar(hex[2]) * 17)));
+					return true;
+				case 4:
+					color = new RDColor(
+						(uint)(
+						((FromChar(hex[3]) * 17) << 24) |
+						((FromChar(hex[0]) * 17) << 16) |
+						((FromChar(hex[1]) * 17) << 8) |
+						(FromChar(hex[2]) * 17)));
+					return true;
+				case 6:
+					color = new RDColor(
+						(uint)(
+						255 << 24 |
+						((FromChar(hex[0]) * 16 + FromChar(hex[1])) << 16) |
+						((FromChar(hex[2]) * 16 + FromChar(hex[3])) << 8) |
+						(FromChar(hex[4]) * 16 + FromChar(hex[5]))));
+					return true;
+				case 8:
+					string str = hex.Slice(6, 2).ToString();
+					color = new RDColor(
+						(uint)(
+						((FromChar(hex[6]) * 16 + FromChar(hex[7])) << 24) |
+						((FromChar(hex[0]) * 16 + FromChar(hex[1])) << 16) |
+						((FromChar(hex[2]) * 16 + FromChar(hex[3])) << 8) |
+						(FromChar(hex[4]) * 16 + FromChar(hex[5]))));
+					return true;
+				default:
+					color = default;
+					return false;
+			}
 		}
 		/// <summary>
 		/// Creates an RDColor instance from a 32-bit RGBA value.
@@ -339,7 +421,7 @@ namespace RhythmBase.Global.Components
 				g = hue2rgb(p, q, h);
 				b = hue2rgb(p, q, h - 1 / 3.0f);
 			}
-			return new RDColor((uint)(a << 24 | (int)(r * 255) << 16 | (int)(g * 255) << 8 | (int)(b * 255)));
+			return new RDColor((uint)(a << 24 | ((int)(r * 255) << 16) | (int)(g * 255) << 8 | (int)(b * 255)));
 		}
 		/// <summary>
 		/// Creates an RDColor object from HSV values.
@@ -369,7 +451,7 @@ namespace RhythmBase.Global.Components
 				case 4: r = t; g = p; b = v; break;
 				case 5: r = v; g = p; b = q; break;
 			}
-			return new RDColor((uint)(a << 24 | (int)(r * 255) << 16 | (int)(g * 255) << 8 | (int)(b * 255)));
+			return new RDColor((uint)(a << 24 | ((int)(r * 255) << 16) | (int)(g * 255) << 8 | (int)(b * 255)));
 		}
 		/// <summary>
 		/// Creates an RDColor instance from a color name.
