@@ -2,7 +2,6 @@
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
-using System.Buffers;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -296,7 +295,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				settings.OnBeforeReading();
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
 				level = FromStream(stream, settings);// JsonSerializer.Deserialize<RDLevel>(stream, options);
-				level?._path = filepath;
+				level?._path = System.IO.Path.GetFullPath(filepath);
 				settings.OnAfterReading();
 			}
 			else
@@ -388,7 +387,6 @@ namespace RhythmBase.RhythmDoctor.Components
 				JsonSerializer.Serialize(stream, this, options);
 			}
 			settings.OnAfterWriting();
-			_path = filepath;
 		}
 		/// <summary>
 		/// Serializes the current level to a JSON string.
