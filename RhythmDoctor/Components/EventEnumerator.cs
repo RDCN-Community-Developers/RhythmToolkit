@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			this.types = types;
 			this.range = range;
 			while (beats.MoveNext())
-				if ((range.Start is null || beats.Current >= range.Start) && collection.eventsBeatOrder[beats.Current]._types.Any(types.Contains))
+				if ((range.Start is null || beats.Current >= range.Start) && collection.eventsBeatOrder[beats.Current].ContainsTypes(types))
 				{
 					if (range.End is null || beats.Current < range.End)
 						events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
@@ -43,7 +43,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				while (beats.MoveNext())
 				{
-					if (!collection.eventsBeatOrder[beats.Current]._types.Any(types.Contains))
+					if (!collection.eventsBeatOrder[beats.Current].ContainsTypes(types))
 					{
 						continue;
 					}

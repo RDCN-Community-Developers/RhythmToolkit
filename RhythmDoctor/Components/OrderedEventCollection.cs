@@ -108,7 +108,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <returns>An enumerator for the collection.</returns>
 		public IEnumerator<IBaseEvent> GetEnumerator() => new EventEnumerator<IBaseEvent>(this);
-		//internal IEnumerator<TEvent> GetEnumerator<TEvent>(RDBeat? start, RDBeat? end) where TEvent : IBaseEvent => new EventEnumerator<TEvent>(this, start, end);
 		internal IEnumerator<TEvent> GetEnumerator<TEvent>(float? start, float? end) where TEvent : IBaseEvent => new EventEnumerator<TEvent>(this, new RDRange(
 			start is null ? null : new(start.Value),
 			end is null ? null : new(end.Value)));

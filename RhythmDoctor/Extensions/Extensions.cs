@@ -303,51 +303,265 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <summary>
 		/// Returns all previous events of the same type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.InRange(new(), e.Beat).OfEvent<TEvent>().AsEnumerable() ?? [];
+		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
+		{
+			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
+			{
+				if (enumerator.Current.Value.ContainsTypes(types))
+					foreach (var item in enumerator.Current.Value)
+					{
+						if (item as TEvent is TEvent o)
+							yield return o;
+					}
+			}
+			if (enumerator.Current.Key != e.Beat)
+				yield break;
+			if (enumerator.Current.Value.ContainsTypes(types))
+				foreach (var item in enumerator.Current.Value)
+				{
+					if (item == e)
+						yield break;
+					if (item as TEvent is TEvent o)
+						yield return o;
+				}
+		}
 		/// <summary>
 		/// Returns all previous events of the specified type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static IEnumerable<TEvent> Before<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.InRange(new(), e.Beat).OfEvent<TEvent>().AsEnumerable() ?? [];
+		public static IEnumerable<TEvent> Before<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
+		{
+			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
+			{
+				if (enumerator.Current.Value.ContainsTypes(types))
+					foreach (var item in enumerator.Current.Value)
+					{
+						if (item as TEvent is TEvent o)
+							yield return o;
+					}
+			}
+			if (enumerator.Current.Key != e.Beat || !enumerator.Current.Value.ContainsTypes(types))
+				yield break;
+			foreach (var item in enumerator.Current.Value)
+			{
+				if (item == e)
+					yield break;
+				if (item as TEvent is TEvent o)
+					yield return o;
+			}
+		}
+
 		/// <summary>
 		/// Returns all events of the same type that follow, including events of the same beat but executed after itself.
 		/// </summary>
-		public static IEnumerable<TEvent> After<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.InRange(e.Beat, null).OfEvent<TEvent>().AsEnumerable() ?? [];
+		public static IEnumerable<TEvent> After<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
+		{
+			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			bool moved;
+			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
+			if (!moved)
+				yield break;
+			bool flag = false;
+			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
+			{
+				foreach (var item in enumerator.Current.Value)
+				{
+					if (flag && item as TEvent is TEvent o)
+						yield return o;
+					if (item == e)
+						flag = true;
+				}
+			}
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current.Value.ContainsTypes(types))
+					foreach (var item in enumerator.Current.Value)
+					{
+						if (item as TEvent is TEvent o)
+							yield return o;
+					}
+			}
+		}
+
 		/// <summary>
 		/// Returns all events of the specified type that follow, including events of the same beat but executed after itself.
 		/// </summary>
-		public static IEnumerable<TEvent> After<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Beat.BaseLevel?.InRange(e.Beat, null).OfEvent<TEvent>().AsEnumerable() ?? [];
+		public static IEnumerable<TEvent> After<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
+		{
+			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			bool moved;
+			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
+			if (!moved)
+				yield break;
+			bool flag = false;
+			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
+			{
+				foreach (var item in enumerator.Current.Value)
+				{
+					if (flag && item as TEvent is TEvent o)
+						yield return o;
+					if (item == e)
+						flag = true;
+				}
+			}
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current.Value.ContainsTypes(types))
+					foreach (var item in enumerator.Current.Value)
+					{
+						if (item as TEvent is TEvent o)
+							yield return o;
+					}
+			}
+		}
+
 		/// <summary>
 		/// Returns the previous event of the same type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static TEvent Front<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Before().Last();
+		public static TEvent Front<TEvent>(this TEvent e) where TEvent : class, IBaseEvent => e.FrontOrDefault() ?? throw new InvalidOperationException("");
 		/// <summary>
 		/// Returns the previous event of the specified type, including events of the same beat but executed before itself.
 		/// </summary>
-		public static TEvent Front<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Before<TEvent>().Last();
+		public static TEvent Front<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent => e.FrontOrDefault<TEvent>() ?? throw new InvalidOperationException("");
 		/// <summary>
 		/// Returns the previous event of the same type, including events of the same beat but executed before itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent? FrontOrDefault<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.Before().LastOrDefault();
+		public static TEvent? FrontOrDefault<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
+		{
+			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			TEvent? front = null;
+			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
+			{
+				if (enumerator.Current.Value.ContainsTypes(types))
+					foreach (var item in enumerator.Current.Value)
+					{
+						if (item as TEvent is TEvent o)
+							front = o;
+					}
+			}
+			if (enumerator.Current.Key != e.Beat || !enumerator.Current.Value.ContainsTypes(types))
+				return front;
+			foreach (var item in enumerator.Current.Value)
+			{
+				if (item == e)
+					return front;
+				if (item as TEvent is TEvent o)
+					front = o;
+			}
+			throw new InvalidOperationException();
+		}
+
 		/// <summary>
 		/// Returns the previous event of the specified type, including events of the same beat but executed before itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent? FrontOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.Before<TEvent>().LastOrDefault();
+		public static TEvent? FrontOrDefault<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
+		{
+			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			TEvent? front = null;
+			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
+			{
+				if (enumerator.Current.Value.ContainsTypes(types))
+					foreach (var item in enumerator.Current.Value)
+					{
+						if (item as TEvent is TEvent o)
+							front = o;
+					}
+			}
+			if (enumerator.Current.Key != e.Beat || !enumerator.Current.Value.ContainsTypes(types))
+				return front;
+			foreach (var item in enumerator.Current.Value)
+			{
+				if (item == e)
+					return front;
+				if (item as TEvent is TEvent o)
+					front = o;
+			}
+			throw new InvalidOperationException();
+		}
+
 		/// <summary>
 		/// Returns the next event of the same type, including events of the same beat but executed after itself.
 		/// </summary>
-		public static TEvent Next<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.After().First();
+		public static TEvent Next<TEvent>(this TEvent e) where TEvent : class, IBaseEvent => e.NextOrDefault() ?? throw new InvalidOperationException("");
 		/// <summary>
 		/// Returns the next event of the specified type, including events of the same beat but executed after itself.
 		/// </summary>
-		public static TEvent Next<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().First();
+		public static TEvent Next<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent => e.NextOrDefault<TEvent>() ?? throw new InvalidOperationException("");
 		/// <summary>
 		/// Returns the next event of the same type, including events of the same beat but executed after itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent? NextOrDefault<TEvent>(this TEvent e) where TEvent : IBaseEvent => e.After().FirstOrDefault();
+		public static TEvent? NextOrDefault<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
+		{
+			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			bool moved;
+			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
+			if(!moved)
+				return null;
+			bool flag = false;
+			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
+			{
+				foreach (var item in enumerator.Current.Value)
+				{
+					if (flag && item as TEvent is TEvent o)
+						return o;
+					if (item == e)
+						flag = true;
+				}
+			}
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current.Value.ContainsTypes(types))
+					foreach (var item in enumerator.Current.Value)
+					{
+						if (item as TEvent is TEvent o)
+							return o;
+					}
+			}
+			return null;
+		}
+
 		/// <summary>
 		/// Returns the next event of the specified type, including events of the same beat but executed after itself. Returns <see langword="null" /> if it does not exist.
 		/// </summary>
-		public static TEvent? NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().FirstOrDefault();      //?
+		public static TEvent? NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
+		{
+			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			bool moved;
+			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
+			if (!moved)
+				return null;
+			bool flag = false;
+			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
+			{
+				foreach (var item in enumerator.Current.Value)
+				{
+					if (flag && item as TEvent is TEvent o)
+						return o;
+					if (item == e)
+						flag = true;
+				}
+			}
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current.Value.ContainsTypes(types))
+					foreach (var item in enumerator.Current.Value)
+					{
+						if (item as TEvent is TEvent o)
+							return o;
+					}
+			}
+			return null;
+		}
+
 		/// <summary>
 		/// Compares this <see cref="BaseEvent"/> instance with another <see cref="BaseEvent"/> instance.
 		/// </summary>
