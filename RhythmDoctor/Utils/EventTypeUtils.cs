@@ -123,7 +123,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 																																	  where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
 																																	  select ToEnum(j))
 			.ToArray()));
-		internal static readonly ReadOnlyCollection<Type> GroupTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
+		internal static readonly ReadOnlyCollection<Type> MacroTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
 																		where
 																			typeof(MacroEvent).IsAssignableFrom(i) &&
 																			i != typeof(MacroEvent) &&

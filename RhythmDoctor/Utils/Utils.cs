@@ -20,6 +20,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 				{
 					new SettingsConverter(),
 					new AudioConverter(),
+					new PaletteColorConverter(),
 					new DialogueExchangeConverter(),
 					new PlayerTypeGroupConverter(),
 					new CpuTypeGroupConverter(),

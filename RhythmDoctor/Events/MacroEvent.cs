@@ -118,7 +118,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				Condition = Condition,
 				Active = Active,
 				Action = TagActions.Run,
-				ActionTag = $"{RhythmBaseMacroEventHeader}{EventTypeUtils.GroupTypes.IndexOf(GetType()):X8}{DataId:X8}",
+				ActionTag = $"{RhythmBaseMacroEventHeader}{EventTypeUtils.MacroTypes.IndexOf(GetType()):X8}{DataId:X8}",
 			};
 		}
 #if NETSTANDARD
@@ -183,7 +183,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				result = null;
 				return false;
 			}
-			Type? type = EventTypeUtils.GroupTypes.FirstOrDefault(i => i.FullName == types[typeIndex])
+			Type? type = EventTypeUtils.MacroTypes.FirstOrDefault(i => i.FullName == types[typeIndex])
 				?? throw new IllegalEventTypeException(types[typeIndex], "This value does not exist in the EventType enumeration.");
 			MacroEvent group = (MacroEvent)Activator.CreateInstance(type)!;
 			group.DataId = id;

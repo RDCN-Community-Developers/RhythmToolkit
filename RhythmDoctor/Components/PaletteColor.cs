@@ -10,7 +10,6 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// 
 	/// </remarks>
 	/// <param name="enableAlpha">Specifies whether this object supports alpha channel.</param>
-	[JsonConverter(typeof(PaletteColorConverter))]
 	public struct PaletteColor(bool enableAlpha)
 	{
 		/// <summary>
@@ -69,9 +68,16 @@ namespace RhythmBase.RhythmDoctor.Components
 		public RDColor Value => EnablePanel ? default : _color;
 		/// <inheritdoc/>
 		public override string ToString() => EnablePanel ? $"[{_panel}]{Value:#AARRGGBB}" : "[-]" + Value.ToString();
+		/// <summary>
+		/// Deserializes the specified string value into the current <see cref="PaletteColor"/> instance.
+		/// </summary>
+		/// <param name="value">
+		/// The string representation of the palette color. If the value starts with "pal", it is interpreted as a palette index (e.g., "pal3").
+		/// Otherwise, it is interpreted as a custom color in RGBA format.
+		/// </param>
 		public void Deserialize(string value)
 		{
-			if(value.StartsWith("pal"))
+			if (value.StartsWith("pal"))
 			{
 				_panel = int.Parse(value.Substring(3));
 				_color = default;
@@ -82,6 +88,13 @@ namespace RhythmBase.RhythmDoctor.Components
 				_panel = -1;
 			}
 		}
+		/// <summary>
+		/// Serializes the current <see cref="PaletteColor"/> instance to a string representation.
+		/// </summary>
+		/// <returns>
+		/// A string representing the palette color. If the color is from a palette, returns "pal" followed by the palette index.
+		/// Otherwise, returns the color in "RRGGBBAA" or "RRGGBB" format depending on whether alpha is enabled.
+		/// </returns>
 		public string Serialize() => EnablePanel ? $"pal{_panel}" : EnableAlpha ? Value.ToString("RRGGBBAA") : Value.ToString("RRGGBB");
 		/// <summary>  
 		/// Implicitly converts a <see cref="PaletteColor"/> instance to an <see cref="RDColor"/>.  
@@ -89,15 +102,15 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="paletteColor">The <see cref="PaletteColor"/> instance to convert.</param>  
 		/// <returns>The <see cref="RDColor"/> value of the <see cref="PaletteColor"/>.</returns>  
 		public static implicit operator RDColor(PaletteColor paletteColor) => paletteColor.Value;
-		///// <summary>  
-		///// Implicitly converts an <see cref="RDColor"/> to a <see cref="PaletteColor"/> instance.  
-		///// </summary>  
-		///// <param name="color">The <see cref="RDColor"/> to convert.</param>  
-		///// <returns>A new <see cref="PaletteColor"/> instance with the specified <see cref="RDColor"/>.</returns>  
-		//public static implicit operator PaletteColor(RDColor color) => new PaletteColor(color.A != byte.MaxValue)
-		//{
-		//	Color = color
-		//};
+		/// <summary>  
+		/// Implicitly converts an <see cref="RDColor"/> to a <see cref="PaletteColor"/> instance.  
+		/// </summary>  
+		/// <param name="color">The <see cref="RDColor"/> to convert.</param>  
+		/// <returns>A new <see cref="PaletteColor"/> instance with the specified <see cref="RDColor"/>.</returns>  
+		public static implicit operator PaletteColor(RDColor color) => new PaletteColor(color.A != byte.MaxValue)
+		{
+			Color = color
+		};
 		private int _panel;
 		private RDColor _color;
 	}

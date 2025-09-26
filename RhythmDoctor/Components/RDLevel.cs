@@ -660,16 +660,16 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			if (keepCpb)
 			{
-				SetCrotchetsPerBar? frt = item.FrontOrDefault();
 				SetCrotchetsPerBar? nxt = item.NextOrDefault();
 				//更新拍号
 				//RefreshCPBs(item._beat);
 				//添加事件
 				base.Add(item);
-				//更新计算器
-				Calculator.Refresh();
 				if (nxt != null)
 				{
+					SetCrotchetsPerBar? frt = item.FrontOrDefault();
+					//更新计算器
+					Calculator.Refresh();
 					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
 						i.Type != EventType.SetCrotchetsPerBar &&
 						i._beat < nxt._beat);
@@ -706,10 +706,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			if (keepCpb)
 			{
-				SetCrotchetsPerBar? frt = item.FrontOrDefault();
 				SetCrotchetsPerBar? nxt = item.NextOrDefault();
 				if (nxt != null)
 				{
+					SetCrotchetsPerBar? frt = item.FrontOrDefault();
 					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
 						i.Type != EventType.SetCrotchetsPerBar &&
 						i._beat < nxt._beat);

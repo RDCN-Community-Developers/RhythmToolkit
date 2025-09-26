@@ -22,6 +22,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					5 => t[3] is >= (byte)'0' and <= (byte)'9' && t[4] is >= (byte)'0' and <= (byte)'9'
 						? (t[3] - '0') * 10 + (t[4] - '0')
 						: throw new Exception(""),
+					_ => throw new Exception(""),
 				}) }
 				: new() { Color = RDColor.FromRgba(t) };
 #else
