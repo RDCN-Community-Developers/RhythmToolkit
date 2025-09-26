@@ -70,6 +70,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 						string[]? types = [];
 						JsonElement[]? data = [];
 						Comment? maybeDataComment = null;
+						List<JsonDocument> maybeIllegalAt = [];
 						while (reader.Read())
 						{
 							if (reader.TokenType == JsonTokenType.EndArray)
@@ -109,24 +110,27 @@ namespace RhythmBase.RhythmDoctor.Converters
 							else if (e is AdvanceText at)
 								advanceTexts.Add(at);
 						}
-						HashSet<int> matchedIds = [];
-						foreach (var mm in maybeMacroEvents)
+						if (Settings.EnableMacroEvent && maybeDataComment != null && types != null && data != null)
 						{
-							if (MacroEvent.TryParse(mm, types, out MacroEvent? result))
+							HashSet<int> matchedIds = [];
+							foreach (var mm in maybeMacroEvents)
 							{
-								matchedIds.Add(result.DataId);
-								result._data = data[(
-										result.DataId < data.Length ? result.DataId : throw new IndexOutOfRangeException($"DataId {result.DataId} is out of range.")
-									)];
-								result.Flush();
-								level.Add(result);
+								if (MacroEvent.TryParse(mm, types, out MacroEvent? result))
+								{
+									matchedIds.Add(result!.DataId);
+									if (result.DataId >= data.Length)
+										Settings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(mm, options), $"DataId {result.DataId} is out of range.");
+									result._data = data[result.DataId];
+									result.Flush();
+									level.Add(result);
+								}
 							}
-						}
-						foreach (var mms in maybeGeneratedEvents)
-						{
-							if (!matchedIds.Contains(mms.Key))
-								foreach (var e in mms.Value)
-									level.Add(e);
+							foreach (var mms in maybeGeneratedEvents)
+							{
+								if (!matchedIds.Contains(mms.Key))
+									foreach (var e in mms.Value)
+										level.Add(e);
+							}
 						}
 						foreach (var at in advanceTexts)
 						{
@@ -139,7 +143,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 							}
 							else
 							{
-								//Console.WriteLine($"Warning: AdvanceText at bar {at.Beat.Bar}, beat {at.Beat.Beat} references non-existent FloatingText id {targetId}.");
+								Settings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(at, options), $"AdvanceText references non-existent FloatingText id {targetId}.");
 							}
 						}
 					}

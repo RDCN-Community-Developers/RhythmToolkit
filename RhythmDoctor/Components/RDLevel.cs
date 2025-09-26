@@ -553,10 +553,9 @@ namespace RhythmBase.RhythmDoctor.Components
 			// Set the default beat calculator
 			((BaseEvent)item)._beat._calculator = Calculator;
 			// Some events can only be at the beginning of a bar
-			if (item is IBarBeginningEvent @event && ((BaseEvent)item)._beat.BarBeat.beat != 1f)
-				throw new IllegalBeatException(@event);
+			if (item is IBarBeginningEvent e && ((BaseEvent)item)._beat.BarBeat.beat != 1f)
+				throw new IllegalBeatException(e);
 			// Update the beat's associated level
-			((BaseEvent)item)._beat._calculator = Calculator;
 			((BaseEvent)item)._beat.ResetCache();
 			if (item is Comment comment && comment.Parent == null)
 				// Comment events may or may not be in the decoration section

@@ -187,7 +187,21 @@ namespace RhythmBase.Global.Components
 		/// <param name="hex">The hexadecimal string representing the color.</param>
 		/// <param name="color">When this method returns, contains the RDColor instance created from the hexadecimal string, if the conversion succeeded, or the default value if the conversion failed.</param>
 		/// <returns>true if the hexadecimal string was converted successfully; otherwise, false.</returns>
+		private static byte FromChar(byte b)
+		{
+			return b switch
+			{
+				>= (byte)'0' and <= (byte)'9' => (byte)(b - (byte)'0'),
+				>= (byte)'a' and <= (byte)'f' => (byte)(b - (byte)'a' + 10),
+				>= (byte)'A' and <= (byte)'F' => (byte)(b - (byte)'A' + 10),
+				_ => throw new ArgumentException("Invalid hex character."),
+			};
+		}
+#if NETSTANDARD
 		public static bool TryFromRgba(string hex, out RDColor color)
+#else
+		public static bool TryFromRgba(string hex, [MaybeNullWhen(false)] out RDColor color)
+#endif
 		{
 			hex = hex.Trim();
 			if (hex.Length == 0)
@@ -237,17 +251,11 @@ namespace RhythmBase.Global.Components
 					return false;
 			}
 		}
-		private static byte FromChar(byte b)
-		{
-			return b switch
-			{
-				>= (byte)'0' and <= (byte)'9' => (byte)(b - (byte)'0'),
-				>= (byte)'a' and <= (byte)'f' => (byte)(b - (byte)'a' + 10),
-				>= (byte)'A' and <= (byte)'F' => (byte)(b - (byte)'A' + 10),
-				_ => throw new ArgumentException("Invalid hex character."),
-			};
-		}
+#if NETSTANDARD
 		public static bool TryFromRgba(ReadOnlySpan<byte> hex, out RDColor color)
+#else
+		public static bool TryFromRgba(ReadOnlySpan<byte> hex, [MaybeNullWhen(false)] out RDColor color)
+#endif
 		{
 			if (hex.Length == 0)
 			{
@@ -256,7 +264,6 @@ namespace RhythmBase.Global.Components
 			}
 			if (hex[0] == '#')
 				hex = hex.Slice(1);
-			byte a, r, g, b;
 			switch (hex.Length)
 			{
 				case 3:
@@ -379,6 +386,59 @@ namespace RhythmBase.Global.Components
 			}
 			color = new RDColor(Convert.ToUInt32(hex2, 16));
 			return true;
+		}
+#if NETSTANDARD
+		public static bool TryFromArgb(ReadOnlySpan<byte> hex, out RDColor color)
+#else
+		public static bool TryFromArgb(ReadOnlySpan<byte> hex, [MaybeNullWhen(true)] out RDColor color)
+#endif
+		{
+			if (hex.Length == 0)
+			{
+				color = default;
+				return false;
+			}
+			if (hex[0] == '#')
+				hex = hex.Slice(1);
+			switch (hex.Length)
+			{
+				case 3:
+					color = new RDColor(
+						(uint)(
+						255 << 24 |
+						((FromChar(hex[0]) * 17) << 16) |
+						((FromChar(hex[1]) * 17) << 8) |
+						(FromChar(hex[2]) * 17)));
+					return true;
+				case 4:
+					color = new RDColor(
+						(uint)(
+						((FromChar(hex[0]) * 17) << 24) |
+						((FromChar(hex[1]) * 17) << 16) |
+						((FromChar(hex[2]) * 17) << 8) |
+						(FromChar(hex[3]) * 17)));
+					return true;
+				case 6:
+					color = new RDColor(
+						(uint)(
+						255 << 24 |
+						((FromChar(hex[0]) * 16 + FromChar(hex[1])) << 16) |
+						((FromChar(hex[2]) * 16 + FromChar(hex[3])) << 8) |
+						(FromChar(hex[4]) * 16 + FromChar(hex[5]))));
+					return true;
+				case 8:
+					string str = hex.Slice(6, 2).ToString();
+					color = new RDColor(
+						(uint)(
+						((FromChar(hex[0]) * 16 + FromChar(hex[1])) << 24) |
+						((FromChar(hex[2]) * 16 + FromChar(hex[3])) << 16) |
+						((FromChar(hex[4]) * 16 + FromChar(hex[5])) << 8) |
+						(FromChar(hex[6]) * 16 + FromChar(hex[7]))));
+					return true;
+				default:
+					color = default;
+					return false;
+			}
 		}
 		/// <summary>
 		/// Creates an <see cref="RDColor"/> instance from a 32-bit ARGB value.

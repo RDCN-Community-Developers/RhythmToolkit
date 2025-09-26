@@ -56,7 +56,30 @@ namespace RhythmBase.Global.Settings
 		/// Stores unreadable event data when the <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.UnreadableEventsHandling" /> is <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.Store" />.
 		/// </summary>
 		/// <returns></returns>
-		public List<(JsonDocument item, string reason)> UnreadableEvents { get; set; } = [];
+		public List<(JsonElement item, string reason)> UnreadableEvents { get; set; } = [];
+		internal bool HandleInactiveEvent(BaseEvent item)
+		{
+			switch (InactiveEventsHandling)
+			{
+				case InactiveEventsHandling.Store:
+					InactiveEvents.Add(item);
+					break;
+				case InactiveEventsHandling.Retain:
+					return false;
+			}
+			return true;
+		}
+		internal void HandleUnreadableEvent(JsonElement item, string reason)
+		{
+			switch (UnreadableEventsHandling)
+			{
+				case UnreadableEventHandling.ThrowException:
+					throw new InvalidOperationException($"Unreadable event: {reason}");
+				case UnreadableEventHandling.Store:
+					UnreadableEvents.Add((item, reason));
+					break;
+			}
+		}
 		/// <summary>  
 		/// Indicates whether the level elements' associated information are interlinked.  
 		/// Defaults to <see langword="true" />.  
