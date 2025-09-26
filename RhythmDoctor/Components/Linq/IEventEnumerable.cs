@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace RhythmBase.RhythmDoctor.Components.Linq
 {
-	public interface IEventEnumerable<T> : IEnumerable<T> where T : IBaseEvent
+	public interface IEventEnumerable<out T> : IEnumerable<T> where T : IBaseEvent
 	{
 	}
 }

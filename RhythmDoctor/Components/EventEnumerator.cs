@@ -61,29 +61,19 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		public void Dispose()
 		{
-			//if (collection._currentModifier == this)
-			//{
-			//	collection._currentModifier = null;
-			//	var values = collection._modifierInstances[this];
-			//	while (values.Count > 0)
-			//	{
-			//		(IBaseEvent e, RDBeat b) = values.Dequeue();
-			//		e.Beat = b;
-			//	}
-			//	collection._modifierInstances.Remove(this);
-			//}
-			//else
-			//{
-			//	if (collection._modifierInstances[this].Count > 0)
-			//		throw new InvalidOperationException("Cannot dispose an enumerator while there are modifying events in the queue.");
-			//}
 		}
 		public void Reset() => throw new NotSupportedException();
-		public EventEnumerator<TEvent2> OfEvent<TEvent2>() where TEvent2 : IBaseEvent
+		public IEventEnumerable<TEvent2> OfEvent<TEvent2>() where TEvent2 : IBaseEvent
 		{
 			EventType[] types = [.. this.types.Intersect(EventTypeUtils.ToEnums(typeof(TEvent2)))];
 			this.types = types;
 			return this as EventEnumerator<TEvent2> ?? new(collection, types, range);
+		}
+		public IEventEnumerable<IBaseEvent> WithEvent<TEvent2>() where TEvent2 : IBaseEvent
+		{
+			EventType[] types = [.. this.types.Union(EventTypeUtils.ToEnums(typeof(TEvent2)))];
+			this.types = types;
+			return new EventEnumerator<IBaseEvent>(collection, types, range) ;
 		}
 		public EventEnumerator<TEvent> InRange(RDRange range)
 		{
