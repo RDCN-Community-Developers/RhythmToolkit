@@ -1,6 +1,7 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
+using System.Text;
 using System.Text.RegularExpressions;
 using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
@@ -35,6 +36,64 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			};
 			e.Children.Add(A);
 			return A;
+		}
+		/// <summary>
+		/// Splits the <see cref="FloatingText"/> text into an array of strings based on custom delimiters.
+		/// Supports '/' as a line break, '\n' as a newline, and escape sequences such as '\\n' and '\/'.
+		/// </summary>
+		/// <param name="e">The <see cref="FloatingText"/> instance whose text will be split.</param>
+		/// <returns>
+		/// An array of strings, each representing a split segment of the original text.
+		/// Returns an empty array if <see cref="FloatingText.Text"/> is null or empty.
+		/// </returns>
+		public static string[] Texts(this FloatingText e)
+		{
+			if (string.IsNullOrEmpty(e.Text))
+				return [];
+			List<string> strs = [];
+			StringBuilder sb = new();
+			int i = 0;
+			while (i < e.Text.Length)
+			{
+				char c = e.Text[i];
+				switch (c)
+				{
+					case '/':
+						strs.Add(sb.ToString());
+						break;
+					case '\\':
+						if (i + 1 >= e.Text.Length)
+						{
+							sb.Append(c);
+							break;
+						}
+						i++;
+						char nextChar = e.Text[i];
+						switch (nextChar)
+						{
+							case 'n':
+								sb.Append('\n');
+								break;
+							case '/':
+								sb.Append('/');
+								break;
+							default:
+								sb.Append(c);
+								sb.Append(nextChar);
+								break;
+						}
+						break;
+					case '\n':
+						strs.Add(sb.ToString());
+						sb.Clear();
+						break;
+					default:
+						sb.Append(c);
+						break;
+				}
+				i++;
+			}
+			return [.. strs];
 		}
 		/// <summary>
 		/// Get the end beat of the duration.

@@ -1,5 +1,7 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Extensions;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -27,7 +29,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the parent floating text associated with the event.
 		/// </summary>
 		[RDJsonIgnore]
-		public FloatingText Parent { get; internal set; } = new();
+		public FloatingText? Parent { get; internal set; }
 		/// <summary>
 		/// Gets or sets the fade-out duration for the text.
 		/// </summary>
@@ -38,9 +40,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the ID of the parent floating text.
 		/// </summary>
 		[RDJsonNotIgnore]
-		internal int Id => Parent.Id;
+		internal int Id => Parent?.Id ?? -1;
 		/// <inheritdoc/>
-		public override string ToString() => base.ToString() + $" Index:{Parent.Children.IndexOf(this)}";
+		public override string ToString()
+		{
+			string[]? texts = Parent?.Texts();
+			int? index = Parent?.Children.IndexOf(this);
+			if (texts is not null && index is not null && texts.Length > index + 1)
+			{
+				return base.ToString() + $" \"{texts[index.Value + 1]}\"";
+			}
+			return base.ToString() + $" ?";
+		}
+
 		private string GetDebuggerDisplay() => ToString();
 	}
 }
