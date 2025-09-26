@@ -349,6 +349,34 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static TEvent? NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : IBaseEvent => e.After<TEvent>().FirstOrDefault();      //?
 		/// <summary>
+		/// Compares this <see cref="BaseEvent"/> instance with another <see cref="BaseEvent"/> instance.
+		/// </summary>
+		/// <param name="e">The current <see cref="BaseEvent"/> instance.</param>
+		/// <param name="obj">The <see cref="BaseEvent"/> instance to compare with.</param>
+		/// <returns>
+		/// <para>0 if both events are the same instance.</para>
+		/// <para>-1 if <paramref name="e"/> should be ordered before <paramref name="obj"/>.</para>
+		/// <para>1 if <paramref name="e"/> should be ordered after <paramref name="obj"/>.</para>
+		/// </returns>
+		/// <exception cref="RhythmBaseException">
+		/// Thrown if either event has an empty beat, or if the event order cannot be determined.
+		/// </exception>
+		public static int CompareTo(this BaseEvent e, BaseEvent obj)
+		{
+			if (e.Beat.IsEmpty || obj.Beat.IsEmpty)
+				throw new RhythmBaseException("Cannot compare events with empty beats.");
+			if (ReferenceEquals(e, obj))
+				return 0;
+			if (e.Beat == obj.Beat)
+			{
+				var list = e._beat.BaseLevel?.eventsBeatOrder[e.Beat];
+				if (list is null)
+					throw new RhythmBaseException("How?");
+				return list.CompareTo(e, obj) ? -1 : 1;
+			}
+			return e.Beat.CompareTo(obj.Beat);
+		}
+		/// <summary>
 		/// Shallow copy.
 		/// </summary>
 		public static TEvent MemberwiseClone<TEvent>(this TEvent e) where TEvent : IBaseEvent, new() => (TEvent)e.MClone();

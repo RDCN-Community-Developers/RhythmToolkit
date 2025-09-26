@@ -24,7 +24,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				_types.Remove(item.Type);
 			return result;
 		}
-		public bool BeforeThan(IBaseEvent item1, IBaseEvent item2) =>
+		public bool CompareTo(IBaseEvent item1, IBaseEvent item2) =>
 			list.IndexOf((TEvent)(object)item1) < list.IndexOf((TEvent)(object)item2);
 		public override string ToString() =>
 			string.Format("{0}Count={1}", _types.Contains(EventType.SetBeatsPerMinute) || _types.Contains(EventType.PlaySong) ? "BPM, " : _types.Contains(EventType.SetCrotchetsPerBar) ? "CPB, " : "", list.Count);
