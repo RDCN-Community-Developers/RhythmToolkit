@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Represents the sources of the voice.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum SatReaDyGetSetGoVoiceSources
+	public enum SayReadyGetSetGoVoiceSources
 	{
 		/// <summary>
 		/// Represents the voice source "Nurse".
@@ -60,11 +60,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the phrase to say.
 		/// </summary>
-		public SayReaDyGetSetGoWords PhraseToSay { get; set; }
+		public SayReadyGetSetGoWords PhraseToSay { get; set; }
 		/// <summary>
 		/// Gets or sets the voice source.
 		/// </summary>
-		public SatReaDyGetSetGoVoiceSources VoiceSource { get; set; } = SatReaDyGetSetGoVoiceSources.Nurse;
+		public SayReadyGetSetGoVoiceSources VoiceSource { get; set; } = SayReadyGetSetGoVoiceSources.Nurse;
 		/// <summary>
 		/// Gets or sets the tick value.
 		/// </summary>
@@ -88,7 +88,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		{
 			get
 			{
-				return PhraseToSay == SayReaDyGetSetGoWords.SayReaDyGetSetGoNew || PhraseToSay == SayReaDyGetSetGoWords.SayGetSetGo || PhraseToSay == SayReaDyGetSetGoWords.SayReaDyGetSetOne || PhraseToSay == SayReaDyGetSetGoWords.SayGetSetOne || PhraseToSay == SayReaDyGetSetGoWords.SayReadyGetSetGo;
+				return PhraseToSay == SayReadyGetSetGoWords.SayReaDyGetSetGoNew || PhraseToSay == SayReadyGetSetGoWords.SayGetSetGo || PhraseToSay == SayReadyGetSetGoWords.SayReaDyGetSetOne || PhraseToSay == SayReadyGetSetGoWords.SayGetSetOne || PhraseToSay == SayReadyGetSetGoWords.SayReadyGetSetGo;
 			}
 		}
 		/// <summary>
@@ -101,7 +101,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Represents the phrases that can be said.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum SayReaDyGetSetGoWords
+	public enum SayReadyGetSetGoWords
 	{
 		/// <summary>
 		/// Represents the phrase "Ready, Get Set, Go New".
