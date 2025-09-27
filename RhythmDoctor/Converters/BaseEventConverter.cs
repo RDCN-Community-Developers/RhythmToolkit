@@ -44,6 +44,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 				e = ReadForwardEvent(ref reader, typeToConvert, options) ?? new ForwardEvent() { ActureType = type.ToString() ?? "" };
 			else
 				e = converters[typeEnum].ReadProperties(ref reader, options);
+			if (reader.TokenType != JsonTokenType.EndObject)
+				throw new JsonException($"Expected EndObject token, but got {reader.TokenType}.");
+			reader.Read();
 			return e;
 		}
 		public override void Write(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options)
@@ -90,7 +93,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteNumber("beat", value.Beat.BarBeat.beat);
 			if (!string.IsNullOrEmpty(value.Tag))
 				writer.WriteString("tag", value.Tag);
-			if(value.RunTag)
+			if (value.RunTag)
 				writer.WriteBoolean("runTag", value.RunTag);
 			if (!value.Active)
 				writer.WriteBoolean("active", value.Active);

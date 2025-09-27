@@ -56,7 +56,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Level directory path.
 		/// </summary>
 		[JsonIgnore]
-		public string? Directory => System.IO.Path.GetDirectoryName(_path);
+		public string? Directory => Path.GetDirectoryName(_path);
 		/// <summary>
 		/// Default beats with levels.
 		/// The beat is 1.
@@ -159,18 +159,15 @@ namespace RhythmBase.RhythmDoctor.Components
 		public static RDLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
-			//JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
 			string extension = Path.GetExtension(filepath);
 			RDLevel? level;
 			if (extension != ".rdzip" && extension != ".zip")
 			{
 				if (extension != ".rdlevel")
 					throw new RhythmBaseException("File not supported.");
-				settings.OnBeforeReading();
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-				level = FromStream(stream, settings);// JsonSerializer.Deserialize<RDLevel>(stream, options);
-				level?._path = System.IO.Path.GetFullPath(filepath);
-				settings.OnAfterReading();
+				level = FromStream(stream, settings);
+				level?._path = Path.GetFullPath(filepath);
 			}
 			else
 			{
@@ -180,11 +177,24 @@ namespace RhythmBase.RhythmDoctor.Components
 				{
 #if NET8_0_OR_GREATER
 					using Stream stream = File.OpenRead(filepath);
-					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName);
+					// Use async extraction if available for better performance
+					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
 					ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
-					level = FromFile(tempDirectory.GetFiles().Single(i => i.Extension == ".rdlevel").FullName, settings);
+					// Avoid LINQ Single for performance, use a simple loop
+					string? rdlevelPath = null;
+					foreach (var file in tempDirectory.GetFiles())
+					{
+						if (file.Extension == ".rdlevel")
+						{
+							rdlevelPath = file.FullName;
+							break;
+						}
+					}
+					if (rdlevelPath == null)
+						throw new RhythmBaseException("No RDLevel file has been found.");
+					level = FromFile(rdlevelPath, settings);
 					level.isZip = true;
 				}
 				catch (InvalidOperationException ex)
@@ -255,9 +265,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+			DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
+			if (!directory.Exists)
+				directory.Create();
 			settings.OnBeforeWriting();
 			using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
 			{
+				stream.SetLength(0);
 				JsonSerializer.Serialize(stream, this, options);
 			}
 			settings.OnAfterWriting();

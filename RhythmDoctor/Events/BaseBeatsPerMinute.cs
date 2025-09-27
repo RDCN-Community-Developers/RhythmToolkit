@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		protected BaseBeatsPerMinute()
 		{
-			_bpm = RhythmDoctor.Utils.Utils.DefaultBPM;
+			_bpm = Utils.Utils.DefaultBPM;
 		}
 		/// <summary>
 		/// Gets or sets the beat associated with this event.
