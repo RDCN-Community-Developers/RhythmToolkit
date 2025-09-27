@@ -26,6 +26,7 @@
 		/// <summary>  
 		/// Defines the available track animation types.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum TrackAnimations
 		{
 			/// <summary>No animation.</summary>  
@@ -50,6 +51,7 @@
 		/// <summary>  
 		/// Defines the available track disappear animation types.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum TrackDisappearAnimations
 		{
 			/// <summary>No disappear animation.</summary>  

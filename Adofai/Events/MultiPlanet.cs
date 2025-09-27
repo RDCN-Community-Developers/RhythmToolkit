@@ -6,7 +6,8 @@
 	public class MultiPlanet : BaseTileEvent
 	{
 		/// <inheritdoc/>
-		public override EventType Type => EventType.MultiPlanet;		/// <summary>
+		public override EventType Type => EventType.MultiPlanet;
+		/// <summary>
 		/// Gets or sets the planets associated with this event.
 		/// </summary>
 		public Planets Planets { get; set; }
@@ -14,12 +15,14 @@
 	/// <summary>  
 	/// Represents the number of planets associated with the multi-planet event.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum Planets
 	{
 		/// <summary>  
 		/// Two planets are active in the event.  
 		/// </summary>  
-		TwoPlanets,		/// <summary>  
+		TwoPlanets,
+		/// <summary>  
 		/// Three planets are active in the event.  
 		/// </summary>  
 		ThreePlanets,

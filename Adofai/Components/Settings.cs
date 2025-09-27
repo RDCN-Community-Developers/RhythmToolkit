@@ -1,12 +1,11 @@
 ﻿using RhythmBase.Adofai.Events;
 using RhythmBase.Global.Components.Easing;
-using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Represents the settings for an ADOFAI (A Dance of Fire and Ice) level.
 	/// </summary>
-	public class ADSettings
+	public class Settings
 	{
 		/// <summary>
 		/// Gets or sets the version of the level.
@@ -72,6 +71,7 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the links to the artist's work or profile.
 		/// </summary>
 		public string ArtistLinks { get; set; } = string.Empty;
+		public float SpeedTrialAim { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the difficulty level of the level.
 		/// </summary>
@@ -163,7 +163,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets or sets the type of track disappear animation.
 		/// </summary>
-		public ADTrackDisappearAnimationTypes TrackDisappearAnimation { get; set; } = ADTrackDisappearAnimationTypes.None;
+		public TrackDisappearAnimationTypes TrackDisappearAnimation { get; set; } = TrackDisappearAnimationTypes.None;
 		/// <summary>
 		/// Gets or sets the number of beats behind for the track.
 		/// </summary>
@@ -187,7 +187,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>  
 		/// Gets or sets the shape type of the default background tile.  
 		/// </summary>  
-		public DefaultBGTileShapeType DefaultBGTileShapeType { get; set; } = Components.DefaultBGTileShapeType.Default;
+		public DefaultBGTileShapeType DefaultBGTileShapeType { get; set; } = DefaultBGTileShapeType.Default;
 		/// <summary>  
 		/// Gets or sets the color of the default background shape.  
 		/// </summary>  
@@ -203,11 +203,12 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets or sets the parallax effect for the background.
 		/// </summary>
-		public RDPointI Parallax { get; set; } = new RDPointI(100, 100);
+		public RDPointNI Parallax { get; set; } = new RDPointNI(100, 100);
 		/// <summary>
 		/// Gets or sets the display mode of the background.
 		/// </summary>
-		public BgDisplayModes BgDisplayMode { get; set; } = BgDisplayModes.FitToScreen;
+		public BgDisplayMode BgDisplayMode { get; set; } = BgDisplayMode.FitToScreen;
+		public bool ImageSmoothing { get; set; } = false;
 		/// <summary>
 		/// Gets or sets a value indicating whether the rotation is locked.
 		/// </summary>
@@ -227,7 +228,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets or sets the position of the camera.
 		/// </summary>
-		public RDPointI Position { get; set; } = new RDPointI(0, 0);
+		public RDPointNI Position { get; set; } = new RDPointNI(0, 0);
 		/// <summary>
 		/// Gets or sets the rotation of the camera.
 		/// </summary>
@@ -236,6 +237,7 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the zoom level of the camera.
 		/// </summary>
 		public float Zoom { get; set; } = 100;
+		public bool PulseOnFloor { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the background video for the level.
 		/// </summary>

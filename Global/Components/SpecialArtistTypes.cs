@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Components
+﻿namespace RhythmBase.Global.Components
 {
 	/// <summary>
 	/// Enum representing special types of artists.

@@ -30,7 +30,6 @@ public class RDAudio
 	/// <summary>
 	/// Gets or sets the offset of the audio.
 	/// </summary>
-	[JsonConverter(typeof(MilliSecondConverter))]
 	public TimeSpan Offset { get; set; }
 	/// <summary>
 	/// Gets a value indicating whether the file is a valid audio file based on its extension.

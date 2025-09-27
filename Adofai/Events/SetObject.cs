@@ -85,6 +85,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents the various track icons that can be used in the Adofai editor.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum TrackIcon
 	{
 		/// <summary>  

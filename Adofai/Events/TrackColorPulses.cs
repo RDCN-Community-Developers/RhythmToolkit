@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the direction of track color pulses in the Adofai rhythm game.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum TrackColorPulses
 	{
 		/// <summary>

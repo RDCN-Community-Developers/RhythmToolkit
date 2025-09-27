@@ -42,7 +42,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets an enumerable collection of all events associated with the tiles in the collection.
 		/// </summary>
-		public virtual IEnumerable<BaseEvent> Events
+		public virtual IEnumerable<IBaseEvent> Events
 		{
 			get
 			{

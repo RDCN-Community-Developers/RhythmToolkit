@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the types of default background tile shapes.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum DefaultBGTileShapeType
 	{
 		/// <summary>

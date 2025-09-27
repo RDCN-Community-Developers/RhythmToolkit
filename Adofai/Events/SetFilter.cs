@@ -35,6 +35,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Represents the available filter types.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum Filters
 		{
 			/// <summary>  

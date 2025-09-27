@@ -87,6 +87,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Specifies the masking types available for the decoration.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum MaskingTypes
 		{
 			/// <summary>  

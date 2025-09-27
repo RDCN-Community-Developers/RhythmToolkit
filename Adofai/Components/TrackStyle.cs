@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the different styles of tracks available in the game.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum TrackStyle
 	{
 		/// <summary>

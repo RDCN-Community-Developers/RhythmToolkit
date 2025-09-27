@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.Adofai.Events
+﻿using RhythmBase.Adofai.Components;
+
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to set the background properties in the Adofai event system.  
@@ -54,25 +56,5 @@
 		/// Gets or sets the scaling ratio of the background image.  
 		/// </summary>  
 		public float ScalingRatio { get; set; } = 100f;
-	}
-	/// <summary>  
-	/// Specifies the display modes for the background image.  
-	/// </summary>  
-	public enum BgDisplayMode
-	{
-		/// <summary>  
-		/// Scales the background image to fit the screen.  
-		/// </summary>  
-		FitToScreen,
-
-		/// <summary>  
-		/// Displays the background image without scaling.  
-		/// </summary>  
-		Unscaled,
-
-		/// <summary>  
-		/// Tiles the background image across the screen.  
-		/// </summary>  
-		Tiled,
 	}
 }

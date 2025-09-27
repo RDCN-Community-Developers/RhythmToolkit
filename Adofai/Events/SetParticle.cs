@@ -35,6 +35,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>
 	/// Specifies the target mode for the particle effect.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum TargetMode
 	{
 		/// <summary>

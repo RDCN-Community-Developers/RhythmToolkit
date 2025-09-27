@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Specifies the reference point for decoration placement in the game.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum DecorationRelativeTo
 	{
 		/// <summary>
@@ -20,16 +21,20 @@
 		/// <summary>
 		/// Decoration is positioned relative to the blue planet.
 		/// </summary>
-		BluePlanet,		/// <summary>
+		BluePlanet,
+		/// <summary>
 		/// Decoration is positioned relative to the green planet.
 		/// </summary>
-		GreenPlanet,		/// <summary>
+		GreenPlanet,
+		/// <summary>
 		/// Decoration is positioned relative to the camera.
 		/// </summary>
-		Camera,		/// <summary>
+		Camera,
+		/// <summary>
 		/// Decoration is positioned relative to the camera's aspect ratio.
 		/// </summary>
-		CameraAspect,		/// <summary>
+		CameraAspect,
+		/// <summary>
 		/// Decoration is positioned relative to the last known position.
 		/// </summary>
 		LastPosition

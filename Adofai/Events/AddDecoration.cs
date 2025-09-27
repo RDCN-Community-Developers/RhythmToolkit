@@ -122,6 +122,7 @@
 		/// <summary>  
 		/// Specifies the blend modes available for the decoration.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum BlendModes
 		{
 			/// <summary>  
@@ -232,6 +233,7 @@
 		/// <summary>  
 		/// Specifies the masking types available for the decoration.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum MaskingTypes
 		{
 			/// <summary>  
@@ -254,6 +256,7 @@
 		/// <summary>  
 		/// Specifies the hitbox types available for the decoration.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum HitboxTypes
 		{
 			/// <summary>  
@@ -272,6 +275,7 @@
 		/// <summary>  
 		/// Specifies the fail hitbox types available for the decoration.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum FailHitboxTypes
 		{
 			/// <summary>  

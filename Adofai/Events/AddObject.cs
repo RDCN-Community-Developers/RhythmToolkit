@@ -131,6 +131,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Represents the types of objects that can be added.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum ObjectTypes
 		{
 			/// <summary>  
@@ -145,6 +146,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Represents the types of planet colors.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum PlanetColorTypes
 		{
 			/// <summary>  
@@ -171,6 +173,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Represents the types of tracks.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum TrackTypes
 		{
 			/// <summary>  

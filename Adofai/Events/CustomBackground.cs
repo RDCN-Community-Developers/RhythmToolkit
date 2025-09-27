@@ -46,6 +46,7 @@
 		/// <summary>  
 		/// Represents the display modes for the background image.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum BgDisplayModes
 		{
 			/// <summary>  

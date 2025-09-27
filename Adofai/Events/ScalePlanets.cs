@@ -28,6 +28,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Represents the target planets that can be scaled.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum TargetPlanets
 		{
 			/// <summary>  

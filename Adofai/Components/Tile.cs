@@ -102,6 +102,21 @@ namespace RhythmBase.Adofai.Components
 		/// Returns -1 if the tile does not belong to any level.
 		/// </summary>
 		public int Index => Parent?.IndexOf(this) ?? Parent?.Count ?? -1;
+		public Tile Clone()
+					{
+			Tile tile = new()
+			{
+				_angle = _angle,
+				IsMidSpin = IsMidSpin,
+			};
+			//foreach (BaseTileEvent action in this)
+			//{
+			//	BaseTileEvent action2 = (BaseTileEvent)action.Clone();
+			//	action2.Parent = tile;
+			//	tile.Add(action2);
+			//}
+			return tile;
+		}
 		/// <inheritdoc />
 		public override void Add(BaseTileEvent item)
 		{

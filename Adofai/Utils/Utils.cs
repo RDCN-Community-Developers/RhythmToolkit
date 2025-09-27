@@ -1,5 +1,7 @@
-﻿using RhythmBase.Adofai.Events;
+﻿using RhythmBase.Adofai.Converters;
+using RhythmBase.Adofai.Events;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 namespace RhythmBase.Adofai.Utils
 {
 	/// <summary>
@@ -7,6 +9,20 @@ namespace RhythmBase.Adofai.Utils
 	/// </summary>
 	public static class Utils
 	{
+		private static JsonSerializerOptions options;
+		static Utils()
+		{
+			options = new()
+			{
+				WriteIndented = true,
+				DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+				AllowTrailingCommas = true,
+				Converters =
+				{
+					new LevelConverter(),
+				}
+			};
+		}
 		/// <summary>  
 		/// Represents the angle used for mid-spin calculations.  
 		/// </summary>  
@@ -74,7 +90,7 @@ namespace RhythmBase.Adofai.Utils
 			if (flag)
 				ADConvertToType = ConvertToType(result);
 			else
-				ADConvertToType = ConvertToType(Events.EventType.CustomEvent);
+				ADConvertToType = ConvertToType(EventType.ForwardEvent);
 			return ADConvertToType;
 		}
 		/// <summary>
@@ -123,6 +139,38 @@ namespace RhythmBase.Adofai.Utils
 		//	converters.Add(new BaseEventConverter<BaseEvent>(adlevel, settings));
 		//	return EventsSerializer;
 		//}
+		public static JsonSerializerOptions GetJsonSerializerOptions(LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = new(Utils.options);
+			if (settings.Indented)
+				options.WriteIndented = true;
+			else
+				options.WriteIndented = false;
+			LevelConverter levelConverter = new()
+			{
+				Settings = settings,
+				Filepath = null
+			};
+			options.Converters.Add(levelConverter);
+			return options;
+		}
+		public static JsonSerializerOptions GetJsonSerializerOptions(string filepath, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = new(Utils.options);
+			if (settings.Indented)
+				options.WriteIndented = true;
+			else
+				options.WriteIndented = false;
+			LevelConverter levelConverter = new()
+			{
+				Settings = settings,
+				Filepath = filepath
+			};
+			options.Converters.Add(levelConverter);
+			return options;
+		}
 		private static readonly ReadOnlyCollection<Type> ADETypes = (from i in typeof(BaseEvent).Assembly.GetTypes()
 																	 where typeof(BaseEvent).IsAssignableFrom(i)
 																	 select i).ToList().AsReadOnly();

@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the types of events available in the Adofai editor.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum EventType
 
 	{
@@ -56,11 +57,11 @@
 		/// <summary>
 		/// Defines a custom event in the level.
 		/// </summary>
-		CustomEvent,
+		ForwardEvent,
 		/// <summary>
 		/// Defines a custom tile event in the level.
 		/// </summary>
-		CustomTileEvent,
+		ForwardTileEvent,
 		/// <summary>
 		/// Adds a comment in the editor.
 		/// </summary>

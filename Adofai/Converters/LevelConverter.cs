@@ -1,89 +1,87 @@
-﻿//using Newtonsoft.Json;
-//using Newtonsoft.Json.Linq;
-//using RhythmBase.Adofai.Components;
-//using RhythmBase.Adofai.Events;
-//using RhythmBase.Adofai.Utils;
-//namespace RhythmBase.Adofai.Converters
-//{
-//	internal class LevelConverter : JsonConverter<ADLevel>
-//	{
-//		public override void WriteJson(JsonWriter writer, ADLevel? value, JsonSerializer serializer)
-//		{
-//			JsonSerializerSettings AllInOneSerializer = value!.GetSerializer(settings);
-//			writer.Formatting = settings.Indented ? Formatting.Indented : Formatting.None;
-//			writer.WriteStartObject();
-//			writer.WritePropertyName("angleData");
-//			writer.Formatting = Formatting.None;
-//			writer.WriteStartArray();
-//			foreach (Tile item in value!)
-//				writer.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer));
-//			writer.WriteEndArray();
-//			writer.Formatting = settings.Indented ? Formatting.Indented : Formatting.None;
-//			writer.WritePropertyName("settings");
-//			writer.WriteRawValue(JsonConvert.SerializeObject(value.Settings, settings.Indented ? Formatting.Indented : Formatting.None, AllInOneSerializer));
-//			writer.WritePropertyName("actions");
-//			writer.WriteStartArray();
-//			foreach (Tile item2 in value)
-//				foreach (BaseTileEvent item in item2)
-//					writer.WriteRawValue(JsonConvert.SerializeObject(item, Formatting.None, AllInOneSerializer));
-//			writer.WriteEndArray();
-//			writer.WritePropertyName("decorations");
-//			writer.WriteStartArray();
-//			foreach (BaseEvent item3 in value.Decorations)
-//				writer.WriteRawValue(JsonConvert.SerializeObject(item3, Formatting.None, AllInOneSerializer));
-//			writer.WriteEndArray();
-//			writer.WriteEndObject();
-//			writer.Close();
-//		}
-//		public override ADLevel ReadJson(JsonReader reader, Type objectType, ADLevel? existingValue, bool hasExistingValue, JsonSerializer serializer)
-//		{
-//			ADLevel outLevel = new()
-//			{
-//				_path = fileLocation
-//			};
-//			JsonSerializer AllInOneSerializer = JsonSerializer.Create(outLevel.GetSerializer(settings));
-//			JArray JActions = [];
-//			JArray JDecorations = [];
-//			while (reader.Read())
-//			{
-//				string name = (string)reader.Value!;
-//				reader.Read();
-//				object left = name;
-//				switch (name)
-//				{
-//					case "settings":
-//						JObject jobj = JObject.Load(reader);
-//						outLevel.Settings = jobj.ToObject<ADSettings>(AllInOneSerializer)!;
-//						break;
-//					case "angleData":
-//						JArray jobj2 = JArray.Load(reader);
-//						var s = jobj2.ToObject<List<Tile>>(AllInOneSerializer)!;
-//						foreach (Tile item in s)
-//						{
-//							item.Parent = outLevel;
-//							outLevel.Add(item);
-//						}
-//						break;
-//					case "actions":
-//						JActions = JArray.Load(reader);
-//						break;
-//					case "decorations":
-//						JDecorations = JArray.Load(reader);
-//						break;
-//				}
-//			}
-//			reader.Close();
-//			JActions.ToObject<List<BaseTileEvent>>(AllInOneSerializer);
-//			outLevel.Decorations.AddRange(JDecorations.ToObject<List<BaseEvent>>(AllInOneSerializer)!);
-//			return outLevel;
-//		}
-//		private readonly string fileLocation;
-//		private readonly LevelReadOrWriteSettings settings;
+﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Events;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+namespace RhythmBase.Adofai.Converters
+{
+	internal class LevelConverter : JsonConverter<ADLevel>
+	{
+		internal string? Filepath { get; set; }
+		internal LevelReadOrWriteSettings Settings { get; set; } = new();
 
-//		public LevelConverter(string location, LevelReadOrWriteSettings settings)
-//		{
-//			fileLocation = location;
-//			this.settings = settings;
-//		}
-//	}
-//}
+		public override ADLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			ADLevel level = [];
+			if (reader.TokenType != JsonTokenType.StartObject)
+				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
+			reader.Read();
+			while (true)
+			{
+				if (reader.TokenType == JsonTokenType.EndObject)
+					break;
+				if (reader.TokenType != JsonTokenType.PropertyName)
+					throw new JsonException($"Expected PropertyName token, but got {reader.TokenType}.");
+				if (reader.ValueSpan.SequenceEqual("angleData"u8))
+				{
+					reader.Read();
+					if (reader.TokenType != JsonTokenType.StartArray)
+						throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
+					reader.Read();
+					while (true)
+					{
+						if (reader.TokenType == JsonTokenType.EndArray)
+							break;
+						if(reader.TokenType != JsonTokenType.Number)
+							throw new JsonException($"Expected Number token, but got {reader.TokenType}.");
+						int angle = reader.GetInt32();
+						if (angle == Utils.Utils.MidSpinAngle)
+							level.Add(new(true));
+						else
+							level.Add(new(angle));
+						reader.Read();
+					}
+					reader.Read();
+				}
+				else if (reader.ValueSpan.SequenceEqual("settings"u8))
+				{
+					reader.Read();
+					SettingsConverter settingsConverter = new();
+					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
+				}
+				else if(reader.ValueSpan.SequenceEqual("actions"u8))
+				{
+
+				}
+				else if(reader.ValueSpan.SequenceEqual("decoration"u8))
+				{
+					reader.Read();
+					if (reader.TokenType != JsonTokenType.StartArray)
+						throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
+					reader.Read();
+					BaseEventConverter baseEventConverter = new();
+					while (true)
+					{
+						if (reader.TokenType == JsonTokenType.EndArray)
+							break;
+						IBaseEvent? e = baseEventConverter.Read(ref reader, typeof(BaseEvent), options) as BaseEvent;
+						if (e != null)
+							level.Decorations.Add(e);
+					}
+					reader.Read();
+				}
+				else
+				{
+					reader.Skip();
+					reader.Read();
+				}
+			}
+			reader.Read();
+			return level;
+		}
+
+		public override void Write(Utf8JsonWriter writer, ADLevel value, JsonSerializerOptions options)
+		{
+			throw new NotImplementedException();
+		}
+	}
+}

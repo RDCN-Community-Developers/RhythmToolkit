@@ -31,6 +31,7 @@
 		/// <summary>
 		/// Specifies the possible input targets for the event.
 		/// </summary>
+		[RDJsonEnumSerializable]
 		public enum Targets
 		{
 			/// <summary>
@@ -70,6 +71,7 @@
 		/// <summary>
 		/// Specifies the possible states of a key.
 		/// </summary>
+		[RDJsonEnumSerializable]
 		public enum KeyState
 		{
 			/// <summary>

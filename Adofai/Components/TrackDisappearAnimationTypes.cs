@@ -3,7 +3,8 @@
 	/// <summary>
 	/// Represents the types of animations used for track disappearance.
 	/// </summary>
-	public enum ADTrackDisappearAnimationTypes
+	[RDJsonEnumSerializable]
+	public enum TrackDisappearAnimationTypes
 	{
 		/// <summary>
 		/// No animation is applied.

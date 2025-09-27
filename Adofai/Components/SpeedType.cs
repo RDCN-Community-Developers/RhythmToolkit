@@ -3,6 +3,7 @@
 	/// <summary>  
 	/// Defines the types of speed adjustments available.  
 	/// </summary>  
+	[RDJsonEnumSerializable]
 	public enum SpeedType
 	{
 		/// <summary>  

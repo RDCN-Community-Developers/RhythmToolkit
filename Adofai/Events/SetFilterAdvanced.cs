@@ -58,6 +58,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>
 		/// Represents the target type for the filter effect.
 		/// </summary>
+		[RDJsonEnumSerializable]
 		public enum TargetTypes
 		{
 			/// <summary>
@@ -69,6 +70,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>
 	/// Represents the plane where the filter is applied.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum Plane
 	{
 		/// <summary>

@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the different types of track colors available in the application.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum TrackColorType
 	{
 		/// <summary>

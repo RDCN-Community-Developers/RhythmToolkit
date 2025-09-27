@@ -33,5 +33,14 @@ namespace RhythmBase.Adofai.Extensions
 				index++;
 			}
 		}
+		public static Tile[] Repeat(this Tile tile, int count)
+		{
+			Tile[] result = new Tile[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = tile.Clone();
+			}
+			return result;
+		}
 	}
 }

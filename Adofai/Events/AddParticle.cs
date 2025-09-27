@@ -177,6 +177,7 @@
 	/// <summary>
 	/// Specifies the mode of the arc emission.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum ArcMode
 	{
 		/// <summary>
@@ -202,6 +203,7 @@
 	/// <summary>
 	/// Specifies the simulation space for the particle effect.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum SimulationSpace
 	{
 		/// <summary>
@@ -297,6 +299,7 @@
 	/// <summary>
 	/// Specifies the mode of the color gradient.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum ColorMode
 	{
 		/// <summary>
@@ -327,6 +330,7 @@
 	/// <summary>
 	/// Specifies the mode of the gradient.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum GradientMode
 	{
 		/// <summary>
@@ -397,6 +401,7 @@
 	/// <summary>
 	/// Specifies the shape type for particle emission.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum EmissionShapeType
 	{
 		/// <summary>

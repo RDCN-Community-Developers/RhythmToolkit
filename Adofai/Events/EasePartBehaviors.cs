@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Represents the behaviors for easing parts in the ADEase system.
 	/// </summary>
+	[RDJsonEnumSerializable]
 	public enum EasePartBehaviors
 	{
 		/// <summary>

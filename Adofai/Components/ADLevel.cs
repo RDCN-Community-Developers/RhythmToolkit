@@ -1,35 +1,36 @@
 ﻿using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Extensions;
 using RhythmBase.Adofai.Utils;
-using System.Text;
+using System.IO.Compression;
+using System.Text.Json;
 
 namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Adofal level.
 	/// </summary>
-	public class ADLevel : TileCollection
+	public class ADLevel : TileCollection, IDisposable
 	{
 		/// <summary>
 		/// Level settings.
 		/// </summary>
-		public ADSettings Settings { get; set; }
+		public Settings Settings { get; set; }
 		/// <summary>
 		/// Level decoration collection.
 		/// </summary>
-		public List<BaseEvent> Decorations { get; set; }
+		public List<IBaseEvent> Decorations { get; set; }
 		/// <summary>
 		/// Level file path.
 		/// </summary>
-		public string Path => _path;
+		public string Filepath => _path;
 		/// <summary>
 		/// Level directory path.
 		/// </summary>
-		public string Directory => System.IO.Path.GetDirectoryName(_path) ?? "";
+		public string Directory => Path.GetDirectoryName(_path) ?? "";
 		/// <summary>
 		/// Get all the events of the level.
 		/// </summary>
-		public override IEnumerable<BaseEvent> Events
+		public override IEnumerable<IBaseEvent> Events
 		{
 			get
 			{
@@ -48,7 +49,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>  
 		public ADLevel()
 		{
-			Settings = new ADSettings();
+			Settings = new Settings();
 			Decorations = [];
 			Calculator = new ADBeatCalculator(this);
 			End.Parent = this;
@@ -59,7 +60,7 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="items">The collection of tiles to initialize the level with.</param>  
 		public ADLevel(IEnumerable<Tile> items)
 		{
-			Settings = new ADSettings();
+			Settings = new Settings();
 			Decorations = [];
 			Calculator = new ADBeatCalculator(this);
 			End.Parent = this;
@@ -68,103 +69,138 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// The default level within the game.
 		/// </summary>
-		public static ADLevel Default => [[], [], [], [], [], [], [], [], [], []];
-//		/// <summary>
-//		/// Read from file as level.
-//		/// Use default input settings.
-//		/// Supports .rdlevel, .rdzip, .zip file extension.
-//		/// </summary>
-//		/// <param name="filepath">File path.</param>
-//		/// <returns>An instance of a level that reads from a file.</returns>
-//		public static ADLevel Read(string filepath) => Read(filepath, new LevelReadOrWriteSettings());
-//		/// <summary>
-//		/// Read from file as level.
-//		/// Supports .rdlevel, .rdzip, .zip file extension.
-//		/// </summary>
-//		/// <param name="filepath">File path.</param>
-//		/// <param name="settings">Input settings.</param>
-//		/// <returns>An instance of a level that reads from a file.</returns>
-//		public static ADLevel Read(string filepath, LevelReadOrWriteSettings settings)
-//		{
-//			JsonSerializer LevelSerializer = new();
-//			LevelSerializer.Converters.Add(new LevelConverter(filepath, settings));
-//			string extension = System.IO.Path.GetExtension(filepath);
-//			if (extension != ".adofai")
-//			{
-//				throw new RhythmBaseException("File not supported.");
-//			}
-//			return LevelSerializer.Deserialize<ADLevel>(new JsonTextReader(File.OpenText(filepath)))!;
-//		}
-//		/// <summary>
-//		/// Save the level.
-//		/// Use default output settings.
-//		/// </summary>
-//		/// <param name="filepath">File path.</param>
-//		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
-//		public void Write(string filepath) => Write(filepath, new LevelReadOrWriteSettings());
-//		/// <summary>
-//		/// Save the level.
-//		/// </summary>
-//		/// <param name="filepath">File path.</param>
-//		/// <param name="settings">Output settings.</param>
-//		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
-//		public void Write(string filepath, LevelReadOrWriteSettings settings)
-//		{
-//			using StreamWriter file = File.CreateText(filepath);
-//			Write(file, settings);
-//		}
-//		/// <summary>
-//		/// Save the level to a text writer.
-//		/// Use default output settings.
-//		/// </summary>
-//		/// <param name="stream">The text writer to write the level to.</param>
-//		public void Write(TextWriter stream) => Write(stream, new LevelReadOrWriteSettings());
-//		/// <summary>
-//		/// Save the level to a text writer.
-//		/// </summary>
-//		/// <param name="stream">The text writer to write the level to.</param>
-//		/// <param name="settings">The settings for writing the level.</param>
-//		public void Write(TextWriter stream, LevelReadOrWriteSettings settings)
-//		{
-//			using JsonTextWriter writer = new(stream);
-//			settings.OnBeforeWriting();
-//			Serializer(settings).Serialize(writer, this);
-//			settings.OnAfterWriting();
-//		}
-//		/// <summary>
-//		/// Save the level to a stream.
-//		/// Use default output settings.
-//		/// </summary>
-//		/// <param name="stream">The stream to write the level to.</param>
-//#if NET7_0_OR_GREATER
-//		public void Write(Stream stream) => Write(new StreamWriter(stream, leaveOpen: true), new LevelReadOrWriteSettings());
-//#else
-//		public void Write(Stream stream) => Write(new StreamWriter(stream, Encoding.UTF8, 1024, leaveOpen: true), new LevelReadOrWriteSettings());
-//#endif
-//		/// <summary>
-//		/// Save the level to a stream.
-//		/// </summary>
-//		/// <param name="stream">The stream to write the level to.</param>
-//		/// <param name="settings">The settings for writing the level.</param>
-//		public void Write(Stream stream, LevelReadOrWriteSettings settings) => Write(new StreamWriter(stream), settings);
-		///// <summary>
-		///// Convert to a string that can be read by the game.
-		///// Use default output settings.
-		///// </summary>
-		///// <returns>Level string.</returns>
-		//public string ToADLevelJson() => ToADLevelJson(new LevelReadOrWriteSettings());
-		///// <summary>
-		///// Convert to a string that can be read by the game.
-		///// </summary>
-		///// <param name="settings">Output settings.</param>
-		///// <returns>Level string.</returns>
-		//public string ToADLevelJson(LevelReadOrWriteSettings settings)
-		//{
-		//	StringWriter file = new();
-		//	Write(file, settings);
-		//	file.Close();
-		//	return file.ToString();
-		//}
+		public static ADLevel Default => [.. new Tile().Repeat(10)];
+		/// <summary>
+		/// Read from file as level.
+		/// Supports .rdlevel, .rdzip, .zip file extension.
+		/// </summary>
+		/// <param name="filepath">File path.</param>
+		/// <param name="settings">Input settings.</param>
+		/// <returns>An instance of a level that reads from a file.</returns>
+		public static ADLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			string extension = Path.GetExtension(filepath);
+			ADLevel? level;
+			if (extension != ".zip")
+			{
+				if (extension != ".adofai")
+					throw new RhythmBaseException("File not supported.");
+				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
+				level = FromStream(stream, settings);
+				level?._path = Path.GetFullPath(filepath);
+			}
+			else
+			{
+				DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
+				tempDirectory.Create();
+				try
+				{
+#if NET8_0_OR_GREATER
+					using Stream stream = File.OpenRead(filepath);
+					// Use async extraction if available for better performance
+					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+#elif NETSTANDARD2_0_OR_GREATER
+					ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+#endif
+					// Avoid LINQ Single for performance, use a simple loop
+					string? adlevelPath = null;
+					foreach (var file in tempDirectory.GetFiles())
+					{
+						if (file.Extension == ".adofai")
+						{
+							adlevelPath = file.FullName;
+							break;
+						}
+					}
+					if (adlevelPath == null)
+						throw new RhythmBaseException("No Adofai file has been found.");
+					level = FromFile(adlevelPath, settings);
+					level.isZip = true;
+				}
+				catch (InvalidOperationException ex)
+				{
+					tempDirectory.Delete(true);
+					throw new RhythmBaseException("No or more than one Adofai file has been found.", ex);
+				}
+				catch (Exception ex2)
+				{
+					tempDirectory.Delete(true);
+					throw new RhythmBaseException("Cannot extract the file.", ex2);
+				}
+			}
+			return level ?? [];
+		}
+		public static ADLevel FromStream(Stream stream, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			ADLevel? level;
+			settings.OnBeforeReading();
+			level = JsonSerializer.Deserialize<ADLevel>(stream, options);
+			settings.OnAfterReading();
+			return level ?? [];
+		}
+		/// <summary>
+		/// Reads a level from a JSON string.
+		/// </summary>
+		/// <param name="json">The JSON string containing the level data.</param>
+		/// <param name="settings">Optional settings for reading the level.</param>
+		/// <returns>An <see cref="ADLevel"/> instance loaded from the JSON string.</returns>
+		public static ADLevel FromJsonString(string json, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			ADLevel? level;
+			settings.OnBeforeWriting();
+			level = JsonSerializer.Deserialize<ADLevel>(json, options);
+			settings.OnAfterWriting();
+			return level ?? [];
+		}
+		/// <summary>
+		/// Saves the current level to the specified stream in JSON format.
+		/// </summary>
+		/// <param name="stream">The stream to which the level will be saved.</param>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		public void SaveToStream(Stream stream, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			settings.OnBeforeWriting();
+			JsonSerializer.Serialize(stream, this, options);
+			settings.OnAfterWriting();
+		}
+		/// <summary>
+		/// Saves the current level to a file in JSON format.
+		/// </summary>
+		/// <param name="filepath">The file path where the level will be saved.</param>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		public void SaveToFile(string filepath, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+			settings.OnBeforeWriting();
+			using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
+			{
+				JsonSerializer.Serialize(stream, this, options);
+			}
+			settings.OnAfterWriting();
+		}
+		/// <summary>
+		/// Serializes the current level to a JSON string.
+		/// </summary>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		/// <returns>A JSON string representing the current level.</returns>
+		public string ToJsonString(LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			string json;
+			settings.OnBeforeWriting();
+			json = JsonSerializer.Serialize(this, options);
+			settings.OnAfterWriting();
+			return json;
+		}
 		/// <summary>  
 		/// Adds a tile to the level.  
 		/// Sets the parent of the tile to this level before adding it to the base collection.  
@@ -194,6 +230,16 @@ namespace RhythmBase.Adofai.Components
 			}
 			base.Clear();
 		}
+		public void Dispose()
+		{
+			if (isZip)
+			{
+				System.IO.Directory.Delete(Directory, true);
+			}
+			GC.SuppressFinalize(this);
+		}
+
 		internal string _path = string.Empty;
+		private bool isZip = false;
 	}
 }

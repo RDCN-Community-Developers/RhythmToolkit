@@ -32,6 +32,7 @@
 		public int HoldSoundVolume { get; set; }		/// <summary>  
 		/// Represents the types of sounds that can be played at the start or end of a hold.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum HoldSounds
 		{
 			/// <summary>  
@@ -45,6 +46,7 @@
 		/// <summary>  
 		/// Represents the types of sounds that can be played in the middle of a hold.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum HoldMidSounds
 		{
 			/// <summary>  
@@ -61,6 +63,7 @@
 		/// <summary>  
 		/// Represents the types of mid-hold sound playback behaviors.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum HoldMidSoundTypes
 		{
 			/// <summary>  
@@ -74,6 +77,7 @@
 		/// <summary>  
 		/// Represents the timing reference for the mid-hold sound.  
 		/// </summary>  
+		[RDJsonEnumSerializable]
 		public enum RelativeTypes
 		{
 			/// <summary>  
