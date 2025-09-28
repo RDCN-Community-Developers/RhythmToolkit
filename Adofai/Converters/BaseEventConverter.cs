@@ -39,29 +39,6 @@ namespace RhythmBase.Adofai.Converters
 
 		public override IBaseEvent? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			//if (reader.TokenType != JsonTokenType.StartObject)
-			//	throw new JsonException("Expected StartObject token");
-			//reader.Read();
-			//ReadOnlySpan<byte> type;
-			//while (true)
-			//{
-			//	if (reader.TokenType == JsonTokenType.EndObject)
-			//		throw new JsonException("Expected property 'eventType' not found");
-			//	if (reader.TokenType != JsonTokenType.PropertyName)
-			//		throw new JsonException($"Unexpected token type {reader.TokenType}");
-			//	if(reader.ValueSpan.SequenceEqual("eventType"u8))
-			//	{
-			//		reader.Read();
-			//		if (reader.TokenType != JsonTokenType.String)
-			//			throw new JsonException("Expected string for 'eventType' property");
-			//		type = reader.ValueSpan;
-			//		break;
-			//	}
-			//	reader.Skip();
-			//	reader.Read();
-			//}
-
-
 			if (reader.TokenType != JsonTokenType.StartObject)
 				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
 
@@ -74,7 +51,7 @@ namespace RhythmBase.Adofai.Converters
 					break;
 				if (reader.TokenType == JsonTokenType.PropertyName)
 				{
-					if (reader.ValueSpan.SequenceEqual("type"u8))
+					if (reader.ValueSpan.SequenceEqual("eventType"u8))
 					{
 						reader.Read();
 						type = reader.ValueSpan;
@@ -96,29 +73,25 @@ namespace RhythmBase.Adofai.Converters
 			reader.Read();
 			return e;
 		}
-		public IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-		{
-			//using var doc = JsonDocument.ParseValue(ref reader);
-			//var root = doc.RootElement;
-
-			//// 判断属性
-			//bool hasRow = false, hasTarget = false;
-			//foreach (var prop in root.EnumerateObject())
-			//{
-			//	if (prop.NameEquals("row"))
-			//		hasRow = true;
-			//	else if (prop.NameEquals("target"))
-			//		hasTarget = true;
-			//}
-			//if (hasRow) return new ForwardRowEvent(doc);
-			//else if (hasTarget) return new ForwardDecorationEvent(doc);
-			//else return new ForwardEvent(doc);
-			return new ForwardEvent();
-		}
-
 		public override void Write(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options)
 		{
 			throw new NotImplementedException();
 		}
+		public IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			using var doc = JsonDocument.ParseValue(ref reader);
+			var root = doc.RootElement;
+
+			// 判断属性
+			bool isTile = false;
+			foreach (var prop in root.EnumerateObject())
+			{
+				if (prop.NameEquals("floor"))
+					isTile = true;
+			}
+			if (isTile) return new ForwardTileEvent(doc);
+			else return new ForwardEvent(doc);
+		}
+
 	}
 }

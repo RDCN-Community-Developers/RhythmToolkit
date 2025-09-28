@@ -2,10 +2,71 @@
 using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Adofai.Components
 {
+	public struct EmptyTile() : ITile
+	{
+		private float _angle;
+		/// <summary>
+		/// Gets or sets the angle of the tile.
+		/// The value is normalized to the range [-180, 180].
+		/// If the value is outside the range [-360, 360], it is set to -999.
+		/// </summary>
+		public float Angle
+		{
+			get => _angle;
+			set
+			{
+				_angle = (value % 360 + 540) % 360 - 180;
+			}
+		}
+		/// <summary>
+		/// Gets a value indicating whether the tile is in a mid-spin state.
+		/// A tile is considered mid-spin if its angle is less than -180 or greater than 180.
+		/// </summary>
+		public bool IsMidSpin { get; set; } = false;
+		/// <summary>  
+		/// Gets a value indicating whether the tile is a hairpin.  
+		/// A tile is considered a hairpin if the absolute difference between its angle and the previous tile's angle is exactly 180 degrees.  
+		/// </summary>  
+		public bool IsHairPin => Math.Abs(_angle - (Previous?.Angle ?? 0)) == 180f;
+		/// <summary>  
+		/// Gets the tick value of the tile.  
+		/// The tick is calculated based on the relationship between the current tile, the previous tile, and the next tile.  
+		/// If the tile is a hairpin, the tick is set to 2.  
+		/// If there is no next tile, the tick is set to 0.  
+		/// Otherwise, the tick is calculated as the normalized angular difference between the previous tile and the current tile.  
+		/// </summary>  
+		public float Tick => Next is null ? 0 : (((Previous?.Angle ?? 0) - _angle) % 360 + 540) % 360 / 180;
+		///// <summary>
+		///// Gets the beat associated with the tile, calculated based on its angle and index.
+		///// </summary>
+		//public ADBeat Beat => new(Parent?.Calculator, Index + (_angle / 180f));
+		/// <summary>
+		/// Gets or sets the parent level of the tile.
+		/// </summary>
+		internal ADLevel? Parent { get; set; }
+		public int Index => Parent.IndexOf(this);
+		public ITile Next { get; set; } = null!;
+		public ITile? Previous { get; set; } = null;
+		ADLevel ITile.Parent { get => Parent; set => Parent = value; }
+		public ITile Clone()
+		{
+			throw new NotImplementedException();
+		}
+		public void Add(BaseTileEvent item)
+		{
+			int index = this.Index;
+			Parent.RemoveAt(index);
+			Parent.Insert(index, new Tile() { item});
+		}
+		public EmptyTile(float angle) : this() => Angle = angle;
+		public EmptyTile(bool isMidSpin) : this() => IsMidSpin = isMidSpin;
+		public static implicit operator EmptyTile(float angle) => new() { Angle = angle };
+		public static implicit operator EmptyTile(bool isMidSpin) => new() { IsMidSpin = isMidSpin };
+	}
 	/// <summary>
 	/// Represents a tile in the ADOFAI level, containing events and properties related to the tile.
 	/// </summary>
-	public class Tile : ADTypedList<BaseTileEvent>
+	public class Tile : ADTypedList<BaseTileEvent>, ITile
 	{
 		/// <summary>
 		/// Gets or sets the angle of the tile.
@@ -29,7 +90,7 @@ namespace RhythmBase.Adofai.Components
 		/// Gets a value indicating whether the tile is a hairpin.  
 		/// A tile is considered a hairpin if the absolute difference between its angle and the previous tile's angle is exactly 180 degrees.  
 		/// </summary>  
-		public bool IsHairPin => Math.Abs(_angle - (Previous?._angle ?? 0)) == 180f;
+		public bool IsHairPin => Math.Abs(_angle - (Previous?.Angle ?? 0)) == 180f;
 		/// <summary>  
 		/// Gets the tick value of the tile.  
 		/// The tick is calculated based on the relationship between the current tile, the previous tile, and the next tile.  
@@ -37,7 +98,7 @@ namespace RhythmBase.Adofai.Components
 		/// If there is no next tile, the tick is set to 0.  
 		/// Otherwise, the tick is calculated as the normalized angular difference between the previous tile and the current tile.  
 		/// </summary>  
-		public float Tick => Next is null ? 0 : (((Previous?._angle ?? 0) - _angle) % 360 + 540) % 360 / 180;
+		public float Tick => Next is null ? 0 : (((Previous?.Angle ?? 0) - _angle) % 360 + 540) % 360 / 180;
 		///// <summary>
 		///// Gets the beat associated with the tile, calculated based on its angle and index.
 		///// </summary>
@@ -45,7 +106,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets or sets the parent level of the tile.
 		/// </summary>
-		public ADLevel? Parent { get; set; }
+		internal ADLevel? Parent { get; set; }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class.
 		/// </summary>
@@ -82,7 +143,7 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the previous tile in the sequence.  
 		/// This property is set internally and represents the tile that comes before the current tile.  
 		/// </summary>  
-		public Tile? Previous { get; internal set; }
+		public ITile? Previous { get; set; }
 		/// <summary>  
 		/// Gets or sets the next tile in the sequence.  
 		/// This property is set internally and represents the tile that comes after the current tile.  
@@ -90,7 +151,7 @@ namespace RhythmBase.Adofai.Components
 #if !NETSTANDARD
 		[NotNull]
 #endif
-		public Tile Next { get; internal set; }
+		public ITile Next { get; set; }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class with a specified mid-spin state and a collection of tile events.
 		/// </summary>
@@ -102,8 +163,11 @@ namespace RhythmBase.Adofai.Components
 		/// Returns -1 if the tile does not belong to any level.
 		/// </summary>
 		public int Index => Parent?.IndexOf(this) ?? Parent?.Count ?? -1;
-		public Tile Clone()
-					{
+
+		ADLevel ITile.Parent { get => Parent; set => Parent = value; }
+
+		public ITile Clone()
+		{
 			Tile tile = new()
 			{
 				_angle = _angle,

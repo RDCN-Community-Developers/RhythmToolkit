@@ -20,6 +20,8 @@ namespace RhythmBase.Adofai.Utils
 				Converters =
 				{
 					new LevelConverter(),
+					new RDPointsConverter(),
+					new TileReferenceConverter(),
 				}
 			};
 		}

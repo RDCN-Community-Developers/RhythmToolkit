@@ -12,6 +12,8 @@ namespace RhythmBase.Adofai.Converters
 		public override ADLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			ADLevel level = [];
+			bool isTileLoad = false;
+			List<BaseTileEvent> tileEventsNotLoad = [];
 			if (reader.TokenType != JsonTokenType.StartObject)
 				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
 			reader.Read();
@@ -31,16 +33,17 @@ namespace RhythmBase.Adofai.Converters
 					{
 						if (reader.TokenType == JsonTokenType.EndArray)
 							break;
-						if(reader.TokenType != JsonTokenType.Number)
+						if (reader.TokenType != JsonTokenType.Number)
 							throw new JsonException($"Expected Number token, but got {reader.TokenType}.");
 						int angle = reader.GetInt32();
 						if (angle == Utils.Utils.MidSpinAngle)
-							level.Add(new(true));
+							level.Add(new EmptyTile(true));
 						else
-							level.Add(new(angle));
+							level.Add(new EmptyTile(angle));
 						reader.Read();
 					}
 					reader.Read();
+					isTileLoad = true;
 				}
 				else if (reader.ValueSpan.SequenceEqual("settings"u8))
 				{
@@ -48,11 +51,31 @@ namespace RhythmBase.Adofai.Converters
 					SettingsConverter settingsConverter = new();
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
 				}
-				else if(reader.ValueSpan.SequenceEqual("actions"u8))
+				else if (reader.ValueSpan.SequenceEqual("actions"u8))
 				{
-
+					reader.Read();
+					if (reader.TokenType != JsonTokenType.StartArray)
+						throw new JsonException($"Expected StartArray token for 'events', but got {reader.TokenType}.");
+					BaseEventConverter baseEventConverter = new();
+					reader.Read();
+					while (true)
+					{
+						if (reader.TokenType == JsonTokenType.EndArray)
+							break;
+						IBaseEvent? e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
+						if (e == null)
+							continue;
+						if (e is BaseTileEvent tileE)
+						{
+							if (isTileLoad)
+								level[tileE._floor].Add(tileE);
+							else
+								tileEventsNotLoad.Add(tileE);
+						}
+					}
+					reader.Read();
 				}
-				else if(reader.ValueSpan.SequenceEqual("decoration"u8))
+				else if (reader.ValueSpan.SequenceEqual("decoration"u8))
 				{
 					reader.Read();
 					if (reader.TokenType != JsonTokenType.StartArray)

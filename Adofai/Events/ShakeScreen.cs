@@ -27,6 +27,6 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the fade-out duration for the screen shake effect.  
 		/// </summary>  
-		public float FadeOut { get; set; }
+		public bool FadeOut { get; set; }
 	}
 }

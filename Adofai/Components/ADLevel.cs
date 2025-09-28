@@ -206,17 +206,25 @@ namespace RhythmBase.Adofai.Components
 		/// Sets the parent of the tile to this level before adding it to the base collection.  
 		/// </summary>  
 		/// <param name="item">The tile to add to the level.</param>  
-		public override void Add(Tile item) => Insert(Count, item);
+		public override void Add(ITile item) => Insert(Count, item);
 		/// <summary>  
 		/// Inserts a tile into the level at the specified index.  
 		/// Sets the parent of the tile to this level before inserting it into the base collection.  
 		/// </summary>  
 		/// <param name="index">The zero-based index at which the tile should be inserted.</param>  
 		/// <param name="item">The tile to insert into the level.</param>  
-		public override void Insert(int index, Tile item)
+		public override void Insert(int index, ITile item)
 		{
 			item.Parent = this;
 			base.Insert(index, item);
+		}
+		public void RemoveAt(int index)
+		{
+			ITile tile = this[index];
+			tile.Parent = null;
+			tile.Previous = null;
+			tile.Next = null;
+			tileOrder.RemoveAt(index);
 		}
 		/// <summary>  
 		/// Removes all tiles from the level.  
@@ -239,6 +247,8 @@ namespace RhythmBase.Adofai.Components
 			GC.SuppressFinalize(this);
 		}
 
+		/// <inheritdoc/>
+		public override string ToString() => $"\"{Settings.Song}\" Count = {Count}";
 		internal string _path = string.Empty;
 		private bool isZip = false;
 	}

@@ -4,7 +4,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents a custom tile event in the ADOFAI game.  
 	/// </summary>  
-	public class ForwardTileEvent : BaseTileEvent
+	public class ForwardTileEvent : BaseTileEvent, IForwardEvent
 	{
 		/// <inheritdoc/>
 		public override EventType Type => EventType.ForwardTileEvent;
@@ -16,6 +16,11 @@ namespace RhythmBase.Adofai.Events
 		/// Gets or sets the data associated with the custom tile event.  
 		/// </summary>  
 		public JsonElement Data { get; set; } = new();
+		public ForwardTileEvent() { }
+		public ForwardTileEvent(JsonDocument doc)
+		{
+
+		}
 		/// <summary>  
 		/// Returns a string representation of the custom tile event.  
 		/// </summary>  

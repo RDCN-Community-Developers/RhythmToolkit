@@ -2,13 +2,34 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 
 namespace RhythmBase.Adofai.Converters
 {
-	internal class EventInstantConverterBaseTileEvent<TEvent> : EventInstantConverterBaseEvent<TEvent> where TEvent : IBaseEvent, new()
+	internal class EventInstantConverterBaseTileEvent<TEvent> : EventInstantConverterBaseEvent<TEvent> where TEvent : BaseTileEvent, new()
 	{
+		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
+		{
+			if (base.Read(ref reader, propertyName, ref value, options))
+				return true;
+			if (propertyName.SequenceEqual("floor"u8))
+				value._floor = reader.GetInt32();
+			else
+				return false;
+			return true;
+		}
 	}
-	internal class EventInstantConverterBaseTaggedTileAction<TEvent> : EventInstantConverterBaseEvent<TEvent> where TEvent : IBaseEvent, new()
+	internal class EventInstantConverterBaseTaggedTileAction<TEvent> : EventInstantConverterBaseTileEvent<TEvent> where TEvent : BaseTaggedTileAction, new()
 	{
+		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
+		{
+			if (base.Read(ref reader, propertyName, ref value, options))
+				return true;
+			if (propertyName.SequenceEqual("eventTag"u8))
+				value.EventTag = reader.GetString() ?? "";
+			else
+				return false;
+			return true;
+		}
 	}
 }

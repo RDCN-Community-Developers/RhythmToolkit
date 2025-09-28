@@ -23,7 +23,11 @@ namespace RhythmBase.Adofai.Events
 			//	Data.GetProperty("eventType")
 			}
 		}
+		public ForwardEvent() { }
+		public ForwardEvent(JsonDocument doc)
+		{
 
+		}
 		/// <summary>  
 		/// Gets or sets the data associated with the custom event.  
 		/// </summary>  

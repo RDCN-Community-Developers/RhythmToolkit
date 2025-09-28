@@ -16,5 +16,18 @@ namespace RhythmBase.Adofai.Events
 		/// </summary>
 		/// <returns>A string that represents the event type.</returns>
 		public override string ToString() => Type.ToString();
+		public JsonElement this[string key]
+		{
+			get
+			{
+				if (_extraData.ContainsKey(key))
+					return _extraData[key];
+				return new JsonElement();
+			}
+			set
+			{
+				_extraData[key] = value;
+			}
+		}
 	}
 }

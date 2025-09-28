@@ -1,34 +1,42 @@
-﻿//using Newtonsoft.Json;
-//using Newtonsoft.Json.Linq;
-//using RhythmBase.Adofai.Components;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using RhythmBase.Adofai.Components;
+using RhythmBase.Global.Extensions;
 
-//namespace RhythmBase.Adofai.Converters
-//{
-//	internal class TileReferenceConverter : JsonConverter<TileReference>
-//	{
-//		public override TileReference ReadJson(JsonReader reader, Type objectType, TileReference existingValue, bool hasExistingValue, JsonSerializer serializer)
-//		{
-//			JArray array = JArray.Load(reader);
-//			if (array.Count != 2)
-//			{
-//				throw new JsonSerializationException("Invalid TileReference format.");
-//			}
-//			int offset = array[0].ToObject<int>();
-//			RelativeType type = array[1].ToObject<RelativeType>();
-//			TileReference tileReference = new()
-//			{
-//				Offset = offset,
-//				Type = type
-//			};
-//			return tileReference;
-//		}
-
-//		public override void WriteJson(JsonWriter writer, TileReference value, JsonSerializer serializer)
-//		{
-//			writer.WriteStartArray();
-//			writer.WriteValue(value.Offset);
-//			writer.WriteValue(value.Type.ToString());
-//			writer.WriteEndArray();
-//		}
-//	}
-//}
+namespace RhythmBase.Adofai.Converters
+{
+	internal class TileReferenceConverter : JsonConverter<TileReference>
+	{
+		public override TileReference Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			if (reader.TokenType != JsonTokenType.StartArray)
+				throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
+			reader.Read();
+			if (reader.TokenType != JsonTokenType.Number)
+				throw new JsonException($"Expected Number token for Offset, but got {reader.TokenType}.");
+			int offset = reader.GetInt32();
+			reader.Read();
+			if (reader.TokenType != JsonTokenType.String)
+				throw new JsonException($"Expected String token for Type, but got {reader.TokenType}.");
+			ReadOnlySpan<byte> typeSpan = reader.ValueSpan;
+			if (!EnumConverter.TryParse(typeSpan, out RelativeType type))
+				throw new JsonException($"Invalid RelativeType value: {typeSpan.ToString()}");
+			reader.Read();
+			if (reader.TokenType != JsonTokenType.EndArray)
+				throw new JsonException($"Expected EndArray token, but got {reader.TokenType}.");
+			reader.Read();
+			return new TileReference
+			{
+				Offset = offset,
+				Type = type
+			};
+		}
+		public override void Write(Utf8JsonWriter writer, TileReference value, JsonSerializerOptions options)
+		{
+			writer.WriteStartArray();
+			writer.WriteNumberValue(value.Offset);
+			writer.WriteStringValue(EnumConverter.ToEnumString(value.Type));
+			writer.WriteEndArray();
+		}
+	}
+}
