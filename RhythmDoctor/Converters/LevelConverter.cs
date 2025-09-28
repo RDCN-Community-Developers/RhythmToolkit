@@ -164,13 +164,15 @@ namespace RhythmBase.RhythmDoctor.Converters
 					if (reader.TokenType != JsonTokenType.StartArray)
 						throw new JsonException($"Expected StartArray token for 'bookmarks', but got {reader.TokenType}.");
 					BookmarkConverter bookmarkConverter = new();
-					while (reader.Read())
+					reader.Read();
+					while (true)
 					{
 						if (reader.TokenType == JsonTokenType.EndArray)
 							break;
 						Bookmark? e = bookmarkConverter.Read(ref reader, typeof(Bookmark), options);
 						if (e != null)
 							level.Bookmarks.Add(e);
+						reader.Read();
 					}
 					reader.Read();
 				}
@@ -199,7 +201,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 					if (reader.TokenType != JsonTokenType.StartArray)
 						throw new JsonException($"Expected StartArray token for 'conditionals', but got {reader.TokenType}.");
 					ConditionalConverter conditionalConverter = new();
-					while (reader.Read())
+					reader.Read();
+					while (true)
 					{
 						if (reader.TokenType == JsonTokenType.EndArray)
 							break;

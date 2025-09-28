@@ -16,6 +16,7 @@
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	  <LangVersion>Preview</LangVersion>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="RhythmDoctor\Converters\Old\**" />

@@ -661,8 +661,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		private void RefreshBPMs(RDBeat start)
 		{
-			foreach (var item in eventsBeatOrder.Keys)
-				item.ResetBPM();
+			foreach (var item in eventsBeatOrder)
+				item.Key.ResetBPM();
 			foreach (var item in this.Where(i => i.Beat > start))
 				item.Beat.ResetBPM();
 			foreach (var item in Bookmarks)
@@ -670,8 +670,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		private void RefreshCPBs(RDBeat start)
 		{
-			foreach (var item in eventsBeatOrder.Keys)
-				item.ResetCPB();
+			foreach (var item in eventsBeatOrder)
+				item.Key.ResetCPB();
 			foreach (var item in this.Where(i => i.Beat > start))
 				item.Beat.ResetCPB();
 			foreach (var item in Bookmarks)

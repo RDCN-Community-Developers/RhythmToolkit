@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	internal class EventEnumerator { }
 	internal class EventEnumerator<TEvent> : EventEnumerator, IEventEnumerable<TEvent>, IEnumerator<TEvent> where TEvent : IBaseEvent
 	{
-		protected readonly IEnumerator<RDBeat> beats;
+		protected readonly IEnumerator<KeyValuePair< RDBeat, TypedEventCollection<IBaseEvent>>> beats;
 		protected IEnumerator<IBaseEvent>? events;
 		protected readonly OrderedEventCollection collection;
 		private EventType[] types;
@@ -19,14 +19,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			//collection._modifierInstances[this] = [];
 			this.collection = collection;
-			beats = collection.eventsBeatOrder.Keys.GetEnumerator();
+			beats = collection.eventsBeatOrder.GetEnumerator();
 			this.types = types;
 			this.range = range;
 			while (beats.MoveNext())
-				if ((range.Start is null || beats.Current >= range.Start) && collection.eventsBeatOrder[beats.Current].ContainsTypes(types))
+				if ((range.Start is null || beats.Current.Key >= range.Start) && beats.Current.Value.ContainsTypes(types))
 				{
-					if (range.End is null || beats.Current < range.End)
-						events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
+					if (range.End is null || beats.Current.Key < range.End)
+						events = beats.Current.Value.GetEnumerator();
 					break;
 				}
 		}
@@ -43,13 +43,13 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				while (beats.MoveNext())
 				{
-					if (!collection.eventsBeatOrder[beats.Current].ContainsTypes(types))
+					if (!beats.Current.Value.ContainsTypes(types))
 					{
 						continue;
 					}
-					if (range.End is not null && range.End <= beats.Current)
+					if (range.End is not null && range.End <= beats.Current.Key)
 						return false;
-					events = collection.eventsBeatOrder[beats.Current].GetEnumerator();
+					events = beats.Current.Value.GetEnumerator();
 					while (events.MoveNext())
 					{
 						if (types.Contains(events.Current.Type))

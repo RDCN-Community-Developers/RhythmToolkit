@@ -2,7 +2,6 @@
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
-using System.Collections.Specialized;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
@@ -22,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns the beat of the last event.
 		/// </summary>
 		/// <returns>The beat of the last event.</returns>
-		public RDBeat Length => eventsBeatOrder.Keys.LastOrDefault();
+		public RDBeat Length => eventsBeatOrder.LastOrDefault().Key;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OrderedEventCollection"/> class.
 		/// </summary>
@@ -52,8 +51,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (eventsBeatOrder.TryGetValue(item.Beat, out TypedEventCollection<IBaseEvent>? value))
 				list = value;
 			else
-				eventsBeatOrder.Add(item.Beat, list);
-			list.Add(item);
+				eventsBeatOrder.Insert(item.Beat, list);
 		}
 		/// <summary>
 		/// Clears all events from the collection.
@@ -64,7 +62,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="item">The event to locate in the collection.</param>
 		/// <returns>true if the event is found in the collection; otherwise, false.</returns>
-		public virtual bool Contains(IBaseEvent item) => eventsBeatOrder.ContainsKey(item.Beat) && eventsBeatOrder[item.Beat].Contains(item);
+		public virtual bool Contains(IBaseEvent item) => eventsBeatOrder.FindNode(item.Beat)?.Value.Contains(item) ?? false;
 		/// <summary>
 		/// Copies the elements of the collection to an array, starting at a particular array index.
 		/// </summary>
@@ -130,7 +128,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// The dictionary that maintains the order of events based on their beats.
 		/// </summary>
-		internal SortedDictionary<RDBeat, TypedEventCollection<IBaseEvent>> eventsBeatOrder;
+		//internal SortedDictionary<RDBeat, TypedEventCollection<IBaseEvent>> eventsBeatOrder;
+		internal RedBlackTree<RDBeat, TypedEventCollection<IBaseEvent>> eventsBeatOrder = new();
 		internal Dictionary<EventEnumerator, Queue<(IBaseEvent e, RDBeat b)>> _modifierInstances = [];
 		internal EventEnumerator? _currentModifier;
 		internal BeatCalculator? calculator;
