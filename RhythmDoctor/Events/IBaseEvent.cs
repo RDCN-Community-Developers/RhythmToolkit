@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents the base interface for an event in the rhythm base system.
 	/// </summary>
-	public interface IBaseEvent
+	public interface IBaseEvent : IEvent
 	{
 		/// <summary>
 		/// Gets or sets a value indicating whether the event is active.

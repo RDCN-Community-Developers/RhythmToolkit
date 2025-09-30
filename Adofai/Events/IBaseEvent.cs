@@ -2,7 +2,7 @@
 
 namespace RhythmBase.Adofai.Events
 {
-	public interface IBaseEvent
+	public interface IBaseEvent : IEvent
 	{
 		EventType Type { get; }
 		JsonElement this[string key] { get; set; }

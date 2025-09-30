@@ -167,48 +167,63 @@ namespace RhythmBase.RhythmDoctor.Components
 					throw new RhythmBaseException("File not supported.");
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
 				level = FromStream(stream, settings);
-				level?._path = Path.GetFullPath(filepath);
+				level._path = Path.GetFullPath(filepath);
+				return level;
 			}
-			else
+			switch (settings.CompressionMode)
 			{
-				DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
-				tempDirectory.Create();
-				try
-				{
+				case Global.Settings.CompressionMode.EntirePackage:
+					DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
+					tempDirectory.Create();
+					try
+					{
 #if NET8_0_OR_GREATER
 					using Stream stream = File.OpenRead(filepath);
 					// Use async extraction if available for better performance
 					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
-					ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+						ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
-					// Avoid LINQ Single for performance, use a simple loop
-					string? rdlevelPath = null;
-					foreach (var file in tempDirectory.GetFiles())
-					{
-						if (file.Extension == ".rdlevel")
+						string? rdlevelPath = null;
+						foreach (var file in tempDirectory.GetFiles())
 						{
-							rdlevelPath = file.FullName;
-							break;
+							if (file.Extension == ".rdlevel")
+							{
+								rdlevelPath = file.FullName;
+								break;
+							}
 						}
+						if (rdlevelPath == null)
+							throw new RhythmBaseException("No RDLevel file has been found.");
+						level = FromFile(rdlevelPath, settings);
+						level.isZip = true;
+						level.isExtracted = true;
+						return level;
 					}
-					if (rdlevelPath == null)
+					catch (Exception ex2)
+					{
+						tempDirectory.Delete(true);
+						throw new RhythmBaseException("Cannot extract the file.", ex2);
+					}
+				case Global.Settings.CompressionMode.No:
+					using (var zip = ZipFile.OpenRead(filepath))
+					{
+						foreach (var entry in zip.Entries)
+						{
+							if (entry.FullName.EndsWith(".rdlevel", StringComparison.OrdinalIgnoreCase))
+							{
+								using var entryStream = entry.Open();
+								level = FromStream(entryStream, settings);
+								level._path = Path.GetFullPath(filepath);
+								level.isZip = true;
+								return level;
+							}
+						}
 						throw new RhythmBaseException("No RDLevel file has been found.");
-					level = FromFile(rdlevelPath, settings);
-					level.isZip = true;
-				}
-				catch (InvalidOperationException ex)
-				{
-					tempDirectory.Delete(true);
-					throw new RhythmBaseException("No or more than one RDLevel file has been found.", ex);
-				}
-				catch (Exception ex2)
-				{
-					tempDirectory.Delete(true);
-					throw new RhythmBaseException("Cannot extract the file.", ex2);
-				}
+					}
+				default:
+					throw new RhythmBaseException("Unsupported compression mode.");
 			}
-			return level ?? [];
 		}
 		/// <summary>
 		/// Reads a level from a stream.
@@ -680,7 +695,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <inheritdoc/>
 		public void Dispose()
 		{
-			if (isZip)
+			if (isZip && isExtracted)
 			{
 				System.IO.Directory.Delete(Directory, true);
 			}
@@ -690,6 +705,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public override string ToString() => $"\"{Settings.Song}\" Count = {Count}";
 		internal string? _path;
 		private bool isZip = false;
+		private bool isExtracted = false;
 		private RDColor[] colorPalette = new RDColor[21];
 		internal List<FloatingText> _floatingTexts = [];
 		/// <summary>

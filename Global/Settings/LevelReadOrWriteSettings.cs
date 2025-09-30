@@ -3,6 +3,20 @@ using System.Text.Json;
 namespace RhythmBase.Global.Settings
 {
 	/// <summary>
+	/// Specifies the resource extraction mode when reading or writing a level.
+	/// </summary>
+	public enum CompressionMode
+	{
+		/// <summary>
+		/// Extracts all resources to a temporary folder.
+		/// </summary>
+		EntirePackage,
+		/// <summary>
+		/// Does not extract any resources.
+		/// </summary>
+		No,
+	}
+	/// <summary>
 	/// Level import settings.
 	/// </summary>
 	public class LevelReadOrWriteSettings
@@ -34,6 +48,10 @@ namespace RhythmBase.Global.Settings
 			AfterWriting = delegate { };
 		}
 		/// <summary>
+		/// Gets or sets the compression mode used for processing data.
+		/// </summary>
+		public CompressionMode CompressionMode { get; set; } = CompressionMode.No;
+		/// <summary>
 		/// Enable resource preloading. This may grow read times. 
 		/// Defaults to <see langword="false" />.
 		/// </summary>
@@ -46,7 +64,7 @@ namespace RhythmBase.Global.Settings
 		/// <summary>
 		/// Stores unreadable event data when the <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.InactiveEventsHandling" /> is <see cref="F:RhythmBase.Global.Settings.InactiveEventsHandling.Store" />.
 		/// </summary>
-		public List<BaseEvent> InactiveEvents { get; set; } = [];
+		public List<IEvent> InactiveEvents { get; set; } = [];
 		/// <summary>
 		/// Action on unreadable events.
 		/// Defaults to <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.ThrowException" />.
@@ -57,7 +75,7 @@ namespace RhythmBase.Global.Settings
 		/// </summary>
 		/// <returns></returns>
 		public List<(JsonElement item, string reason)> UnreadableEvents { get; set; } = [];
-		internal bool HandleInactiveEvent(BaseEvent item)
+		internal bool HandleInactiveEvent(IEvent item)
 		{
 			switch (InactiveEventsHandling)
 			{

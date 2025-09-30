@@ -49,9 +49,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			TypedEventCollection<IBaseEvent> list = [];
 			if (eventsBeatOrder.TryGetValue(item.Beat, out TypedEventCollection<IBaseEvent>? value))
-				list = value;
+				value.Add(item);
 			else
-				eventsBeatOrder.Insert(item.Beat, list);
+				eventsBeatOrder.Insert(item.Beat, [item]);
 		}
 		/// <summary>
 		/// Clears all events from the collection.

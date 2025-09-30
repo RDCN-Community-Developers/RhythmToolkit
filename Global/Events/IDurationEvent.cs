@@ -3,7 +3,7 @@
 	/// <summary>  
 	/// Interface representing a duration event.  
 	/// </summary>  
-	public interface IDurationEvent
+	public interface IDurationEvent : IEvent
 	{
 		/// <summary>  
 		/// Gets or sets the duration of the ease event.  

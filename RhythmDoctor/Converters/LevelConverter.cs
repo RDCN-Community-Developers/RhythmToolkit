@@ -244,7 +244,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 				rowConverter.Write(noIndentWriter, row, localOptions);
 				noIndentWriter.Flush();
 				Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-				Console.WriteLine(Encoding.UTF8.GetString(sl.ToArray()));
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
@@ -261,7 +260,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 				decorationConverter.Write(noIndentWriter, decoration, localOptions);
 				noIndentWriter.Flush();
 				Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-				Console.WriteLine(Encoding.UTF8.GetString(sl.ToArray()));
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
@@ -313,7 +311,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 						baseEventConverter.Write(noIndentWriter, e, localOptions);
 						noIndentWriter.Flush();
 						Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-						Console.WriteLine(Encoding.UTF8.GetString(sl.ToArray()));
 						writer.WriteRawValue(sl);
 						noIndentWriter.Reset();
 					}
@@ -343,7 +340,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 					baseEventConverter.Write(noIndentWriter, e, localOptions);
 					noIndentWriter.Flush();
 					Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-					Console.WriteLine(Encoding.UTF8.GetString(sl.ToArray()));
 					writer.WriteRawValue(sl);
 					noIndentWriter.Reset();
 				}
@@ -363,7 +359,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 						baseEventConverter.Write(noIndentWriter, e, localOptions);
 						noIndentWriter.Flush();
 						Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-						Console.WriteLine(Encoding.UTF8.GetString(sl.ToArray()));
 						writer.WriteRawValue(sl);
 						noIndentWriter.Reset();
 					}
@@ -382,7 +377,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 				bookmarkConverter.Write(noIndentWriter, bookmark, localOptions);
 				noIndentWriter.Flush();
 				Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-				Console.WriteLine(Encoding.UTF8.GetString(sl.ToArray()));
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
@@ -404,7 +398,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 				conditionalConverter.Write(noIndentWriter, conditional, localOptions);
 				noIndentWriter.Flush();
 				Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-				Console.WriteLine(Encoding.UTF8.GetString(sl.ToArray()));
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
