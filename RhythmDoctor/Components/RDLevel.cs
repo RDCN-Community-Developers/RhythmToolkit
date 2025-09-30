@@ -170,59 +170,37 @@ namespace RhythmBase.RhythmDoctor.Components
 				level._path = Path.GetFullPath(filepath);
 				return level;
 			}
-			switch (settings.CompressionMode)
+			DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
+			tempDirectory.Create();
+			try
 			{
-				case Global.Settings.CompressionMode.EntirePackage:
-					DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
-					tempDirectory.Create();
-					try
-					{
 #if NET8_0_OR_GREATER
 					using Stream stream = File.OpenRead(filepath);
 					// Use async extraction if available for better performance
 					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
-						ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
-						string? rdlevelPath = null;
-						foreach (var file in tempDirectory.GetFiles())
-						{
-							if (file.Extension == ".rdlevel")
-							{
-								rdlevelPath = file.FullName;
-								break;
-							}
-						}
-						if (rdlevelPath == null)
-							throw new RhythmBaseException("No RDLevel file has been found.");
-						level = FromFile(rdlevelPath, settings);
-						level.isZip = true;
-						level.isExtracted = true;
-						return level;
-					}
-					catch (Exception ex2)
+				string? rdlevelPath = null;
+				foreach (var file in tempDirectory.GetFiles())
+				{
+					if (file.Extension == ".rdlevel")
 					{
-						tempDirectory.Delete(true);
-						throw new RhythmBaseException("Cannot extract the file.", ex2);
+						rdlevelPath = file.FullName;
+						break;
 					}
-				case Global.Settings.CompressionMode.No:
-					using (var zip = ZipFile.OpenRead(filepath))
-					{
-						foreach (var entry in zip.Entries)
-						{
-							if (entry.FullName.EndsWith(".rdlevel", StringComparison.OrdinalIgnoreCase))
-							{
-								using var entryStream = entry.Open();
-								level = FromStream(entryStream, settings);
-								level._path = Path.GetFullPath(filepath);
-								level.isZip = true;
-								return level;
-							}
-						}
-						throw new RhythmBaseException("No RDLevel file has been found.");
-					}
-				default:
-					throw new RhythmBaseException("Unsupported compression mode.");
+				}
+				if (rdlevelPath == null)
+					throw new RhythmBaseException("No RDLevel file has been found.");
+				level = FromFile(rdlevelPath, settings);
+				level.isZip = true;
+				level.isExtracted = true;
+				return level;
+			}
+			catch (Exception ex2)
+			{
+				tempDirectory.Delete(true);
+				throw new RhythmBaseException("Cannot extract the file.", ex2);
 			}
 		}
 		/// <summary>

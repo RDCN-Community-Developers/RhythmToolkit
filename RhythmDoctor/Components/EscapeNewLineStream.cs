@@ -44,7 +44,10 @@
 				else
 				{
 					int read = await _inner.ReadAsync(_buffer, 0, 1, ct);
-					if (read == 0) break; // EOF
+					if (read == 0)
+					{
+						break; // EOF
+					}
 					b = _buffer[0];
 				}
 				//if (written < 10)
@@ -72,6 +75,7 @@
 				{
 					// 可能是 \r\n
 					int read = await _inner.ReadAsync(_buffer, 0, 1, ct);
+					if (read == 0) break;
 					if (read > 0 && IsLF(_buffer[0]))
 					{
 						// \r\n -> \\r\\n
@@ -114,7 +118,7 @@
 					_prevIsEscape = false;
 				}
 			}
-			return written == 0 ? 0 : written;
+			return written > 0 ? written : 0;
 		}
 		public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 		public override void SetLength(long value) => throw new NotSupportedException();

@@ -91,59 +91,37 @@ namespace RhythmBase.Adofai.Components
 				level._path = Path.GetFullPath(filepath);
 				return level;
 			}
-			switch (settings.CompressionMode)
+			DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
+			tempDirectory.Create();
+			try
 			{
-				case Global.Settings.CompressionMode.EntirePackage:
-					DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
-					tempDirectory.Create();
-					try
-					{
 #if NET8_0_OR_GREATER
 					using Stream stream = File.OpenRead(filepath);
 					// Use async extraction if available for better performance
 					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
-						ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
-						// Avoid LINQ Single for performance, use a simple loop
-						string? adlevelPath = null;
-						foreach (var file in tempDirectory.GetFiles())
-						{
-							if (file.Extension == ".adofai")
-							{
-								adlevelPath = file.FullName;
-								break;
-							}
-						}
-						if (adlevelPath == null)
-							throw new RhythmBaseException("No Adofai file has been found.");
-						level = FromFile(adlevelPath, settings);
-						level.isZip = true;
-						return level;
-					}
-					catch (Exception ex2)
+				// Avoid LINQ Single for performance, use a simple loop
+				string? adlevelPath = null;
+				foreach (var file in tempDirectory.GetFiles())
+				{
+					if (file.Extension == ".adofai")
 					{
-						tempDirectory.Delete(true);
-						throw new RhythmBaseException("Cannot extract the file.", ex2);
+						adlevelPath = file.FullName;
+						break;
 					}
-				case Global.Settings.CompressionMode.No:
-					using (var zip = ZipFile.OpenRead(filepath))
-					{
-						foreach (var entry in zip.Entries)
-						{
-							if (entry.FullName.EndsWith(".adofai", StringComparison.OrdinalIgnoreCase))
-							{
-								using var entryStream = entry.Open();
-								level = FromStream(entryStream, settings);
-								level._path = Path.GetFullPath(filepath);
-								level.isZip = true;
-								return level;
-							}
-						}
-						throw new RhythmBaseException("No Adofai file has been found.");
-					}
-				default:
-					throw new RhythmBaseException("Unsupported compression mode.");
+				}
+				if (adlevelPath == null)
+					throw new RhythmBaseException("No Adofai file has been found.");
+				level = FromFile(adlevelPath, settings);
+				level.isZip = true;
+				return level;
+			}
+			catch (Exception ex2)
+			{
+				tempDirectory.Delete(true);
+				throw new RhythmBaseException("Cannot extract the file.", ex2);
 			}
 		}
 		public static ADLevel FromStream(Stream stream, LevelReadOrWriteSettings? settings = null)

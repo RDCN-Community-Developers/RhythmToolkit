@@ -3,20 +3,6 @@ using System.Text.Json;
 namespace RhythmBase.Global.Settings
 {
 	/// <summary>
-	/// Specifies the resource extraction mode when reading or writing a level.
-	/// </summary>
-	public enum CompressionMode
-	{
-		/// <summary>
-		/// Extracts all resources to a temporary folder.
-		/// </summary>
-		EntirePackage,
-		/// <summary>
-		/// Does not extract any resources.
-		/// </summary>
-		No,
-	}
-	/// <summary>
 	/// Level import settings.
 	/// </summary>
 	public class LevelReadOrWriteSettings
@@ -47,10 +33,6 @@ namespace RhythmBase.Global.Settings
 			BeforeWriting = delegate { };
 			AfterWriting = delegate { };
 		}
-		/// <summary>
-		/// Gets or sets the compression mode used for processing data.
-		/// </summary>
-		public CompressionMode CompressionMode { get; set; } = CompressionMode.No;
 		/// <summary>
 		/// Enable resource preloading. This may grow read times. 
 		/// Defaults to <see langword="false" />.
