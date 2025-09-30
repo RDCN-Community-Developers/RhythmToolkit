@@ -14,16 +14,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				return (ordered.GetEnumerator() as EventEnumerator<IBaseEvent> ?? new EventEnumerator<IBaseEvent>(ordered)).OfEvent<TEvent>();
 			throw new NotSupportedException("The provided IEventEnumerable is not supported.");
 		}
-		public static IEventEnumerable<IBaseEvent> WithEvent<TEvent, TExtraEvent>(this IEventEnumerable<TEvent> source)
-			where TEvent : IBaseEvent
-			where TExtraEvent : IBaseEvent
+		public static IEventEnumerable<IBaseEvent> OfEvents(this IEventEnumerable<IBaseEvent> source, params EventType[] types)
 		{
-			if (source is EventEnumerator<TEvent> casted)
-				return casted.WithEvent<TExtraEvent>();
 			if (source is EventEnumerator<IBaseEvent> casted1)
-				return casted1.WithEvent<TExtraEvent>();
+				return casted1.OfEvents(types);
 			if (source is OrderedEventCollection ordered)
-				return (ordered.GetEnumerator() as EventEnumerator<IBaseEvent> ?? new EventEnumerator<IBaseEvent>(ordered)).WithEvent<TExtraEvent>();
+				return (ordered.GetEnumerator() as EventEnumerator<IBaseEvent> ?? new EventEnumerator<IBaseEvent>(ordered)).OfEvents(types);
 			throw new NotSupportedException("The provided IEventEnumerable is not supported.");
 		}
 		public static IEventEnumerable<IBaseEvent> InRange(this IEventEnumerable<IBaseEvent> source, RDBeat? start, RDBeat? end)

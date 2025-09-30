@@ -69,11 +69,10 @@ namespace RhythmBase.RhythmDoctor.Components
 			this.types = types;
 			return this as EventEnumerator<TEvent2> ?? new(collection, types, range);
 		}
-		public IEventEnumerable<IBaseEvent> WithEvent<TEvent2>() where TEvent2 : IBaseEvent
+		public IEventEnumerable<IBaseEvent> OfEvents(EventType[] types)
 		{
-			EventType[] types = [.. this.types.Union(EventTypeUtils.ToEnums(typeof(TEvent2)))];
 			this.types = types;
-			return new EventEnumerator<IBaseEvent>(collection, types, range) ;
+			return this as EventEnumerator<IBaseEvent> ?? new(collection, types, range) ;
 		}
 		public EventEnumerator<TEvent> InRange(RDRange range)
 		{
