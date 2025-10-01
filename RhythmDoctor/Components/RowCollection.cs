@@ -34,15 +34,16 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="item">The <see cref="Row"/> to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> is null.</exception>
-		public override bool Remove(Row item)
+		public override bool Remove(Row row)
 		{
-			if (!_items.Contains(item))
+			if (!_items.Contains(row))
 				return false;
-			foreach (var i in item)
+			BaseRowAction[] rowsToRemove = [.. row];
+			foreach (var i in rowsToRemove)
 				parent.Remove(i);
-			item.Parent = null;
-			item.calculator = null;
-			return _items.Remove(item);
+			row.Parent = null;
+			row.calculator = null;
+			return _items.Remove(row);
 		}
 		/// <summary>  
 		/// Gets or sets the <see cref="Row"/> at the specified index.  

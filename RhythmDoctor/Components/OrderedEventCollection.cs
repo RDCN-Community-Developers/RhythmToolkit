@@ -105,7 +105,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>An enumerator for the collection.</returns>
-		public IEnumerator<IBaseEvent> GetEnumerator() => new EventEnumerator<IBaseEvent>(this);
+		public virtual IEnumerator<IBaseEvent> GetEnumerator() => new EventEnumerator<IBaseEvent>(this);
 		internal IEnumerator<TEvent> GetEnumerator<TEvent>(float? start, float? end) where TEvent : IBaseEvent => new EventEnumerator<TEvent>(this, new RDRange(
 			start is null ? null : new(start.Value),
 			end is null ? null : new(end.Value)));

@@ -28,7 +28,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		protected override void Write(Utf8JsonWriter writer, ref TEvent value, JsonSerializerOptions options)
 		{
 			base.Write(writer, ref value, options);
-			writer.WriteNumber("row"u8, value._row);
+			writer.WriteNumber("row"u8, value.Parent?.Index ?? value._row);
 		}
 	}
 	internal abstract class EventInstantConverterBaseBeat<TEvent> : EventInstantConverterBaseRowAction<TEvent> where TEvent : BaseBeat, new()
@@ -77,7 +77,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			base.Write(writer, ref value, options);
 			if (value is not Comment cmt || cmt.CustomTab == Tabs.Decorations)
-				writer.WriteString("target"u8, value._decoId);
+				writer.WriteString("target"u8, value.Parent?.Id ?? value._decoId);
 		}
 	}
 	internal abstract class EventInstantConverterBaseRowAnimation<TEvent> : EventInstantConverterBaseRowAction<TEvent> where TEvent : BaseRowAnimation, new()

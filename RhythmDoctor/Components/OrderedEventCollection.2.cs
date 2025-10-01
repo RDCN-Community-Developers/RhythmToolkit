@@ -41,8 +41,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		public virtual bool Remove(TEvent item) => Remove((BaseEvent)(object)item);
 		/// <inheritdoc/>  
 		public override string ToString() => string.Format("Count = {0}", Count);
+		///// <inheritdoc/>
+		//public override IEnumerator<IBaseEvent> GetEnumerator() => (IEnumerator<IBaseEvent>)new EventEnumerator<TEvent>(this);
 		/// <inheritdoc/>  
-		IEnumerator<TEvent> IEnumerable<TEvent>.GetEnumerator()
+		public new IEnumerator<TEvent> GetEnumerator()
 		{
 			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> pair in eventsBeatOrder)
 				foreach (TEvent item in pair.Value.Select(v => (TEvent)v))

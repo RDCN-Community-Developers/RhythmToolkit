@@ -30,7 +30,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the index of the row.
 		/// </summary>
-		public sbyte Index => (sbyte)(Parent?.Rows.IndexOf(this) ?? throw new RhythmBaseException());
+		public int Index => Parent?.Rows.IndexOf(this) ?? throw new RhythmBaseException();
 		/// <summary>
 		/// Gets or sets the rooms associated with the row.
 		/// </summary>
@@ -114,19 +114,13 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				item._parent?.Remove(item);
 				item._parent = this;
-				Parent?.Add(item);
+				if(Parent is null)
+					base.Add(item);
+				else
+					Parent?.AddInternal(item);
 				return;
 			}
 			throw new IllegalRowEventTypeException(item.Type, RowType);
-		}
-		/// <summary>
-		/// Adds an item to the row safely.
-		/// </summary>
-		/// <param name="item">The row event to add.</param>
-		internal void AddInternal(BaseRowAction item)
-		{
-			item._parent = this;
-			base.Add(item);
 		}
 
 		/// <summary>
@@ -134,13 +128,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="item">The row event to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
-		public override bool Remove(BaseRowAction item) => Parent?.Remove(item) ?? throw new RhythmBaseException();
-		/// <summary>
-		/// Removes an item from the row safely.
-		/// </summary>
-		/// <param name="item">The row event to remove.</param>
-		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
-		internal bool RemoveInternal(BaseRowAction item) => base.Remove(item);
+		public override bool Remove(BaseRowAction item) => Parent?.RemoveInternal(item) ?? false;
 
 		private RowTypes _rowType;
 		[RDJsonIgnore]

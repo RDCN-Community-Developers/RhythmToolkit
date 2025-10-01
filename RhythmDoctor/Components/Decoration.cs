@@ -60,20 +60,20 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			item._parent?.Remove(item);
 			item._parent = this;
-			Parent?.Add(item);
-		}
-		internal void AddInternal(BaseDecorationAction item)
-		{
-			item._parent = this;
-			base.Add(item);
+			if (Parent is null)
+				base.Add(item);
+			else
+				Parent?.AddInternal(item);
 		}
 
 		/// <summary>
 		/// Remove an event from decoration.
 		/// </summary>
 		/// <param name="item">A decoration event.</param>
-		public override bool Remove(BaseDecorationAction item) => Parent?.Remove(item) ?? throw new RhythmBaseException();
-		internal bool RemoveInternal(BaseDecorationAction item) => base.Remove(item);
+		public override bool Remove(BaseDecorationAction item)
+		{
+			return Parent?.RemoveInternal(item) ?? base.Remove(item);
+		}
 		/// <inheritdoc/>
 		public override string ToString() => string.Format("{0}, {1}, {2}, {3}",
 			[

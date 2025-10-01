@@ -18,12 +18,12 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="decoration">The <see cref="Decoration"/> to add.</param>
 		public override void Add(Decoration decoration)
 		{
-			if(_items.Contains(decoration))
+			if (_items.Contains(decoration))
 				return;
 			decoration.Parent = parent;
 			decoration.calculator = parent.Calculator;
-			foreach (var i in decoration)
-				parent.Add(i);
+			foreach (BaseDecorationAction i in decoration)
+				parent.AddInternal(i);
 			_items.Add(decoration);
 		}
 		/// <summary>
@@ -32,15 +32,16 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="item">The <see cref="Decoration"/> to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> is null.</exception>
-		public override bool Remove(Decoration item)
+		public override bool Remove(Decoration decoration)
 		{
-			if (!_items.Contains(item))
+			if (!_items.Contains(decoration))
 				return false;
-			foreach (var i in item)
+			BaseDecorationAction[] decosToRemove = [.. decoration];
+			foreach (var i in decosToRemove)
 				parent.Remove(i);
-			item.Parent = null;
-			item.calculator = null;
-			return _items.Remove(item);
+			decoration.Parent = null;
+			decoration.calculator = null;
+			return _items.Remove(decoration);
 		}
 		/// <summary>
 		/// Gets or sets the <see cref="Decoration"/> at the specified index.

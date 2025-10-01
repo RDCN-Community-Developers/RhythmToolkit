@@ -444,24 +444,18 @@ namespace RhythmBase.RhythmDoctor.Components
 			else if (item is BaseRowAction rowAction)
 			{
 				// Add to the corresponding row
-				Row? parent = rowAction.Parent ?? (rowAction.Index < Rows.Count ? Rows[rowAction.Index] : null);
-				if (parent == null) Rows._unhandledRowEvents.Add(rowAction);
-				else parent.AddInternal(rowAction);
-				base.Add(item);
+				AddInternal(rowAction);
 			}
 			else if (item is BaseDecorationAction decoAction)
 			{
 				// Add to the corresponding decoration
-				Decoration? parent = decoAction.Parent ?? Decorations[decoAction._decoId];
-				if (parent == null) Decorations._unhandledRowEvents.Add(decoAction);
-				else parent.AddInternal(decoAction);
-				base.Add(item);
+				AddInternal(decoAction);
 			}
 			// BPM and CPB
 			else if (item is SetCrotchetsPerBar setCrochetsPerBar)
-				AddSetCrotchetsPerBar(setCrochetsPerBar, keepPos);
+				AddSetCrotchetsPerBarInternal(setCrochetsPerBar, keepPos);
 			else if (item is BaseBeatsPerMinute baseBeatsPerMinute)
-				AddBaseBeatsPerMinute(baseBeatsPerMinute);
+				AddBaseBeatsPerMinuteInternal(baseBeatsPerMinute);
 			// Other events
 			else
 				base.Add(item);
@@ -490,26 +484,24 @@ namespace RhythmBase.RhythmDoctor.Components
 		public bool Remove(IBaseEvent item, bool keepPos)
 		{
 			bool Remove;
-			if (EventTypeUtils.RowTypes.Contains(item.Type)
-				&& Rows.Any((i) => i.RemoveInternal((BaseRowAction)item)))
+			if (item is BaseDecorationAction decoAction)
 			{
-				base.Remove(item);
+				RemoveInternal(decoAction);
 				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
-			else if (EventTypeUtils.DecorationTypes.Contains(item.Type)
-					&& Decorations.Any((i) => i.RemoveInternal((BaseDecorationAction)item)))
+			else if (item is BaseRowAction rowAction)
 			{
-				base.Remove(item);
+				RemoveInternal(rowAction);
 				((BaseEvent)item)._beat._calculator = null;
 				Remove = true;
 			}
 			else if (Contains(item))
 			{
 				if (item.Type == EventType.SetCrotchetsPerBar)
-					Remove = RemoveSetCrotchetsPerBar((SetCrotchetsPerBar)item, keepPos);
+					Remove = RemoveSetCrotchetsPerBarInternal((SetCrotchetsPerBar)item, keepPos);
 				else if (EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
-					Remove = RemoveBaseBeatsPerMinute((BaseBeatsPerMinute)item);
+					Remove = RemoveBaseBeatsPerMinuteInternal((BaseBeatsPerMinute)item);
 				else
 				{
 					bool result = base.Remove(item);
@@ -523,21 +515,37 @@ namespace RhythmBase.RhythmDoctor.Components
 				_floatingTexts.Remove(floatingText);
 			return Remove;
 		}
-		///// <summary>  
-		///// Extracts all group events from the level and adds their individual events to the level.  
-		///// </summary>  
-		///// <remarks>  
-		///// This method iterates through all group events in the level, adds their individual events to the level,  
-		///// and then removes the original group events.  
-		///// </remarks>  
-		//public void ExtractGroups()
-		//{
-		//	IEnumerable<MacroEvent> groups = this.Where<MacroEvent>();
-		//	foreach (var group in groups)
-		//		this.AddRange(group);
-		//	this.RemoveRange(groups);
-		//}
-		private void AddSetCrotchetsPerBar(SetCrotchetsPerBar item, bool keepCpb = true)
+		internal void AddInternal(BaseDecorationAction item)
+		{
+			Decoration? parent = item.Parent ?? Decorations[item._decoId];
+			if (parent == null) Decorations._unhandledRowEvents.Add(item);
+			if (base.Contains(item))
+				return;
+			base.Add(item);
+		}
+		internal void AddInternal(BaseRowAction item)
+		{
+			Row? parent = item.Parent ?? (item.Index < Rows.Count ? Rows[item.Index] : null);
+			if (parent == null) Rows._unhandledRowEvents.Add(item);
+			if (base.Contains(item))
+				return;
+			base.Add(item);
+		}
+		internal bool RemoveInternal(BaseDecorationAction item)
+		{
+			Decoration? parent = item.Parent ?? Decorations[item._decoId];
+			if (parent == null) Decorations._unhandledRowEvents.Remove(item);
+			else ((OrderedEventCollection)parent).Remove(item);
+			return base.Remove(item);
+		}
+		internal bool RemoveInternal(BaseRowAction item)
+		{
+			Row? parent = item.Parent ?? (item.Index < Rows.Count ? Rows[item.Index] : null);
+			if (parent == null) Rows._unhandledRowEvents.Remove(item);
+			else ((OrderedEventCollection)parent).Remove(item);
+			return base.Remove(item);
+		}
+		private void AddSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, bool keepCpb = true)
 		{
 			if (keepCpb)
 			{
@@ -583,7 +591,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			// 更新计算器
 			Calculator.Refresh();
 		}
-		private bool RemoveSetCrotchetsPerBar(SetCrotchetsPerBar item, bool keepCpb = true)
+		private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, bool keepCpb = true)
 		{
 			if (keepCpb)
 			{
@@ -638,13 +646,13 @@ namespace RhythmBase.RhythmDoctor.Components
 				return result;
 			}
 		}
-		private void AddBaseBeatsPerMinute(BaseBeatsPerMinute item)
+		private void AddBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
 			//RefreshBPMs(item.Beat);
 			base.Add(item);
 			Calculator.Refresh();
 		}
-		private bool RemoveBaseBeatsPerMinute(BaseBeatsPerMinute item)
+		private bool RemoveBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
 			bool result = base.Remove(item);
 			Calculator.Refresh();

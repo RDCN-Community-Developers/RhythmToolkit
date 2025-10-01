@@ -19,11 +19,11 @@ namespace RhythmBase.Global.Components
 		/// <summary>
 		/// Gets or sets the right edge of the rectangle.
 		/// </summary>
-		public float Right { get; set; } = top;
+		public float Right { get; set; } = right;
 		/// <summary>
 		/// Gets or sets the top edge of the rectangle.
 		/// </summary>
-		public float Top { get; set; } = right;
+		public float Top { get; set; } = top;
 		/// <summary>
 		/// Gets or sets the bottom edge of the rectangle.
 		/// </summary>
@@ -72,11 +72,11 @@ namespace RhythmBase.Global.Components
 		/// <summary>
 		/// Gets the location of the rectangle as an <see cref="RDPointNI"/>.
 		/// </summary>
-		public readonly RDPointNI Location => new((int)Math.Round((double)Left), (int)Math.Round((double)Bottom));
+		public readonly RDPointN Location => new(Left, Bottom);
 		/// <summary>
 		/// Gets the size of the rectangle as an <see cref="RDSizeNI"/>.
 		/// </summary>
-		public readonly RDSizeNI Size => new RDSizeNI((int)Math.Round((double)Width), (int)Math.Round((double)Height));
+		public readonly RDSizeN Size => new(Width, Height);
 
 		/// <summary>
 		/// Inflates the specified rectangle by the specified size.
