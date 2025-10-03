@@ -262,6 +262,10 @@
 		/// </summary>
 		ShakeScreen,
 		/// <summary>
+		/// Shake the screen, the custom version.
+		/// </summary>
+		ShakeScreenCustom,
+		/// <summary>
 		/// Show the dialogue.
 		/// </summary>
 		ShowDialogue,
@@ -277,6 +281,7 @@
 		/// Show the status sign.
 		/// </summary>
 		ShowStatusSign,
+		ShowSubdivisionsRows,
 		/// <summary>
 		/// Stutter effect.
 		/// </summary>

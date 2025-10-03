@@ -2,13 +2,6 @@
 
 namespace RhythmBase.RhythmDoctor.Events
 {
-	[RDJsonEnumSerializable]
-	public enum ShakeType
-	{
-		Normal,
-		Smooth,
-		Rotate,
-	}
 	/// <summary>
 	/// Represents an event that shakes the screen.
 	/// </summary>
