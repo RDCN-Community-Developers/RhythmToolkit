@@ -10,28 +10,23 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Flash"/> class.
 		/// </summary>
-		public Flash()
-		{
-			Rooms = new RDRoom([0]);
-			Type = EventType.Flash;
-			Tab = Tabs.Actions;
-		}
+		public Flash() { }
 		/// <summary>
 		/// Gets or sets the rooms associated with the flash event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets the duration of the flash event.
 		/// </summary>
-		public DurationType Duration { get; set; }
+		public DurationType Duration { get; set; } = DurationType.Short;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.Flash;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
@@ -42,19 +37,19 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Specifies the possible durations for a flash event.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum DurationType
+	public enum DurationType : int
 	{
 		/// <summary>
 		/// A short duration.
 		/// </summary>
-		Short,
+		Short = 1,
 		/// <summary>
 		/// A medium duration.
 		/// </summary>
-		Medium,
+		Medium = 2,
 		/// <summary>
 		/// A long duration.
 		/// </summary>
-		Long
+		Long = 4,
 	}
 }

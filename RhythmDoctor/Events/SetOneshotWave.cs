@@ -8,26 +8,23 @@
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetOneshotWave"/> class.  
 		/// </summary>  
-		public SetOneshotWave()
-		{
-			Type = EventType.SetOneshotWave;
-		}
+		public SetOneshotWave() { }
 		/// <summary>  
 		/// Gets or sets the type of wave.  
 		/// </summary>  
-		public OneshotWaveShapeTypes WaveType { get; set; }
+		public OneshotWaveShapeTypes WaveType { get; set; } = OneshotWaveShapeTypes.BoomAndRush;
 		/// <summary>  
 		/// Gets or sets the height of the wave.  
 		/// </summary>  
-		public int Height { get; set; }
+		public int Height { get; set; } = 100;
 		/// <summary>  
 		/// Gets or sets the width of the wave.  
 		/// </summary>  
-		public int Width { get; set; }
+		public int Width { get; set; } = 100;
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetOneshotWave;
 	}
 	/// <summary>  
 	/// Defines the types of waves.  

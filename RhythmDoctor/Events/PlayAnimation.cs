@@ -25,7 +25,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the expression for the animation.
 		/// </summary>
-		public string Expression { get; set; } = "";
+		public string Expression { get; set; } = "neutral";
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

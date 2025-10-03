@@ -8,17 +8,13 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetBeatsPerMinute"/> class.
 		/// </summary>
-		public SetBeatsPerMinute()
-		{
-			Type = EventType.SetBeatsPerMinute;
-			Tab = Tabs.Sounds;
-		}
+		public SetBeatsPerMinute() { }
 		/// <inheritdoc/>
 		public override float BeatsPerMinute { get => base.BeatsPerMinute; set => base.BeatsPerMinute = value; }
 		/// <inheritdoc/>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetBeatsPerMinute;
 		/// <inheritdoc/>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Sounds;
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" BPM:{BeatsPerMinute}";
 	}

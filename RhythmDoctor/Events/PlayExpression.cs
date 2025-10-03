@@ -8,29 +8,25 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PlayExpression"/> class.
 		/// </summary>
-		public PlayExpression()
-		{
-			Type = EventType.PlayExpression;
-			Tab = Tabs.Actions;
-		}
+		public PlayExpression() { }
 		/// <summary>
 		/// Gets or sets the expression to be played.
 		/// </summary>
-		public string Expression { get; set; } = "";
+		public string Expression { get; set; } = "neutral";
 		/// <summary>
 		/// Gets or sets a value indicating whether to replace the current expression.
 		/// </summary>
-		public bool Replace { get; set; }
+		public bool Replace { get; set; } = false;
 		[RDJsonCondition($"$&.{nameof(Replace)}")]
-		public string Target { get; set; }
+		public string Target { get; set; } = "neutral";
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.PlayExpression;
 		/// <summary>
 		/// Gets the tab where the event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

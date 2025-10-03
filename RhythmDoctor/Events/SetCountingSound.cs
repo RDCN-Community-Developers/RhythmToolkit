@@ -121,15 +121,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the voice source for the counting sound.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(VoiceSource)} != RhythmBase.RhythmDoctor.Events.CountingSoundVoiceSources.Custom")]
-		public CountingSoundVoiceSources VoiceSource { get; set; }
+		public CountingSoundVoiceSources VoiceSource { get; set; } = CountingSoundVoiceSources.JyiCount;
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="SetCountingSound"/> is enabled.
 		/// </summary>
-		public bool Enabled { get; set; }
+		public bool Enabled { get; set; } = true;
 		/// <summary>
 		/// Gets or sets the subdivision offset for the counting sound.
 		/// </summary>
-		public float SubdivOffset { get; set; }
+		public float SubdivOffset { get; set; } = 0.5f;
 		/// <summary>
 		/// Gets or sets the volume of the counting sound.
 		/// </summary>

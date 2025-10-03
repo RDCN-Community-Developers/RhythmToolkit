@@ -60,7 +60,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the phrase to say.
 		/// </summary>
-		public SayReadyGetSetGoWords PhraseToSay { get; set; }
+		public SayReadyGetSetGoWords PhraseToSay { get; set; } = SayReadyGetSetGoWords.SayReaDyGetSetGoNew;
 		/// <summary>
 		/// Gets or sets the voice source.
 		/// </summary>
@@ -68,7 +68,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the tick value.
 		/// </summary>
-		public float Tick { get; set; }
+		public float Tick
+		{
+			get => Splitable ? field : 1;
+			set
+			{
+				if (Splitable)
+					field = value;
+			}
+		} = 1;
 		/// <summary>
 		/// Gets or sets the volume.
 		/// </summary>
@@ -84,13 +92,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets a value indicating whether the phrase is splitable.
 		/// </summary>
-		public bool Splitable
-		{
-			get
-			{
-				return PhraseToSay == SayReadyGetSetGoWords.SayReaDyGetSetGoNew || PhraseToSay == SayReadyGetSetGoWords.SayGetSetGo || PhraseToSay == SayReadyGetSetGoWords.SayReaDyGetSetOne || PhraseToSay == SayReadyGetSetGoWords.SayGetSetOne || PhraseToSay == SayReadyGetSetGoWords.SayReadyGetSetGo;
-			}
-		}
+		public bool Splitable => PhraseToSay is
+			SayReadyGetSetGoWords.SayReaDyGetSetGoNew or
+			SayReadyGetSetGoWords.SayGetSetGo or
+			SayReadyGetSetGoWords.SayReaDyGetSetOne or
+			SayReadyGetSetGoWords.SayGetSetOne or
+			SayReadyGetSetGoWords.SayReadyGetSetGo;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

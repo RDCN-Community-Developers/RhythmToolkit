@@ -8,27 +8,23 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HideRow"/> class.
 		/// </summary>
-		public HideRow()
-		{
-			Type = EventType.HideRow;
-			Tab = Tabs.Actions;
-		}
+		public HideRow() { }
 		/// <summary>
 		/// Gets or sets the transition type for hiding the row.
 		/// </summary>
-		public ObjectTransitionTypes Transition { get; set; }
+		public ObjectTransitionTypes Transition { get; set; } = ObjectTransitionTypes.Smooth;
 		/// <summary>
 		/// Gets or sets the visibility state of the row.
 		/// </summary>
-		public ShowTargetTypes Show { get; set; }
+		public ShowTargetTypes Show { get; set; } = ShowTargetTypes.Hidden;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.HideRow;
 		/// <summary>
 		/// Gets the tab category of the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 	}
 	/// <summary>
 	/// Defines the possible transition types for hiding the row.

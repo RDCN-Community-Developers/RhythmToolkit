@@ -12,20 +12,17 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		public BassDrop()
 		{
-			Rooms = new RDRoom([0]);
-			Type = EventType.BassDrop;
-			Tab = Tabs.Actions;
 		}
 		/// <inheritdoc/>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>  
 		/// Gets or sets the strength of the BassDrop event.  
 		/// </summary>  
-		public BassDropStrengthTypes Strength { get; set; }
+		public BassDropStrengthTypes Strength { get; set; } = BassDropStrengthTypes.High;
 		/// <inheritdoc/>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.BassDrop;
 		/// <inheritdoc/>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {Strength}";
 	}

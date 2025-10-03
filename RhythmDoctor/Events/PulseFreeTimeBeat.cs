@@ -28,38 +28,33 @@
 	/// </summary>
 	public class PulseFreeTimeBeat : BaseBeat
 	{
-		private uint customPulse;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PulseFreeTimeBeat"/> class.
 		/// </summary>
-		public PulseFreeTimeBeat()
-		{
-			Type = EventType.PulseFreeTimeBeat;
-		}
+		public PulseFreeTimeBeat() { }
 		/// <summary>
 		/// Gets or sets the hold duration.
 		/// </summary>
-		public float Hold { get; set; }
+		public float Hold { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the custom pulse value.
 		/// </summary>
 		public uint CustomPulse
 		{
-			get => customPulse; set
+			get => field; set
 			{
-				customPulse = value;
+				field = value;
 				Action = PulseActions.Custom;
 			}
 		}
 		/// <summary>
 		/// Gets or sets the action type.
 		/// </summary>
-		public PulseActions Action { get; set; }
+		public PulseActions Action { get; set; } = PulseActions.Increment;
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.PulseFreeTimeBeat;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

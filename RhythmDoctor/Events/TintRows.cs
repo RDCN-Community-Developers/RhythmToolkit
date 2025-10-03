@@ -10,72 +10,60 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TintRows"/> class.
 		/// </summary>
-		public TintRows()
-		{
-			TintColor = new PaletteColor(true);
-			BorderColor = new PaletteColor(true);
-			Type = EventType.TintRows;
-			Tab = Tabs.Actions;
-		}
+		public TintRows() { }
 		/// <summary>
 		/// Gets or sets the tint color.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Tint)}")]
-		public PaletteColor TintColor { get; set; }
+		public PaletteColor TintColor { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the easing type for the animation.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets or sets the border style.
 		/// </summary>
-		public Borders Border { get; set; }
+		public Borders Border { get; set; } = Borders.None;
 		/// <summary>
 		/// Gets or sets the border color.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
-		public PaletteColor BorderColor { get; set; }
+		public PaletteColor BorderColor { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the opacity level.
 		/// </summary>
 		[Tween]
-		public int Opacity { get; set; }
+		public int Opacity { get; set; } = 100;
 		/// <summary>
 		/// Gets or sets a value indicating whether to apply tint.
 		/// </summary>
-		public bool Tint { get; set; }
+		public bool Tint { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the duration of the tint effect.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 0f;
 		/// <summary>
 		/// Gets or sets the row effect.
 		/// </summary>
-		public TintRowEffects Effect { get; set; }
+		public TintRowEffects Effect { get; set; } = TintRowEffects.None;
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.TintRows;
 		/// <summary>
 		/// Gets the tab category.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <inheritdoc/>
 		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets a value indicating whether to tint all rows.
 		/// </summary>
 		[RDJsonIgnore]
-		public bool TintAll
-		{
-			get
-			{
-				return Parent != null;
-			}
-		}
+		public bool TintAll => Parent != null;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

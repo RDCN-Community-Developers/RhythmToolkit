@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Represents an event to show a status sign.
 	/// </summary>
-	public class ShowStatusSign : BaseEvent
+	public class ShowStatusSign : BaseEvent, IDurationEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ShowStatusSign"/> class.
@@ -18,11 +18,11 @@
 		/// <summary>
 		/// Gets or sets a value indicating whether to use beats.
 		/// </summary>
-		public bool UseBeats { get; set; }
+		public bool UseBeats { get; set; } = true;
 		/// <summary>
 		/// Gets or sets a value indicating whether to narrate.
 		/// </summary>
-		public bool Narrate { get; set; }
+		public bool Narrate { get; set; } = true;
 		/// <summary>
 		/// Gets or sets the text to display.
 		/// </summary>
@@ -30,7 +30,7 @@
 		/// <summary>
 		/// Gets or sets the duration of the status sign in seconds.
 		/// </summary>
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 4f;
 		/// <summary>
 		/// Gets or sets the duration of the status sign as a <see cref="TimeSpan"/>.
 		/// </summary>

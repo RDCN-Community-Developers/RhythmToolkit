@@ -5,6 +5,7 @@
 	/// </summary>
 	[Flags]
 	[RDJsonEnumSerializable]
+#warning 这里有序列化问题
 	public enum TagActions
 	{
 		/// <summary>

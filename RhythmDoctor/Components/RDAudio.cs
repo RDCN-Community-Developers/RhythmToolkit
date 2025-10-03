@@ -26,11 +26,11 @@ public class RDAudio
 	/// <summary>
 	/// Gets or sets the pan of the audio.
 	/// </summary>
-	public int Pan { get; set; }
+	public int Pan { get; set; } = 0;
 	/// <summary>
 	/// Gets or sets the offset of the audio.
 	/// </summary>
-	public TimeSpan Offset { get; set; }
+	public TimeSpan Offset { get; set; } = TimeSpan.Zero;
 	/// <summary>
 	/// Gets a value indicating whether the file is a valid audio file based on its extension.
 	/// </summary>

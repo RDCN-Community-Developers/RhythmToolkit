@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the execution time of the method.
 		/// </summary>
-		public EventExecutionTimeOptions ExecutionTime { get; set; }
+		public EventExecutionTimeOptions ExecutionTime { get; set; } = EventExecutionTimeOptions.OnBar;
 		/// <summary>
 		/// Gets or sets the sort offset for the event.
 		/// </summary>

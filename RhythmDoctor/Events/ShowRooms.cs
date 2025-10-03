@@ -8,7 +8,6 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// </summary>  
 	public class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent
 	{
-		private RoomHeight _height = new();
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="ShowRooms"/> class.  
 		/// </summary>  
@@ -18,21 +17,21 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		//[JsonIgnore]
 		[RDJsonProperty("heights")]
-		public RoomHeight Height { get => _height; set => _height = value; }
+		public RoomHeight Height { get => field; set => field = value; }
 		/// <summary>  
 		/// Gets or sets the room configuration associated with the height.  
 		/// </summary>  
 		//[JsonIgnore]
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>  
 		/// Gets or sets the ease type for the event.  
 		/// </summary>  
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.InOutSine;
 		/// <summary>  
 		/// Gets or sets the duration of the transition.  
 		/// </summary>  
 		[RDJsonProperty("transitionTime")]
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 1;
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  

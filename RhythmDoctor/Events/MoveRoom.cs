@@ -11,51 +11,47 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MoveRoom"/> class.
 		/// </summary>
-		public MoveRoom()
-		{
-			Type = EventType.MoveRoom;
-			Tab = Tabs.Rooms;
-		}
+		public MoveRoom() { }
 		/// <summary>
 		/// Gets or sets the position of the room.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.RoomPosition is not null")]
-		public RDPointE? RoomPosition { get; set; }
+		public RDPointE? RoomPosition { get; set; } = new(50f, 50f);
 		/// <summary>
 		/// Gets or sets the scale of the room.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.Scale is not null")]
-		public RDSizeE? Scale { get; set; }
+		public RDSizeE? Scale { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the angle of the room.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.Angle is not null")]
-		public RDExpression? Angle { get; set; }
+		public RDExpression? Angle { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the pivot point of the room.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.Pivot is not null")]
-		public RDPointE? Pivot { get; set; }
+		public RDPointE? Pivot { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the duration of the move event.
 		/// </summary>
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 1;
 		/// <summary>
 		/// Gets or sets the easing type of the move event.
 		/// </summary>
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.MoveRoom;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Rooms;
 		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>

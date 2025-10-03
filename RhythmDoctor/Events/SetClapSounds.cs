@@ -19,28 +19,31 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the clap sound for player 1.
 		/// </summary>
 		[RDJsonCondition("$&.P1Sound is not null")]
-		public RDAudio? P1Sound { get; set; }
+		public RDAudio? P1Sound { get; set; } = new RDAudio()
+		{
+			Filename = "ClapHit",
+		};
 		/// <summary>
 		/// Gets or sets the clap sound for player 2.
 		/// </summary>
 		[RDJsonCondition("$&.P2Sound is not null")]
-		public RDAudio? P2Sound { get; set; }
+		public RDAudio? P2Sound { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the clap sound for the CPU.
 		/// </summary>
 		[RDJsonCondition("$&.CpuSound is not null")]
-		public RDAudio? CpuSound { get; set; }
+		public RDAudio? CpuSound { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the row type for the event.
 		/// </summary>
-		public RowTypes RowType { get; set; }
+		public RowTypes RowType { get; set; } = RowTypes.Classic;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetClapSounds;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Sounds;
 	}
 }

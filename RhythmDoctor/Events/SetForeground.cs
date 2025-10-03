@@ -11,31 +11,25 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetForeground"/> class.  
 		/// </summary>  
-		public SetForeground()
-		{
-			Rooms = new RDRoom([0]);
-			Color = new PaletteColor(true);
-			Type = EventType.SetForeground;
-			Tab = Tabs.Actions;
-		}
+		public SetForeground() { }
 		/// <summary>  
 		/// Gets or sets the rooms associated with the event.  
 		/// </summary>  
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>  
 		/// Gets or sets the content mode for the event.  
 		/// </summary>  
-		public ContentModes ContentMode { get; set; }
+		public ContentModes ContentMode { get; set; } = ContentModes.ScaleToFill;
 		/// <summary>  
 		/// Gets or sets the tiling type for the event.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public TilingTypes TilingType { get; set; }
+		public TilingTypes TilingType { get; set; } = TilingTypes.Scroll;
 		/// <summary>  
 		/// Gets or sets the color for the foreground.  
 		/// </summary>  
 		[Tween]
-		public PaletteColor Color { get; set; }
+		public PaletteColor Color { get; set; } = RDColor.White;
 		/// <summary>  
 		/// Gets or sets the list of images for the foreground.  
 		/// </summary>  
@@ -44,24 +38,24 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the frames per second for the foreground animation.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public float Fps { get; set; }
+		public float Fps { get; set; } = 30f;
 		/// <summary>  
 		/// Gets or sets the horizontal scroll value.  
 		/// </summary>  
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public float ScrollX { get; set; }
+		public float ScrollX { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the vertical scroll value.  
 		/// </summary>  
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public float ScrollY { get; set; }
+		public float ScrollY { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the duration of the event.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the interval between frames.  
 		/// </summary>  
@@ -75,16 +69,16 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the easing type for the event.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetForeground;
 		/// <summary>  
 		/// Gets the tab associated with the event.  
 		/// </summary>  
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>  
 		/// Returns a string that represents the current object.  
 		/// </summary>  

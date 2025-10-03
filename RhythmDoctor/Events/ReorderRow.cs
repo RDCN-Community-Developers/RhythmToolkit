@@ -18,7 +18,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		[RDJsonDefaultSerializer]
 		public RDRoomIndex NewRoom { get; set; } = 0;
-
+		[RDJsonCondition($"{nameof(NewRoom)} != 0")]
+		public int Order { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the transition type for reordering the row.  
 		/// </summary>  

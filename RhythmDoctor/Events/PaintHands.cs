@@ -11,62 +11,55 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PaintHands"/> class.
 		/// </summary>
-		public PaintHands()
-		{
-			TintColor = new PaletteColor(true);
-			BorderColor = new PaletteColor(true);
-			Rooms = new RDRoom([0]);
-			Type = EventType.PaintHands;
-			Tab = Tabs.Actions;
-		}
+		public PaintHands() { }
 		/// <summary>
 		/// Gets or sets the tint color of the hands.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Tint)}")]
-		public PaletteColor TintColor { get; set; }
+		public PaletteColor TintColor { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the easing type for the event.
 		/// </summary>
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets or sets the border style of the hands.
 		/// </summary>
-		public Borders Border { get; set; }
+		public Borders Border { get; set; } = Borders.None;
 		/// <summary>
 		/// Gets or sets the border color of the hands.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
-		public PaletteColor BorderColor { get; set; }
+		public PaletteColor BorderColor { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the opacity of the hands.
 		/// </summary>
 		[Tween]
-		public int Opacity { get; set; }
+		public int Opacity { get; set; } = 100;
 		/// <summary>
 		/// Gets or sets a value indicating whether the hands should be tinted.
 		/// </summary>
-		public bool Tint { get; set; }
+		public bool Tint { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets the player hands associated with the event.
 		/// </summary>
-		public PlayerHands Hands { get; set; }
+		public PlayerHands Hands { get; set; } = PlayerHands.Right;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.PaintHands;
 		/// <summary>
 		/// Gets the tab category of the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 	}
 }

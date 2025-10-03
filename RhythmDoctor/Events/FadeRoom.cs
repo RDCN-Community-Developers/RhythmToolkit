@@ -20,7 +20,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the opacity level for the fade effect.
 		/// </summary>
 		[Tween]
-		public uint Opacity { get; set; }
+		public int Opacity { get; set; } = 100;
 		/// <summary>
 		/// Gets or sets the duration of the fade effect.
 		/// </summary>

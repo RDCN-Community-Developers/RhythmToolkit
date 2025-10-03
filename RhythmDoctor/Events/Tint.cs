@@ -11,60 +11,51 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tint"/> class.
 		/// </summary>
-		public Tint()
-		{
-			BorderColor = new PaletteColor(true);
-			TintColor = new PaletteColor(true)
-			{
-				Color = RDColor.White
-			};
-			Type = EventType.Tint;
-			Tab = Tabs.Decorations;
-		}
+		public Tint() { }
 		/// <summary>
 		/// Gets or sets the ease type for the tint event.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets or sets the border type for the tint event.
 		/// </summary>
-		public Borders Border { get; set; }
+		public Borders Border { get; set; } = Borders.None;
 		/// <summary>
 		/// Gets or sets the border color for the tint event.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
-		public PaletteColor BorderColor { get; set; }
+		public PaletteColor BorderColor { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the opacity for the tint event.
 		/// </summary>
 		[Tween]
-		public int Opacity { get; set; }
+		public int Opacity { get; set; } = 100;
 		/// <summary>
 		/// Gets or sets a value indicating whether this event is a tint.
 		/// </summary>
 		[RDJsonProperty("tint")]
-		public bool IsTint { get; set; }
+		public bool IsTint { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the tint color for the tint event.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(IsTint)}")]
-		public PaletteColor TintColor { get; set; }
+		public PaletteColor TintColor { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the duration of the tint event.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 0f;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.Tint;
 		/// <summary>
 		/// Gets the tab where the event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Decorations;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

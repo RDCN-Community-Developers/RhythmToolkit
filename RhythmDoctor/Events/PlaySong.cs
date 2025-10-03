@@ -38,15 +38,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether the song should loop.
 		/// </summary>
-		public bool Loop { get; set; }
+		public bool Loop { get; set; } = false; ///???
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.PlaySong;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Sounds;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
@@ -55,6 +55,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the song to be played.
 		/// </summary>
-		public RDAudio Song { get; set; } = new();
+		public RDAudio Song { get; set; } = new()
+		{
+			Filename = "sndOrientalTechno"
+		};
 	}
 }

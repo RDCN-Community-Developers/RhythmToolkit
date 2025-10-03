@@ -8,27 +8,23 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetHeartExplodeInterval"/> class.
 		/// </summary>
-		public SetHeartExplodeInterval()
-		{
-			Type = EventType.SetHeartExplodeInterval;
-			Tab = Tabs.Sounds;
-		}
+		public SetHeartExplodeInterval() { }
 		/// <summary>
 		/// Gets or sets the type of interval.
 		/// </summary>
-		public HeartExplodeIntervalTypes IntervalType { get; set; }
+		public HeartExplodeIntervalTypes IntervalType { get; set; } = HeartExplodeIntervalTypes.GatherAndCeil;
 		/// <summary>
 		/// Gets or sets the interval value.
 		/// </summary>
-		public float Interval { get; set; }
+		public float Interval { get; set; } = 1f;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetHeartExplodeInterval;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Sounds;
 	}
 	/// <summary>
 	/// Defines the types of intervals.

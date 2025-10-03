@@ -11,49 +11,44 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MoveCamera"/> class.
 		/// </summary>
-		public MoveCamera()
-		{
-			Rooms = new RDRoom([0]);
-			Type = EventType.MoveCamera;
-			Tab = Tabs.Actions;
-		}
+		public MoveCamera() { }
 		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets the camera position.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.CameraPosition is not null")]
-		public RDPoint? CameraPosition { get; set; }
+		public RDPoint? CameraPosition { get; set; } = new(50f, 50f);
 		/// <summary>
 		/// Gets or sets the zoom level.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.Zoom is not null")]
-		public int? Zoom { get; set; }
+		public int? Zoom { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the angle of the camera.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.Angle is not null")]
-		public RDExpression? Angle { get; set; }
+		public RDExpression? Angle { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 1;
 		/// <summary>
 		/// Gets or sets the easing type of the event.
 		/// </summary>
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.MoveCamera;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 	}
 }

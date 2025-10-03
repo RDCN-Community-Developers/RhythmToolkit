@@ -11,45 +11,41 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MoveRow"/> class.
 		/// </summary>
-		public MoveRow()
-		{
-			Type = EventType.MoveRow;
-			Tab = Tabs.Actions;
-		}
+		public MoveRow() { }
 		/// <summary>
 		/// Gets or sets a value indicating whether a custom position is used.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)}")]
-		public bool CustomPosition { get; set; }
+		public bool CustomPosition { get; set; } = true;
 		/// <summary>
 		/// Gets or sets the target of the move row event.
 		/// </summary>
-		public MoveRowTargets Target { get; set; }
+		public MoveRowTargets Target { get; set; } = MoveRowTargets.WholeRow;
 		/// <summary>
 		/// Gets or sets the row position.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(CustomPosition)} is true && $&.{nameof(RowPosition)} is not null")]
-		public RDPointE? RowPosition { get; set; }
+		public RDPointE? RowPosition { get; set; } = new(50f, 50f);
 		/// <summary>
 		/// Gets or sets the scale.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
-		public RDSizeE? Scale { get; set; }
+		public RDSizeE? Scale { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the angle.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
-		public RDExpression? Angle { get; set; }
+		public RDExpression? Angle { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the pivot.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&" +
 			$"$&.{nameof(Pivot)} is not null")]
-		public float? Pivot { get; set; }
+		public float? Pivot { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the duration of the move row event.
 		/// </summary>
@@ -57,7 +53,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(Target)} is not RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&
 			$&.{nameof(CustomPosition)}
 			""")]
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 1;
 		/// <summary>
 		/// Gets or sets the easing type of the move row event.
 		/// </summary>
@@ -65,15 +61,15 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(Target)} is not RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&
 			$&.{nameof(CustomPosition)}
 			""")]
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.MoveRow;
 		/// <summary>
 		/// Gets the tab of the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 	}
 	/// <summary>
 	/// Specifies the targets for the move row event.

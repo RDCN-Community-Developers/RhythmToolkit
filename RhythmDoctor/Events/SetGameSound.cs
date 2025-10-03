@@ -10,20 +10,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetGameSound"/> class.  
 		/// </summary>  
-		public SetGameSound()
-		{
-			Audio = new RDAudio();
-			Type = EventType.SetGameSound;
-			Tab = Tabs.Sounds;
-		}
+		public SetGameSound() { }
 		/// <summary>  
 		/// Gets or sets the audio associated with the event.  
 		/// </summary>  
-		private RDAudio Audio { get; set; }
+		private RDAudio Audio { get; set; } = new();
 		/// <summary>  
 		/// Gets or sets the type of the sound.  
 		/// </summary>  
-		public SoundTypes SoundType { get; set; }
+		public SoundTypes SoundType { get; set; } = SoundTypes.SmallMistake;
 		/// <summary>  
 		/// Gets or sets the filename of the audio.  
 		/// </summary>
@@ -116,11 +111,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetGameSound;
 		/// <summary>  
 		/// Gets the tab associated with the event.  
 		/// </summary>  
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>  
 		/// Returns a string that represents the current object.  
 		/// </summary>  

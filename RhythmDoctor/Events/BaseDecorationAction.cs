@@ -15,6 +15,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the Y coordinate.
 		/// </summary>
 		public override int Y { get => base.Y; set => base.Y = value; }
+		/// <inheritdoc/>
+		public override Tabs Tab => Tabs.Decorations;
 		/// <summary>
 		/// Gets the target identifier.
 		/// </summary>

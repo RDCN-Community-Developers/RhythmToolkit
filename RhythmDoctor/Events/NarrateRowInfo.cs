@@ -17,11 +17,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the type of narration information.
 		/// </summary>
-		public NarrateInfoTypes InfoType { get; set; }
+		public NarrateInfoTypes InfoType { get; set; } = NarrateInfoTypes.Online;
 		/// <summary>
 		/// Gets or sets a value indicating whether the narration is sound only.
 		/// </summary>
-		public bool SoundOnly { get; set; }
+		public bool SoundOnly { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the beats to skip during narration.
 		/// </summary>
@@ -35,11 +35,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip unstable beats.
 		/// </summary>
-		public bool SkipsUnstable { get; set; }
+		public bool SkipsUnstable { get; set; } = false;
 		/// <summary>  
 		/// Gets or sets the custom player option for narrating row information.  
 		/// </summary>  
-		public NarrateRowInfoCustomPlayer CustomPlayer { get; set; }
+		public NarrateRowInfoCustomPlayer CustomPlayer { get; set; } = NarrateRowInfoCustomPlayer.AutoDetect;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

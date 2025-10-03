@@ -11,20 +11,16 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Comment"/> class.
 		/// </summary>
-		public Comment()
-		{
-			Text = "";
-			Color = new PaletteColor(false)
-			{
-				Color = RDColor.FromRgba(242, 230, 68)
-			};
-			Type = EventType.Comment;
-		}
+		public Comment() { }
 		/// <inheritdoc />
 		public override int Y
 		{
 			get => Tab == Tabs.Decorations ? base.Y : field;
-			set;
+			set
+			{
+				if (Tab != Tabs.Decorations)
+					field = value;
+			}
 		}
 		/// <summary>
 		/// Gets or sets the custom tab.
@@ -37,19 +33,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Comment"/> is shown.
 		/// </summary>
-		public bool Show { get; set; }
+		public bool Show { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the text of the comment.
 		/// </summary>
-		public string Text { get; set; }
+		public string Text { get; set; } = "";
 		/// <inheritdoc />
 		public override string Target => base.Target;
 		/// <summary>
 		/// Gets or sets the color of the comment.
 		/// </summary>
-		public PaletteColor Color { get; set; }
+		public PaletteColor Color { get; set; } = new RDColor(0xFFF2E644u);
 		/// <inheritdoc />
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.Comment;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

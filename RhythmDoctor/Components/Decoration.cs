@@ -60,9 +60,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			item._parent?.Remove(item);
 			item._parent = this;
-			if (Parent is null)
-				base.Add(item);
-			else
+			base.Add(item);
+			if (Parent is not null)
 				Parent?.AddInternal(item);
 		}
 

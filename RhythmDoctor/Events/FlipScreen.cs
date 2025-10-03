@@ -10,32 +10,27 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FlipScreen"/> class.
 		/// </summary>
-		public FlipScreen()
-		{
-			Rooms = new RDRoom([0]);
-			Type = EventType.FlipScreen;
-			Tab = Tabs.Actions;
-		}
+		public FlipScreen() { }
 		/// <summary>
 		/// Gets or sets the rooms associated with this event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets a value indicating whether the screen should be flipped horizontally.
 		/// </summary>
-		public bool FlipX { get; set; }
+		public bool FlipX { get; set; } = false;
 		/// <summary>
 		/// Gets or sets a value indicating whether the screen should be flipped vertically.
 		/// </summary>
-		public bool FlipY { get; set; }
+		public bool FlipY { get; set; } = false;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.FlipScreen;
 		/// <summary>
 		/// Gets the tab where this event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

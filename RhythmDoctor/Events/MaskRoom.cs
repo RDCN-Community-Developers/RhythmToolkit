@@ -10,26 +10,21 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MaskRoom"/> class.
 		/// </summary>
-		public MaskRoom()
-		{
-			KeyColor = new PaletteColor(false);
-			Type = EventType.MaskRoom;
-			Tab = Tabs.Rooms;
-		}
+		public MaskRoom() { }
 		/// <summary>
 		/// Gets or sets the type of the mask.
 		/// </summary>
-		public RoomMaskTypes MaskType { get; set; }
+		public RoomMaskTypes MaskType { get; set; } = RoomMaskTypes.None;
 		/// <summary>
 		/// Gets or sets the alpha mode.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(MaskType)} != RhythmBase.RhythmDoctor.Events.RoomMaskTypes.None")]
-		public MaskAlphaModes AlphaMode { get; set; }
+		public MaskAlphaModes AlphaMode { get; set; } = MaskAlphaModes.Normal;
 		/// <summary>
 		/// Gets or sets the source room.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Room")]
-		public byte SourceRoom { get; set; }
+		public byte SourceRoom { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the list of image assets.
 		/// </summary>
@@ -39,30 +34,30 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the frames per second.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Image)}.Count > 1")]
-		public uint Fps { get; set; }
+		public uint Fps { get; set; } = 30;
 		/// <summary>
 		/// Gets or sets the key color.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
-		public PaletteColor KeyColor { get; set; }
+		public PaletteColor KeyColor { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the color cutoff value.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
-		public int ColorCutoff { get; set; }
+		public int ColorCutoff { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the color feathering value.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
-		public int ColorFeathering { get; set; }
+		public int ColorFeathering { get; set; } = 0;
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.MaskRoom;
 		/// <summary>
 		/// Gets the tab type.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Rooms;
 		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>

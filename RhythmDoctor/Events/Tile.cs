@@ -9,42 +9,38 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class.
 		/// </summary>
-		public Tile()
-		{
-			Type = EventType.Tile;
-			Tab = Tabs.Decorations;
-		}
+		public Tile() { }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.Tile;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Decorations;
 		/// <summary>
 		/// Gets or sets the position of the tile.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
-		public RDPoint? Position { get; set; }
+		public RDPoint? Position { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the tiling of the tile.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Tiling)} is not null")]
-		public RDPoint? Tiling { get; set; }
+		public RDPoint? Tiling { get; set; } = new(2f, 2f);
 		/// <summary>
 		/// Gets or sets the speed of the tile.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
-		public RDPoint? Speed { get; set; }
+		public RDPoint? Speed { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the type of tiling.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
-		public TilingTypes TilingType { get; set; }
+		public TilingTypes TilingType { get; set; } = TilingTypes.Scroll;
 		/// <summary>
 		/// Gets or sets the interval for the tiling.
 		/// </summary>
@@ -53,10 +49,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the Y coordinate. Always returns 0.
 		/// </summary>
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 0f;
 	}
 }

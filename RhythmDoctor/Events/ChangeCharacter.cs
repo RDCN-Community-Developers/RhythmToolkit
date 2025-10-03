@@ -16,7 +16,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the character to be changed to.  
 		/// </summary>  
-		public RDCharacter Character { get; set; } = new RDCharacter();
+		public RDCharacter Character { get; set; } = RDCharacters.Samurai;
 
 		/// <summary>  
 		/// Gets or sets the transition type for the character change.  

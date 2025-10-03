@@ -11,51 +11,47 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Move"/> class.
 		/// </summary>
-		public Move()
-		{
-			Type = EventType.Move;
-			Tab = Tabs.Decorations;
-		}
+		public Move() { }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.Move;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Decorations;
 		/// <summary>
 		/// Gets or sets the position of the move event.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Position is not null")]
-		public RDPointE? Position { get; set; }
+		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
+		public RDPointE? Position { get; set; } = new(50f, 50f);
 		/// <summary>
 		/// Gets or sets the scale of the move event.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Scale is not null")]
-		public RDSizeE? Scale { get; set; }
+		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
+		public RDSizeE? Scale { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the angle of the move event.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Angle is not null")]
-		public RDExpression? Angle { get; set; }
+		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
+		public RDExpression? Angle { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the pivot point of the move event.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Pivot is not null")]
-		public RDPointE? Pivot { get; set; }
+		[RDJsonCondition($"$&.{nameof(Pivot)} is not null")]
+		public RDPointE? Pivot { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the duration of the move event.
 		/// </summary>
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 1;
 		/// <summary>
 		/// Gets or sets the easing type of the move event.
 		/// </summary>
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

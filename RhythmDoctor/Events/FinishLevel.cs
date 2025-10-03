@@ -8,18 +8,14 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FinishLevel"/> class.
 		/// </summary>
-		public FinishLevel()
-		{
-			Type = EventType.FinishLevel;
-			Tab = Tabs.Actions;
-		}
+		public FinishLevel() { }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.FinishLevel;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 	}
 }

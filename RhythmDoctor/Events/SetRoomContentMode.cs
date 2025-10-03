@@ -10,33 +10,23 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetRoomContentMode"/> class.
 		/// </summary>
-		public SetRoomContentMode()
-		{
-			Type = EventType.SetRoomContentMode;
-			Tab = Tabs.Rooms;
-		}
+		public SetRoomContentMode() { }
 		/// <summary>
 		/// Gets or sets the mode of the room content.
 		/// </summary>
-		public ContentModes Mode { get; set; }
+		public ContentModes Mode { get; set; } = ContentModes.Center;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetRoomContentMode;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Rooms;
 		/// <summary>
 		/// Gets the room associated with the event.
 		/// </summary>
 		[RDJsonIgnore]
-		public RDRoom Room
-		{
-			get
-			{
-				return new RDSingleRoom(checked((byte)Y));
-			}
-		}
+		public RDRoom Room => new RDSingleRoom(checked((byte)Y));
 	}
 }

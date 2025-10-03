@@ -22,7 +22,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the text of the dialogue.
 		/// </summary>
-		public string Text
+		[RDJsonNotIgnore]
+		internal string Text
 		{
 			get => text; set
 			{
@@ -46,28 +47,28 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the side of the panel where the dialogue will be shown.
 		/// </summary>
-		public DialogueSides PanelSide { get; set; }
+		public DialogueSides PanelSide { get; set; } = DialogueSides.Bottom;
 		/// <summary>
 		/// Gets or sets the side of the portrait in the dialogue.
 		/// </summary>
-		public DialoguePortraitSides PortraitSide { get; set; }
+		public DialoguePortraitSides PortraitSide { get; set; } = DialoguePortraitSides.Left;
 		/// <summary>
 		/// Gets or sets the speed of the dialogue display.
 		/// </summary>
-		public int Speed { get; set; }
+		public int Speed { get; set; } = 1;
 		/// <summary>
 		/// Gets or sets a value indicating whether text sounds should be played.
 		/// </summary>
-		public bool PlayTextSounds { get; set; }
+		public bool PlayTextSounds { get; set; } = true;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.ShowDialogue;
 		/// <summary>
 		/// Gets the tab where the event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; }
-		public RDRoom Rooms { get; set; }
+		public override Tabs Tab { get; } = Tabs.Actions;
+		public RDRoom Rooms { get; set; } = new RDRoom([4]);
 
 		/// <summary>
 		/// Returns a string that represents the current object.

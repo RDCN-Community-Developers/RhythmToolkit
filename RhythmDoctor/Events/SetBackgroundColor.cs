@@ -21,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets the easing type for the event.
 		/// </summary>
@@ -29,21 +29,21 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
 			""")]
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets or sets the content mode for the event.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
-		public ContentModes ContentMode { get; set; }
+		public ContentModes ContentMode { get; set; } = ContentModes.ScaleToFill;
 		/// <summary>
 		/// Gets or sets the filter mode for the event.
 		/// </summary>
-		public BackgroundFilterModes Filter { get; set; }
+		public BackgroundFilterModes Filter { get; set; } = BackgroundFilterModes.NearestNeighbor;
 		/// <summary>
 		/// Gets or sets the color for the background.
 		/// </summary>
 		[Tween]
-		public PaletteColor Color { get; set; }
+		public PaletteColor Color { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the interval for the event.
 		/// </summary>
@@ -60,7 +60,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the background type for the event.
 		/// </summary>
-		public BackgroundTypes BackgroundType { get; set; }
+		public BackgroundTypes BackgroundType { get; set; } = BackgroundTypes.Color;
 		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
@@ -68,7 +68,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
 			""")]
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 0f;
 		/// <summary>
 		/// Gets or sets the frames per second for the event.
 		/// </summary>
@@ -76,7 +76,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(Image)}.Count > 1
 			""")]
-		public float Fps { get; set; }
+		public float Fps { get; set; } = 30f;
 		/// <summary>
 		/// Gets or sets the list of images for the background.
 		/// </summary>
@@ -90,7 +90,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
 			""")]
-		public int ScrollX { get; set; }
+		public int ScrollX { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the vertical scroll value.
 		/// </summary>
@@ -99,7 +99,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
 			""")]
-		public int ScrollY { get; set; }
+		public int ScrollY { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the tiling type for the background.
 		/// </summary>
@@ -107,15 +107,15 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
 			""")]
-		public TilingTypes TilingType { get; set; }
+		public TilingTypes TilingType { get; set; } = TilingTypes.Scroll;
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetBackgroundColor;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

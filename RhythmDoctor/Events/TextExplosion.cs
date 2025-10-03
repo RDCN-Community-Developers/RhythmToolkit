@@ -9,21 +9,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TextExplosion"/> class.
 		/// </summary>
-		public TextExplosion()
-		{
-			Rooms = new RDRoom([0]);
-			Color = new PaletteColor(false);
-			Type = EventType.TextExplosion;
-			Tab = Tabs.Actions;
-		}
+		public TextExplosion() { }
 		/// <summary>
 		/// Gets or sets the rooms associated with the text explosion.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets the color of the text explosion.
 		/// </summary>
-		public PaletteColor Color { get; set; }
+		public PaletteColor Color { get; set; } = RDColor.Black;
 		/// <summary>
 		/// Gets or sets the text to be displayed in the explosion.
 		/// </summary>
@@ -32,19 +26,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the direction of the text explosion.
 		/// </summary>
-		public TextExplosionDirections Direction { get; set; }
+		public TextExplosionDirections Direction { get; set; } = TextExplosionDirections.Left;
 		/// <summary>
 		/// Gets or sets the mode of the text explosion.
 		/// </summary>
-		public TextExplosionModes Mode { get; set; }
+		public TextExplosionModes Mode { get; set; } = TextExplosionModes.OneColor;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.TextExplosion;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

@@ -12,7 +12,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		protected BaseBeatsPerMinute()
 		{
-			_bpm = Utils.Utils.DefaultBPM;
 		}
 		/// <summary>
 		/// Gets or sets the beat associated with this event.
@@ -59,6 +58,6 @@ namespace RhythmBase.RhythmDoctor.Events
 				}
 			}
 		}
-		private float _bpm;
+		private float _bpm = Utils.Utils.DefaultBPM;
 	}
 }

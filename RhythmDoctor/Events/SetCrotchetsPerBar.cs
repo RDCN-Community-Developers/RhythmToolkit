@@ -17,11 +17,11 @@
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetCrotchetsPerBar;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Sounds;
 		/// <summary>
 		/// Gets or sets the visual beat multiplier.
 		/// </summary>

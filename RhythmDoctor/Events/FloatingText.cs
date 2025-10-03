@@ -64,24 +64,24 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the fade out rate of the text.
 		/// </summary>
-		public float FadeOutRate { get; set; }
+		public float FadeOutRate { get; set; } = 3;
 		float IDurationEvent.Duration { get => FadeOutRate; set => FadeOutRate = value; }
 		/// <summary>
 		/// Gets or sets the color of the text.
 		/// </summary>
-		public PaletteColor Color { get; internal set; } = new PaletteColor(true) { Color = RDColor.White, };
+		public PaletteColor Color { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the angle of the text.
 		/// </summary>
-		public float Angle { get; set; }
+		public float Angle { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the size of the text.
 		/// </summary>
-		public uint Size { get; set; }
+		public uint Size { get; set; } = 8;
 		/// <summary>
 		/// Gets or sets the outline color of the text.
 		/// </summary>
-		public PaletteColor OutlineColor { get; internal set; } = new PaletteColor(true) { Color = RDColor.Black, };
+		public PaletteColor OutlineColor { get; set; } =  RDColor.Black;
 		/// <summary>
 		/// Gets the ID of the event.
 		/// </summary>
@@ -90,12 +90,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the position of the text.
 		/// </summary>
-		public RDPoint TextPosition { get; set; } = new RDPoint(new float?(50f), new float?(50f));
+		public RDPoint TextPosition { get; set; } = new(50f, 50f);
 		/// <summary>
 		/// Gets or sets the anchor style of the text.
 		/// </summary>
 		[RDJsonDefaultSerializer]
-		public FloatingTextAnchorStyles Anchor { get; set; }
+		public FloatingTextAnchorStyles Anchor { get; set; } = FloatingTextAnchorStyles.Center;
 		/// <summary>
 		/// Gets or sets a value indicating whether to narrate the text.
 		/// </summary>
@@ -103,7 +103,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the narration category of the text.
 		/// </summary>
-		public NarrationCategorys NarrationCategory { get; set; }
+		public NarrationCategorys NarrationCategory { get; set; } = NarrationCategorys.Subtitles;
 		/// <summary>
 		/// Gets or sets the mode of the text.
 		/// </summary>
@@ -111,7 +111,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether to show child texts.
 		/// </summary>
-		public bool ShowChildren { get; set; } = false;
+		public bool ShowChildren { get; set; } = true;
 		/// <summary>
 		/// Gets or sets the text content.
 		/// </summary>

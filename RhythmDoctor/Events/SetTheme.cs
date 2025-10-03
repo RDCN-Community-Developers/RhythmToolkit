@@ -20,28 +20,28 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the theme preset.  
 		/// </summary>  
-		public Themes Preset { get; set; }
+		public Themes Preset { get; set; } = Themes.None;
 		/// <summary>  
 		/// Gets or sets the variant of the theme.  
 		/// </summary>  
-		#warning 需要细致区分
+#warning 需要细致区分
 		public byte Variant { get; set; }
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetTheme;
 		/// <summary>  
 		/// Gets the tab associated with the event.  
 		/// </summary>  
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>  
 		/// Gets or sets the rooms associated with the event.  
 		/// </summary>  
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip paint effects.
 		/// </summary>
-		public bool SkipPaintEffects { get; set; }
+		public bool SkipPaintEffects { get; set; } = false;
 		/// <summary>  
 		/// Returns a string that represents the current object.  
 		/// </summary>  

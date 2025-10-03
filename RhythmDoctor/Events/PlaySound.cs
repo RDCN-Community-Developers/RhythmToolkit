@@ -10,19 +10,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PlaySound"/> class.
 		/// </summary>
-		public PlaySound()
-		{
-			Type = EventType.PlaySound;
-			Tab = Tabs.Sounds;
-		}
+		public PlaySound() { }
 		/// <summary>
 		/// Gets or sets a value indicating whether the sound is custom.
 		/// </summary>
-		public bool IsCustom { get; set; }
+		public bool IsCustom { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the type of the custom sound.
 		/// </summary>
-		public CustomSoundTypes CustomSoundType { get; set; }
+		public CustomSoundTypes CustomSoundType { get; set; } = CustomSoundTypes.CueSound;
 		/// <summary>
 		/// Gets or sets the audio sound.
 		/// </summary>
@@ -31,11 +27,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.PlaySound;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Sounds;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

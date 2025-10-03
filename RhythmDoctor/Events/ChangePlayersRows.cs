@@ -6,29 +6,23 @@ namespace RhythmBase.RhythmDoctor.Events
 	public class ChangePlayersRows : BaseEvent
 	{
 		/// <inheritdoc />
-		public ChangePlayersRows()
-		{
-			Players = new PlayerTypeGroup();
-			CpuMarkers = new CpuTypeGroup();
-			Type = EventType.ChangePlayersRows;
-			Tab = Tabs.Actions;
-		}
+		public ChangePlayersRows() { }
 		/// <summary>
 		/// Gets or sets the list of players.
 		/// </summary>
-		public PlayerTypeGroup Players { get; set; }
+		public PlayerTypeGroup Players { get; set; } = new PlayerTypeGroup() { [0] = PlayerType.P1 };
 		/// <summary>
 		/// Gets or sets the player mode.
 		/// </summary>
-		public PlayingModes PlayerMode { get; set; }
+		public PlayingModes PlayerMode { get; set; } = PlayingModes.OnePlayer;
 		/// <summary>
 		/// Gets or sets the list of CPU markers.
 		/// </summary>
-		public CpuTypeGroup CpuMarkers { get; set; }
+		public CpuTypeGroup CpuMarkers { get; set; } = new CpuTypeGroup() { [0] = CpuType.Otto };
 		/// <inheritdoc />
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.ChangePlayersRows;
 		/// <inheritdoc />
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 	}
 	/// <summary>
 	/// Represents the types of CPUs.

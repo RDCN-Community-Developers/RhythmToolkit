@@ -12,11 +12,11 @@
 		/// <summary>
 		/// Gets or sets the text of the narration.
 		/// </summary>
-		public string Text { get; set; } = "";
+		public string Text { get; set; } = "一名身穿红色盔甲的武士跟着音乐节拍点头。";
 		/// <summary>
 		/// Gets or sets the category of the narration.
 		/// </summary>
-		public NarrationCategorys Category { get; set; }
+		public NarrationCategorys Category { get; set; } = NarrationCategorys.Description;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>

@@ -33,45 +33,40 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ShowHands"/> class.
 		/// </summary>
-		public ShowHands()
-		{
-			Rooms = new RDRoom([0]);
-			Type = EventType.ShowHands;
-			Tab = Tabs.Actions;
-		}
+		public ShowHands() { }
 		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets the action to be performed.
 		/// </summary>
-		public ShowHandsActions Action { get; set; }
+		public ShowHandsActions Action { get; set; } = ShowHandsActions.Show;
 		/// <summary>
 		/// Gets or sets the hand of the player.
 		/// </summary>
-		public PlayerHands Hand { get; set; }
+		public PlayerHands Hand { get; set; } = PlayerHands.Right;
 		/// <summary>
 		/// Gets or sets a value indicating whether the hands should be aligned.
 		/// </summary>
-		public bool Align { get; set; }
+		public bool Align { get; set; } = false;
 		/// <summary>
 		/// Gets or sets a value indicating whether the action should be instant.
 		/// </summary>
-		public bool ForceRaise { get; set; }
-		public bool Instant { get; set; }
+		public bool ForceRaise { get; set; } = true;
+		public bool Instant { get; set; } = true;
 		/// <summary>
 		/// Gets or sets the extent of the action.
 		/// </summary>
-		public ShowHandsExtents Extent { get; set; }
+		public ShowHandsExtents Extent { get; set; } = ShowHandsExtents.Full;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.ShowHands;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 	}
 	/// <summary>
 	/// Defines the possible extents for the action.

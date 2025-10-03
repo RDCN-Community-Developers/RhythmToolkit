@@ -1,5 +1,4 @@
 ﻿using RhythmBase.RhythmDoctor.Events;
-using RhythmBase.RhythmDoctor.Extensions;
 using static RhythmBase.RhythmDoctor.Utils.EventTypeUtils;
 namespace RhythmBase.RhythmDoctor.Components
 {
@@ -114,9 +113,8 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				item._parent?.Remove(item);
 				item._parent = this;
-				if(Parent is null)
-					base.Add(item);
-				else
+				base.Add(item);
+				if (Parent is not null)
 					Parent?.AddInternal(item);
 				return;
 			}

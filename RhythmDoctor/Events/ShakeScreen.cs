@@ -17,29 +17,24 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ShakeScreen"/> class.
 		/// </summary>
-		public ShakeScreen()
-		{
-			Rooms = new RDRoom([0]);
-			Type = EventType.ShakeScreen;
-			Tab = Tabs.Actions;
-		}
+		public ShakeScreen() { }
 		/// <summary>
 		/// Gets or sets the rooms associated with the event.
 		/// </summary>
-		public RDRoom Rooms { get; set; }
+		public RDRoom Rooms { get; set; } = new RDRoom([0]);
 		/// <summary>
 		/// Gets or sets the shake level of the event.
 		/// </summary>
-		public ScreenShakeLevels ShakeLevel { get; set; }
-		public ShakeType ShakeType { get; set; }
+		public ScreenShakeLevels ShakeLevel { get; set; } = ScreenShakeLevels.Medium;
+		public ShakeType ShakeType { get; set; } = ShakeType.Normal;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>		
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.ShakeScreen;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

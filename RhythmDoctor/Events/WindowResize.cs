@@ -34,8 +34,8 @@ namespace RhythmBase.RhythmDoctor.Events
 			set => tab = CustomTab is Tabs.Actions or Tabs.Windows ? value : throw new InvalidOperationException();
 		}
 		/// <inheritdoc/>
-		public EaseType Ease { get; set; }
+		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <inheritdoc/>
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 0f;
 	}
 }

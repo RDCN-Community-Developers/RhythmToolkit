@@ -8,23 +8,19 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetVisible"/> class.
 		/// </summary>
-		public SetVisible()
-		{
-			Type = EventType.SetVisible;
-			Tab = Tabs.Decorations;
-		}
+		public SetVisible() { }
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetVisible;
 		/// <summary>
 		/// Gets the tab to which the event belongs.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Decorations;
 		/// <summary>
 		/// Gets or sets a value indicating whether the decoration is visible.
 		/// </summary>
-		public bool Visible { get; set; }
+		public bool Visible { get; set; } = true;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

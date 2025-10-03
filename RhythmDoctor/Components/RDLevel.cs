@@ -521,6 +521,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (parent == null) Decorations._unhandledRowEvents.Add(item);
 			if (base.Contains(item))
 				return;
+			item._beat._calculator = Calculator;
 			base.Add(item);
 		}
 		internal void AddInternal(BaseRowAction item)
@@ -529,6 +530,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (parent == null) Rows._unhandledRowEvents.Add(item);
 			if (base.Contains(item))
 				return;
+			item._beat._calculator = Calculator;
 			base.Add(item);
 		}
 		internal bool RemoveInternal(BaseDecorationAction item)

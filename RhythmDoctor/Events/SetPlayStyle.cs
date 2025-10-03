@@ -8,34 +8,30 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetPlayStyle"/> class.
 		/// </summary>
-		public SetPlayStyle()
-		{
-			Type = EventType.SetPlayStyle;
-			Tab = Tabs.Actions;
-		}
+		public SetPlayStyle() { }
 		/// <summary>
 		/// Gets or sets the play style.
 		/// </summary>
 		[RDJsonProperty(nameof(PlayStyle))]
-		public PlayStyleTypes PlayStyle { get; set; }
+		public PlayStyleTypes PlayStyle { get; set; } = PlayStyleTypes.Normal;
 		/// <summary>
 		/// Gets or sets the next bar.
 		/// </summary>
 		[RDJsonProperty(nameof(NextBar))]
-		public int NextBar { get; set; }
+		public int NextBar { get; set; } = 1;
 		/// <summary>
 		/// Gets or sets a value indicating whether the play style is relative.
 		/// </summary>
 		[RDJsonProperty(nameof(Relative))]
-		public bool Relative { get; set; }
+		public bool Relative { get; set; } = true;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.SetPlayStyle;
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } = Tabs.Actions;
 	}
 	/// <summary>
 	/// Defines the play styles.
