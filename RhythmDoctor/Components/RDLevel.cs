@@ -161,9 +161,9 @@ namespace RhythmBase.RhythmDoctor.Components
 			settings ??= new();
 			string extension = Path.GetExtension(filepath);
 			RDLevel? level;
-			if (extension != ".rdzip" && extension != ".zip")
+			if (extension is not ".rdzip" and not ".zip")
 			{
-				if (extension != ".rdlevel")
+				if (extension is not ".rdlevel" and not ".json")
 					throw new RhythmBaseException("File not supported.");
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
 				level = FromStream(stream, settings);
