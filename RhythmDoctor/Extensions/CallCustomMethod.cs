@@ -99,7 +99,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			public struct ProceduralTree
 			{
 				/// <summary>
-				/// 过程树的属性
+				/// Enables or disables the procedural tree effect.
 				/// </summary>
 				public float?
 					BrachedPerlteration,

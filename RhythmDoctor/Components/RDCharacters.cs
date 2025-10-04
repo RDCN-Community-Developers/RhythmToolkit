@@ -10,28 +10,23 @@
 		Adog,
 		Allison,
 		Athlete,
+		AthleteAlt,
 		AthletePhysio,
 		Barista,
 		Beat,
-#if DEBUG
 		BlankCPU,
-#endif
 		Bodybuilder,
 		Boy,
 		BoyRaya,
 		BoyTangzhuang,
 		Buro,
-#if DEBUG
 		Canary,
-#endif
 		Clef,
 		Cockatiel,
 		ColeGuitar,
 		ColeSynth,
 		Controller,
-#if DEBUG
 		Custom,
-#endif
 		DancingCouple,
 		Edega,
 		Farmer,
@@ -44,14 +39,11 @@
 		Ian,
 		IanBubble,
 		Janitor,
-		Kanye,
 		Lucia,
 		LuckyBag,
 		LuckyBaseball,
 		LuckyIce,
-#if DEBUG
 		LuckyJersey,
-#endif
 		Lune,
 		Marija,
 		Miner,
@@ -59,14 +51,13 @@
 		MrsStevenson,
 		MrStevendog,
 		MrStevenson,
+		New,
 		NicoleCigs,
 		NicoleCoffee,
 		NicoleMints,
 		None,
 		Oriole,
-#if DEBUG
 		Otto,
-#endif
 		Owl,
 		Paige,
 		Parrot,
@@ -76,7 +67,6 @@
 		Quaver,
 		Rin,
 		Rodney,
-		Saturday,
 		Samurai,
 		SamuraiBaseball,
 		SamuraiBlue,
@@ -86,12 +76,12 @@
 		SamuraiGreen,
 		SamuraiPirate,
 		SamuraiYellow,
+		Saturday,
 		SmokinBarista,
+		Sophia,
 		Tentacle,
 		Treble,
-		Weeknd,
-#if DEBUG
-		Wren
-#endif
+		Weightlifter,
+		Wren,
 	}
 }

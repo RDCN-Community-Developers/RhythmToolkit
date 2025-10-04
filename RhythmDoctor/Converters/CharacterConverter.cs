@@ -31,12 +31,12 @@ namespace RhythmBase.RhythmDoctor.Converters
 				ReadJson = name;
 			}
 			else
-			{ 
-				EnumConverter.TryParse(value, out RDCharacters character);
-#if NETSTANDARD
-				ReadJson = string.IsNullOrEmpty(value) ? new() : character;
+			{
+				ReadJson = EnumConverter.TryParse(value, out RDCharacters character) ? character :
+#if DEBUG
+					throw new RhythmBaseException($"Character {value} not exist in RDCharacters.");
 #else
-				ReadJson = string.IsNullOrEmpty(value) ? new() : Enum.Parse<RDCharacters>(value);
+					new RDCharacter(value);
 #endif
 			}
 			return ReadJson;
