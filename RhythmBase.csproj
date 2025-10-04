@@ -1,42 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-	<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<Nullable>enable</Nullable>
-	<RootNamespace>RhythmBase</RootNamespace>
-	<AssemblyName>RhythmBase</AssemblyName>
-	<GenerateDocumentationFile>True</GenerateDocumentationFile>
-	<Title>RhythmToolkit</Title>
-	<Version>1.2.6</Version>
-	<Authors>obugs</Authors>
-	<Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels.</Description>
-	<PackageProjectUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit</PackageProjectUrl>
-	<PackageIcon>RhythmBase.png</PackageIcon>
-	<RepositoryUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit.git</RepositoryUrl>
-	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	  <LangVersion>Preview</LangVersion>
-	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>RhythmBase</RootNamespace>
+    <AssemblyName>RhythmBase</AssemblyName>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>RhythmToolkit</Title>
+    <Version>1.2.7</Version>
+    <Authors>obugs</Authors>
+    <Description>A package that can be used to help with the development of support tools for the Rhythm Doctor game levels.</Description>
+    <PackageProjectUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit</PackageProjectUrl>
+    <PackageIcon>RhythmBase.png</PackageIcon>
+    <RepositoryUrl>https://github.com/RDCN-Community-Developers/RhythmToolkit.git</RepositoryUrl>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <LangVersion>Preview</LangVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
+        <PublishAot>true</PublishAot>
+    </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="RhythmDoctor\Converters\Old\**" />
-    <EmbeddedResource Remove="RhythmDoctor\Converters\Old\**" />
-    <None Remove="RhythmDoctor\Converters\Old\**" />
+    <PackageReference Include="System.Text.Json" Version="10.0.0-preview.6.25358.103" />
   </ItemGroup>
   <ItemGroup>
-	<PackageReference Include="System.Text.Json" Version="10.0.0-preview.6.25358.103" />
+    <None Include="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="RhythmBase.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
   <ItemGroup>
-	<None Include="README.md">
-	  <Pack>True</Pack>
-	  <PackagePath>\</PackagePath>
-	</None>
-	<None Include="RhythmBase.png">
-	  <Pack>True</Pack>
-	  <PackagePath>\</PackagePath>
-	</None>
-  </ItemGroup>
-  <ItemGroup>
-	<ProjectReference Include="..\RhythmBase.Generator\RhythmBase.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\RhythmBase.Generator\RhythmBase.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

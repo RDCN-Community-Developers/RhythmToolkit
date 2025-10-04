@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		}
 		public override RDCharacter Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
-			string value = reader.GetString();
+			string value = reader.GetString() ?? "";
 			if (string.IsNullOrEmpty(value))
 				return default;
 			RDCharacter ReadJson;
