@@ -78,8 +78,8 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						values[1] is PatternValue { TokenType: TokenType.Dot } &&
 						values[2] is PatternGroup { GroupType: GroupType.Identifier } pg12)
 					{
-						pattern.StringValue = $"{pg11.Value.Value}.{pg12.StringValue}";
-						pattern.AssignableToken = [new((string)pg11.Value.Value), .. pg12.AssignableToken];
+						pattern.StringValue = $"{pg11.Token.Value}.{pg12.StringValue}";
+						pattern.AssignableToken = [new((string)pg11.Token.Value), .. pg12.AssignableToken];
 					}
 					else if (values.Length == 6 &&
 						values[0] is PatternValue { TokenType: TokenType.StringOrIdentifier } pg13 &&
@@ -89,8 +89,8 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						values[4] is PatternValue { TokenType: TokenType.Dot } &&
 						values[5] is PatternGroup { GroupType: GroupType.Identifier } pg15)
 					{
-						pattern.StringValue = $"{(string)pg13.Value.Value}[{pg14.Value.Value}].{pg15.StringValue}";
-						pattern.AssignableToken = [new((string)pg13.Value.Value, (int)pg14.Value.Value), .. pg15.AssignableToken];
+						pattern.StringValue = $"{(string)pg13.Token.Value}[{pg14.Token.Value}].{pg15.StringValue}";
+						pattern.AssignableToken = [new((string)pg13.Token.Value, (int)pg14.Token.Value), .. pg15.AssignableToken];
 					}
 #else
 					switch (values)
@@ -104,8 +104,8 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 								PatternValue { TokenType: TokenType.Dot },
 								PatternGroup { GroupType: GroupType.Identifier } pg1,
 							]:
-							pattern.StringValue = $"{pg0.Value.Value}.{pg1.StringValue}";
-							pattern.AssignableToken = [new((string)pg0.Value.Value), .. pg1.AssignableToken];
+							pattern.StringValue = $"{pg0.Token.Value}.{pg1.StringValue}";
+							pattern.AssignableToken = [new((string)pg0.Token.Value), .. pg1.AssignableToken];
 							break;
 						case [
 								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
@@ -115,8 +115,8 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 								PatternValue { TokenType: TokenType.Dot },
 								PatternGroup { GroupType: GroupType.Identifier } pg2,
 							]:
-							pattern.StringValue = $"{(string)pg0.Value.Value}[{pg1.Value.Value}].{pg2.StringValue}";
-							pattern.AssignableToken = [new((string)pg0.Value.Value, (int)pg1.Value.Value), .. pg2.AssignableToken];
+							pattern.StringValue = $"{(string)pg0.Token.Value}[{pg1.Token.Value}].{pg2.StringValue}";
+							pattern.AssignableToken = [new((string)pg0.Token.Value, (int)pg1.Token.Value), .. pg2.AssignableToken];
 							break;
 					}
 #endif
@@ -126,35 +126,43 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 					if (values.Length == 1 &&
 						values[0] is PatternValue { TokenType: TokenType.VariableInteger } pg20)
 					{
-						pattern.FloatValue = variables.i[(int)pg20.Value.Value];
-						pattern.AssignableToken = [new($"i{pg20.Value.Value}")];
+						pattern.FloatValue = variables.i[(int)pg20.Token.Value];
+						pattern.AssignableToken = [new($"i{pg20.Token.Value}")];
 					}
 					else if (values.Length == 1 &&
 						values[0] is PatternValue { TokenType: TokenType.VariableFloat } pg21)
 					{
-						pattern.FloatValue = variables.f[(int)pg21.Value.Value];
-						pattern.AssignableToken = [new($"f{pg21.Value.Value}")];
+						pattern.FloatValue = variables.f[(int)pg21.Token.Value];
+						pattern.AssignableToken = [new($"f{pg21.Token.Value}")];
 					}
 					else if (values.Length == 1 &&
 						values[0] is PatternValue { TokenType: TokenType.VariableBoolean } pg22)
 					{
-						pattern.FloatValue = variables.b[(int)pg22.Value.Value] ? 1f : 0f;
-						pattern.AssignableToken = [new($"b{pg22.Value.Value}")];
+						pattern.FloatValue = variables.b[(int)pg22.Token.Value] ? 1f : 0f;
+						pattern.AssignableToken = [new($"b{pg22.Token.Value}")];
 					}
 					else if (values.Length == 1 &&
 						values[0] is PatternValue { TokenType: TokenType.StringOrIdentifier } pg23)
 					{
-						object? tokenValue = pg23.Value.TokenID switch
+						object? tokenValue = pg23.Token.TokenID switch
 						{
-							TokenType.VariableInteger => variables.i[(int)pg23.Value.Value],
-							TokenType.VariableFloat => variables.f[(int)pg23.Value.Value],
-							TokenType.VariableBoolean => variables.b[(int)pg23.Value.Value],
-							TokenType.StringOrIdentifier => variables[(string)pg23.Value.Value],
+							TokenType.VariableInteger => variables.i[(int)pg23.Token.Value],
+							TokenType.VariableFloat => variables.f[(int)pg23.Token.Value],
+							TokenType.VariableBoolean => variables.b[(int)pg23.Token.Value],
+							TokenType.StringOrIdentifier => variables[(string)pg23.Token.Value],
 							_ => null,
 						};
-						pattern.FloatValue = tokenValue is float f ? f : 0f;
-						pattern.StringValue = (string)pg23.Value.Value;
-						pattern.AssignableToken = [new((string)pg23.Value.Value)];
+						pattern.FloatValue = tokenValue switch
+						{
+							int i => i,
+							float f => f,
+							bool b => b ? 1f : 0f,
+							_ => 0f,
+						};
+						if (tokenValue is string str){
+							pattern.StringValue = str;
+							pattern.AssignableToken = [new(str)];
+						}
 					}
 					else if (values.Length == 4 &&
 						values[0] is PatternValue { TokenType: TokenType.StringOrIdentifier } pg24 &&
@@ -162,36 +170,44 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						values[2] is PatternValue { TokenType: TokenType.Integer } pg25 &&
 						values[3] is PatternValue { TokenType: TokenType.RightBracket })
 					{
-						pattern.FloatValue = variables.i[(int)pg25.Value.Value];
-						pattern.AssignableToken = [new((string)pg24.Value.Value, (int)pg25.Value.Value)];
+						pattern.AssignableToken = [new((string)pg24.Token.Value, (int)pg25.Token.Value)];
 					}
 #else
 					switch (values)
 					{
 						case [PatternValue { TokenType: TokenType.VariableInteger } pg0,]:
-							pattern.FloatValue = variables.i[(int)pg0.Value.Value];
-							pattern.AssignableToken = [new($"i{pg0.Value.Value}")];
+							pattern.FloatValue = variables.i[(int)pg0.Token.Value];
+							pattern.AssignableToken = [new($"i{pg0.Token.Value}")];
 							break;
 						case [PatternValue { TokenType: TokenType.VariableFloat } pg0,]:
-							pattern.FloatValue = variables.f[(int)pg0.Value.Value];
-							pattern.AssignableToken = [new($"f{pg0.Value.Value}")];
+							pattern.FloatValue = variables.f[(int)pg0.Token.Value];
+							pattern.AssignableToken = [new($"f{pg0.Token.Value}")];
 							break;
 						case [PatternValue { TokenType: TokenType.VariableBoolean } pg0,]:
-							pattern.FloatValue = variables.b[(int)pg0.Value.Value] ? 1f : 0f;
-							pattern.AssignableToken = [new($"b{pg0.Value.Value}")];
+							pattern.FloatValue = variables.b[(int)pg0.Token.Value] ? 1f : 0f;
+							pattern.AssignableToken = [new($"b{pg0.Token.Value}")];
 							break;
 						case [PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,]:
-							object? tokenValue = pg0.Value.TokenID switch
+							object? tokenValue = pg0.Token.TokenID switch
 							{
-								TokenType.VariableInteger => variables.i[(int)pg0.Value.Value],
-								TokenType.VariableFloat => variables.f[(int)pg0.Value.Value],
-								TokenType.VariableBoolean => variables.b[(int)pg0.Value.Value],
-								TokenType.StringOrIdentifier => variables[(string)pg0.Value.Value],
+								TokenType.VariableInteger => variables.i[(int)pg0.Token.Value],
+								TokenType.VariableFloat => variables.f[(int)pg0.Token.Value],
+								TokenType.VariableBoolean => variables.b[(int)pg0.Token.Value],
+								TokenType.StringOrIdentifier => variables[(string)pg0.Token.Value],
 								_ => null,
 							};
-							pattern.FloatValue = tokenValue is float f ? f : 0f;
-							pattern.StringValue = (string)pg0.Value.Value;
-							pattern.AssignableToken = [new((string)pg0.Value.Value)];
+							pattern.FloatValue = tokenValue switch
+							{
+								int i => i,
+								float f => f,
+								bool b => b ? 1f : 0f,
+								_ => 0f,
+							};
+							if (tokenValue is string str)
+							{
+								pattern.StringValue = str;
+								pattern.AssignableToken = [new(str)];
+							}
 							break;
 						case [
 								PatternValue { TokenType: TokenType.StringOrIdentifier } pg0,
@@ -199,8 +215,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 								PatternValue { TokenType: TokenType.Integer } pg1,
 								PatternValue { TokenType: TokenType.RightBracket },
 							]:
-							pattern.FloatValue = variables.i[(int)pg1.Value.Value];
-							pattern.AssignableToken = [new((string)pg0.Value.Value, (int)pg1.Value.Value)];
+							pattern.AssignableToken = [new((string)pg0.Token.Value, (int)pg1.Token.Value)];
 							break;
 					}
 #endif
@@ -362,12 +377,12 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 					else if (values.Length == 1 &&
 						values[0] is PatternValue { TokenType: TokenType.Integer } pg41)
 					{
-						pattern.FloatValue = (int)pg41.Value.Value;
+						pattern.FloatValue = (int)pg41.Token.Value;
 					}
 					else if (values.Length == 1 &&
 						values[0] is PatternValue { TokenType: TokenType.Float } pg42)
 					{
-						pattern.FloatValue = (float)pg42.Value.Value;
+						pattern.FloatValue = (float)pg42.Token.Value;
 					}
 					else if (values.Length == 1 &&
 						values[0] is PatternValue { TokenType: TokenType.True })
@@ -382,16 +397,16 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 #else
 					switch (values)
 					{
-						case [PatternGroup { GroupType: GroupType.Identifier} pg0,]:
+						case [PatternGroup { GroupType: GroupType.Identifier } pg0,]:
 							pattern.FloatValue = pg0.FloatValue;
 							pattern.StringValue = pg0.StringValue;
 							pattern.AssignableToken = pg0.AssignableToken;
 							break;
 						case [PatternValue { TokenType: TokenType.Integer } pg0,]:
-							pattern.FloatValue = (int)pg0.Value.Value;
+							pattern.FloatValue = (int)pg0.Token.Value;
 							break;
 						case [PatternValue { TokenType: TokenType.Float } pg0,]:
-							pattern.FloatValue = (float)pg0.Value.Value;
+							pattern.FloatValue = (float)pg0.Token.Value;
 							break;
 						case [PatternValue { TokenType: TokenType.True },]:
 							pattern.FloatValue = 1f;
@@ -422,7 +437,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 					switch (values)
 					{
 						case [PatternValue { TokenType: TokenType.String } pg0,]:
-							pattern.StringValue = (string)pg0.Value.Value;
+							pattern.StringValue = (string)pg0.Token.Value;
 							break;
 						case [PatternGroup { GroupType: GroupType.Expression } pg0,]:
 							pattern.FloatValue = pg0.FloatValue;

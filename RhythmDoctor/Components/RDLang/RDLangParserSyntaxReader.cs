@@ -54,7 +54,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 	internal struct PatternValue(TokenType tokenType) : IPattern
 	{
 		public TokenType TokenType = tokenType;
-		public Token Value;
+		public Token Token;
 		public static implicit operator PatternValue(TokenType tokenType) => new(tokenType);
 		public override readonly string ToString() => TokenType.ToString();
 		private readonly string GetDebuggerDisplay() => ToString();
@@ -189,7 +189,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		};
 		private static float Run(Token[] tokens, RDVariables variables, RDLangType type, out Error? error)
 		{
-			inputStack = new(tokens.Select(i => new PatternValue(i.TokenID) { Value = i }).Reverse());
+			inputStack = new(tokens.Select(i => new PatternValue(i.TokenID) { Token = i }).Reverse());
 			symbolStack.Clear();
 			stateStack.Clear();
 			stateStack.Push(0);
@@ -263,7 +263,7 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 						if (inputStack.TryPeek(out PatternValue pv2))
 #endif
 						{
-							Token token = pv2.Value;
+							Token token = pv2.Token;
 							error = new(action.ErrorInfo, token);
 							return 0;
 						}
