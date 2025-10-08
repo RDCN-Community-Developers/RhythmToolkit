@@ -203,6 +203,53 @@ namespace RhythmBase.RhythmDoctor.Components
 				throw new RhythmBaseException("Cannot extract the file.", ex2);
 			}
 		}
+		public static async Task<RDLevel> FromFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		{
+			settings ??= new();
+			string extension = Path.GetExtension(filepath);
+			RDLevel? level;
+			if (extension is not ".rdzip" and not ".zip")
+			{
+				if (extension is not ".rdlevel" and not ".json")
+					throw new RhythmBaseException("File not supported.");
+				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
+				level = await FromStreamAsync(stream, settings, cancellationToken);
+				level._path = Path.GetFullPath(filepath);
+				return level;
+			}
+			DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
+			tempDirectory.Create();
+			try
+			{
+#if NET8_0_OR_GREATER
+					using Stream stream = File.OpenRead(filepath);
+					// Use async extraction if available for better performance
+					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+#elif NETSTANDARD2_0_OR_GREATER
+				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+#endif
+				string? rdlevelPath = null;
+				foreach (var file in tempDirectory.GetFiles())
+				{
+					if (file.Extension == ".rdlevel")
+					{
+						rdlevelPath = file.FullName;
+						break;
+					}
+				}
+				if (rdlevelPath == null)
+					throw new RhythmBaseException("No RDLevel file has been found.");
+				level = await FromFileAsync(rdlevelPath, settings, cancellationToken);
+				level.isZip = true;
+				level.isExtracted = true;
+				return level;
+			}
+			catch (Exception ex2)
+			{
+				tempDirectory.Delete(true);
+				throw new RhythmBaseException("Cannot extract the file.", ex2);
+			}
+		}
 		/// <summary>
 		/// Reads a level from a stream.
 		/// </summary>
@@ -217,6 +264,17 @@ namespace RhythmBase.RhythmDoctor.Components
 			settings.OnBeforeReading();
 			using EscapeNewLineStream stream = new(rdlevelStream);
 			level = JsonSerializer.Deserialize<RDLevel>(stream, options);
+			settings.OnAfterReading();
+			return level ?? [];
+		}
+		public static async Task<RDLevel> FromStreamAsync(Stream rdlevelStream, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			RDLevel? level;
+			settings.OnBeforeReading();
+			using EscapeNewLineStream stream = new(rdlevelStream);
+			level = await JsonSerializer.DeserializeAsync<RDLevel>(stream, options, cancellationToken);
 			settings.OnAfterReading();
 			return level ?? [];
 		}
@@ -249,6 +307,14 @@ namespace RhythmBase.RhythmDoctor.Components
 			JsonSerializer.Serialize(stream, this, options);
 			settings.OnAfterWriting();
 		}
+		public async void SaveToStreamAsync(Stream stream, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			settings.OnBeforeWriting();
+			JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
+			settings.OnAfterWriting();
+		}
 		/// <summary>
 		/// Saves the current level to a file in JSON format.
 		/// </summary>
@@ -266,6 +332,21 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				stream.SetLength(0);
 				JsonSerializer.Serialize(stream, this, options);
+			}
+			settings.OnAfterWriting();
+		}
+		public async void SaveToFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+			DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
+			if (!directory.Exists)
+				directory.Create();
+			settings.OnBeforeWriting();
+			using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
+			{
+				stream.SetLength(0);
+				JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
 			}
 			settings.OnAfterWriting();
 		}

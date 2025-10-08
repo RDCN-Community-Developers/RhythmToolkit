@@ -231,7 +231,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 			byte[] bytes = GetIndentByte(writer, options.IndentCharacter, 2);
 			writer.WriteStartObject();
 			writer.WritePropertyName("settings");
-			JsonSerializer.Serialize(writer, value.Settings, options);
+			SettingsConverter settingsConverter = new();
+			settingsConverter.Write(writer, value.Settings, options);
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
 			RowConverter rowConverter = new();

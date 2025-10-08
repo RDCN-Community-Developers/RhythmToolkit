@@ -19,7 +19,93 @@
 		public override long Length => throw new NotSupportedException();
 		public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 		public override void Flush() { }
-		public override int Read(byte[] buffer, int offset, int count) => ReadAsync(buffer, offset, count).GetAwaiter().GetResult();
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			if (count == 0) return 0;
+			int written = 0;
+
+			static bool IsQuote(byte b) => b == (byte)'"';
+			static bool IsEscape(byte b) => b == (byte)'\\';
+			static bool IsCR(byte b) => b == 0x0D;
+			static bool IsLF(byte b) => b == 0x0A;
+
+			while (written < count)
+			{
+				byte b;
+				if (_peeked >= 0)
+				{
+					b = (byte)_peeked;
+					_peeked = -1;
+				}
+				else
+				{
+					int read = _inner.Read(_buffer, 0, 1);
+					if (read == 0)
+					{
+						break; // EOF
+					}
+					b = _buffer[0];
+				}
+				if (IsQuote(b) && !_prevIsEscape)
+				{
+					_inQuotes = !_inQuotes;
+					_prevIsEscape = false;
+					buffer[offset + written++] = b;
+				}
+				else if (IsEscape(b) && _inQuotes)
+				{
+					_prevIsEscape = !_prevIsEscape;
+					buffer[offset + written++] = b;
+				}
+				else if (_inQuotes && IsCR(b))
+				{
+					// 可能是 \r\n
+					int read = _inner.Read(_buffer, 0, 1);
+					if (read == 0) break;
+					if (read > 0 && IsLF(_buffer[0]))
+					{
+						// \r\n -> \\r\\n
+						if (written + 4 > count)
+						{
+							_peeked = _buffer[0];
+							break;
+						}
+						buffer[offset + written++] = (byte)'\\';
+						buffer[offset + written++] = (byte)'r';
+						buffer[offset + written++] = (byte)'\\';
+						buffer[offset + written++] = (byte)'n';
+					}
+					else
+					{
+						// 只有 \r
+						if (written + 2 > count)
+						{
+							if (read > 0) _peeked = _buffer[0];
+							break;
+						}
+						buffer[offset + written++] = (byte)'\\';
+						buffer[offset + written++] = (byte)'r';
+						if (read > 0) _peeked = _buffer[0];
+					}
+					_prevIsEscape = false;
+				}
+				else if (_inQuotes && IsLF(b))
+				{
+					// \n -> \\n
+					if (written + 2 > count)
+						break;
+					buffer[offset + written++] = (byte)'\\';
+					buffer[offset + written++] = (byte)'n';
+					_prevIsEscape = false;
+				}
+				else
+				{
+					buffer[offset + written++] = b;
+					_prevIsEscape = false;
+				}
+			}
+			return written > 0 ? written : 0;
+		}
 		public override async Task<int> ReadAsync(byte[] buffer,
 			int offset,
 			int count,
@@ -50,16 +136,6 @@
 					}
 					b = _buffer[0];
 				}
-				//if (written < 10)
-				//	Console.BackgroundColor = ConsoleColor.DarkBlue;
-				//else
-				//	Console.BackgroundColor = ConsoleColor.Black;
-				//if (_inQuotes)
-				//	Console.ForegroundColor = ConsoleColor.Blue;
-				//else
-				//	Console.ForegroundColor = ConsoleColor.White;
-				//Console.Write((char)b);
-
 				if (IsQuote(b) && !_prevIsEscape)
 				{
 					_inQuotes = !_inQuotes;
@@ -123,6 +199,7 @@
 		public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 		public override void SetLength(long value) => throw new NotSupportedException();
 		public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+		public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
