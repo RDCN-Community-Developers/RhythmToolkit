@@ -27,6 +27,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; } = Tabs.Rows;
+		/// <summary>
+		/// Gets a dictionary containing additional data not explicitly modeled by the class.
+		/// </summary>
+		/// <remarks>This property provides access to extra data that may be included in the input but is not directly
+		/// represented by other properties. It is useful for handling extensible or dynamic data structures.</remarks>
 		protected Dictionary<string, JsonElement> ExtraData { get => _extraData; }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ForwardRowEvent"/> class.

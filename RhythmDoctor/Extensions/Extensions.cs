@@ -210,10 +210,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			{
 				if (rowType != RowTypes.Oneshot)
 					throw new RhythmBaseException("How?");
-				HitBeats = e.OneshotBeats().SelectMany((BaseBeat i) => i.HitTimes());
+				HitBeats = e.OneshotBeats().SelectMany(i => i.HitTimes());
 			}
 			else
-				HitBeats = e.ClassicBeats().SelectMany((BaseBeat i) => i.HitTimes());
+				HitBeats = e.ClassicBeats().SelectMany(i => i.HitTimes());
 			return HitBeats;
 		}
 		/// <summary>
@@ -235,8 +235,34 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="e">RDLevel</param>
 		/// <param name="timeSpan">Total time span of the beat.</param>
 		public static RDBeat BeatOf(this RDLevel e, TimeSpan timeSpan) => e.Calculator.BeatOf(timeSpan);
+		/// <summary>
+		/// Gets the depth of the decoration at the specified beat.
+		/// </summary>
+		/// <param name="e">The decoration instance.</param>
+		/// <param name="beat">The beat to query.</param>
+		/// <returns>
+		/// The depth value at the specified beat, or the decoration's default depth if no <see cref="ReorderSprite"/> event is found.
+		/// </returns>
 		public static int DepthOf(this Decoration e, RDBeat beat) => e.InRange(new(), beat).OfEvent<ReorderSprite>().LastOrDefault()?.Depth ?? e.Depth;
+
+		/// <summary>
+		/// Gets the room index of the decoration at the specified beat.
+		/// </summary>
+		/// <param name="e">The decoration instance.</param>
+		/// <param name="beat">The beat to query.</param>
+		/// <returns>
+		/// The room index at the specified beat, or the decoration's default room if no <see cref="ReorderSprite"/> event is found.
+		/// </returns>
 		public static RDRoomIndex RoomOf(this Decoration e, RDBeat beat) => e.InRange(new(), beat).OfEvent<ReorderSprite>().LastOrDefault()?.NewRoom ?? e.Room.Room;
+
+		/// <summary>
+		/// Gets the room index of the row at the specified beat.
+		/// </summary>
+		/// <param name="e">The row instance.</param>
+		/// <param name="beat">The beat to query.</param>
+		/// <returns>
+		/// The room index at the specified beat, or the row's default room if no <see cref="ReorderRow"/> event is found.
+		/// </returns>
 		public static RDRoomIndex RoomOf(this Row e, RDBeat beat) => e.InRange(new(), beat).OfEvent<ReorderRow>().LastOrDefault()?.NewRoom ?? e.Rooms.Room;
 		/// <summary>
 		/// Get the row beat status
@@ -583,9 +609,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				return 0;
 			if (e.Beat == obj.Beat)
 			{
-				var list = e._beat.BaseLevel?.eventsBeatOrder[e.Beat];
-				if (list is null)
-					throw new RhythmBaseException("How?");
+				var list = (e._beat.BaseLevel?.eventsBeatOrder[e.Beat]) ?? throw new RhythmBaseException("How?");
 				return list.CompareTo(e, obj) ? -1 : 1;
 			}
 			return e.Beat.CompareTo(obj.Beat);

@@ -41,7 +41,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			reader = checkpoint; IBaseEvent e;
 			if (!EnumConverter.TryParse(type, out EventType typeEnum))
-				e = ReadForwardEvent(ref reader, typeToConvert, options) ?? new ForwardEvent() { ActureType = type.ToString() ?? "" };
+				e = ReadForwardEvent(ref reader) ?? new ForwardEvent() { ActureType = type.ToString() ?? "" };
 			else
 				e = converters[typeEnum].ReadProperties(ref reader, options);
 			if (reader.TokenType != JsonTokenType.EndObject)
@@ -53,10 +53,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			if (value is IForwardEvent ce)
 			{
-				WriteForwardEvent(writer, ce, options);
+				WriteForwardEvent(writer, ce);
 				return;
 			}
-			else if (value is MacroEvent group)
+			else if (value is MacroEvent)
 			{
 				throw new NotSupportedException("Group should be handled in GroupConverter. It will be fixed in the next version.");
 			}
@@ -65,7 +65,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				converters[value.Type].WriteProperties(writer, value, options);
 			}
 		}
-		public IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		public static IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader)
 		{
 			using var doc = JsonDocument.ParseValue(ref reader);
 			var root = doc.RootElement;
@@ -84,7 +84,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			else return new ForwardEvent(doc);
 		}
 
-		public void WriteForwardEvent(Utf8JsonWriter writer, IForwardEvent value, JsonSerializerOptions options)
+		public static void WriteForwardEvent(Utf8JsonWriter writer, IForwardEvent value)
 		{
 			writer.WriteStartObject();
 			if (!string.IsNullOrEmpty(value.ActureType))

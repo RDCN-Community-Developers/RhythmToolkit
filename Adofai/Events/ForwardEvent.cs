@@ -23,7 +23,14 @@ namespace RhythmBase.Adofai.Events
 			//	Data.GetProperty("eventType")
 			}
 		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ForwardEvent"/> class.
+		/// </summary>
 		public ForwardEvent() { }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ForwardEvent"/> class from a <see cref="JsonDocument"/>.
+		/// </summary>
+		/// <param name="doc">The <see cref="JsonDocument"/> containing event data.</param>
 		public ForwardEvent(JsonDocument doc)
 		{
 

@@ -21,6 +21,18 @@
     <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
         <PublishAot>true</PublishAot>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+      <NoWarn>1701;1702;IL2080;IL2075;IL3050;IL2026</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
+      <NoWarn>1701;1702;IL2080;IL2075;IL3050;IL2026</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+      <NoWarn>1701;1702;IL2080;IL2075;IL3050;IL2026</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+      <NoWarn>1701;1702;IL2080;IL2075;IL3050;IL2026</NoWarn>
+    </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="10.0.0-preview.6.25358.103" />
   </ItemGroup>

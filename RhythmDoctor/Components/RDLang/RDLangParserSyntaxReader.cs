@@ -60,12 +60,32 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 		private readonly string GetDebuggerDisplay() => ToString();
 	}
 
+	/// <summary>
+	/// Represents an error encountered during parsing, including message, location, and token name.
+	/// </summary>
 	public struct Error
 	{
+		/// <summary>
+		/// The error message describing the issue.
+		/// </summary>
 		public string Message;
+		/// <summary>
+		/// The line number where the error occurred.
+		/// </summary>
 		public int Line;
+		/// <summary>
+		/// The column number where the error occurred.
+		/// </summary>
 		public int Column;
+		/// <summary>
+		/// The name of the token associated with the error.
+		/// </summary>
 		public string Name;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Error"/> struct with a message.
+		/// </summary>
+		/// <param name="message">The error message.</param>
 		public Error(string message)
 		{
 			Message = message;
@@ -73,6 +93,12 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 			Column = -1;
 			Name = "";
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Error"/> struct with a message and token information.
+		/// </summary>
+		/// <param name="message">The error message.</param>
+		/// <param name="token">The token where the error occurred.</param>
 		public Error(string message, Token token)
 		{
 			Message = message;
@@ -80,6 +106,11 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 			Column = token.Column;
 			Name = token.Name;
 		}
+
+		/// <summary>
+		/// Returns a string representation of the error, including message and location.
+		/// </summary>
+		/// <returns>A string describing the error and its location.</returns>
 		public override readonly string ToString() => $"{Message} at {Line}:{Column}";
 	}
 	internal enum ActionType

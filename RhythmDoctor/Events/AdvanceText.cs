@@ -20,8 +20,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		[RDJsonIgnore]
 		public RDRoom Rooms
 		{
-			get => Parent.Rooms;
-			set => Parent.Rooms = value;
+			get => Parent?.Rooms ?? new();
+			set => Parent?.Rooms = value;
 		}
 		/// <inheritdoc/>
 		public override Tabs Tab => Tabs.Actions;

@@ -1,34 +1,95 @@
 ﻿namespace RhythmBase.Global.Components.Easing
 {
+	/// <summary>
+	/// Contains information about an easing operation, including its type and duration.
+	/// </summary>
 	public struct EaseInfo
 	{
+		/// <summary>
+		/// Gets the type of easing function to use.
+		/// </summary>
 		public EaseType Type { get; }
+
+		/// <summary>
+		/// Gets the duration of the easing operation.
+		/// </summary>
 		public float Duration { get; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EaseInfo"/> struct.
+		/// </summary>
+		/// <param name="type">The type of easing function.</param>
+		/// <param name="duration">The duration of the easing.</param>
 		internal EaseInfo(EaseType type, float duration)
 		{
 			Type = type;
 			Duration = duration;
 		}
 	}
+	/// <summary>
+	/// Represents a node with a time value.
+	/// </summary>
 	public interface INode
 	{
-		public float Time { get; }
+		/// <summary>
+		/// Gets the time value of the node.
+		/// </summary>
+		float Time { get; }
 	}
+	/// <summary>
+	/// Represents a curve node with a value at a specific time.
+	/// </summary>
+	/// <typeparam name="T">The type of value stored in the node.</typeparam>
 	public struct CurveNode<T> : INode
 	{
+		/// <summary>
+		/// Gets the time value of the node.
+		/// </summary>
 		public float Time { get; }
+
+		/// <summary>
+		/// Gets the value at the specified time.
+		/// </summary>
 		public T Value { get; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CurveNode{T}"/> struct.
+		/// </summary>
+		/// <param name="time">The time value.</param>
+		/// <param name="value">The value at the specified time.</param>
 		internal CurveNode(float time, T value)
 		{
 			Time = time;
 			Value = value;
 		}
 	}
+	/// <summary>
+	/// Represents a tween curve node with a target value and easing information at a specific time.
+	/// </summary>
+	/// <typeparam name="T">The type of the target value.</typeparam>
 	public struct TweenCurveNode<T> : INode
 	{
+		/// <summary>
+		/// Gets the time value of the node.
+		/// </summary>
 		public float Time { get; }
+
+		/// <summary>
+		/// Gets the target value for the tween.
+		/// </summary>
 		public T Target { get; }
+
+		/// <summary>
+		/// Gets the easing information for the tween.
+		/// </summary>
 		public EaseInfo EaseInfo { get; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TweenCurveNode{T}"/> struct.
+		/// </summary>
+		/// <param name="time">The time value.</param>
+		/// <param name="target">The target value.</param>
+		/// <param name="easeInfo">The easing information.</param>
 		internal TweenCurveNode(float time, T target, EaseInfo easeInfo)
 		{
 			Time = time;
@@ -36,15 +97,31 @@
 			EaseInfo = easeInfo;
 		}
 	}
+	/// <summary>
+	/// Represents a curve of values over time.
+	/// </summary>
+	/// <typeparam name="T">The type of value in the curve.</typeparam>
 	public struct Curve<T>
 	{
 		private readonly T _default;
 		private CurveNode<T>[] _nodes = [];
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Curve{T}"/> struct.
+		/// </summary>
+		/// <param name="values">The curve nodes.</param>
+		/// <param name="defaultValue">The default value to use when no nodes are present or time is out of range.</param>
 		internal Curve(CurveNode<T>[] values, T defaultValue)
 		{
 			_nodes = [.. values.OrderBy(i => i.Time)];
 			_default = defaultValue;
 		}
+
+		/// <summary>
+		/// Gets the value of the curve at the specified time.
+		/// </summary>
+		/// <param name="time">The time to evaluate.</param>
+		/// <returns>The value at the specified time.</returns>
 		public readonly T this[float time]
 		{
 			get
@@ -71,17 +148,34 @@
 			}
 		}
 	}
+	/// <summary>
+	/// Represents a tween curve that interpolates between values over time using easing functions.
+	/// </summary>
+	/// <typeparam name="T">The type of value in the curve.</typeparam>
 	public struct TweenCurve<T>
 	{
 		private readonly T _default;
 		private TweenCurveNode<T>[] _nodes = [];
 		private Func<T, T, double, T> _interpolator;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TweenCurve{T}"/> struct.
+		/// </summary>
+		/// <param name="values">The tween curve nodes.</param>
+		/// <param name="defaultValue">The default value to use when no nodes are present or time is out of range.</param>
+		/// <param name="interpolator">The interpolation function to use between values.</param>
 		internal TweenCurve(TweenCurveNode<T>[] values, T defaultValue, Func<T, T, double, T> interpolator)
 		{
 			_nodes = [.. values.OrderBy(i => i.Time)];
 			_default = defaultValue;
 			_interpolator = interpolator;
 		}
+
+		/// <summary>
+		/// Gets the interpolated value of the curve at the specified time.
+		/// </summary>
+		/// <param name="time">The time to evaluate.</param>
+		/// <returns>The interpolated value at the specified time.</returns>
 		public readonly T this[float time]
 		{
 			get
@@ -89,7 +183,7 @@
 				if (_nodes.Length == 0 || time <= _nodes[0].Time)
 					return _default;
 				int left = 0, right = _nodes.Length - 1;
-				if(time >= _nodes[_nodes.Length - 1].Time)
+				if (time >= _nodes[_nodes.Length - 1].Time)
 					left = _nodes.Length - 1;
 				if (time >= _nodes[_nodes.Length - 1].Time + _nodes[_nodes.Length - 1].EaseInfo.Duration)
 					return _nodes[_nodes.Length - 1].Target;
@@ -129,12 +223,25 @@
 			}
 		}
 	}
+	/// <summary>
+	/// Represents a vector tween curve that interpolates between multi-dimensional values over time using easing functions.
+	/// </summary>
+	/// <typeparam name="T">The type of vector value in the curve.</typeparam>
 	public struct VectorTweenCurve<T>
 	{
 		private readonly float[] _default;
 		private TweenCurveNode<float>[][] _nodes = [];
 		private Func<float, float, double, float> _interpolator;
 		private Func<float[], T> _fromArray;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VectorTweenCurve{T}"/> struct.
+		/// </summary>
+		/// <param name="values">The array of tween curve nodes for each vector component.</param>
+		/// <param name="defaultValue">The default vector value to use when no nodes are present or time is out of range.</param>
+		/// <param name="interpolator">The interpolation function to use between values.</param>
+		/// <param name="toArray">Function to convert the vector value to an array of floats.</param>
+		/// <param name="fromArray">Function to convert an array of floats to the vector value.</param>
 		internal VectorTweenCurve(
 			TweenCurveNode<float>[][] values,
 			T defaultValue,
@@ -147,6 +254,12 @@
 			_interpolator = interpolator;
 			_fromArray = fromArray;
 		}
+
+		/// <summary>
+		/// Gets the interpolated vector value of the curve at the specified time.
+		/// </summary>
+		/// <param name="time">The time to evaluate.</param>
+		/// <returns>The interpolated vector value at the specified time.</returns>
 		public readonly T this[float time]
 		{
 			get

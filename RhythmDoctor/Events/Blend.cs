@@ -31,8 +31,17 @@
 		/// No blend effect.  
 		/// </summary>  
 		None,
+		/// <summary>
+		/// Additive blend effect.
+		/// </summary>
 		Additive,
+		/// <summary>
+		/// Multiply blend effect.
+		/// </summary>
 		Multipy,
+		/// <summary>
+		/// Invert blend effect.
+		/// </summary>
 		Invert,
 	}
 }

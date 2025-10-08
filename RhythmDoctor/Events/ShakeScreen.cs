@@ -19,6 +19,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the shake level of the event.
 		/// </summary>
 		public ScreenShakeLevels ShakeLevel { get; set; } = ScreenShakeLevels.Medium;
+		/// <summary>
+		/// Gets or sets the type of shake effect to apply.
+		/// </summary>
 		public ShakeType ShakeType { get; set; } = ShakeType.Normal;
 		/// <summary>
 		/// Gets the type of the event.

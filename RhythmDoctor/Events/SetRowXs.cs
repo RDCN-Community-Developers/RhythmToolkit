@@ -1,10 +1,19 @@
 ﻿using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Events
 {
+	/// <summary>
+	/// Specifies the style of the synco sound for the SetRowXs event.
+	/// </summary>
 	[RDJsonEnumSerializable]
 	public enum SetRowXsSyncoStyle
 	{
+		/// <summary>
+		/// Use the "Chirp" style for the synco sound.
+		/// </summary>
 		Chirp,
+		/// <summary>
+		/// Use the "Beep" style for the synco sound.
+		/// </summary>
 		Beep,
 	}
 	/// <inheritdoc />
@@ -29,6 +38,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
 		public float SyncoSwing { get; set; } = 0;
+		/// <summary>
+		/// Gets or sets the synchronization style for row processing.
+		/// </summary>
 		[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
 		public SetRowXsSyncoStyle SyncoStyle { get; set; } = SetRowXsSyncoStyle.Chirp;
 		/// <summary>

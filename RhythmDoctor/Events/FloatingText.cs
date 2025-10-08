@@ -1,5 +1,6 @@
 ﻿using RhythmBase.Converters;
 using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -94,7 +95,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the anchor style of the text.
 		/// </summary>
-		[RDJsonDefaultSerializer]
+		[RDJsonConverter(typeof(FloatingTextAnchorStylesConverter))]
 		public FloatingTextAnchorStyles Anchor { get; set; } = FloatingTextAnchorStyles.Center;
 		/// <summary>
 		/// Gets or sets a value indicating whether to narrate the text.

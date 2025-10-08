@@ -145,12 +145,12 @@ namespace RhythmBase.Adofai.Components
 			if (item == End)
 				return false;
 			ITile? previousTile = item.Previous;
-			ITile nextTile = item.Next;
+			ITile? nextTile = item.Next;
 			if (previousTile != null)
 				previousTile.Next = nextTile;
-			else
+			else if(nextTile != null)
 				Start = nextTile;
-			nextTile.Previous = previousTile;
+			nextTile?.Previous = previousTile;
 			item.Previous = null;
 			item.Next = null;
 			return tileOrder.Remove(item);

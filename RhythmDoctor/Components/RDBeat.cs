@@ -115,6 +115,12 @@ namespace RhythmBase.RhythmDoctor.Components
 				return _CPB;
 			}
 		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RDBeat"/> class with default values.
+		/// </summary>
+		/// <remarks>This constructor sets the initial state of the <see cref="RDBeat"/> instance, including default
+		/// values for internal fields. The instance is initialized with a beat value of 1, a bar-beat tuple of (1, 1f), a
+		/// zero <see cref="System.TimeSpan"/>, and flags indicating that the beat, bar-beat, and time span are loaded.</remarks>
 		public RDBeat()
 		{
 			this = default;

@@ -67,129 +67,293 @@ namespace RhythmBase.Adofai.Components
 			this.InsertRange(0, items);
 		}
 		/// <summary>
-		/// The default level within the game.
+		/// Gets the default level, which consists of 10 repeated tiles.
 		/// </summary>
 		public static ADLevel Default => [.. new Tile().Repeat(10)];
 		/// <summary>
-		/// Read from file as level.
-		/// Supports .adofai, .zip file extension.
+		/// Reads a level from a file.
+		/// Supports .adofai and .zip file extensions.
 		/// </summary>
-		/// <param name="filepath">File path.</param>
-		/// <param name="settings">Input settings.</param>
-		/// <returns>An instance of a level that reads from a file.</returns>
+		/// <param name="filepath">The path to the level file.</param>
+		/// <param name="settings">Optional settings for reading the level.</param>
+		/// <returns>An <see cref="ADLevel"/> instance loaded from the file.</returns>
+		/// <exception cref="RhythmBaseException">Thrown if the file type is not supported or extraction fails.</exception>
 		public static ADLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
+
 			settings ??= new();
+
 			string extension = Path.GetExtension(filepath);
+
 			ADLevel? level;
+
 			if (extension != ".zip")
+
 			{
+
 				if (extension != ".adofai")
+
 					throw new RhythmBaseException("File not supported.");
+
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
+
 				level = FromStream(stream, settings);
+
 				level._path = Path.GetFullPath(filepath);
+
 				return level;
+
 			}
+
 			DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
+
 			tempDirectory.Create();
+
 			try
+
 			{
+
+
+
+
+
+
+
+
+
+
+
 #if NET8_0_OR_GREATER
-					using Stream stream = File.OpenRead(filepath);
-					// Use async extraction if available for better performance
-					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+
+														using Stream stream = File.OpenRead(filepath);
+
+														// Use async extraction if available for better performance
+
+														ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+
 #elif NETSTANDARD2_0_OR_GREATER
+
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+
+
+
+
+
+
 #endif
+
 				// Avoid LINQ Single for performance, use a simple loop
+
 				string? adlevelPath = null;
+
 				foreach (var file in tempDirectory.GetFiles())
+
 				{
+
 					if (file.Extension == ".adofai")
+
 					{
+
 						adlevelPath = file.FullName;
+
 						break;
+
 					}
+
 				}
+
 				if (adlevelPath == null)
+
 					throw new RhythmBaseException("No Adofai file has been found.");
+
 				level = FromFile(adlevelPath, settings);
+
 				level.isZip = true;
+
 				return level;
+
 			}
+
 			catch (Exception ex2)
+
 			{
+
 				tempDirectory.Delete(true);
+
 				throw new RhythmBaseException("Cannot extract the file.", ex2);
+
 			}
-		}	
+
+		}
+		/// <summary>
+		/// Asynchronously reads a level from a file.
+		/// Supports .adofai and .zip file extensions.
+		/// </summary>
+		/// <param name="filepath">The path to the level file.</param>
+		/// <param name="settings">Optional settings for reading the level.</param>
+		/// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+		/// <returns>A task that represents the asynchronous operation. The task result contains the loaded <see cref="ADLevel"/> instance.</returns>
+		/// <exception cref="RhythmBaseException">Thrown if the file type is not supported or extraction fails.</exception>
 		public static async Task<ADLevel> FromFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
+
 			settings ??= new();
+
 			string extension = Path.GetExtension(filepath);
+
 			ADLevel? level;
+
 			if (extension != ".zip")
+
 			{
+
 				if (extension != ".adofai")
+
 					throw new RhythmBaseException("File not supported.");
+
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
+
 				level = await FromStreamAsync(stream, settings);
+
 				level._path = Path.GetFullPath(filepath);
+
 				return level;
+
 			}
+
 			DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
+
 			tempDirectory.Create();
+
 			try
+
 			{
+
+
+
+
+
+
+
+
+
+
+
 #if NET8_0_OR_GREATER
-					using Stream stream = File.OpenRead(filepath);
-					// Use async extraction if available for better performance
-					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+
+														using Stream stream = File.OpenRead(filepath);
+
+														// Use async extraction if available for better performance
+
+														ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+
 #elif NETSTANDARD2_0_OR_GREATER
+
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+
+
+
+
+
+
 #endif
+
 				// Avoid LINQ Single for performance, use a simple loop
+
 				string? adlevelPath = null;
+
 				foreach (var file in tempDirectory.GetFiles())
+
 				{
+
 					if (file.Extension == ".adofai")
+
 					{
+
 						adlevelPath = file.FullName;
+
 						break;
+
 					}
+
 				}
+
 				if (adlevelPath == null)
+
 					throw new RhythmBaseException("No Adofai file has been found.");
+
 				level = await FromFileAsync(adlevelPath, settings);
+
 				level.isZip = true;
+
 				return level;
+
 			}
+
 			catch (Exception ex2)
+
 			{
+
 				tempDirectory.Delete(true);
+
 				throw new RhythmBaseException("Cannot extract the file.", ex2);
+
 			}
+
 		}
+
+		/// <summary>
+		/// Reads an <see cref="ADLevel"/> instance from a stream containing JSON data.
+		/// </summary>
+		/// <param name="stream">The input stream containing the level data in JSON format.</param>
+		/// <param name="settings">Optional settings for reading the level. If <c>null</c>, default settings are used.</param>
+		/// <returns>
+		/// An <see cref="ADLevel"/> instance loaded from the stream. If deserialization fails, returns a new empty <see cref="ADLevel"/>.
+		/// </returns>
 		public static ADLevel FromStream(Stream stream, LevelReadOrWriteSettings? settings = null)
 		{
+
 			settings ??= new();
+
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+
 			ADLevel? level;
+
 			settings.OnBeforeReading();
+
 			level = JsonSerializer.Deserialize<ADLevel>(stream, options);
+
 			settings.OnAfterReading();
+
 			return level ?? [];
+
 		}
+
+		/// <summary>
+		/// Asynchronously reads an <see cref="ADLevel"/> instance from a stream containing JSON data.
+		/// </summary>
+		/// <param name="stream">The input stream containing the level data in JSON format.</param>
+		/// <param name="settings">Optional settings for reading the level. If <c>null</c>, default settings are used.</param>
+		/// <returns>
+		/// A task that represents the asynchronous operation. The task result contains the loaded <see cref="ADLevel"/> instance.
+		/// </returns>
 		public static async Task<ADLevel> FromStreamAsync(Stream stream, LevelReadOrWriteSettings? settings = null)
 		{
+
 			settings ??= new();
+
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+
 			ADLevel? level;
+
 			settings.OnBeforeReading();
+
 			level = await JsonSerializer.DeserializeAsync<ADLevel>(stream, options);
+
 			settings.OnAfterReading();
+
 			return level ?? [];
+
 		}
 		/// <summary>
 		/// Reads a level from a JSON string.
@@ -220,14 +384,21 @@ namespace RhythmBase.Adofai.Components
 			JsonSerializer.Serialize(stream, this, options);
 			settings.OnAfterWriting();
 		}
+		/// <summary>
+		/// Asynchronously saves the current level to the specified stream in JSON format.
+		/// </summary>
+		/// <param name="stream">The stream to which the level will be saved.</param>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		/// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
 		public async void SaveToStreamAsync(Stream stream, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
 			settings.OnBeforeWriting();
-			JsonSerializer.SerializeAsync(stream, this, options);
+			await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
 			settings.OnAfterWriting();
 		}
+
 		/// <summary>
 		/// Saves the current level to a file in JSON format.
 		/// </summary>
@@ -244,6 +415,12 @@ namespace RhythmBase.Adofai.Components
 			}
 			settings.OnAfterWriting();
 		}
+		/// <summary>
+		/// Asynchronously saves the current level to a file in JSON format.
+		/// </summary>
+		/// <param name="filepath">The file path where the level will be saved.</param>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		/// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
 		public async void SaveToFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
@@ -251,10 +428,11 @@ namespace RhythmBase.Adofai.Components
 			settings.OnBeforeWriting();
 			using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
 			{
-				JsonSerializer.SerializeAsync(stream, this, options);
+				await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
 			}
 			settings.OnAfterWriting();
 		}
+
 		/// <summary>
 		/// Serializes the current level to a JSON string.
 		/// </summary>
@@ -267,7 +445,6 @@ namespace RhythmBase.Adofai.Components
 			string json;
 			settings.OnBeforeWriting();
 			json = JsonSerializer.Serialize(this, options);
-			settings.OnAfterWriting();
 			return json;
 		}
 		/// <summary>  
@@ -287,12 +464,18 @@ namespace RhythmBase.Adofai.Components
 			item.Parent = this;
 			base.Insert(index, item);
 		}
+		/// <summary>
+		/// Removes the tile at the specified index from the collection.
+		/// </summary>
+		/// <remarks>After removal, the tile's <see cref="ITile.Parent"/>, <see cref="ITile.Previous"/>, and <see
+		/// cref="ITile.Next"/> properties are set to <see langword="null"/>.</remarks>
+		/// <param name="index">The zero-based index of the tile to remove.</param>
 		public void RemoveAt(int index)
 		{
 			ITile tile = this[index];
-			tile.Parent = null;
+			tile.Parent = null!;
 			tile.Previous = null;
-			tile.Next = null;
+			tile.Next = null!;
 			tileOrder.RemoveAt(index);
 		}
 		/// <summary>  
@@ -307,6 +490,7 @@ namespace RhythmBase.Adofai.Components
 			}
 			base.Clear();
 		}
+		/// <inheritdoc/>
 		public void Dispose()
 		{
 			if (isZip)
@@ -320,6 +504,6 @@ namespace RhythmBase.Adofai.Components
 		public override string ToString() => $"\"{Settings.Song}\" Count = {Count}";
 		internal string _path = string.Empty;
 		private bool isZip = false;
-		private bool isExtracted = false;
+		//private bool isExtracted = false;
 	}
 }

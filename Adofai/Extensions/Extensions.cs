@@ -33,6 +33,13 @@ namespace RhythmBase.Adofai.Extensions
 				index++;
 			}
 		}
+		/// <summary>
+		/// Creates an array containing multiple copies of the specified tile.
+		/// </summary>
+		/// <param name="tile">The tile to be repeated. Must not be <see langword="null"/>.</param>
+		/// <param name="count">The number of times the tile should be repeated. Must be greater than or equal to 0.</param>
+		/// <returns>An array of tiles, where each element is a clone of the specified tile.  Returns an empty array if <paramref
+		/// name="count"/> is 0.</returns>
 		public static ITile[] Repeat(this ITile tile, int count)
 		{
 			ITile[] result = new Tile[count];

@@ -13,7 +13,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				return null;
 			try
 			{
-				return RDDialogueExchange.Deserialize(s);
+				return RDDialogueExchange.Deserialize(s!);
 			}
 			catch (Exception ex)
 			{

@@ -59,6 +59,12 @@
 		{
 			return RDLangParser.Run(code, RDLangType.Expression);
 		}
+		/// <summary>
+		/// Analyzes the provided code and returns an array of tokens representing its structure.
+		/// </summary>
+		/// <param name="code">The source code to analyze. Cannot be null.</param>
+		/// <returns>An array of <see cref="Token"/> objects representing the lexical tokens in the provided code. The array will be
+		/// empty if the input code is empty or contains no valid tokens.</returns>
 		public static Token[] Analyze(string code)
 		{
 			return RDLangParser.Analyze(code);

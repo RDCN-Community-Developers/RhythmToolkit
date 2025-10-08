@@ -1,4 +1,5 @@
 ﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -26,7 +27,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the custom tab.
 		/// </summary>
 		[RDJsonProperty("tab")]
-		[RDJsonDefaultSerializer]
+		[RDJsonConverter(typeof(TabsConverter))]
 		[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.Tabs.Windows")]
 		public Tabs CustomTab
 		{

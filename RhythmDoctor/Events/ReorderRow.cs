@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -17,7 +18,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the new room to which the row will be moved.  
 		/// </summary>  
 		[RDJsonDefaultSerializer]
+		[RDJsonConverter(typeof(RoomIndexConverter))]
 		public RDRoomIndex NewRoom { get; set; } = 0;
+		/// <summary>
+		/// Gets or sets the order of the room. The default value is <see langword="0"/>.
+		/// </summary>
 		[RDJsonCondition($"$&.{nameof(NewRoom)} != 0")]
 		public int Order { get; set; } = 0;
 		/// <summary>  

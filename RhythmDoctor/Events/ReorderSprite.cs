@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -22,8 +23,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the new room to which the sprite will be moved.
 		/// </summary>
-		[RDJsonDefaultSerializer]
+		[RDJsonConverter(typeof(RoomIndexConverter))]
 		public RDRoomIndex NewRoom { get; set; } = 0;
+		/// <summary>
+		/// Gets or sets the depth level of the object.
+		/// </summary>
 		public int Depth { get; set; } = 0;
 	}
 }

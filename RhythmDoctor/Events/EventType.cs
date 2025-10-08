@@ -281,6 +281,9 @@
 		/// Show the status sign.
 		/// </summary>
 		ShowStatusSign,
+		/// <summary>
+		/// Displays the rows of subdivisions.
+		/// </summary>
 		ShowSubdivisionsRows,
 		/// <summary>
 		/// Stutter effect.

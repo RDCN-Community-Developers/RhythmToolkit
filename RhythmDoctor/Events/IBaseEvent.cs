@@ -40,6 +40,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the Y coordinate of the event.
 		/// </summary>
 		int Y { get; set; }
+		/// <summary>
+		/// Gets or sets the <see cref="JsonElement"/> associated with the specified property name.
+		/// </summary>
+		/// <param name="propertyName">The name of the property whose value is to be retrieved or set. The property name is case-sensitive.</param>
+		/// <returns></returns>
 		JsonElement this[string propertyName] { get; set; }
 		/// <summary>  
 		/// Creates a deep copy of the current event instance.  

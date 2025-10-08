@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace RhythmBase.RhythmDoctor.Components.RDLang
 {

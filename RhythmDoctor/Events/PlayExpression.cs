@@ -17,6 +17,9 @@
 		/// Gets or sets a value indicating whether to replace the current expression.
 		/// </summary>
 		public bool Replace { get; set; } = false;
+		/// <summary>
+		/// Gets or sets the target string used for replacement operations.
+		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Replace)}")]
 		public string Target { get; set; } = "neutral";
 		/// <summary>

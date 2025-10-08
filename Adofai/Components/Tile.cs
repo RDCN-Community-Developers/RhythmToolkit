@@ -2,6 +2,13 @@
 using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Adofai.Components
 {
+	/// <summary>
+	/// Represents an empty tile in a sequence, providing properties and methods to manage its state and behavior.
+	/// </summary>
+	/// <remarks>The <see cref="EmptyTile"/> struct implements the <see cref="ITile"/> interface and provides
+	/// functionality for managing tile properties such as angle, mid-spin state, and relationships with other tiles in a
+	/// sequence. It supports operations like cloning, adding tile events, and implicit conversions from <see
+	/// langword="float"/>  and <see langword="bool"/> values.</remarks>
 	public struct EmptyTile() : ITile
 	{
 		private float _angle;
@@ -44,25 +51,64 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the parent level of the tile.
 		/// </summary>
 		internal ADLevel? Parent { get; set; }
-		public int Index => Parent.IndexOf(this);
-		public ITile Next { get; set; } = null!;
+		/// <summary>
+		/// Gets the index of the tile within its parent level.
+		/// Returns -1 if the tile does not belong to any level.
+		/// </summary>
+		public readonly int Index => Parent?.IndexOf(this) ?? -1;
+		/// <summary>
+		/// Gets or sets the next tile in the sequence.
+		/// This property is set internally and represents the tile that comes after the current tile.
+		/// </summary>
+		public ITile? Next { get; set; } = null!;
+		/// <summary>
+		/// Gets or sets the previous tile in the sequence.
+		/// This property is set internally and represents the tile that comes before the current tile.
+		/// </summary>
 		public ITile? Previous { get; set; } = null;
-		ADLevel ITile.Parent { get => Parent; set => Parent = value; }
+		/// <summary>
+		/// Gets or sets the parent level of the tile.
+		/// </summary>
+		ADLevel? ITile.Parent { get => Parent; set => Parent = value; }
+		/// <summary>
+		/// Creates a deep copy of the current tile instance.
+		/// </summary>
+		/// <returns>A new instance of <see cref="ITile"/> that is a copy of the current tile.</returns>
 		public ITile Clone()
 		{
 			throw new NotImplementedException();
 		}
+		/// <summary>
+		/// Adds a tile event to the tile.
+		/// Removes the tile from its parent at the current index and inserts a new tile with the event at the same index.
+		/// </summary>
+		/// <param name="item">The tile event to add.</param>
 		public void Add(BaseTileEvent item)
 		{
 			int index = this.Index;
-			Parent.RemoveAt(index);
-			Parent.Insert(index, new Tile() { item});
+			Parent?.RemoveAt(index);
+			Parent?.Insert(index, new Tile() { item });
 		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EmptyTile"/> struct with a specified angle.
+		/// </summary>
+		/// <param name="angle">The angle of the tile.</param>
 		public EmptyTile(float angle) : this() => Angle = angle;
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EmptyTile"/> struct with a specified mid-spin state.
+		/// </summary>
+		/// <param name="isMidSpin">A value indicating whether the tile is in a mid-spin state.</param>
 		public EmptyTile(bool isMidSpin) : this() => IsMidSpin = isMidSpin;
+		/// <summary>
+		/// Implicitly converts a float value to an <see cref="EmptyTile"/> with the specified angle.
+		/// </summary>
+		/// <param name="angle">The angle to assign to the tile.</param>
 		public static implicit operator EmptyTile(float angle) => new() { Angle = angle };
-		public static implicit operator EmptyTile(bool isMidSpin) => new() { IsMidSpin = isMidSpin };
-	}
+		/// <summary>
+		/// Implicitly converts a bool value to an <see cref="EmptyTile"/> with the specified mid-spin state.
+		/// </summary>
+		/// <param name="isMidSpin">The mid-spin state to assign to the tile.</param>
+		public static implicit operator EmptyTile(bool isMidSpin) => new() { IsMidSpin = isMidSpin };	}
 	/// <summary>
 	/// Represents a tile in the ADOFAI level, containing events and properties related to the tile.
 	/// </summary>
@@ -110,7 +156,8 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class.
 		/// </summary>
-		public Tile() { }
+		public Tile() {
+		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class with a specified angle.
 		/// </summary>
@@ -151,7 +198,7 @@ namespace RhythmBase.Adofai.Components
 #if !NETSTANDARD
 		[NotNull]
 #endif
-		public ITile Next { get; set; }
+		public ITile? Next { get; set; }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class with a specified mid-spin state and a collection of tile events.
 		/// </summary>
@@ -164,8 +211,14 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		public int Index => Parent?.IndexOf(this) ?? Parent?.Count ?? -1;
 
-		ADLevel ITile.Parent { get => Parent; set => Parent = value; }
-
+		ADLevel? ITile.Parent { get => Parent; set => Parent = value; }
+		/// <summary>
+		/// Creates a new instance of the tile with the same state as the current instance.
+		/// </summary>
+		/// <remarks>The cloned tile will have the same angle and spin state as the original.  Any additional
+		/// properties or behaviors not explicitly set in the clone  will need to be manually configured after
+		/// cloning.</remarks>
+		/// <returns>A new <see cref="ITile"/> instance that is a copy of the current tile.</returns>
 		public ITile Clone()
 		{
 			Tile tile = new()

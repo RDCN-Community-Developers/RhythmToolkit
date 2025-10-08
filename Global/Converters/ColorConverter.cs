@@ -9,7 +9,9 @@ namespace RhythmBase.Global.Converters
 		{
 			var s = reader.GetString();
 			if (string.IsNullOrEmpty(s)) return default;
-			return RDColor.FromRgba(s);
+			if(RDColor.TryFromRgba(s!, out var c))
+				return c;
+			return default;
 		}
 
 		public override void Write(Utf8JsonWriter writer, RDColor value, JsonSerializerOptions options)

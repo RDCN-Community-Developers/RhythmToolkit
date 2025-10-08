@@ -131,7 +131,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		//internal SortedDictionary<RDBeat, TypedEventCollection<IBaseEvent>> eventsBeatOrder;
 		internal RedBlackTree<RDBeat, TypedEventCollection<IBaseEvent>> eventsBeatOrder = new();
 		internal Dictionary<EventEnumerator, Queue<(IBaseEvent e, RDBeat b)>> _modifierInstances = [];
-		internal EventEnumerator? _currentModifier;
+		//internal EventEnumerator? _currentModifier;
 		internal BeatCalculator? calculator;
 	}
 }

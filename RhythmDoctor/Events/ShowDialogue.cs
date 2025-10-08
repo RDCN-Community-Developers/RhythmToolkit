@@ -68,6 +68,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab where the event is categorized.
 		/// </summary>
 		public override Tabs Tab { get; } = Tabs.Actions;
+		/// <summary>
+		/// Gets or sets the collection of rooms managed by the system.
+		/// </summary>
 		public RDRoom Rooms { get; set; } = new RDRoom([4]);
 
 		/// <summary>

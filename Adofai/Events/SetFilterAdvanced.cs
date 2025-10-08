@@ -8,6 +8,7 @@ namespace RhythmBase.Adofai.Events
 	/// </summary>
 	public class SetFilterAdvanced : BaseTaggedTileAction, IEaseEvent, IStartEvent
 	{
+#pragma warning disable CS8618
 		/// <inheritdoc/>
 		public override EventType Type => EventType.SetFilterAdvanced;
 

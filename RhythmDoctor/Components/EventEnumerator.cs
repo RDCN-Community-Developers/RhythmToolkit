@@ -13,7 +13,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		protected readonly OrderedEventCollection collection;
 		private EventType[] types;
 		private RDRange range;
-		public EventEnumerator(OrderedEventCollection collection) : this(collection, RDRange.Infinite) { }
+		public EventEnumerator(OrderedEventCollection collection) : this(collection, RDRange.Infinity) { }
 		public EventEnumerator(OrderedEventCollection collection, RDRange range) : this(collection, EventTypeUtils.ToEnums(typeof(TEvent)), range) { }
 		public EventEnumerator(OrderedEventCollection collection, EventType[] types, RDRange range)
 		{

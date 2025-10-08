@@ -147,15 +147,17 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 		}
 		/// <summary>
-		/// Reads a level from a file.
-		/// Supports .rdlevel, .rdzip, and .zip file extensions.
+		/// Creates an <see cref="RDLevel"/> instance by reading data from the specified file.
 		/// </summary>
-		/// <param name="filepath">The path to the file to read.</param>
-		/// <param name="settings">Optional settings for reading the level.</param>
-		/// <exception cref="T:RhythmBase.Exceptions.VersionTooLowException">Thrown if the level version is below the minimum supported (54).</exception>
-		/// <exception cref="T:RhythmBase.Exceptions.ConvertingException">Thrown if a conversion error occurs.</exception>
-		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">Thrown if the file is not supported or cannot be extracted.</exception>
-		/// <returns>An <see cref="RDLevel"/> instance loaded from the specified file.</returns>
+		/// <remarks>This method supports both plain level files (<c>.rdlevel</c>, <c>.json</c>) and compressed
+		/// archives (<c>.rdzip</c>, <c>.zip</c>). If the file is a compressed archive, it is extracted to a temporary
+		/// directory to locate the level file within the archive.</remarks>
+		/// <param name="filepath">The path to the file to read. The file must have one of the following extensions: <c>.rdlevel</c>, <c>.json</c>,
+		/// <c>.rdzip</c>, or <c>.zip</c>.</param>
+		/// <param name="settings">Optional settings that control how the level is read. If not provided, default settings are used.</param>
+		/// <returns>An <see cref="RDLevel"/> instance representing the data read from the file.</returns>
+		/// <exception cref="RhythmBaseException">Thrown if the file format is not supported, if no level file is found in the archive, or if an error occurs during
+		/// file extraction.</exception>
 		public static RDLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
@@ -175,9 +177,9 @@ namespace RhythmBase.RhythmDoctor.Components
 			try
 			{
 #if NET8_0_OR_GREATER
-					using Stream stream = File.OpenRead(filepath);
-					// Use async extraction if available for better performance
-					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+                using Stream stream = File.OpenRead(filepath);
+                // Use async extraction if available for better performance
+                ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
@@ -203,6 +205,21 @@ namespace RhythmBase.RhythmDoctor.Components
 				throw new RhythmBaseException("Cannot extract the file.", ex2);
 			}
 		}
+		/// <summary>
+		/// Asynchronously loads an <see cref="RDLevel"/> instance from a file.
+		/// </summary>
+		/// <remarks>If the file is a compressed archive (<c>.rdzip</c> or <c>.zip</c>), the method extracts its
+		/// contents to a temporary directory and searches for a file with the <c>.rdlevel</c> extension. If no such file is
+		/// found, an exception is thrown. The temporary directory is automatically cleaned up after the operation
+		/// completes.</remarks>
+		/// <param name="filepath">The path to the file to load. The file must have one of the supported extensions: <c>.rdlevel</c>, <c>.json</c>,
+		/// <c>.rdzip</c>, or <c>.zip</c>.</param>
+		/// <param name="settings">Optional settings that control how the level is read. If <see langword="null"/>, default settings are used.</param>
+		/// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+		/// <returns>A task that represents the asynchronous operation. The task result contains the loaded <see cref="RDLevel"/>
+		/// instance.</returns>
+		/// <exception cref="RhythmBaseException">Thrown if the file format is unsupported, if no <c>.rdlevel</c> file is found in a compressed archive, or if an
+		/// error occurs during extraction.</exception>
 		public static async Task<RDLevel> FromFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
@@ -222,9 +239,9 @@ namespace RhythmBase.RhythmDoctor.Components
 			try
 			{
 #if NET8_0_OR_GREATER
-					using Stream stream = File.OpenRead(filepath);
-					// Use async extraction if available for better performance
-					ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+                using Stream stream = File.OpenRead(filepath);
+                // Use async extraction if available for better performance
+                ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
@@ -267,6 +284,13 @@ namespace RhythmBase.RhythmDoctor.Components
 			settings.OnAfterReading();
 			return level ?? [];
 		}
+		/// <summary>
+		/// Asynchronously reads a level from a stream.
+		/// </summary>
+		/// <param name="rdlevelStream">The stream containing the level data.</param>
+		/// <param name="settings">Optional settings for reading the level.</param>
+		/// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+		/// <returns>A <see cref="Task{RDLevel}"/> representing the asynchronous operation, with an <see cref="RDLevel"/> instance loaded from the stream.</returns>
 		public static async Task<RDLevel> FromStreamAsync(Stream rdlevelStream, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
@@ -307,12 +331,18 @@ namespace RhythmBase.RhythmDoctor.Components
 			JsonSerializer.Serialize(stream, this, options);
 			settings.OnAfterWriting();
 		}
+		/// <summary>
+		/// Asynchronously saves the current level to the specified stream in JSON format.
+		/// </summary>
+		/// <param name="stream">The stream to which the level will be saved.</param>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		/// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
 		public async void SaveToStreamAsync(Stream stream, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
 			settings.OnBeforeWriting();
-			JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
+			await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
 			settings.OnAfterWriting();
 		}
 		/// <summary>
@@ -335,6 +365,12 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			settings.OnAfterWriting();
 		}
+		/// <summary>
+		/// Asynchronously saves the current level to a file in JSON format.
+		/// </summary>
+		/// <param name="filepath">The file path where the level will be saved.</param>
+		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+		/// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
 		public async void SaveToFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
@@ -346,7 +382,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
 			{
 				stream.SetLength(0);
-				JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
+				await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
 			}
 			settings.OnAfterWriting();
 		}
@@ -764,7 +800,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <inheritdoc/>
 		public void Dispose()
 		{
-			if (isZip && isExtracted)
+			if (isZip && isExtracted && !string.IsNullOrEmpty(Directory))
 			{
 				System.IO.Directory.Delete(Directory, true);
 			}

@@ -162,18 +162,26 @@ namespace RhythmBase.Global.Components
 		/// <returns>RDColor instance</returns>
 		public static RDColor FromRgba(byte r, byte g, byte b, byte a = 255) => new((uint)(a << 24 | r << 16 | g << 8 | b));
 		/// <summary>
-		/// Creates an RDColor instance from a hexadecimal string.
+		/// Creates an <see cref="RDColor"/> instance from a hexadecimal string in RGBA format.
 		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
 		/// </summary>
-		/// <param name="hex">Hexadecimal string</param>
-		/// <returns>RDColor instance</returns>
-		/// <exception cref="ArgumentException">Thrown when the hexadecimal string length is not 3, 4, 6, or 8</exception>
+		/// <param name="hex">The hexadecimal string representing the color.</param>
+		/// <returns>An <see cref="RDColor"/> instance created from the hexadecimal string.</returns>
+		/// <exception cref="ArgumentException">Thrown when the hexadecimal string length is not 3, 4, 6, or 8.</exception>
 		public static RDColor FromRgba(string hex)
 		{
 			if (TryFromRgba(hex, out RDColor color))
 				return color;
 			throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
 		}
+
+		/// <summary>
+		/// Creates an <see cref="RDColor"/> instance from a hexadecimal byte span in RGBA format.
+		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
+		/// </summary>
+		/// <param name="hex">The byte span representing the hexadecimal color string.</param>
+		/// <returns>An <see cref="RDColor"/> instance created from the hexadecimal byte span.</returns>
+		/// <exception cref="ArgumentException">Thrown when the hexadecimal string length is not 3, 4, 6, or 8.</exception>
 		public static RDColor FromRgba(ReadOnlySpan<byte> hex)
 		{
 			if (TryFromRgba(hex, out RDColor color))
@@ -181,12 +189,13 @@ namespace RhythmBase.Global.Components
 			throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
 		}
 		/// <summary>
-		/// Tries to create an RDColor instance from a hexadecimal string.
-		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
+		/// Converts a byte representing a hexadecimal character to its corresponding numeric value.
 		/// </summary>
-		/// <param name="hex">The hexadecimal string representing the color.</param>
-		/// <param name="color">When this method returns, contains the RDColor instance created from the hexadecimal string, if the conversion succeeded, or the default value if the conversion failed.</param>
-		/// <returns>true if the hexadecimal string was converted successfully; otherwise, false.</returns>
+		/// <param name="b">The byte representing a hexadecimal character. Must be a valid ASCII character in the ranges '0'-'9', 'a'-'f', or
+		/// 'A'-'F'.</param>
+		/// <returns>The numeric value of the hexadecimal character, where '0'-'9' map to 0-9, 'a'-'f' map to 10-15, and 'A'-'F' map to
+		/// 10-15.</returns>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="b"/> is not a valid hexadecimal character.</exception>
 		private static byte FromChar(byte b)
 		{
 			return b switch
@@ -197,12 +206,28 @@ namespace RhythmBase.Global.Components
 				_ => throw new ArgumentException("Invalid hex character."),
 			};
 		}
+		/// <summary>
+		/// Attempts to create an <see cref="RDColor"/> instance from a hexadecimal RGBA color string.
+		/// </summary>
+		/// <remarks>The method trims any leading or trailing whitespace from the input string. If the string starts
+		/// with a '#', it is ignored during parsing. The method supports both shorthand (3 or 4 characters) and full-length
+		/// (6 or 8 characters) hexadecimal color formats.</remarks>
+		/// <param name="hex">A string representing the color in hexadecimal format. The string may optionally start with a '#' character and
+		/// can be in one of the following formats: RGB (3 characters), RGBA (4 characters), RRGGBB (6 characters), or
+		/// RRGGBBAA (8 characters).</param>
+		/// <param name="color">When this method returns, contains the <see cref="RDColor"/> instance corresponding to the specified hexadecimal
+		/// color string, if the conversion succeeded; otherwise, contains the default value of <see cref="RDColor"/>.</param>
+		/// <returns><see langword="true"/> if the hexadecimal string was successfully converted to an <see cref="RDColor"/>;
+		/// otherwise, <see langword="false"/>.</returns>
 #if NETSTANDARD
 		public static bool TryFromRgba(string hex, out RDColor color)
 #else
 		public static bool TryFromRgba(string hex, [MaybeNullWhen(false)] out RDColor color)
 #endif
 		{
+			color = default;
+			if (string.IsNullOrEmpty(hex))
+				return false;
 			hex = hex.Trim();
 			if (hex.Length == 0)
 			{
@@ -215,7 +240,6 @@ namespace RhythmBase.Global.Components
 #else
 				hex = hex[1..];
 #endif
-			byte a, r, g, b;
 			switch (hex.Length)
 			{
 				case 3:
@@ -251,6 +275,18 @@ namespace RhythmBase.Global.Components
 					return false;
 			}
 		}
+		/// <summary>
+		/// Attempts to create an <see cref="RDColor"/> instance from a hexadecimal RGBA color representation.
+		/// </summary>
+		/// <remarks>This method does not throw exceptions for invalid input. Instead, it returns <see
+		/// langword="false"/> if the input is not in a valid format. The method supports both shorthand (e.g., RGB, RGBA) and
+		/// full-length (e.g., RRGGBB, RRGGBBAA) hexadecimal color representations.</remarks>
+		/// <param name="hex">A read-only span of bytes representing the hexadecimal RGBA color. The input can optionally start with a '#'
+		/// character and must be in one of the following formats: RGB (3 characters), RGBA (4 characters), RRGGBB (6
+		/// characters), or RRGGBBAA (8 characters).</param>
+		/// <param name="color">When this method returns, contains the resulting <see cref="RDColor"/> if the conversion was successful;
+		/// otherwise, the default value of <see cref="RDColor"/>.</param>
+		/// <returns><see langword="true"/> if the conversion was successful; otherwise, <see langword="false"/>.</returns>
 #if NETSTANDARD
 		public static bool TryFromRgba(ReadOnlySpan<byte> hex, out RDColor color)
 #else
@@ -387,6 +423,17 @@ namespace RhythmBase.Global.Components
 			color = new RDColor(Convert.ToUInt32(hex2, 16));
 			return true;
 		}
+		/// <summary>
+		/// Attempts to create an <see cref="RDColor"/> instance from a hexadecimal ARGB color representation.
+		/// </summary>
+		/// <remarks>This method does not validate the content of the hexadecimal string beyond its length and
+		/// expected format. The caller must ensure that the input contains valid hexadecimal characters.</remarks>
+		/// <param name="hex">A read-only span of bytes representing the hexadecimal ARGB color value. The input may optionally start with a '#'
+		/// character. Supported formats include 3-digit (RGB), 4-digit (ARGB), 6-digit (RRGGBB), and 8-digit (AARRGGBB)
+		/// hexadecimal strings.</param>
+		/// <param name="color">When this method returns, contains the resulting <see cref="RDColor"/> instance if the conversion was successful;
+		/// otherwise, contains the default value of <see cref="RDColor"/>.</param>
+		/// <returns><see langword="true"/> if the conversion was successful; otherwise, <see langword="false"/>.</returns>
 #if NETSTANDARD
 		public static bool TryFromArgb(ReadOnlySpan<byte> hex, out RDColor color)
 #else
@@ -849,6 +896,17 @@ namespace RhythmBase.Global.Components
 				return false;
 			return true;
 		}
+		/// <summary>
+		/// Linearly interpolates between two <see cref="RDColor"/> values based on a weighting factor.
+		/// </summary>
+		/// <remarks>This method interpolates each color channel (alpha, red, green, and blue)
+		/// independently.</remarks>
+		/// <param name="a">The starting color.</param>
+		/// <param name="b">The ending color.</param>
+		/// <param name="t">A value between 0 and 1 that specifies the interpolation factor.  If <paramref name="t"/> is 0, the result is
+		/// <paramref name="a"/>.  If <paramref name="t"/> is 1, the result is <paramref name="b"/>.  Values outside the range
+		/// [0, 1] are clamped to the nearest boundary.</param>
+		/// <returns>A new <see cref="RDColor"/> that represents the interpolated color.</returns>
 		public static RDColor Lerp(RDColor a, RDColor b, float t)
 		{
 			t = t < 0 ? 0 : t > 1 ? 1 : t;

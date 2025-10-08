@@ -26,7 +26,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the custom tab.
 		/// </summary>
 		[RDJsonProperty(name: "tab")]
-		[RDJsonDefaultSerializer]
+		[RDJsonConverter(typeof(TabsConverter))]
 		public Tabs CustomTab { get; set; }
 		/// <inheritdoc />
 		public override Tabs Tab => CustomTab;

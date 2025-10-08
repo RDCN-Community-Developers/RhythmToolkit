@@ -26,6 +26,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		}
 		/// <inheritdoc />
 		public override Tabs Tab { get; } = Tabs.Decorations;
+		/// <summary>
+		/// Gets a dictionary containing additional data not explicitly modeled by the class.
+		/// </summary>
+		/// <remarks>This property provides access to extra data that may be included in the source but is not
+		/// directly represented by other properties. The dictionary is read-only and reflects the internal state of the extra
+		/// data.</remarks>
 		protected Dictionary<string, JsonElement> ExtraData { get => _extraData; }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ForwardDecorationEvent"/> class.

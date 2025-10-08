@@ -28,6 +28,15 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				}
 			}
 		}
+		/// <summary>
+		/// Generates a timeline-based view of the specified level, including its decorations, rows, and other elements.
+		/// </summary>
+		/// <remarks>This method processes the elements of the provided level and organizes them into a structured
+		/// timeline view. The returned <see cref="LevelTimeline"/> includes detailed information about decorations, rows, and
+		/// other  level components, such as their positions, sizes, visibility, animations, and other properties.</remarks>
+		/// <param name="level">The level to generate the timeline view for. This parameter cannot be <see langword="null"/>.</param>
+		/// <returns>A <see cref="LevelTimeline"/> object representing the timeline-based view of the level,  including all
+		/// decorations, rows, and their associated properties and animations.</returns>
 		public static LevelTimeline GetView(this RDLevel level)
 		{
 			#region decorations

@@ -71,6 +71,9 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the links to the artist's work or profile.
 		/// </summary>
 		public string ArtistLinks { get; set; } = string.Empty;
+		/// <summary>
+		/// Gets or sets the target speed for the trial.
+		/// </summary>
 		public float SpeedTrialAim { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the difficulty level of the level.
@@ -208,6 +211,9 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the display mode of the background.
 		/// </summary>
 		public BgDisplayMode BgDisplayMode { get; set; } = BgDisplayMode.FitToScreen;
+		/// <summary>
+		/// Gets or sets a value indicating whether image smoothing is enabled.
+		/// </summary>
 		public bool ImageSmoothing { get; set; } = false;
 		/// <summary>
 		/// Gets or sets a value indicating whether the rotation is locked.
@@ -237,6 +243,9 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the zoom level of the camera.
 		/// </summary>
 		public float Zoom { get; set; } = 100;
+		/// <summary>
+		/// Gets or sets a value indicating whether the pulse signal is active on the floor.
+		/// </summary>
 		public bool PulseOnFloor { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the background video for the level.

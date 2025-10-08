@@ -27,11 +27,13 @@ namespace RhythmBase.RhythmDoctor.Components
 			_items.Add(decoration);
 		}
 		/// <summary>
-		/// Removes a <see cref="Decoration"/> from the collection.
+		/// Removes the specified decoration from the collection.
 		/// </summary>
-		/// <param name="item">The <see cref="Decoration"/> to remove.</param>
-		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> is null.</exception>
+		/// <remarks>This method also removes any associated child decorations and clears the parent and calculator
+		/// references of the specified decoration.</remarks>
+		/// <param name="decoration">The decoration to remove from the collection.</param>
+		/// <returns><see langword="true"/> if the decoration was successfully removed; otherwise, <see langword="false"/> if the
+		/// decoration was not found in the collection.</returns>
 		public override bool Remove(Decoration decoration)
 		{
 			if (!_items.Contains(decoration))

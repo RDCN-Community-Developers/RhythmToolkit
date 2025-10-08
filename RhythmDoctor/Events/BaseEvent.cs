@@ -37,10 +37,10 @@ namespace RhythmBase.RhythmDoctor.Events
 			{
 				if (!value.IsEmpty && _beat == value)
 					return;
-				if (_beat.BaseLevel?._currentModifier is not null)
-				{
-					_beat.BaseLevel?._modifierInstances[_beat.BaseLevel._currentModifier].Enqueue((this, value));
-				}
+				//if (_beat.BaseLevel?._currentModifier is not null)
+				//{
+				//	_beat.BaseLevel?._modifierInstances[_beat.BaseLevel._currentModifier].Enqueue((this, value));
+				//}
 				else
 				{
 					BeatCalculator? c = _beat.BaseLevel?.Calculator;
@@ -72,6 +72,14 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Indicates whether this event is activated.
 		/// </summary>
 		public bool Active { get; set; }
+		/// <summary>
+		/// Gets or sets the <see cref="JsonElement"/> associated with the specified property name.
+		/// </summary>
+		/// <remarks>When setting a value, if the <see cref="JsonElement"/> has a <see
+		/// cref="JsonValueKind.Undefined"/>, the property is removed from the collection. Otherwise, the property is added or
+		/// updated with the specified value.</remarks>
+		/// <param name="propertyName">The name of the property whose value is to be retrieved or set. This parameter is case-sensitive.</param>
+		/// <returns></returns>
 		public JsonElement this[string propertyName]
 		{
 			get
@@ -118,6 +126,12 @@ namespace RhythmBase.RhythmDoctor.Events
 				};
 			return temp;
 		}
+		/// <summary>
+		/// Creates a shallow copy of the current <see cref="BaseEvent"/> instance.
+		/// </summary>
+		/// <remarks>The cloned object will have the same values for all fields as the original object.  Changes to
+		/// reference-type fields in the clone will affect the original object, and vice versa.</remarks>
+		/// <returns>A new <see cref="BaseEvent"/> object that is a shallow copy of the current instance.</returns>
 		public virtual IBaseEvent Clone()
 		{
 			return (BaseEvent)MemberwiseClone();

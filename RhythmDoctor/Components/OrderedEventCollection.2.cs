@@ -27,7 +27,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Concatenates all events in the collection.  
 		/// </summary>  
 		/// <returns>An <see cref="IEnumerable{TEvent}"/> that contains all events in the collection.</returns>  
-		public new IEnumerable<TEvent> ConcatAll() => eventsBeatOrder.SelectMany(i => i.Value).Cast<TEvent>();
+		public IEnumerable<TEvent> ConcatAll() => eventsBeatOrder.SelectMany(i => i.Value).Cast<TEvent>();
 		/// <summary>  
 		/// Adds an event to the collection.  
 		/// </summary>  

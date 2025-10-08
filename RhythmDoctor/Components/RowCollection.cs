@@ -31,9 +31,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Removes a <see cref="Row"/> from the collection.
 		/// </summary>
-		/// <param name="item">The <see cref="Row"/> to remove.</param>
+		/// <param name="row">The <see cref="Row"/> to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> is null.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="row"/> is null.</exception>
 		public override bool Remove(Row row)
 		{
 			if (!_items.Contains(row))

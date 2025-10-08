@@ -54,6 +54,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets a value indicating whether the action should be instant.
 		/// </summary>
 		public bool ForceRaise { get; set; } = true;
+		/// <summary>
+		/// Gets or sets a value indicating whether the operation should be executed immediately.
+		/// </summary>
 		public bool Instant { get; set; } = true;
 		/// <summary>
 		/// Gets or sets the extent of the action.

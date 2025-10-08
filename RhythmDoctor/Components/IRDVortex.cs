@@ -2,6 +2,12 @@
 
 namespace RhythmBase.RhythmDoctor.Components
 {
+	/// <summary>
+	/// Represents a contract for a vortex in the RD system.
+	/// </summary>
+	/// <remarks>This interface serves as a marker or base for defining vortex-related functionality within the RD
+	/// system. Implementing types should provide specific behaviors or properties relevant to the vortex
+	/// concept.</remarks>
 	public interface IRDVortex
 	{
 }
