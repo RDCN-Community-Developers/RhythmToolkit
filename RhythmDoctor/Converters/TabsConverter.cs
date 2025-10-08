@@ -19,7 +19,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 				var v when v.SequenceEqual("Windows"u8) => Tabs.Windows,
 				_ => throw new ConvertingException($"Invalid tabs value: '{reader.GetString()}'.")
 			};
-			reader.Read();
 			return tabs;
 		}
 
