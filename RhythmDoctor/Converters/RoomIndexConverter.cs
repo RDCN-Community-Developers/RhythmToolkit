@@ -16,7 +16,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 			byte index = reader.GetByte();
 			if(index > 4)
 				throw new JsonException($"Room index must be between 0 and 4, but got {index}.");
-			reader.Read();
 			return (RDRoomIndex)(1 << index);
 		}
 
