@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		//[JsonIgnore]
 		[RDJsonProperty("heights")]
-		public RoomHeight Height { get => field; set => field = value; }
+		public RoomHeight Height { get; set; } = new RoomHeight();
 		/// <summary>  
 		/// Gets or sets the room configuration associated with the height.  
 		/// </summary>  
