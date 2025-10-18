@@ -43,13 +43,8 @@
 		/// <param name="p">The point to translate.</param>
 		/// <param name="rect">The rectangle defining the room perspective.</param>
 		/// <returns>The translated point.</returns>
-		public static RDPointN RoomPerspectiveTranslate(this RDPointN p, RDRectN rect)
+		public static RDPointN RoomPerspectiveTranslate(this RDPointN p, RDPointN plb, RDPointN prb, RDPointN plt, RDPointN prt)
 		{
-			RDPointN plb = rect.LeftBottom;
-			RDPointN prb = rect.RightBottom;
-			RDPointN plt = rect.LeftTop;
-			RDPointN prt = rect.RightTop;
-			p = new(p.X, p.Y);
 			RDPointN p1p2 = prb - (RDSizeN)plb;
 			RDPointN p1p4 = plt - (RDSizeN)plb;
 			RDPointN p1p3 = prt - (RDSizeN)plb;

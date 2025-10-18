@@ -3,6 +3,8 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Utils
 {
+	record struct Bpm(int Bar, int Beat, float BPM);
+	record struct Cpb(int Bar, int CPB);
 	/// <summary>
 	/// Beat calculator.
 	/// </summary>
@@ -22,6 +24,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 			{
 				_BPMList = [];
 				_CPBList = [];
+				_BpmTree = [];
+				_CpbTree = [];
 			}
 			else
 			{
@@ -157,6 +161,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>
 		public float CrotchetsPerBarOf(RDBeat beat) => _CPBList.LastOrDefault((i) => i.Beat < beat)?.CrotchetsPerBar ?? 8;
 		internal readonly RDLevel Collection;
+		private RedBlackTree<int, Bpm> _BpmTree = [];
+		private RedBlackTree<int, Cpb> _CpbTree = [];
 		private List<BaseBeatsPerMinute> _BPMList = [];
 		private List<SetCrotchetsPerBar> _CPBList = [];
 	}
