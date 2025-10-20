@@ -85,7 +85,27 @@ namespace RhythmBase.RhythmDoctor.Converters
 					{
 						if (reader.TokenType == JsonTokenType.EndArray)
 							break;
-						IBaseEvent? e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
+						IBaseEvent? e = null;
+#if DEBUG
+						e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
+#else
+						Utf8JsonReader checkPoint = reader;
+						try
+						{
+							e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
+						}
+						catch (JsonException)
+						{
+							level.Dispose();
+							throw;
+						}
+						catch (Exception ex)
+						{
+							JsonElement element = JsonDocument.ParseValue(ref checkPoint).RootElement;
+							Settings.HandleUnreadableEvent(element, ex.Message);
+							continue;
+						}
+#endif
 						if (e == null)
 							continue;
 						if (Settings.EnableMacroEvent)
