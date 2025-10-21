@@ -420,7 +420,7 @@ e.IsHitable()
 				case ClassicBeatPatterns.NoChange:
 					return e.FrontOrDefault()?.RowXs() ??
 						[Patterns.None, Patterns.None, Patterns.None, Patterns.None, Patterns.None, Patterns.None];
-				case null or _:
+				default:
 					return [Patterns.None, Patterns.None, Patterns.None, Patterns.None, Patterns.None, Patterns.None];
 			}
 		}
