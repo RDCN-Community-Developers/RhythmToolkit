@@ -34,9 +34,9 @@ namespace RhythmBase.Adofai.Components
 		{
 			get
 			{
-				foreach (BaseEvent tile in base.Events)
+				foreach (IBaseEvent tile in base.Events)
 					yield return tile;
-				foreach (BaseEvent tile2 in Decorations)
+				foreach (IBaseEvent tile2 in Decorations)
 					yield return tile2;
 			}
 		}
@@ -80,110 +80,48 @@ namespace RhythmBase.Adofai.Components
 		/// <exception cref="RhythmBaseException">Thrown if the file type is not supported or extraction fails.</exception>
 		public static ADLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
-
 			settings ??= new();
-
 			string extension = Path.GetExtension(filepath);
-
 			ADLevel? level;
-
 			if (extension != ".zip")
-
 			{
-
 				if (extension != ".adofai")
-
 					throw new RhythmBaseException("File not supported.");
-
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-
 				level = FromStream(stream, settings);
-
 				level._path = Path.GetFullPath(filepath);
-
 				return level;
-
 			}
-
-			DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
-
+			DirectoryInfo tempDirectory = new(Path.Combine(GlobalSettings.CachePath, "RhythmBaseTemp_" + Path.GetRandomFileName()));
 			tempDirectory.Create();
-
 			try
-
 			{
-
-
-
-
-
-
-
-
-
-
-
 #if NET8_0_OR_GREATER
-
-														using Stream stream = File.OpenRead(filepath);
-
-														// Use async extraction if available for better performance
-
-														ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
-
+				using Stream stream = File.OpenRead(filepath);
+				ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
-
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
-
-
-
-
-
-
 #endif
-
-				// Avoid LINQ Single for performance, use a simple loop
-
 				string? adlevelPath = null;
-
 				foreach (var file in tempDirectory.GetFiles())
-
 				{
-
 					if (file.Extension == ".adofai")
-
 					{
-
 						adlevelPath = file.FullName;
-
 						break;
-
 					}
-
 				}
-
 				if (adlevelPath == null)
-
 					throw new RhythmBaseException("No Adofai file has been found.");
-
 				level = FromFile(adlevelPath, settings);
-
 				level.isZip = true;
-
 				return level;
-
 			}
-
 			catch (Exception ex2)
-
 			{
-
 				tempDirectory.Delete(true);
-
 				throw new RhythmBaseException("Cannot extract the file.", ex2);
-
 			}
-
 		}
 		/// <summary>
 		/// Asynchronously reads a level from a file.
@@ -196,110 +134,48 @@ namespace RhythmBase.Adofai.Components
 		/// <exception cref="RhythmBaseException">Thrown if the file type is not supported or extraction fails.</exception>
 		public static async Task<ADLevel> FromFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
-
 			settings ??= new();
-
 			string extension = Path.GetExtension(filepath);
-
 			ADLevel? level;
-
 			if (extension != ".zip")
-
 			{
-
 				if (extension != ".adofai")
-
 					throw new RhythmBaseException("File not supported.");
-
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-
 				level = await FromStreamAsync(stream, settings);
-
 				level._path = Path.GetFullPath(filepath);
-
 				return level;
-
 			}
-
 			DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_" + Path.GetRandomFileName()));
-
 			tempDirectory.Create();
-
 			try
-
 			{
-
-
-
-
-
-
-
-
-
-
-
 #if NET8_0_OR_GREATER
-
-														using Stream stream = File.OpenRead(filepath);
-
-														// Use async extraction if available for better performance
-
-														ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
-
+				using Stream stream = File.OpenRead(filepath);
+				ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
-
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
-
-
-
-
-
-
 #endif
-
-				// Avoid LINQ Single for performance, use a simple loop
-
 				string? adlevelPath = null;
-
 				foreach (var file in tempDirectory.GetFiles())
-
 				{
-
 					if (file.Extension == ".adofai")
-
 					{
-
 						adlevelPath = file.FullName;
-
 						break;
-
 					}
-
 				}
-
 				if (adlevelPath == null)
-
 					throw new RhythmBaseException("No Adofai file has been found.");
-
 				level = await FromFileAsync(adlevelPath, settings);
-
 				level.isZip = true;
-
 				return level;
-
 			}
-
 			catch (Exception ex2)
-
 			{
-
 				tempDirectory.Delete(true);
-
 				throw new RhythmBaseException("Cannot extract the file.", ex2);
-
 			}
-
 		}
 
 		/// <summary>
@@ -312,21 +188,13 @@ namespace RhythmBase.Adofai.Components
 		/// </returns>
 		public static ADLevel FromStream(Stream stream, LevelReadOrWriteSettings? settings = null)
 		{
-
 			settings ??= new();
-
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
-
 			ADLevel? level;
-
 			settings.OnBeforeReading();
-
 			level = JsonSerializer.Deserialize<ADLevel>(stream, options);
-
 			settings.OnAfterReading();
-
 			return level ?? [];
-
 		}
 
 		/// <summary>
@@ -339,21 +207,13 @@ namespace RhythmBase.Adofai.Components
 		/// </returns>
 		public static async Task<ADLevel> FromStreamAsync(Stream stream, LevelReadOrWriteSettings? settings = null)
 		{
-
 			settings ??= new();
-
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
-
 			ADLevel? level;
-
 			settings.OnBeforeReading();
-
 			level = await JsonSerializer.DeserializeAsync<ADLevel>(stream, options);
-
 			settings.OnAfterReading();
-
 			return level ?? [];
-
 		}
 		/// <summary>
 		/// Reads a level from a JSON string.

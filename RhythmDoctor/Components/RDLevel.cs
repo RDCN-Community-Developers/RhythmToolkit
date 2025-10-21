@@ -172,13 +172,12 @@ namespace RhythmBase.RhythmDoctor.Components
 				level._path = Path.GetFullPath(filepath);
 				return level;
 			}
-			DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
+			DirectoryInfo tempDirectory = new(Path.Combine(GlobalSettings.CachePath, "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
 			tempDirectory.Create();
 			try
 			{
 #if NET8_0_OR_GREATER
                 using Stream stream = File.OpenRead(filepath);
-                // Use async extraction if available for better performance
                 ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
