@@ -11,6 +11,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Gets or sets the character associated with the row.
 		/// </summary>
 		public RDCharacter Character { get; set; } = RDCharacters.Samurai;
+		public RDCharacters CpuMarker { get; set; } = RDCharacters.Otto;
 		/// <summary>
 		/// Gets or sets the type of the row.
 		/// </summary>

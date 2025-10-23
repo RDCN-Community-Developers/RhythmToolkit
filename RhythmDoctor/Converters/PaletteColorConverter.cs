@@ -28,7 +28,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 #else
 			return (t is [0x70, 0x61, 0x6c, ..])
 				? new() { PaletteIndex = int.Parse(t[3..]) }
-				: new() { Color = RDColor.FromRgba(t) };
+				: new(t.Length == 8) { Color = RDColor.FromRgba(t) };
 #endif
 			//			var s = reader.GetString();
 			//			if (string.IsNullOrEmpty(s)) return default;

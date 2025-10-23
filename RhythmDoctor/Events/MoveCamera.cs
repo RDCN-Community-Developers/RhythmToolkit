@@ -21,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.CameraPosition is not null")]
-		public RDPoint? CameraPosition { get; set; } = new(50f, 50f);
+		public RDPoint? CameraPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the zoom level.
 		/// </summary>

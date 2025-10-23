@@ -1,4 +1,5 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -42,6 +43,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; } = Tabs.Actions;
+		/// <summary>
+		/// Gets or sets the easing type.
+		/// </summary>
+		public EaseType Ease { get; set; }
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

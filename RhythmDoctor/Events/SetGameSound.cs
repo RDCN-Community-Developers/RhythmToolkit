@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -97,7 +98,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the list of sound subtypes.  
 		/// </summary>  
-#warning 这里的序列化逻辑需要重新考虑
 		[RDJsonCondition($"""
 			$&.{nameof(SoundType)}
 			is RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
@@ -107,7 +107,8 @@ namespace RhythmBase.RhythmDoctor.Events
 			or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound
 			or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
 			""")]
-		public List<SoundSubType> SoundSubtypes { get; set; } = [];
+		[RDJsonConverter(typeof(SoundSubTypeCollectionConverter))]
+		public SoundSubTypeCollection SoundSubtypes { get; set; } = [];
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  

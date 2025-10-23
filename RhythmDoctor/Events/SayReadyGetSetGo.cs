@@ -71,11 +71,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		public float Tick
 		{
 			get => Splitable ? field : 1;
-			set
-			{
-				if (Splitable)
-					field = value;
-			}
+			set => field = value;
 		} = 1;
 		/// <summary>
 		/// Gets or sets the volume.

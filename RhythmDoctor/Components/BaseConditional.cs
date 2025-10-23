@@ -1,5 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Converters;
-namespace RhythmBase.RhythmDoctor.Components
+﻿namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Represents a base class for different types of conditions.
@@ -21,7 +20,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the 1-based serial number of this condition in the parent collection.
 		/// </summary>
-		public int Id => checked(ParentCollection.IndexOf(this) + 1);
+		public int Id => checked((ParentCollection?.IndexOf(this) ?? 0) + 1);
 		/// <summary>
 		/// Returns the name of the condition.
 		/// </summary>
@@ -30,7 +29,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the parent collection of conditions.
 		/// </summary>
-		internal List<BaseConditional> ParentCollection = [];
+		internal ConditionalCollection? ParentCollection;
 		/// <summary>
 		/// Specifies the type of condition.
 		/// </summary>

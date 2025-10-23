@@ -23,11 +23,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			writer.WriteNumberValue(value switch
 			{
-				RDRoomIndex.None => 0,
-				RDRoomIndex.Room1 => 1,
-				RDRoomIndex.Room2 => 2,
-				RDRoomIndex.Room3 => 3,
-				RDRoomIndex.Room4 => 4,
+				RDRoomIndex.Room1 => 0,
+				RDRoomIndex.Room2 => 1,
+				RDRoomIndex.Room3 => 2,
+				RDRoomIndex.Room4 => 3,
 				_ => throw new JsonException($"Cannot convert {value} to room index."),
 			});
 		}

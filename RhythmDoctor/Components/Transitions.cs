@@ -17,6 +17,7 @@
 		/// <summary>
 		/// Full transition.
 		/// </summary>
-		Full
+		Full,
+		None,
 	}
 }

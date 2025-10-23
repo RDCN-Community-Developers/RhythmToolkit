@@ -2,6 +2,7 @@
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.Conditions;
 using System.Buffers.Text;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.Global.Extensions.EnumConverter;
@@ -32,7 +33,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					writer.WriteNumber("time"u8, ((TimesExecutedCondition)value).MaxTimes);
 					break;
 				case BaseConditional.ConditionType.Language:
-					writer.WriteString("language"u8, ((LanguageCondition)value).Language.ToEnumString());
+					writer.WriteString("Language"u8, ((LanguageCondition)value).Language.ToEnumString());
 					break;
 				case BaseConditional.ConditionType.PlayerMode:
 					writer.WriteBoolean("twoPlayerMode"u8, ((PlayerModeCondition)value).TwoPlayerMode);

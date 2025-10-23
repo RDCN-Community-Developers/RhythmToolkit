@@ -1,11 +1,11 @@
-﻿namespace RhythmBase.RhythmDoctor.Events
+﻿using RhythmBase.RhythmDoctor.Converters;
+
+namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
 	/// Defines the possible actions for a tag.
 	/// </summary>
 	[Flags]
-	[RDJsonEnumSerializable]
-#warning 这里有序列化问题
 	public enum TagActions
 	{
 		/// <summary>
@@ -38,6 +38,7 @@
 		/// Gets or sets the action associated with the tag.
 		/// </summary>
 		[RDJsonProperty("Action")]
+		[RDJsonConverter(typeof(TagActionTypeConverter))]
 		public TagActions Action { get; set; } = TagActions.Run;
 		/// <summary>
 		/// Gets or sets the action tag.

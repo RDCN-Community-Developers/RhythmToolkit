@@ -15,7 +15,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the ease type for the tint event.
 		/// </summary>
-		[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
 		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
 		/// Gets or sets the border type for the tint event.

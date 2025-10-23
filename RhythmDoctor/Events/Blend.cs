@@ -38,7 +38,7 @@
 		/// <summary>
 		/// Multiply blend effect.
 		/// </summary>
-		Multipy,
+		Multiply,
 		/// <summary>
 		/// Invert blend effect.
 		/// </summary>

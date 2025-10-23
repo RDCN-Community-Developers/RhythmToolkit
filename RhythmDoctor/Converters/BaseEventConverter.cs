@@ -98,7 +98,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			if (!value.Active)
 				writer.WriteBoolean("active", value.Active);
 			if (value.Condition is not null)
-				writer.WriteString("condition", value.Condition.Serialize());
+				writer.WriteString("if", value.Condition.Serialize());
 			if (value.Y != 0)
 				writer.WriteNumber("y", value.Y);
 

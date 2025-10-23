@@ -52,7 +52,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		Blur,
 		RadialBlur,
 		Dots,
-		FishEye,
+		Fisheye,
 		DisableAll,
 		Diamonds,
 		Tutorial,
@@ -93,7 +93,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the VFX preset.
 		/// </summary>
-		public VFXPreset Preset { get; set; } = VFXPreset.SilhouettesOnHBeat;
+		public VFXPreset Preset { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether the VFX is enabled.
 		/// </summary>
@@ -133,6 +133,9 @@ namespace RhythmBase.RhythmDoctor.Events
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.RadialBlur)}
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Dots)}
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Tutorial)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.WavyRows)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Fisheye)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Diamonds)}
 			""")]
 		public float Intensity { get; set; } = 0f;
 		/// <summary>
@@ -165,6 +168,13 @@ namespace RhythmBase.RhythmDoctor.Events
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
 			""")]
 		public float FloatY { get; set; } = 1;
+		[Tween]
+		[RDJsonProperty("speedPerc")]
+		[RDJsonCondition($"""
+			$&.{nameof(Enable)} && $&.{nameof(Preset)} 
+			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.WavyRows)}
+			""")]
+		public float SpeedPercentage { get; set; } = 100f;
 		/// <summary>
 		/// Gets or sets the easing type for the VFX.
 		/// </summary>
@@ -189,6 +199,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.RadialBlur)}
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Dots)}
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Tutorial)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Fisheye)}
 			""")]
 		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
@@ -215,6 +226,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.RadialBlur)}
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Dots)}
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Tutorial)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Fisheye)}
 			""")]
 		public float Duration { get; set; } = 0f;
 		/// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
@@ -9,7 +10,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Condition list.
 		/// </summary>
-		public List<(bool Enabled, BaseConditional Conditional)> ConditionLists;
+		public Dictionary<int, bool> ConditionLists { get; } = [];
 		/// <summary>
 		/// The time of effectiveness of the condition.
 		/// </summary>
@@ -19,7 +20,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		public Condition()
 		{
-			ConditionLists = [];
 		}
 		/// <summary>
 		/// Loads a condition from a string.
@@ -27,22 +27,76 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="text">The text to load the condition from.</param>
 		/// <returns>A new instance of the <see cref="Condition"/> class.</returns>
 		/// <exception cref="RhythmBaseException">Thrown when the condition is illegal.</exception>
-		internal static Condition Deserialize(string text)
+		public static Condition Deserialize(string text)
 		{
-			Condition @out = new();
-			MatchCollection Matches = Regex.Matches(text, "(~?\\d+)(?=[&d])");
-			if (Matches.Count > 0)
+			// "1&~2&3d4.5"
+			int i = 0;
+			Condition o = new Condition();
+			while (i < text.Length && text[i] != 'd')
 			{
-				@out.Duration = float.Parse(Regex.Match(text, "[\\d\\.]").Value);
-				return @out;
+				bool enabled = true;
+				int index = 0;
+				char c = text[i];
+				if (text[i] is '~')
+				{
+					enabled = false;
+					++i;
+				}
+				while (i < text.Length && char.IsDigit(text[i]))
+					index = index * 10 + (text[i++] - '0');
+				if (text[i] is '&')
+				{
+					o.ConditionLists[index] = enabled;
+					++i;
+					continue;
+				}
+				if (text[i] is 'd')
+				{
+					o.ConditionLists[index] = enabled;
+					break;
+				}
+				throw new RhythmBaseException($"Illegal condition: {text}.");
 			}
-			throw new RhythmBaseException(string.Format("Illegal condition: {0}.", text));
+			float duration = 0;
+			i++;
+			while (i < text.Length && char.IsDigit(text[i]))
+				duration = duration * 10 + (text[i++] - '0');
+			if(i < text.Length && text[i] is '.')
+			{
+				++i;
+				float frac = 0.1f;
+				while (i < text.Length && char.IsDigit(text[i]))
+				{
+					duration += frac * (text[i++] - '0');
+					frac *= 0.1f;
+				}
+			}
+			o.Duration = duration;
+			return o;
 		}
 		/// <summary>
 		/// Converts conditions to a string.
 		/// </summary>
 		/// <returns>A string in the format supported by RDLevel.</returns>
-		public string Serialize() => $"{string.Join("&", ConditionLists.Select((i) => (i.Enabled ? "" : "~") + i.Conditional.Id.ToString()))}d{Duration}";
+		public string Serialize()
+		{
+			StringBuilder sb = new();
+			foreach(var pair in ConditionLists)
+			{
+				if (sb.Length > 0)
+					sb.Append('&');
+				if (!pair.Value)
+					sb.Append('~');
+				sb.Append(pair.Key);
+			}
+			sb.Append('d').Append(Duration.ToString("0.########"));
+			return sb.ToString();
+		}
+
+		public Condition Clone()
+		{
+			return Deserialize(Serialize());
+		}
 		/// <inheritdoc/>
 		public override string ToString() => Serialize();
 	}

@@ -40,9 +40,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[RDJsonCondition($"""
 			$&.{nameof(Skipshot)} ||
-			$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotTypes)}.{nameof(OneshotTypes.Wave)}
+			$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotTypes)}.{nameof(OneshotTypes.Wave)} ||
+			$&.{nameof(Loops)} > 0
 			""")]
-		public float Interval { get; set; }
+		public float Interval { get; set; } = 2;
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip the shot.
 		/// </summary>
@@ -64,8 +65,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the freeze burn mode.
 		/// </summary>
-		[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} is not null")]
-		public OneshotTypes? FreezeBurnMode { get; set; }
+		[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotTypes)}.{nameof(OneshotTypes.Wave)}")]
+		public OneshotTypes FreezeBurnMode { get; set; }
 		/// <summary>
 		/// Gets or sets the delay value.
 		/// </summary>

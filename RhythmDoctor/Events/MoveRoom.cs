@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition("$&.RoomPosition is not null")]
-		public RDPointE? RoomPosition { get; set; } = new(50f, 50f);
+		public RDPointE? RoomPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the scale of the room.
 		/// </summary>

@@ -25,7 +25,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
-		public RDPointE? Position { get; set; } = new(50f, 50f);
+		public RDPointE? Position { get; set; }
 		/// <summary>
 		/// Gets or sets the scale of the move event.
 		/// </summary>

@@ -23,8 +23,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the order of the room. The default value is <see langword="0"/>.
 		/// </summary>
-		[RDJsonCondition($"$&.{nameof(NewRoom)} != 0")]
-		public int Order { get; set; } = 0;
+		[RDJsonCondition($"$&.{nameof(Order)} is not null")]
+		public int? Order { get; set; }
 		/// <summary>  
 		/// Gets or sets the transition type for reordering the row.  
 		/// </summary>  

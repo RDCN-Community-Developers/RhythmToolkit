@@ -26,7 +26,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(CustomPosition)} is true && $&.{nameof(RowPosition)} is not null")]
-		public RDPointE? RowPosition { get; set; } = new(50f, 50f);
+		public RDPointE? RowPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the scale.
 		/// </summary>
@@ -50,7 +50,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the duration of the move row event.
 		/// </summary>
 		[RDJsonCondition($"""
-			$&.{nameof(Target)} is not RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&
 			$&.{nameof(CustomPosition)}
 			""")]
 		public float Duration { get; set; } = 1;
@@ -58,7 +57,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the easing type of the move row event.
 		/// </summary>
 		[RDJsonCondition($"""
-			$&.{nameof(Target)} is not RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&
 			$&.{nameof(CustomPosition)}
 			""")]
 		public EaseType Ease { get; set; } = EaseType.Linear;

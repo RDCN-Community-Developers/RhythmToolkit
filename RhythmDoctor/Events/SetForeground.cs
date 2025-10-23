@@ -59,7 +59,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the interval between frames.  
 		/// </summary>  
-		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
+		[RDJsonCondition($"""
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+			$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.Events.TilingTypes.Pulse
+			""")]
 		public float Interval
 		{
 			get => field;

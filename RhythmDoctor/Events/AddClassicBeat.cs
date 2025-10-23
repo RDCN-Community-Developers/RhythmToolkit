@@ -38,7 +38,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the classic beat pattern.
 		/// </summary>
 		//[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		[RDJsonCondition("$&.Hold != 0f")]
+		[RDJsonCondition($"""
+			$&.{nameof(Hold)} != 0f &&
+			$&.{nameof(SetXs)} != RhythmBase.RhythmDoctor.Events.ClassicBeatPatterns.NoChange
+			""")]
 		public ClassicBeatPatterns SetXs { get; set; }
 		/// <inheritdoc/>
 		public override EventType Type => EventType.AddClassicBeat;

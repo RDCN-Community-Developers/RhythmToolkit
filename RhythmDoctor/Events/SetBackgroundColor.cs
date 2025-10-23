@@ -88,18 +88,44 @@ namespace RhythmBase.RhythmDoctor.Events
 		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+			!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
 			""")]
-		public int ScrollX { get; set; } = 0;
+		public float? ScrollX
+		{
+			get => Speed.X;
+			set
+			{
+				var speed = Speed;
+				speed.X = value;
+				Speed = speed;
+			}
+		}
 		/// <summary>
 		/// Gets or sets the vertical scroll value.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+			!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
 			""")]
-		public int ScrollY { get; set; } = 0;
+		public float? ScrollY
+		{
+			get => Speed.Y;
+			set
+			{
+				var speed = Speed;
+				speed.Y = value;
+				Speed = speed;
+			}
+		}
+		[RDJsonCondition($"""
+			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+			($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+			""")]
+		public RDPoint Speed { get; set; } = new(0, 0);
 		/// <summary>
 		/// Gets or sets the tiling type for the background.
 		/// </summary>

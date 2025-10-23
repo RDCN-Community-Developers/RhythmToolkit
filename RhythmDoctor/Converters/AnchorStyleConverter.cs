@@ -1,10 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Events;
-using System.Text.RegularExpressions;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
-	internal partial class AnchorStyleConverter : JsonConverter<FloatingTextAnchorStyles>
+	internal class AnchorStyleConverter : JsonConverter<FloatingTextAnchorStyles>
 	{
 		public override void Write(Utf8JsonWriter writer, FloatingTextAnchorStyles value, JsonSerializerOptions serializer)
 		{
@@ -17,32 +18,40 @@ namespace RhythmBase.Converters
 				+ horizontal.ToString()
 			);
 		}
-		public override FloatingTextAnchorStyles Read(ref Utf8JsonReader reader, Type objectType,  JsonSerializerOptions serializer)
+		public override FloatingTextAnchorStyles Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
-			string JString = reader.GetString() ?? throw new ConvertingException("Cannot read the anchor.");
-			Match match = AnchorStyleRegex().Match(JString);
-			if (!match.Success)
-				return FloatingTextAnchorStyles.Left | FloatingTextAnchorStyles.Upper;
+			ReadOnlySpan<byte> value = reader.ValueSpan;
 			FloatingTextAnchorStyles result = FloatingTextAnchorStyles.Center;
-			result |= match.Groups[1].Value switch
+			switch (value)
 			{
-				"Upper" => FloatingTextAnchorStyles.Upper,
-				"Lower" => FloatingTextAnchorStyles.Lower,
-				_ => 0,
-			};
-			result |= match.Groups[2].Value switch
+				case var v when v.StartsWith("Upper"u8):
+					result |= FloatingTextAnchorStyles.Upper;
+					value = value.Slice(5);
+					break;
+				case var v when v.StartsWith("Lower"u8):
+					result |= FloatingTextAnchorStyles.Lower;
+					value = value.Slice(5);
+					break;
+				case var v when v.StartsWith("Middle"u8):
+					value = value.Slice(6);
+					break;
+				default:
+					throw new ConvertingException("Cannot read the anchor.");
+			}
+			switch (value)
 			{
-				"Left" => FloatingTextAnchorStyles.Left,
-				"Right" => FloatingTextAnchorStyles.Right,
-				_ => 0,
-			};
+				case var v when v.SequenceEqual("Left"u8):
+					result |= FloatingTextAnchorStyles.Left;
+					break;
+				case var v when v.SequenceEqual("Right"u8):
+					result |= FloatingTextAnchorStyles.Right;
+					break;
+				case var v when v.SequenceEqual("Center"u8):
+					break;
+				default:
+					throw new ConvertingException("Cannot read the anchor.");
+			}
 			return result;
 		}
-#if NET7_0_OR_GREATER
-		[GeneratedRegex("(Upper|Middle|Lower)(Left|Center|Right)")]
-		private static partial Regex AnchorStyleRegex();
-#elif NETSTANDARD
-		private static Regex AnchorStyleRegex() => new("(Upper|Middle|Lower)(Left|Center|Right)", RegexOptions.Compiled);
-#endif
 	}
 }

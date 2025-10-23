@@ -104,6 +104,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the narration category of the text.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Narrate)}")]
 		public NarrationCategorys NarrationCategory { get; set; } = NarrationCategorys.Subtitles;
 		/// <summary>
 		/// Gets or sets the mode of the text.

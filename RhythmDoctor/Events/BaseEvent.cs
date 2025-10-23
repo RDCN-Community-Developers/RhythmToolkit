@@ -120,10 +120,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				Active = Active
 			};
 			if (Condition != null)
-				temp.Condition = new()
-				{
-					ConditionLists = [.. Condition.ConditionLists]
-				};
+				temp.Condition = Condition.Clone();
 			return temp;
 		}
 		/// <summary>
@@ -147,10 +144,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				Active = Active
 			};
 			if (Condition != null)
-				temp.Condition = new()
-				{
-					ConditionLists = [.. Condition.ConditionLists]
-				};
+				temp.Condition = Condition.Clone();
 			return temp;
 		}
 		/// <inheritdoc/>

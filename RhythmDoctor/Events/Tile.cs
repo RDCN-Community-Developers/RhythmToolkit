@@ -29,7 +29,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Tiling)} is not null")]
-		public RDPoint? Tiling { get; set; } = new(2f, 2f);
+		public RDPoint? Tiling { get; set; }
 		/// <summary>
 		/// Gets or sets the speed of the tile.
 		/// </summary>

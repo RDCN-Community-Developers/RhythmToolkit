@@ -34,7 +34,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Level condition collection.
 		/// </summary>
-		public List<BaseConditional> Conditionals { get; }
+		public ConditionalCollection Conditionals { get; }
 		/// <summary>
 		/// Level bookmark collection.
 		/// </summary>
@@ -177,8 +177,8 @@ namespace RhythmBase.RhythmDoctor.Components
 			try
 			{
 #if NET8_0_OR_GREATER
-                using Stream stream = File.OpenRead(filepath);
-                ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+				using Stream stream = File.OpenRead(filepath);
+				ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
@@ -238,9 +238,9 @@ namespace RhythmBase.RhythmDoctor.Components
 			try
 			{
 #if NET8_0_OR_GREATER
-                using Stream stream = File.OpenRead(filepath);
-                // Use async extraction if available for better performance
-                ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+				using Stream stream = File.OpenRead(filepath);
+				// Use async extraction if available for better performance
+				ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
 #elif NETSTANDARD2_0_OR_GREATER
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
@@ -658,7 +658,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		internal bool RemoveInternal(BaseRowAction item)
 		{
-			Row? parent = item.Parent ?? (item.Index < Rows.Count ? Rows[item.Index] : null);
+			Row? parent = item.Parent ?? ((item.Index >= 0 && item.Index < Rows.Count) ? Rows[item.Index] : null);
 			if (parent == null) Rows._unhandledRowEvents.Remove(item);
 			else ((OrderedEventCollection)parent).Remove(item);
 			return base.Remove(item);

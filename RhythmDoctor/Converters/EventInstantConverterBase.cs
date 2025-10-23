@@ -48,6 +48,15 @@ namespace RhythmBase.RhythmDoctor.Converters
 				else if (propertyName.SequenceEqual("type"u8))
 					continue;
 				else if (!Read(ref reader, propertyName, ref value, options))
+				{
+#if DEBUG
+					if(!(
+						(value is FloatingText && propertyName.SequenceEqual("times"u8)) ||
+						(value is FloatingText && propertyName.SequenceEqual("id"u8)) ||
+						(value is AdvanceText && propertyName.SequenceEqual("id"u8))
+						))
+					Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.Type} not found.");
+#endif
 					value[
 #if NET8_0_OR_GREATER
 						Encoding.UTF8.GetString(propertyName)
@@ -55,6 +64,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 						Encoding.UTF8.GetString(propertyName.ToArray())
 #endif
 						] = JsonElement.ParseValue(ref reader);
+				}
 			}
 			return value;
 		}
@@ -63,7 +73,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			TEvent v = (TEvent)value;
 			writer.WriteStartObject();
 			Write(writer, ref v, options);
-			foreach(var kv in ((BaseEvent)(IBaseEvent)v)._extraData)
+			foreach (var kv in ((BaseEvent)(IBaseEvent)v)._extraData)
 			{
 				writer.WritePropertyName(kv.Key);
 				writer.WriteRawValue(kv.Value.GetRawText());

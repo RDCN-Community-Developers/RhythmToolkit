@@ -4,19 +4,8 @@
 	/// Subtypes of sound effects.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public class SoundSubType
+	public class SoundSubType : RDAudio
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SoundSubType"/> class.
-		/// </summary>
-		public SoundSubType()
-		{
-			Audio = new RDAudio();
-		}
-		/// <summary>
-		/// Gets or sets the referenced audio.
-		/// </summary>
-		public RDAudio Audio { get; set; }
 		/// <summary>
 		/// Gets or sets the sound effect name.
 		/// </summary>
@@ -25,45 +14,5 @@
 		/// Gets or sets a value indicating whether this <see cref="SoundSubType"/> is used.
 		/// </summary>
 		public bool Used { get; set; }
-		/// <summary>
-		/// Gets or sets the filename of the audio.
-		/// </summary>
-		public string Filename
-		{
-			get => Audio.Filename;
-			set => Audio.Filename = value;
-		}
-		/// <summary>
-		/// Gets or sets the volume of the audio.
-		/// </summary>
-		public int Volume
-		{
-			get => Audio.Volume;
-			set => Audio.Volume = value;
-		}
-		/// <summary>
-		/// Gets or sets the pitch of the audio.
-		/// </summary>
-		public int Pitch
-		{
-			get => Audio.Pitch;
-			set => Audio.Pitch = value;
-		}
-		/// <summary>
-		/// Gets or sets the pan of the audio.
-		/// </summary>
-		public int Pan
-		{
-			get => Audio.Pan;
-			set => Audio.Pan = value;
-		}
-		/// <summary>
-		/// Gets or sets the offset of the audio.
-		/// </summary>
-		public TimeSpan Offset
-		{
-			get => Audio.Offset;
-			set => Audio.Offset = value;
-		}
 	}
 }
