@@ -92,7 +92,10 @@ namespace RhythmBase.RhythmDoctor.Components
 			sb.Append('d').Append(Duration.ToString("0.########"));
 			return sb.ToString();
 		}
-
+		/// <summary>
+		/// Creates a deep copy of the current <see cref="Condition"/> instance.
+		/// </summary>
+		/// <returns>A new <see cref="Condition"/> object that is a deep copy of the current instance.</returns>
 		public Condition Clone()
 		{
 			return Deserialize(Serialize());

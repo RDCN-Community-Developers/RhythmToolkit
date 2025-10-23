@@ -120,6 +120,9 @@ namespace RhythmBase.RhythmDoctor.Events
 				Speed = speed;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the speed of the background scrolling when the content mode is set to tiled.
+		/// </summary>
 		[RDJsonCondition($"""
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
 			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&

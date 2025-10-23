@@ -168,6 +168,9 @@ namespace RhythmBase.RhythmDoctor.Events
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
 			""")]
 		public float FloatY { get; set; } = 1;
+		/// <summary>
+		/// Gets or sets the speed percentage for the effect.
+		/// </summary>
 		[Tween]
 		[RDJsonProperty("speedPerc")]
 		[RDJsonCondition($"""

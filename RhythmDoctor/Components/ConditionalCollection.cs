@@ -2,6 +2,10 @@
 
 namespace RhythmBase.RhythmDoctor.Components
 {
+	/// <summary>
+	/// Represents a collection of <see cref="BaseConditional"/> objects that maintains a relationship between each item
+	/// and the collection it belongs to.
+	/// </summary>
 	public class ConditionalCollection : ICollection<BaseConditional>
 	{
 		private List<BaseConditional> cs = [];

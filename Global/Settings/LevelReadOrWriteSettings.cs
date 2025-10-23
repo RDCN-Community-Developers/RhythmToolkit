@@ -3,6 +3,24 @@ using System.Text.Json;
 namespace RhythmBase.Global.Settings
 {
 	/// <summary>
+	/// Specifies the method used to process files within a ZIP archive.
+	/// </summary>
+	/// <remarks>This enumeration defines the scope of file processing when working with ZIP archives.  Use <see
+	/// cref="LevelFileOnly"/> to process only the top-level file, or <see cref="AllFiles"/>  to process all files within
+	/// the archive, including nested files.</remarks>
+	public enum ZipFileProcessMethod
+	{
+		/// <summary>
+		/// Specifies that logging should be restricted to level-specific files only,  without writing to a general 
+		/// file.
+		/// </summary>
+		LevelFileOnly,
+		/// <summary>
+		/// Represents a collection of all files in the current context.
+		/// </summary>
+		AllFiles,
+	}
+	/// <summary>
 	/// Level import settings.
 	/// </summary>
 	public class LevelReadOrWriteSettings
@@ -52,6 +70,10 @@ namespace RhythmBase.Global.Settings
 		/// Defaults to <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.ThrowException" />.
 		/// </summary>
 		public UnreadableEventHandling UnreadableEventsHandling { get; set; } = UnreadableEventHandling.ThrowException;
+		/// <summary>
+		/// Gets or sets the method used to process zip files.
+		/// </summary>
+		public ZipFileProcessMethod ZipFileProcessMethod { get; set; } = ZipFileProcessMethod.LevelFileOnly;
 		/// <summary>
 		/// Stores unreadable event data when the <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.UnreadableEventsHandling" /> is <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.Store" />.
 		/// </summary>

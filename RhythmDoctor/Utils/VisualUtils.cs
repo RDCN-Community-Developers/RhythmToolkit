@@ -38,11 +38,18 @@
 			return PixelToPercent;
 		}
 		/// <summary>
-		/// Translates a point in room perspective.
+		/// Translates a point within a room perspective based on the specified corner points of the room.
 		/// </summary>
-		/// <param name="p">The point to translate.</param>
-		/// <param name="rect">The rectangle defining the room perspective.</param>
-		/// <returns>The translated point.</returns>
+		/// <remarks>This method maps a normalized point to a custom quadrilateral defined by the four corner points
+		/// of the room perspective. The input point <paramref name="p"/> is expected to be in normalized coordinates, where
+		/// the X and Y values range from 0 to 1.</remarks>
+		/// <param name="p">The point to translate, represented as a normalized coordinate where (0, 0) corresponds to the bottom-left corner
+		/// and (1, 1) corresponds to the top-right corner.</param>
+		/// <param name="plb">The bottom-left corner of the room perspective.</param>
+		/// <param name="prb">The bottom-right corner of the room perspective.</param>
+		/// <param name="plt">The top-left corner of the room perspective.</param>
+		/// <param name="prt">The top-right corner of the room perspective.</param>
+		/// <returns>The translated point in the room perspective, adjusted based on the provided corner points.</returns>
 		public static RDPointN RoomPerspectiveTranslate(this RDPointN p, RDPointN plb, RDPointN prb, RDPointN plt, RDPointN prt)
 		{
 			RDPointN p1p2 = prb - (RDSizeN)plb;

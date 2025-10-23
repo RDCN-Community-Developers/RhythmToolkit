@@ -18,6 +18,9 @@
 		/// Full transition.
 		/// </summary>
 		Full,
+		/// <summary>
+		/// Represents a placeholder or default value indicating the absence of a specific option or selection.
+		/// </summary>
 		None,
 	}
 }

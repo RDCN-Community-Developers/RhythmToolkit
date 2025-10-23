@@ -9,7 +9,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class LevelConverter : JsonConverter<RDLevel>
 	{
-		internal string? Filepath { get; set; }
 		internal LevelReadOrWriteSettings Settings { get; set; } = new();
 		public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
@@ -237,7 +236,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 					reader.Skip();
 				}
 			}
-			level._path = Filepath;
 			return level;
 		}
 		public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
