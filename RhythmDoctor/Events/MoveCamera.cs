@@ -20,24 +20,30 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the camera position.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.CameraPosition is not null")]
+		[RDJsonCondition($"$&.{nameof(CameraPosition)} is not null")]
 		public RDPoint? CameraPosition { get; set; }
 		/// <summary>
 		/// Gets or sets the zoom level.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Zoom is not null")]
+		[RDJsonCondition($"$&.{nameof(Zoom)} is not null")]
 		public int? Zoom { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the angle of the camera.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Angle is not null")]
+		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
 		public RDExpression? Angle { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>
 		public float Duration { get; set; } = 1;
+		/// <summary>
+		/// Gets or sets a value indicating whether the camera is a real physical device.
+		/// </summary>
+		[RDJsonProperty("real")]
+		[RDJsonCondition($"$&.{nameof(RealCamera)} == true")]
+		public bool RealCamera { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the easing type of the event.
 		/// </summary>

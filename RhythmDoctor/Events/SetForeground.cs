@@ -33,24 +33,57 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the list of images for the foreground.  
 		/// </summary>  
-		public List<string> Image { get; set; } = [];
+		[RDJsonProperty("image")]
+		public List<string> Images { get; set; } = [];
 		/// <summary>  
 		/// Gets or sets the frames per second for the foreground animation.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
 		public float Fps { get; set; } = 30f;
-		/// <summary>  
-		/// Gets or sets the horizontal scroll value.  
-		/// </summary>  
+		/// <summary>
+		/// Gets or sets the horizontal scroll value.
+		/// </summary>
 		[Tween]
-		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public float ScrollX { get; set; } = 0;
-		/// <summary>  
-		/// Gets or sets the vertical scroll value.  
-		/// </summary>  
+		[RDJsonCondition($"""
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+			!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+			""")]
+		public float? ScrollX
+		{
+			get => Speed.X;
+			set
+			{
+				var speed = Speed;
+				speed.X = value;
+				Speed = speed;
+			}
+		}
+		/// <summary>
+		/// Gets or sets the vertical scroll value.
+		/// </summary>
 		[Tween]
-		[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled")]
-		public float ScrollY { get; set; } = 0;
+		[RDJsonCondition($"""
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+			!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+			""")]
+		public float? ScrollY
+		{
+			get => Speed.Y;
+			set
+			{
+				var speed = Speed;
+				speed.Y = value;
+				Speed = speed;
+			}
+		}
+		/// <summary>
+		/// Gets or sets the speed of the foreground scrolling when the content mode is set to tiled.
+		/// </summary>
+		[Tween]
+		[RDJsonCondition($"""
+			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+			""")]
+		public RDPoint Speed { get; set; } = new(0, 0);
 		/// <summary>  
 		/// Gets or sets the duration of the event.  
 		/// </summary>  
@@ -87,9 +120,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		/// <returns>A string that represents the current object.</returns>  
 #if NETSTANDARD
-		public override string ToString() => base.ToString() + $" {Color},{string.Join(",", Image.Select(i => i.ToString()))}";
+		public override string ToString() => base.ToString() + $" {Color},{string.Join(",", Images.Select(i => i.ToString()))}";
 #else
-		public override string ToString() => base.ToString() + $" {Color},{string.Join(',', Image.Select(i => i.ToString()))}";
+		public override string ToString() => base.ToString() + $" {Color},{string.Join(',', Images.Select(i => i.ToString()))}";
 #endif
 	}
 }

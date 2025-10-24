@@ -14,7 +14,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the tint color.
 		/// </summary>
-		[RDJsonCondition($"$&.{nameof(Tint)}")]
+		[RDJsonCondition($"$&.{nameof(IsTint)}")]
 		public PaletteColor TintColor { get; set; } = RDColor.White;
 		/// <summary>
 		/// Gets or sets the easing type for the animation.
@@ -39,7 +39,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether to apply tint.
 		/// </summary>
-		public bool Tint { get; set; } = false;
+		[RDJsonProperty("tint")]
+		public bool IsTint { get; set; } = false;
 		/// <summary>
 		/// Gets or sets the duration of the tint effect.
 		/// </summary>

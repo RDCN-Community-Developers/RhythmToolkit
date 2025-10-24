@@ -32,7 +32,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Normalizes the height values so that their sum equals 100.
 		/// </summary>
 		/// <returns>A new <see cref="RoomHeight"/> instance with normalized height values.</returns>
-		public RoomHeight Normalized(RDRoom room)
+		public readonly RoomHeight Normalized(RDRoom room)
 		{
 			float sum = 0;
 			int empty = 0;
@@ -64,7 +64,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Gets an array of height percentages for the room.
 		/// </summary>
 		/// <returns>An array of floats representing the height percentages.</returns>
-		public float[] GetHeightPercents(RDRoom room)
+		public readonly float[] GetHeightPercents(RDRoom room)
 		{
 			float[] result = new float[4];
 			float sum = 0;

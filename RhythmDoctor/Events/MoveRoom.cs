@@ -16,25 +16,26 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the position of the room.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.RoomPosition is not null")]
-		public RDPointE? RoomPosition { get; set; }
+		[RDJsonProperty("roomPosition")]
+		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
+		public RDPointE? Position { get; set; }
 		/// <summary>
 		/// Gets or sets the scale of the room.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Scale is not null")]
+		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
 		public RDSizeE? Scale { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the angle of the room.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Angle is not null")]
+		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
 		public RDExpression? Angle { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the pivot point of the room.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition("$&.Pivot is not null")]
+		[RDJsonCondition($"$&.{nameof(Pivot)} is not null")]
 		public RDPointE? Pivot { get; set; } = null;
 		/// <summary>
 		/// Gets or sets the duration of the move event.

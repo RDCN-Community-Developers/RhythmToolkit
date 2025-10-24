@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -137,6 +138,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the list of sounds for the counting sound.
 		/// </summary>
+		[RDJsonConverter(typeof(CountingSoundCollectionConverter))]
 		[RDJsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(VoiceSource)} == RhythmBase.RhythmDoctor.Events.CountingSoundVoiceSources.Custom")]
 		public RDAudio[] Sounds { get; set; } = [
 			new RDAudio(){Filename = "Jyi - ChineseCount1" },

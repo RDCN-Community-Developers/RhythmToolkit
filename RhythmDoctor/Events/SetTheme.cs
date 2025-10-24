@@ -42,6 +42,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets a value indicating whether to skip paint effects.
 		/// </summary>
 		public bool SkipPaintEffects { get; set; } = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether the first row is positioned on the floor.
+		/// </summary>
+		[RDJsonCondition($"$&.{nameof(FirstRowOnFloor)}")]
+		public bool FirstRowOnFloor { get; set; } = false;
 		/// <summary>  
 		/// Returns a string that represents the current object.  
 		/// </summary>  

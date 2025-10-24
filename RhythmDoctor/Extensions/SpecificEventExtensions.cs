@@ -382,9 +382,9 @@ e.IsHitable()
 		/// <param name="target">Specified position. </param>
 		public static void MovePositionMaintainVisual(this MoveRoom e, RDSizeE target)
 		{
-			if (e.RoomPosition != null && e.Pivot != null && e.Angle != null && e.Angle.Value.IsNumeric)
+			if (e.Position != null && e.Pivot != null && e.Angle != null && e.Angle.Value.IsNumeric)
 			{
-				e.RoomPosition = new RDPointE?((RDPointE)target);
+				e.Position = new RDPointE?((RDPointE)target);
 				e.Pivot = new RDPointE?((e.VisualPosition() - new RDSizeE((RDPointE)target)).Rotate(e.Angle.Value.NumericValue));
 			}
 		}
@@ -585,9 +585,9 @@ e.SplitCopy(e.Tick * 4f, SayReadyGetSetGoWords.JustSayGo)
 		public static RDPointE VisualPosition(this MoveRoom e)
 		{
 			RDPointE VisualPosition = default;
-			if (e.RoomPosition != null && e.Pivot != null && e.Angle != null)
+			if (e.Position != null && e.Pivot != null && e.Angle != null)
 			{
-				RDPointE previousPosition = e.RoomPosition.Value;
+				RDPointE previousPosition = e.Position.Value;
 				RDPointE previousPivot = new((e.Pivot?.X) * (e.Scale?.Width), (e.Pivot?.Y) * (e.Scale?.Height));
 				VisualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
 			}
@@ -604,13 +604,13 @@ e.SplitCopy(e.Tick * 4f, SayReadyGetSetGoWords.JustSayGo)
 		/// </summary>
 		/// <param name="e">The MoveRow event.</param>
 		/// <returns>A rotated rectangle representing the row's position, scale, pivot, and angle.</returns>
-		public static RDRotatedRectE RotatedRect(this MoveRow e) => new(e.RowPosition, e.Scale, new(e.Pivot, e.Pivot), e.Angle);
+		public static RDRotatedRectE RotatedRect(this MoveRow e) => new(e.Position, e.Scale, new(e.Pivot, e.Pivot), e.Angle);
 		/// <summary>
 		/// Creates a rotated rectangle for the MoveRoom event.
 		/// </summary>
 		/// <param name="e">The MoveRoom event.</param>
 		/// <returns>A rotated rectangle representing the room's position, scale, pivot, and angle.</returns>
-		public static RDRotatedRectE RotatedRect(this MoveRoom e) => new(e.RoomPosition, e.Scale, e.Pivot, e.Angle);
+		public static RDRotatedRectE RotatedRect(this MoveRoom e) => new(e.Position, e.Scale, e.Pivot, e.Angle);
 		/// <summary>
 		/// Creates a rotated rectangle for the Move event.
 		/// </summary>

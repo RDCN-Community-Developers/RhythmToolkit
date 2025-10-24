@@ -12,18 +12,18 @@
 		/// <summary>
 		/// Gets or sets the play style.
 		/// </summary>
-		[RDJsonProperty(nameof(PlayStyle))]
+		[RDJsonProperty("PlayStyle")]
 		public PlayStyleTypes PlayStyle { get; set; } = PlayStyleTypes.Normal;
 		/// <summary>
 		/// Gets or sets the next bar.
 		/// </summary>
-		[RDJsonProperty(nameof(NextBar))]
+		[RDJsonProperty("NextBar")]
 		public int NextBar { get; set; } = 1;
 		/// <summary>
 		/// Gets or sets a value indicating whether the play style is relative.
 		/// </summary>
-		[RDJsonProperty(nameof(Relative))]
-		public bool Relative { get; set; } = true;
+		[RDJsonProperty("Relative")]
+		public bool IsRelative { get; set; } = true;
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>

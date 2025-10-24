@@ -33,9 +33,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the fade-out duration for the text.
 		/// </summary>
-		[RDJsonCondition($"$&.{nameof(FadeOutDuration)} != 0")]
-		public float FadeOutDuration { get; set; }
-		float IDurationEvent.Duration { get => FadeOutDuration; set => FadeOutDuration = value; }
+		[RDJsonProperty("fadeOutDuration")]
+		[RDJsonCondition($"$&.{nameof(Duration)} != 0")]
+		public float Duration { get; set; }
 		/// <summary>
 		/// Gets the ID of the parent floating text.
 		/// </summary>
@@ -52,7 +52,6 @@ namespace RhythmBase.RhythmDoctor.Events
 			}
 			return base.ToString() + $" ?";
 		}
-
 		private string GetDebuggerDisplay() => ToString();
 	}
 }

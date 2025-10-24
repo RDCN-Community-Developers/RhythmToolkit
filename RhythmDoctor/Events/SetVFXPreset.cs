@@ -157,7 +157,16 @@ namespace RhythmBase.RhythmDoctor.Events
 			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
 			""")]
-		public float FloatX { get; set; } = 1;
+		public float? FloatX
+		{
+			get => Speed.X;
+			set
+			{
+				var speed = Speed;
+				speed.X = value;
+				Speed = speed;
+			}
+		}
 		/// <summary>
 		/// Gets or sets the Y coordinate for the VFX.
 		/// </summary>
@@ -167,7 +176,24 @@ namespace RhythmBase.RhythmDoctor.Events
 			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
 			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
 			""")]
-		public float FloatY { get; set; } = 1;
+		public float? FloatY
+		{
+			get => Speed.Y;
+			set
+			{
+				var speed = Speed;
+				speed.Y = value;
+				Speed = speed;
+			}
+		}
+		/// <summary>
+		/// Gets or sets the speed represented as a two-dimensional point.
+		/// </summary>
+		[Tween]
+		[RDJsonCondition($"""
+			false
+			""")]
+		public RDPoint Speed { get;set; } = new(1, 1);
 		/// <summary>
 		/// Gets or sets the speed percentage for the effect.
 		/// </summary>

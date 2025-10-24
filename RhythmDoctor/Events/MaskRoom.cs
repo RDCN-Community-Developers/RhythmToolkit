@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -23,8 +24,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the source room.
 		/// </summary>
+		[RDJsonConverter(typeof(RoomIndexConverter))]
 		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Room")]
-		public byte SourceRoom { get; set; } = 0;
+		public RDRoomIndex SourceRoom { get; set; } = RDRoomIndex.Room1;
 		/// <summary>
 		/// Gets or sets the list of image assets.
 		/// </summary>

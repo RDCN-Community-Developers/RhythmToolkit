@@ -25,6 +25,10 @@
 		/// <summary>
 		/// Tiles the content to fill the available space.
 		/// </summary>
-		Tiled
+		Tiled,
+		/// <summary>
+		/// 
+		/// </summary>
+		Real,
 	}
 }

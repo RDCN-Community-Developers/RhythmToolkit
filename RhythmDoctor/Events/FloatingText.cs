@@ -1,5 +1,4 @@
-﻿using RhythmBase.Converters;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -65,8 +64,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the fade out rate of the text.
 		/// </summary>
-		public float FadeOutRate { get; set; } = 3;
-		float IDurationEvent.Duration { get => FadeOutRate; set => FadeOutRate = value; }
+		[RDJsonProperty("fadeOutRate")]
+		public float Duration { get; set; } = 3;
 		/// <summary>
 		/// Gets or sets the color of the text.
 		/// </summary>
@@ -82,7 +81,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the outline color of the text.
 		/// </summary>
-		public PaletteColor OutlineColor { get; set; } =  RDColor.Black;
+		public PaletteColor OutlineColor { get; set; } = RDColor.Black;
 		/// <summary>
 		/// Gets the ID of the event.
 		/// </summary>
@@ -100,6 +99,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether to narrate the text.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Narrate)}")]
 		public bool Narrate { get; set; } = true;
 		/// <summary>
 		/// Gets or sets the narration category of the text.

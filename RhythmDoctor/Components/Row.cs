@@ -53,7 +53,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets a value indicating whether the beats are muted.
 		/// </summary>
+		[RDJsonCondition($"$&.{nameof(MuteBeats)}")]
 		public bool MuteBeats { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether audio should be muted when the game is in single-player mode.
+		/// </summary>
+		[RDJsonProperty("muteIn1P")]
+		[RDJsonCondition($"$&.{nameof(MuteInSinglePlayerMode)}")]
+		public bool MuteInSinglePlayerMode { get; set; }
 		/// <summary>
 		/// Gets or sets the row to mimic.
 		/// </summary>

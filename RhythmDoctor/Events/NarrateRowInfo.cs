@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the type of narration information.
 		/// </summary>
-		public NarrateInfoTypes InfoType { get; set; } = NarrateInfoTypes.Online;
+		public NarrateInfoType InfoType { get; set; } = NarrateInfoType.Online;
 		/// <summary>
 		/// Gets or sets a value indicating whether the narration is sound only.
 		/// </summary>
@@ -39,7 +39,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the custom player option for narrating row information.  
 		/// </summary>  
-		public NarrateRowInfoCustomPlayer CustomPlayer { get; set; } = NarrateRowInfoCustomPlayer.AutoDetect;
+		public PlayerType CustomPlayer { get; set; } = PlayerType.AutoDetect;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
@@ -50,7 +50,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Specifies the type of narration information.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum NarrateInfoTypes
+	public enum NarrateInfoType
 	{
 		/// <summary>
 		/// Indicates a connection event.
@@ -91,26 +91,5 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Skip beats is off.
 		/// </summary>
 		Off,
-	}
-	/// <summary>  
-	/// Specifies the custom player options for narrating row information.  
-	/// </summary>  
-	[RDJsonEnumSerializable]
-	public enum NarrateRowInfoCustomPlayer
-	{
-		/// <summary>  
-		/// Automatically detect the player.  
-		/// </summary>  
-		AutoDetect,
-
-		/// <summary>  
-		/// Player 1.  
-		/// </summary>  
-		P1,
-
-		/// <summary>  
-		/// Player 2.  
-		/// </summary>  
-		P2,
 	}
 }

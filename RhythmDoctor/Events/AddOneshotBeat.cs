@@ -25,8 +25,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets a value indicating whether the subdivision sound is enabled.
 		/// </summary>
+		[RDJsonProperty("subdivSound")]
 		[RDJsonCondition($"$&.{nameof(PulseType)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeTypes)}.{nameof(OneshotPulseShapeTypes.Wave)}")]
-		public bool SubdivSound { get; set; }
+		public bool SubdivisionSound { get; set; }
 		/// <summary>
 		/// Gets or sets the tick value.
 		/// </summary>

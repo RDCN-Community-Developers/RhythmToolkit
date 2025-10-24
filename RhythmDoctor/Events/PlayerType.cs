@@ -6,6 +6,10 @@
 	[RDJsonEnumSerializable]
 	public enum PlayerType
 	{
+		/// <summary>  
+		/// Automatically detect the player.  
+		/// </summary>  
+		AutoDetect,
 		/// <summary>
 		/// Player 1.
 		/// </summary>

@@ -55,7 +55,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the speed of the dialogue display.
 		/// </summary>
-		public int Speed { get; set; } = 1;
+		public float Speed { get; set; } = 1;
 		/// <summary>
 		/// Gets or sets a value indicating whether text sounds should be played.
 		/// </summary>

@@ -27,17 +27,14 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[RDJsonCondition("$&.Hold != 0f")]
 		public float Hold { get; set; }
-
 		/// <summary>  
 		/// Gets or sets the number of beats in a classic beat pattern.  
 		/// </summary>   
 		[RDJsonCondition("false")]
 		public ushort Length { get; set; } = 7;
-
 		/// <summary>
 		/// Gets or sets the classic beat pattern.
 		/// </summary>
-		//[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		[RDJsonCondition($"""
 			$&.{nameof(Hold)} != 0f &&
 			$&.{nameof(SetXs)} != RhythmBase.RhythmDoctor.Events.ClassicBeatPatterns.NoChange

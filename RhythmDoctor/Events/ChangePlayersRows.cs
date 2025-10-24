@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -10,6 +11,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the list of players.
 		/// </summary>
+		[RDJsonConverter(typeof(PlayerTypeGroupConverter))]
 		public PlayerTypeGroup Players { get; set; } = new PlayerTypeGroup() { [0] = PlayerType.P1 };
 		/// <summary>
 		/// Gets or sets the player mode.
@@ -18,6 +20,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the list of CPU markers.
 		/// </summary>
+		[RDJsonConverter(typeof(CpuTypeGroupConverter))]
 		public CpuTypeGroup CpuMarkers { get; set; } = new CpuTypeGroup() { [0] = CpuType.Otto };
 		/// <inheritdoc />
 		public override EventType Type { get; } = EventType.ChangePlayersRows;

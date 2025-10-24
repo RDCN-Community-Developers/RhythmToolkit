@@ -1,5 +1,7 @@
 ﻿using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Events;
+using System.Collections.ObjectModel;
+using System.Text;
 using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Utils
 {
@@ -8,6 +10,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 	/// </summary>
 	public static class Utils
 	{
+		private static readonly BaseEventConverter evc = new();
 		private static JsonSerializerOptions options;
 		static Utils()
 		{
@@ -74,7 +77,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 			LevelConverter levelConverter = new()
 			{
 				Settings = settings,
-				Filepath = null
 			};
 			options.Converters.Add(levelConverter);
 			return options;
@@ -103,7 +105,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 			LevelConverter levelConverter = new()
 			{
 				Settings = settings,
-				Filepath = filepath
 			};
 			options.Converters.Add(levelConverter);
 			return options;
@@ -118,5 +119,49 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public const int DefaultCPB = 8;
 		internal const string RhythmBaseMacroEventDataHeader = "$RhythmBase_MacroData$";
 		internal const string RhythmBaseMacroEventHeader = "$RhythmBase_MacroEvent$";
+		/// <summary>
+		/// Gets a read-only collection of default expressions.
+		/// </summary>
+		public static ReadOnlyCollection<string> DefaultExpressions { get; } = new([
+				"neutral",
+				"happy",
+				"barely",
+				"missed",
+				"prehit",
+				"beep",
+			]);
+		/// <summary>
+		/// Converts the specified <see cref="IBaseEvent"/> instance to its JSON string representation.
+		/// </summary>
+		/// <remarks>The JSON output can be customized using the provided <paramref name="options"/>.  If no options
+		/// are specified, the default settings are applied.</remarks>
+		/// <param name="ev">The <see cref="IBaseEvent"/> instance to serialize. Cannot be <see langword="null"/>.</param>
+		/// <param name="options">Optional <see cref="JsonSerializerOptions"/> to configure the serialization process.  If <see langword="null"/>,
+		/// default serialization options are used.</param>
+		/// <returns>A JSON string representation of the <see cref="IBaseEvent"/> instance.</returns>
+		public static string ToJsonString(this IBaseEvent ev, JsonSerializerOptions? options = null)
+		{
+			options ??= JsonSerializerOptions.Default;
+			using var stream = new MemoryStream();
+			using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = options.WriteIndented, });
+			evc.Write(writer, ev, options);
+			writer.Flush();
+			return Encoding.UTF8.GetString(stream.ToArray());
+		}
+		/// <summary>
+		/// Deserializes a JSON string into an instance of a type implementing <see cref="IBaseEvent"/>.
+		/// </summary>
+		/// <param name="json">The JSON string to deserialize. This parameter cannot be <see langword="null"/> or empty.</param>
+		/// <param name="options">Optional <see cref="JsonSerializerOptions"/> to customize the deserialization process.  If not provided, the
+		/// default options will be used.</param>
+		/// <returns>An instance of a type implementing <see cref="IBaseEvent"/> if deserialization is successful;  otherwise, <see
+		/// langword="null"/>.</returns>
+		public static IBaseEvent? FromJsonString(string json, JsonSerializerOptions? options = null)
+		{
+			options ??= JsonSerializerOptions.Default;
+			var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+			reader.Read();
+			return evc.Read(ref reader, typeof(IBaseEvent), options);
+		}
 	}
 }
