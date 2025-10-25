@@ -5,10 +5,6 @@ namespace RhythmBase.Global.Converters
 {
 	internal class RDPointsConverter : JsonConverter<IRDVortex>
 	{
-		public RDPointsConverter() : base()
-		{
-
-		}
 		public override void Write(Utf8JsonWriter writer, IRDVortex? value, JsonSerializerOptions serializer)
 		{
 			writer.WriteStartArray();
@@ -155,7 +151,7 @@ namespace RhythmBase.Global.Converters
 			else if (objectType == typeof(RDSize) || objectType == typeof(RDSize?))
 				ReadJson = new RDSize(
 					reader.TokenType == JsonTokenType.Number ? reader.GetSingle() : null,
-					reader.Read()&&reader.TokenType == JsonTokenType.Number ? reader.GetSingle() : null
+					reader.Read() && reader.TokenType == JsonTokenType.Number ? reader.GetSingle() : null
 					);
 			else if (objectType == typeof(RDSizeE) || objectType == typeof(RDSizeE?))
 				ReadJson = new RDSizeE(
@@ -165,12 +161,12 @@ namespace RhythmBase.Global.Converters
 					reader.Read() ?
 					reader.TokenType == JsonTokenType.Number ? new RDExpression(reader.GetSingle()) :
 					reader.TokenType == JsonTokenType.String ? new RDExpression(reader.GetString() ?? string.Empty) :
-					(RDExpression?)null : 
+					(RDExpression?)null :
 					null
 					);
 			else
 				throw new NotImplementedException();
-			if(reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+			if (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
 				throw new JsonException("Expected end array token.");
 			return ReadJson;
 		}

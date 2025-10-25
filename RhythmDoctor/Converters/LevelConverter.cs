@@ -9,6 +9,12 @@ namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class LevelConverter : JsonConverter<RDLevel>
 	{
+		private static readonly SettingsConverter settingsConverter = new();
+		private static readonly RowConverter rowConverter = new();
+		private static readonly DecorationConverter decorationConverter = new();
+		private static readonly BaseEventConverter baseEventConverter = new();
+		private static readonly BookmarkConverter bookmarkConverter = new();
+		private static readonly ConditionalConverter conditionalConverter = new();
 		internal LevelReadOrWriteSettings Settings { get; set; } = new();
 		public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
@@ -30,7 +36,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 					reader.Read();
 					if (reader.TokenType != JsonTokenType.StartObject)
 						throw new JsonException($"Expected StartObject token for 'settings', but got {reader.TokenType}.");
-					SettingsConverter settingsConverter = new();
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
 				}
 				else if (reader.ValueSpan.SequenceEqual("rows"u8))
@@ -38,7 +43,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 					reader.Read();
 					if (reader.TokenType != JsonTokenType.StartArray)
 						throw new JsonException($"Expected StartArray token for 'rows', but got {reader.TokenType}.");
-					RowConverter rowConverter = new();
 					while (reader.Read())
 					{
 						if (reader.TokenType == JsonTokenType.EndArray)
@@ -54,7 +58,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 					reader.Read();
 					if (reader.TokenType != JsonTokenType.StartArray)
 						throw new JsonException($"Expected StartArray token for 'decorations', but got {reader.TokenType}.");
-					DecorationConverter decorationConverter = new();
 					while (reader.Read())
 					{
 						if (reader.TokenType == JsonTokenType.EndArray)
@@ -78,7 +81,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 					JsonElement[]? data = [];
 					Comment? maybeDataComment = null;
 					List<JsonDocument> maybeIllegalAt = [];
-					BaseEventConverter baseEventConverter = new();
 					reader.Read();
 					while (true)
 					{
@@ -182,7 +184,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 					reader.Read();
 					if (reader.TokenType != JsonTokenType.StartArray)
 						throw new JsonException($"Expected StartArray token for 'bookmarks', but got {reader.TokenType}.");
-					BookmarkConverter bookmarkConverter = new();
 					reader.Read();
 					while (true)
 					{
@@ -219,7 +220,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 					reader.Read();
 					if (reader.TokenType != JsonTokenType.StartArray)
 						throw new JsonException($"Expected StartArray token for 'conditionals', but got {reader.TokenType}.");
-					ConditionalConverter conditionalConverter = new();
 					reader.Read();
 					while (true)
 					{
@@ -240,7 +240,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		}
 		public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
 		{
-			using MemoryStream stream = new MemoryStream();
+			using MemoryStream stream = new();
 			//using Utf8JsonWriter noIndentWriter = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = false });
 			JsonSerializerOptions localOptions = new(options)
 			{
@@ -249,11 +249,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 			byte[] bytes = GetIndentByte(writer, options.IndentCharacter, 2);
 			writer.WriteStartObject();
 			writer.WritePropertyName("settings");
-			SettingsConverter settingsConverter = new();
 			settingsConverter.Write(writer, value.Settings, options);
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
-			RowConverter rowConverter = new();
 			foreach (Row row in value.Rows)
 			{
 				stream.SetLength(0);
@@ -269,7 +267,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteEndArray();
 			writer.WritePropertyName("decorations");
 			writer.WriteStartArray();
-			DecorationConverter decorationConverter = new();
 			foreach (Decoration decoration in value.Decorations)
 			{
 				stream.SetLength(0);
@@ -285,7 +282,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
 			writer.WriteStartArray();
-			BaseEventConverter baseEventConverter = new();
 			if (Settings.EnableMacroEvent)
 			{
 				JsonSerializerOptions dataOptions = new()
@@ -386,7 +382,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteEndArray();
 			writer.WritePropertyName("bookmarks");
 			writer.WriteStartArray();
-			BookmarkConverter bookmarkConverter = new();
 			foreach (Bookmark bookmark in value.Bookmarks)
 			{
 				stream.SetLength(0);
@@ -407,7 +402,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteEndArray();
 			writer.WritePropertyName("conditionals");
 			writer.WriteStartArray();
-			ConditionalConverter conditionalConverter = new();
 			foreach (BaseConditional conditional in value.Conditionals)
 			{
 				stream.SetLength(0);

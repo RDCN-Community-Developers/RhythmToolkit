@@ -21,23 +21,15 @@ namespace RhythmBase.RhythmDoctor.Utils
 				AllowTrailingCommas = true,
 				Converters =
 				{
-					new SettingsConverter(),
 					new AudioConverter(),
 					new PaletteColorConverter(),
 					new DialogueExchangeConverter(),
-					new PlayerTypeGroupConverter(),
-					new CpuTypeGroupConverter(),
-					new ConditionalConverter(),
 					new PatternConverter(),
 					new TabsConverter(),
-					new RowConverter(),
-					new DecorationConverter(),
-					new BaseEventConverter(),
-					new FloatingTextAnchorStylesConverter(),
+					new	RDPointsConverter(),
 					new RoomConverter(),
 					new SingleRoomConverter(),
 					new ExpressionConverter(),
-					new RDPointsConverter(),
 				}
 			};
 		}
