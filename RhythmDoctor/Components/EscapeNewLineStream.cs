@@ -28,6 +28,7 @@
 			static bool IsEscape(byte b) => b == (byte)'\\';
 			static bool IsCR(byte b) => b == 0x0D;
 			static bool IsLF(byte b) => b == 0x0A;
+			static bool IsTab(byte b) => b == (byte)'\t';
 
 			while (written < count)
 			{
@@ -51,6 +52,18 @@
 					_inQuotes = !_inQuotes;
 					_prevIsEscape = false;
 					buffer[offset + written++] = b;
+				}
+				else if(IsTab(b) && _inQuotes)
+				{
+					// \t -> \\t
+					if (written + 2 > count)
+					{
+						_peeked = b;
+						break;
+					}
+					buffer[offset + written++] = (byte)'\\';
+					buffer[offset + written++] = (byte)'t';
+					_prevIsEscape = false;
 				}
 				else if (IsEscape(b) && _inQuotes)
 				{
@@ -118,6 +131,7 @@
 			static bool IsEscape(byte b) => b == (byte)'\\';
 			static bool IsCR(byte b) => b == 0x0D;
 			static bool IsLF(byte b) => b == 0x0A;
+			static bool IsTab(byte b) => b == (byte)'\t';
 
 			while (written < count)
 			{
@@ -141,6 +155,18 @@
 					_inQuotes = !_inQuotes;
 					_prevIsEscape = false;
 					buffer[offset + written++] = b;
+				}
+				else if(IsTab(b) && _inQuotes)
+				{
+					// \t -> \\t
+					if (written + 2 > count)
+					{
+						_peeked = b;
+						break;
+					}
+					buffer[offset + written++] = (byte)'\\';
+					buffer[offset + written++] = (byte)'t';
+					_prevIsEscape = false;
 				}
 				else if (IsEscape(b) && _inQuotes)
 				{

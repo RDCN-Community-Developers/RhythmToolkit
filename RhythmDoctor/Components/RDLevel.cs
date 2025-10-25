@@ -178,7 +178,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			switch (settings.ZipFileProcessMethod)
 			{
 				case ZipFileProcessMethod.AllFiles:
-					DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
+					DirectoryInfo tempDirectory = new(Path.Combine(GlobalSettings.CachePath, "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
 					tempDirectory.Create();
 					try
 					{
@@ -264,7 +264,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			switch (settings.ZipFileProcessMethod)
 			{
 				case ZipFileProcessMethod.AllFiles:
-					DirectoryInfo tempDirectory = new(Path.Combine(Path.GetTempPath(), "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
+					DirectoryInfo tempDirectory = new(Path.Combine(GlobalSettings.CachePath, "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
 					tempDirectory.Create();
 					try
 					{
