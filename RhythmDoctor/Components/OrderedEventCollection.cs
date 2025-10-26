@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets the total count of events in the collection.
 		/// </summary>
-		public virtual int Count => eventsBeatOrder.Sum((i) => i.Value.Count());
+		public virtual int Count => eventsBeatOrder.Sum(i => i.Value.Count);
 		/// <summary>
 		/// Gets a value indicating whether the collection is read-only.
 		/// </summary>

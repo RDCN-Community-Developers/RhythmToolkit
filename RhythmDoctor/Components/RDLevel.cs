@@ -686,20 +686,20 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		internal void AddInternal(BaseDecorationAction item)
 		{
+			item._beat._calculator = Calculator;
+			if (base.Contains(item)) return;
 			Decoration? parent = item.Parent ?? Decorations[item._decoId];
 			if (parent == null) Decorations._unhandledRowEvents.Add(item);
-			if (base.Contains(item))
-				return;
-			item._beat._calculator = Calculator;
+			else ((OrderedEventCollection)parent).Add(item);
 			base.Add(item);
 		}
 		internal void AddInternal(BaseRowAction item)
 		{
+			item._beat._calculator = Calculator;
+			if (base.Contains(item)) return;
 			Row? parent = item.Parent ?? (item.Index < Rows.Count ? Rows[item.Index] : null);
 			if (parent == null) Rows._unhandledRowEvents.Add(item);
-			if (base.Contains(item))
-				return;
-			item._beat._calculator = Calculator;
+			else ((OrderedEventCollection)parent).Add(item);
 			base.Add(item);
 		}
 		internal bool RemoveInternal(BaseDecorationAction item)
