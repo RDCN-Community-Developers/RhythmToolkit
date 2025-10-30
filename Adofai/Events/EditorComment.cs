@@ -3,7 +3,7 @@
 	/// <summary>  
 	/// Represents an editor comment event in ADOFAI.  
 	/// </summary>  
-	public class EditorComment : BaseTileEvent, IStartEvent
+	public class EditorComment : BaseTileEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>
 		public override EventType Type => EventType.EditorComment;		/// <summary>  

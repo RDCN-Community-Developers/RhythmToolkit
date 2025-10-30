@@ -9,6 +9,7 @@ namespace RhythmBase.Adofai.Converters
 {
 	internal class SettingsConverter : JsonConverter<Settings>
 	{
+		private static RDPointsConverter pointsConverter = new();
 		public override Settings? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			if (reader.TokenType != JsonTokenType.StartObject)
@@ -40,7 +41,7 @@ namespace RhythmBase.Adofai.Converters
 					settings.PreviewImage = reader.GetString() ?? string.Empty;
 				else if (propertyName.SequenceEqual("previewIcon"u8))
 					settings.PreviewIcon = reader.GetString() ?? string.Empty;
-				else if (propertyName.SequenceEqual("previewIconColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor color))
+				else if (propertyName.SequenceEqual("previewIconColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor color))
 					settings.PreviewIconColor = color;
 				else if (propertyName.SequenceEqual("previewSongStart"u8))
 					settings.PreviewSongStart = reader.GetInt32();
@@ -85,15 +86,17 @@ namespace RhythmBase.Adofai.Converters
 					settings.HitsoundVolume = reader.GetInt32();
 				else if (propertyName.SequenceEqual("countdownTicks"u8))
 					settings.CountdownTicks = reader.GetInt32();
+				else if (propertyName.SequenceEqual("tileShape"u8) && EnumConverter.TryParse(reader.ValueSpan, out TileShape tileShape))
+					settings.TileShape = tileShape;
 				else if (propertyName.SequenceEqual("trackColorType"u8) && EnumConverter.TryParse(reader.ValueSpan, out TrackColorType trackColorType))
 					settings.TrackColorType = trackColorType;
-				else if (propertyName.SequenceEqual("trackColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor trackColor))
+				else if (propertyName.SequenceEqual("trackColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor trackColor))
 					settings.TrackColor = trackColor;
-				else if (propertyName.SequenceEqual("secondaryTrackColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor secondaryTrackColor))
+				else if (propertyName.SequenceEqual("secondaryTrackColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor secondaryTrackColor))
 					settings.SecondaryTrackColor = secondaryTrackColor;
 				else if (propertyName.SequenceEqual("trackColorAnimDuration"u8))
 					settings.TrackColorAnimDuration = reader.GetSingle();
-				else if (propertyName.SequenceEqual("trackColorPulse"u8) && EnumConverter.TryParse(reader.ValueSpan, out TrackColorPulses trackColorPulse))
+				else if (propertyName.SequenceEqual("trackColorPulse"u8) && EnumConverter.TryParse(reader.ValueSpan, out TrackColorPulse trackColorPulse))
 					settings.TrackColorPulse = trackColorPulse;
 				else if (propertyName.SequenceEqual("trackPulseLength"u8))
 					settings.TrackPulseLength = reader.GetInt32();
@@ -105,44 +108,32 @@ namespace RhythmBase.Adofai.Converters
 					settings.TrackTextureScale = reader.GetInt16();
 				else if (propertyName.SequenceEqual("trackGlowIntensity"u8))
 					settings.TrackGlowIntensity = reader.GetInt32();
-				else if (propertyName.SequenceEqual("trackAnimation"u8) && EnumConverter.TryParse(reader.ValueSpan, out TrackAnimationTypes trackAnimation))
+				else if (propertyName.SequenceEqual("trackAnimation"u8) && EnumConverter.TryParse(reader.ValueSpan, out TrackAnimationType trackAnimation))
 					settings.TrackAnimation = trackAnimation;
 				else if (propertyName.SequenceEqual("beatsAhead"u8))
 					settings.BeatsAhead = reader.GetInt32();
-				else if (propertyName.SequenceEqual("trackDisappearAnimation"u8) && EnumConverter.TryParse(reader.ValueSpan, out TrackDisappearAnimationTypes trackDisappearAnimation))
+				else if (propertyName.SequenceEqual("trackDisappearAnimation"u8) && EnumConverter.TryParse(reader.ValueSpan, out TrackDisappearAnimationType trackDisappearAnimation))
 					settings.TrackDisappearAnimation = trackDisappearAnimation;
 				else if (propertyName.SequenceEqual("beatsBehind"u8))
 					settings.BeatsBehind = reader.GetInt32();
-				else if (propertyName.SequenceEqual("backgroundColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor backgroundColor))
+				else if (propertyName.SequenceEqual("backgroundColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor backgroundColor))
 					settings.BackgroundColor = backgroundColor;
 				else if (propertyName.SequenceEqual("showDefaultBGIfNoImage"u8))
 					settings.ShowDefaultBGIfNoImage = reader.GetBoolean();
 				else if (propertyName.SequenceEqual("showDefaultBGTile"u8))
 					settings.ShowDefaultBGTile = reader.GetBoolean();
-				else if (propertyName.SequenceEqual("defaultBGTileColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor defaultBGTileColor))
+				else if (propertyName.SequenceEqual("defaultBGTileColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor defaultBGTileColor))
 					settings.DefaultBGTileColor = defaultBGTileColor;
 				else if (propertyName.SequenceEqual("defaultBGShapeType"u8) && EnumConverter.TryParse(reader.ValueSpan, out DefaultBGTileShapeType defaultBGShapeType))
 					settings.DefaultBGTileShapeType = defaultBGShapeType;
-				else if (propertyName.SequenceEqual("defaultBGShapeColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor defaultBGShapeColor))
+				else if (propertyName.SequenceEqual("defaultBGShapeColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor defaultBGShapeColor))
 					settings.DefaultBGShapeColor = defaultBGShapeColor;
 				else if (propertyName.SequenceEqual("bgImage"u8))
 					settings.BgImage = reader.GetString() ?? string.Empty;
-				else if (propertyName.SequenceEqual("bgImageColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor bgImageColor))
+				else if (propertyName.SequenceEqual("bgImageColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor bgImageColor))
 					settings.BgImageColor = bgImageColor;
 				else if (propertyName.SequenceEqual("parallax"u8))
-				{
-					if (reader.TokenType != JsonTokenType.StartArray)
-						throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
-					if (!reader.Read() || reader.TokenType != JsonTokenType.Number)
-						throw new JsonException($"Expected Number token, but got {reader.TokenType}.");
-					int x = reader.GetInt32();
-					if (!reader.Read() || reader.TokenType != JsonTokenType.Number)
-						throw new JsonException($"Expected Number token, but got {reader.TokenType}.");
-					int y = reader.GetInt32();
-					if (!reader.Read() || reader.TokenType != JsonTokenType.EndArray)
-						throw new JsonException($"Expected EndArray token, but got {reader.TokenType}.");
-					settings.Parallax = new RDPointNI(x, y);
-				}
+					settings.Parallax = (RDPointNI)pointsConverter.Read(ref reader, typeof(RDPointNI), options);
 				else if (propertyName.SequenceEqual("bgDisplayMode"u8) && EnumConverter.TryParse(reader.ValueSpan, out BgDisplayMode bgDisplayMode))
 					settings.BgDisplayMode = bgDisplayMode;
 				else if (propertyName.SequenceEqual("imageSmoothing"u8))
@@ -156,19 +147,7 @@ namespace RhythmBase.Adofai.Converters
 				else if (propertyName.SequenceEqual("relativeTo"u8) && EnumConverter.TryParse(reader.ValueSpan, out CameraRelativeTo cameraRelativeTo))
 					settings.RelativeTo = cameraRelativeTo;
 				else if (propertyName.SequenceEqual("position"u8))
-				{
-					if (reader.TokenType != JsonTokenType.StartArray)
-						throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
-					if (!reader.Read() || reader.TokenType != JsonTokenType.Number)
-						throw new JsonException($"Expected Number token, but got {reader.TokenType}.");
-					int x = reader.GetInt32();
-					if (!reader.Read() || reader.TokenType != JsonTokenType.Number)
-						throw new JsonException($"Expected Number token, but got {reader.TokenType}.");
-					int y = reader.GetInt32();
-					if (!reader.Read() || reader.TokenType != JsonTokenType.EndArray)
-						throw new JsonException($"Expected EndArray token, but got {reader.TokenType}.");
-					settings.Position = new RDPointNI(x, y);
-				}
+					settings.Position = (RDPointNI)pointsConverter.Read(ref reader, typeof(RDPointNI), options);
 				else if (propertyName.SequenceEqual("rotation"u8))
 					settings.Rotation = reader.GetInt32();
 				else if (propertyName.SequenceEqual("zoom"u8))
@@ -191,9 +170,9 @@ namespace RhythmBase.Adofai.Converters
 					settings.PlanetEaseParts = reader.GetInt32();
 				else if (propertyName.SequenceEqual("planetEasePartBehavior"u8) && EnumConverter.TryParse(reader.ValueSpan, out EasePartBehaviors planetEasePartBehavior))
 					settings.PlanetEasePartBehavior = planetEasePartBehavior;
-				else if (propertyName.SequenceEqual("defaultTextColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor defaultTextColor))
+				else if (propertyName.SequenceEqual("defaultTextColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor defaultTextColor))
 					settings.DefaultTextColor = defaultTextColor;
-				else if (propertyName.SequenceEqual("defaultTextShadowColor"u8) && RDColor.TryFromArgb(reader.ValueSpan, out RDColor defaultTextShadowColor))
+				else if (propertyName.SequenceEqual("defaultTextShadowColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor defaultTextShadowColor))
 					settings.DefaultTextShadowColor = defaultTextShadowColor;
 				else if (propertyName.SequenceEqual("congratsText"u8))
 					settings.CongratsText = reader.GetString() ?? string.Empty;
@@ -205,6 +184,10 @@ namespace RhythmBase.Adofai.Converters
 					settings.LegacyCamRelativeTo = reader.GetBoolean();
 				else if (propertyName.SequenceEqual("legacySpriteTiles"u8))
 					settings.LegacySpriteTiles = reader.GetBoolean();
+				else if (propertyName.SequenceEqual("legacyTween"u8))
+					settings.LegacyTween = reader.GetBoolean();
+				else if (propertyName.SequenceEqual("disableV15Features"u8))
+					settings.DisableV15Features = reader.GetBoolean();
 				else
 					reader.Skip();
 			}
@@ -223,7 +206,7 @@ namespace RhythmBase.Adofai.Converters
 			writer.WriteBoolean("separateCountdownTime"u8, value.SeparateCountdownTime);
 			writer.WriteString("previewImage"u8, value.PreviewImage);
 			writer.WriteString("previewIcon"u8, value.PreviewIcon);
-			writer.WriteString("previewIconColor"u8, value.PreviewIconColor.ToString("RRGGBB"));
+			writer.WriteString("previewIconColor"u8, value.PreviewIconColor.ToString("rrggbb"));
 			writer.WriteNumber("previewSongStart"u8, value.PreviewSongStart);
 			writer.WriteNumber("previewSongDuration"u8, value.PreviewSongDuration);
 			writer.WriteBoolean("seizureWarning"u8, value.SeizureWarning);
@@ -246,8 +229,8 @@ namespace RhythmBase.Adofai.Converters
 			writer.WriteNumber("hitsoundVolume"u8, value.HitsoundVolume);
 			writer.WriteNumber("countdownTicks"u8, value.CountdownTicks);
 			writer.WriteString("trackColorType"u8, EnumConverter.ToEnumString(value.TrackColorType));
-			writer.WriteString("trackColor"u8, value.TrackColor.ToString("RRGGBB"));
-			writer.WriteString("secondaryTrackColor"u8, value.SecondaryTrackColor.ToString("RRGGBB"));
+			writer.WriteString("trackColor"u8, value.TrackColor.ToString("rrggbb"));
+			writer.WriteString("secondaryTrackColor"u8, value.SecondaryTrackColor.ToString("rrggbb"));
 			writer.WriteNumber("trackColorAnimDuration"u8, value.TrackColorAnimDuration);
 			writer.WriteString("trackColorPulse"u8, EnumConverter.ToEnumString(value.TrackColorPulse));
 			writer.WriteNumber("trackPulseLength"u8, value.TrackPulseLength);
@@ -259,29 +242,24 @@ namespace RhythmBase.Adofai.Converters
 			writer.WriteNumber("beatsAhead"u8, value.BeatsAhead);
 			writer.WriteString("trackDisappearAnimation"u8, EnumConverter.ToEnumString(value.TrackDisappearAnimation));
 			writer.WriteNumber("beatsBehind"u8, value.BeatsBehind);
-			writer.WriteString("backgroundColor"u8, value.BackgroundColor.ToString("RRGGBB"));
+			writer.WriteString("backgroundColor"u8, value.BackgroundColor.ToString("rrggbb"));
 			writer.WriteBoolean("showDefaultBGIfNoImage"u8, value.ShowDefaultBGIfNoImage);
 			writer.WriteBoolean("showDefaultBGTile"u8, value.ShowDefaultBGTile);
-			writer.WriteString("defaultBGTileColor"u8, value.DefaultBGTileColor.ToString("RRGGBB"));
+			writer.WriteString("defaultBGTileColor"u8, value.DefaultBGTileColor.ToString("rrggbb"));
 			writer.WriteString("defaultBGShapeType"u8, EnumConverter.ToEnumString(value.DefaultBGTileShapeType));
-			writer.WriteString("defaultBGShapeColor"u8, value.DefaultBGShapeColor.ToString("RRGGBB"));
+			writer.WriteString("defaultBGShapeColor"u8, value.DefaultBGShapeColor.ToString("rrggbb"));
 			writer.WriteString("bgImage"u8, value.BgImage);
-			writer.WriteString("bgImageColor"u8, value.BgImageColor.ToString("RRGGBB"));
+			writer.WriteString("bgImageColor"u8, value.BgImageColor.ToString("rrggbb"));
 			writer.WritePropertyName("parallax"u8);
-			writer.WriteStartArray();
-			writer.WriteNumberValue(value.Parallax.X);
-			writer.WriteNumberValue(value.Parallax.Y);
-			writer.WriteEndArray();
+			pointsConverter.Write(writer, value.Parallax, options);
 			writer.WriteString("bgDisplayMode"u8, EnumConverter.ToEnumString(value.BgDisplayMode));
 			writer.WriteBoolean("imageSmoothing"u8, value.ImageSmoothing);
 			writer.WriteBoolean("lockRot"u8, value.LockRot);
 			writer.WriteBoolean("loopBG"u8, value.LoopBG);
 			writer.WriteNumber("scalingRatio"u8, value.ScalingRatio);
 			writer.WriteString("relativeTo"u8, EnumConverter.ToEnumString(value.RelativeTo));
-			writer.WriteStartArray("position"u8);
-			writer.WriteNumberValue(value.Position.X);
-			writer.WriteNumberValue(value.Position.Y);
-			writer.WriteEndArray();
+			writer.WritePropertyName("position"u8);
+			pointsConverter.Write(writer, value.Position, options);
 			writer.WriteNumber("rotation"u8, value.Rotation);
 			writer.WriteNumber("zoom"u8, value.Zoom);
 			writer.WriteBoolean("pulseOnFloor"u8, value.PulseOnFloor);
@@ -293,13 +271,15 @@ namespace RhythmBase.Adofai.Converters
 			writer.WriteString("planetEase"u8, EnumConverter.ToEnumString(value.PlanetEase));
 			writer.WriteNumber("planetEaseParts"u8, value.PlanetEaseParts);
 			writer.WriteString("planetEasePartBehavior"u8, EnumConverter.ToEnumString(value.PlanetEasePartBehavior));
-			writer.WriteString("defaultTextColor"u8, value.DefaultTextColor.ToString("RRGGBB"));
-			writer.WriteString("defaultTextShadowColor"u8, value.DefaultTextShadowColor.ToString("RRGGBBAA"));
+			writer.WriteString("defaultTextColor"u8, value.DefaultTextColor.ToString("rrggbb"));
+			writer.WriteString("defaultTextShadowColor"u8, value.DefaultTextShadowColor.ToString("rrggbbaa"));
 			writer.WriteString("congratsText"u8, value.CongratsText);
 			writer.WriteString("perfectText"u8, value.PerfectText);
 			writer.WriteBoolean("legacyFlash"u8, value.LegacyFlash);
 			writer.WriteBoolean("legacyCamRelativeTo"u8, value.LegacyCamRelativeTo);
 			writer.WriteBoolean("legacySpriteTiles"u8, value.LegacySpriteTiles);
+			writer.WriteBoolean("legacyTween"u8, value.LegacyTween);
+			writer.WriteBoolean("disableV15Features"u8, value.DisableV15Features);
 			writer.WriteEndObject();
 		}
 	}

@@ -19,7 +19,7 @@ namespace RhythmBase.Adofai.Converters
 			return true;
 		}
 	}
-	internal class EventInstantConverterBaseTaggedTileAction<TEvent> : EventInstantConverterBaseTileEvent<TEvent> where TEvent : BaseTaggedTileAction, new()
+	internal class EventInstantConverterBaseTaggedTileEvent<TEvent> : EventInstantConverterBaseTileEvent<TEvent> where TEvent : BaseTaggedTileEvent, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
 		{

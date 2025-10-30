@@ -1,30 +1,29 @@
-﻿namespace RhythmBase.Adofai.Events
+﻿namespace RhythmBase.Adofai.Events;
+
+/// <summary>
+/// Represents an event that enables multi-planet mode in the level.
+/// </summary>
+public class MultiPlanet : BaseTileEvent, ISingleEvent
 {
+	/// <inheritdoc/>
+	public override EventType Type => EventType.MultiPlanet;
 	/// <summary>
-	/// Represents an event that enables multi-planet mode in the level.
+	/// Gets or sets the planets associated with this event.
 	/// </summary>
-	public class MultiPlanet : BaseTileEvent
-	{
-		/// <inheritdoc/>
-		public override EventType Type => EventType.MultiPlanet;
-		/// <summary>
-		/// Gets or sets the planets associated with this event.
-		/// </summary>
-		public Planets Planets { get; set; }
-	}
+	public Planets Planets { get; set; } = Planets.TwoPlanets;
+}
+/// <summary>  
+/// Represents the number of planets associated with the multi-planet event.  
+/// </summary>  
+[RDJsonEnumSerializable]
+public enum Planets
+{
 	/// <summary>  
-	/// Represents the number of planets associated with the multi-planet event.  
+	/// Two planets are active in the event.  
 	/// </summary>  
-	[RDJsonEnumSerializable]
-	public enum Planets
-	{
-		/// <summary>  
-		/// Two planets are active in the event.  
-		/// </summary>  
-		TwoPlanets,
-		/// <summary>  
-		/// Three planets are active in the event.  
-		/// </summary>  
-		ThreePlanets,
-	}
+	TwoPlanets,
+	/// <summary>  
+	/// Three planets are active in the event.  
+	/// </summary>  
+	ThreePlanets,
 }

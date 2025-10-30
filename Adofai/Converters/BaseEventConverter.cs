@@ -2,6 +2,7 @@
 using RhythmBase.Adofai.Extensions;
 using RhythmBase.Global.Converters;
 using RhythmBase.Global.Extensions;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.Adofai.Utils.EventTypeUtils;
@@ -9,34 +10,6 @@ namespace RhythmBase.Adofai.Converters
 {
 	internal class BaseEventConverter : JsonConverter<IBaseEvent>
 	{
-		//public override void WriteJson(JsonWriter writer, TEvent? value, JsonSerializer serializer)
-		//{
-		//	if (value == null)
-		//		throw new ConvertingException($"Event is null");
-		//	serializer.Formatting = Formatting.None;
-		//	writer.WriteRawValue(JsonConvert.SerializeObject(SetSerializedObject(value, serializer)));
-		//	serializer.Formatting = Formatting.Indented;
-		//}
-		//public override TEvent? ReadJson(JsonReader reader, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer) => GetDeserializedObject((JObject)JToken.ReadFrom(reader), objectType, existingValue, hasExistingValue, serializer);
-		//public virtual TEvent? GetDeserializedObject(JObject jobj, Type objectType, TEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
-		//{
-		//	Type SubClassType = Utils.Utils.ADConvertToType(jobj["eventType"]?.ToObject<string>() ?? throw new IllegalEventTypeException("")) ?? throw new IllegalEventTypeException("SubClassType is null");
-		//	_canread = false;
-		//	existingValue = (TEvent)(((SubClassType != null) ? jobj.ToObject(SubClassType, serializer) : jobj.ToObject<CustomEvent>(serializer)) ?? throw new IllegalEventTypeException(SubClassType!));
-		//	_canread = true;
-		//	return existingValue;
-		//}
-		//public virtual JObject SetSerializedObject(TEvent value, JsonSerializer serializer)
-		//{
-		//	_canwrite = false;
-		//	JObject JObj = JObject.FromObject(value, serializer);
-		//	_canwrite = true;
-		//	JObj.Remove("type");
-		//	JToken? s = JObj.First;
-		//	s?.AddBeforeSelf(new JProperty("eventType", value.Type.ToString()));
-		//	return JObj;
-		//}
-
 		public override IBaseEvent? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			if (reader.TokenType != JsonTokenType.StartObject)
@@ -75,7 +48,12 @@ namespace RhythmBase.Adofai.Converters
 		}
 		public override void Write(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options)
 		{
-			throw new NotImplementedException();
+			if(value is IForwardEvent forwardEvent)
+			{
+				WriteForwardEvent(writer, forwardEvent);
+				return;
+			}
+			converters[value.Type].WriteProperties(writer, value, options);
 		}
 		public IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
@@ -91,6 +69,15 @@ namespace RhythmBase.Adofai.Converters
 			}
 			if (isTile) return new ForwardTileEvent(doc);
 			else return new ForwardEvent(doc);
+		}
+		public static void WriteForwardEvent(Utf8JsonWriter writer, IForwardEvent value)
+		{
+			writer.WriteStartObject();
+			writer.WriteString("eventType", value.ActureType);
+			if (value is ForwardTileEvent tileEvent)
+				writer.WriteNumber("floor", tileEvent._floor);
+			value.Data.WriteTo(writer);
+			writer.WriteEndObject();
 		}
 
 	}

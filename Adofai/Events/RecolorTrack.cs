@@ -5,10 +5,10 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event to recolor a track in the Adofai level.  
 	/// </summary>  
-	public class RecolorTrack : BaseTaggedTileAction, IEaseEvent, IStartEvent
+	public class RecolorTrack : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>
-		public override EventType Type { get; }
+		public override EventType Type => EventType.RecolorTrack;
 		/// <summary>  
 		/// Gets or sets the starting tile reference for the recolor action.  
 		/// </summary>  
@@ -20,43 +20,43 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the gap length between tiles for the recolor action.  
 		/// </summary>  
-		public int GapLength { get; set; }
+		public int GapLength { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the duration of the recolor animation.  
 		/// </summary>  
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the type of track color to apply.  
 		/// </summary>  
-		public TrackColorType TrackColorType { get; set; }
+		public TrackColorType TrackColorType { get; set; } = TrackColorType.Single;
 		/// <summary>  
 		/// Gets or sets the primary track color.  
 		/// </summary>  
-		public RDColor TrackColor { get; set; }
+		public RDColor TrackColor { get; set; } = RDColor.FromRgba("debb7b");
 		/// <summary>  
 		/// Gets or sets the secondary track color.  
 		/// </summary>  
-		public RDColor SecondaryTrackColor { get; set; }
+		public RDColor SecondaryTrackColor { get; set; } = RDColor.White;
 		/// <summary>  
 		/// Gets or sets the duration of the track color animation.  
 		/// </summary>  
-		public float TrackColorAnimDuration { get; set; }
+		public float TrackColorAnimDuration { get; set; } = 2f;
 		/// <summary>  
 		/// Gets or sets the track color pulse type.  
 		/// </summary>  
-		public TrackColorPulses TrackColorPulse { get; set; }
+		public TrackColorPulse TrackColorPulse { get; set; } = TrackColorPulse.None;
 		/// <summary>  
 		/// Gets or sets the length of the track pulse.  
 		/// </summary>  
-		public float TrackPulseLength { get; set; }
+		public int TrackPulseLength { get; set; } = 10;
 		/// <summary>  
 		/// Gets or sets the style of the track.  
 		/// </summary>  
-		public TrackStyle TrackStyle { get; set; }
+		public TrackStyle TrackStyle { get; set; } = TrackStyle.Standard;
 		/// <summary>  
 		/// Gets or sets the intensity of the track glow effect.  
 		/// </summary>  
-		public float TrackGlowIntensity { get; set; }
+		public float TrackGlowIntensity { get; set; } = 100f;
 		/// <summary>  
 		/// Gets or sets the easing type for the recolor animation.  
 		/// </summary>  

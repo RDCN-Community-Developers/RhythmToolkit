@@ -4,14 +4,14 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event to move the camera in the Adofai game.  
 	/// </summary>  
-	public class MoveCamera : BaseTaggedTileAction, IEaseEvent, IStartEvent
+	public class MoveCamera : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>
 		public override EventType Type => EventType.MoveCamera;
 		/// <summary>  
 		/// Gets or sets the duration of the camera movement.  
 		/// </summary>  
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 1f;
 		/// <summary>  
 		/// Gets or sets the easing type for the camera movement.  
 		/// </summary>  
@@ -27,18 +27,22 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the reference point for the camera movement.  
 		/// </summary>  
-		public CameraRelativeTo RelativeTo { get; set; }
+		[RDJsonCondition($"$&.{nameof(RelativeTo)} is not null")]
+		public CameraRelativeTo? RelativeTo { get; set; }
 		/// <summary>  
 		/// Gets or sets the target position of the camera.  
 		/// </summary>  
+		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
 		public RDPoint? Position { get; set; }
 		/// <summary>  
 		/// Gets or sets the rotation angle of the camera.  
-		/// </summary>  
-		public float Rotation { get; set; }
+		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Rotation)} is not null")]
+		public float? Rotation { get; set; }
 		/// <summary>  
 		/// Gets or sets the zoom level of the camera.  
 		/// </summary>  
-		public float Zoom { get; set; }
+		[RDJsonCondition($"$&.{nameof(Zoom)} is not null")]
+		public float? Zoom { get; set; }
 	}
 }

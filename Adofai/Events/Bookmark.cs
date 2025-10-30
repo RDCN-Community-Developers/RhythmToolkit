@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Represents a bookmark event in the ADOFAI game.
 	/// </summary>
-	public class Bookmark : BaseTileEvent, IStartEvent
+	public class Bookmark : BaseTileEvent, IBeginningEvent,	ISingleEvent
 	{
 		/// <inheritdoc/>s
 		public override EventType Type => EventType.Bookmark;

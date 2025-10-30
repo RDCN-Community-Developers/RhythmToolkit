@@ -4,7 +4,7 @@
 	/// Represents the types of track animations available in the ADTrack system.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum TrackAnimationTypes
+	public enum TrackAnimationType
 	{
 		/// <summary>
 		/// No animation.

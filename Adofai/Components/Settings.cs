@@ -115,6 +115,7 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the number of countdown ticks before the level starts.
 		/// </summary>
 		public float CountdownTicks { get; set; } = 4;
+		public TileShape TileShape { get; set; } = TileShape.Long;
 		/// <summary>
 		/// Gets or sets the type of track color used in the level.
 		/// </summary>
@@ -134,7 +135,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets or sets the type of track color pulse.
 		/// </summary>
-		public TrackColorPulses TrackColorPulse { get; set; } = TrackColorPulses.None;
+		public TrackColorPulse TrackColorPulse { get; set; } = TrackColorPulse.None;
 		/// <summary>
 		/// Gets or sets the length of the track pulse.
 		/// </summary>
@@ -158,7 +159,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets or sets the type of track animation.
 		/// </summary>
-		public TrackAnimationTypes TrackAnimation { get; set; } = TrackAnimationTypes.None;
+		public TrackAnimationType TrackAnimation { get; set; } = TrackAnimationType.None;
 		/// <summary>
 		/// Gets or sets the number of beats ahead for the track.
 		/// </summary>
@@ -166,7 +167,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets or sets the type of track disappear animation.
 		/// </summary>
-		public TrackDisappearAnimationTypes TrackDisappearAnimation { get; set; } = TrackDisappearAnimationTypes.None;
+		public TrackDisappearAnimationType TrackDisappearAnimation { get; set; } = TrackDisappearAnimationType.None;
 		/// <summary>
 		/// Gets or sets the number of beats behind for the track.
 		/// </summary>
@@ -323,5 +324,10 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets a value indicating whether version 15 features are disabled.  
 		/// </summary>  
 		public bool DisableV15Features { get; set; } = false;
+	}
+	[RDJsonEnumSerializable]
+	public enum TileShape
+	{
+		Long,
 	}
 }

@@ -5,7 +5,7 @@ namespace RhythmBase.Adofai.Components
 	/// <summary>
 	/// Represents a collection of ADOFAI tiles.
 	/// </summary>
-	public abstract class TileCollection : ICollection<ITile>
+	public abstract class TileCollection : ICollection<Tile>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TileCollection"/> class.
@@ -14,7 +14,7 @@ namespace RhythmBase.Adofai.Components
 		{
 			tileOrder = [];
 			IsReadOnly = false;
-			End = new EmptyTile();
+			End = new Tile();
 			Start = End;
 		}
 		/// <summary>
@@ -28,17 +28,17 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets the start tile of the collection.
 		/// </summary>
-		public ITile Start { get; private set; }
+		public Tile Start { get; private set; }
 		/// <summary>
 		/// Gets the end tile of the collection.
 		/// </summary>
-		public ITile End { get; }
+		public Tile End { get; }
 		/// <summary>
 		/// Gets the tile at the specified index.
 		/// </summary>
 		/// <param name="index">The index of the tile to retrieve.</param>
 		/// <returns>The tile at the specified index, or the end tile if the index equals the count.</returns>
-		public ITile this[int index] => index == tileOrder.Count ? End : tileOrder[index];
+		public Tile this[int index] => index == tileOrder.Count ? End : tileOrder[index];
 		/// <summary>
 		/// Gets an enumerable collection of all events associated with the tiles in the collection.
 		/// </summary>
@@ -58,7 +58,7 @@ namespace RhythmBase.Adofai.Components
 		/// Adds a tile to the collection.
 		/// </summary>
 		/// <param name="item">The tile to add.</param>
-		public virtual void Add(ITile item)
+		public virtual void Add(Tile item)
 		{
 			if (item.Previous != null || item.Next != null)
 				throw new InvalidOperationException("Tile is already in a collection.");
@@ -73,7 +73,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>  
 		/// <param name="index">The zero-based index at which the tile should be inserted.</param>  
 		/// <param name="item">The tile to insert into the collection.</param>  
-		public virtual void Insert(int index, ITile item)
+		public virtual void Insert(int index, Tile item)
 		{
 			if (item.Previous != null || item.Next != null)
 				throw new InvalidOperationException("Tile is already in a collection.");
@@ -93,8 +93,8 @@ namespace RhythmBase.Adofai.Components
 			}
 			else
 			{
-				ITile nextTile = tileOrder[index];
-				ITile? previousTile = nextTile.Previous;
+				Tile nextTile = tileOrder[index];
+				Tile? previousTile = nextTile.Previous;
 
 				item.Next = nextTile;
 				item.Previous = previousTile;
@@ -113,7 +113,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		public virtual void Clear()
 		{
-			foreach (ITile tile in tileOrder)
+			foreach (Tile tile in tileOrder)
 			{
 				tile.Previous = null;
 				tile.Next = null;
@@ -128,24 +128,24 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>  
 		/// <param name="array">The destination array to which the elements will be copied.</param>  
 		/// <param name="arrayIndex">The zero-based index in the destination array at which copying begins.</param>  
-		public void CopyTo(ITile[] array, int arrayIndex) => tileOrder.CopyTo(array, arrayIndex);
+		public void CopyTo(Tile[] array, int arrayIndex) => tileOrder.CopyTo(array, arrayIndex);
 		/// <summary>
 		/// Determines whether the collection contains a specific tile.
 		/// </summary>
 		/// <param name="item">The tile to locate in the collection.</param>
 		/// <returns><c>true</c> if the tile is found; otherwise, <c>false</c>.</returns>
-		public bool Contains(ITile item) => tileOrder.Contains(item);
+		public bool Contains(Tile item) => item == End || tileOrder.Contains(item);
 		/// <summary>
 		/// Removes the first occurrence of a specific tile from the collection.
 		/// </summary>
 		/// <param name="item">The tile to remove.</param>
 		/// <returns><c>true</c> if the tile was successfully removed; otherwise, <c>false</c>.</returns>
-		public virtual bool Remove(ITile item)
+		public virtual bool Remove(Tile item)
 		{
 			if (item == End)
 				return false;
-			ITile? previousTile = item.Previous;
-			ITile? nextTile = item.Next;
+			Tile? previousTile = item.Previous;
+			Tile? nextTile = item.Next;
 			if (previousTile != null)
 				previousTile.Next = nextTile;
 			else if(nextTile != null)
@@ -159,13 +159,19 @@ namespace RhythmBase.Adofai.Components
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>An enumerator for the collection.</returns>
-		public IEnumerator<ITile> GetEnumerator() => tileOrder.GetEnumerator();
+		public IEnumerator<Tile> GetEnumerator()
+		{
+			foreach (Tile tile in tileOrder)
+				yield return tile;
+			yield return End;
+		}
+
 		/// <summary>
 		/// Gets the index of a specific tile in the collection.
 		/// </summary>
 		/// <param name="item">The tile to locate.</param>
 		/// <returns>The index of the tile if found; otherwise, -1.</returns>
-		public int IndexOf(ITile item) => item == End ? Count : tileOrder.IndexOf(item);
+		public int IndexOf(Tile item) => item == End ? Count : tileOrder.IndexOf(item);
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
@@ -174,6 +180,6 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// The internal list that stores the tiles in the collection.
 		/// </summary>
-		internal List<ITile> tileOrder;
+		internal List<Tile> tileOrder;
 	}
 }

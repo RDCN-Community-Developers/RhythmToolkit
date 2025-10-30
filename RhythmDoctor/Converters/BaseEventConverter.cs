@@ -91,6 +91,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 				writer.WriteString("type", value.ActureType);
 			writer.WriteNumber("bar", value.Beat.BarBeat.bar);
 			writer.WriteNumber("beat", value.Beat.BarBeat.beat);
+			if (value is ForwardRowEvent rowEvent)
+				writer.WriteNumber("row", rowEvent.Index);
+			else if (value is ForwardDecorationEvent decorationEvent)
+				writer.WriteString("target", decorationEvent.Target);
 			if (!string.IsNullOrEmpty(value.Tag))
 				writer.WriteString("tag", value.Tag);
 			if (value.RunTag)

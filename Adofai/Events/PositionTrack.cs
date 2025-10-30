@@ -10,35 +10,40 @@ namespace RhythmBase.Adofai.Events
 		public override EventType Type => EventType.PositionTrack;
 		/// <summary>  
 		/// Gets or sets the position offset of the track.  
-		/// </summary>  
-		public RDPoint PositionOffset { get; set; }
+		/// </summary> 
+		[RDJsonCondition($"$&.{nameof(PositionOffset)} is not null")]
+		public RDPoint? PositionOffset { get; set; } = new(0, 0);
 		/// <summary>  
 		/// Gets or sets the reference tile relative to which the position is calculated.  
 		/// </summary>  
 		public TileReference RelativeTo { get; set; }
 		/// <summary>  
 		/// Gets or sets the rotation of the track in degrees.  
-		/// </summary>  
-		public float Rotation { get; set; }
+		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Rotation)} is not null")]
+		public float? Rotation { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the scale of the track.  
 		/// </summary>  
-		public float Scale { get; set; }
+		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
+		public float? Scale { get; set; } = 100f;
 		/// <summary>  
 		/// Gets or sets the opacity of the track.  
 		/// </summary>  
-		public float Opacity { get; set; }
+		[RDJsonCondition($"$&.{nameof(Opacity)} is not null")]
+		public float? Opacity { get; set; } = 100f;
 		/// <summary>  
 		/// Gets or sets a value indicating whether the event applies only to the current tile.  
 		/// </summary>  
-		public bool JustThisTile { get; set; }
+		public bool JustThisTile { get; set; } = false;
 		/// <summary>  
 		/// Gets or sets a value indicating whether the event is editor-only.  
 		/// </summary>  
-		public bool SditorOnly { get; set; }
+		public bool EditorOnly { get; set; } = false;
 		/// <summary>  
 		/// Gets or sets a value indicating whether the track should stick to floors.  
 		/// </summary>  
-		public bool? StickToFloors { get; set; }
+		[RDJsonCondition($"$&.{nameof(StickToFloors)} is not null")]
+		public bool? StickToFloors { get; set; } = true;
 	}
 }

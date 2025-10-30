@@ -32,7 +32,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Adds an event to the collection.  
 		/// </summary>  
 		/// <param name="item">The event to add.</param>  
-		public virtual void Add(TEvent item) => Add((IBaseEvent)(object)item);
+		public virtual bool Add(TEvent item) => Add((IBaseEvent)(object)item);
+		void ICollection<TEvent>.Add(TEvent item) => Add(item);
 		/// <inheritdoc/>  
 		public virtual bool Contains(TEvent item) => Contains((IBaseEvent)(object)item);
 		/// <inheritdoc/>  

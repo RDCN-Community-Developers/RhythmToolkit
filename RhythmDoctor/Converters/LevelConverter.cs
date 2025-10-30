@@ -102,7 +102,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 						}
 						catch (Exception ex)
 						{
-							JsonElement element = JsonDocument.ParseValue(ref checkPoint).RootElement;
+							JsonElement element = JsonElement.ParseValue(ref checkPoint);
 							Settings.HandleUnreadableEvent(element, ex.Message);
 							continue;
 						}
@@ -247,20 +247,21 @@ namespace RhythmBase.RhythmDoctor.Converters
 				WriteIndented = false,
 			};
 			byte[] bytes = GetIndentByte(writer, options.IndentCharacter, 2);
+			ReadOnlySpan<byte> sl;
 			writer.WriteStartObject();
 			writer.WritePropertyName("settings");
 			settingsConverter.Write(writer, value.Settings, options);
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
+				using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 			foreach (Row row in value.Rows)
 			{
 				stream.SetLength(0);
 				if (options.WriteIndented)
 					stream.Write(bytes, 0, bytes.Length);
-				using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 				rowConverter.Write(noIndentWriter, row, localOptions);
 				noIndentWriter.Flush();
-				Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+						sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
@@ -272,10 +273,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 				stream.SetLength(0);
 				if (options.WriteIndented)
 					stream.Write(bytes, 0, bytes.Length);
-				using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 				decorationConverter.Write(noIndentWriter, decoration, localOptions);
 				noIndentWriter.Flush();
-				Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+				 sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
@@ -322,10 +322,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 						stream.SetLength(0);
 						if (options.WriteIndented)
 							stream.Write(bytes, 0, bytes.Length);
-						using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 						baseEventConverter.Write(noIndentWriter, e, localOptions);
 						noIndentWriter.Flush();
-						Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+						sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 						writer.WriteRawValue(sl);
 						noIndentWriter.Reset();
 					}
@@ -351,10 +350,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 					stream.SetLength(0);
 					if (options.WriteIndented)
 						stream.Write(bytes, 0, bytes.Length);
-					using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 					baseEventConverter.Write(noIndentWriter, e, localOptions);
 					noIndentWriter.Flush();
-					Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+					sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 					writer.WriteRawValue(sl);
 					noIndentWriter.Reset();
 				}
@@ -370,10 +368,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 						stream.SetLength(0);
 						if (options.WriteIndented)
 							stream.Write(bytes, 0, bytes.Length);
-						using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 						baseEventConverter.Write(noIndentWriter, e, localOptions);
 						noIndentWriter.Flush();
-						Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+						sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 						writer.WriteRawValue(sl);
 						noIndentWriter.Reset();
 					}
@@ -387,10 +384,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 				stream.SetLength(0);
 				if (options.WriteIndented)
 					stream.Write(bytes, 0, bytes.Length);
-				using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 				bookmarkConverter.Write(noIndentWriter, bookmark, localOptions);
 				noIndentWriter.Flush();
-				Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
@@ -407,10 +403,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 				stream.SetLength(0);
 				if (options.WriteIndented)
 					stream.Write(bytes, 0, bytes.Length);
-				using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 				conditionalConverter.Write(noIndentWriter, conditional, localOptions);
 				noIndentWriter.Flush();
-				Span<byte> sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}

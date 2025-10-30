@@ -4,22 +4,22 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents a screen shake event in the Adofai event system.  
 	/// </summary>  
-	public class ShakeScreen : BaseTaggedTileAction, IEaseEvent, IStartEvent
+	public class ShakeScreen : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>
 		public override EventType Type => EventType.ShakeScreen;
 		/// <summary>  
 		/// Gets or sets the duration of the screen shake effect.  
 		/// </summary>  
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 1f;
 		/// <summary>  
 		/// Gets or sets the strength of the screen shake effect.  
 		/// </summary>  
-		public float Strength { get; set; }
+		public float Strength { get; set; } = 100f;
 		/// <summary>  
 		/// Gets or sets the intensity of the screen shake effect.  
 		/// </summary>  
-		public float Intensity { get; set; }
+		public float Intensity { get; set; } = 100f;
 		/// <summary>  
 		/// Gets or sets the easing type for the screen shake effect.  
 		/// </summary>  
@@ -27,6 +27,6 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the fade-out duration for the screen shake effect.  
 		/// </summary>  
-		public bool FadeOut { get; set; }
+		public bool FadeOut { get; set; } = true;
 	}
 }

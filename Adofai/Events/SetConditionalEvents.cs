@@ -3,7 +3,7 @@
 	/// <summary>  
 	/// Represents an event that sets conditional tags for various gameplay scenarios in ADOFAI.  
 	/// </summary>  
-	public class SetConditionalEvents : BaseTileEvent
+	public class SetConditionalEvents : BaseTileEvent, ISingleEvent
 	{		/// <inheritdoc/>
 		public override EventType Type => EventType.SetConditionalEvents;		/// <summary>  
 		/// Gets or sets the tag for a perfect hit.  

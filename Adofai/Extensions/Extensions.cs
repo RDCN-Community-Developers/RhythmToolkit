@@ -40,9 +40,9 @@ namespace RhythmBase.Adofai.Extensions
 		/// <param name="count">The number of times the tile should be repeated. Must be greater than or equal to 0.</param>
 		/// <returns>An array of tiles, where each element is a clone of the specified tile.  Returns an empty array if <paramref
 		/// name="count"/> is 0.</returns>
-		public static ITile[] Repeat(this ITile tile, int count)
+		public static Tile[] Repeat(this Tile tile, int count)
 		{
-			ITile[] result = new Tile[count];
+			Tile[] result = new Tile[count];
 			for (int i = 0; i < count; i++)
 				result[i] = tile.Clone();
 			return result;

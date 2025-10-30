@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Represents a base class for tagged tile actions in the Adofai event system.
 	/// </summary>
-	public abstract class BaseTaggedTileAction : BaseTileEvent
+	public abstract class BaseTaggedTileEvent : BaseTileEvent
 	{
 		/// <inheritdoc/>
 		public float AngleOffset { get; set; }

@@ -3,7 +3,5 @@
 	/// <summary>  
 	/// Represents an event that can be placed on the first tile.  
 	/// </summary>  
-	public interface IStartEvent
-	{
-	}
+	public interface IBeginningEvent { }
 }

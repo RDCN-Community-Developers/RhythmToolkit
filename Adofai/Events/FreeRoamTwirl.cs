@@ -10,6 +10,6 @@
 		/// <summary>  
 		/// Gets or sets the position associated with the Free Roam Twirl event.  
 		/// </summary>  
-		public int Position { get; set; }
+		public RDPointN Position { get; set; } = new(1, 0);
 	}
 }

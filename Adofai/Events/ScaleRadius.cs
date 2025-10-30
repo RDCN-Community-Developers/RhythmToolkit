@@ -3,12 +3,13 @@
 	/// <summary>
 	/// Represents the ScaleRadius event in the ADOFAI editor.
 	/// </summary>
-	public class ScaleRadius : BaseTileEvent
+	public class ScaleRadius : BaseTileEvent, ISingleEvent
 	{
 		/// <inheritdoc/>
-		public override EventType Type => EventType.ScaleRadius;		/// <summary>
+		public override EventType Type => EventType.ScaleRadius;
+		/// <summary>
 		/// Gets or sets the scale value for the radius adjustment.
 		/// </summary>
-		public int Scale { get; set; }
+		public float Scale { get; set; } = 100f;
 	}
 }

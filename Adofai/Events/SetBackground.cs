@@ -5,7 +5,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event to set the background properties in the Adofai event system.  
 	/// </summary>  
-	public class SetBackground : BaseTaggedTileAction, IStartEvent
+	public class SetBackground : BaseTaggedTileEvent, IBeginningEvent
 	{
 		/// <summary>  
 		/// Gets the type of the event, which is <see cref="EventType.SetBackground"/>.  

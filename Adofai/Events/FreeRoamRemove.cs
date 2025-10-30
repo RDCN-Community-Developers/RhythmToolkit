@@ -10,10 +10,10 @@
 		/// <summary>  
 		/// Gets or sets the position associated with the free roam removal.  
 		/// </summary>  
-		public int Position { get; set; }
+		public RDPointN Position { get; set; } = new(1, 0);
 		/// <summary>  
 		/// Gets or sets the size of the area affected by the free roam removal.  
 		/// </summary>  
-		public int Size { get; set; }
+		public RDPointN Size { get; set; } = new(1, 0);
 	}
 }

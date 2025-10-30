@@ -6,6 +6,7 @@
 	[RDJsonEnumSerializable]
 	public enum TrackColorType
 	{
+		None,
 		/// <summary>
 		/// A single solid color for the track.
 		/// </summary>
@@ -33,6 +34,6 @@
 		/// <summary>
 		/// A color effect based on the volume of the track.
 		/// </summary>
-		Volume
+		Volume,
 	}
 }

@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			{
 				if (reader.TokenType == JsonTokenType.EndArray)
 				{
-					if (index == 6)
+					if (index == 7)
 						return audios;
 					throw new JsonException("Not enough elements in CountingSoundCollection.");
 				}

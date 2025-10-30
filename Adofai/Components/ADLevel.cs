@@ -271,6 +271,7 @@ namespace RhythmBase.Adofai.Components
 			settings.OnBeforeWriting();
 			using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
 			{
+				stream.SetLength(0);
 				JsonSerializer.Serialize(stream, this, options);
 			}
 			settings.OnAfterWriting();
@@ -312,14 +313,14 @@ namespace RhythmBase.Adofai.Components
 		/// Sets the parent of the tile to this level before adding it to the base collection.  
 		/// </summary>  
 		/// <param name="item">The tile to add to the level.</param>  
-		public override void Add(ITile item) => Insert(Count, item);
+		public override void Add(Tile item) => Insert(Count, item);
 		/// <summary>  
 		/// Inserts a tile into the level at the specified index.  
 		/// Sets the parent of the tile to this level before inserting it into the base collection.  
 		/// </summary>  
 		/// <param name="index">The zero-based index at which the tile should be inserted.</param>  
 		/// <param name="item">The tile to insert into the level.</param>  
-		public override void Insert(int index, ITile item)
+		public override void Insert(int index, Tile item)
 		{
 			item.Parent = this;
 			base.Insert(index, item);
@@ -327,12 +328,12 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Removes the tile at the specified index from the collection.
 		/// </summary>
-		/// <remarks>After removal, the tile's <see cref="ITile.Parent"/>, <see cref="ITile.Previous"/>, and <see
-		/// cref="ITile.Next"/> properties are set to <see langword="null"/>.</remarks>
+		/// <remarks>After removal, the tile's <see cref="Tile.Parent"/>, <see cref="Tile.Previous"/>, and <see
+		/// cref="Tile.Next"/> properties are set to <see langword="null"/>.</remarks>
 		/// <param name="index">The zero-based index of the tile to remove.</param>
 		public void RemoveAt(int index)
 		{
-			ITile tile = this[index];
+			Tile tile = this[index];
 			tile.Parent = null!;
 			tile.Previous = null;
 			tile.Next = null!;

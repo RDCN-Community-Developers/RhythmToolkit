@@ -4,14 +4,14 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event to move decorations in the Adofai editor.  
 	/// </summary>  
-	public class MoveDecorations : BaseTaggedTileAction, IEaseEvent, IStartEvent
+	public class MoveDecorations : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>
 		public override EventType Type => EventType.MoveDecorations;
 		/// <summary>  
 		/// Gets or sets the duration of the event.  
 		/// </summary>  
-		public float Duration { get; set; }
+		public float Duration { get; set; } = 1f;
 		/// <summary>  
 		/// Gets or sets the tag associated with the decoration.  
 		/// </summary>  
@@ -23,89 +23,83 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the position offset for the decoration.  
 		/// </summary>  
-		public RDPoint? PositionOffset { get; set; }
-		/// <summary>  
-		/// Gets or sets the parallax offset for the decoration.  
-		/// </summary>  
-		public RDPoint? ParallaxOffset { get; set; }
+		[RDJsonCondition($"$&.{nameof(PositionOffset)} is not null")]
+		public RDPoint? PositionOffset { get; set; } = new();
 		/// <summary>  
 		/// Gets or sets a value indicating whether the decoration is visible.  
-		/// </summary>  
-		public bool? Visible { get; set; }
+		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Visible)} is not null")]
+		public bool? Visible { get; set; } = true;
 		/// <summary>  
 		/// Gets or sets the reference point for the decoration's position.  
 		/// </summary>  
-		public DecorationRelativeTo? RelativeTo { get; set; }
+		[RDJsonCondition($"$&.{nameof(RelativeTo)} is not null")]
+		public DecorationRelativeTo? RelativeTo { get; set; } = DecorationRelativeTo.Global;
 		/// <summary>  
 		/// Gets or sets the image used for the decoration.  
 		/// </summary>  
-		public string DecorationImage { get; set; } = string.Empty;
+		[RDJsonCondition($"$&.{nameof(DecorationImage)} is not null")]
+		public string? DecorationImage { get; set; } = string.Empty;
 		/// <summary>  
 		/// Gets or sets the pivot offset for the decoration.  
 		/// </summary>  
-		public RDSize? PivotOffset { get; set; }
+		[RDJsonCondition($"$&.{nameof(PivotOffset)} is not null")]
+		public RDSize? PivotOffset { get; set; } = new();
 		/// <summary>  
 		/// Gets or sets the rotation offset for the decoration.  
 		/// </summary>  
-		public float? RotationOffset { get; set; }
+		[RDJsonCondition($"$&.{nameof(RotationOffset)} is not null")]
+		public float? RotationOffset { get; set; } = 0f;
 		/// <summary>  
 		/// Gets or sets the scale of the decoration.  
 		/// </summary>  
-		public RDSize? Scale { get; set; }
+		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
+		public RDSize? Scale { get; set; } = new();
 		/// <summary>  
 		/// Gets or sets the color of the decoration.  
 		/// </summary>  
-		public RDColor? Color { get; set; }
+		[RDJsonCondition($"$&.{nameof(Color)} is not null")]
+		public RDColor? Color { get; set; } = RDColor.White;
 		/// <summary>  
 		/// Gets or sets the opacity of the decoration.  
-		/// </summary>  
-		public float? Opacity { get; set; }
+		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Opacity)} is not null")]
+		public float? Opacity { get; set; } = 100;
 		/// <summary>  
 		/// Gets or sets the depth of the decoration.  
 		/// </summary>  
-		public int? Depth { get; set; }
+		[RDJsonCondition($"$&.{nameof(Depth)} is not null")]
+		public int? Depth { get; set; } = -1;
 		/// <summary>  
 		/// Gets or sets the parallax value for the decoration.  
 		/// </summary>  
-		public RDPoint? Parallax { get; set; }
+		[RDJsonCondition($"$&.{nameof(Parallax)} is not null")]
+		public RDPoint? Parallax { get; set; } = new(0, 0);
+		/// <summary>  
+		/// Gets or sets the parallax offset for the decoration.  
+		/// </summary> 
+		[RDJsonCondition($"$&.{nameof(ParallaxOffset)} is not null")]
+		public RDPoint? ParallaxOffset { get; set; }
+		public float AngleOffset { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the masking type for the decoration.  
 		/// </summary>  
-		public MaskingTypes? MaskingType { get; set; }
+		[RDJsonCondition($"$&.{nameof(MaskingType)} is not null")]
+		public MaskingType? MaskingType { get; set; } = Events.MaskingType.None;
 		/// <summary>  
 		/// Gets or sets a value indicating whether to use masking depth.  
 		/// </summary>  
-		public bool? UseMaskingDepth { get; set; }
+		[RDJsonCondition($"$&.{nameof(UseMaskingDepth)} is not null")]
+		public bool? UseMaskingDepth { get; set; } = false;
 		/// <summary>  
 		/// Gets or sets the front depth for masking.  
 		/// </summary>  
-		public int? MaskingFrontDepth { get; set; }
+		[RDJsonCondition($"$&.{nameof(MaskingFrontDepth)} is not null")]
+		public int? MaskingFrontDepth { get; set; } = -1;
 		/// <summary>  
 		/// Gets or sets the back depth for masking.  
 		/// </summary>  
-		public int? MaskingBackDepth { get; set; }
-		/// <summary>  
-		/// Specifies the masking types available for the decoration.  
-		/// </summary>  
-		[RDJsonEnumSerializable]
-		public enum MaskingTypes
-		{
-			/// <summary>  
-			/// No masking is applied.  
-			/// </summary>  
-			None,
-			/// <summary>  
-			/// Applies a mask to the decoration.  
-			/// </summary>  
-			Mask,
-			/// <summary>  
-			/// Makes the decoration visible only inside the mask.  
-			/// </summary>  
-			VisibleInsideMask,
-			/// <summary>  
-			/// Makes the decoration visible only outside the mask.  
-			/// </summary>  
-			VisibleOutsideMask
-		}
+		[RDJsonCondition($"$&.{nameof(MaskingBackDepth)} is not null")]
+		public int? MaskingBackDepth { get; set; } = -1;
 	}
 }

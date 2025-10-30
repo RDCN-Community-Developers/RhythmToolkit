@@ -56,13 +56,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Add an event to decoration.
 		/// </summary>
 		/// <param name="item">Decoration event.</param>
-		public override void Add(BaseDecorationAction item)
+		public override bool Add(BaseDecorationAction item)
 		{
 			item._parent?.Remove(item);
 			item._parent = this;
-			base.Add(item);
+			bool success = base.Add(item);
 			if (Parent is not null)
-				Parent?.AddInternal(item);
+				success &= Parent.AddInternal(item);
+			return success;
 		}
 
 		/// <summary>

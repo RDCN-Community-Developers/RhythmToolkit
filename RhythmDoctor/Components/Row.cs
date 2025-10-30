@@ -113,32 +113,26 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Adds an item to the row.
 		/// </summary>
 		/// <param name="item">The row event to add.</param>
-		public override void Add(BaseRowAction item)
+		public override bool Add(BaseRowAction item)
 		{
-			if (item is not BaseBeat ||
-				item is BaseBeat && (
-				EventTypeEnumsForRowClassic.Contains(item.Type) && RowType is Events.RowTypes.Classic ||
-				EventTypeEnumsForRowOneshot.Contains(item.Type) && RowType is Events.RowTypes.Oneshot
+			if (item is BaseBeat &&
+				(item is not BaseBeat || (!EventTypeEnumsForRowClassic.Contains(item.Type) || RowType is not Events.RowTypes.Classic) &&
+				(!EventTypeEnumsForRowOneshot.Contains(item.Type) || RowType is not Events.RowTypes.Oneshot))
 				)
-				)
-			{
-				item._parent?.Remove(item);
-				item._parent = this;
-				base.Add(item);
-				if (Parent is not null)
-					Parent?.AddInternal(item);
-				return;
-			}
-			throw new IllegalRowEventTypeException(item.Type, RowType);
+				throw new IllegalRowEventTypeException(item.Type, RowType);
+			item._parent?.Remove(item);
+			item._parent = this;
+			bool success = base.Add(item);
+			if (Parent is not null)
+				success &= Parent.AddInternal(item);
+			return success;
 		}
-
 		/// <summary>
 		/// Removes an item from the row.
 		/// </summary>
 		/// <param name="item">The row event to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
 		public override bool Remove(BaseRowAction item) => Parent?.RemoveInternal(item) ?? false;
-
 		private RowTypes _rowType;
 		[RDJsonIgnore]
 		internal RDLevel? Parent = null;

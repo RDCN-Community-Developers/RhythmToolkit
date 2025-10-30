@@ -2,6 +2,7 @@
 using RhythmBase.RhythmDoctor.Utils;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using static RhythmBase.RhythmDoctor.Utils.Utils;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -153,7 +154,7 @@ namespace RhythmBase.RhythmDoctor.Events
 					typel.Add(lines[i][1..]);
 				else if (lines[i].StartsWith('{'))
 #endif
-					datal.Add(JsonElement.Parse(lines[i]));
+					datal.Add(JsonSerializer.SerializeToElement(lines[i]));
 			}
 			types = [.. typel];
 			data = [.. datal];

@@ -45,14 +45,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Adds an event to the collection.
 		/// </summary>
 		/// <param name="item">The event to add.</param>
-		public void Add(IBaseEvent item)
+		public bool Add(IBaseEvent item)
 		{
-			TypedEventCollection<IBaseEvent> list = [];
 			if (eventsBeatOrder.TryGetValue(item.Beat, out TypedEventCollection<IBaseEvent>? value))
-				value.Add(item);
-			else
-				eventsBeatOrder.Insert(item.Beat, [item]);
+				return value.Add(item);
+			eventsBeatOrder.Insert(item.Beat, [item]);
+			return true;
 		}
+		void ICollection<IBaseEvent>.Add(IBaseEvent item) => Add(item);
 		/// <summary>
 		/// Clears all events from the collection.
 		/// </summary>
