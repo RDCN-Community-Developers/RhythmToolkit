@@ -29,7 +29,6 @@ public class SetParticle : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// Gets or sets the easing type for the particle effect.
 	/// </summary>
 	public EaseType Ease { get; set; }
-#warning 缺少三种模式
 }
 /// <summary>
 /// Specifies the target mode for the particle effect.

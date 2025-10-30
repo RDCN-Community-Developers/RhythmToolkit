@@ -6,6 +6,9 @@
 	[RDJsonEnumSerializable]
 	public enum TrackColorType
 	{
+		/// <summary>
+		/// Represents a state where no specific value or option is selected.
+		/// </summary>
 		None,
 		/// <summary>
 		/// A single solid color for the track.

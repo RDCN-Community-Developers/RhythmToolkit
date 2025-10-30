@@ -47,10 +47,27 @@ public class FreeRoam : BaseTileEvent, IEaseEvent, ISingleEvent
 	[RDJsonProperty("angleCorrectionDir")]
 	public AngleCorrectionDirection AngleCorrectionDirection { get; set; } = AngleCorrectionDirection.Backward;
 }
+/// <summary>
+/// Specifies the direction used for angle correction when Free Roam mode adjusts or normalizes angles.
+/// </summary>
+/// <remarks>
+/// Angle correction controls how the editor corrects or resolves angular discontinuities
+/// when exiting or interacting with free roam. Use <see cref="None"/> to disable correction,
+/// <see cref="Forward"/> to prefer increasing angle adjustments, or <see cref="Backward"/> to prefer decreasing adjustments.
+/// </remarks>
 [RDJsonEnumSerializable]
 public enum AngleCorrectionDirection
 {
+	/// <summary>
+	/// Do not perform any angle correction.
+	/// </summary>
 	None,
+	/// <summary>
+	/// Correct angles by choosing the forward (increasing) rotation direction.
+	/// </summary>
 	Forward,
+	/// <summary>
+	/// Correct angles by choosing the backward (decreasing) rotation direction.
+	/// </summary>
 	Backward,
 }

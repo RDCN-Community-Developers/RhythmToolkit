@@ -42,6 +42,9 @@
 		/// Adds a bookmark to the level.
 		/// </summary>
 		Bookmark,
+		/// <summary>
+		/// Represents a change track for monitoring modifications to a collection of items.
+		/// </summary>
 		ChangeTrack,
 		/// <summary>
 		/// Creates a checkpoint in the level.
@@ -87,6 +90,9 @@
 		/// Adds a twirl effect in free roam mode.
 		/// </summary>
 		FreeRoamTwirl,
+		/// <summary>
+		/// Represents a warning message displayed when the user is in free roam mode.
+		/// </summary>
 		FreeRoamWarning,
 		/// <summary>
 		/// Applies a hall of mirrors effect.

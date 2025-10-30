@@ -46,6 +46,9 @@ public class AddParticle : BaseEvent, IBeginningEvent
 	/// Gets or sets the color gradient over the lifetime of the particles.
 	/// </summary>
 	public ColorGradient ColorOverLifetime { get; set; } = new ColorGradient();
+	/// <summary>
+	/// Gets or sets the size range of an object over its lifetime.
+	/// </summary>
 	public ValueRange SizeOverLifetime { get; set; } = new ValueRange(100);
 	/// <summary>
 	/// Gets or sets the maximum number of particles.

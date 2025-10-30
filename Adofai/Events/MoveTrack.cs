@@ -30,10 +30,19 @@ public class MoveTrack : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// </summary> 
 	[RDJsonCondition($"$&.{nameof(PositionOffset)} is not null")]
 	public RDPoint? PositionOffset { get; set; }
+	/// <summary>
+	/// Gets or sets the rotation offset value.
+	/// </summary>
 	[RDJsonCondition($"$&.{nameof(RotationOffset)} is not null")]
 	public float? RotationOffset { get; set; }
+	/// <summary>
+	/// Gets or sets the scale factor for resizing operations.
+	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
 	public RDSize? Scale { get; set; }
+	/// <summary>
+	/// Gets or sets the opacity level of the element.
+	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Opacity)} is not null")]
 	public float? Opacity { get; set; }
 	/// <summary>  

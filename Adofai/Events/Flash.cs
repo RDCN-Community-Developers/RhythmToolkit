@@ -37,9 +37,19 @@ public class Flash : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// </summary>  
 	public EaseType Ease { get; set; }
 }
+/// <summary>
+/// Specifies the plane on which a flash effect is rendered.
+/// Use this enum to select whether the flash should appear behind or in front of foreground elements.
+/// </summary>
 [RDJsonEnumSerializable]
 public enum FlashPlane
 {
+	/// <summary>
+	/// Render the flash on the background plane (behind most foreground elements).
+	/// </summary>
 	Background,
+	/// <summary>
+	/// Render the flash on the foreground plane (in front of most foreground elements).
+	/// </summary>
 	Foreground,
 }

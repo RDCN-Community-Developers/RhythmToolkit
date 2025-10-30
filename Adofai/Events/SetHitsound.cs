@@ -35,9 +35,13 @@ public enum GameSound
 	/// </summary>  
 	Midspin
 }
+/// <summary>
+/// 
+/// </summary>
 [RDJsonEnumSerializable]
 public enum HitSound
 {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 	Hat,
 	Kick,
 	Shaker,
@@ -66,4 +70,5 @@ public enum HitSound
 	IceTile,
 	VehiclePositive,
 	VehicleNegative
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 }

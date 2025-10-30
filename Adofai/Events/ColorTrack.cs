@@ -49,7 +49,13 @@ public class ColorTrack : BaseTileEvent, ISingleEvent
 	/// Gets or sets the intensity of the track glow.  
 	/// </summary>  
 	public float TrackGlowIntensity { get; set; } = 100f;
+	/// <summary>
+	/// Gets or sets a value indicating whether floor icon outlines are enabled.
+	/// </summary>
 	[RDJsonCondition($"$&.{nameof(FloorIconOutlines)} is not null")]
 	public bool? FloorIconOutlines { get; set; }
+	/// <summary>
+	/// Gets or sets a value indicating whether only the current tile should be processed.
+	/// </summary>
 	public bool JustThisTile { get; set; } = false;
 }

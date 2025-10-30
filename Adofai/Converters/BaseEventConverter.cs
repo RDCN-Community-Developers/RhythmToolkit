@@ -14,9 +14,7 @@ namespace RhythmBase.Adofai.Converters
 		{
 			if (reader.TokenType != JsonTokenType.StartObject)
 				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
-
 			ReadOnlySpan<byte> type = default;
-
 			Utf8JsonReader checkpoint = reader;
 			while (reader.Read())
 			{

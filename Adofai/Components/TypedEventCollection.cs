@@ -9,6 +9,9 @@ namespace RhythmBase.Adofai.Components
 	public class TypedEventCollection<TEvent> : IEnumerable<TEvent> where TEvent : IBaseEvent
 	{
 		private const int bw = sizeof(ulong) * 8;
+		/// <summary>
+		/// Gets the number of elements contained in the list.
+		/// </summary>
 		public int Count => list.Count;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TypedEventCollection{TEvent}"/> class.

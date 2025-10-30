@@ -18,6 +18,9 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	/// Gets or sets the reference point for the decoration's position.  
 	/// </summary>  
 	public DecorationRelativeTo RelativeTo { get; set; } = DecorationRelativeTo.Global;
+	/// <summary>
+	/// Gets or sets a value indicating whether the object should adhere to the floor surface.
+	/// </summary>
 	public bool StickToFloor { get; set; } = false;
 	/// <summary>  
 	/// Gets or sets the pivot offset of the decoration.  
@@ -66,6 +69,9 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 		!$&.{nameof(SyncFloorDepth)}
 		""")]
 	public int Depth { get; set; } = -1;
+	/// <summary>
+	/// Gets or sets a value indicating whether the floor depth synchronization is enabled.
+	/// </summary>
 	public bool SyncFloorDepth { get; set; }
 	/// <summary>  
 	/// Gets or sets the parallax effect of the decoration.  
@@ -94,6 +100,9 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	/// Gets or sets the masking type of the decoration.  
 	/// </summary>  
 	public MaskingType MaskingType { get; set; } = MaskingType.None;
+	/// <summary>
+	/// Gets or sets the target string to be masked.
+	/// </summary>
 	public string MaskingTarget { get; set; } = string.Empty;
 	/// <summary>  
 	/// Gets or sets a value indicating whether masking depth is used.  
@@ -112,15 +121,30 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	/// </summary>  
 	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.Events.{nameof(Events.MaskingType)}.{nameof(MaskingType.Mask)}")]
 	public HitboxTypes Hitbox { get; set; } = HitboxTypes.None;
+	/// <summary>
+	/// Gets or sets the type of trigger for the hitbox.
+	/// </summary>
 	public HitboxTriggerType HitboxTriggerType { get; set; } = HitboxTriggerType.Once;
+	/// <summary>
+	/// Gets or sets the interval, in milliseconds, at which the hitbox is repeatedly activated.
+	/// </summary>
 	public float HitboxRepeatInterval { get; set; } = 1000f;
 	/// <summary>  
 	/// Gets or sets the event tag associated with the hitbox.  
 	/// </summary>  
 	public string HitboxEventTag { get; set; } = string.Empty;
+	/// <summary>
+	/// Gets or sets the target for hitbox detection.
+	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Hitbox)} is not RhythmBase.Adofai.Events.{nameof(HitboxTypes)}.{nameof(HitboxTypes.None)}")]
 	public HitboxDetectTarget HitboxDetectTarget { get; set; } = HitboxDetectTarget.Planet;
+	/// <summary>
+	/// Gets or sets the target planet for hitbox detection.
+	/// </summary>
 	public HitboxTargetPlanet HitboxTargetPlanet { get; set; } = HitboxTargetPlanet.Any;
+	/// <summary>
+	/// Gets or sets the decorative tag associated with the hitbox.
+	/// </summary>
 	public string HitboxDecoTag { get; set; } = string.Empty;
 	/// <summary>  
 	/// Gets or sets the type of fail hitbox for the decoration.  
@@ -143,23 +167,56 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	/// </summary>  
 	public string Components { get; set; } = string.Empty;
 }
+/// <summary>
+/// Specifies how a decoration's hitbox trigger should behave when activated.
+/// </summary>
 [RDJsonEnumSerializable]
 public enum HitboxTriggerType
 {
+	/// <summary>
+	/// The hitbox triggers a single time and then stops until reactivated.
+	/// </summary>
 	Once,
+	/// <summary>
+	/// The hitbox triggers each time a distinct touch or contact occurs.
+	/// </summary>
 	PerTouch,
+	/// <summary>
+	/// The hitbox triggers repeatedly at the configured repeat interval while active.
+	/// </summary>
 	Repeat,
 }
+/// <summary>
+/// Defines what kinds of objects the hitbox detection system should consider as valid targets.
+/// </summary>
 [RDJsonEnumSerializable]
 public enum HitboxDetectTarget
 {
+	/// <summary>
+	/// The hitbox detects collisions with planets.
+	/// </summary>
 	Planet,
+	/// <summary>
+	/// The hitbox detects collisions with decorations.
+	/// </summary>
 	Decoration,
 }
+/// <summary>
+/// Specifies which planets are considered by the hitbox when the detect target is a planet.
+/// </summary>
 [RDJsonEnumSerializable]
 public enum HitboxTargetPlanet
 {
+	/// <summary>
+	/// The hitbox can target any planet (no restriction).
+	/// </summary>
 	Any,
+	/// <summary>
+	/// The hitbox targets the central planet.
+	/// </summary>
 	Center,
+	/// <summary>
+	/// The hitbox targets orbiting planets.
+	/// </summary>
 	Orbiting,
 }

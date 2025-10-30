@@ -67,6 +67,9 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// Gets or sets the angle of the track icon.  
 	/// </summary>  
 	public float TrackIconAngle { get; set; } = 0;
+	/// <summary>
+	/// Gets or sets a value indicating whether the track icon is flipped.
+	/// </summary>
 	public bool TrackIconFlpped { get; set; } = false;
 	/// <summary>  
 	/// Gets or sets a value indicating whether the track has a red swirl.  
@@ -103,6 +106,9 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// Gets or sets the glow color of the track.  
 	/// </summary>  
 	public RDColor TrackGlowColor { get; set; } = RDColor.White;
+	/// <summary>
+	/// Gets or sets a value indicating whether icon outlines should be tracked.
+	/// </summary>
 	public bool TrackIconOutlines { get; set; } = false;
 	/// <summary>  
 	/// Gets or sets the position of the object.  
@@ -137,6 +143,9 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// </summary>  
 	[RDJsonCondition($"!$&.{nameof(SyncFloorDepth)}")]
 	public int Depth { get; set; } = -1;
+	/// <summary>
+	/// Gets or sets a value indicating whether the floor depth synchronization is enabled.
+	/// </summary>
 	public bool SyncFloorDepth { get; set; } = false;
 	/// <summary>  
 	/// Gets or sets the parallax effect of the object.  
@@ -209,9 +218,17 @@ public enum TrackType
 	/// </summary>  
 	Midspin
 }
+/// <summary>
+/// Specifies the type of icon used to represent a track element in the application.
+/// </summary>
+/// <remarks>The <see cref="TrackIconType"/> enumeration provides various icon types that can be used to visually
+/// represent different track elements. Each value corresponds to a specific icon style, such as a swirl, snail, or
+/// rabbit, which can be used to convey different meanings or statuses within the application's user
+/// interface.</remarks>
 [RDJsonEnumSerializable]
 public enum TrackIconType
 {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 	None,
 	Swirl,
 	Snail,
@@ -226,4 +243,5 @@ public enum TrackIconType
 	MultiPlanetTwo,
 	MultiPlanetThreeMore,
 	Portal,
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 }

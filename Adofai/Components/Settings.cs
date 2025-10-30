@@ -115,6 +115,9 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the number of countdown ticks before the level starts.
 		/// </summary>
 		public float CountdownTicks { get; set; } = 4;
+		/// <summary>
+		/// Gets or sets the shape of the tile.
+		/// </summary>
 		public TileShape TileShape { get; set; } = TileShape.Long;
 		/// <summary>
 		/// Gets or sets the type of track color used in the level.
@@ -325,9 +328,27 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>  
 		public bool DisableV15Features { get; set; } = false;
 	}
+	/// <summary>
+	/// Represents the available tile shapes used by the level track.
+	/// </summary>
+	/// <remarks>
+	/// This enumeration is serialized to/from JSON with the <c>RDJsonEnumSerializable</c> attribute.
+	/// It is used to determine how floor tiles are rendered and laid out in the level.
+	/// </remarks>
 	[RDJsonEnumSerializable]
 	public enum TileShape
 	{
+		/// <summary>
+		/// A long tile shape. Typically used for standard long floor segments.
+		/// </summary>
 		Long,
+		/// <summary>
+		/// A short tile shape. Typically used for shorter floor segments or tighter turns.
+		/// </summary>
+		Short,
+		/// <summary>
+		/// A custom tile shape. Indicates that the tile geometry is user-defined or uses custom dimensions.
+		/// </summary>
+		Custom,
 	}
 }

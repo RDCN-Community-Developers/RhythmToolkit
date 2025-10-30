@@ -80,7 +80,6 @@ namespace RhythmBase.Adofai.Events
 		/// </summary> 
 		[RDJsonCondition($"$&.{nameof(ParallaxOffset)} is not null")]
 		public RDPoint? ParallaxOffset { get; set; }
-		public float AngleOffset { get; set; } = 0;
 		/// <summary>  
 		/// Gets or sets the masking type for the decoration.  
 		/// </summary>  

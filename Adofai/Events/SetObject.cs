@@ -81,6 +81,9 @@ public class SetObject : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(TrackIconFlipped)} is not null")]
 	public bool? TrackIconFlipped { get; set; }
+	/// <summary>
+	/// Gets or sets a value indicating whether the red swirl should be tracked.
+	/// </summary>
 	[RDJsonCondition($"$&.{nameof(TrackRedSwirl)} is not null")]
 	public bool? TrackRedSwirl { get; set; }
 	/// <summary>
@@ -98,6 +101,9 @@ public class SetObject : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(TrackGlowColor)} is not null")]
 	public RDColor? TrackGlowColor { get; set; }
+	/// <summary>
+	/// Gets or sets a value indicating whether icon outlines should be tracked.
+	/// </summary>
 	[RDJsonCondition($"$&.{nameof(TrackIconOutlines)} is not null")]
 	public bool? TrackIconOutlines { get; set; }
 }
