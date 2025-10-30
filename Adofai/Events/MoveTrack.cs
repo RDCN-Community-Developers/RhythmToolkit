@@ -29,14 +29,13 @@ public class MoveTrack : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// Gets or sets the position offset for the track movement.  
 	/// </summary> 
 	[RDJsonCondition($"$&.{nameof(PositionOffset)} is not null")]
-	public RDPoint? PositionOffset { get; set; } = new();
+	public RDPoint? PositionOffset { get; set; }
 	[RDJsonCondition($"$&.{nameof(RotationOffset)} is not null")]
-	public float? RotationOffset { get; set; } = 0;
+	public float? RotationOffset { get; set; }
 	[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
-	public RDSize? Scale { get; set; } = new();
+	public RDSize? Scale { get; set; }
 	[RDJsonCondition($"$&.{nameof(Opacity)} is not null")]
-	public float? Opacity { get; set; } = 100;
-	public float AngleOffset { get; set; } = 0;
+	public float? Opacity { get; set; }
 	/// <summary>  
 	/// Gets or sets the easing type for the track movement.  
 	/// </summary>  

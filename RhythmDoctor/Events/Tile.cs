@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
-		public RDPoint? Position { get; set; } = null;
+		public RDPoint? Position { get; set; }
 		/// <summary>
 		/// Gets or sets the tiling of the tile.
 		/// </summary>
@@ -35,7 +35,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
-		public RDPoint? Speed { get; set; } = null;
+		public RDPoint? Speed { get; set; }
 		/// <summary>
 		/// Gets or sets the type of tiling.
 		/// </summary>

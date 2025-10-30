@@ -27,13 +27,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Zoom)} is not null")]
-		public int? Zoom { get; set; } = null;
+		public int? Zoom { get; set; }
 		/// <summary>
 		/// Gets or sets the angle of the camera.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
-		public RDExpression? Angle { get; set; } = null;
+		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the event.
 		/// </summary>

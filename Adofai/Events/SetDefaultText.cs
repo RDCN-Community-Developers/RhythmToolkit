@@ -34,16 +34,16 @@ public class SetDefaultText : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// <summary>  
 	/// Gets or sets the text for the level title.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(LevelTitleText)} is not null")]
+	[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(LevelTitleText)})")]
 	public string LevelTitleText { get; set; } = string.Empty;
 	/// <summary>  
 	/// Gets or sets the text to display upon level completion.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(CongratsText)} is not null")]
+	[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(CongratsText)})")]
 	public string CongratsText { get; set; } = string.Empty;
 	/// <summary>  
 	/// Gets or sets the text to display for a perfect score.  
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(PerfectText)} is not null")]
+	[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(PerfectText)})")]
 	public string PerfectText { get; set; } = string.Empty;
 }

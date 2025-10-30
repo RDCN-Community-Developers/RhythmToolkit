@@ -50,7 +50,6 @@ public class FreeRoam : BaseTileEvent, IEaseEvent, ISingleEvent
 [RDJsonEnumSerializable]
 public enum AngleCorrectionDirection
 {
-#warning Review the names of these enum members for accuracy.
 	None,
 	Forward,
 	Backward,

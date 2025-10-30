@@ -16,7 +16,7 @@ namespace RhythmBase.Global.Converters
 
 		public override void Write(Utf8JsonWriter writer, RDColor value, JsonSerializerOptions options)
 		{
-			writer.WriteStringValue(value.ToString("RRGGBBAA"));
+			writer.WriteStringValue(value.ToString("rrggbbaa"));
 		}
 	}
 }

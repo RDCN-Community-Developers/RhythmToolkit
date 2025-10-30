@@ -40,7 +40,6 @@ public class Flash : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 [RDJsonEnumSerializable]
 public enum FlashPlane
 {
-#warning Review the names of these enum members for accuracy.
 	Background,
-	Foreground
+	Foreground,
 }

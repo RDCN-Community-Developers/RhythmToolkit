@@ -16,18 +16,15 @@ public class SetParticle : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// Gets or sets the duration of the particle effect.
 	/// </summary>
 	public float Duration { get; set; } = 1f;
-
 	/// <summary>
 	/// Gets or sets the tag associated with the particle effect.
 	/// </summary>
 	public string Tag { get; set; } = string.Empty;
-
 	/// <summary>
 	/// Gets or sets the target mode for the particle effect.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(TargetMode)} is not null")]
 	public TargetMode? TargetMode { get; set; } = Events.TargetMode.Start;
-
 	/// <summary>
 	/// Gets or sets the easing type for the particle effect.
 	/// </summary>

@@ -31,19 +31,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
-		public RDSizeE? Scale { get; set; } = null;
+		public RDSizeE? Scale { get; set; }
 		/// <summary>
 		/// Gets or sets the angle of the move event.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
-		public RDExpression? Angle { get; set; } = null;
+		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the pivot point of the move event.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Pivot)} is not null")]
-		public RDPointE? Pivot { get; set; } = null;
+		public RDPointE? Pivot { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the move event.
 		/// </summary>

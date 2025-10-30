@@ -27,12 +27,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the clap sound for player 2.
 		/// </summary>
 		[RDJsonCondition("$&.P2Sound is not null")]
-		public RDAudio? P2Sound { get; set; } = null;
+		public RDAudio? P2Sound { get; set; }
 		/// <summary>
 		/// Gets or sets the clap sound for the CPU.
 		/// </summary>
 		[RDJsonCondition("$&.CpuSound is not null")]
-		public RDAudio? CpuSound { get; set; } = null;
+		public RDAudio? CpuSound { get; set; }
 		/// <summary>
 		/// Gets or sets the row type for the event.
 		/// </summary>

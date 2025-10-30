@@ -44,7 +44,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Only used if not null.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(ArcAngle)} is not null")]
-		public int? ArcAngle { get; set; } = null;
+		public int? ArcAngle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the spin speed per second for the subdivision rows.

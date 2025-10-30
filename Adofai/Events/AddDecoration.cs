@@ -70,8 +70,8 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	/// <summary>  
 	/// Gets or sets the parallax effect of the decoration.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(RelativeTo)} is RhythmBase.Adofai.Events.{nameof(DecorationRelativeTo)}.{nameof(DecorationRelativeTo.Camera)}")]
-	public RDSizeN Parallax { get; set; } = new(0 ,0);
+	[RDJsonCondition($"$&.{nameof(RelativeTo)} is not RhythmBase.Adofai.Events.{nameof(DecorationRelativeTo)}.{nameof(DecorationRelativeTo.Camera)}")]
+	public RDSizeN Parallax { get; set; } = new(0, 0);
 	/// <summary>  
 	/// Gets or sets the parallax offset of the decoration.  
 	/// </summary>  
@@ -112,7 +112,7 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	/// </summary>  
 	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.Events.{nameof(Events.MaskingType)}.{nameof(MaskingType.Mask)}")]
 	public HitboxTypes Hitbox { get; set; } = HitboxTypes.None;
-	public HitboxTriggerTypes HitboxTriggerType { get; set; } = HitboxTriggerTypes.Once;
+	public HitboxTriggerType HitboxTriggerType { get; set; } = HitboxTriggerType.Once;
 	public float HitboxRepeatInterval { get; set; } = 1000f;
 	/// <summary>  
 	/// Gets or sets the event tag associated with the hitbox.  
@@ -144,20 +144,22 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	public string Components { get; set; } = string.Empty;
 }
 [RDJsonEnumSerializable]
-public enum HitboxTriggerTypes
+public enum HitboxTriggerType
 {
-#warning Review the names of these enum members.
 	Once,
+	PerTouch,
+	Repeat,
 }
 [RDJsonEnumSerializable]
 public enum HitboxDetectTarget
 {
-#warning Review the names of these enum members.
 	Planet,
+	Decoration,
 }
 [RDJsonEnumSerializable]
 public enum HitboxTargetPlanet
 {
-#warning Review the names of these enum members.
 	Any,
+	Center,
+	Orbiting,
 }

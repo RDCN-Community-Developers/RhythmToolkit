@@ -34,20 +34,20 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
-		public RDSizeE? Scale { get; set; } = null;
+		public RDSizeE? Scale { get; set; }
 		/// <summary>
 		/// Gets or sets the angle.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
-		public RDExpression? Angle { get; set; } = null;
+		public RDExpression? Angle { get; set; }
 		/// <summary>
 		/// Gets or sets the pivot.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&" +
 			$"$&.{nameof(Pivot)} is not null")]
-		public float? Pivot { get; set; } = null;
+		public float? Pivot { get; set; }
 		/// <summary>
 		/// Gets or sets the duration of the move row event.
 		/// </summary>

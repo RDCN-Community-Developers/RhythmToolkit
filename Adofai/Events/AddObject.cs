@@ -212,11 +212,18 @@ public enum TrackType
 [RDJsonEnumSerializable]
 public enum TrackIconType
 {
-#warning Req
 	None,
 	Swirl,
 	Snail,
 	DoubleSnail,
 	Rabbit,
 	DoubleRabbit,
+	Checkpoint,
+	HoldArrowShort,
+	HoldArrowLong,
+	HoldReleaseShort,
+	HoldReleaseLong,
+	MultiPlanetTwo,
+	MultiPlanetThreeMore,
+	Portal,
 }

@@ -24,57 +24,57 @@ namespace RhythmBase.Adofai.Events
 		/// Gets or sets the position offset for the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(PositionOffset)} is not null")]
-		public RDPoint? PositionOffset { get; set; } = new();
+		public RDPoint? PositionOffset { get; set; }
 		/// <summary>  
 		/// Gets or sets a value indicating whether the decoration is visible.  
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Visible)} is not null")]
-		public bool? Visible { get; set; } = true;
+		public bool? Visible { get; set; }
 		/// <summary>  
 		/// Gets or sets the reference point for the decoration's position.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(RelativeTo)} is not null")]
-		public DecorationRelativeTo? RelativeTo { get; set; } = DecorationRelativeTo.Global;
+		public DecorationRelativeTo? RelativeTo { get; set; }
 		/// <summary>  
 		/// Gets or sets the image used for the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(DecorationImage)} is not null")]
-		public string? DecorationImage { get; set; } = string.Empty;
+		public string? DecorationImage { get; set; }
 		/// <summary>  
 		/// Gets or sets the pivot offset for the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(PivotOffset)} is not null")]
-		public RDSize? PivotOffset { get; set; } = new();
+		public RDSize? PivotOffset { get; set; }
 		/// <summary>  
 		/// Gets or sets the rotation offset for the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(RotationOffset)} is not null")]
-		public float? RotationOffset { get; set; } = 0f;
+		public float? RotationOffset { get; set; }
 		/// <summary>  
 		/// Gets or sets the scale of the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
-		public RDSize? Scale { get; set; } = new();
+		public RDSize? Scale { get; set; }
 		/// <summary>  
 		/// Gets or sets the color of the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(Color)} is not null")]
-		public RDColor? Color { get; set; } = RDColor.White;
+		public RDColor? Color { get; set; }
 		/// <summary>  
 		/// Gets or sets the opacity of the decoration.  
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Opacity)} is not null")]
-		public float? Opacity { get; set; } = 100;
+		public float? Opacity { get; set; }
 		/// <summary>  
 		/// Gets or sets the depth of the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(Depth)} is not null")]
-		public int? Depth { get; set; } = -1;
+		public int? Depth { get; set; }
 		/// <summary>  
 		/// Gets or sets the parallax value for the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(Parallax)} is not null")]
-		public RDPoint? Parallax { get; set; } = new(0, 0);
+		public RDPoint? Parallax { get; set; }
 		/// <summary>  
 		/// Gets or sets the parallax offset for the decoration.  
 		/// </summary> 
@@ -85,21 +85,21 @@ namespace RhythmBase.Adofai.Events
 		/// Gets or sets the masking type for the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(MaskingType)} is not null")]
-		public MaskingType? MaskingType { get; set; } = Events.MaskingType.None;
+		public MaskingType? MaskingType { get; set; }
 		/// <summary>  
 		/// Gets or sets a value indicating whether to use masking depth.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(UseMaskingDepth)} is not null")]
-		public bool? UseMaskingDepth { get; set; } = false;
+		public bool? UseMaskingDepth { get; set; }
 		/// <summary>  
 		/// Gets or sets the front depth for masking.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(MaskingFrontDepth)} is not null")]
-		public int? MaskingFrontDepth { get; set; } = -1;
+		public int? MaskingFrontDepth { get; set; }
 		/// <summary>  
 		/// Gets or sets the back depth for masking.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(MaskingBackDepth)} is not null")]
-		public int? MaskingBackDepth { get; set; } = -1;
+		public int? MaskingBackDepth { get; set; }
 	}
 }

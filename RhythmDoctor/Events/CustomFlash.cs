@@ -20,26 +20,26 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the start color of the flash.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(StartColor)} is not null")]
-		public PaletteColor? StartColor { get; set; } = RDColor.White;
+		public PaletteColor? StartColor { get; set; }
 		/// <summary>
 		/// Gets or sets the end color of the flash.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(EndColor)} is not null")]
-		public PaletteColor? EndColor { get; set; } = RDColor.White;
+		public PaletteColor? EndColor { get; set; }
 		/// <inheritdoc />
 		public float Duration { get; set; } = 2;
 		/// <summary>
 		/// Gets or sets the start opacity of the flash.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(StartOpacity)} is not null")]
-		public int? StartOpacity { get; set; } = 100;
+		public int? StartOpacity { get; set; }
 		/// <summary>
 		/// Gets or sets the end opacity of the flash.
 		/// </summary>
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(EndOpacity)} is not null")]
-		public int? EndOpacity { get; set; } = 0;
+		public int? EndOpacity { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether the background is affected.
 		/// </summary>
