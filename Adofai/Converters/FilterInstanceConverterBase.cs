@@ -29,7 +29,6 @@ namespace RhythmBase.Adofai.Converters
 						Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.GetType().Name} not found.");
 #endif
 				}
-				var c = FilterTypeUtils.converters;
 			}
 			return value;
 		}

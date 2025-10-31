@@ -1,4 +1,5 @@
-﻿using RhythmBase.Adofai.Converters;
+﻿using RhythmBase.Adofai.Components.Filters;
+using RhythmBase.Adofai.Converters;
 using RhythmBase.Global.Components.Easing;
 using System.Text.Json;
 
@@ -7,6 +8,7 @@ namespace RhythmBase.Adofai.Events;
 /// <summary>
 /// Represents an advanced filter event in the Adofai event system.
 /// </summary>
+[RDJsonObjectNotSerializable]
 public class SetFilterAdvanced : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 {
 #pragma warning disable CS8618
@@ -51,7 +53,7 @@ public class SetFilterAdvanced : BaseTaggedTileEvent, IEaseEvent, IBeginningEven
 	/// Gets or sets the properties of the filter as a JSON object.
 	/// </summary>
 	[RDJsonConverter(typeof(JsonContentConverter))]
-	public JsonElement FilterProperties { get; set; } = new();
+	public IFilter FilterProperties { get; set; } = default!;
 }
 /// <summary>
 /// Represents the target type for the filter effect.

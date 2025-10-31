@@ -3,7 +3,7 @@
 	/// <summary>  
 	/// Represents an event to add text in the game.  
 	/// </summary>  
-	public class AddText : BaseEvent, IBeginningEvent
+	public class AddText : BaseTileEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>
 		public override EventType Type => EventType.AddText;

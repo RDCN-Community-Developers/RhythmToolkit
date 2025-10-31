@@ -49,7 +49,7 @@ public class SetFilter : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 			RhythmBase.Adofai.Events.{nameof(Events.Filter)}.{nameof(Filter.WaterDrop)} or
 			RhythmBase.Adofai.Events.{nameof(Events.Filter)}.{nameof(Filter.LightWater)}
 		""")]
-	public int Intensity { get; set; } = 100;
+	public float Intensity { get; set; } = 100f;
 	/// <summary>  
 	/// Gets or sets the duration of the filter effect.  
 	/// </summary>  

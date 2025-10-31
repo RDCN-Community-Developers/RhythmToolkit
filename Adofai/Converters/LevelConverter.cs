@@ -72,7 +72,6 @@ namespace RhythmBase.Adofai.Converters
 								level[tileE._floor].Add(tileE);
 							else
 								tileEventsNotLoad.Add(tileE);
-							Console.WriteLine(tileE);
 						}
 					}
 					reader.Read();
