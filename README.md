@@ -10,16 +10,16 @@ Thanks to the Rhythm Doctor fan community for their support of this project.
 
 ## Special Thanks
 
-- [0x4D2](__)
+- [0x4D2](https://github.com/0x4D25F2) for amounts of testing and feedback.
 
 | Project | Description | Link |
 | --- | --- | --- |
-| RhythmBase                      | Core library for level editing.         | ***You are here***  |
-| RhythmBase.Addition             | Extensions for levels.                  | **Not disclosed** |
-| RhythmBase.Interact             | Interact with Level editor.             | **Not disclosed** |
-| RhythmBase.Hospital             | Judgement logic for levels.             | **Not disclosed** |
+| RhythmBase                      | Core library for level editing.         | **You are here**  |
+| RhythmBase.Addition             | Extensions for levels.                  | *Not disclosed* |
+| RhythmBase.Interact             | Interact with Level editor.             | *Not disclosed* |
+| RhythmBase.Hospital             | Judgement logic for levels.             | *Not disclosed* |
 | RhythmBase.Lite                 | Lightweight version of RhythmBase.      | [Go there](https://github.com/RDCN-Community-Developers/RhythmToolkitLite)  |
-| RhythmBase.Control.Core         | Core library for custom controls.       | **Not disclosed** |
-| RhythmBase.Control.WPF          | WPF controls for level editing UI.      | **Not disclosed** |
-| RhythmBase.Control.WinForms     | WinForms controls for level editing UI. | **Not disclosed** |
-| RhythmBase.Control.Avalonia     | Avalonia controls for level editing UI. | **Not disclosed** |
+| RhythmBase.Control.Core         | Core library for custom controls.       | *Not disclosed* |
+| RhythmBase.Control.WPF          | WPF controls for level editing UI.      | *Not disclosed* |
+| RhythmBase.Control.WinForms     | WinForms controls for level editing UI. | *Not disclosed* |
+| RhythmBase.Control.Avalonia     | Avalonia controls for level editing UI. | *Not disclosed* |
