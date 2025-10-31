@@ -92,6 +92,9 @@ internal class EventInstanceConverterSetFilterAdvanced : EventInstanceConverterB
 			using Utf8JsonWriter tempWriter = new(ms, new() { SkipValidation = true,});
 			if (FilterTypeUtils.converters.TryGetValue(value.Filter, out FilterInstanceConverterBase? converter))
 				converter.WriteProperties(tempWriter, value.FilterProperties, options);
+			tempWriter.Flush();
+			string jsonString = Encoding.UTF8.GetString(ms.ToArray());
+			writer.WriteStringValue(jsonString);
 		}
 
 	}

@@ -109,6 +109,10 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// The default crotchets per bar.
 		/// </summary>
 		public const int DefaultCPB = 8;
+		/// <summary>
+		/// Represents the minimum supported version for the application or feature.
+		/// </summary>
+		public const int MinimumSupportedVersion = 59;
 		internal const string RhythmBaseMacroEventDataHeader = "$RhythmBase_MacroData$";
 		internal const string RhythmBaseMacroEventHeader = "$RhythmBase_MacroEvent$";
 		/// <summary>
