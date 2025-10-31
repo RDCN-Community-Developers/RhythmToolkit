@@ -11,6 +11,7 @@ Thanks to the Rhythm Doctor fan community for their support of this project.
 ## Special Thanks
 
 - [0x4D2](https://github.com/0x4D25F2) for amounts of testing and feedback.
+- [mfgujhgh](https://github.com/mfgujhgh) for alogrithm guidance.
 
 | Project | Description | Link |
 | --- | --- | --- |

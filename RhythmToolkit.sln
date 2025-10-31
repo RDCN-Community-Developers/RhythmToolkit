@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastTest", "FastTest\FastTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RhythmHospital", "RhythmEdega\RhythmHospital.csproj", "{F0D688D5-E714-404F-87DC-63BB673B27C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RhythmBase", "RhythmBaseCS\RhythmBase.csproj", "{B7F525A8-CB1F-456C-B5C8-C998435C6150}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RhythmBase", "RhythmBase\RhythmBase.csproj", "{B7F525A8-CB1F-456C-B5C8-C998435C6150}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32EF0F5F-6012-485E-B537-7F413AED21B1}"
 EndProject
