@@ -69,7 +69,19 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets the default level, which consists of 10 repeated tiles.
 		/// </summary>
-		public static ADLevel Default => [.. new Tile().Repeat(10)];
+		public static ADLevel Default
+		{
+			get
+			{
+				ADLevel level = [.. new Tile().Repeat(10)];
+				level.Settings = new()
+				{
+					Version = GlobalSettings.DefaultVersionAdofai,
+				};
+				return level;
+			}
+		}
+
 		/// <summary>
 		/// Reads a level from a file.
 		/// Supports .adofai and .zip file extensions.

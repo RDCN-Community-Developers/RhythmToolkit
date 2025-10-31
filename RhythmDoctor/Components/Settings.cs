@@ -37,7 +37,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// The version number of the level.  
 		/// The minimum level version number supported by this library is 55.  
 		/// </summary>  
-		public int Version { get; set; }
+		public int Version { get; set; } = GlobalSettings.DefaultVersionRhythmDoctor;
 		/// <summary>  
 		/// Song artist.  
 		/// </summary>  

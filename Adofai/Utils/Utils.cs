@@ -185,10 +185,5 @@ namespace RhythmBase.Adofai.Utils
 		/// A dictionary that records the correspondence of event types inheriting from ADBaseEvent to ADEventType.
 		/// </summary>
 		public static readonly ReadOnlyDictionary<EventType, Type> ADEnumToEType = new(((EventType[])Enum.GetValues(typeof(EventType))).ToDictionary((EventType i) => i, ConvertToType));
-
-		/// <summary>
-		/// Represents the minimum supported version for the application or feature.
-		/// </summary>
-		public const int MinimumSupportedVersion = 13;
 	}
 }

@@ -37,9 +37,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 					if (reader.TokenType != JsonTokenType.StartObject)
 						throw new JsonException($"Expected StartObject token for 'settings', but got {reader.TokenType}.");
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
-					if(level.Settings.Version < Utils.Utils.MinimumSupportedVersion)
+					if(level.Settings.Version < GlobalSettings.MinimumSupportedVersionRhythmDoctor)
 					{
-						throw new VersionTooLowException(Utils.Utils.MinimumSupportedVersion);
+						throw new VersionTooLowException(GlobalSettings.MinimumSupportedVersionRhythmDoctor);
 					}
 				}
 				else if (reader.ValueSpan.SequenceEqual("rows"u8))
