@@ -7,6 +7,7 @@ public struct ColorRgb : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>ColorRGB</b>.
 	/// </summary>
+	[RDJsonProperty("ColorRGB")]
 	public RDColor ColorRGB { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

@@ -7,6 +7,7 @@ public struct VhsTracking : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Tracking</b>.
 	/// </summary>
+	[RDJsonProperty("Tracking")]
 	public float Tracking { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

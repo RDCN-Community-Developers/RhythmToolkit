@@ -17,10 +17,12 @@ public struct TvArcadeTo : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Contrast</b>.
 	/// </summary>
+	[RDJsonProperty("Contrast")]
 	public float Contrast { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>
+	[RDJsonProperty("Fade")]
 	public float Fade { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

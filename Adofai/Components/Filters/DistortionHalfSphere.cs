@@ -7,10 +7,12 @@ public struct DistortionHalfSphere : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>SphereSize</b>.
 	/// </summary>
+	[RDJsonProperty("SphereSize")]
 	public float SphereSize { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Strength</b>.
 	/// </summary>
+	[RDJsonProperty("Strength")]
 	public float Strength { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

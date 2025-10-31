@@ -7,6 +7,7 @@ public struct BlurBlurHole : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>
+	[RDJsonProperty("Size")]
 	public float Size { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_Radius</b>.

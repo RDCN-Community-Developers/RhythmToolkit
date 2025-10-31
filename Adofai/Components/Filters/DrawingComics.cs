@@ -7,6 +7,7 @@ public struct DrawingComics : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>DotSize</b>.
 	/// </summary>
+	[RDJsonProperty("DotSize")]
 	public float DotSize { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

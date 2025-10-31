@@ -27,6 +27,7 @@ public struct RealVhs : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Constrast</b>.
 	/// </summary>
+	[RDJsonProperty("Constrast")]
 	public float Constrast { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

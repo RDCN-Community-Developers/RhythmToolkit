@@ -22,6 +22,7 @@ public struct DrawingPaperTo : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.
 	/// </summary>
+	[RDJsonProperty("Intensity")]
 	public float Intensity { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed_Animation</b>.

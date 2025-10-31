@@ -12,6 +12,7 @@ public struct TvBrokenGlass : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>LightReflect</b>.
 	/// </summary>
+	[RDJsonProperty("LightReflect")]
 	public float LightReflect { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

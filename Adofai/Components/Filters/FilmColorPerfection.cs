@@ -7,6 +7,7 @@ public struct FilmColorPerfection : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Gamma</b>.
 	/// </summary>
+	[RDJsonProperty("Gamma")]
 	public float Gamma { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

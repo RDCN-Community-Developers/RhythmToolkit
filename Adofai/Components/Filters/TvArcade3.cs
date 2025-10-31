@@ -17,6 +17,7 @@ public struct TvArcade3 : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Contrast</b>.
 	/// </summary>
+	[RDJsonProperty("Contrast")]
 	public float Contrast { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

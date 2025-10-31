@@ -7,10 +7,12 @@ public struct BlurBloom : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Amount</b>.
 	/// </summary>
+	[RDJsonProperty("Amount")]
 	public float Amount { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Glow</b>.
 	/// </summary>
+	[RDJsonProperty("Glow")]
 	public float Glow { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

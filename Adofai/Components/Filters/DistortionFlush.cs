@@ -7,6 +7,7 @@ public struct DistortionFlush : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>
+	[RDJsonProperty("Value")]
 	public float Value { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

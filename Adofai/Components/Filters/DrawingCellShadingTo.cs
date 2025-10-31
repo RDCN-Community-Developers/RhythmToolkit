@@ -7,14 +7,17 @@ public struct DrawingCellShadingTo : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>EdgeSize</b>.
 	/// </summary>
+	[RDJsonProperty("EdgeSize")]
 	public float EdgeSize { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>ColorLevel</b>.
 	/// </summary>
+	[RDJsonProperty("ColorLevel")]
 	public float ColorLevel { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Blur</b>.
 	/// </summary>
+	[RDJsonProperty("Blur")]
 	public float Blur { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

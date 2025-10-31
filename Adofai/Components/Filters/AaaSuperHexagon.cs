@@ -1,5 +1,3 @@
-using RhythmBase.Adofai.Events;
-
 namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>AAA SuperHexagon</b>.
@@ -14,6 +12,7 @@ public struct AaaSuperHexagon : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>HexaSize</b>.
 	/// </summary>
+	[RDJsonProperty("HexaSize")]
 	public float HexaSize { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_BorderSize</b>.
@@ -43,6 +42,7 @@ public struct AaaSuperHexagon : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Radius</b>.
 	/// </summary>
+	[RDJsonProperty("Radius")]
 	public float Radius { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

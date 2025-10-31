@@ -7,6 +7,7 @@ public struct BlendToCameraExclusion : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>
+	[RDJsonProperty("BlendFX")]
 	public float BlendFX { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

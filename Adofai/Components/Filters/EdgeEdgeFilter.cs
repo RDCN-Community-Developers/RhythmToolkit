@@ -7,6 +7,7 @@ public struct EdgeEdgeFilter : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>GreenAmplifier</b>.
 	/// </summary>
+	[RDJsonProperty("GreenAmplifier")]
 	public float GreenAmplifier { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

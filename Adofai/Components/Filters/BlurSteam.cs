@@ -7,10 +7,12 @@ public struct BlurSteam : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Radius</b>.
 	/// </summary>
+	[RDJsonProperty("Radius")]
 	public float Radius { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Quality</b>.
 	/// </summary>
+	[RDJsonProperty("Quality")]
 	public float Quality { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

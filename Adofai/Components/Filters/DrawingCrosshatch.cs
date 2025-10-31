@@ -7,6 +7,7 @@ public struct DrawingCrosshatch : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Width</b>.
 	/// </summary>
+	[RDJsonProperty("Width")]
 	public float Width { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

@@ -7,6 +7,7 @@ public struct ColorNoise : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Noise</b>.
 	/// </summary>
+	[RDJsonProperty("Noise")]
 	public float Noise { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

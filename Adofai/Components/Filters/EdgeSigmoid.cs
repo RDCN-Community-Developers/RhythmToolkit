@@ -7,6 +7,7 @@ public struct EdgeSigmoid : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Gain</b>.
 	/// </summary>
+	[RDJsonProperty("Gain")]
 	public float Gain { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

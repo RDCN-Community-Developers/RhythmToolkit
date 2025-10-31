@@ -7,10 +7,12 @@ public struct NightVisionFX : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Greenness</b>.
 	/// </summary>
+	[RDJsonProperty("Greenness")]
 	public float Greenness { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Vignette</b>.
 	/// </summary>
+	[RDJsonProperty("Vignette")]
 	public float Vignette { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Vignette_Alpha</b>.
@@ -20,26 +22,32 @@ public struct NightVisionFX : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Distortion</b>.
 	/// </summary>
+	[RDJsonProperty("Distortion")]
 	public float Distortion { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Noise</b>.
 	/// </summary>
+	[RDJsonProperty("Noise")]
 	public float Noise { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.
 	/// </summary>
+	[RDJsonProperty("Intensity")]
 	public float Intensity { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Light</b>.
 	/// </summary>
+	[RDJsonProperty("Light")]
 	public float Light { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Light2</b>.
 	/// </summary>
+	[RDJsonProperty("Light2")]
 	public float Light2 { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Line</b>.
 	/// </summary>
+	[RDJsonProperty("Line")]
 	public float Line { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_Binocular_Size</b>.

@@ -7,6 +7,7 @@ public struct TvCompressionFX : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Parasite</b>.
 	/// </summary>
+	[RDJsonProperty("Parasite")]
 	public float Parasite { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

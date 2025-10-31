@@ -7,6 +7,7 @@ public struct DrawingEnhancedComics : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>DotSize</b>.
 	/// </summary>
+	[RDJsonProperty("DotSize")]
 	public float DotSize { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_ColorR</b>.
@@ -41,6 +42,7 @@ public struct DrawingEnhancedComics : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>ColorRGB</b>.
 	/// </summary>
+	[RDJsonProperty("ColorRGB")]
 	public RDColor ColorRGB { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

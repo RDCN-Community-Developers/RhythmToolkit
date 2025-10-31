@@ -7,6 +7,7 @@ public struct GlitchMozaic : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.
 	/// </summary>
+	[RDJsonProperty("Intensity")]
 	public float Intensity { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

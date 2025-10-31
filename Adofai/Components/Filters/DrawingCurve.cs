@@ -7,6 +7,7 @@ public struct DrawingCurve : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>
+	[RDJsonProperty("Size")]
 	public float Size { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

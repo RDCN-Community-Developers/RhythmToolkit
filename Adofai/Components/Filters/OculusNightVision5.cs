@@ -7,6 +7,7 @@ public struct OculusNightVision5 : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>FadeFX</b>.
 	/// </summary>
+	[RDJsonProperty("FadeFX")]
 	public float FadeFX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_Size</b>.

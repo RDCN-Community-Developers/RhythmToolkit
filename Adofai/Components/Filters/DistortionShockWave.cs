@@ -7,14 +7,17 @@ public struct DistortionShockWave : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>PosX</b>.
 	/// </summary>
+	[RDJsonProperty("PosX")]
 	public float PosX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>PosY</b>.
 	/// </summary>
+	[RDJsonProperty("PosY")]
 	public float PosY { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>
+	[RDJsonProperty("Speed")]
 	public float Speed { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

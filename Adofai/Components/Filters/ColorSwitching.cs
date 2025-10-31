@@ -7,6 +7,7 @@ public struct ColorSwitching : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Color</b>.
 	/// </summary>
+	[RDJsonProperty("Color")]
 	public int Color { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

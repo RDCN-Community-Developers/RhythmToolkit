@@ -12,10 +12,12 @@ public struct AaaSuperComputer : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>ShapeFormula</b>.
 	/// </summary>
+	[RDJsonProperty("ShapeFormula")]
 	public float ShapeFormula { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Shape</b>.
 	/// </summary>
+	[RDJsonProperty("Shape")]
 	public float Shape { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_BorderSize</b>.
@@ -40,6 +42,7 @@ public struct AaaSuperComputer : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Radius</b>.
 	/// </summary>
+	[RDJsonProperty("Radius")]
 	public float Radius { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

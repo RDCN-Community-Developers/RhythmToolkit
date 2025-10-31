@@ -7,10 +7,12 @@ public struct DrawingLines : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Number</b>.
 	/// </summary>
+	[RDJsonProperty("Number")]
 	public float Number { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Random</b>.
 	/// </summary>
+	[RDJsonProperty("Random")]
 	public float Random { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0

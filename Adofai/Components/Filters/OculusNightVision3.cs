@@ -7,6 +7,7 @@ public struct OculusNightVision3 : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Greenness</b>.
 	/// </summary>
+	[RDJsonProperty("Greenness")]
 	public float Greenness { get; set; }
 	/// <inheritdoc/>
 #if NETSTANDARD2_0
