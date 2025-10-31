@@ -7,7 +7,7 @@ namespace RhythmBase.Adofai.Events;
 /// <summary>
 /// Represents an advanced filter event in the Adofai event system.
 /// </summary>
-public class SetFilterAdvanced : BaseTaggedTileEvent, IDurationEvent, IBeginningEvent
+public class SetFilterAdvanced : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 {
 #pragma warning disable CS8618
 	/// <inheritdoc/>

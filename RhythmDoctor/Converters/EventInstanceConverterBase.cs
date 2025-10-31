@@ -5,12 +5,12 @@ using System.Text;
 using System.Text.Json;
 
 namespace RhythmBase.RhythmDoctor.Converters;
-internal abstract class EventInstantConverterBase
+internal abstract class EventInstanceConverterBase
 {
 	public abstract IBaseEvent ReadProperties(ref Utf8JsonReader reader, JsonSerializerOptions options);
 	public abstract void WriteProperties(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options);
 }
-internal abstract class EventInstantConverterBaseEvent<TEvent> : EventInstantConverterBase where TEvent : IBaseEvent, new()
+internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceConverterBase where TEvent : IBaseEvent, new()
 {
 	public override sealed IBaseEvent ReadProperties(ref Utf8JsonReader reader, JsonSerializerOptions options)
 	{

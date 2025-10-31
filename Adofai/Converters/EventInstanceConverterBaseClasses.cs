@@ -1,12 +1,9 @@
 ﻿using RhythmBase.Adofai.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json;
 
 namespace RhythmBase.Adofai.Converters
 {
-	internal class EventInstantConverterBaseTileEvent<TEvent> : EventInstantConverterBaseEvent<TEvent> where TEvent : BaseTileEvent, new()
+	internal class EventInstanceConverterBaseTileEvent<TEvent> : EventInstanceConverterBaseEvent<TEvent> where TEvent : BaseTileEvent, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
 		{
@@ -19,7 +16,7 @@ namespace RhythmBase.Adofai.Converters
 			return true;
 		}
 	}
-	internal class EventInstantConverterBaseTaggedTileEvent<TEvent> : EventInstantConverterBaseTileEvent<TEvent> where TEvent : BaseTaggedTileEvent, new()
+	internal class EventInstanceConverterBaseTaggedTileEvent<TEvent> : EventInstanceConverterBaseTileEvent<TEvent> where TEvent : BaseTaggedTileEvent, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
 		{

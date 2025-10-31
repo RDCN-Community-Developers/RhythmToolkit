@@ -4,12 +4,12 @@ using System.Text;
 using System.Text.Json;
 
 namespace RhythmBase.Adofai.Converters;
-internal abstract class EventInstantConverterBase
+internal abstract class EventInstanceConverterBase
 {
 	public abstract IBaseEvent ReadProperties(ref Utf8JsonReader reader, JsonSerializerOptions options);
 	public abstract void WriteProperties(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options);
 }
-internal abstract class EventInstantConverterBaseEvent<TEvent> : EventInstantConverterBase where TEvent : IBaseEvent, new()
+internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceConverterBase where TEvent : IBaseEvent, new()
 {
 	public override sealed IBaseEvent ReadProperties(ref Utf8JsonReader reader, JsonSerializerOptions options)
 	{
@@ -29,6 +29,12 @@ internal abstract class EventInstantConverterBaseEvent<TEvent> : EventInstantCon
 			if (propertyName.SequenceEqual("eventType"u8))
 				continue;
 			else if (!Read(ref reader, propertyName, ref value, options))
+			{
+#if DEBUG
+				if (!(false
+					))
+					Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.Type} not found.");
+#endif
 				value[
 #if NET8_0_OR_GREATER
 					Encoding.UTF8.GetString(propertyName)
@@ -36,6 +42,7 @@ internal abstract class EventInstantConverterBaseEvent<TEvent> : EventInstantCon
 						Encoding.UTF8.GetString(propertyName.ToArray())
 #endif
 					] = JsonElement.ParseValue(ref reader);
+			}
 		}
 		return value;
 	}
@@ -65,7 +72,7 @@ internal abstract class EventInstantConverterBaseEvent<TEvent> : EventInstantCon
 		{
 			if (btta.AngleOffset != 0)
 				writer.WriteNumber("angleOffset"u8, btta.AngleOffset);
-			if(!string.IsNullOrEmpty(btta.EventTag))
+			if (!string.IsNullOrEmpty(btta.EventTag))
 				writer.WriteString("eventTag"u8, btta.EventTag);
 		}
 	}

@@ -134,7 +134,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			throw new JsonException("Unexpected end of JSON.");
 		}
-
+		public override Settings ReadAsPropertyName(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			return base.ReadAsPropertyName(ref reader, typeToConvert, options);
+		}
 		public override void Write(Utf8JsonWriter writer, Settings value, JsonSerializerOptions options)
 		{
 			writer.WriteStartObject();

@@ -8,6 +8,10 @@
 This project serves **Rhythm Doctor** and **A Dance of Fire and Ice** level developers, aiming to provide a more systematic and intuitive level editing medium for developers.  
 Thanks to the Rhythm Doctor fan community for their support of this project.
 
+## Special Thanks
+
+- [0x4D2](__)
+
 | Project | Description | Link |
 | --- | --- | --- |
 | RhythmBase                      | Core library for level editing.         | ***You are here***  |

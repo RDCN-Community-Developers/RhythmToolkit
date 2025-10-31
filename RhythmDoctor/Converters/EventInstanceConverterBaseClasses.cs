@@ -13,7 +13,7 @@ using System.Text.Json;
 
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal abstract class EventInstantConverterBaseRowAction<TEvent> : EventInstantConverterBaseEvent<TEvent> where TEvent : BaseRowAction, new()
+	internal abstract class EventInstanceConverterBaseRowAction<TEvent> : EventInstanceConverterBaseEvent<TEvent> where TEvent : BaseRowAction, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
 		{
@@ -31,7 +31,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteNumber("row"u8, value.Parent?.Index ?? value._row);
 		}
 	}
-	internal abstract class EventInstantConverterBaseBeat<TEvent> : EventInstantConverterBaseRowAction<TEvent> where TEvent : BaseBeat, new()
+	internal abstract class EventInstanceConverterBaseBeat<TEvent> : EventInstanceConverterBaseRowAction<TEvent> where TEvent : BaseBeat, new()
 	{
 	}
 	//internal class EventInstantConverterAddClassicBeat : EventInstantConverterBaseBeat<AddClassicBeat>
@@ -61,7 +61,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 	//		writer.WriteString("setXs"u8, value.SetXs?.ToEnumString());
 	//	}
 	//}
-	internal abstract class EventInstantConverterBaseDecorationAction<TEvent> : EventInstantConverterBaseEvent<TEvent> where TEvent : BaseDecorationAction, new()
+	internal abstract class EventInstanceConverterBaseDecorationAction<TEvent> : EventInstanceConverterBaseEvent<TEvent> where TEvent : BaseDecorationAction, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
 		{
@@ -80,7 +80,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				writer.WriteString("target"u8, value.Parent?.Id ?? value._decoId);
 		}
 	}
-	internal abstract class EventInstantConverterBaseRowAnimation<TEvent> : EventInstantConverterBaseRowAction<TEvent> where TEvent : BaseRowAnimation, new()
+	internal abstract class EventInstanceConverterBaseRowAnimation<TEvent> : EventInstanceConverterBaseRowAction<TEvent> where TEvent : BaseRowAnimation, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
 		{
@@ -91,7 +91,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			base.Write(writer, ref value, options);
 		}
 	}
-	internal abstract class EventInstantConverterBaseBeatsPerMinute<TEvent> : EventInstantConverterBaseEvent<TEvent> where TEvent : BaseBeatsPerMinute, new()
+	internal abstract class EventInstanceConverterBaseBeatsPerMinute<TEvent> : EventInstanceConverterBaseEvent<TEvent> where TEvent : BaseBeatsPerMinute, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
 		{
@@ -102,7 +102,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			base.Write(writer, ref value, options);
 		}
 	}
-	internal abstract class EventInstantConverterBaseWindowEvent<TEvent> : EventInstantConverterBaseEvent<TEvent> where TEvent : BaseWindowEvent, new()
+	internal abstract class EventInstanceConverterBaseWindowEvent<TEvent> : EventInstanceConverterBaseEvent<TEvent> where TEvent : BaseWindowEvent, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
 		{
