@@ -3,6 +3,21 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+
+
+# level file
+*.rdzip
+*.zip
+*.rdlevel
+
+# 忽略 RhythmBase 文件夹
+/FastTest/
+/package/
+/RhythmEdega/
+/RhythmTools/
+/tmp/
+
+
 # User-specific files
 *.rsuser
 *.suo
@@ -358,10 +373,3 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-
-# level file
-*.rdzip
-*.zip
-*.rdlevel
-
-# 忽略 RhythmBase 文件夹
