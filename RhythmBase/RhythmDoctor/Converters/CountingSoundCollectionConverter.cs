@@ -11,20 +11,15 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			if (reader.TokenType != JsonTokenType.StartArray)
 				throw new JsonException($"Unexpected token parsing CountingSoundCollection. Expected StartArray or Null, got {reader.TokenType}.");
-			RDAudio[] audios = new RDAudio[7];
-			int index = 0;
+			List<RDAudio> audios = [];
 			while (reader.Read())
 			{
 				if (reader.TokenType == JsonTokenType.EndArray)
 				{
-					if (index == 7)
-						return audios;
-					throw new JsonException("Not enough elements in CountingSoundCollection.");
+					return [.. audios];
 				}
-				if (index >= 7)
-					throw new JsonException("Too many elements in CountingSoundCollection.");
 				RDAudio? audio = audioConverter.Read(ref reader, typeof(RDAudio), options) ?? throw new JsonException("Null audio in CountingSoundCollection.");
-				audios[index++] = audio;
+				audios.Add(audio);
 			}
 			throw new JsonException("Unexpected end of JSON while reading CountingSoundCollection.");
 		}
