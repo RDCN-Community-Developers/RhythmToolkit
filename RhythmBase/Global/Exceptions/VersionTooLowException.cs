@@ -19,7 +19,7 @@
 		/// <param name="version">The version that is too low.</param>
 		public VersionTooLowException(int version)
 		{
-			Message = string.Format("Might not support. The version {0} is too low. Save this level with the latest version of the game to update the level version.", LevelVersion);
+			Message = $"Might not support. The version {version} is too low. Save this level with the latest version of the game to update the level version.";
 			LevelVersion = version;
 		}
 		/// <summary>
@@ -29,7 +29,7 @@
 		/// <param name="innerException">The exception that is the cause of the current exception.</param>
 		public VersionTooLowException(int version, Exception innerException) : base(string.Empty, innerException)
 		{
-			Message = string.Format("Might not support. The version {0} is too low. Save this level with the latest version of the game to update the level version.", version);
+			Message = $"Might not support. The version {version} is too low. Save this level with the latest version of the game to update the level version.";
 			LevelVersion = version;
 		}
 	}

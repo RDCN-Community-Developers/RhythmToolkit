@@ -47,7 +47,7 @@
 		/// This value is used to determine compatibility and may be referenced when importing/exporting
 		/// Rhythm Doctor assets, selecting feature subsets, or displaying compatibility warnings to users.
 		/// </remarks>
-		public const int MinimumSupportedVersionRhythmDoctor = 59;
+		public const int MinimumSupportedVersionRhythmDoctor = 54;
 
 		/// <summary>
 		/// The default Rhythm Doctor version used when no explicit target version is specified.
