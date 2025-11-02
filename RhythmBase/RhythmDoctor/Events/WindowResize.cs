@@ -1,4 +1,5 @@
 ﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events
@@ -6,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Represents a window resize event.  
 	/// </summary>
-	public class WindowResize : BaseEvent, IEaseEvent
+	public class WindowResize : BaseEvent, IEaseEvent, IRoomEvent
 	{
 		private Tabs tab = Tabs.Actions;
 		/// <inheritdoc/>
@@ -38,5 +39,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <inheritdoc/>
 		public float Duration { get; set; } = 0f;
+		/// <inheritdoc/>
+		public RDRoom Rooms { get; set; }
 	}
 }
