@@ -66,7 +66,7 @@ internal class EventInstanceConverterSetFilterAdvanced : EventInstanceConverterB
 		{
 			ReadOnlySpan<byte> json = [(byte)'{', .. Encoding.UTF8.GetBytes((reader.GetString() ?? "")), (byte)'}'];
 			Utf8JsonReader subReader = new(json);
-			if(FilterTypeUtils.converters.TryGetValue(value.Filter, out FilterInstanceConverterBase? converter))
+			if (FilterTypeUtils.converters.TryGetValue(value.Filter, out FilterInstanceConverterBase? converter))
 				value.FilterProperties = converter.ReadProperties(ref subReader, options);
 		}
 		else
@@ -89,7 +89,7 @@ internal class EventInstanceConverterSetFilterAdvanced : EventInstanceConverterB
 		writer.WritePropertyName("filterProperties"u8);
 		{
 			using MemoryStream ms = new();
-			using Utf8JsonWriter tempWriter = new(ms, new() { SkipValidation = true,});
+			using Utf8JsonWriter tempWriter = new(ms, new() { SkipValidation = true, });
 			if (FilterTypeUtils.converters.TryGetValue(value.Filter, out FilterInstanceConverterBase? converter))
 				converter.WriteProperties(tempWriter, value.FilterProperties, options);
 			tempWriter.Flush();

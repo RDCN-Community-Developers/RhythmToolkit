@@ -41,7 +41,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			reader = checkpoint; IBaseEvent e;
 			if (!EnumConverter.TryParse(type, out EventType typeEnum))
-				e = ReadForwardEvent(ref reader) ?? new ForwardEvent() { ActureType = type.ToString() ?? "" };
+				e = ReadForwardEvent(ref reader) ?? new ForwardEvent() { ActualType = type.ToString() ?? "" };
 			else
 				e = converters[typeEnum].ReadProperties(ref reader, options);
 			if (reader.TokenType != JsonTokenType.EndObject)
@@ -88,8 +88,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 		{
 			(int bar, float beat) = value.Beat;
 			writer.WriteStartObject();
-			if (!string.IsNullOrEmpty(value.ActureType))
-				writer.WriteString("type", value.ActureType);
+			if (!string.IsNullOrEmpty(value.ActualType))
+				writer.WriteString("type", value.ActualType);
 			writer.WriteNumber("bar", bar);
 			writer.WriteNumber("beat", beat);
 			if (value is ForwardRowEvent rowEvent)

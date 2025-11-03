@@ -11,7 +11,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the actual type of the forward event.
 		/// </summary>
-		string ActureType { get; set; }
+		string ActualType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the value associated with the specified key in the event's data.

@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the actual type of the decoration event.
 		/// </summary>
-		public string ActureType
+		public string ActualType
 		{
 			get
 			{
@@ -65,7 +65,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			_extraData.Remove("target");
 		}
 		/// <inheritdoc />
-		public override string ToString() => $"{Beat} *{ActureType}";
+		public override string ToString() => $"{Beat} *{ActualType}";
 		/// <inheritdoc />
 		public virtual bool TryConvert(ref BaseEvent value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
 		/// <inheritdoc />

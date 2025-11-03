@@ -21,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the actual type of the custom event.
 		/// </summary>
-		public string ActureType
+		public string ActualType
 		{
 			get => _extraData.TryGetValue("type", out JsonElement typeElement) && typeElement.ValueKind == JsonValueKind.String ?
 					typeElement.GetString() ?? "" : "";
@@ -81,6 +81,6 @@ namespace RhythmBase.RhythmDoctor.Events
 			_extraData.Remove("y");
 		}
 		/// <inheritdoc/>
-		public override string ToString() => $"{Beat} *{ActureType}";
+		public override string ToString() => $"{Beat} *{ActualType}";
 	}
 }

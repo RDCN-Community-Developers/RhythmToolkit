@@ -186,7 +186,7 @@ namespace RhythmBase.Test
 			myEvent.Beat = new(8);
 
 			Console.WriteLine(myEvent.Type);        // ForwardEvent  
-			Console.WriteLine(myEvent.ActureType);  // MyEvent  
+			Console.WriteLine(myEvent.ActualType);  // MyEvent  
 		}
 		[TestMethod]
 		public void EventTypeUtilsConvert()
@@ -458,7 +458,7 @@ namespace RhythmBase.Test
 			public MyEvent()
 			{
 				// Initialize the ActureType property.
-				ActureType = nameof(MyEvent);
+				ActualType = nameof(MyEvent);
 			}
 		}
 		public class GroupData1

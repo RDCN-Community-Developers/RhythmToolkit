@@ -16,7 +16,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the actual type of the event from the data.
 		/// </summary>
-		public string ActureType
+		public string ActualType
 		{
 			get => _extraData.TryGetValue("type", out JsonElement typeElement) && typeElement.ValueKind == JsonValueKind.String ?
 					typeElement.GetString() ?? "" : "";
@@ -70,6 +70,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => $"{Beat} *{ActureType}";
+		public override string ToString() => $"{Beat} *{ActualType}";
 	}
 }
