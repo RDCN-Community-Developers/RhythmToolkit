@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Vision Drost</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Vision_Drost")]
 public struct VisionDrost : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct VisionDrost : IFilter
 	/// </summary>
 	[RDJsonProperty("Speed")]
 	public float Speed { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Vision_Drost";
-#else
-	public static string Name => "CameraFilterPack_Vision_Drost";
-#endif
 }

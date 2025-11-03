@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Color RGB</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Color_RGB")]
 public struct ColorRgb : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct ColorRgb : IFilter
 	/// </summary>
 	[RDJsonProperty("ColorRGB")]
 	public RDColor ColorRGB { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Color_RGB";
-#else
-	public static string Name => "CameraFilterPack_Color_RGB";
-#endif
 }

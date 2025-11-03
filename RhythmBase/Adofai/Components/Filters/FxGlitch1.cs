@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX Glitch1</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_Glitch1")]
 public struct FxGlitch1 : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct FxGlitch1 : IFilter
 	/// </summary>
 	[RDJsonProperty("Glitch")]
 	public float Glitch { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_Glitch1";
-#else
-	public static string Name => "CameraFilterPack_FX_Glitch1";
-#endif
 }

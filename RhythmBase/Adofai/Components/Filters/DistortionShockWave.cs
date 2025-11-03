@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Distortion ShockWave</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Distortion_ShockWave")]
 public struct DistortionShockWave : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct DistortionShockWave : IFilter
 	/// </summary>
 	[RDJsonProperty("Speed")]
 	public float Speed { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Distortion_ShockWave";
-#else
-	public static string Name => "CameraFilterPack_Distortion_ShockWave";
-#endif
 }

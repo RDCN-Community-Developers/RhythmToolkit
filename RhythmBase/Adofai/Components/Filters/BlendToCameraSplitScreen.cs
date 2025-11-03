@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blend2Camera SplitScreen</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blend2Camera_SplitScreen")]
 public struct BlendToCameraSplitScreen : IFilter
 {
 	/// <summary>
@@ -29,10 +30,4 @@ public struct BlendToCameraSplitScreen : IFilter
 	/// </summary>
 	[RDJsonProperty("Rotation")]
 	public float Rotation { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blend2Camera_SplitScreen";
-#else
-	public static string Name => "CameraFilterPack_Blend2Camera_SplitScreen";
-#endif
 }

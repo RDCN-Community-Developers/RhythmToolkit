@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing BluePrint</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_BluePrint")]
 public struct DrawingBluePrint : IFilter
 {
 	/// <summary>
@@ -49,10 +50,4 @@ public struct DrawingBluePrint : IFilter
 	/// </summary>
 	[RDJsonProperty("Back_Color")]
 	public RDColor BackColor { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_BluePrint";
-#else
-	public static string Name => "CameraFilterPack_Drawing_BluePrint";
-#endif
 }

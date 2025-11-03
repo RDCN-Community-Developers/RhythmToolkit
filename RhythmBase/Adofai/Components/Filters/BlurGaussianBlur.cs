@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur GaussianBlur</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_GaussianBlur")]
 public struct BlurGaussianBlur : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct BlurGaussianBlur : IFilter
 	/// </summary>
 	[RDJsonProperty("Size")]
 	public float Size { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_GaussianBlur";
-#else
-	public static string Name => "CameraFilterPack_Blur_GaussianBlur";
-#endif
 }

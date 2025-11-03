@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur Steam</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_Steam")]
 public struct BlurSteam : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct BlurSteam : IFilter
 	/// </summary>
 	[RDJsonProperty("Quality")]
 	public float Quality { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_Steam";
-#else
-	public static string Name => "CameraFilterPack_Blur_Steam";
-#endif
 }

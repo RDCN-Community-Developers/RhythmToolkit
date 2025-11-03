@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>TV Old Movie 2</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_TV_Old_Movie_2")]
 public struct TvOldMovieTo : IFilter
 {
 	/// <summary>
@@ -24,10 +25,4 @@ public struct TvOldMovieTo : IFilter
 	/// </summary>
 	[RDJsonProperty("Fade")]
 	public float Fade { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_TV_Old_Movie_2";
-#else
-	public static string Name => "CameraFilterPack_TV_Old_Movie_2";
-#endif
 }

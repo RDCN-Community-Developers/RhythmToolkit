@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blend2Camera Lighten</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blend2Camera_Lighten")]
 public struct BlendToCameraLighten : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct BlendToCameraLighten : IFilter
 	/// </summary>
 	[RDJsonProperty("BlendFX")]
 	public float BlendFX { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blend2Camera_Lighten";
-#else
-	public static string Name => "CameraFilterPack_Blend2Camera_Lighten";
-#endif
 }

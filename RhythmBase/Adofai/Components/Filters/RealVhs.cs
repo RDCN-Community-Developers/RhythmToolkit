@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Real VHS</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Real_VHS")]
 public struct RealVhs : IFilter
 {
 	/// <summary>
@@ -29,10 +30,4 @@ public struct RealVhs : IFilter
 	/// </summary>
 	[RDJsonProperty("Constrast")]
 	public float Constrast { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Real_VHS";
-#else
-	public static string Name => "CameraFilterPack_Real_VHS";
-#endif
 }

@@ -65,6 +65,10 @@ public enum TargetType
 	/// The target is the camera.
 	/// </summary>
 	Camera,
+	/// <summary>
+	/// The target is the decoration.
+	/// </summary>
+	Decoration,
 }
 /// <summary>
 /// Represents the plane where the filter is applied.

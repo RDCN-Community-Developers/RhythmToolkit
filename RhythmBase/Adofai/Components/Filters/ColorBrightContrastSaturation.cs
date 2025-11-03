@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Color BrightContrastSaturation</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Color_BrightContrastSaturation")]
 public struct ColorBrightContrastSaturation : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct ColorBrightContrastSaturation : IFilter
 	/// </summary>
 	[RDJsonProperty("Contrast")]
 	public float Contrast { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Color_BrightContrastSaturation";
-#else
-	public static string Name => "CameraFilterPack_Color_BrightContrastSaturation";
-#endif
 }

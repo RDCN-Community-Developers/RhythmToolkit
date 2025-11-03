@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Color Contrast</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Color_Contrast")]
 public struct ColorContrast : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct ColorContrast : IFilter
 	/// </summary>
 	[RDJsonProperty("Contrast")]
 	public float Contrast { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Color_Contrast";
-#else
-	public static string Name => "CameraFilterPack_Color_Contrast";
-#endif
 }

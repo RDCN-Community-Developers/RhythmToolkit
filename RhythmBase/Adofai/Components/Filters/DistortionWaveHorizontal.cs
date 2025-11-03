@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Distortion Wave Horizontal</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Distortion_Wave_Horizontal")]
 public struct DistortionWaveHorizontal : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct DistortionWaveHorizontal : IFilter
 	/// </summary>
 	[RDJsonProperty("WaveIntensity")]
 	public float WaveIntensity { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Distortion_Wave_Horizontal";
-#else
-	public static string Name => "CameraFilterPack_Distortion_Wave_Horizontal";
-#endif
 }

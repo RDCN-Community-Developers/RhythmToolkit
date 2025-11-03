@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blizzard</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blizzard")]
 public struct Blizzard : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct Blizzard : IFilter
 	/// </summary>
 	[RDJsonProperty("_Fade")]
 	public float Fade { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blizzard";
-#else
-	public static string Name => "CameraFilterPack_Blizzard";
-#endif
 }

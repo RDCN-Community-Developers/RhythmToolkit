@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing Manga</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_Manga")]
 public struct DrawingManga : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct DrawingManga : IFilter
 	/// </summary>
 	[RDJsonProperty("DotSize")]
 	public float DotSize { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_Manga";
-#else
-	public static string Name => "CameraFilterPack_Drawing_Manga";
-#endif
 }

@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX Psycho</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_Psycho")]
 public struct FxPsycho : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct FxPsycho : IFilter
 	/// </summary>
 	[RDJsonProperty("Distortion")]
 	public float Distortion { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_Psycho";
-#else
-	public static string Name => "CameraFilterPack_FX_Psycho";
-#endif
 }

@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>EXTRA Rotation</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_EXTRA_Rotation")]
 public struct ExtraRotation : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct ExtraRotation : IFilter
 	/// </summary>
 	[RDJsonProperty("PositionY")]
 	public float PositionY { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_EXTRA_Rotation";
-#else
-	public static string Name => "CameraFilterPack_EXTRA_Rotation";
-#endif
 }

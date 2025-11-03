@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Vision AuraDistortion</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Vision_AuraDistortion")]
 public struct VisionAuraDistortion : IFilter
 {
 	/// <summary>
@@ -29,10 +30,4 @@ public struct VisionAuraDistortion : IFilter
 	/// </summary>
 	[RDJsonProperty("PosY")]
 	public float PosY { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Vision_AuraDistortion";
-#else
-	public static string Name => "CameraFilterPack_Vision_AuraDistortion";
-#endif
 }

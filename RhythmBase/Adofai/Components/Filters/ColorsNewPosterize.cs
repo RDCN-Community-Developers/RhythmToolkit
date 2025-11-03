@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Colors NewPosterize</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Colors_NewPosterize")]
 public struct ColorsNewPosterize : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct ColorsNewPosterize : IFilter
 	/// </summary>
 	[RDJsonProperty("Green_Mod")]
 	public float GreenMod { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Colors_NewPosterize";
-#else
-	public static string Name => "CameraFilterPack_Colors_NewPosterize";
-#endif
 }

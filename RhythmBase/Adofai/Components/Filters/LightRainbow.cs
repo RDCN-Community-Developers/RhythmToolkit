@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Light Rainbow</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Light_Rainbow")]
 public struct LightRainbow : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct LightRainbow : IFilter
 	/// </summary>
 	[RDJsonProperty("Value")]
 	public float Value { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Light_Rainbow";
-#else
-	public static string Name => "CameraFilterPack_Light_Rainbow";
-#endif
 }

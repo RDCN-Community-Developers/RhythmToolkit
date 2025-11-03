@@ -21,6 +21,7 @@ public class ConverterGenerator : IIncrementalGenerator
 	private const string JsonConditionAttrName = "RhythmBase.Global.Converters.RDJsonConditionAttribute";
 	private const string JsonTimeAttrName = "RhythmBase.Global.Converters.RDJsonTimeAttribute";
 	private const string JsonConverterAttrName = "RhythmBase.Global.Converters.RDJsonConverterAttribute";
+	private const string JsonSpecialIDAttrName = "RhythmBase.Global.Converters.RDJsonSpecialIDAttribute";
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
@@ -59,6 +60,7 @@ public class ConverterGenerator : IIncrementalGenerator
 					internal sealed class RDJsonDefaultSerializerAttribute : Attribute { }
 					internal sealed class RDJsonTimeAttribute(string type) : Attribute { }
 					internal sealed class RDJsonConverterAttribute(Type converterType) : Attribute { }
+					internal sealed class RDJsonSpecialIDAttribute(string id) : Attribute { }
 				}
 				"""
 			);
@@ -479,6 +481,7 @@ public class ConverterGenerator : IIncrementalGenerator
 						p.GetAttributes().Any(i => i.AttributeClass?.ToDisplayString() == JsonNotIgnoreAttrName))
 					.ToList();
 
+
 				sb.AppendLine($"internal class FilterInstanceConverter{e.Name} : FilterInstanceConverterBase<{e.ToDisplayString()}>");
 				sb.AppendLine("{");
 				// Read
@@ -523,14 +526,16 @@ public class ConverterGenerator : IIncrementalGenerator
 			foreach (var (symbol, _) in symbols
 				.OrderBy(i => i.symbol.Name))
 			{
-				var filterName = symbol
-					.GetMembers()
-					.OfType<IPropertySymbol>()
-					.FirstOrDefault(p =>
-						p.Name == "Name");
+				string specialID = "";
+
+				var specialIDAttr = symbol.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonSpecialIDAttrName);
+				if(specialIDAttr is not null)
+				{
+					specialID = specialIDAttr.ConstructorArguments.Length > 0 ? specialIDAttr.ConstructorArguments[0].Value?.ToString() ?? "" : "";
+				}
 
 				//sb.AppendLine($"			//{filterName.}");
-				sb.AppendLine($"			[\"{symbol.Name}\"] = new RhythmBase.Adofai.Converters.FilterInstanceConverter{symbol.Name}(),");
+				sb.AppendLine($"			[\"{specialID}\"] = new RhythmBase.Adofai.Converters.FilterInstanceConverter{symbol.Name}(),");
 			}
 			sb.AppendLine("	});");
 			sb.AppendLine("}");

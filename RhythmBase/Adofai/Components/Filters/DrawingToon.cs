@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing Toon</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_Toon")]
 public struct DrawingToon : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct DrawingToon : IFilter
 	/// </summary>
 	[RDJsonProperty("DotSize")]
 	public float DotSize { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_Toon";
-#else
-	public static string Name => "CameraFilterPack_Drawing_Toon";
-#endif
 }

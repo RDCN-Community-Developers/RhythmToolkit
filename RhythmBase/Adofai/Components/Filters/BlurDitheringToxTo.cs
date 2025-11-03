@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur Dithering2x2</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_Dithering2x2")]
 public struct BlurDitheringToxTo : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct BlurDitheringToxTo : IFilter
 	/// </summary>
 	[RDJsonProperty("Distance")]
 	public RDPointN Distance { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_Dithering2x2";
-#else
-	public static string Name => "CameraFilterPack_Blur_Dithering2x2";
-#endif
 }

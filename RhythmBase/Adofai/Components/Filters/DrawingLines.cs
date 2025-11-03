@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing Lines</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_Lines")]
 public struct DrawingLines : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct DrawingLines : IFilter
 	/// </summary>
 	[RDJsonProperty("Random")]
 	public float Random { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_Lines";
-#else
-	public static string Name => "CameraFilterPack_Drawing_Lines";
-#endif
 }

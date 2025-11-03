@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing Paper2</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_Paper2")]
 public struct DrawingPaperTo : IFilter
 {
 	/// <summary>
@@ -44,10 +45,4 @@ public struct DrawingPaperTo : IFilter
 	/// </summary>
 	[RDJsonProperty("Back_Color")]
 	public RDColor BackColor { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_Paper2";
-#else
-	public static string Name => "CameraFilterPack_Drawing_Paper2";
-#endif
 }

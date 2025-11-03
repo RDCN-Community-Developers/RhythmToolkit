@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Sharpen Sharpen</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Sharpen_Sharpen")]
 public struct SharpenSharpen : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct SharpenSharpen : IFilter
 	/// </summary>
 	[RDJsonProperty("Value2")]
 	public float Value2 { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Sharpen_Sharpen";
-#else
-	public static string Name => "CameraFilterPack_Sharpen_Sharpen";
-#endif
 }

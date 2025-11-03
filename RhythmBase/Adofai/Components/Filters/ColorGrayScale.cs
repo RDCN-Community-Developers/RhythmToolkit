@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Color GrayScale</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Color_GrayScale")]
 public struct ColorGrayScale : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct ColorGrayScale : IFilter
 	/// </summary>
 	[RDJsonProperty("_Fade")]
 	public float Fade { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Color_GrayScale";
-#else
-	public static string Name => "CameraFilterPack_Color_GrayScale";
-#endif
 }

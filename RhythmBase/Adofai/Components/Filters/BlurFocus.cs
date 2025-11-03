@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur Focus</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_Focus")]
 public struct BlurFocus : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct BlurFocus : IFilter
 	/// </summary>
 	[RDJsonProperty("_Eyes")]
 	public float Eyes { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_Focus";
-#else
-	public static string Name => "CameraFilterPack_Blur_Focus";
-#endif
 }

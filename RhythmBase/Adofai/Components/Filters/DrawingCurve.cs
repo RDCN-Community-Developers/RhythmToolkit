@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing Curve</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_Curve")]
 public struct DrawingCurve : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct DrawingCurve : IFilter
 	/// </summary>
 	[RDJsonProperty("Size")]
 	public float Size { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_Curve";
-#else
-	public static string Name => "CameraFilterPack_Drawing_Curve";
-#endif
 }

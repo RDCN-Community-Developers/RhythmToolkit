@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>TV BrokenGlass2</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_TV_BrokenGlass2")]
 public struct TvBrokenGlassTo : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct TvBrokenGlassTo : IFilter
 	/// </summary>
 	[RDJsonProperty("Bullet_4")]
 	public float Bullet4 { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_TV_BrokenGlass2";
-#else
-	public static string Name => "CameraFilterPack_TV_BrokenGlass2";
-#endif
 }

@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Special Bubble</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Special_Bubble")]
 public struct SpecialBubble : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct SpecialBubble : IFilter
 	/// </summary>
 	[RDJsonProperty("Rate")]
 	public float Rate { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Special_Bubble";
-#else
-	public static string Name => "CameraFilterPack_Special_Bubble";
-#endif
 }

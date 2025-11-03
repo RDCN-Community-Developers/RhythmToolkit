@@ -11,13 +11,5 @@ namespace RhythmBase.Adofai.Components.Filters
 	/// Implementations may define specific behaviors or additional properties and methods.</remarks>
 	public interface IFilter
 	{
-		/// <summary>
-		/// Gets the name associated with the current instance.
-		/// </summary>
-#if NETSTANDARD2_0
-		public abstract string Name { get; }
-#else
-		public static virtual string Name { get; } = "Unknown";
-#endif
 	}
 }

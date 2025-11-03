@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX DarkMatter</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_DarkMatter")]
 public struct FxDarkMatter : IFilter
 {
 	/// <summary>
@@ -34,10 +35,4 @@ public struct FxDarkMatter : IFilter
 	/// </summary>
 	[RDJsonProperty("DarkIntensity")]
 	public float DarkIntensity { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_DarkMatter";
-#else
-	public static string Name => "CameraFilterPack_FX_DarkMatter";
-#endif
 }

@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Color Noise</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Color_Noise")]
 public struct ColorNoise : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct ColorNoise : IFilter
 	/// </summary>
 	[RDJsonProperty("Noise")]
 	public float Noise { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Color_Noise";
-#else
-	public static string Name => "CameraFilterPack_Color_Noise";
-#endif
 }

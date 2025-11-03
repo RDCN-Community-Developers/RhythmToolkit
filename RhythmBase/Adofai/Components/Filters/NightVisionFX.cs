@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>NightVisionFX</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_NightVisionFX")]
 public struct NightVisionFX : IFilter
 {
 	/// <summary>
@@ -64,10 +65,4 @@ public struct NightVisionFX : IFilter
 	/// </summary>
 	[RDJsonProperty("_Binocular_Dist")]
 	public float BinocularDist { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_NightVisionFX";
-#else
-	public static string Name => "CameraFilterPack_NightVisionFX";
-#endif
 }

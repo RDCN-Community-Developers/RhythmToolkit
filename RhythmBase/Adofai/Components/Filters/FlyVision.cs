@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Fly Vision</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Fly_Vision")]
 public struct FlyVision : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct FlyVision : IFilter
 	/// </summary>
 	[RDJsonProperty("Fade")]
 	public float Fade { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Fly_Vision";
-#else
-	public static string Name => "CameraFilterPack_Fly_Vision";
-#endif
 }

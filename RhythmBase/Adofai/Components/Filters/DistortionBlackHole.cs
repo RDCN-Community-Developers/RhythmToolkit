@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Distortion BlackHole</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Distortion_BlackHole")]
 public struct DistortionBlackHole : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct DistortionBlackHole : IFilter
 	/// </summary>
 	[RDJsonProperty("Distortion")]
 	public float Distortion { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Distortion_BlackHole";
-#else
-	public static string Name => "CameraFilterPack_Distortion_BlackHole";
-#endif
 }

@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Distortion Half Sphere</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Distortion_Half_Sphere")]
 public struct DistortionHalfSphere : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct DistortionHalfSphere : IFilter
 	/// </summary>
 	[RDJsonProperty("Strength")]
 	public float Strength { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Distortion_Half_Sphere";
-#else
-	public static string Name => "CameraFilterPack_Distortion_Half_Sphere";
-#endif
 }

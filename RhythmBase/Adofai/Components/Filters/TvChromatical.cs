@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>TV Chromatical</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_TV_Chromatical")]
 public struct TvChromatical : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct TvChromatical : IFilter
 	/// </summary>
 	[RDJsonProperty("Speed")]
 	public float Speed { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_TV_Chromatical";
-#else
-	public static string Name => "CameraFilterPack_TV_Chromatical";
-#endif
 }

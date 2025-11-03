@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Vision Plasma</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Vision_Plasma")]
 public struct VisionPlasma : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct VisionPlasma : IFilter
 	/// </summary>
 	[RDJsonProperty("Intensity")]
 	public float Intensity { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Vision_Plasma";
-#else
-	public static string Name => "CameraFilterPack_Vision_Plasma";
-#endif
 }

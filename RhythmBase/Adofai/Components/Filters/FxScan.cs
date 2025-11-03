@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX Scan</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_Scan")]
 public struct FxScan : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct FxScan : IFilter
 	/// </summary>
 	[RDJsonProperty("Speed")]
 	public float Speed { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_Scan";
-#else
-	public static string Name => "CameraFilterPack_FX_Scan";
-#endif
 }

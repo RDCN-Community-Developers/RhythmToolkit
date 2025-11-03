@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>AAA WaterDrop</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_AAA_WaterDrop")]
 public struct AaaWaterDrop : IFilter
 {
 	/// <summary>
@@ -24,10 +25,4 @@ public struct AaaWaterDrop : IFilter
 	/// </summary>
 	[RDJsonProperty("Speed")]
 	public float Speed { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_AAA_WaterDrop";
-#else
-	public static string Name => "CameraFilterPack_AAA_WaterDrop";
-#endif
 }

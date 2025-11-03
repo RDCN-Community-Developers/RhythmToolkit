@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Pixelisation OilPaint</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Pixelisation_OilPaint")]
 public struct PixelisationOilPaint : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct PixelisationOilPaint : IFilter
 	/// </summary>
 	[RDJsonProperty("Value")]
 	public float Value { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Pixelisation_OilPaint";
-#else
-	public static string Name => "CameraFilterPack_Pixelisation_OilPaint";
-#endif
 }

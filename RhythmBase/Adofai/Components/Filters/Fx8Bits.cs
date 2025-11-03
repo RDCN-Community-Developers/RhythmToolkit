@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX 8bits</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_8bits")]
 public struct Fx8Bits : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct Fx8Bits : IFilter
 	/// </summary>
 	[RDJsonProperty("ResolutionY")]
 	public int ResolutionY { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_8bits";
-#else
-	public static string Name => "CameraFilterPack_FX_8bits";
-#endif
 }

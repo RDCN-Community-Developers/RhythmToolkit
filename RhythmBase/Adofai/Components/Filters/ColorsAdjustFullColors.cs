@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Colors Adjust FullColors</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Colors_Adjust_FullColors")]
 public struct ColorsAdjustFullColors : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct ColorsAdjustFullColors : IFilter
 	/// </summary>
 	[RDJsonProperty("Blue_B")]
 	public float BlueB { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Colors_Adjust_FullColors";
-#else
-	public static string Name => "CameraFilterPack_Colors_Adjust_FullColors";
-#endif
 }

@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>TV WideScreenHV</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_TV_WideScreenHV")]
 public struct TvWideScreenHV : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct TvWideScreenHV : IFilter
 	/// </summary>
 	[RDJsonProperty("Smooth")]
 	public float Smooth { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_TV_WideScreenHV";
-#else
-	public static string Name => "CameraFilterPack_TV_WideScreenHV";
-#endif
 }

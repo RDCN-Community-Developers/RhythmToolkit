@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Atmosphere Rain Pro</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Atmosphere_Rain_Pro")]
 public struct AtmosphereRainPro : IFilter
 {
 	/// <summary>
@@ -44,10 +45,4 @@ public struct AtmosphereRainPro : IFilter
 	/// </summary>
 	[RDJsonProperty("DropOnOff")]
 	public float DropOnOff { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Atmosphere_Rain_Pro";
-#else
-	public static string Name => "CameraFilterPack_Atmosphere_Rain_Pro";
-#endif
 }

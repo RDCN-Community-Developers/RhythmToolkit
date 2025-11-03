@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur BlurHole</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_BlurHole")]
 public struct BlurBlurHole : IFilter
 {
 	/// <summary>
@@ -34,10 +35,4 @@ public struct BlurBlurHole : IFilter
 	/// </summary>
 	[RDJsonProperty("_AlphaBlur")]
 	public float AlphaBlur { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_BlurHole";
-#else
-	public static string Name => "CameraFilterPack_Blur_BlurHole";
-#endif
 }

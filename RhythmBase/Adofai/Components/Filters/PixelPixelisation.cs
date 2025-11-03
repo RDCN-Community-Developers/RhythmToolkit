@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Pixel Pixelisation</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Pixel_Pixelisation")]
 public struct PixelPixelisation : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct PixelPixelisation : IFilter
 	/// </summary>
 	[RDJsonProperty("_SizeY")]
 	public float SizeY { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Pixel_Pixelisation";
-#else
-	public static string Name => "CameraFilterPack_Pixel_Pixelisation";
-#endif
 }

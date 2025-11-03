@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Distortion Water Drop</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Distortion_Water_Drop")]
 public struct DistortionWaterDrop : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct DistortionWaterDrop : IFilter
 	/// </summary>
 	[RDJsonProperty("NumberOfWaves")]
 	public int NumberOfWaves { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Distortion_Water_Drop";
-#else
-	public static string Name => "CameraFilterPack_Distortion_Water_Drop";
-#endif
 }

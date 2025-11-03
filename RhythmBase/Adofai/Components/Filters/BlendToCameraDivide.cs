@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blend2Camera Divide</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blend2Camera_Divide")]
 public struct BlendToCameraDivide : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct BlendToCameraDivide : IFilter
 	/// </summary>
 	[RDJsonProperty("BlendFX")]
 	public float BlendFX { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blend2Camera_Divide";
-#else
-	public static string Name => "CameraFilterPack_Blend2Camera_Divide";
-#endif
 }

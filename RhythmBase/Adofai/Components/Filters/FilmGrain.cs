@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Film Grain</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Film_Grain")]
 public struct FilmGrain : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct FilmGrain : IFilter
 	/// </summary>
 	[RDJsonProperty("Value")]
 	public float Value { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Film_Grain";
-#else
-	public static string Name => "CameraFilterPack_Film_Grain";
-#endif
 }

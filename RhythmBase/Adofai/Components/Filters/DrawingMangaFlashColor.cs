@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing Manga Flash Color</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_Manga_Flash_Color")]
 public struct DrawingMangaFlashColor : IFilter
 {
 	/// <summary>
@@ -34,10 +35,4 @@ public struct DrawingMangaFlashColor : IFilter
 	/// </summary>
 	[RDJsonProperty("Intensity")]
 	public float Intensity { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_Manga_Flash_Color";
-#else
-	public static string Name => "CameraFilterPack_Drawing_Manga_Flash_Color";
-#endif
 }

@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX Dot Circle</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_Dot_Circle")]
 public struct FxDotCircle : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct FxDotCircle : IFilter
 	/// </summary>
 	[RDJsonProperty("Value")]
 	public float Value { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_Dot_Circle";
-#else
-	public static string Name => "CameraFilterPack_FX_Dot_Circle";
-#endif
 }

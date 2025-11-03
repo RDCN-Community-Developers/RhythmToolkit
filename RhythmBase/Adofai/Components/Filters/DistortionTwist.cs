@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Distortion Twist</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Distortion_Twist")]
 public struct DistortionTwist : IFilter
 {
 	/// <summary>
@@ -24,10 +25,4 @@ public struct DistortionTwist : IFilter
 	/// </summary>
 	[RDJsonProperty("Size")]
 	public float Size { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Distortion_Twist";
-#else
-	public static string Name => "CameraFilterPack_Distortion_Twist";
-#endif
 }

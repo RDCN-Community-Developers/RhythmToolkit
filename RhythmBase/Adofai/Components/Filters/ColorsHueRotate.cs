@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Colors HUE Rotate</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Colors_HUE_Rotate")]
 public struct ColorsHueRotate : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct ColorsHueRotate : IFilter
 	/// </summary>
 	[RDJsonProperty("Speed")]
 	public float Speed { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Colors_HUE_Rotate";
-#else
-	public static string Name => "CameraFilterPack_Colors_HUE_Rotate";
-#endif
 }

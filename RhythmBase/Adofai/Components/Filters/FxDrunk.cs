@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX Drunk</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_Drunk")]
 public struct FxDrunk : IFilter
 {
 	/// <summary>
@@ -29,10 +30,4 @@ public struct FxDrunk : IFilter
 	/// </summary>
 	[RDJsonProperty("ColoredSaturate")]
 	public float ColoredSaturate { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_Drunk";
-#else
-	public static string Name => "CameraFilterPack_FX_Drunk";
-#endif
 }

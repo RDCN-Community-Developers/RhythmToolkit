@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur Regular</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_Regular")]
 public struct BlurRegular : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct BlurRegular : IFilter
 	/// </summary>
 	[RDJsonProperty("Distance")]
 	public RDPointN Distance { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_Regular";
-#else
-	public static string Name => "CameraFilterPack_Blur_Regular";
-#endif
 }

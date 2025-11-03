@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing CellShading2</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_CellShading2")]
 public struct DrawingCellShadingTo : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct DrawingCellShadingTo : IFilter
 	/// </summary>
 	[RDJsonProperty("Blur")]
 	public float Blur { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_CellShading2";
-#else
-	public static string Name => "CameraFilterPack_Drawing_CellShading2";
-#endif
 }

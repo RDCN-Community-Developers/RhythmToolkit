@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Pixelisation Dot</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Pixelisation_Dot")]
 public struct PixelisationDot : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct PixelisationDot : IFilter
 	/// </summary>
 	[RDJsonProperty("LightBackGround")]
 	public float LightBackGround { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Pixelisation_Dot";
-#else
-	public static string Name => "CameraFilterPack_Pixelisation_Dot";
-#endif
 }

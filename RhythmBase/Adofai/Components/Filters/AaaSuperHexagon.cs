@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>AAA SuperHexagon</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_AAA_SuperHexagon")]
 public struct AaaSuperHexagon : IFilter
 {
 	/// <summary>
@@ -37,17 +38,10 @@ public struct AaaSuperHexagon : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>center</b>.
 	/// </summary>
-	[RDJsonProperty("center")]
 	public RDPointN Center { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Radius</b>.
 	/// </summary>
 	[RDJsonProperty("Radius")]
 	public float Radius { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_AAA_SuperHexagon";
-#else
-	public static string Name => "CameraFilterPack_AAA_SuperHexagon";
-#endif
 }

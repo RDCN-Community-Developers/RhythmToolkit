@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Colors HSV</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Colors_HSV")]
 public struct ColorsHsv : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct ColorsHsv : IFilter
 	/// </summary>
 	[RDJsonProperty("_ValueBrightness")]
 	public float ValueBrightness { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Colors_HSV";
-#else
-	public static string Name => "CameraFilterPack_Colors_HSV";
-#endif
 }

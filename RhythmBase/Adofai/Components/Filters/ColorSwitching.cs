@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Color Switching</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Color_Switching")]
 public struct ColorSwitching : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct ColorSwitching : IFilter
 	/// </summary>
 	[RDJsonProperty("Color")]
 	public int Color { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Color_Switching";
-#else
-	public static string Name => "CameraFilterPack_Color_Switching";
-#endif
 }

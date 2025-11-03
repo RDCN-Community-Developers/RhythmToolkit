@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Oculus NightVision3</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Oculus_NightVision3")]
 public struct OculusNightVision3 : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct OculusNightVision3 : IFilter
 	/// </summary>
 	[RDJsonProperty("Greenness")]
 	public float Greenness { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Oculus_NightVision3";
-#else
-	public static string Name => "CameraFilterPack_Oculus_NightVision3";
-#endif
 }

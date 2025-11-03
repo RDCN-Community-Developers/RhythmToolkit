@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>TV Distorted</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_TV_Distorted")]
 public struct TvDistorted : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct TvDistorted : IFilter
 	/// </summary>
 	[RDJsonProperty("RGB")]
 	public float Rgb { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_TV_Distorted";
-#else
-	public static string Name => "CameraFilterPack_TV_Distorted";
-#endif
 }

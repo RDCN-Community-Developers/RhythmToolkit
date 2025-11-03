@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX DigitalMatrix</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_DigitalMatrix")]
 public struct FxDigitalMatrix : IFilter
 {
 	/// <summary>
@@ -29,10 +30,4 @@ public struct FxDigitalMatrix : IFilter
 	/// </summary>
 	[RDJsonProperty("ColorB")]
 	public float ColorB { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_DigitalMatrix";
-#else
-	public static string Name => "CameraFilterPack_FX_DigitalMatrix";
-#endif
 }

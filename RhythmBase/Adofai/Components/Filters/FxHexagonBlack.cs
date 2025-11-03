@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX Hexagon Black</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_Hexagon_Black")]
 public struct FxHexagonBlack : IFilter
 {
 	/// <summary>
@@ -9,10 +10,4 @@ public struct FxHexagonBlack : IFilter
 	/// </summary>
 	[RDJsonProperty("Value")]
 	public float Value { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_Hexagon_Black";
-#else
-	public static string Name => "CameraFilterPack_FX_Hexagon_Black";
-#endif
 }

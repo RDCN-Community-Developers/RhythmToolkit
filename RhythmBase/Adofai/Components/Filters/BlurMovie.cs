@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur Movie</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_Movie")]
 public struct BlurMovie : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct BlurMovie : IFilter
 	/// </summary>
 	[RDJsonProperty("FastFilter")]
 	public int FastFilter { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_Movie";
-#else
-	public static string Name => "CameraFilterPack_Blur_Movie";
-#endif
 }

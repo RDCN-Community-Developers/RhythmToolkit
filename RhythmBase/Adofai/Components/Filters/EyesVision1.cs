@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>EyesVision 1</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_EyesVision_1")]
 public struct EyesVision1 : IFilter
 {
 	/// <summary>
@@ -24,10 +25,4 @@ public struct EyesVision1 : IFilter
 	/// </summary>
 	[RDJsonProperty("_EyeBlink")]
 	public float EyeBlink { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_EyesVision_1";
-#else
-	public static string Name => "CameraFilterPack_EyesVision_1";
-#endif
 }

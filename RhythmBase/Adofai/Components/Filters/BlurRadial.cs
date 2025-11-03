@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur Radial</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_Radial")]
 public struct BlurRadial : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct BlurRadial : IFilter
 	/// </summary>
 	[RDJsonProperty("MovY")]
 	public float MovY { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_Radial";
-#else
-	public static string Name => "CameraFilterPack_Blur_Radial";
-#endif
 }

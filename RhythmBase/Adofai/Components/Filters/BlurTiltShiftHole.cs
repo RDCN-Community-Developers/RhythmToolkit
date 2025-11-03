@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur Tilt Shift Hole</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Blur_Tilt_Shift_Hole")]
 public struct BlurTiltShiftHole : IFilter
 {
 	/// <summary>
@@ -34,10 +35,4 @@ public struct BlurTiltShiftHole : IFilter
 	/// </summary>
 	[RDJsonProperty("PositionY")]
 	public float PositionY { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Blur_Tilt_Shift_Hole";
-#else
-	public static string Name => "CameraFilterPack_Blur_Tilt_Shift_Hole";
-#endif
 }

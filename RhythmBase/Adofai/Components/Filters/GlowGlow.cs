@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Glow Glow</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Glow_Glow")]
 public struct GlowGlow : IFilter
 {
 	/// <summary>
@@ -29,10 +30,4 @@ public struct GlowGlow : IFilter
 	/// </summary>
 	[RDJsonProperty("Precision")]
 	public float Precision { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Glow_Glow";
-#else
-	public static string Name => "CameraFilterPack_Glow_Glow";
-#endif
 }

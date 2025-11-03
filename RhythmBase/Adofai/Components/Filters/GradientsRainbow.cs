@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Gradients Rainbow</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Gradients_Rainbow")]
 public struct GradientsRainbow : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct GradientsRainbow : IFilter
 	/// </summary>
 	[RDJsonProperty("Fade")]
 	public float Fade { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Gradients_Rainbow";
-#else
-	public static string Name => "CameraFilterPack_Gradients_Rainbow";
-#endif
 }

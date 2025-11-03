@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>FX DigitalMatrixDistortion</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_FX_DigitalMatrixDistortion")]
 public struct FxDigitalMatrixDistortion : IFilter
 {
 	/// <summary>
@@ -19,10 +20,4 @@ public struct FxDigitalMatrixDistortion : IFilter
 	/// </summary>
 	[RDJsonProperty("Distortion")]
 	public float Distortion { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_FX_DigitalMatrixDistortion";
-#else
-	public static string Name => "CameraFilterPack_FX_DigitalMatrixDistortion";
-#endif
 }

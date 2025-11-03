@@ -2,6 +2,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Drawing Halftone</b>.
 /// </summary>
+[RDJsonSpecialID("CameraFilterPack_Drawing_Halftone")]
 public struct DrawingHalftone : IFilter
 {
 	/// <summary>
@@ -14,10 +15,4 @@ public struct DrawingHalftone : IFilter
 	/// </summary>
 	[RDJsonProperty("DotSize")]
 	public float DotSize { get; set; }
-	/// <inheritdoc/>
-#if NETSTANDARD2_0
-	public readonly string Name => "CameraFilterPack_Drawing_Halftone";
-#else
-	public static string Name => "CameraFilterPack_Drawing_Halftone";
-#endif
 }
