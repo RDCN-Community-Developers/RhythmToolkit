@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RhythmBaseCS\RhythmBase.csproj" />
+    <ProjectReference Include="..\RhythmBase\RhythmBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>
