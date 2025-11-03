@@ -30,7 +30,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				if (!_isBeatLoaded && _calculator is not null)
 				{
 					if (_isBarBeatLoaded)
-						_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
+						_beat = _calculator.BarBeatToBeatOnly(_b_bar, _b_beat) - 1f;
 					else if (_isTimeSpanLoaded)
 						_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
 					_isBeatLoaded = true;
@@ -38,28 +38,28 @@ namespace RhythmBase.RhythmDoctor.Components
 				return _beat + 1f;
 			}
 		}
-		/// <summary>
-		/// The actual bar and beat of this moment.
-		/// </summary>
-		public (int bar, float beat) BarBeat
-		{
-			get
-			{
-				if (!_isBarBeatLoaded && _calculator is not null)
-				{
-					if (_isBeatLoaded)
-						_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1f);
-					else if (_isTimeSpanLoaded)
-					{
-						_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
-						_isBeatLoaded = true;
-						_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1f);
-					}
-					_isBarBeatLoaded = true;
-				}
-				return _BarBeat;
-			}
-		}
+		///// <summary>
+		///// The actual bar and beat of this moment.
+		///// </summary>
+		//public (int bar, float beat) BarBeat
+		//{
+		//	get
+		//	{
+		//		if (!_isBarBeatLoaded && _calculator is not null)
+		//		{
+		//			if (_isBeatLoaded)
+		//				_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1f);
+		//			else if (_isTimeSpanLoaded)
+		//			{
+		//				_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
+		//				_isBeatLoaded = true;
+		//				_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1f);
+		//			}
+		//			_isBarBeatLoaded = true;
+		//		}
+		//		return _BarBeat;
+		//	}
+		//}
 		/// <summary>
 		/// The total amount of time from the beginning of the level to this beat.
 		/// </summary>
@@ -75,7 +75,7 @@ namespace RhythmBase.RhythmDoctor.Components
 					{
 						if (_isBarBeatLoaded)
 						{
-							_beat = _calculator.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f;
+							_beat = _calculator.BarBeatToBeatOnly(_b_bar, _b_beat) - 1f;
 							_isBeatLoaded = true;
 							_TimeSpan = _calculator.BeatOnlyToTimeSpan(_beat + 1f);
 						}
@@ -125,7 +125,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			this = default;
 			_beat = 1f;
-			_BarBeat = (1, 1f);
+			(_b_bar, _b_beat) = (1, 1f);
 			_TimeSpan = TimeSpan.Zero;
 			_isBeatLoaded = true;
 			_isBarBeatLoaded = true;
@@ -155,7 +155,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				bar = 1;
 			if (beat < 1)
 				beat = 1;
-			_BarBeat = (bar, beat);
+			(_b_bar, _b_beat) = (bar, beat);
 			_isBarBeatLoaded = true;
 		}
 		/// <summary>
@@ -219,10 +219,10 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			else if (beat._isBarBeatLoaded)
 			{
-				_BarBeat = (Math.Max(beat._BarBeat.Bar, 1), Math.Max(beat._BarBeat.Beat, 1));
+				(_b_bar, _b_beat) = (Math.Max(beat._b_bar, 1), Math.Max(beat._b_beat, 1));
 				_isBarBeatLoaded = true;
 				_calculator = calculator;
-				_beat = _calculator.BarBeatToBeatOnly(beat._BarBeat.Bar, beat._BarBeat.Beat) - 1f;
+				_beat = _calculator.BarBeatToBeatOnly(beat._b_bar, beat._b_beat) - 1f;
 			}
 			else if (beat._isTimeSpanLoaded)
 			{
@@ -321,8 +321,32 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			IfNullThrowException();
 			object __ = BeatOnly;
-			__ = BarBeat;
+			Deconstruct(out _, out _);
 			__ = TimeSpan;
+		}
+		/// <summary>
+		/// Deconstructs the current instance into its bar and beat components.
+		/// </summary>
+		/// <remarks>This method calculates the bar and beat values if they are not already loaded.  The calculation
+		/// depends on the internal state of the instance and may involve  converting other loaded values such as time span or
+		/// beat-only values.</remarks>
+		/// <param name="Bar">The bar component of the instance.</param>
+		/// <param name="Beat">The beat component of the instance.</param>
+		public void Deconstruct(out int Bar, out float Beat)
+		{
+			if (!_isBarBeatLoaded && _calculator is not null)
+			{
+				if (_isBeatLoaded)
+					(_b_bar, _b_beat) = _calculator.BeatOnlyToBarBeat(_beat + 1f);
+				else if (_isTimeSpanLoaded)
+				{
+					_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
+					_isBeatLoaded = true;
+					(_b_bar, _b_beat)	 = _calculator.BeatOnlyToBarBeat(_beat + 1f);
+				}
+				_isBarBeatLoaded = true;
+			}
+			(Bar, Beat) = (_b_bar, _b_beat);
 		}
 		internal void ResetBPM()
 		{
@@ -335,7 +359,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		internal void ResetCPB()
 		{
 			if (!_isBeatLoaded)
-				_beat = _calculator?.BarBeatToBeatOnly(_BarBeat.Bar, _BarBeat.Beat) - 1f ?? throw new InvalidRDBeatException();
+				_beat = _calculator?.BarBeatToBeatOnly(_b_bar, _b_beat) - 1f ?? throw new InvalidRDBeatException();
 			_isBeatLoaded = true;
 			_isBarBeatLoaded = false;
 			_isCPBLoaded = false;
@@ -358,7 +382,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				}
 				if (a._isBarBeatLoaded)
 				{
-					result._BarBeat = (a._BarBeat.Bar, a._BarBeat.Beat + b);
+					(result._b_bar, result._b_beat) = (a._b_bar, a._b_beat + b);
 					result._isBarBeatLoaded = true;
 				}
 				result._isTimeSpanLoaded = b == 0;
@@ -403,7 +427,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				}
 				if (a._isBarBeatLoaded)
 				{
-					result._BarBeat = (a._BarBeat.Bar, a._BarBeat.Beat - b);
+					(result._b_bar, result._b_beat) = (a._b_bar, a._b_beat - b);
 					result._isBarBeatLoaded = true;
 				}
 				result._isTimeSpanLoaded = b == 0;
@@ -443,18 +467,18 @@ namespace RhythmBase.RhythmDoctor.Components
 		///  <inheritdoc/>
 		public static bool operator !=(RDBeat a, RDBeat b) => CompareInternal(a, b) != 0;
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static int CompareInternal((int bar, float beat) left, (int bar, float beat) right)
+		private static int CompareInternal(int bar1, float beat1, int bar2, float beat2)
 		{
-			int barComparison = left.bar.CompareTo(right.bar);
+			int barComparison = bar1.CompareTo(bar2);
 			if (barComparison != 0)
 				return barComparison;
-			return left.beat.CompareTo(right.beat);
+			return beat1.CompareTo(beat2);
 		}
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static int CompareInternal(RDBeat left, RDBeat right)
 		{
 			if (left._isBarBeatLoaded && right._isBarBeatLoaded)
-				return CompareInternal(left._BarBeat, right._BarBeat);
+				return CompareInternal(left._b_bar, left._b_beat, right._b_bar, right._b_beat);
 			if (left._isBeatLoaded && right._isBeatLoaded)
 				return left._beat.CompareTo(right._beat);
 			if (left._isTimeSpanLoaded && right._isTimeSpanLoaded)
@@ -464,7 +488,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				// 用 left 的单位比较
 				return (right._isBeatLoaded ? left.BeatOnly.CompareTo(right._beat)
-					: right._isBarBeatLoaded ? CompareInternal(left.BarBeat, right._BarBeat)
+					: right._isBarBeatLoaded ? CompareInternal(left._b_bar, left._b_beat, right._b_bar, right._b_beat)
 					: right._isTimeSpanLoaded ? left.BeatOnly.CompareTo(left._calculator.TimeSpanToBeatOnly(right.TimeSpan))
 					: throw new RhythmBaseException("The beat cannot be compared."));
 			}
@@ -473,7 +497,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				// 用 right 的单位比较
 				return (left._isBeatLoaded ? left._beat.CompareTo(right.BeatOnly)
-					: left._isBarBeatLoaded ? CompareInternal(left._BarBeat, right.BarBeat)
+					: left._isBarBeatLoaded ? CompareInternal(left._b_bar, left._b_beat, right._b_bar, right._b_beat)
 					: left._isTimeSpanLoaded ? right.BeatOnly.CompareTo(right._calculator.TimeSpanToBeatOnly(left.TimeSpan))
 					: throw new RhythmBaseException("The beat cannot be compared."));
 			}
@@ -484,10 +508,17 @@ namespace RhythmBase.RhythmDoctor.Components
 		public override string ToString()
 		{
 			string ToString;
+			(int bar, float beat) = this;
 			if (IsEmpty)
-				ToString = string.Format("[{0},{1},{2}]", _isBeatLoaded ? _beat.ToString() : "?", _isBarBeatLoaded ? _BarBeat.ToString() : "?", _isTimeSpanLoaded ? _TimeSpan.ToString() : "?");
+				ToString = $"[{(
+					_isBeatLoaded ? _beat.ToString() : "?"
+					)},{(
+					_isBarBeatLoaded ? $"({bar},{beat})" : "?"
+					)},{(
+					_isTimeSpanLoaded ? _TimeSpan.ToString() : "?"
+					)}]";
 			else
-				ToString = string.Format("[{0},{1}]", BarBeat.bar, BarBeat.beat);
+				ToString = $"[{bar},{beat}]";
 			return ToString;
 		}
 		///  <inheritdoc/>
@@ -508,7 +539,8 @@ namespace RhythmBase.RhythmDoctor.Components
 			hash = hash * 31 + _isBarBeatLoaded.GetHashCode();
 			hash = hash * 31 + _isTimeSpanLoaded.GetHashCode();
 			hash = hash * 31 + _beat.GetHashCode();
-			hash = hash * 31 + _BarBeat.GetHashCode();
+			hash = hash * 31 + _b_bar.GetHashCode();
+			hash = hash * 31 + _b_beat.GetHashCode();
 			hash = hash * 31 + _TimeSpan.GetHashCode();
 			return hash;
 		}
@@ -524,7 +556,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		private bool _isBPMLoaded;
 		private bool _isCPBLoaded;
 		private float _beat;
-		private (int Bar, float Beat) _BarBeat;
+		private int _b_bar;
+		private float _b_beat;
 		private TimeSpan _TimeSpan;
 		private float _BPM;
 		private int _CPB;
