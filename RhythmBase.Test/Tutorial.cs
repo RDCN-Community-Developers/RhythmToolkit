@@ -449,9 +449,7 @@ namespace RhythmBase.Test
 					// Save the content in the Data field  
 					ExtraData["myProperty"] =
 						value.HasValue ?
-						JsonElement.Parse(
-							JsonSerializer.Serialize(value, Utils.GetJsonSerializerOptions())
-						) :
+						JsonSerializer.SerializeToElement(value, Utils.GetJsonSerializerOptions()) :
 						default;
 				}
 			}
