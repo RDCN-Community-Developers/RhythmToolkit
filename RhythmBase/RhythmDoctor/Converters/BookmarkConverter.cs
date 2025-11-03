@@ -8,10 +8,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 	{
 		public override void Write(Utf8JsonWriter writer, Bookmark? value, JsonSerializerOptions serializer)
 		{
-			var beat = value?.Beat.BarBeat ?? throw new ConvertingException("Cannot write the bookmark.");
+			(int bar, float beat) = value?.Beat ?? throw new ConvertingException("Cannot write the bookmark.");
 			writer.WriteStartObject();
-			writer.WriteNumber("bar", beat.bar);
-			writer.WriteNumber("beat", beat.beat);
+			writer.WriteNumber("bar", bar);
+			writer.WriteNumber("beat", beat);
 			writer.WriteNumber("color", (int)value.Color);
 			writer.WriteEndObject();
 		}

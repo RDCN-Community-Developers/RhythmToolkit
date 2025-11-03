@@ -13,27 +13,16 @@ namespace RhythmBase.RhythmDoctor.Utils
 		internal BeatCalculator(RDLevel level)
 		{
 			Collection = level;
-			Refresh(true);
 		}
 		/// <summary>
 		/// Refresh the cache.
 		/// </summary>
-		public void Refresh(bool init = false)
+		public void Refresh()
 		{
-			if (init)
-			{
-				_BPMList = [];
-				_CPBList = [];
-				_BpmTree = [];
-				_CpbTree = [];
-			}
-			else
-			{
-				_BPMList = Collection.OfEvent<BaseBeatsPerMinute>()
-							.ToList();
-				_CPBList = Collection.OfEvent<SetCrotchetsPerBar>()
-							.ToList();
-			}
+			_BPMList = [];
+			_CPBList = [];
+			_BpmTree = [];
+			_CpbTree = [];
 		}
 		/// <summary>
 		/// Convert beat data.
@@ -76,9 +65,16 @@ namespace RhythmBase.RhythmDoctor.Utils
 		private static float BarBeatToBeatOnly(int bar, float beat, IEnumerable<SetCrotchetsPerBar> Collection)
 		{
 			(float BeatOnly, int Bar, int CPB) foreCPB = new(1f, 1, 8);
-			SetCrotchetsPerBar? LastCPB = Collection.LastOrDefault((i) => i.Active && i.Beat.BarBeat.bar < bar);
+			SetCrotchetsPerBar? LastCPB = Collection.LastOrDefault((i) =>
+			{
+				(int cbar, _) = i.Beat;
+				return i.Active && cbar < bar;
+			});
 			if (LastCPB != null)
-				foreCPB = new(LastCPB.Beat.BeatOnly, LastCPB.Beat.BarBeat.bar, LastCPB.CrotchetsPerBar);
+			{
+				(int bbar, _) = LastCPB.Beat;
+				foreCPB = new(LastCPB.Beat.BeatOnly, bbar, LastCPB.CrotchetsPerBar);
+			}
 			return foreCPB.BeatOnly + (bar - foreCPB.Bar) * foreCPB.CPB + beat - 1f;
 		}
 		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, IEnumerable<SetCrotchetsPerBar> Collection)
@@ -86,7 +82,10 @@ namespace RhythmBase.RhythmDoctor.Utils
 			(float BeatOnly, int Bar, int CPB) foreCPB = new(1f, 1, 8);
 			SetCrotchetsPerBar? LastCPB = Collection.LastOrDefault((i) => i.Active && i.Beat.BeatOnly < beat);
 			if (LastCPB != null)
-				foreCPB = new(LastCPB.Beat.BeatOnly, LastCPB.Beat.BarBeat.bar, LastCPB.CrotchetsPerBar);
+			{
+				(int bbar, _) = LastCPB.Beat;
+				foreCPB = new(LastCPB.Beat.BeatOnly, bbar, LastCPB.CrotchetsPerBar);
+			}
 			(int bar, float beat) result = ((int)Math.Round(foreCPB.Bar + Math.Floor((double)((beat - foreCPB.BeatOnly) / foreCPB.CPB))), (beat - foreCPB.BeatOnly) % foreCPB.CPB + 1f);
 			return result;
 		}

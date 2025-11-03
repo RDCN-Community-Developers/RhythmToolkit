@@ -105,8 +105,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static RDBeat DurationOffset(this RDBeat beat, float duration)
 		{
 			SetBeatsPerMinute setBPM = beat.BaseLevel?.OfEvent<SetBeatsPerMinute>().First(i => i.Beat > beat) ?? throw new InvalidRDBeatException();
+			(int bbar, _) = beat;
+			(int sbar, _) = setBPM.Beat;
 			RDBeat DurationOffset =
-				beat.BarBeat.bar == setBPM.Beat.BarBeat.bar
+				bbar == sbar
 				? beat + duration
 				: beat + TimeSpan.FromMinutes(duration / beat.BPM);
 			return DurationOffset;

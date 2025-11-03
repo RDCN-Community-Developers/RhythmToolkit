@@ -20,11 +20,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		{
 			if (e.calculator is BeatCalculator c)
 			{
+				(int bar, _) = e.Length;
 				float start = index.IsFromEnd
-					? c.BarBeatToBeatOnly(e.Length.BarBeat.bar - index.Value, 1f)
+					? c.BarBeatToBeatOnly(bar - index.Value, 1f)
 					: c.BarBeatToBeatOnly(index.Value, 1f);
 				float end = index.IsFromEnd
-					? c.BarBeatToBeatOnly(e.Length.BarBeat.bar - index.Value + 1, 1f)
+					? c.BarBeatToBeatOnly(bar - index.Value + 1, 1f)
 					: c.BarBeatToBeatOnly(index.Value + 1, 1f);
 				return (start, end);
 			}
@@ -35,11 +36,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		{
 			if (e.calculator is BeatCalculator c)
 			{
+				(int bar, _) = e.Length;
 				float start = range.Start.IsFromEnd
-					? c.BarBeatToBeatOnly(e.Length.BarBeat.bar - range.Start.Value, 1f)
+					? c.BarBeatToBeatOnly(bar - range.Start.Value, 1f)
 					: c.BarBeatToBeatOnly(range.Start.Value, 1f);
 				float end = range.End.IsFromEnd
-					? c.BarBeatToBeatOnly(e.Length.BarBeat.bar - range.End.Value + 1, 1f)
+					? c.BarBeatToBeatOnly(bar - range.End.Value + 1, 1f)
 					: c.BarBeatToBeatOnly(range.End.Value + 1, 1f);
 				return (start, end);
 			}

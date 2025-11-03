@@ -88,9 +88,10 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 	}
 	protected virtual void Write(Utf8JsonWriter writer, ref TEvent value, JsonSerializerOptions options)
 	{
-		writer.WriteNumber("bar"u8, value.Beat.BarBeat.bar);
+		(int bar, float beat) = value.Beat;
+		writer.WriteNumber("bar"u8, bar);
 		if (value is not IBarBeginningEvent)
-			writer.WriteNumber("beat"u8, value.Beat.BarBeat.beat);
+			writer.WriteNumber("beat"u8, beat);
 		writer.WriteString("type"u8, EnumConverter.ToEnumString(value.Type));
 		if (value is not BaseDecorationAction)
 			writer.WriteNumber("y"u8, value.Y);

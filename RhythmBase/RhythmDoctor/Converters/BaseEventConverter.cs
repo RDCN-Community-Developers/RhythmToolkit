@@ -86,11 +86,12 @@ namespace RhythmBase.RhythmDoctor.Converters
 
 		public static void WriteForwardEvent(Utf8JsonWriter writer, IForwardEvent value)
 		{
+			(int bar, float beat) = value.Beat;
 			writer.WriteStartObject();
 			if (!string.IsNullOrEmpty(value.ActureType))
 				writer.WriteString("type", value.ActureType);
-			writer.WriteNumber("bar", value.Beat.BarBeat.bar);
-			writer.WriteNumber("beat", value.Beat.BarBeat.beat);
+			writer.WriteNumber("bar", bar);
+			writer.WriteNumber("beat", beat);
 			if (value is ForwardRowEvent rowEvent)
 				writer.WriteNumber("row", rowEvent.Index);
 			else if (value is ForwardDecorationEvent decorationEvent)
@@ -101,7 +102,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				writer.WriteBoolean("runTag", value.RunTag);
 			if (!value.Active)
 				writer.WriteBoolean("active", value.Active);
-			if (value.Condition is not null)
+			if (value.Condition.HasValue)
 				writer.WriteString("if", value.Condition.Serialize());
 			if (value.Y != 0)
 				writer.WriteNumber("y", value.Y);
