@@ -18,6 +18,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		{
 			_beat = new RDBeat(1f);
 			Active = true;
+			Condition = new();
 		}
 		/// <summary>
 		/// Event type.
@@ -67,7 +68,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Event conditions.
 		/// </summary>
-		public Condition? Condition { get; set; }
+		public Condition Condition { get; set; }
 		/// <summary>
 		/// Indicates whether this event is activated.
 		/// </summary>
@@ -143,8 +144,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				Condition = Condition,
 				Active = Active
 			};
-			if (Condition != null)
-				temp.Condition = Condition.Clone();
+			temp.Condition = Condition.Clone();
 			return temp;
 		}
 		/// <inheritdoc/>

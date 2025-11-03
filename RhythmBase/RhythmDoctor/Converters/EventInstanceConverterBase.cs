@@ -39,12 +39,12 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 			else if (!Read(ref reader, propertyName, ref value, options))
 			{
 #if DEBUG
-				if(!(
+				if (!(
 					(value is FloatingText && propertyName.SequenceEqual("times"u8)) ||
 					(value is FloatingText && propertyName.SequenceEqual("id"u8)) ||
 					(value is AdvanceText && propertyName.SequenceEqual("id"u8))
 					))
-				Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.Type} not found.");
+					Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.Type} not found.");
 #endif
 				value[
 #if NET8_0_OR_GREATER
@@ -99,7 +99,7 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 			writer.WriteString("tag"u8, value.Tag);
 		if (value.RunTag)
 			writer.WriteBoolean("runTag"u8, true);
-		if (value.Condition != null)
+		if (value.Condition.HasValue)
 			writer.WriteString("if"u8, value.Condition.Serialize());
 		if (!value.Active)
 			writer.WriteBoolean("active"u8, false);

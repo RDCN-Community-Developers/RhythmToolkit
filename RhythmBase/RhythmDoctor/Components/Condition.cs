@@ -16,6 +16,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		public float Duration { get; set; }
 		/// <summary>
+		/// Gets a value indicating whether the collection contains any conditions.
+		/// </summary>
+		public bool HasValue => ConditionLists.Count > 0;
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Condition"/> class.
 		/// </summary>
 		public Condition()

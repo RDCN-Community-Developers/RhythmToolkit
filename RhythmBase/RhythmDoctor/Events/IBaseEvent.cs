@@ -19,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the condition associated with the event.
 		/// </summary>
-		Condition? Condition { get; set; }
+		Condition Condition { get; set; }
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
