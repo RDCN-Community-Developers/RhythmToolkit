@@ -1,5 +1,4 @@
 ﻿using RhythmBase.RhythmDoctor.Converters;
-using RhythmBase.RhythmDoctor.Extensions;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
@@ -15,38 +14,48 @@ namespace RhythmBase.RhythmDoctor.Components
 #endif
 		IEquatable<RDRoom>
 	{
-		///// <summary>
-		///// Indicates if the top room can be applied. 0-base.
-		///// </summary>
-		//public bool EnableTop { get; }
+		/// <summary>
+		/// Gets or sets whether the specified room is enabled. 0-base.
+		/// </summary>
+		/// <param name="index">The index of the room.</param>
+		/// <returns>True if the room is enabled; otherwise, false.</returns>
+		[IndexerName("Room")]
+		public bool this[byte index]
+		{
+			readonly get => _data.HasFlag((RDRoomIndex)(1 << index));
+			set
+			{
+				if (index <= 4)
+					_data = value ? _data | (RDRoomIndex)(1 << index) : _data & (RDRoomIndex)(~(1 << index));
+			}
+		}
 		/// <summary>
 		/// Gets or sets whether the specified room is enabled.
 		/// </summary>
-		/// <param name="Index">The index of the room.</param>
+		/// <param name="index">The index of the room.</param>
 		/// <returns>True if the room is enabled; otherwise, false.</returns>
 		[IndexerName("Room")]
-		public bool this[byte Index]
+		public bool this[RDRoomIndex index]
 		{
-			readonly get => _data.HasFlag((RDRoomIndex)(1 << Index));
+			readonly get => _data.HasFlag(index);
 			set
 			{
-				if (Index <= 4)
-					_data = value ? _data | (RDRoomIndex)(1 << Index) : _data & (RDRoomIndex)(1 << Index);
+				if (((byte)index & 0b1111) != 0)
+					_data = value ? _data | index : _data & (~index);
 			}
 		}
 		/// <summary>
 		/// Gets the list of enabled rooms.
 		/// </summary>
-		public readonly List<byte> Rooms
+		public readonly byte[] Rooms
 		{
 			get
 			{
 				RDRoomIndex indexes = _data;
-				return Enumerable
+				return [..Enumerable
 					.Range(0, 5)
 					.Where(x => indexes.HasFlag((RDRoomIndex)(1 << x)))
-					.Select(x => (byte)x)
-					.ToList();
+					.Select(x => (byte)x)];
 			}
 		}
 		/// <inheritdoc/>
@@ -133,15 +142,16 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <returns>A SingleRoom instance.</returns>
 		/// <exception cref="Global.Exceptions.RhythmBaseException">Thrown when the Room contains more than one room.</exception>
 		public static explicit operator RDSingleRoom(RDRoom room) =>
-			room.Rooms.Count == 1
-				? new RDSingleRoom(room.Rooms.Single())
-				: throw new RhythmBaseException();
+			room.Rooms.Length == 1
+				? new RDSingleRoom(room.Rooms[0])
+				: throw new InvalidCastException("This object has multiple rooms.");
 
 		/// <inheritdoc/>
 		public override readonly bool Equals(object? obj) => obj is RDRoom e && Equals(e);
 		/// <inheritdoc/>
 #if NETSTANDARD
-		public override readonly int GetHashCode(){
+		public override readonly int GetHashCode()
+		{
 			int hash = 17;
 			hash = hash * 31 + _data.GetHashCode();
 			return hash;
