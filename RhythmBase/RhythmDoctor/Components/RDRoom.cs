@@ -16,7 +16,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		IEquatable<RDRoom>
 	{
 		///// <summary>
-		///// Indicates if the top room can be applied.
+		///// Indicates if the top room can be applied. 0-base.
 		///// </summary>
 		//public bool EnableTop { get; }
 		/// <summary>
