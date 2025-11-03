@@ -24,7 +24,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the new room to which the sprite will be moved.
 		/// </summary>
 		[RDJsonConverter(typeof(RoomIndexConverter))]
-		public RDRoomIndex NewRoom { get; set; } = 0;
+		public RDRoomIndex NewRoom { get; set; } = RDRoomIndex.Room1;
 		/// <summary>
 		/// Gets or sets the depth level of the object.
 		/// </summary>

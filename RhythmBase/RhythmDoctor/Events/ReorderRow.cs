@@ -19,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		[RDJsonDefaultSerializer]
 		[RDJsonConverter(typeof(RoomIndexConverter))]
-		public RDRoomIndex NewRoom { get; set; } = 0;
+		public RDRoomIndex NewRoom { get; set; } = RDRoomIndex.Room1;
 		/// <summary>
 		/// Gets or sets the order of the room. The default value is <see langword="0"/>.
 		/// </summary>
