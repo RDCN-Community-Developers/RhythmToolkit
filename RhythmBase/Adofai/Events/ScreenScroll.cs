@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.Adofai.Events
+﻿using RhythmBase.Global.Components.Vector;
+
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents a screen scroll action in the Adofai event system.  

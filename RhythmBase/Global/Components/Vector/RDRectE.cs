@@ -1,6 +1,6 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics.CodeAnalysis;
-namespace RhythmBase.Global.Components
+namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// Represents a rectangle defined by four expressions: left, top, right, and bottom.

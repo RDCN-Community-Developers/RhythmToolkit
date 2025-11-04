@@ -1,11 +1,12 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Converters
 {
-	internal class RDPointsConverter : JsonConverter<IRDVortex>
+	internal class RDPointsConverter : JsonConverter<IRDVector>
 	{
-		public override void Write(Utf8JsonWriter writer, IRDVortex? value, JsonSerializerOptions serializer)
+		public override void Write(Utf8JsonWriter writer, IRDVector? value, JsonSerializerOptions serializer)
 		{
 			writer.WriteStartArray();
 			if (value is RDPointNI v1)
@@ -110,12 +111,12 @@ namespace RhythmBase.Global.Converters
 				throw new NotImplementedException();
 			writer.WriteEndArray();
 		}
-		public override IRDVortex Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
+		public override IRDVector Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
 			if (reader.TokenType != JsonTokenType.StartArray)
 				throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
 			reader.Read();//read start array
-			IRDVortex ReadJson;
+			IRDVector ReadJson;
 			if (objectType == typeof(RDPointNI) || objectType == typeof(RDPointNI?))
 				ReadJson = new RDPointNI(reader.GetInt32(), reader.Read() ? reader.GetInt32() : 0);
 			else if (objectType == typeof(RDPointN) || objectType == typeof(RDPointN?))
@@ -170,6 +171,6 @@ namespace RhythmBase.Global.Converters
 				throw new JsonException("Expected end array token.");
 			return ReadJson;
 		}
-		public override bool CanConvert(Type objectType) => typeof(IRDVortex).IsAssignableFrom(objectType);
+		public override bool CanConvert(Type objectType) => typeof(IRDVector).IsAssignableFrom(objectType);
 	}
 }

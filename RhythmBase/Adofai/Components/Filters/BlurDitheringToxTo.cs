@@ -1,3 +1,5 @@
+using RhythmBase.Global.Components.Vector;
+
 namespace RhythmBase.Adofai.Components.Filters;
 /// <summary>
 /// The filter of <b>Blur Dithering2x2</b>.

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace RhythmBase.Global.Components
+namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// Represents a rotated rectangle with non-nullable float coordinates.

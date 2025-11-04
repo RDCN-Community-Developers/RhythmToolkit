@@ -1,14 +1,13 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Extensions;
+﻿using RhythmBase.RhythmDoctor.Extensions;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-namespace RhythmBase.Global.Components
+namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float" />
 	/// </summary>
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public struct RDPoint(float? x, float? y) : IRDVortex<RDPoint, RDSize, float?>, IRDVortex<RDPoint, RDSizeI, float?>
+	public struct RDPoint(float? x, float? y) : IRDVector<RDPoint, RDSize, float?>, IRDVector<RDPoint, RDSizeI, float?>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPoint"/> struct with the specified size.

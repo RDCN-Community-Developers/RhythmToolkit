@@ -1,15 +1,14 @@
 ﻿using System.Text.Json.Serialization;
-using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-namespace RhythmBase.Global.Components
+namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="float" />
 	/// </summary>
 	[JsonConverter(typeof(RDPointsConverter))]
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public struct RDSizeN(float width, float height) : IRDVortex<RDSizeN, RDSizeN, float>
+	public struct RDSizeN(float width, float height) : IRDVector<RDSizeN, RDSizeN, float>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDSizeN"/> struct with the specified point.

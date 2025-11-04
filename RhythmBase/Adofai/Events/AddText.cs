@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.Adofai.Events
+﻿using RhythmBase.Global.Components.Vector;
+
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to add text in the game.  

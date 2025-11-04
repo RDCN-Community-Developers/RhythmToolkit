@@ -1,6 +1,7 @@
 ﻿using RhythmBase.Global.Components;
 using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.RichText;
+using RhythmBase.Global.Components.Vector;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.RDLang;

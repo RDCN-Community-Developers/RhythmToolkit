@@ -1,10 +1,10 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.Global.Components.Vector;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class RDPointArrayConverter<TPoint> : JsonConverter<TPoint[]> where TPoint : IRDVortex
+	internal class RDPointArrayConverter<TPoint> : JsonConverter<TPoint[]> where TPoint : IRDVector
 	{
 		private static readonly RDPointsConverter converter = new();
 		public override TPoint[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

@@ -2,7 +2,7 @@
 using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-namespace RhythmBase.Global.Components
+namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="T:RhythmBase.Components.Expression" />
@@ -10,9 +10,9 @@ namespace RhythmBase.Global.Components
 	[JsonConverter(typeof(RDPointsConverter))]
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public struct RDPointE(RDExpression? x, RDExpression? y) :
-		IRDVortex<RDPointE, RDSize, RDExpression>,
-		IRDVortex<RDPointE, RDSizeI, RDExpression>,
-		IRDVortex<RDPointE, RDSizeE, RDExpression>
+		IRDVector<RDPointE, RDSize, RDExpression>,
+		IRDVector<RDPointE, RDSizeI, RDExpression>,
+		IRDVector<RDPointE, RDSizeE, RDExpression>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPointE"/> struct with the specified size.

@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.Adofai.Events
+﻿using RhythmBase.Global.Components.Vector;
+
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents the Free Roam Twirl event in the ADOFAI editor.  

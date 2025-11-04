@@ -1,5 +1,6 @@
 ﻿using RhythmBase.Adofai.Events;
 using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.Adofai.Components
 {
 	/// <summary>

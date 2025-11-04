@@ -1,4 +1,5 @@
 ﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.Timeline;
 using RhythmBase.RhythmDoctor.Components.TimeLine;

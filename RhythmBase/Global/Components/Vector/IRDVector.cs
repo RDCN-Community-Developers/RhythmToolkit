@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace RhythmBase.RhythmDoctor.Components
+namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// Represents a contract for a vortex in the RD system.
@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <remarks>This interface serves as a marker or base for defining vortex-related functionality within the RD
 	/// system. Implementing types should provide specific behaviors or properties relevant to the vortex
 	/// concept.</remarks>
-	public interface IRDVortex
+	public interface IRDVector
 	{
 }
 	/// <summary>
@@ -17,8 +17,8 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <typeparam name="TSelf">The type that implements this interface.</typeparam>
 	/// <typeparam name="TRight">The type of the right operand in addition and subtraction operations.</typeparam>
 	/// <typeparam name="TValue">The type of the value in multiplication and division operations.</typeparam>
-	public interface IRDVortex<TSelf, TRight, TValue> :
-		IRDVortex,
+	public interface IRDVector<TSelf, TRight, TValue> :
+		IRDVector,
 		IEquatable<TSelf>
 #if NET7_0_OR_GREATER
 		,

@@ -1,4 +1,5 @@
 ﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>

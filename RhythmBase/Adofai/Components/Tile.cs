@@ -21,6 +21,10 @@ namespace RhythmBase.Adofai.Components
 			}
 		}
 		/// <summary>
+		/// Gets or sets the current beat information for the audio detection system.
+		/// </summary>
+		public ADBeat Beat { get; set; }
+		/// <summary>
 		/// Gets a value indicating whether the tile is in a mid-spin state.
 		/// A tile is considered mid-spin if its angle is less than -180 or greater than 180.
 		/// </summary>
@@ -131,7 +135,26 @@ namespace RhythmBase.Adofai.Components
 		{
 			bool result = false;
 			if ((item is IBeginningEvent) || (Previous is not null))
+			{
+				if (Parent is not null)
+					switch (item)
+					{
+						case SetSpeed setSpeed: // tick
+							Parent.Calculator
+							break;
+						case Twirl twirl: // reverse
+							break;
+						case Pause pause: // delay
+							break;
+						case Hold hold: // delay
+							break;
+						case FreeRoam freeRoam: // delay
+							break;
+						case MultiPlanet multiPlanet: // tick
+							break;
+					}
 				result = base.Add(item);
+			}
 			if (result)
 				item.Parent = this;
 			return result;
@@ -150,7 +173,11 @@ namespace RhythmBase.Adofai.Components
 		/// Returns a string representation of the tile, including its index, beat, angle, and event count.
 		/// </summary>
 		/// <returns>A string that represents the tile.</returns>
-		public override string ToString() => $"[{Index}]<{(IsMidSpin ? "MS".PadRight(4) : _angle.ToString().PadLeft(4))}>{(this.Any() ? string.Format(", Count = {0}", this.Count()) : string.Empty)}";
+		public override string ToString() => $"[{Index}]<{(
+				IsMidSpin ? "MS".PadRight(4) : $"{_angle,4}"
+			)}>{(
+				this.Any() ? $"[{Count}]" : string.Empty
+			)}";
 		/// <summary>
 		/// The internal storage for the angle of the tile.
 		/// </summary>

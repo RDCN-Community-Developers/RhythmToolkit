@@ -230,6 +230,7 @@ public class ConverterGenerator : IIncrementalGenerator
 			sb.AppendLine("using System;");
 			sb.AppendLine("using RhythmBase.Global.Extensions;");
 			sb.AppendLine("using RhythmBase.Global.Components;");
+			sb.AppendLine("using RhythmBase.Global.Components.Vector;");
 			sb.AppendLine("using RhythmBase.Global.Components.Easing;");
 			sb.AppendLine("using RhythmBase.Global.Components.RichText;");
 			sb.AppendLine("using RhythmBase.RhythmDoctor.Events;");
@@ -340,6 +341,7 @@ public class ConverterGenerator : IIncrementalGenerator
 			sb.AppendLine("using System;");
 			sb.AppendLine("using RhythmBase.Global.Extensions;");
 			sb.AppendLine("using RhythmBase.Global.Components;");
+			sb.AppendLine("using RhythmBase.Global.Components.Vector;");
 			sb.AppendLine("using RhythmBase.Global.Components.Easing;");
 			sb.AppendLine("using RhythmBase.Global.Components.RichText;");
 			sb.AppendLine("using RhythmBase.Adofai.Events;");
@@ -459,6 +461,7 @@ public class ConverterGenerator : IIncrementalGenerator
 			sb.AppendLine("using System;");
 			sb.AppendLine("using RhythmBase.Global.Extensions;");
 			sb.AppendLine("using RhythmBase.Global.Components;");
+			sb.AppendLine("using RhythmBase.Global.Components.Vector;");
 			sb.AppendLine("using RhythmBase.Global.Components.Easing;");
 			sb.AppendLine("using RhythmBase.Global.Components.RichText;");
 			sb.AppendLine("using RhythmBase.Adofai.Components.Filters;");

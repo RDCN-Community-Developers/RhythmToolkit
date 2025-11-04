@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RhythmBase.RhythmDoctor.Components
+namespace RhythmBase.Global.Components
 {
 	internal class RedBlackNode<TKey, TValue> where TKey : IComparable<TKey>
 	{
