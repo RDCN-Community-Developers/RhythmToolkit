@@ -10,10 +10,6 @@
 		/// </summary>
 		public ShowStatusSign()
 		{
-			UseBeats = true;
-			Narrate = true;
-			Type = EventType.ShowStatusSign;
-			Tab = Tabs.Actions;
 		}
 		/// <summary>
 		/// Gets or sets a value indicating whether to use beats.
@@ -41,12 +37,9 @@
 			get
 			{
 				bool useBeats = UseBeats;
-				TimeSpan TimeDuration;
-				if (useBeats)
-					TimeDuration = TimeSpan.Zero;
-				else
-					TimeDuration = TimeSpan.FromSeconds((double)Duration);
-				return TimeDuration;
+				TimeSpan timeDuration;
+				timeDuration = useBeats ? TimeSpan.Zero : TimeSpan.FromSeconds((double)Duration);
+				return timeDuration;
 			}
 			set
 			{
@@ -57,15 +50,15 @@
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; }
+		public override EventType Type { get; } = EventType.ShowStatusSign;
 		/// <summary>
 		/// Gets the tab of the event.
 		/// </summary>
-		public override Tabs Tab { get; }
+		public override Tabs Tab { get; } =  Tabs.Actions;
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
+		public override string ToString() => base.ToString() + $" {Text}";
 	}
 }

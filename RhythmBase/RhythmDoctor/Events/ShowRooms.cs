@@ -35,11 +35,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
-		public override EventType Type { get; } = EventType.ShowRooms;
+		public override EventType Type => EventType.ShowRooms;
 
 		/// <summary>  
 		/// Gets the tab associated with the event.  
 		/// </summary>  
-		public override Tabs Tab { get; } = Tabs.Rooms;
+		public override Tabs Tab => Tabs.Rooms;
 	}
 }

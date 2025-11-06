@@ -59,7 +59,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 		}
 		/// <inheritdoc/>
-		public override readonly string ToString() => string.Format("[{0}]", string.Join(",", Rooms));
+		public override readonly string ToString() => $"[{string.Join(",", Rooms)}]";
 		/// <summary>
 		/// Returns an instance with only room 1 enabled.
 		/// </summary>

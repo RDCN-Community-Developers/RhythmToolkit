@@ -8,31 +8,27 @@ namespace RhythmBase.RhythmDoctor.Events
 	public class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
 	{
 		/// <inheritdoc />
-		public override EventType Type { get; } = EventType.ForwardDecorationEvent;
+		public override EventType Type => EventType.ForwardDecorationEvent;
+
 		/// <summary>
 		/// Gets the actual type of the decoration event.
 		/// </summary>
 		public string ActualType
 		{
-			get
-			{
-				return _extraData.TryGetValue("type", out JsonElement typeElement) && typeElement.ValueKind == JsonValueKind.String ?
-					typeElement.GetString() ?? "" : "";
-			}
-			set
-			{
-				_extraData["type"] = JsonSerializer.SerializeToElement(value);
-			}
+			get => _extraData.TryGetValue("type", out JsonElement typeElement) && typeElement.ValueKind == JsonValueKind.String ?
+				typeElement.GetString() ?? "" : "";
+			set => _extraData["type"] = JsonSerializer.SerializeToElement(value);
 		}
 		/// <inheritdoc />
-		public override Tabs Tab { get; } = Tabs.Decorations;
+		public override Tabs Tab => Tabs.Decorations;
+
 		/// <summary>
 		/// Gets a dictionary containing additional data not explicitly modeled by the class.
 		/// </summary>
 		/// <remarks>This property provides access to extra data that may be included in the source but is not
 		/// directly represented by other properties. The dictionary is read-only and reflects the internal state of the extra
 		/// data.</remarks>
-		protected Dictionary<string, JsonElement> ExtraData { get => _extraData; }
+		protected Dictionary<string, JsonElement> ExtraData => _extraData;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ForwardDecorationEvent"/> class.
 		/// </summary>
@@ -53,7 +49,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			Active = (!_extraData.TryGetValue("active".ToLowerCamelCase(), out JsonElement activeElement) || activeElement.ValueKind != JsonValueKind.True) && activeElement.ValueKind != JsonValueKind.False || activeElement.GetBoolean();
 			RunTag = (_extraData.TryGetValue("runTag".ToLowerCamelCase(), out JsonElement runTagElement) && runTagElement.ValueKind == JsonValueKind.True || runTagElement.ValueKind == JsonValueKind.False) && runTagElement.GetBoolean();
 			Condition = _extraData.TryGetValue("condition".ToLowerCamelCase(), out JsonElement conditionElement) && conditionElement.ValueKind == JsonValueKind.String ?
-				Condition.Deserialize( conditionElement.GetString() ?? "") : null;
+				Condition.Deserialize( conditionElement.GetString() ?? "") : new();
 			_decoId = _extraData.TryGetValue("target".ToLowerCamelCase(), out JsonElement targetElement) && targetElement.ValueKind == JsonValueKind.String ?
 				targetElement.GetString() ?? "" : "";
 			_extraData.Remove("bar");

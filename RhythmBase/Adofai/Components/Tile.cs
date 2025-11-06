@@ -41,7 +41,7 @@ namespace RhythmBase.Adofai.Components
 		/// If there is no next tile, the tick is set to 0.  
 		/// Otherwise, the tick is calculated as the normalized angular difference between the previous tile and the current tile.  
 		/// </summary>  
-		public float Tick => Next is null ? 0 : (((Previous?.Angle ?? 0) - _angle) % 360 + 540) % 360 / 180;
+		public float Tick => (((Previous?.Angle ?? 0) - _angle) % 360 + 540) % 360 / 180;
 		///// <summary>
 		///// Gets the beat associated with the tile, calculated based on its angle and index.
 		///// </summary>
@@ -140,7 +140,7 @@ namespace RhythmBase.Adofai.Components
 					switch (item)
 					{
 						case SetSpeed setSpeed: // tick
-							Parent.Calculator
+							//Parent.Calculator
 							break;
 						case Twirl twirl: // reverse
 							break;
@@ -150,7 +150,7 @@ namespace RhythmBase.Adofai.Components
 							break;
 						case FreeRoam freeRoam: // delay
 							break;
-						case MultiPlanet multiPlanet: // tick
+						case MultiPlanet multiPlanet: // runtype
 							break;
 					}
 				result = base.Add(item);

@@ -218,7 +218,7 @@ namespace RhythmBase.Adofai.Converters
 			writer.WriteNumber("difficulty"u8, value.Difficulty);
 			writer.WritePropertyName("requiredMods"u8);
 			writer.WriteStartArray();
-			foreach (var mod in value.RequiredMods)
+			foreach (string? mod in value.RequiredMods)
 				writer.WriteStringValue(mod);
 			writer.WriteEndArray();
 			writer.WriteString("songFilename"u8, value.SongFilename);

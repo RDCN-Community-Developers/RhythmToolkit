@@ -1,7 +1,6 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extensions;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -40,7 +39,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the ID of the parent floating text.
 		/// </summary>
 		[RDJsonNotIgnore]
-		internal int Id => Parent?.Id ?? -1;
+		internal int Id => Parent?._id ?? -1;
 		/// <inheritdoc/>
 		public override string ToString()
 		{

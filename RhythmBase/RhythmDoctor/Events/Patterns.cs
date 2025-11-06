@@ -1,6 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Converters;
-
-namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Enum representing different rhythm patterns.  

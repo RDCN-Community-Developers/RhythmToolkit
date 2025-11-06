@@ -134,8 +134,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static string ToJsonString(this IBaseEvent ev, JsonSerializerOptions? options = null)
 		{
 			options ??= JsonSerializerOptions.Default;
-			using var stream = new MemoryStream();
-			using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = options.WriteIndented, });
+			using MemoryStream stream = new MemoryStream();
+			using Utf8JsonWriter writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = options.WriteIndented, });
 			evc.Write(writer, ev, options);
 			writer.Flush();
 			return Encoding.UTF8.GetString(stream.ToArray());
@@ -151,7 +151,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static IBaseEvent? FromJsonString(string json, JsonSerializerOptions? options = null)
 		{
 			options ??= JsonSerializerOptions.Default;
-			var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+			Utf8JsonReader reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
 			reader.Read();
 			return evc.Read(ref reader, typeof(IBaseEvent), options);
 		}

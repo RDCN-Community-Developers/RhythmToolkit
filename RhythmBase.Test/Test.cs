@@ -1,4 +1,5 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+﻿using System.Diagnostics;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
@@ -33,28 +34,28 @@ namespace RhythmBase.Test
 			level.Rows.Add(new() { RowType = RowTypes.Oneshot });
 			level.Decorations.Add([]);
 			Dictionary<Tabs, int> count = [];
-			foreach (var type in ((EventType[])Enum.GetValues(typeof(EventType))).Where(i => !EventTypeUtils.CustomTypes.Contains(i)))
+			foreach (EventType type in ((EventType[])Enum.GetValues(typeof(EventType))).Where(i => !EventTypeUtils.CustomTypes.Contains(i)))
 			{
 				if (EventTypeUtils.CustomTypes.Contains(type))
 					continue;
 				if (type == EventType.AdvanceText)
 					continue;
-				var e = (IBaseEvent?)Activator.CreateInstance(EventTypeUtils.ToType(type));
-				if (e is IBaseEvent ei)
+				IBaseEvent? e = (IBaseEvent?)Activator.CreateInstance(EventTypeUtils.ToType(type));
+				if (e is not null)
 				{
-					if (ei is IBarBeginningEvent eb)
+					if (e is IBarBeginningEvent eb)
 					{
 						level.Add(eb);
 					}
 					else
 					{
-						if (!count.TryGetValue(ei.Tab, out int value))
+						if (!count.TryGetValue(e.Tab, out int value))
 						{
 							value = 0;
-							count[ei.Tab] = value;
+							count[e.Tab] = value;
 						}
-						ei.Beat = new(count[ei.Tab] + 1);
-						if (ei is BaseRowAction er)
+						e.Beat = new(count[e.Tab] + 1);
+						if (e is BaseRowAction er)
 						{
 							if (er is BaseBeat beat)
 							{
@@ -66,11 +67,11 @@ namespace RhythmBase.Test
 							else
 								level.Rows[0].Add(er);
 						}
-						else if (ei is BaseDecorationAction ed)
+						else if (e is BaseDecorationAction ed)
 							level.Decorations[0].Add(ed);
 						else
-							level.Add(ei);
-						count[ei.Tab] = ++value;
+							level.Add(e);
+						count[e.Tab] = ++value;
 					}
 				}
 			}
@@ -81,7 +82,7 @@ namespace RhythmBase.Test
 		public void ReadWriteSpeedTest()
 		{
 			Console.WriteLine("|Action\t|Elapsed\t|");
-			var sw = System.Diagnostics.Stopwatch.StartNew();
+			Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 			for (int i = 0; i < 10; i++)
 			{
 				sw.Start();
@@ -118,7 +119,7 @@ namespace RhythmBase.Test
 			level.Add(cmt2);
 			level.Add(cpb2);
 			level.Add(cmt3);
-			foreach(var cpb in level.OfEvent<SetCrotchetsPerBar>())
+			foreach(SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
 			{
 				Console.WriteLine(cpb);
 			}
@@ -129,7 +130,7 @@ namespace RhythmBase.Test
 			Console.WriteLine();
 
 			level.Add(cpb1);
-			foreach(var cpb in level.OfEvent<SetCrotchetsPerBar>())
+			foreach(SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
 			{
 				Console.WriteLine(cpb);
 			}
@@ -140,7 +141,7 @@ namespace RhythmBase.Test
 			Console.WriteLine();
 
 			level.Remove(cpb1);
-			foreach(var cpb in level.OfEvent<SetCrotchetsPerBar>())
+			foreach(SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
 			{
 				Console.WriteLine(cpb);
 			}
@@ -151,7 +152,7 @@ namespace RhythmBase.Test
 			Console.WriteLine();
 
 			level.Add(cpb1);
-			foreach(var cpb in level.OfEvent<SetCrotchetsPerBar>())
+			foreach(SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
 			{
 				Console.WriteLine(cpb);
 			}

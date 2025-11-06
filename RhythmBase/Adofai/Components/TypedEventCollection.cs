@@ -73,7 +73,7 @@ namespace RhythmBase.Adofai.Components
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that contains the count of events in the list.</returns>
-		public override string ToString() => string.Format("Count = {0}", list.Count);
+		public override string ToString() => $"Count = {list.Count}";
 		/// <summary>
 		/// Returns an enumerator that iterates through the list.
 		/// </summary>

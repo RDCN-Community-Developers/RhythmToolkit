@@ -23,9 +23,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		[RDJsonConverter(typeof(CpuTypeGroupConverter))]
 		public CpuTypeGroup CpuMarkers { get; set; } = new CpuTypeGroup() { [0] = CpuType.Otto };
 		/// <inheritdoc />
-		public override EventType Type { get; } = EventType.ChangePlayersRows;
+		public override EventType Type => EventType.ChangePlayersRows;
+
 		/// <inheritdoc />
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
 	}
 	/// <summary>
 	/// Represents the types of CPUs.

@@ -115,7 +115,7 @@ namespace RhythmBase.Adofai.Components
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
 				string? adlevelPath = null;
-				foreach (var file in tempDirectory.GetFiles())
+				foreach (FileInfo file in tempDirectory.GetFiles())
 				{
 					if (file.Extension == ".adofai")
 					{
@@ -169,7 +169,7 @@ namespace RhythmBase.Adofai.Components
 				ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
 				string? adlevelPath = null;
-				foreach (var file in tempDirectory.GetFiles())
+				foreach (FileInfo file in tempDirectory.GetFiles())
 				{
 					if (file.Extension == ".adofai")
 					{

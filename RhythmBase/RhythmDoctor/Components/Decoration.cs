@@ -88,7 +88,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <returns>A new <see cref="Decoration"/> instance that is a shallow copy of the current instance.</returns>  
 		public Decoration Clone()
 		{
-			var s = (Decoration)MemberwiseClone();
+			Decoration s = (Decoration)MemberwiseClone();
 			s.Parent = null;
 			return s;
 		}

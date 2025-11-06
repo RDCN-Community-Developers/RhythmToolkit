@@ -17,7 +17,8 @@
 		/// <summary>
 		/// Gets the message that describes the current exception.
 		/// </summary>
-		public override string Message => string.Format("Cannot save file '{0}' because overwriting is disabled by the settings and a file with the same name already exists.\r\nTo correct this, change the path or filename or set the OverWrite property of {1} to false.", FilePath, _referType.Name);
+		public override string Message =>
+			$"Cannot save file '{FilePath}' because overwriting is disabled by the settings and a file with the same name already exists.\r\nTo correct this, change the path or filename or set the OverWrite property of {_referType.Name} to false.";
 		private readonly Type _referType = referType;
 	}
 }

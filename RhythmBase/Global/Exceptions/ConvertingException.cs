@@ -21,7 +21,7 @@ namespace RhythmBase.Global.Exceptions
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
 		public ConvertingException(string message)
-			: base(string.Format("An exception was thrown on reading the event: {0}", message)) { }
+			: base($"An exception was thrown on reading the event: {message}") { }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConvertingException"/> class with a specified event and inner exception.
 		/// </summary>

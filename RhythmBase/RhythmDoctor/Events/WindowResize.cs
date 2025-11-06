@@ -10,7 +10,6 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// </summary>
 	public class WindowResize : BaseEvent, IEaseEvent, IRoomEvent
 	{
-		private Tabs tab = Tabs.Actions;
 		/// <inheritdoc/>
 		public override EventType Type => EventType.WindowResize;
 		/// <inheritdoc/>
@@ -33,9 +32,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.Tabs.Windows")]
 		public Tabs CustomTab
 		{
-			get => tab;
-			set => tab = CustomTab is Tabs.Actions or Tabs.Windows ? value : throw new InvalidOperationException();
-		}
+			get;
+			set => field = CustomTab is Tabs.Actions or Tabs.Windows ? value : throw new InvalidOperationException();
+		} = Tabs.Actions;
 		/// <inheritdoc/>
 		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <inheritdoc/>

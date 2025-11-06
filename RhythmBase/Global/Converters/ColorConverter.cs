@@ -7,9 +7,9 @@ namespace RhythmBase.Global.Converters
 	{
 		public override RDColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			var s = reader.GetString();
+			string? s = reader.GetString();
 			if (string.IsNullOrEmpty(s)) return default;
-			if(RDColor.TryFromRgba(s!, out var c))
+			if(RDColor.TryFromRgba(s!, out RDColor c))
 				return c;
 			return default;
 		}

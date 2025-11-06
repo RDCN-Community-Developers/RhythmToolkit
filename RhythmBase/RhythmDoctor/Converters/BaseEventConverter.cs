@@ -67,12 +67,12 @@ namespace RhythmBase.RhythmDoctor.Converters
 		}
 		public static IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader)
 		{
-			using var doc = JsonDocument.ParseValue(ref reader);
-			var root = doc.RootElement;
+			using JsonDocument doc = JsonDocument.ParseValue(ref reader);
+			JsonElement root = doc.RootElement;
 
 			// 判断属性
 			bool hasRow = false, hasTarget = false;
-			foreach (var prop in root.EnumerateObject())
+			foreach (JsonProperty prop in root.EnumerateObject())
 			{
 				if (prop.NameEquals("row"))
 					hasRow = true;
@@ -107,7 +107,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			if (value.Y != 0)
 				writer.WriteNumber("y", value.Y);
 
-			foreach (var kv in ((BaseEvent)value)._extraData)
+			foreach (KeyValuePair<string,JsonElement> kv in ((BaseEvent)value)._extraData)
 			{
 				writer.WritePropertyName(kv.Key);
 				kv.Value.WriteTo(writer);

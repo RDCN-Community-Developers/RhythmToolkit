@@ -26,16 +26,18 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>		
-		public override EventType Type { get; } = EventType.ShakeScreen;
+		public override EventType Type => EventType.ShakeScreen;
+
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", ShakeLevel);
+		public override string ToString() => base.ToString() + $" {ShakeLevel}";
 	}
 	/// <summary>
 	/// Defines the levels of screen shake.

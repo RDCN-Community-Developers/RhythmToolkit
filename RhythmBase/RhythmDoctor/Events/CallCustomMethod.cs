@@ -4,7 +4,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event that calls a custom method.
 	/// </summary>
-	public partial class CallCustomMethod : BaseEvent
+	public partial class CallCustomMethod : BaseEvent, IRoomEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CallCustomMethod"/> class.

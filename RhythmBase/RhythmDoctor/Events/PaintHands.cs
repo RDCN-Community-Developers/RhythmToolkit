@@ -56,10 +56,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.PaintHands;
+		public override EventType Type => EventType.PaintHands;
+
 		/// <summary>
 		/// Gets the tab category of the event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
 	}
 }

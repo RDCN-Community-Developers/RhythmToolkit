@@ -1,5 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Events;
-using System.Text.Json;
+﻿using System.Text.Json;
 namespace RhythmBase.Global.Settings
 {
 	/// <summary>

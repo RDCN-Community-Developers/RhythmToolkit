@@ -74,16 +74,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} == RhythmBase.RhythmDoctor.Events.OneshotTypes.Freezeshot")]
 		public float Delay
 		{
-			get => _delay;
-			set => _delay = FreezeBurnMode != OneshotTypes.Freezeshot
-					? 0f : value <= 0f
+			get;
+			set => field = FreezeBurnMode != OneshotTypes.Freezeshot
+				? 0f : value <= 0f
 					? 0.5f : value;
-		}
+		} = 0f;
 		/// <inheritdoc/>
 		public override EventType Type => EventType.AddOneshotBeat;
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {FreezeBurnMode} {PulseType}";
-		private float _delay = 0f;
 		private string GetDebuggerDisplay() => ToString();
 	}
 	/// <summary>

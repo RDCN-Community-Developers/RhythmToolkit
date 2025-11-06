@@ -58,5 +58,9 @@
 		/// behavior to change accordingly.
 		/// </remarks>
 		public const int DefaultVersionRhythmDoctor = 64;
+		/// <summary>
+		/// 
+		/// </summary>
+		public const float Tolerance = 0.00001f;
 	}
 }

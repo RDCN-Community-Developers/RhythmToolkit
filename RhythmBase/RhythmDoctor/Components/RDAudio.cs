@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-namespace RhythmBase.RhythmDoctor.Components;
+﻿namespace RhythmBase.RhythmDoctor.Components;
 
 /// <summary>
 /// Represents an audio file with properties for volume, pitch, pan, and offset.

@@ -1,5 +1,4 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -18,10 +17,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public override RDBeat Beat
 		{
-			get
-			{
-				return base.Beat;
-			}
+			get => base.Beat;
 			set
 			{
 				base.Beat = value;
@@ -33,10 +29,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public virtual float BeatsPerMinute
 		{
-			get
-			{
-				return _bpm;
-			}
+			get => _bpm;
 			set
 			{
 				_bpm = value;

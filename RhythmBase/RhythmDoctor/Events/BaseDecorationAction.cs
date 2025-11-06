@@ -28,10 +28,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		public override TEvent Clone<TEvent>()
 		{
-			TEvent Temp = base.Clone<TEvent>();
-			if (Temp is BaseDecorationAction TempAction)
-				TempAction._parent = Parent;
-			return Temp;
+			TEvent temp = base.Clone<TEvent>();
+			if (temp is BaseDecorationAction tempAction)
+				tempAction._parent = Parent;
+			return temp;
 		}
 		/// <summary>
 		/// Clones this event and its basic properties, associating it with a specific decoration event collection.
@@ -41,9 +41,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		internal TEvent Clone<TEvent>(Decoration decoration) where TEvent : BaseDecorationAction, new()
 		{
-			TEvent Temp = base.Clone<TEvent>(decoration.Parent ?? throw new RhythmBaseException());
-			Temp._parent = decoration;
-			return Temp;
+			TEvent temp = base.Clone<TEvent>(decoration.Parent ?? throw new RhythmBaseException());
+			temp._parent = decoration;
+			return temp;
 		}
 		/// <summary>
 		/// Gets the room associated with this action.

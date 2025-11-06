@@ -74,9 +74,9 @@ namespace RhythmBase.RhythmDoctor.Components
 				throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 			if (array.Length - arrayIndex < Count)
 				throw new ArgumentException("The number of elements in the source collection is greater than the available space from arrayIndex to the end of the destination array.");
-			foreach (var pair in eventsBeatOrder)
+			foreach (KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>> pair in eventsBeatOrder)
 			{
-				foreach (var item in pair.Value)
+				foreach (IBaseEvent item in pair.Value)
 				{
 					array[arrayIndex++] = item;
 				}
@@ -118,7 +118,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => string.Format("Count = {0}", Count);
+		public override string ToString() => $"Count = {Count}";
 		/// <summary>
 		/// Removes the first occurrence of a specific event from the collection.
 		/// </summary>

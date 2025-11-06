@@ -49,9 +49,8 @@ namespace RhythmBase.Adofai.Components
 				foreach (Tile tile in tileOrder)
 					foreach (BaseTileEvent action in tile)
 						yield return action;
-				if (End is Tile tileEnd)
-					foreach (BaseTileEvent action2 in tileEnd)
-						yield return action2;
+				foreach (BaseTileEvent action2 in End)
+					yield return action2;
 			}
 		}
 		/// <summary>

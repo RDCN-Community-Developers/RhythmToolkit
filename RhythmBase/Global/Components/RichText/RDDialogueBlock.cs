@@ -28,7 +28,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// <returns>A string representation of the dialogue line.</returns>
 		public string Serialize()
 		{
-			var sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 			if (!string.IsNullOrWhiteSpace(Character))
 			{
 				sb.Append(Character);

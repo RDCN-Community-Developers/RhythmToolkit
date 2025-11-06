@@ -51,7 +51,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Returns a string that represents the current object.  
 		/// </summary>  
 		/// <returns>A string that represents the current object.</returns>  
-		public override string ToString() => base.ToString() + string.Format(" {0}", Preset);
+		public override string ToString() => base.ToString() + $" {Preset}";
 	}
 	/// <summary>  
 	/// Represents the available themes.  

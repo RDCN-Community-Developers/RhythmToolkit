@@ -1,16 +1,14 @@
-﻿using RhythmBase.Global.Extensions;
-using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 namespace RhythmBase.Converters
 {
 	internal class AnchorStyleConverter : JsonConverter<FloatingTextAnchorStyles>
 	{
 		public override void Write(Utf8JsonWriter writer, FloatingTextAnchorStyles value, JsonSerializerOptions serializer)
 		{
-			var horizontal = value & (FloatingTextAnchorStyles.Left | FloatingTextAnchorStyles.Right);
-			var vertical = value & (FloatingTextAnchorStyles.Upper | FloatingTextAnchorStyles.Lower);
+			FloatingTextAnchorStyles horizontal = value & (FloatingTextAnchorStyles.Left | FloatingTextAnchorStyles.Right);
+			FloatingTextAnchorStyles vertical = value & (FloatingTextAnchorStyles.Upper | FloatingTextAnchorStyles.Lower);
 			writer.WriteStringValue(
 				(vertical == 0 ?
 					"Middle"

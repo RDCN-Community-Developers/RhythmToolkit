@@ -1,7 +1,6 @@
 ﻿using RhythmBase.Adofai.Components.Filters;
 using RhythmBase.Adofai.Converters;
 using RhythmBase.Global.Components.Easing;
-using System.Text.Json;
 
 namespace RhythmBase.Adofai.Events;
 

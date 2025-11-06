@@ -12,7 +12,8 @@
 		{
 			get
 			{
-				return string.Format("Illegal type: \"{0}\"{1}", IllegalTypeName, string.IsNullOrEmpty(ExtraMessage) ? "." : string.Format(", {0}", ExtraMessage));
+				return
+					$"Illegal type: \"{IllegalTypeName}\"{(string.IsNullOrEmpty(ExtraMessage) ? "." : $", {ExtraMessage}")}";
 			}
 		}
 		/// <summary>

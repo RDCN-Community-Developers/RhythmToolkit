@@ -2,25 +2,23 @@
 using RhythmBase.Global.Components.Vector;
 using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
-namespace RhythmBase.RhythmDoctor.Events
+namespace RhythmBase.RhythmDoctor.Events;
+public partial class Comment
 {
-	public partial class Comment
+	/// <summary>
+	/// Contains a series of default custom method implementations.
+	/// </summary>
+	public static class Shared
 	{
-		/// <summary>
-		/// Contains a series of default custom method implementations.
-		/// </summary>
-		public static class Shared
-		{
 #pragma warning disable CS1591
 #if NETSTANDARD
-			private static Comment FunctionCalling(string name, params object[] @params) => new() { Text = $"()=>{name.ToLowerCamelCase()}({string.Join(",", @params.Select(i => i.ToString()))})" };
+		private static Comment FunctionCalling(string name, params object[] @params) => new() { Text = $"()=>{name.ToLowerCamelCase()}({string.Join(",", @params.Select(i => i.ToString()))})" };
 #else
-			private static Comment FunctionCalling(string name, params object[] @params) => new() { Text = $"()=>{name.ToLowerCamelCase()}({string.Join(',', @params.Select(i => i.ToString()))})" };
+		private static Comment FunctionCalling(string name, params object[] @params) => new() { Text = $"()=>{name.ToLowerCamelCase()}({string.Join(',', @params.Select(i => i.ToString()))})" };
 #endif
-			public static Comment TrueCameraMove(int RoomID, RDPointN p, float AnimationDuration, EaseType Ease) => FunctionCalling("TrueCameraMove", (byte)RoomID, p.X, p.Y, AnimationDuration, Ease);
-			public static Comment Create(Particle particleName, RDPointN p) => FunctionCalling("Create", $"CustomParticles/{particleName}", p.X, p.Y);
-			public static Comment Shockwave(ShockWaveType type, float value) => FunctionCalling("Shockwave", type, value);
-			public static Comment WavyRowsAmplitude(byte roomID, float amplitude, float duration) => FunctionCalling("WavyRowsAmplitude", roomID, amplitude, duration);
-		}
+		public static Comment TrueCameraMove(int roomId, RDPointN p, float animationDuration, EaseType ease) => FunctionCalling("TrueCameraMove", (byte)roomId, p.X, p.Y, animationDuration, ease);
+		public static Comment Create(Particle particleName, RDPointN p) => FunctionCalling("Create", $"CustomParticles/{particleName}", p.X, p.Y);
+		public static Comment Shockwave(ShockWaveType type, float value) => FunctionCalling("Shockwave", type, value);
+		public static Comment WavyRowsAmplitude(byte roomId, float amplitude, float duration) => FunctionCalling("WavyRowsAmplitude", roomId, amplitude, duration);
 	}
 }

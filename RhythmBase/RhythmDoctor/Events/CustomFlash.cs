@@ -45,9 +45,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		public bool Background { get; set; } = false;
 		/// <inheritdoc />
-		public override EventType Type { get; } = EventType.CustomFlash;
+		public override EventType Type => EventType.CustomFlash;
+
 		/// <inheritdoc />
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
+
 		/// <inheritdoc />
 		public override string ToString() => base.ToString() + $" {StartColor} {StartOpacity}%=>{EndColor} {EndOpacity}%";
 	}

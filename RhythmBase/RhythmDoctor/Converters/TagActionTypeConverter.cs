@@ -1,7 +1,4 @@
 ﻿using RhythmBase.RhythmDoctor.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -46,7 +43,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		public override void Write(Utf8JsonWriter writer, TagActions value, JsonSerializerOptions options)
 		{
 			bool isAll = value.HasFlag(TagActions.All);
-			var action = value & (TagActions.Run | TagActions.Enable | TagActions.Disable);
+			TagActions action = value & (TagActions.Run | TagActions.Enable | TagActions.Disable);
 			writer.WriteStringValue(
 				isAll
 					? action.ToString() + "All"

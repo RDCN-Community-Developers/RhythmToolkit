@@ -7,7 +7,7 @@ namespace RhythmBase.Adofai.Events;
 public class AddParticle : BaseEvent, IBeginningEvent
 {
 	/// <inheritdoc/>
-	public override EventType Type { get; } = EventType.AddParticle;
+	public override EventType Type => EventType.AddParticle;
 
 	/// <summary>
 	/// Gets or sets the tag associated with the particle effect.

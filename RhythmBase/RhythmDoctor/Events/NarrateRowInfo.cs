@@ -44,7 +44,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}:{1}", InfoType, NarrateSkipBeat);
+		public override string ToString() => base.ToString() + $" {InfoType}:{NarrateSkipBeat}";
 	}
 	/// <summary>
 	/// Specifies the type of narration information.

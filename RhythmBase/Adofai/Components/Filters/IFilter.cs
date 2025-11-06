@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RhythmBase.Adofai.Components.Filters
+﻿namespace RhythmBase.Adofai.Components.Filters
 {
 	/// <summary>
 	/// Defines a contract for a filter with an associated name.

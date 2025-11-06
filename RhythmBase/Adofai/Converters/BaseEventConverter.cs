@@ -1,8 +1,5 @@
 ﻿using RhythmBase.Adofai.Events;
-using RhythmBase.Adofai.Extensions;
-using RhythmBase.Global.Converters;
 using RhythmBase.Global.Extensions;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.Adofai.Utils.EventTypeUtils;
@@ -55,12 +52,12 @@ namespace RhythmBase.Adofai.Converters
 		}
 		public IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			using var doc = JsonDocument.ParseValue(ref reader);
-			var root = doc.RootElement;
+			using JsonDocument doc = JsonDocument.ParseValue(ref reader);
+			JsonElement root = doc.RootElement;
 
 			// 判断属性
 			bool isTile = false;
-			foreach (var prop in root.EnumerateObject())
+			foreach (JsonProperty prop in root.EnumerateObject())
 			{
 				if (prop.NameEquals("floor"))
 					isTile = true;

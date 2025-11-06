@@ -33,7 +33,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		public override void Write(Utf8JsonWriter writer, Patterns[] value, JsonSerializerOptions options)
 		{
 			StringBuilder sb = new();
-			foreach (var pattern in value)
+			foreach (Patterns pattern in value)
 			{
 				char c = pattern switch
 				{

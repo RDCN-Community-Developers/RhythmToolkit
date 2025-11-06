@@ -25,6 +25,6 @@
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
+		public override string ToString() => base.ToString() + $" {Text}";
 	}
 }

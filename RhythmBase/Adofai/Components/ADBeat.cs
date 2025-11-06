@@ -1,13 +1,24 @@
-﻿using RhythmBase.Adofai.Utils;
+﻿using RhythmBase.Adofai.Events;
+using RhythmBase.Adofai.Utils;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
+
 namespace RhythmBase.Adofai.Components
 {
 	/// <summary>
 	/// Represents a beat in the ADLevel.
 	/// </summary>
 	public struct ADBeat : IComparable<ADBeat>, IEquatable<ADBeat>
+#if !NETSTANDARD
+		,
+		IAdditionOperators<ADBeat, float, ADBeat>,
+		IAdditionOperators<ADBeat, TimeSpan, ADBeat>,
+		ISubtractionOperators<ADBeat, float, ADBeat>,
+		ISubtractionOperators<ADBeat, TimeSpan, ADBeat>,
+		IComparisonOperators<ADBeat,ADBeat, bool>
+#endif
 	{
-		internal readonly ADLevel? baseLevel => _calculator?.Collection;
+		internal readonly ADLevel? _baseLevel => _calculator?.Collection;
 		/// <summary>
 		/// Gets or sets the beat only value.
 		/// </summary>
@@ -26,6 +37,14 @@ namespace RhythmBase.Adofai.Components
 			get => _timeSpan;
 			set
 			{
+			}
+		}
+		public readonly Planets Planets
+		{
+			get
+			{
+				IfNullThrowException();
+				throw new RhythmBaseException();
 			}
 		}
 		/// <summary>
@@ -71,7 +90,7 @@ namespace RhythmBase.Adofai.Components
 			this = default;
 			if (timeSpan < TimeSpan.Zero)
 			{
-				throw new OverflowException(string.Format("The time must not be less than zero, but {0} is given", timeSpan));
+				throw new OverflowException($"The time must not be less than zero, but {timeSpan} is given");
 			}
 			_calculator = calculator;
 			_timeSpan = timeSpan;
@@ -84,8 +103,8 @@ namespace RhythmBase.Adofai.Components
 		/// <returns>The first beat tied to the level.</returns>
 		public static ADBeat Default(ADBeatCalculator calculator)
 		{
-			ADBeat Default = new(calculator, 1f);
-			return Default;
+			ADBeat @default = new(calculator, 1f);
+			return @default;
 		}
 		/// <summary>
 		/// Determine if two beats come from the same level
@@ -96,11 +115,11 @@ namespace RhythmBase.Adofai.Components
 		/// <returns></returns>
 		public static bool FromSameLevel(ADBeat a, ADBeat b, bool @throw = false)
 		{
-			bool flag = a.baseLevel?.Equals(b.baseLevel) ?? true;
-			bool FromSameLevel;
+			bool flag = a._baseLevel?.Equals(b._baseLevel) ?? true;
+			bool fromSameLevel;
 			if (flag)
 			{
-				FromSameLevel = true;
+				fromSameLevel = true;
 			}
 			else
 			{
@@ -108,9 +127,9 @@ namespace RhythmBase.Adofai.Components
 				{
 					throw new RhythmBaseException("Beats must come from the same ADLevel.");
 				}
-				FromSameLevel = false;
+				fromSameLevel = false;
 			}
-			return FromSameLevel;
+			return fromSameLevel;
 		}
 		/// <summary>
 		/// Determine if two beats are from the same level.
@@ -121,7 +140,7 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
-		public static bool FromSameLevelOrNull(ADBeat a, ADBeat b, bool @throw = false) => a.baseLevel == null || b.baseLevel == null || FromSameLevel(a, b, @throw);
+		public static bool FromSameLevelOrNull(ADBeat a, ADBeat b, bool @throw = false) => a._baseLevel == null || b._baseLevel == null || FromSameLevel(a, b, @throw);
 		/// <summary>  
 		/// Determines if the current beat and the specified beat are from the same level.  
 		/// </summary>  
@@ -139,7 +158,7 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>	
-		public readonly bool FromSameLevelOrNull(ADBeat b, bool @throw = false) => baseLevel == null || b.baseLevel == null || FromSameLevel(b, @throw);
+		public readonly bool FromSameLevelOrNull(ADBeat b, bool @throw = false) => _baseLevel == null || b._baseLevel == null || FromSameLevel(b, @throw);
 		/// <summary>
 		/// Returns a new instance of unbinding the level.
 		/// </summary>
@@ -224,7 +243,7 @@ namespace RhythmBase.Adofai.Components
 		/// <inheritdoc/>
 		public readonly int CompareTo(ADBeat other) => checked((int)Math.Round((double)unchecked(_beat - other._beat)));
 		/// <inheritdoc/>
-		public override readonly string ToString() => string.Format("[{0}]", BeatOnly);
+		public override readonly string ToString() => $"[{BeatOnly}]";
 		/// <inheritdoc/>
 		public override readonly bool Equals(object? obj) => obj is ADBeat b && Equals((ADBeat)obj);
 		/// <inheritdoc/>
@@ -239,11 +258,11 @@ namespace RhythmBase.Adofai.Components
 		{
 			int hash = 17;
 			hash = hash * 23 + BeatOnly.GetHashCode();
-			hash = hash * 23 + (baseLevel?.GetHashCode() ?? 0);
+			hash = hash * 23 + (_baseLevel?.GetHashCode() ?? 0);
 			return hash;
 		}
 #else
-		public override readonly int GetHashCode() => HashCode.Combine(BeatOnly, baseLevel);
+		public override readonly int GetHashCode() => HashCode.Combine(BeatOnly, _baseLevel);
 #endif
 		internal ADBeatCalculator? _calculator;
 		private bool _isBeatLoaded;

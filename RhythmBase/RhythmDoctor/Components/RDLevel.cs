@@ -1,5 +1,4 @@
-﻿using RhythmBase.Adofai.Extensions;
-using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 using System.IO.Compression;
@@ -189,7 +188,7 @@ namespace RhythmBase.RhythmDoctor.Components
 						ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
 						string? rdlevelPath = null;
-						foreach (var file in tempDirectory.GetFiles())
+						foreach (FileInfo? file in tempDirectory.GetFiles())
 						{
 							if (file.Extension == ".rdlevel")
 							{
@@ -275,7 +274,7 @@ namespace RhythmBase.RhythmDoctor.Components
 						ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
 #endif
 						string? rdlevelPath = null;
-						foreach (var file in tempDirectory.GetFiles())
+						foreach (FileInfo? file in tempDirectory.GetFiles())
 						{
 							if (file.Name == "main.rdlevel")
 							{
@@ -837,20 +836,20 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		private void RefreshBPMs(RDBeat start)
 		{
-			foreach (var item in eventsBeatOrder)
+			foreach (KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
 				item.Key.ResetBPM();
-			foreach (var item in this.Where(i => i.Beat > start))
+			foreach (IBaseEvent? item in this.Where(i => i.Beat > start))
 				item.Beat.ResetBPM();
-			foreach (var item in Bookmarks)
+			foreach (Bookmark? item in Bookmarks)
 				item.Beat.ResetBPM();
 		}
 		private void RefreshCPBs(RDBeat start)
 		{
-			foreach (var item in eventsBeatOrder)
+			foreach (KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
 				item.Key.ResetCPB();
-			foreach (var item in this.Where(i => i.Beat > start))
+			foreach (IBaseEvent? item in this.Where(i => i.Beat > start))
 				item.Beat.ResetCPB();
-			foreach (var item in Bookmarks)
+			foreach (Bookmark? item in Bookmarks)
 				item.Beat.ResetCPB();
 		}
 		/// <inheritdoc/>

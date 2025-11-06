@@ -2,6 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/RhythmBaseCS" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/RhythmBase" vcs="Git" />
   </component>
 </project>

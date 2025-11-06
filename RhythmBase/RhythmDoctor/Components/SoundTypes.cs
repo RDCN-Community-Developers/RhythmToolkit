@@ -11,7 +11,7 @@
 		ClapSoundP2Classic,
 		ClapSoundP1Oneshot,
 		ClapSoundP2Oneshot,
-		SmallMistake = 20,
+		SmallMistake,
 		BigMistake,
 		Hand1PopSound,
 		Hand2PopSound,

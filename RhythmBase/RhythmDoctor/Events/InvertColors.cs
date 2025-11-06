@@ -22,11 +22,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.InvertColors;
+		public override EventType Type => EventType.InvertColors;
+
 		/// <summary>
 		/// Gets the tab associated with this event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

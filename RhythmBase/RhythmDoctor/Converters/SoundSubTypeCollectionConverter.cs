@@ -1,6 +1,5 @@
 ﻿using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
-using System.Data;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,8 +10,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 	{
 		public override SoundSubTypeCollection? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			var collection = new SoundSubTypeCollection();
-			var sounds = new List<SoundSubType>();
+			SoundSubTypeCollection collection = new SoundSubTypeCollection();
+			List<SoundSubType> sounds = new List<SoundSubType>();
 			if (reader.TokenType != JsonTokenType.StartArray)
 				throw new JsonException("Expected StartArray token");
 			while (reader.Read())
@@ -60,7 +59,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		public override void Write(Utf8JsonWriter writer, SoundSubTypeCollection value, JsonSerializerOptions options)
 		{
 			writer.WriteStartArray();
-			foreach (var item in value._sounds)
+			foreach (SoundSubType? item in value._sounds)
 			{
 				writer.WriteStartObject();
 				writer.WriteString("groupSubtype"u8, item.GroupSubtype.ToString());

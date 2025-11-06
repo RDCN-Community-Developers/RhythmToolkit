@@ -54,6 +54,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
 		public int SyncoVolume { get; set; } = 70;
 		/// <inheritdoc />
-		public override string ToString() => base.ToString() + string.Format(" {0}", this.GetPatternString());
+		public override string ToString() => base.ToString() + $" {this.GetPatternString()}";
 	}
 }

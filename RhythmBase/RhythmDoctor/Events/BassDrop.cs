@@ -20,9 +20,11 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>  
 		public BassDropStrengthTypes Strength { get; set; } = BassDropStrengthTypes.High;
 		/// <inheritdoc/>
-		public override EventType Type { get; } = EventType.BassDrop;
+		public override EventType Type => EventType.BassDrop;
+
 		/// <inheritdoc/>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
+
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" {Strength}";
 	}

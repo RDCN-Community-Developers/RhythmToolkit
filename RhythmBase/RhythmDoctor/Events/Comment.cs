@@ -4,7 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
-	/// <inheritdoc />
+	/// <summary>
+	/// Represents a summary or description for the associated code element.
+	/// </summary>
 	[JsonConverter(typeof(BaseEventConverter))]
 	public partial class Comment : BaseDecorationAction, IColorEvent
 	{
@@ -38,18 +40,17 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the text of the comment.
 		/// </summary>
 		public string Text { get; set; } = "";
-		/// <inheritdoc />
-		public override string Target => base.Target;
 		/// <summary>
 		/// Gets or sets the color of the comment.
 		/// </summary>
 		public PaletteColor Color { get; set; } = new RDColor(0xFFF2E644u);
 		/// <inheritdoc />
-		public override EventType Type { get; } = EventType.Comment;
+		public override EventType Type => EventType.Comment;
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
+		public override string ToString() => base.ToString() + $" {Text}";
 	}
 }

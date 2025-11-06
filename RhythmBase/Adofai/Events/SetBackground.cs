@@ -11,7 +11,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets the type of the event, which is <see cref="EventType.SetBackground"/>.  
 		/// </summary>  
-		public override EventType Type { get; } = EventType.SetBackground;
+		public override EventType Type => EventType.SetBackground;
 
 		/// <summary>  
 		/// Gets or sets the background color.  

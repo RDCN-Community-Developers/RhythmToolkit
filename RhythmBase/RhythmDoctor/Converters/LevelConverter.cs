@@ -127,7 +127,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 							else if (e is TagAction ta1 && MacroEvent.MatchTag(ta1.ActionTag, out int type, out _, out _)
 								|| MacroEvent.MatchTag(e.Tag, out type, out _, out _))
 							{
-								if (maybeGeneratedEvents.TryGetValue(type, out var list))
+								if (maybeGeneratedEvents.TryGetValue(type, out List<IBaseEvent>? list))
 									list.Add(e);
 								else
 									maybeGeneratedEvents[type] = [e];
@@ -149,7 +149,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					if (Settings.EnableMacroEvent && maybeDataComment != null && types != null && data != null)
 					{
 						HashSet<int> matchedIds = [];
-						foreach (var mm in maybeMacroEvents)
+						foreach (TagAction? mm in maybeMacroEvents)
 						{
 							if (MacroEvent.TryParse(mm, types, out MacroEvent? result))
 							{
@@ -161,17 +161,17 @@ namespace RhythmBase.RhythmDoctor.Converters
 								level.Add(result);
 							}
 						}
-						foreach (var mms in maybeGeneratedEvents)
+						foreach (KeyValuePair<int,List<IBaseEvent>> mms in maybeGeneratedEvents)
 						{
 							if (!matchedIds.Contains(mms.Key))
-								foreach (var e in mms.Value)
+								foreach (IBaseEvent? e in mms.Value)
 									level.Add(e);
 						}
 					}
-					foreach (var at in advanceTexts)
+					foreach (AdvanceText? at in advanceTexts)
 					{
 						int targetId = at["id"].GetInt32();
-						if (floatingTexts.TryGetValue(targetId, out var ft))
+						if (floatingTexts.TryGetValue(targetId, out FloatingText? ft))
 						{
 							at.Parent = ft;
 							ft.Children.Add(at);

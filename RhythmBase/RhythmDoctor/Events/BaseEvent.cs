@@ -16,7 +16,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		protected BaseEvent()
 		{
-			_beat = new RDBeat(1f);
+			_beat = new(1f);
 			Active = true;
 			Condition = new();
 		}
@@ -38,19 +38,12 @@ namespace RhythmBase.RhythmDoctor.Events
 			{
 				if (!value.IsEmpty && _beat == value)
 					return;
-				//if (_beat.BaseLevel?._currentModifier is not null)
-				//{
-				//	_beat.BaseLevel?._modifierInstances[_beat.BaseLevel._currentModifier].Enqueue((this, value));
-				//}
-				else
-				{
-					BeatCalculator? c = _beat.BaseLevel?.Calculator;
-					_beat.BaseLevel?.Remove(this);
-					_beat = c == null ?
-							value.WithoutLink() :
-							new(c, value);
-					_beat.BaseLevel?.Add(this);
-				}
+				BeatCalculator? c = _beat.BaseLevel?.Calculator;
+				_beat.BaseLevel?.Remove(this);
+				_beat = c == null ?
+					value.WithoutLink() :
+					new(c,value);
+				_beat.BaseLevel?.Add(this);
 			}
 		}
 		/// <summary>
@@ -83,12 +76,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns></returns>
 		public JsonElement this[string propertyName]
 		{
-			get
-			{
-				if (_extraData.TryGetValue(propertyName, out var value))
-					return value;
-				return default;
-			}
+			get => _extraData.TryGetValue(propertyName, out JsonElement value) ? value : default;
 			set
 			{
 				if (value.ValueKind == JsonValueKind.Undefined)
@@ -120,7 +108,6 @@ namespace RhythmBase.RhythmDoctor.Events
 				Condition = Condition,
 				Active = Active
 			};
-			if (Condition != null)
 				temp.Condition = Condition.Clone();
 			return temp;
 		}

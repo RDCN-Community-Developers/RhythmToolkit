@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 	{
 		public override PaletteColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			var t = reader.ValueSpan;
+			ReadOnlySpan<byte> t = reader.ValueSpan;
 			if (t.Length == 0) return default;
 #if NETSTANDARD
 			return (t[0] is 0x70 &&

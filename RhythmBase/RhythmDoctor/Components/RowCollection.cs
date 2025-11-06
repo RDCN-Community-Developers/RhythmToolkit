@@ -22,9 +22,9 @@ namespace RhythmBase.RhythmDoctor.Components
 				return;
 			row.Parent = parent;
 			row.calculator = parent.Calculator;
-			foreach (var i in row)
+			foreach (BaseRowAction? i in row)
 				parent.Add(i);
-			foreach(var e in _unhandledRowEvents.Where(i=>i.Index == Count))
+			foreach(BaseRowAction? e in _unhandledRowEvents.Where(i=>i.Index == Count))
 				row.Add(e);
 			_items.Add(row);
 		}
@@ -39,7 +39,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (!_items.Contains(row))
 				return false;
 			BaseRowAction[] rowsToRemove = [.. row];
-			foreach (var i in rowsToRemove)
+			foreach (BaseRowAction i in rowsToRemove)
 				parent.Remove(i);
 			row.Parent = null;
 			row.calculator = null;
@@ -72,7 +72,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				foreach (var item in _items)
+				foreach (Row? item in _items)
 				{
 					if (room.Contains(item.Rooms))
 						yield return item;

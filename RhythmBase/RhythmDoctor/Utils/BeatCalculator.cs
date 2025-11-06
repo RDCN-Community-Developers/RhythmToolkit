@@ -1,10 +1,9 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
-using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Utils
 {
-	record struct Bpm(int Bar, int Beat, float BPM);
-	record struct Cpb(int Bar, int CPB);
+	internal record struct Bpm(int Bar, int Beat, float BPM);
+	internal record struct Cpb(int Bar, int CPB);
 	/// <summary>
 	/// Beat calculator.
 	/// </summary>
@@ -62,41 +61,40 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <param name="timeSpan">Total time span.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
 		public (int bar, float beat) TimeSpanToBarBeat(TimeSpan timeSpan) => BeatOnlyToBarBeat(TimeSpanToBeatOnly(timeSpan));
-		private static float BarBeatToBeatOnly(int bar, float beat, IEnumerable<SetCrotchetsPerBar> Collection)
+		private static float BarBeatToBeatOnly(int bar, float beat, IEnumerable<SetCrotchetsPerBar> collection)
 		{
-			(float BeatOnly, int Bar, int CPB) foreCPB = new(1f, 1, 8);
-			SetCrotchetsPerBar? LastCPB = Collection.LastOrDefault((i) =>
+			(float BeatOnly, int Bar, int CPB) foreCpb = new(1f, 1, 8);
+			SetCrotchetsPerBar? lastCpb = collection.LastOrDefault((i) =>
 			{
 				(int cbar, _) = i.Beat;
 				return i.Active && cbar < bar;
 			});
-			if (LastCPB != null)
-			{
-				(int bbar, _) = LastCPB.Beat;
-				foreCPB = new(LastCPB.Beat.BeatOnly, bbar, LastCPB.CrotchetsPerBar);
-			}
-			return foreCPB.BeatOnly + (bar - foreCPB.Bar) * foreCPB.CPB + beat - 1f;
+			if (lastCpb == null)
+				return foreCpb.BeatOnly + (bar - foreCpb.Bar) * foreCpb.CPB + beat - 1f;
+			(int bbar, _) = lastCpb.Beat;
+			foreCpb = new(lastCpb.Beat.BeatOnly, bbar, lastCpb.CrotchetsPerBar);
+			return foreCpb.BeatOnly + (bar - foreCpb.Bar) * foreCpb.CPB + beat - 1f;
 		}
-		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, IEnumerable<SetCrotchetsPerBar> Collection)
+		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, IEnumerable<SetCrotchetsPerBar> collection)
 		{
-			(float BeatOnly, int Bar, int CPB) foreCPB = new(1f, 1, 8);
-			SetCrotchetsPerBar? LastCPB = Collection.LastOrDefault((i) => i.Active && i.Beat.BeatOnly < beat);
-			if (LastCPB != null)
+			(float BeatOnly, int Bar, int CPB) foreCpb = new(1f, 1, 8);
+			SetCrotchetsPerBar? lastCpb = collection.LastOrDefault((i) => i.Active && i.Beat.BeatOnly < beat);
+			if (lastCpb != null)
 			{
-				(int bbar, _) = LastCPB.Beat;
-				foreCPB = new(LastCPB.Beat.BeatOnly, bbar, LastCPB.CrotchetsPerBar);
+				(int bbar, _) = lastCpb.Beat;
+				foreCpb = new(lastCpb.Beat.BeatOnly, bbar, lastCpb.CrotchetsPerBar);
 			}
-			(int bar, float beat) result = ((int)Math.Round(foreCPB.Bar + Math.Floor((double)((beat - foreCPB.BeatOnly) / foreCPB.CPB))), (beat - foreCPB.BeatOnly) % foreCPB.CPB + 1f);
+			(int bar, float beat) result = ((int)Math.Round(foreCpb.Bar + Math.Floor((double)((beat - foreCpb.BeatOnly) / foreCpb.CPB))), (beat - foreCpb.BeatOnly) % foreCpb.CPB + 1f);
 			return result;
 		}
-		private static TimeSpan BeatOnlyToTimeSpan(float beatOnly, IEnumerable<BaseBeatsPerMinute> BPMCollection)
+		private static TimeSpan BeatOnlyToTimeSpan(float beatOnly, IEnumerable<BaseBeatsPerMinute> bpmCollection)
 		{
 			ValueTuple<float, float> fore = new(1f, Utils.DefaultBPM);
-			BaseBeatsPerMinute? foreBPM = BPMCollection.FirstOrDefault();
-			if (foreBPM != null)
-				fore = new ValueTuple<float, float>(foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute);
+			BaseBeatsPerMinute? foreBpm = bpmCollection.FirstOrDefault();
+			if (foreBpm != null)
+				fore = new ValueTuple<float, float>(foreBpm.Beat.BeatOnly, foreBpm.BeatsPerMinute);
 			float resultMinute = 0f;
-			foreach (BaseBeatsPerMinute item in BPMCollection)
+			foreach (BaseBeatsPerMinute item in bpmCollection)
 				if (beatOnly > item.Beat.BeatOnly)
 				{
 					resultMinute += (item.Beat.BeatOnly - fore.Item1) / fore.Item2;
@@ -105,17 +103,17 @@ namespace RhythmBase.RhythmDoctor.Utils
 			resultMinute += (beatOnly - fore.Item1) / fore.Item2;
 			return TimeSpan.FromMinutes((double)resultMinute);
 		}
-		private static float TimeSpanToBeatOnly(TimeSpan timeSpan, IEnumerable<BaseBeatsPerMinute> BPMCollection)
+		private static float TimeSpanToBeatOnly(TimeSpan timeSpan, IEnumerable<BaseBeatsPerMinute> bpmCollection)
 		{
 			ValueTuple<float, float> fore = new(1f, Utils.DefaultBPM);
-			BaseBeatsPerMinute? foreBPM = BPMCollection.FirstOrDefault();
-			if (foreBPM != null)
-				fore = new ValueTuple<float, float>(foreBPM.Beat.BeatOnly, foreBPM.BeatsPerMinute);
+			BaseBeatsPerMinute? foreBpm = bpmCollection.FirstOrDefault();
+			if (foreBpm != null)
+				fore = new ValueTuple<float, float>(foreBpm.Beat.BeatOnly, foreBpm.BeatsPerMinute);
 			float beatOnly = 1f;
-			foreach (BaseBeatsPerMinute item in BPMCollection)
-				if (timeSpan > BeatOnlyToTimeSpan(item.Beat.BeatOnly, BPMCollection))
-					beatOnly = (float)((double)beatOnly + (BeatOnlyToTimeSpan(item.Beat.BeatOnly, BPMCollection) - BeatOnlyToTimeSpan(fore.Item1, BPMCollection)).TotalMinutes * fore.Item2);
-			beatOnly = (float)((double)beatOnly + (timeSpan - BeatOnlyToTimeSpan(fore.Item1, BPMCollection)).TotalMinutes * fore.Item2);
+			foreach (BaseBeatsPerMinute item in bpmCollection)
+				if (timeSpan > BeatOnlyToTimeSpan(item.Beat.BeatOnly, bpmCollection))
+					beatOnly = (float)((double)beatOnly + (BeatOnlyToTimeSpan(item.Beat.BeatOnly, bpmCollection) - BeatOnlyToTimeSpan(fore.Item1, bpmCollection)).TotalMinutes * fore.Item2);
+			beatOnly = (float)((double)beatOnly + (timeSpan - BeatOnlyToTimeSpan(fore.Item1, bpmCollection)).TotalMinutes * fore.Item2);
 			return beatOnly;
 		}
 		/// <summary>

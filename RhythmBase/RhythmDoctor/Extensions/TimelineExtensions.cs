@@ -20,7 +20,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			{
 				int sum = 0;
 				float lastTime = float.NegativeInfinity;
-				foreach (var (time, action) in list.OrderBy(e => e.time))
+				foreach ((float time, int action) in list.OrderBy(e => e.time))
 				{
 					sum += action;
 					if (time == lastTime) continue;
@@ -80,7 +80,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			#endregion
 			#region rooms
 			#endregion
-			foreach (var e in level)
+			foreach (IBaseEvent e in level)
 			{
 				switch (e)
 				{

@@ -1,8 +1,6 @@
 ﻿using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.Conditions;
-using System.Buffers.Text;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.Global.Extensions.EnumConverter;
@@ -109,7 +107,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					break;
 				if (reader.TokenType == JsonTokenType.PropertyName)
 				{
-					var propertyName = reader.ValueSpan;
+					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
 					if (propertyName.SequenceEqual("expression"u8))
 						condition.Expression = reader.GetString() ?? string.Empty;
@@ -126,7 +124,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					break;
 				if (reader.TokenType == JsonTokenType.PropertyName)
 				{
-					var propertyName = reader.ValueSpan;
+					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
 					if (propertyName.SequenceEqual("Language"u8) && TryParse(reader.ValueSpan, out LanguageCondition.Languages languages))
 						condition.Language = languages;
@@ -143,7 +141,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					break;
 				if (reader.TokenType == JsonTokenType.PropertyName)
 				{
-					var propertyName = reader.ValueSpan;
+					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
 					if (propertyName.SequenceEqual("row"u8))
 						condition.Row = reader.GetSByte();
@@ -162,7 +160,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					break;
 				if (reader.TokenType == JsonTokenType.PropertyName)
 				{
-					var propertyName = reader.ValueSpan;
+					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
 					if (propertyName.SequenceEqual("twoPlayerMode"u8))
 						condition.TwoPlayerMode = reader.GetBoolean();
@@ -179,7 +177,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					break;
 				if (reader.TokenType == JsonTokenType.PropertyName)
 				{
-					var propertyName = reader.ValueSpan;
+					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
 					if (propertyName.SequenceEqual("time"u8))
 						condition.MaxTimes = reader.GetInt32();

@@ -1,7 +1,4 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -26,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					throw new JsonException("Expected PropertyName token");
 				}
-				var propertyName = reader.ValueSpan;
+				ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 				reader.Read();
 				if (propertyName.SequenceEqual("filename"u8))
 					audio.Filename = reader.GetString() ?? "";

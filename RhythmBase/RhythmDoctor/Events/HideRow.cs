@@ -20,11 +20,12 @@
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.HideRow;
+		public override EventType Type => EventType.HideRow;
+
 		/// <summary>
 		/// Gets the tab category of the event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
 	}
 	/// <summary>
 	/// Defines the possible transition types for hiding the row.

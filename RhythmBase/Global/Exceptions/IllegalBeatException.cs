@@ -13,7 +13,8 @@ namespace RhythmBase.Global.Exceptions
 		{
 			get
 			{
-				return string.Format("This beat is invalid, the event {0} only allows the beat to be at the beginning of the bar.", ((BaseEvent)Item).Type);
+				return
+					$"This beat is invalid, the event {((BaseEvent)Item).Type} only allows the beat to be at the beginning of the bar.";
 			}
 		}
 		/// <summary>

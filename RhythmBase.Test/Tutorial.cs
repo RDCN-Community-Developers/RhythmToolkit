@@ -9,13 +9,14 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Text.Json;
+using RhythmBase.RhythmDoctor.Components.Linq;
 
 namespace RhythmBase.Test
 {
 	[TestClass]
 	public sealed class Tutorial
 	{
-		private static RDLevel rdlevel = RDLevel.Default;
+		private static RDLevel _rdlevel = RDLevel.Default;
 		[TestMethod]
 		public void CreateAnEmptyLevel()
 		{
@@ -58,15 +59,15 @@ namespace RhythmBase.Test
 				Indented = true,
 			};
 
-			using RDLevel rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel", settings);
+			using RDLevel _rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel", settings);
 		}
 		[TestMethod]
 		public void ConvertLevelToJsonDocument()
 		{
 			LevelReadOrWriteSettings settings = new();
 
-			JsonDocument jdoc = rdlevel.ToJsonDocument();
-			string json = rdlevel.ToJsonString(settings);
+			JsonDocument jdoc = _rdlevel.ToJsonDocument();
+			string json = _rdlevel.ToJsonString(settings);
 			Console.WriteLine(jdoc);
 			Console.WriteLine(json);
 		}
@@ -82,14 +83,14 @@ namespace RhythmBase.Test
 				Console.WriteLine("After writing");
 			}
 
-			rdlevel.SaveToFile(@"your\outLevel.rdlevel", settings);
+			_rdlevel.SaveToFile(@"your\outLevel.rdlevel", settings);
 		}
 #if NETCOREAPP
 		[TestMethod]
 		public void FindEventsInLevel()
 		{
 			// Find MoveRow events between bar 3 and 5, and in event rows 0 to 2
-			var list = rdlevel
+			IEnumerable<MoveRow> list = _rdlevel
 				.OfEvent<MoveRow>()
 				.InRange(new(3, 1), new(5, 1))// From Bar 3 to 5
 				.Where(i => 0 <= i.Y && i.Y < 3);  // In event rows 0 to 2
@@ -98,9 +99,9 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void FindEventsInDecoration()
 		{
-			rdlevel.Decorations.Add([]);
+			_rdlevel.Decorations.Add([]);
 			// Find the AddClassicBeat event in the row decoration between beat (11,1) and (13,1)
-			var list = rdlevel.Decorations[0]
+			IEventEnumerable<AddClassicBeat> list = _rdlevel.Decorations[0]
 				.OfEvent<AddClassicBeat>()
 				.InRange(
 					new RDBeat(11, 1), // Start searching from bar 11, beat 1
@@ -123,8 +124,8 @@ namespace RhythmBase.Test
 		public void CreateBeatWithBinding()
 		{
 			// Create a beat associated with a level
-			RDBeat beat1 = rdlevel.BeatOf(11);
-			RDBeat beat2 = rdlevel.Calculator.BeatOf(2, 3);
+			RDBeat beat1 = _rdlevel.BeatOf(11);
+			RDBeat beat2 = _rdlevel.Calculator.BeatOf(2, 3);
 			RDBeat beat3 = beat1 - 10 + TimeSpan.FromSeconds(11.45);
 
 			Console.WriteLine(beat1); // [2,3]
@@ -134,7 +135,7 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void LinkBeats()
 		{
-			RDBeat beat1 = rdlevel.BeatOf(1);
+			RDBeat beat1 = _rdlevel.BeatOf(1);
 			RDBeat beat2 = beat1.WithoutLink();
 
 			Console.WriteLine(beat1.FromSameLevel(beat2));       // False
@@ -143,13 +144,13 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void ConvertTimeUnit()
 		{
-			(float, float) barbeat = rdlevel.Calculator.TimeSpanToBarBeat(TimeSpan.FromSeconds(19.19));
+			(float, float) barbeat = _rdlevel.Calculator.TimeSpanToBarBeat(TimeSpan.FromSeconds(19.19));
 			Console.WriteLine(barbeat); // (4, 8.983334)
 		}
 		[TestMethod]
 		public void RangeUsage()
 		{
-			var result = rdlevel.InRange(new RDRange(rdlevel.DefaultBeat + 10, null));
+			IEventEnumerable<IBaseEvent> result = _rdlevel.InRange(new RDRange(_rdlevel.DefaultBeat + 10, null));
 		}
 		[TestMethod]
 		public void ExpressionUsage()
@@ -169,10 +170,10 @@ namespace RhythmBase.Test
 			Comment comment = new() { Beat = new(12), Text = "My_comment." };
 			Console.WriteLine(comment); // [11,?,?] Comment My_comment.
 
-			rdlevel.Add(comment);
+			_rdlevel.Add(comment);
 			Console.WriteLine(comment); // [2,4] Comment My_comment.
 
-			rdlevel.Remove(comment);
+			_rdlevel.Remove(comment);
 			Console.WriteLine(comment); // [11,?,?] Comment My_comment.
 		}
 		[TestMethod]
@@ -182,7 +183,7 @@ namespace RhythmBase.Test
 
 			myEvent.MyProperty = new(2, "i3+1");
 
-			rdlevel.Add(myEvent);
+			_rdlevel.Add(myEvent);
 
 			myEvent.Beat = new(8);
 
@@ -348,8 +349,8 @@ namespace RhythmBase.Test
 
 			using RDLevel level = RDLevel.Default;
 			level.Decorations.Add(new Decoration() { Room = RDRoomIndex.Room1 });
-			var re1 = new MoveCameraRectangle() { Beat = new(4), Size = new RDSize(80, 80) };
-			var re2 = new MoveCameraRectangle() { Beat = new(9), Y = 2, Size = new RDSize(20, 20) };
+			MoveCameraRectangle re1 = new MoveCameraRectangle() { Beat = new(4), Size = new RDSize(80, 80) };
+			MoveCameraRectangle re2 = new MoveCameraRectangle() { Beat = new(9), Y = 2, Size = new RDSize(20, 20) };
 			level.Add(re1);
 			level.Add(re2);
 			string levelJson = level.ToJsonString(settings);
@@ -390,11 +391,11 @@ namespace RhythmBase.Test
 
 			// Remove all rows from the visual effects level
 			Row[] vfxrows = [.. vfxLevel.Rows];
-			foreach (var row in vfxrows)
+			foreach (Row row in vfxrows)
 				vfxLevel.Rows.Remove(row);
 
 			// Copy all rows from the audio level into the new level
-			foreach (var row in audioLevel.Rows)
+			foreach (Row row in audioLevel.Rows)
 			{
 				// Copy row information
 				Row row2 = new()
@@ -408,12 +409,12 @@ namespace RhythmBase.Test
 
 				// Copy events within the row
 				BaseBeat[] evts = [.. row.OfEvent<BaseBeat>()];
-				foreach (var evt in evts)
+				foreach (BaseBeat evt in evts)
 					row2.Add(evt);
 			}
 
 			// Copy necessary sound events
-			foreach (var sound in audioLevel.Where(e =>
+			foreach (IBaseEvent sound in audioLevel.Where(e =>
 				e.Tab == Tabs.Sounds &&       // Event is in the Sounds tab
 				e is not BaseRowAction &&     // Sound events contain row events; adding row events here would cause reference errors
 				e is not PlaySong &&          // No need to copy PlaySong if the music is the same
@@ -441,7 +442,7 @@ namespace RhythmBase.Test
 				get
 				{
 					// Get the required content from the Data field and check for null  
-					return ExtraData.TryGetValue("myProperty", out var jsonElement)
+					return ExtraData.TryGetValue("myProperty", out JsonElement jsonElement)
 						? jsonElement.Deserialize<RDPointE>()
 						: null;
 				}

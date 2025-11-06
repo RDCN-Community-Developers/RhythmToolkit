@@ -39,7 +39,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (!_items.Contains(decoration))
 				return false;
 			BaseDecorationAction[] decosToRemove = [.. decoration];
-			foreach (var i in decosToRemove)
+			foreach (BaseDecorationAction i in decosToRemove)
 				parent.Remove(i);
 			decoration.Parent = null;
 			decoration.calculator = null;
@@ -72,7 +72,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				foreach (var item in _items)
+				foreach (Decoration item in _items)
 				{
 					if (room.Contains(item.Room))
 						yield return item;
@@ -88,7 +88,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				foreach (var item in _items)
+				foreach (Decoration item in _items)
 				{
 					if (item.Id == id)
 						return item;

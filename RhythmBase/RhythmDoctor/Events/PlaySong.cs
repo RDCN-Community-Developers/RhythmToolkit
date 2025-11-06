@@ -1,5 +1,4 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
-using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -51,7 +50,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" BPM:{0}, Song:{1}", BeatsPerMinute, Song.Filename);
+		public override string ToString() => base.ToString() + $" BPM:{BeatsPerMinute}, Song:{Song.Filename}";
 		/// <summary>
 		/// Gets or sets the song to be played.
 		/// </summary>

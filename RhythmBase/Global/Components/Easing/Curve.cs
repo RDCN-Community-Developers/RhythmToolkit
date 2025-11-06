@@ -143,7 +143,7 @@
 					else
 						right = mid;
 				}
-				var leftNode = _nodes[left];
+				CurveNode<T> leftNode = _nodes[left];
 				return leftNode.Value;
 			}
 		}

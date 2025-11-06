@@ -26,7 +26,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					break;
 				if (reader.TokenType == JsonTokenType.PropertyName)
 				{
-					var propertyName = reader.ValueSpan;
+					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
 					switch (propertyName)
 					{

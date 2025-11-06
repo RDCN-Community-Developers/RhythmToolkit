@@ -1,9 +1,6 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Utils;
-using System.Collections.Generic;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -17,7 +14,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		public override EventType Type => EventType.ForwardEvent;
 
 		/// <inheritdoc/>
-		public override Tabs Tab { get; } = Tabs.Unknown;
+		public override Tabs Tab => Tabs.Unknown;
+
 		/// <summary>
 		/// Gets or sets the actual type of the custom event.
 		/// </summary>
@@ -59,7 +57,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		public ForwardEvent(JsonDocument data)
 		{
 			_extraData = data.Deserialize<Dictionary<string, JsonElement>>() ?? [];
-			Beat =
+			base.Beat =
 				_extraData.TryGetValue("bar".ToLowerCamelCase(), out JsonElement barElement) && barElement.ValueKind == JsonValueKind.Number ?
 				_extraData.TryGetValue("beat".ToLowerCamelCase(), out JsonElement beatElement) && beatElement.ValueKind == JsonValueKind.Number ?
 				new(barElement.GetInt32(), beatElement.GetSingle()) : new(barElement.GetInt32(), 1) : default;
@@ -68,8 +66,8 @@ namespace RhythmBase.RhythmDoctor.Events
 			Active = (!_extraData.TryGetValue("active".ToLowerCamelCase(), out JsonElement activeElement) || activeElement.ValueKind != JsonValueKind.True) && activeElement.ValueKind != JsonValueKind.False || activeElement.GetBoolean();
 			RunTag = (_extraData.TryGetValue("runTag".ToLowerCamelCase(), out JsonElement runTagElement) && runTagElement.ValueKind == JsonValueKind.True || runTagElement.ValueKind == JsonValueKind.False) && runTagElement.GetBoolean();
 			Condition = _extraData.TryGetValue("condition".ToLowerCamelCase(), out JsonElement conditionElement) && conditionElement.ValueKind == JsonValueKind.String ?
-				Condition.Deserialize(conditionElement.GetString() ?? "") : null;
-			Y = _extraData.TryGetValue("y".ToLowerCamelCase(), out JsonElement yElement) && yElement.ValueKind == JsonValueKind.Number ?
+				Condition.Deserialize(conditionElement.GetString() ?? "") : new();
+			base.Y = _extraData.TryGetValue("y".ToLowerCamelCase(), out JsonElement yElement) && yElement.ValueKind == JsonValueKind.Number ?
 				yElement.GetInt32() : 0;
 			_extraData["type"] = data.RootElement.GetProperty("type");
 			_extraData.Remove("bar");

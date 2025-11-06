@@ -22,22 +22,24 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.Flash;
+		public override EventType Type => EventType.Flash;
+
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", Duration);
+		public override string ToString() => base.ToString() + $" {Duration}";
 	}
 	/// <summary>
 	/// Specifies the possible durations for a flash event.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum DurationType : int
+	public enum DurationType
 	{
 		/// <summary>
 		/// A short duration.

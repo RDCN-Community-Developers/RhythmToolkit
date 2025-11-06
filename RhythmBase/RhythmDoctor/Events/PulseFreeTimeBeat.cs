@@ -55,7 +55,8 @@
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
-		public override EventType Type { get; } = EventType.PulseFreeTimeBeat;
+		public override EventType Type => EventType.PulseFreeTimeBeat;
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

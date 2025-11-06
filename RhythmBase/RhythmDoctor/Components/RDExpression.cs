@@ -323,51 +323,51 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <inheritdoc/>
 		public static RDExpression operator +(RDExpression left, float right) => left.IsNumeric
 				? new RDExpression(left.NumericValue + right)
-				: new RDExpression(string.Format("{0}+{1}", left.ExpressionValue, right));
+				: new RDExpression($"{left.ExpressionValue}+{right}");
 		/// <inheritdoc/>
 		public static RDExpression operator +(float left, RDExpression right) => right.IsNumeric
 				? new RDExpression(left + right.NumericValue)
-				: new RDExpression(string.Format("{0}+{1}", left, right.ExpressionValue));
+				: new RDExpression($"{left}+{right.ExpressionValue}");
 		/// <inheritdoc/>
 		public static RDExpression operator +(RDExpression left, RDExpression right) => left.IsNumeric && right.IsNumeric
 				? new RDExpression(left.NumericValue + right.NumericValue)
-				: new RDExpression(string.Format("{0}+{1}", left.ExpressionValue, right.ExpressionValue));
+				: new RDExpression($"{left.ExpressionValue}+{right.ExpressionValue}");
 		/// <inheritdoc/>
 		public static RDExpression operator -(RDExpression left, float right) => left.IsNumeric
 				? new RDExpression(left.NumericValue - right)
-				: new RDExpression(string.Format("{0}-{1}", left.ExpressionValue, right));
+				: new RDExpression($"{left.ExpressionValue}-{right}");
 		/// <inheritdoc/>
 		public static RDExpression operator -(float left, RDExpression right) => right.IsNumeric
 				? new RDExpression(left - right.NumericValue)
-				: new RDExpression(string.Format("{0}-{1}", left, right.ExpressionValue));
+				: new RDExpression($"{left}-{right.ExpressionValue}");
 		/// <inheritdoc/>
 		public static RDExpression operator -(RDExpression left, RDExpression right) => left.IsNumeric && right.IsNumeric
 				? new RDExpression(left.NumericValue - right.NumericValue)
-				: new RDExpression(string.Format("{0}-{1}", left.ExpressionValue, right.ExpressionValue));
+				: new RDExpression($"{left.ExpressionValue}-{right.ExpressionValue}");
 		/// <inheritdoc/>
 		public static RDExpression operator *(RDExpression left, float right) => left.IsNumeric
 				? new RDExpression(left.NumericValue * right)
-				: new RDExpression(string.Format("({0})*{1}", left.ExpressionValue, right));
+				: new RDExpression($"({left.ExpressionValue})*{right}");
 		/// <inheritdoc/>
 		public static RDExpression operator *(float left, RDExpression right) => right.IsNumeric
 				? new RDExpression(left * right.NumericValue)
-				: new RDExpression(string.Format("{0}*({1})", left, right.ExpressionValue));
+				: new RDExpression($"{left}*({right.ExpressionValue})");
 		/// <inheritdoc/>
 		public static RDExpression operator *(RDExpression left, RDExpression right) => left.IsNumeric && right.IsNumeric
 				? new RDExpression(left.NumericValue * right.NumericValue)
-				: new RDExpression(string.Format("({0})*({1})", left.ExpressionValue, right.ExpressionValue));
+				: new RDExpression($"({left.ExpressionValue})*({right.ExpressionValue})");
 		/// <inheritdoc/>
 		public static RDExpression operator /(RDExpression left, float right) => left.IsNumeric
 				? new RDExpression(left.NumericValue / right)
-				: new RDExpression(string.Format("({0})/{1}", left.ExpressionValue, right));
+				: new RDExpression($"({left.ExpressionValue})/{right}");
 		/// <inheritdoc/>
 		public static RDExpression operator /(float left, RDExpression right) => right.IsNumeric
 				? new RDExpression(left / right.NumericValue)
-				: new RDExpression(string.Format("{0}/({1})", left, right.ExpressionValue));
+				: new RDExpression($"{left}/({right.ExpressionValue})");
 		/// <inheritdoc/>
 		public static RDExpression operator /(RDExpression left, RDExpression right) => left.IsNumeric && right.IsNumeric
 				? new RDExpression(left.NumericValue / right.NumericValue)
-				: new RDExpression(string.Format("({0})/({1})", left.ExpressionValue, right.ExpressionValue));
+				: new RDExpression($"({left.ExpressionValue})/({right.ExpressionValue})");
 		/// <inheritdoc/>
 		public static bool operator ==(RDExpression left, RDExpression right) => left.Equals(right);
 		/// <inheritdoc/>

@@ -50,15 +50,18 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.Tint;
+		public override EventType Type => EventType.Tint;
+
 		/// <summary>
 		/// Gets the tab where the event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Decorations;
+		public override Tabs Tab => Tabs.Decorations;
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}{1}", Border, Border == Borders.None ? "" : ":" + BorderColor.ToString());
+		public override string ToString() => base.ToString() +
+		                                     $" {Border}{(Border == Borders.None ? "" : ":" + BorderColor.ToString())}";
 	}
 }

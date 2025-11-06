@@ -1,5 +1,4 @@
 ﻿using RhythmBase.Adofai.Components.Filters;
-using RhythmBase.Adofai.Utils;
 using System.Text;
 using System.Text.Json;
 
@@ -34,7 +33,7 @@ namespace RhythmBase.Adofai.Converters
 		}
 		public sealed override void WriteProperties(Utf8JsonWriter writer, IFilter value, JsonSerializerOptions options)
 		{
-			var f = (TFilter)value;
+			TFilter f = (TFilter)value;
 			Write(writer, ref f, options);
 		}
 		protected virtual bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TFilter value, JsonSerializerOptions options) { return false; }

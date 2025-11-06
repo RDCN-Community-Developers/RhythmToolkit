@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RhythmBase.RhythmDoctor.Components.Timeline;
+﻿namespace RhythmBase.RhythmDoctor.Components.Timeline;
 
 /// <summary>
 /// Represents a timeline of events or activities within a room.

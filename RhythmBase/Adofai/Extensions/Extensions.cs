@@ -14,7 +14,7 @@ namespace RhythmBase.Adofai.Extensions
 		/// <param name="tiles">The collection of <see cref="Tile"/> objects to add to the level.</param>  
 		public static void AddRange(this ADLevel level, IEnumerable<Tile> tiles)
 		{
-			foreach (var item in tiles)
+			foreach (Tile item in tiles)
 			{
 				level.Insert(level.Count, item);
 			}
@@ -27,7 +27,7 @@ namespace RhythmBase.Adofai.Extensions
 		/// <param name="tiles">The collection of <see cref="Tile"/> objects to insert into the level.</param>  
 		public static void InsertRange(this ADLevel level, int index, IEnumerable<Tile> tiles)
 		{
-			foreach (var item in tiles)
+			foreach (Tile item in tiles)
 			{
 				level.Insert(index, item);
 				index++;

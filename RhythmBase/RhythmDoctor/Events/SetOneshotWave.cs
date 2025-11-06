@@ -24,7 +24,7 @@
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
-		public override EventType Type { get; } = EventType.SetOneshotWave;
+		public override EventType Type => EventType.SetOneshotWave;
 	}
 	/// <summary>  
 	/// Defines the types of waves.  

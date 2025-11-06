@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RhythmBase.Global.Components
+﻿namespace RhythmBase.Global.Components
 {
 	internal class RedBlackNode<TKey, TValue> where TKey : IComparable<TKey>
 	{
@@ -28,13 +24,13 @@ namespace RhythmBase.Global.Components
 		private int _count;
 		public bool ContainsKey(TKey key)
 		{
-			var node = FindNode(key);
+			RedBlackNode<TKey,TValue>? node = FindNode(key);
 			return node != null;
 		}
 
 		public RedBlackNode<TKey, TValue>? FindNode(TKey key)
 		{
-			var current = _root;
+			RedBlackNode<TKey,TValue>? current = _root;
 			while (current != null)
 			{
 				int cmp = key.CompareTo(current.Key);
@@ -49,13 +45,13 @@ namespace RhythmBase.Global.Components
 		{
 			if (node.Left != null)
 			{
-				var pred = node.Left;
+				RedBlackNode<TKey,TValue>? pred = node.Left;
 				while (pred.Right != null)
 					pred = pred.Right;
 				return pred;
 			}
-			var parent = node.Parent;
-			var current = node;
+			RedBlackNode<TKey,TValue>? parent = node.Parent;
+			RedBlackNode<TKey,TValue> current = node;
 			while (parent != null && current == parent.Left)
 			{
 				current = parent;
@@ -68,13 +64,13 @@ namespace RhythmBase.Global.Components
 		{
 			if (node.Right != null)
 			{
-				var succ = node.Right;
+				RedBlackNode<TKey,TValue>? succ = node.Right;
 				while (succ.Left != null)
 					succ = succ.Left;
 				return succ;
 			}
-			var parent = node.Parent;
-			var current = node;
+			RedBlackNode<TKey,TValue>? parent = node.Parent;
+			RedBlackNode<TKey,TValue> current = node;
 			while (parent != null && current == parent.Right)
 			{
 				current = parent;
@@ -85,9 +81,9 @@ namespace RhythmBase.Global.Components
 
 		public void Insert(TKey key, TValue value)
 		{
-			var newNode = new RedBlackNode<TKey, TValue>(key, value);
+			RedBlackNode<TKey,TValue> newNode = new RedBlackNode<TKey, TValue>(key, value);
 			RedBlackNode<TKey, TValue>? parent = null;
-			var current = _root;
+			RedBlackNode<TKey,TValue>? current = _root;
 			while (current != null)
 			{
 				parent = current;
@@ -117,10 +113,10 @@ namespace RhythmBase.Global.Components
 		{
 			while (node.Parent != null && node.Parent.IsRed)
 			{
-				var grandparent = node.Parent.Parent;
+				RedBlackNode<TKey,TValue>? grandparent = node.Parent.Parent;
 				if (node.Parent == grandparent?.Left)
 				{
-					var uncle = grandparent?.Right;
+					RedBlackNode<TKey,TValue>? uncle = grandparent?.Right;
 					if (uncle != null && uncle.IsRed)
 					{
 						node.Parent.IsRed = false;
@@ -147,7 +143,7 @@ namespace RhythmBase.Global.Components
 				}
 				else
 				{
-					var uncle = grandparent?.Left;
+					RedBlackNode<TKey,TValue>? uncle = grandparent?.Left;
 					if (uncle != null && uncle.IsRed)
 					{
 						node.Parent.IsRed = false;
@@ -179,7 +175,7 @@ namespace RhythmBase.Global.Components
 
 		private void RotateLeft(RedBlackNode<TKey, TValue> node)
 		{
-			var right = node.Right;
+			RedBlackNode<TKey,TValue>? right = node.Right;
 			if (right == null) return;
 			node.Right = right.Left;
 			if (right.Left != null)
@@ -197,7 +193,7 @@ namespace RhythmBase.Global.Components
 
 		private void RotateRight(RedBlackNode<TKey, TValue> node)
 		{
-			var left = node.Left;
+			RedBlackNode<TKey,TValue>? left = node.Left;
 			if (left == null) return;
 			node.Left = left.Right;
 			if (left.Right != null)
@@ -215,7 +211,7 @@ namespace RhythmBase.Global.Components
 
 		public bool Remove(TKey key)
 		{
-			var node = FindNode(key);
+			RedBlackNode<TKey,TValue>? node = FindNode(key);
 			if (node == null)
 				return false;
 			DeleteNode(node);
@@ -273,7 +269,7 @@ namespace RhythmBase.Global.Components
 					break;
 				if (x == parent.Left)
 				{
-					var w = parent.Right;
+					RedBlackNode<TKey,TValue>? w = parent.Right;
 					if (w != null && w.IsRed)
 					{
 						w.IsRed = false;
@@ -311,7 +307,7 @@ namespace RhythmBase.Global.Components
 				}
 				else
 				{
-					var w = parent.Left;
+					RedBlackNode<TKey,TValue>? w = parent.Left;
 					if (w != null && w.IsRed)
 					{
 						w.IsRed = false;
@@ -375,7 +371,7 @@ namespace RhythmBase.Global.Components
 		{
 			get
 			{
-				var node = FindNode(key);
+				RedBlackNode<TKey,TValue>? node = FindNode(key);
 				if (node == null)
 					throw new KeyNotFoundException();
 				return node.Value;
@@ -388,7 +384,7 @@ namespace RhythmBase.Global.Components
 
 		public bool TryGetValue(TKey key, out TValue value)
 		{
-			var node = FindNode(key);
+			RedBlackNode<TKey,TValue>? node = FindNode(key);
 			if (node != null)
 			{
 				value = node.Value;
@@ -417,7 +413,7 @@ namespace RhythmBase.Global.Components
 
 		public bool Contains(KeyValuePair<TKey, TValue> item)
 		{
-			var node = FindNode(item.Key);
+			RedBlackNode<TKey,TValue>? node = FindNode(item.Key);
 			if (node == null)
 				return false;
 			return EqualityComparer<TValue>.Default.Equals(node.Value, item.Value);
@@ -433,7 +429,7 @@ namespace RhythmBase.Global.Components
 				throw new ArgumentException("目标数组空间不足。");
 
 			int i = arrayIndex;
-			foreach (var kv in this)
+			foreach (KeyValuePair<TKey,TValue> kv in this)
 			{
 				array[i++] = kv;
 			}
@@ -441,7 +437,7 @@ namespace RhythmBase.Global.Components
 
 		public bool Remove(KeyValuePair<TKey, TValue> item)
 		{
-			var node = FindNode(item.Key);
+			RedBlackNode<TKey,TValue>? node = FindNode(item.Key);
 			if (node == null)
 				return false;
 			if (!EqualityComparer<TValue>.Default.Equals(node.Value, item.Value))
@@ -459,10 +455,10 @@ namespace RhythmBase.Global.Components
 		{
 			if (node == null)
 				yield break;
-			foreach (var kv in InOrderTraversal(node.Left))
+			foreach (KeyValuePair<TKey,TValue> kv in InOrderTraversal(node.Left))
 				yield return kv;
 			yield return new KeyValuePair<TKey, TValue>(node.Key, node.Value);
-			foreach (var kv in InOrderTraversal(node.Right))
+			foreach (KeyValuePair<TKey,TValue> kv in InOrderTraversal(node.Right))
 				yield return kv;
 		}
 

@@ -18,11 +18,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the source beat of the stutter event.
 		/// </summary>
-		public float SourceBeat
-		{
-			get => field;
-			set => field = value;
-		}
+		public float SourceBeat { get; set; }
 		/// <summary>
 		/// Gets or sets the length of the stutter event.
 		/// </summary>
@@ -38,11 +34,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.Stutter;
+		public override EventType Type => EventType.Stutter;
+
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
 	}
 	/// <summary>
 	/// Defines the possible actions for the stutter event.

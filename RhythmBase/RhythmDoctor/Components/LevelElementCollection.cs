@@ -37,7 +37,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <inheritdoc/>
 		public IEnumerator<T> GetEnumerator()
 		{
-			foreach (var item in _items)
+			foreach (T item in _items)
 				yield return item;
 		}
 		/// <summary>  

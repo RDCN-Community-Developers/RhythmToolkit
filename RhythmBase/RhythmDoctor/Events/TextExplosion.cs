@@ -38,11 +38,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.TextExplosion;
+		public override EventType Type => EventType.TextExplosion;
+
 		/// <summary>
 		/// Gets the tab associated with the event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
+
 		/// <summary>
 		/// Gets or sets the easing type.
 		/// </summary>
@@ -52,7 +54,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", Text);
+		public override string ToString() => base.ToString() + $" {Text}";
 	}
 	/// <summary>
 	/// Specifies the direction of the text explosion.

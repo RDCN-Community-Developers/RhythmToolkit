@@ -24,7 +24,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		public override void Write(Utf8JsonWriter writer, TPoint[] value, JsonSerializerOptions options)
 		{
 			writer.WriteStartArray();
-			foreach (var p in value)
+			foreach (TPoint p in value)
 				converter.Write(writer, p, options);
 			writer.WriteEndArray();
 		}

@@ -158,7 +158,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static int RemoveRange<TEvent>(this OrderedEventCollection<TEvent> e, IEnumerable<TEvent> items) where TEvent : IBaseEvent
 		{
 			int count = 0;
-			foreach (var item in items)
+			foreach (TEvent item in items)
 				count += e.Remove(item) ? 1 : 0;
 			return count;
 		}
@@ -334,11 +334,11 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
-					foreach (var item in enumerator.Current.Value)
+					foreach (IBaseEvent item in enumerator.Current.Value)
 					{
 						if (item as TEvent is TEvent o)
 							yield return o;
@@ -347,7 +347,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			if (enumerator.Current.Key != e.Beat)
 				yield break;
 			if (enumerator.Current.Value.ContainsTypes(types))
-				foreach (var item in enumerator.Current.Value)
+				foreach (IBaseEvent item in enumerator.Current.Value)
 				{
 					if (item == e)
 						yield break;
@@ -361,11 +361,11 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> Before<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
-					foreach (var item in enumerator.Current.Value)
+					foreach (IBaseEvent item in enumerator.Current.Value)
 					{
 						if (item as TEvent is TEvent o)
 							yield return o;
@@ -373,7 +373,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			}
 			if (enumerator.Current.Key != e.Beat || !enumerator.Current.Value.ContainsTypes(types))
 				yield break;
-			foreach (var item in enumerator.Current.Value)
+			foreach (IBaseEvent item in enumerator.Current.Value)
 			{
 				if (item == e)
 					yield break;
@@ -388,7 +388,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> After<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
 			if (!moved)
@@ -396,7 +396,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			bool flag = false;
 			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
 			{
-				foreach (var item in enumerator.Current.Value)
+				foreach (IBaseEvent item in enumerator.Current.Value)
 				{
 					if (flag && item as TEvent is TEvent o)
 						yield return o;
@@ -407,7 +407,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			while (enumerator.MoveNext())
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
-					foreach (var item in enumerator.Current.Value)
+					foreach (IBaseEvent item in enumerator.Current.Value)
 					{
 						if (item as TEvent is TEvent o)
 							yield return o;
@@ -421,7 +421,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> After<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
 			if (!moved)
@@ -429,7 +429,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			bool flag = false;
 			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
 			{
-				foreach (var item in enumerator.Current.Value)
+				foreach (IBaseEvent item in enumerator.Current.Value)
 				{
 					if (flag && item as TEvent is TEvent o)
 						yield return o;
@@ -440,7 +440,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			while (enumerator.MoveNext())
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
-					foreach (var item in enumerator.Current.Value)
+					foreach (IBaseEvent item in enumerator.Current.Value)
 					{
 						if (item as TEvent is TEvent o)
 							yield return o;
@@ -462,12 +462,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FrontOrDefault<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			TEvent? front = null;
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
-					foreach (var item in enumerator.Current.Value)
+					foreach (IBaseEvent item in enumerator.Current.Value)
 					{
 						if (item as TEvent is TEvent o)
 							front = o;
@@ -475,7 +475,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			}
 			if (enumerator.Current.Key != e.Beat || !enumerator.Current.Value.ContainsTypes(types))
 				return front;
-			foreach (var item in enumerator.Current.Value)
+			foreach (IBaseEvent item in enumerator.Current.Value)
 			{
 				if (item == e)
 					return front;
@@ -491,24 +491,24 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FrontOrDefault<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			TEvent? front = null;
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
-					foreach (var item in enumerator.Current.Value)
+					foreach (IBaseEvent item in enumerator.Current.Value)
 					{
-						if (item as TEvent is TEvent o)
+						if (item is TEvent o)
 							front = o;
 					}
 			}
 			if (enumerator.Current.Key != e.Beat || !enumerator.Current.Value.ContainsTypes(types))
 				return front;
-			foreach (var item in enumerator.Current.Value)
+			foreach (IBaseEvent item in enumerator.Current.Value)
 			{
 				if (item == e)
 					return front;
-				if (item as TEvent is TEvent o)
+				if (item is TEvent o)
 					front = o;
 			}
 			throw new InvalidOperationException();
@@ -528,7 +528,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? NextOrDefault<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
 			if(!moved)
@@ -536,9 +536,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			bool flag = false;
 			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
 			{
-				foreach (var item in enumerator.Current.Value)
+				foreach (IBaseEvent item in enumerator.Current.Value)
 				{
-					if (flag && item as TEvent is TEvent o)
+					if (flag && item is TEvent o)
 						return o;
 					if (item == e)
 						flag = true;
@@ -546,12 +546,13 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			}
 			while (enumerator.MoveNext())
 			{
-				if (enumerator.Current.Value.ContainsTypes(types))
-					foreach (var item in enumerator.Current.Value)
-					{
-						if (item as TEvent is TEvent o)
-							return o;
-					}
+				if (!enumerator.Current.Value.ContainsTypes(types))
+					continue;
+				foreach (IBaseEvent item in enumerator.Current.Value)
+				{
+					if (item is TEvent o)
+						return o;
+				}
 			}
 			return null;
 		}
@@ -562,7 +563,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			var enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
 			if (!moved)
@@ -570,9 +571,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			bool flag = false;
 			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
 			{
-				foreach (var item in enumerator.Current.Value)
+				foreach (IBaseEvent item in enumerator.Current.Value)
 				{
-					if (flag && item as TEvent is TEvent o)
+					if (flag && item is TEvent o)
 						return o;
 					if (item == e)
 						flag = true;
@@ -581,9 +582,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			while (enumerator.MoveNext())
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
-					foreach (var item in enumerator.Current.Value)
+					foreach (IBaseEvent item in enumerator.Current.Value)
 					{
-						if (item as TEvent is TEvent o)
+						if (item is TEvent o)
 							return o;
 					}
 			}
@@ -611,7 +612,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				return 0;
 			if (e.Beat == obj.Beat)
 			{
-				var list = (e._beat.BaseLevel?.eventsBeatOrder[e.Beat]) ?? throw new RhythmBaseException("How?");
+				TypedEventCollection<IBaseEvent> list = (e._beat.BaseLevel?.eventsBeatOrder[e.Beat]) ?? throw new RhythmBaseException("How?");
 				return list.CompareTo(e, obj) ? -1 : 1;
 			}
 			return e.Beat.CompareTo(obj.Beat);
@@ -622,21 +623,15 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent MemberwiseClone<TEvent>(this TEvent e) where TEvent : IBaseEvent, new() => (TEvent)e.MClone();
 		internal static object MClone(this object e)
 		{
-			if (e != null)
-			{
-				Type type = e.GetType();
-				object copy = Activator.CreateInstance(type)!;
-				PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-				foreach (PropertyInfo p in properties)
-				{
-					if (p.CanWrite)
-					{
-						p.SetValue(copy, p.GetValue(e));
-					}
-				}
-				return copy;
-			}
-			throw new NullReferenceException();
+			if (e == null)
+				throw new NullReferenceException();
+			Type type = e.GetType();
+			object copy = Activator.CreateInstance(type)!;
+			PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			foreach (PropertyInfo p in properties)
+				if (p.CanWrite)
+					p.SetValue(copy, p.GetValue(e));
+			return copy;
 		}
 		/// <inheritdoc/>
 		public static string GetCloseTag(string name) => $"</{name}>";

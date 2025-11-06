@@ -45,6 +45,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override readonly string ToString() => string.Format("{{{0}, {1}}}", Beat, Parent);
+		public override readonly string ToString() => $"{{{Beat}, {Parent}}}";
 	}
 }

@@ -97,7 +97,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			get => Speed.X;
 			set
 			{
-				var speed = Speed;
+				RDPoint speed = Speed;
 				speed.X = value;
 				Speed = speed;
 			}
@@ -116,7 +116,7 @@ namespace RhythmBase.RhythmDoctor.Events
 			get => Speed.Y;
 			set
 			{
-				var speed = Speed;
+				RDPoint speed = Speed;
 				speed.Y = value;
 				Speed = speed;
 			}

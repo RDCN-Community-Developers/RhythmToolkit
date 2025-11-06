@@ -1,6 +1,4 @@
 ﻿using RhythmBase.RhythmDoctor.Events;
-using RhythmBase.RhythmDoctor.Utils;
-using System.Collections;
 
 namespace RhythmBase.RhythmDoctor.Components.Linq
 {

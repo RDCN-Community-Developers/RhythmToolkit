@@ -1,5 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Converters;
-using RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.RhythmDoctor.Events;
 using System.Collections.ObjectModel;
 
 namespace RhythmBase.RhythmDoctor.Utils
@@ -95,7 +94,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 			Type ConvertToType;
 			if (Enum_EventType == null)
 			{
-				return Type.GetType($"{typeof(IBaseEvent).Namespace}.{type}") ?? throw new RhythmBaseException(string.Format("Illegal Type: {0}.", type));
+				return Type.GetType($"{typeof(IBaseEvent).Namespace}.{type}") ?? throw new RhythmBaseException(
+					$"Illegal Type: {type}.");
 			}
 			else
 			{

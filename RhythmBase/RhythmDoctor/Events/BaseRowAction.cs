@@ -37,10 +37,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		public override TEvent Clone<TEvent>()
 		{
-			TEvent Temp = base.Clone<TEvent>();
-			if(Temp is BaseRowAction TempAction)
-				TempAction._parent = Parent;
-			return Temp;
+			TEvent temp = base.Clone<TEvent>();
+			if(temp is BaseRowAction tempAction)
+				tempAction._parent = Parent;
+			return temp;
 		}
 		/// <summary>
 		/// Clones this event and assigns it to a specified row event collection.
@@ -50,9 +50,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <returns>A new instance of <typeparamref name="TEvent"/>.</returns>
 		internal TEvent Clone<TEvent>(Row row) where TEvent : BaseRowAction, new()
 		{
-			TEvent Temp = base.Clone<TEvent>(row.Parent ?? throw new RhythmBaseException());
-			Temp.Parent = row;
-			return Temp;
+			TEvent temp = base.Clone<TEvent>(row.Parent ?? throw new RhythmBaseException());
+			temp.Parent = row;
+			return temp;
 		}
 		internal Row? _parent;
 		internal int _row;

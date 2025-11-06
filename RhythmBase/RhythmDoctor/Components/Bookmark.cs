@@ -21,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns a string that represents the current bookmark.
 		/// </summary>
 		/// <returns>A string that represents the current bookmark.</returns>
-		public override string ToString() => string.Format("{0}, {1}", Beat, Color);
+		public override string ToString() => $"{Beat}, {Color}";
 		/// <summary>
 		/// Specifies the colors available for bookmarks.
 		/// </summary>

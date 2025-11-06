@@ -256,10 +256,10 @@ namespace RhythmBase.RhythmDoctor.Components.RDLang
 					case ActionType.Reduce:
 					reduce:
 						Stack<IPattern> ptargs = [];
-						var ps = GetPatterns(action.ReduceTo, type);
+						PatternGroup ps = GetPatterns(action.ReduceTo, type);
 						for (int i = 0; i < ps.Patterns.Length; i++)
 						{
-							var peak = symbolStack.Pop();
+							IPattern peak = symbolStack.Pop();
 							ptargs.Push(peak);
 							stateStack.Pop();
 #if NETSTANDARD

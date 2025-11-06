@@ -66,11 +66,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.MoveRow;
+		public override EventType Type => EventType.MoveRow;
+
 		/// <summary>
 		/// Gets the tab of the event.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
 	}
 	/// <summary>
 	/// Specifies the targets for the move row event.

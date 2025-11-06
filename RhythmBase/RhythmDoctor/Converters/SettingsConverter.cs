@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					throw new JsonException($"Unexpected token type: {reader.TokenType}");
 				}
-				var propertyName = reader.ValueSpan;
+				ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 				reader.Read();
 				if (propertyName.SequenceEqual("version"u8))
 					settings.Version = reader.GetInt32();
@@ -201,7 +201,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			{
 				writer.WritePropertyName("mods"u8);
 				writer.WriteStartArray();
-				foreach (var mod in value.Mods)
+				foreach (string? mod in value.Mods)
 					writer.WriteStringValue(mod ?? "");
 				writer.WriteEndArray();
 			}
@@ -209,7 +209,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			// ExtraData
 			if (value.ExtraData != null)
 			{
-				foreach (var kv in value.ExtraData)
+				foreach (KeyValuePair<string,JsonElement> kv in value.ExtraData)
 				{
 					writer.WritePropertyName(kv.Key);
 					kv.Value.WriteTo(writer);

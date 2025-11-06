@@ -12,11 +12,13 @@
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.SetVisible;
+		public override EventType Type => EventType.SetVisible;
+
 		/// <summary>
 		/// Gets the tab to which the event belongs.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Decorations;
+		public override Tabs Tab => Tabs.Decorations;
+
 		/// <summary>
 		/// Gets or sets a value indicating whether the decoration is visible.
 		/// </summary>
@@ -25,6 +27,6 @@
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}", Visible);
+		public override string ToString() => base.ToString() + $" {Visible}";
 	}
 }

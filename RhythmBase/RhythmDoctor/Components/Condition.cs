@@ -85,7 +85,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public string Serialize()
 		{
 			StringBuilder sb = new();
-			foreach(var pair in ConditionLists)
+			foreach(KeyValuePair<int,bool> pair in ConditionLists)
 			{
 				if (sb.Length > 0)
 					sb.Append('&');

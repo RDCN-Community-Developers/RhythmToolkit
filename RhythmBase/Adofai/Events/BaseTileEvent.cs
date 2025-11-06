@@ -21,7 +21,7 @@ namespace RhythmBase.Adofai.Events
 		/// Returns a string representation of the event type.
 		/// </summary>
 		/// <returns>A string that represents the event type.</returns>
-		public override string ToString() => string.Format("{0}", Type);
+		public override string ToString() => $"{Type}";
 		internal int _floor = -1;
 	}
 }

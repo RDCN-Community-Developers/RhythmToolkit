@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Utils;
 
 namespace RhythmBase.Adofai.Converters
@@ -9,7 +9,7 @@ namespace RhythmBase.Adofai.Converters
 	{
 		public override JsonElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			var v = FilterTypeUtils.converters;
+			ReadOnlyDictionary<string,FilterInstanceConverterBase> v = FilterTypeUtils.converters;
 			return JsonSerializer.Deserialize<JsonElement>($"{{{reader.GetString()}}}", options);
 		}
 

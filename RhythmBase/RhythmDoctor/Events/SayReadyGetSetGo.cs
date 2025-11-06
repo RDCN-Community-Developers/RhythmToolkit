@@ -98,7 +98,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + string.Format(" {0}: {1}", VoiceSource, PhraseToSay);
+		public override string ToString() => base.ToString() + $" {VoiceSource}: {PhraseToSay}";
 	}
 	/// <summary>
 	/// Represents the phrases that can be said.

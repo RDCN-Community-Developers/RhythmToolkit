@@ -12,9 +12,11 @@
 		/// <inheritdoc/>
 		public override float BeatsPerMinute { get => base.BeatsPerMinute; set => base.BeatsPerMinute = value; }
 		/// <inheritdoc/>
-		public override EventType Type { get; } = EventType.SetBeatsPerMinute;
+		public override EventType Type => EventType.SetBeatsPerMinute;
+
 		/// <inheritdoc/>
-		public override Tabs Tab { get; } = Tabs.Sounds;
+		public override Tabs Tab => Tabs.Sounds;
+
 		/// <inheritdoc/>
 		public override string ToString() => base.ToString() + $" BPM:{BeatsPerMinute}";
 	}

@@ -23,13 +23,17 @@ namespace RhythmBase.Adofai.Utils
 #pragma warning disable IDE0052 // 删除未读的私有成员
 		internal ADLevel Collection;
 		private float _DefaultBpm = 100;
-		private readonly List<Tile> _SetSpeeds = [];
-		private readonly List<Tile> _Twirls = [];
-		private readonly List<Tile> _Pauses = [];
-		private readonly List<Tile> _Holds = [];
-		private readonly List<Tile> _Freeroams = [];
-		private readonly List<Tile> _MultiPlanets = [];
-		private readonly List<Tile> _RadiusScales = [];
 #pragma warning restore IDE0052 // 删除未读的私有成员
+
+		/*
+		 * 更新：
+		 * - 事件添加进砖块
+		 * - 事件移除出砖块
+		 * - 砖块添加进关卡
+		 * - 砖块移除出关卡
+		 * - 砖块中旋
+		 * - 砖块发卡弯
+		 * - 事件属性更新
+		 */
 	}
 }

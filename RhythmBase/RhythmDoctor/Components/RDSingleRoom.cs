@@ -40,7 +40,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override readonly string ToString() => string.Format("[{0}]", _data);
+		public override readonly string ToString() => $"[{_data}]";
 		/// <summary>
 		/// Gets the default single room which represents room 0.
 		/// </summary>

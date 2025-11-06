@@ -26,11 +26,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets the type of the event.
 		/// </summary>
-		public override EventType Type { get; } = EventType.FlipScreen;
+		public override EventType Type => EventType.FlipScreen;
+
 		/// <summary>
 		/// Gets the tab where this event is categorized.
 		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
+		public override Tabs Tab => Tabs.Actions;
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
@@ -45,7 +47,7 @@ namespace RhythmBase.RhythmDoctor.Events
 				: FlipY
 					? "<>"
 					: "";
-			return base.ToString() + string.Format(" {0}", result);
+			return base.ToString() + $" {result}";
 		}
 	}
 }
