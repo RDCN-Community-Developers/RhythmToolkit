@@ -1,6 +1,7 @@
 ﻿using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Extensions;
 using RhythmBase.Adofai.Utils;
+using RhythmBase.RhythmDoctor.Components;
 using System.IO.Compression;
 using System.Text.Json;
 
@@ -193,17 +194,18 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Reads an <see cref="ADLevel"/> instance from a stream containing JSON data.
 		/// </summary>
-		/// <param name="stream">The input stream containing the level data in JSON format.</param>
+		/// <param name="adlevelStream">The input stream containing the level data in JSON format.</param>
 		/// <param name="settings">Optional settings for reading the level. If <c>null</c>, default settings are used.</param>
 		/// <returns>
 		/// An <see cref="ADLevel"/> instance loaded from the stream. If deserialization fails, returns a new empty <see cref="ADLevel"/>.
 		/// </returns>
-		public static ADLevel FromStream(Stream stream, LevelReadOrWriteSettings? settings = null)
+		public static ADLevel FromStream(Stream adlevelStream, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
 			ADLevel? level;
 			settings.OnBeforeReading();
+			using EscapeNewLineStream stream = new(adlevelStream);
 			level = JsonSerializer.Deserialize<ADLevel>(stream, options);
 			settings.OnAfterReading();
 			return level ?? [];

@@ -118,7 +118,7 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// <summary>  
 	/// Gets or sets the relative position of the camera.  
 	/// </summary>  
-	public CameraRelativeTo RelativeTo { get; set; } = CameraRelativeTo.Global;
+	public ObjectRelativeTo RelativeTo { get; set; } = ObjectRelativeTo.Global;
 	/// <summary>  
 	/// Gets or sets the pivot offset of the object.  
 	/// </summary>  
@@ -160,6 +160,50 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// Gets or sets the tag associated with the object.  
 	/// </summary>  
 	public string Tag { get; set; } = string.Empty;
+}
+/// <summary>
+/// Specifies the coordinate space or reference frame used to interpret an object's position and pivot offsets.
+/// </summary>
+/// <remarks>
+/// Use this enum to indicate whether object coordinates are evaluated relative to a tile, the global level
+/// coordinate system, a specific planet, the camera, or the last used object position. This affects how
+/// Position, PivotOffset and related properties are applied when the object is placed or rendered.
+/// </remarks>
+[RDJsonEnumSerializable]
+public enum ObjectRelativeTo
+{
+	/// <summary>
+	/// Position is relative to the current tile. The object's coordinates are interpreted in the local tile space.
+	/// </summary>
+	Tile,
+	/// <summary>
+	/// Position is in global (level) coordinates. The object's coordinates are independent of individual tiles.
+	/// </summary>
+	Global,
+	/// <summary>
+	/// Position is relative to the red planet. Coordinates are interpreted in the red planet's local space.
+	/// </summary>
+	RedPlanet,
+	/// <summary>
+	/// Position is relative to the blue planet. Coordinates are interpreted in the blue planet's local space.
+	/// </summary>
+	BluePlanet,
+	/// <summary>
+	/// Position is relative to the green planet. Coordinates are interpreted in the green planet's local space.
+	/// </summary>
+	GreenPlanet,
+	/// <summary>
+	/// Position is relative to the camera. Use this to place objects in camera space (camera-local coordinates).
+	/// </summary>
+	Camera,
+	/// <summary>
+	/// Position is relative to the camera's aspect or viewport space. Useful for screen-aligned placements that depend on aspect ratio.
+	/// </summary>
+	CameraAspect,
+	/// <summary>
+	/// Position uses the last known position used by a previously placed object (e.g. for repeated placements).
+	/// </summary>
+	LastPosition,
 }
 
 /// <summary>  

@@ -23,6 +23,7 @@ public class ColorTrack : BaseTileEvent, ISingleEvent
 	/// <summary>  
 	/// Gets or sets the duration of the track color animation.  
 	/// </summary>  
+	[RDJsonProperty("trackColorAnimDuration")]
 	public float TrackColorAnimationDuration { get; set; } = 2;
 	/// <summary>  
 	/// Gets or sets the track color pulse type.  
