@@ -1,7 +1,7 @@
-﻿using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Immutable;
 using System.Text;
 
 // 这坨写得太史了
@@ -198,7 +198,7 @@ public class ConverterGenerator : IIncrementalGenerator
 	private static void GenerateEventConverterForRDLevel(IncrementalGeneratorInitializationContext context)
 	{
 		HashSet<string> names = [];
-		IncrementalValueProvider<ImmutableArray<(INamedTypeSymbol? symbol,INamedTypeSymbol? baseType)>> eventClasses = context.SyntaxProvider.CreateSyntaxProvider(
+		IncrementalValueProvider<ImmutableArray<(INamedTypeSymbol? symbol, INamedTypeSymbol? baseType)>> eventClasses = context.SyntaxProvider.CreateSyntaxProvider(
 			predicate: (s, _) => s is ClassDeclarationSyntax,
 			transform: (ctx, _) =>
 			{
@@ -310,7 +310,7 @@ public class ConverterGenerator : IIncrementalGenerator
 	private static void GenerateEventConverterForADLevel(IncrementalGeneratorInitializationContext context)
 	{
 		HashSet<string> names = [];
-		IncrementalValueProvider<ImmutableArray<(INamedTypeSymbol? symbol,INamedTypeSymbol? baseType)>> eventClasses = context.SyntaxProvider.CreateSyntaxProvider(
+		IncrementalValueProvider<ImmutableArray<(INamedTypeSymbol? symbol, INamedTypeSymbol? baseType)>> eventClasses = context.SyntaxProvider.CreateSyntaxProvider(
 			predicate: (s, _) => s is ClassDeclarationSyntax,
 			transform: (ctx, _) =>
 			{
@@ -424,7 +424,7 @@ public class ConverterGenerator : IIncrementalGenerator
 	private static void GenerateFilterConverter(IncrementalGeneratorInitializationContext context)
 	{
 		HashSet<string> names = [];
-		IncrementalValueProvider<ImmutableArray<(INamedTypeSymbol? symbol,INamedTypeSymbol? baseType)>> eventClasses = context.SyntaxProvider.CreateSyntaxProvider(
+		IncrementalValueProvider<ImmutableArray<(INamedTypeSymbol? symbol, INamedTypeSymbol? baseType)>> eventClasses = context.SyntaxProvider.CreateSyntaxProvider(
 			predicate: (s, _) =>
 			{
 				if (s is not StructDeclarationSyntax structDeclarationSyntax)
@@ -532,7 +532,7 @@ public class ConverterGenerator : IIncrementalGenerator
 				string specialID = "";
 
 				AttributeData? specialIDAttr = symbol.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonSpecialIDAttrName);
-				if(specialIDAttr is not null)
+				if (specialIDAttr is not null)
 				{
 					specialID = specialIDAttr.ConstructorArguments.Length > 0 ? specialIDAttr.ConstructorArguments[0].Value?.ToString() ?? "" : "";
 				}
@@ -670,11 +670,17 @@ public class ConverterGenerator : IIncrementalGenerator
 				}
 				if (type2.TypeKind == TypeKind.Enum)
 				{
-					sb.AppendLine($"		{(isFirst ? "" : "else ")}if (" +
-						$"propertyName.SequenceEqual(\"{jsonName}\"u8) && " +
-						(isNullable ? $"reader.TokenType is not JsonTokenType.Null && " : "") +
-						$"TryParse(reader.ValueSpan, out {type.ToDisplayString().TrimEnd('?')} enumValue{enumIndex}))");
-					sb.AppendLine($"			value.{propertyName} = enumValue{enumIndex};");
+					sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{jsonName}\"u8){
+						(isNullable ? $" && reader.TokenType is not JsonTokenType.Null)" : ")")
+						}");
+					sb.AppendLine($$"""
+									if(reader.TokenType is JsonTokenType.String && TryParse(reader.ValueSpan, out {{type.ToDisplayString().TrimEnd('?')}} enumValue{{enumIndex}}))
+										value.{{propertyName}} = enumValue{{enumIndex}};
+									else if(reader.TokenType is JsonTokenType.Number && reader.TryGetInt32(out int intValue{{enumIndex}}))
+										value.{{propertyName}} = ({{type.ToDisplayString().TrimEnd('?')}})intValue{{enumIndex}};
+									else
+										value.{{propertyName}} = default;
+						""");
 					enumIndex++;
 				}
 				else
@@ -682,16 +688,16 @@ public class ConverterGenerator : IIncrementalGenerator
 					sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{jsonName}\"u8))");
 					if (isNullable)
 					{
-						sb.AppendLine($"			if(reader.TokenType is JsonTokenType.Null)");
-						sb.AppendLine($"				value.{propertyName} = null;");
-						sb.AppendLine("			else");
-						sb.Append('	');
+						sb.AppendLine($"""
+										if(reader.TokenType is JsonTokenType.Null)
+											value.{propertyName} = null;
+										else
+							""");
 					}
 
 					switch (type2.SpecialType)
 					{
-						case SpecialType.System_Boolean or
-							SpecialType.System_Byte or
+						case SpecialType.System_Byte or
 							SpecialType.System_Int16 or
 							SpecialType.System_Int32 or
 							SpecialType.System_Int64 or
@@ -702,6 +708,16 @@ public class ConverterGenerator : IIncrementalGenerator
 							SpecialType.System_Double or
 							SpecialType.System_Decimal:
 							sb.AppendLine($"			value.{propertyName} = reader.Get{type2.SpecialType.ToString().Replace("System_", "")}();");
+							break;
+						case SpecialType.System_Boolean:
+							sb.AppendLine($"""
+											if (reader.TokenType is JsonTokenType.True or JsonTokenType.False)
+												value.{propertyName} = reader.GetBoolean();
+											else if (reader.TokenType is JsonTokenType.String)
+												value.{propertyName} = "Enabled" == reader.GetString();
+											else
+												value.{propertyName} = false;
+								""");
 							break;
 						case SpecialType.System_String:
 							sb.AppendLine($"			value.{propertyName} = reader.GetString() ?? \"\";");
