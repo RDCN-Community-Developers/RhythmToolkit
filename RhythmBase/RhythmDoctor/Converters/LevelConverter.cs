@@ -37,10 +37,12 @@ namespace RhythmBase.RhythmDoctor.Converters
 					if (reader.TokenType != JsonTokenType.StartObject)
 						throw new JsonException($"Expected StartObject token for 'settings', but got {reader.TokenType}.");
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
-					if(level.Settings.Version < GlobalSettings.MinimumSupportedVersionRhythmDoctor)
-					{
+					if (level.Settings.Version < GlobalSettings.MinimumSupportedVersionRhythmDoctor)
+#if DEBUG
+						Console.WriteLine($"Current version {level.Settings.Version} is too low.");
+#else
 						throw new VersionTooLowException(GlobalSettings.MinimumSupportedVersionRhythmDoctor);
-					}
+#endif
 				}
 				else if (reader.ValueSpan.SequenceEqual("rows"u8))
 				{
@@ -161,7 +163,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 								level.Add(result);
 							}
 						}
-						foreach (KeyValuePair<int,List<IBaseEvent>> mms in maybeGeneratedEvents)
+						foreach (KeyValuePair<int, List<IBaseEvent>> mms in maybeGeneratedEvents)
 						{
 							if (!matchedIds.Contains(mms.Key))
 								foreach (IBaseEvent? e in mms.Value)
@@ -257,7 +259,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			settingsConverter.Write(writer, value.Settings, options);
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
-				using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
+			using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
 			foreach (Row row in value.Rows)
 			{
 				stream.SetLength(0);
@@ -265,7 +267,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					stream.Write(bytes, 0, bytes.Length);
 				rowConverter.Write(noIndentWriter, row, localOptions);
 				noIndentWriter.Flush();
-						sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
@@ -279,7 +281,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					stream.Write(bytes, 0, bytes.Length);
 				decorationConverter.Write(noIndentWriter, decoration, localOptions);
 				noIndentWriter.Flush();
-				 sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
