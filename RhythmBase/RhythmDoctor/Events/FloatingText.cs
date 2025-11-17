@@ -87,6 +87,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the ID of the event.
 		/// </summary>
 		[RDJsonNotIgnore]
+		[RDJsonProperty("id")]
 		internal int _id => _beat.BaseLevel?._floatingTexts.IndexOf(this) ?? -1;
 		/// <summary>
 		/// Gets or sets the position of the text.

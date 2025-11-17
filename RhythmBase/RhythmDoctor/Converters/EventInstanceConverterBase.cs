@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Extensions;
+using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text;
