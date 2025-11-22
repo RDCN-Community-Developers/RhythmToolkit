@@ -8,7 +8,6 @@ namespace RhythmBase.Adofai.Components
 	/// <typeparam name="TEvent">The type of event, which must inherit from <see cref="BaseEvent"/>.</typeparam>
 	public class TypedEventCollection<TEvent> : IEnumerable<TEvent> where TEvent : IBaseEvent
 	{
-		private const int bw = sizeof(ulong) * 8;
 		/// <summary>
 		/// Gets the number of elements contained in the list.
 		/// </summary>
@@ -26,9 +25,7 @@ namespace RhythmBase.Adofai.Components
 			if (item is ISingleEvent && ContainsType(item.Type))
 				return false;
 			list.Add(item);
-			int div = (int)item.Type / bw;
-			int rem = (int)item.Type % bw;
-			_types[div] |= (1ul << rem);
+			_types.Add(item.Type);
 			return true;
 		}
 		/// <summary>
@@ -41,33 +38,14 @@ namespace RhythmBase.Adofai.Components
 			bool result = list.Remove(item);
 			if (!result)
 				return false;
-			if(!list.Any(i => i.Type == item.Type))
-			{
-				int div = (int)item.Type / bw;
-				int rem = (int)item.Type % bw;
-				_types[div] &= ~(1ul << rem);
-			}
+			if (!list.Any(i => i.Type == item.Type))
+				_types.Remove(item.Type);
 			return true;
 		}
-		internal bool ContainsType(EventType type)
-		{
-			int div = (int)type / bw;
-			int rem = (int)type % bw;
-			return (_types[div] & (1ul << rem)) != 0;
-		}
-		internal bool ContainsTypes(EventType[] types)
-		{
-			foreach (EventType type in types)
-			{
-				int div = (int)type / bw;
-				int rem = (int)type % bw;
-				if ((_types[div] & (1ul << rem)) != 0)
-					return true;
-			}
-			return false;
-		}
+		internal bool ContainsType(EventType type) => _types.ContainsType(type);
+		internal bool ContainsTypes(EventType[] types) => _types.ContainsTypes(types);
 		internal bool CompareTo(IBaseEvent item1, IBaseEvent item2) =>
-			list.IndexOf((TEvent)(object)item1) < list.IndexOf((TEvent)(object)item2);
+						list.IndexOf((TEvent)(object)item1) < list.IndexOf((TEvent)(object)item2);
 
 		/// <summary>
 		/// Returns a string that represents the current object.
@@ -79,18 +57,8 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		/// <returns>An enumerator for the list.</returns>
 		public IEnumerator<TEvent> GetEnumerator() => list.GetEnumerator();
-		/// <summary>
-		/// Returns an enumerator that iterates through the list.
-		/// </summary>
-		/// <returns>An enumerator for the list.</returns>
 		IEnumerator IEnumerable.GetEnumerator() => list.GetEnumerator();
-		/// <summary>
-		/// The internal list that stores the events.
-		/// </summary>
 		private readonly List<TEvent> list = [];
-		/// <summary>
-		/// A set of event types contained in the list.
-		/// </summary>
-		private readonly ulong[] _types =  new ulong[2];
+		private readonly EnumCollection<EventType> _types = new(2);
 	}
 }

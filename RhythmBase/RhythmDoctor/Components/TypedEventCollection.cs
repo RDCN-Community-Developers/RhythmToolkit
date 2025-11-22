@@ -4,7 +4,6 @@ namespace RhythmBase.RhythmDoctor.Components
 {
 	internal class TypedEventCollection<TEvent> : IEnumerable<TEvent> where TEvent : IBaseEvent
 	{
-		private const int bw = sizeof(ulong) * 8;
 		public int Count => list.Count;
 		public TypedEventCollection() { }
 		public bool Add(TEvent item)
@@ -12,9 +11,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (list.Contains(item))
 				return false;
 			list.Add(item);
-			int div = (int)item.Type / bw;
-			int rem = (int)item.Type % bw;
-			_types[div] |= (1ul << rem);
+			_types.Add(item.Type);
 			return true;
 		}
 		public bool Remove(TEvent item)
@@ -23,38 +20,19 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (!result)
 				return false;
 			if (!list.Any(i => i.Type == item.Type))
-			{
-				int div = (int)item.Type / bw;
-				int rem = (int)item.Type % bw;
-				_types[div] &= ~(1ul << rem);
-			}
+				_types.Remove(item.Type);
 			return true;
 		}
-		internal bool ContainsType(EventType type)
-		{
-			int div = (int)type / bw;
-			int rem = (int)type % bw;
-			return (_types[div] & (1ul << rem)) != 0;
-		}
-		internal bool ContainsTypes(EventType[] types)
-		{
-			foreach (EventType type in types)
-			{
-				int div = (int)type / bw;
-				int rem = (int)type % bw;
-				if ((_types[div] & (1ul << rem)) != 0)
-					return true;
-			}
-			return false;
-		}
+		internal bool ContainsType(EventType type) => _types.ContainsType(type);
+		internal bool ContainsTypes(EventType[] types) => _types.ContainsTypes(types);
 		internal bool CompareTo(IBaseEvent item1, IBaseEvent item2) =>
-			list.IndexOf((TEvent)(object)item1) < list.IndexOf((TEvent)(object)item2);
+	list.IndexOf((TEvent)(object)item1) < list.IndexOf((TEvent)(object)item2);
 		public override string ToString()
 		{
 			string result = "";
 			if (ContainsType(EventType.SetCrotchetsPerBar))
 				result += "CPB,";
-			if(ContainsType(EventType.SetBeatsPerMinute))
+			if (ContainsType(EventType.SetBeatsPerMinute))
 				result += "BPM,";
 			result += $"Count={list.Count}";
 			return result;
@@ -64,6 +42,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		IEnumerator IEnumerable.GetEnumerator() =>
 			list.GetEnumerator();
 		private readonly List<TEvent> list = [];
-		private readonly ulong[] _types = new ulong[2];
+		private EnumCollection<EventType> _types = new(2);
 	}
 }
