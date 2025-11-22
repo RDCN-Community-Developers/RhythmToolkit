@@ -139,11 +139,11 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseRowAction" />.  
 		/// </summary>  
-		public static readonly ReadOnlyEnumCollection<EventType> RowTypes = new(ToEnums<BaseRowAction>());
+		public static readonly ReadOnlyEnumCollection<EventType> RowTypes = new(2, ToEnums<BaseRowAction>());
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseDecorationAction" />.  
 		/// </summary>  
-		public static readonly ReadOnlyEnumCollection<EventType> DecorationTypes = new(ToEnums<BaseDecorationAction>());
+		public static readonly ReadOnlyEnumCollection<EventType> DecorationTypes = new(2, ToEnums<BaseDecorationAction>());
 		/// <summary>  
 		/// Custom event types.  
 		/// </summary>  
