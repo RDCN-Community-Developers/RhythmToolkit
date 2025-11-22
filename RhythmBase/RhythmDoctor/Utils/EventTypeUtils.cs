@@ -95,7 +95,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			if (Enum_EventType == null)
 			{
 				return Type.GetType($"{typeof(IBaseEvent).Namespace}.{type}") ?? throw new RhythmBaseException(
-					$"Illegal Type: {type}.");
+						$"Illegal Type: {type}.");
 			}
 			else
 			{
@@ -112,25 +112,25 @@ namespace RhythmBase.RhythmDoctor.Utils
 		}
 
 		private static readonly ReadOnlyCollection<Type> EventTypes = (from i in typeof(IBaseEvent).Assembly.GetTypes().Where(i => i.Namespace == typeof(IBaseEvent).Namespace)
-																	   where typeof(IBaseEvent).IsAssignableFrom(i)
-																	   select i)
-			.ToList()
-			.AsReadOnly();
+																																	 where typeof(IBaseEvent).IsAssignableFrom(i)
+																																	 select i)
+				.ToList()
+				.AsReadOnly();
 		/// <summary>  
 		/// A dictionary that records the correspondence of event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" /> to <see cref="T:RhythmBase.Events.EventType" />.  
 		/// </summary>  
 		private static readonly ReadOnlyDictionary<Type, EventType[]> EventType_Enums = new(EventTypes.ToDictionary((i) => i, (i) => (from j in EventTypes
-																																	  where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
-																																	  select ToEnum(j))
-			.ToArray()));
+																																																																	where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
+																																																																	select ToEnum(j))
+				.ToArray()));
 		internal static readonly ReadOnlyCollection<Type> MacroTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
-																		where
-																			typeof(MacroEvent).IsAssignableFrom(i) &&
-																			i != typeof(MacroEvent) &&
-																			i != typeof(MacroEvent<>)
-																		select i)
-			.ToList()
-			.AsReadOnly();
+																																		where
+																																				typeof(MacroEvent).IsAssignableFrom(i) &&
+																																				i != typeof(MacroEvent) &&
+																																				i != typeof(MacroEvent<>)
+																																		select i)
+				.ToList()
+				.AsReadOnly();
 		/// <summary>  
 		/// A dictionary that records the correspondence of <see cref="T:RhythmBase.Events.EventType" /> to event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" />.  
 		/// </summary>  
@@ -139,118 +139,108 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseRowAction" />.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> RowTypes = new(ToEnums<BaseRowAction>());
+		public static readonly ReadOnlyEnumCollection<EventType> RowTypes = new(ToEnums<BaseRowAction>());
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseDecorationAction" />.  
 		/// </summary>  
-		public static readonly ReadOnlyCollection<EventType> DecorationTypes = new(ToEnums<BaseDecorationAction>());
+		public static readonly ReadOnlyEnumCollection<EventType> DecorationTypes = new(ToEnums<BaseDecorationAction>());
 		/// <summary>  
 		/// Custom event types.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> CustomTypes => new(
-		[
-			EventType.ForwardEvent,
-			EventType.ForwardRowEvent,
-			EventType.ForwardDecorationEvent,
-			EventType.MacroEvent,
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> CustomTypes = new(2,
+				EventType.ForwardEvent,
+				EventType.ForwardRowEvent,
+				EventType.ForwardDecorationEvent,
+				EventType.MacroEvent
+		);
 		/// <summary>  
 		/// Event types for gameplay.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForGameplay => new(
-		[
-			EventType.HideRow,
-			EventType.ChangePlayersRows,
-			EventType.FinishLevel,
-			EventType.ShowHands,
-			EventType.SetHandOwner,
-			EventType.SetPlayStyle
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForGameplay = new(2,
+				EventType.HideRow,
+				EventType.ChangePlayersRows,
+				EventType.FinishLevel,
+				EventType.ShowHands,
+				EventType.SetHandOwner,
+				EventType.SetPlayStyle
+		);
 		/// <summary>  
 		/// Event types for environment.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForEnvironment => new(
-		[
-			EventType.SetTheme,
-			EventType.SetBackgroundColor,
-			EventType.SetForeground,
-			EventType.SetSpeed,
-			EventType.Flash,
-			EventType.CustomFlash
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForEnvironment = new(2,
+				EventType.SetTheme,
+				EventType.SetBackgroundColor,
+				EventType.SetForeground,
+				EventType.SetSpeed,
+				EventType.Flash,
+				EventType.CustomFlash
+				);
 		/// <summary>  
 		/// Event types for row effects.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForRowFX => new(
-		[
-			EventType.HideRow,
-			EventType.MoveRow,
-			EventType.PlayExpression,
-			EventType.TintRows
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForRowFX = new(2,
+				EventType.HideRow,
+				EventType.MoveRow,
+				EventType.PlayExpression,
+				EventType.TintRows
+		);
 		/// <summary>  
 		/// Event types for camera effects.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForCameraFX => new(
-		[
-			EventType.MoveCamera,
-			EventType.ShakeScreen,
-			EventType.FlipScreen,
-			EventType.PulseCamera
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForCameraFX = new(2,
+				EventType.MoveCamera,
+				EventType.ShakeScreen,
+				EventType.FlipScreen,
+				EventType.PulseCamera
+		);
 		/// <summary>  
 		/// Event types for visual effects.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForVisualFX => new(
-		[
-			EventType.SetVFXPreset,
-			EventType.SetSpeed,
-			EventType.Flash,
-			EventType.CustomFlash,
-			EventType.BassDrop,
-			EventType.InvertColors,
-			EventType.Stutter,
-			EventType.PaintHands,
-			EventType.NewWindowDance
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForVisualFX = new(2,
+				EventType.SetVFXPreset,
+				EventType.SetSpeed,
+				EventType.Flash,
+				EventType.CustomFlash,
+				EventType.BassDrop,
+				EventType.InvertColors,
+				EventType.Stutter,
+				EventType.PaintHands,
+				EventType.NewWindowDance
+		);
 		/// <summary>  
 		/// Event types for text effects.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForText => new(
-		[
-			EventType.TextExplosion,
-			EventType.ShowDialogue,
-			EventType.ShowStatusSign,
-			EventType.FloatingText,
-			EventType.AdvanceText
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForText = new(2,
+				EventType.TextExplosion,
+				EventType.ShowDialogue,
+				EventType.ShowStatusSign,
+				EventType.FloatingText,
+				EventType.AdvanceText
+		);
 		/// <summary>  
 		/// Event types for utility actions.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForUtility => new(
-		[
-			EventType.Comment,
-			EventType.TagAction,
-			EventType.CallCustomMethod
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForUtility = new(2,
+				EventType.Comment,
+				EventType.TagAction,
+				EventType.CallCustomMethod
+		);
 
 		/// <summary>  
 		/// Event types that inherit from classic row actions.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForRowClassic => new(
-		[
-		   EventType.AddClassicBeat,
-		   EventType.AddFreeTimeBeat,
-		   EventType.PulseFreeTimeBeat,
-		   EventType.SetRowXs,
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForRowClassic = new(2,
+				 EventType.AddClassicBeat,
+				 EventType.AddFreeTimeBeat,
+				 EventType.PulseFreeTimeBeat,
+				 EventType.SetRowXs
+		);
 		/// <summary>  
 		/// Event types that inherit from oneshot row actions.  
 		/// </summary>  
-		public static ReadOnlyCollection<EventType> EventTypeEnumsForRowOneshot => new(
-		[
-		   EventType.AddOneshotBeat,
-		   EventType.SetOneshotWave,
-		]);
+		public static readonly ReadOnlyEnumCollection<EventType> EventTypeEnumsForRowOneshot = new(2,
+				 EventType.AddOneshotBeat,
+				 EventType.SetOneshotWave
+		);
 	}
 }
