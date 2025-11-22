@@ -7,10 +7,10 @@ namespace RhythmBase.Global.Components
 	/// Represents a compact collection of enum values backed by a bitset.
 	/// </summary>
 	/// <typeparam name="TEnum">The enum type stored in the collection. Must be an unmanaged enum type.</typeparam>
-	public class EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
+	internal class EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
 	{
 		private const int bw = sizeof(ulong) * 8;
-		private readonly ulong[] _bits;
+		internal readonly ulong[] _bits;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EnumCollection{TEnum}"/> class with the specified capacity in 64-bit blocks.
@@ -139,7 +139,7 @@ namespace RhythmBase.Global.Components
 		/// <exception cref="IndexOutOfRangeException">
 		/// Thrown when the numeric value of <paramref name="type"/> maps outside the internally allocated bitset.
 		/// </exception>
-		internal bool ContainsType(TEnum type)
+		internal bool Contains(TEnum type)
 		{
 			ulong v = ToUL(type);
 			int div = (int)(v / bw);
@@ -152,10 +152,10 @@ namespace RhythmBase.Global.Components
 		/// </summary>
 		/// <param name="types">An array of enum values to check for presence.</param>
 		/// <returns><c>true</c> if any value in <paramref name="types"/> is present; otherwise <c>false</c>.</returns>
-		internal bool ContainsTypes(TEnum[] types)
+		internal bool ContainsAny(TEnum[] types)
 		{
 			foreach (TEnum type in types)
-				if (ContainsType(type)) return true;
+				if (Contains(type)) return true;
 			return false;
 		}
 

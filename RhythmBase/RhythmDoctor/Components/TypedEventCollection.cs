@@ -23,8 +23,8 @@ namespace RhythmBase.RhythmDoctor.Components
 				_types.Remove(item.Type);
 			return true;
 		}
-		internal bool ContainsType(EventType type) => _types.ContainsType(type);
-		internal bool ContainsTypes(EventType[] types) => _types.ContainsTypes(types);
+		internal bool ContainsType(EventType type) => _types.Contains(type);
+		internal bool ContainsTypes(EventType[] types) => _types.ContainsAny(types);
 		internal bool CompareTo(IBaseEvent item1, IBaseEvent item2) =>
 	list.IndexOf((TEvent)(object)item1) < list.IndexOf((TEvent)(object)item2);
 		public override string ToString()
