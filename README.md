@@ -30,9 +30,13 @@ You can see examples [here](/RhythmBase.Test/Tutorial.cs).
 flowchart RL
 RBLite[RhythmBase.Lite]
 subgraph RD[Rhythm Doctor]
-RDLE[Rhythm Doctor Level Editor]
+  RDLE[Rhythm Doctor Level Editor]
+end
+subgraph AD[Adofai]
+  ADLE[Adofai Level Editor]
 end
 RDL([Rhythm Doctor Level])
+ADL([Adofai Level])
 subgraph RBTitle[RhythmBase]
   RB[RhythmBase]
   RBAdd[RhythmBase.Addition]
@@ -46,8 +50,9 @@ subgraph RBTitle[RhythmBase]
   end
 end
 
-RBLite --> RDL
+RBLite ---> RDL
 RBCWPF & RBCWF & RBCAva --> RBCCore
-RBCCore & RBHos & RBAdd & RBInt --> RB --> RDL
-RBInt --> RDLE --> RDL
+RBCCore & RBHos & RBAdd & RBInt --> RB ---> RDL & ADL
+RBInt ---> RDLE --> RDL
+RBInt ---> ADLE --> ADL
 ```
