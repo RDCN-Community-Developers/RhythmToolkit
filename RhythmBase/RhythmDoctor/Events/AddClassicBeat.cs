@@ -30,7 +30,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the number of beats in a classic beat pattern.  
 		/// </summary>   
-		[RDJsonCondition("false")]
+		[RDJsonCondition("$&.Length != 7")]
 		public ushort Length { get; set; } = 7;
 		/// <summary>
 		/// Gets or sets the classic beat pattern.
