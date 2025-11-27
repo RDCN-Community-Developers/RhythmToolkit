@@ -29,12 +29,10 @@ public class SetFilterAdvanced : BaseTaggedTileEvent, IEaseEvent, IBeginningEven
 	/// <summary>
 	/// Gets or sets the duration of the filter effect in seconds.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Enabled)}")]
 	public float Duration { get; set; }
 	/// <summary>
 	/// Gets or sets the easing type for the filter effect.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Enabled)}")]
 	public EaseType Ease { get; set; }
 	/// <summary>
 	/// Gets or sets the target type for the filter effect.
@@ -51,7 +49,6 @@ public class SetFilterAdvanced : BaseTaggedTileEvent, IEaseEvent, IBeginningEven
 	/// <summary>
 	/// Gets or sets the properties of the filter as a JSON object.
 	/// </summary>
-	[RDJsonConverter(typeof(JsonContentConverter))]
 	public IFilter FilterProperties { get; set; } = default!;
 }
 /// <summary>
