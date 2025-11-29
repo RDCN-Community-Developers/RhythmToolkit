@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event to set the background color.
 	/// </summary>
-	public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
+	public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent, IImageFileEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetBackgroundColor"/> class.
@@ -82,7 +82,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the list of images for the background.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
-		public List<string> Image { get; set; } = [];
+		public List<FileReference> Image { get; set; } = [];
 		/// <summary>
 		/// Gets or sets the horizontal scroll value.
 		/// </summary>
@@ -146,6 +146,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; } = Tabs.Actions;
+		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Image];
+		IEnumerable<FileReference> IFileEvent.Files => [.. Image];
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>

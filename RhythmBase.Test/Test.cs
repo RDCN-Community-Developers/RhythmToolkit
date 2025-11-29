@@ -1,8 +1,9 @@
-using System.Diagnostics;
+using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
+using System.Diagnostics;
 
 namespace RhythmBase.Test
 {
@@ -81,27 +82,50 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void ReadWriteSpeedTest()
 		{
-			Console.WriteLine("|Action\t|Elapsed\t|");
-			Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
-			for (int i = 0; i < 10; i++)
+			GlobalSettings.CachePath = "cache";
 			{
-				sw.Start();
-				using RDLevel level = RDLevel.FromFile("the-powe-S7V1kg9RWYK.rdzip");
-				sw.Stop();
-				Console.WriteLine($"|Read\t|{sw.ElapsedMilliseconds,10} ms\t|");
-				sw.Reset();
-				sw.Start();
-				level.SaveToFile("out.rdlevel");
-				sw.Stop();
-				Console.WriteLine($"|Write\t|{sw.ElapsedMilliseconds,10} ms\t|");
-
-				//foreach (var ad in level
-				//	.OfEvents(EventType.FloatingText, EventType.AdvanceText)
-				//	)
-				//{
-				//	Console.WriteLine(ad);
-				//}
+				LevelReadOrWriteSettings settings = new()
+				{
+					InactiveEventsHandling = InactiveEventsHandling.Ignore,
+					UnreadableEventsHandling = UnreadableEventHandling.Store,
+					ZipFileProcessMethod = ZipFileProcessMethod.AllFiles,
+					LoadAssets = false,
+				};
+				Console.WriteLine("|Action\t|Elapsed\t|");
+				Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+				for (int i = 0; i < 10; i++)
+				{
+					sw.Restart();
+					using RDLevel level = RDLevel.FromFile("the-powe-S7V1kg9RWYK.rdzip", settings);
+					Console.WriteLine($"|Read\t|{sw.ElapsedMilliseconds,10} ms\t|");
+					sw.Restart();
+					level.SaveToFile("out.rdlevel");
+					Console.WriteLine($"|Write\t|{sw.ElapsedMilliseconds,10} ms\t|");
+					foreach(var file in settings.FileReferences)
+					{
+						Console.WriteLine($"Cached file: {file.Path}");
+					}
+				}
 			}
+			//{
+			//	LevelReadOrWriteSettings settings = new()
+			//	{
+			//		InactiveEventsHandling = InactiveEventsHandling.Ignore,
+			//		UnreadableEventsHandling = UnreadableEventHandling.Store,
+			//		ZipFileProcessMethod = ZipFileProcessMethod.LevelFileOnly,
+			//	};
+			//	Console.WriteLine("|Action\t|Elapsed\t|");
+			//	Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+			//	for (int i = 0; i < 10; i++)
+			//	{
+			//		sw.Restart();
+			//		using RDLevel level = RDLevel.FromFile("the-powe-S7V1kg9RWYK.rdzip", settings);
+			//		Console.WriteLine($"|Read\t|{sw.ElapsedMilliseconds,10} ms\t|");
+			//		sw.Restart();
+			//		level.SaveToFile("out.rdlevel");
+			//		Console.WriteLine($"|Write\t|{sw.ElapsedMilliseconds,10} ms\t|");
+			//	}
+			//}
 		}
 		[TestMethod]
 		public void CPBTest()
@@ -119,29 +143,29 @@ namespace RhythmBase.Test
 			level.Add(cmt2);
 			level.Add(cpb2);
 			level.Add(cmt3);
-			foreach(SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
+			foreach (SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
 			{
 				Console.WriteLine(cpb);
 			}
-			for(int i = 1; i <= 20; i++)
+			for (int i = 1; i <= 20; i++)
 			{
 				Console.WriteLine($"{i}: {level.Calculator.BeatOf(i)}");
 			}
 			Console.WriteLine();
 
 			level.Add(cpb1);
-			foreach(SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
+			foreach (SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
 			{
 				Console.WriteLine(cpb);
 			}
-			for(int i = 1; i <= 20; i++)
+			for (int i = 1; i <= 20; i++)
 			{
 				Console.WriteLine($"{i}: {level.Calculator.BeatOf(i)}");
 			}
 			Console.WriteLine();
 
 			level.Remove(cpb1);
-			foreach(SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
+			foreach (SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
 			{
 				Console.WriteLine(cpb);
 			}
@@ -152,7 +176,7 @@ namespace RhythmBase.Test
 			Console.WriteLine();
 
 			level.Add(cpb1);
-			foreach(SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
+			foreach (SetCrotchetsPerBar cpb in level.OfEvent<SetCrotchetsPerBar>())
 			{
 				Console.WriteLine(cpb);
 			}
@@ -161,6 +185,13 @@ namespace RhythmBase.Test
 				Console.WriteLine($"{i}: {level.Calculator.BeatOf(i)}");
 			}
 			Console.WriteLine();
+		}
+		[TestMethod]
+		public void EventTypeCollectionsTest()
+		{
+			var allTypes = (EventType[])Enum.GetValues(typeof(EventType));
+			foreach (var type in EventTypeUtils.CustomTypes)
+				Console.WriteLine(type);
 		}
 	}
 }

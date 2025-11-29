@@ -5,7 +5,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents a custom background event in the Adofai event system.  
 	/// </summary>  
-	public class CustomBackground : BaseTaggedTileEvent
+	public class CustomBackground : BaseTaggedTileEvent, IImageFileEvent
 	{
 		/// <inheritdoc/>
 		public override EventType Type => EventType.CustomBackground;
@@ -17,16 +17,16 @@ namespace RhythmBase.Adofai.Events
 		/// Gets or sets the background image file path.  
 		/// </summary>  
 		[RDJsonProperty("bgImage")]
-		public string BackgroundImage { get; set; } = string.Empty;
+		public FileReference BackgroundImage { get; set; } = string.Empty;
 		/// <summary>  
 		/// Gets or sets the color applied to the background image.  
 		/// </summary>  
-		[RDJsonCondition($"$&.{nameof(BackgroundImage)}.Length > 0")]
+		[RDJsonCondition($"!$&.{nameof(BackgroundImage)}.IsEmpty")]
 		public RDColor ImageColor { get; set; } = RDColor.White;
 		/// <summary>  
 		/// Gets or sets the parallax effect values for the background.  
 		/// </summary>  
-		[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(BackgroundImage)}) || !$&.{nameof(LockRot)}")]
+		[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(BackgroundImage)}) || !$&.{nameof(LockRotation)}")]
 		public RDPoint Parallax { get; set; }
 		/// <summary>  
 		/// Gets or sets the display mode of the background image.  
@@ -41,8 +41,9 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets a value indicating whether the background rotation is locked.  
 		/// </summary>  
+		[RDJsonProperty("lockRot")]
 		[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(BackgroundImage)})")]
-		public bool LockRot { get; set; }
+		public bool LockRotation { get; set; }
 		/// <summary>  
 		/// Gets or sets a value indicating whether the background image should loop.  
 		/// </summary>  
@@ -54,6 +55,8 @@ namespace RhythmBase.Adofai.Events
 		/// </summary>  
 		[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(BackgroundImage)})")]
 		public float ScalingRatio { get; set; }
+		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [BackgroundImage];
+		IEnumerable<FileReference> IFileEvent.Files => [BackgroundImage];
 	}
 	/// <summary>  
 	/// Represents the display modes for the background image.  

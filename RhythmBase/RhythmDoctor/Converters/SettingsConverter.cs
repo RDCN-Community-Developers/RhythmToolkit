@@ -146,14 +146,14 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteString("artist"u8, value.Artist ?? "");
 			writer.WriteString("song"u8, value.Song ?? "");
 			writer.WriteString("specialArtistType"u8, EnumConverter.ToEnumString(value.SpecialArtistType));
-			writer.WriteString("artistPermission"u8, value.ArtistPermission ?? "");
+			writer.WriteString("artistPermission"u8, value.ArtistPermission.Path ?? "");
 			writer.WriteString("artistLinks"u8, value.ArtistLinks ?? "");
 			writer.WriteString("author"u8, value.Author ?? "");
 			writer.WriteString("difficulty"u8, EnumConverter.ToEnumString(value.Difficulty));
 			writer.WriteBoolean("seizureWarning"u8, value.SeizureWarning);
-			writer.WriteString("previewImage"u8, value.PreviewImage ?? "");
-			writer.WriteString("syringeIcon"u8, value.SyringeIcon ?? "");
-			writer.WriteString("previewSong"u8, value.PreviewSong ?? "");
+			writer.WriteString("previewImage"u8, value.PreviewImage.Path ?? "");
+			writer.WriteString("syringeIcon"u8, value.SyringeIcon.Path ?? "");
+			writer.WriteString("previewSong"u8, value.PreviewSong.Path ?? "");
 			writer.WriteNumber("previewSongStartTime"u8, (float)value.PreviewSongStartTime.TotalSeconds);
 			writer.WriteNumber("previewSongDuration"u8, (float)value.PreviewSongDuration.TotalSeconds);
 			writer.WriteNumber("songNameHue"u8, value.SongNameHueOrGrayscale);

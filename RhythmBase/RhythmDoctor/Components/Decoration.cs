@@ -74,6 +74,28 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			return Parent?.RemoveInternal(item) ?? base.Remove(item);
 		}
+		internal IEnumerable<FileReference> GetAllFileReferences()
+		{
+			string cc = Filename;
+			if(string.IsNullOrEmpty(cc))
+				yield break;
+			if (Path.GetExtension(cc) == ".png")
+				yield return cc;
+			else
+			{
+				yield return cc + ".png";
+				yield return cc + ".json";
+				string glowPath = cc + "_glow.png";
+				string outlinePath = cc + "_outline.png";
+				string freezePath = cc + "_freeze.png";
+				if (File.Exists(glowPath))
+					yield return glowPath;
+				if (File.Exists(outlinePath))
+					yield return outlinePath;
+				if (File.Exists(freezePath))
+					yield return freezePath;
+			}
+		}
 		/// <inheritdoc/>
 		public override string ToString() => string.Format("{0}, {1}, {2}, {3}",
 			[

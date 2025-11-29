@@ -27,34 +27,30 @@ namespace RhythmBase.Global.Settings
 		/// <summary>
 		/// Event triggered before reading.
 		/// </summary>
-		public event EventHandler BeforeReading;
+		public event EventHandler? BeforeReading;
 		/// <summary>
 		/// Event triggered after reading.
 		/// </summary>
-		public event EventHandler AfterReading;
+		public event EventHandler? AfterReading;
 		/// <summary>
 		/// Event triggered before writing.
 		/// </summary>
-		public event EventHandler BeforeWriting;
+		public event EventHandler? BeforeWriting;
 		/// <summary>
 		/// Event triggered after writing.
 		/// </summary>
-		public event EventHandler AfterWriting;
+		public event EventHandler? AfterWriting;
 		/// <summary>
 		/// Initialize.
 		/// </summary>
 		public LevelReadOrWriteSettings()
 		{
-			BeforeReading = delegate { };
-			AfterReading = delegate { };
-			BeforeWriting = delegate { };
-			AfterWriting = delegate { };
 		}
 		/// <summary>
 		/// Enable resource preloading. This may grow read times. 
 		/// Defaults to <see langword="false" />.
 		/// </summary>
-		public bool PreloadAssets { get; set; } = false;
+		public bool LoadAssets { get; set; } = false;
 		/// <summary>
 		/// Action on inactive items on reads or writes.
 		/// Defaults to <see cref="F:RhythmBase.Global.Settings.InactiveEventsHandling.Retain" />.
@@ -72,7 +68,8 @@ namespace RhythmBase.Global.Settings
 		/// <summary>
 		/// Gets or sets the method used to process zip files.
 		/// </summary>
-		public ZipFileProcessMethod ZipFileProcessMethod { get; set; } = ZipFileProcessMethod.LevelFileOnly;
+		public ZipFileProcessMethod ZipFileProcessMethod { get; set; } = ZipFileProcessMethod.AllFiles;
+		public HashSet<FileReference> FileReferences { get; } = [];
 		/// <summary>
 		/// Stores unreadable event data when the <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.UnreadableEventsHandling" /> is <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.Store" />.
 		/// </summary>

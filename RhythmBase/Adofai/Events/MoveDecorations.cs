@@ -1,11 +1,12 @@
 ﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
+
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to move decorations in the Adofai editor.  
 	/// </summary>  
-	public class MoveDecorations : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
+	public class MoveDecorations : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent, IImageFileEvent
 	{
 		/// <inheritdoc/>
 		public override EventType Type => EventType.MoveDecorations;
@@ -40,7 +41,7 @@ namespace RhythmBase.Adofai.Events
 		/// Gets or sets the image used for the decoration.  
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(DecorationImage)} is not null")]
-		public string? DecorationImage { get; set; }
+		public FileReference? DecorationImage { get; set; }
 		/// <summary>  
 		/// Gets or sets the pivot offset for the decoration.  
 		/// </summary>  
@@ -101,5 +102,7 @@ namespace RhythmBase.Adofai.Events
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(MaskingBackDepth)} is not null")]
 		public int? MaskingBackDepth { get; set; }
+		IEnumerable<FileReference> IImageFileEvent.ImageFiles => DecorationImage is not null ? [DecorationImage.Value] : [];
+		IEnumerable<FileReference> IFileEvent.Files => DecorationImage is not null ? [DecorationImage.Value] : [];
 	}
 }

@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event to set the game sound.
 	/// </summary>
-	public partial class SetGameSound : BaseEvent
+	public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	{
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetGameSound"/> class.  
@@ -118,6 +118,19 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.  
 		/// </summary>  
 		public override Tabs Tab => Tabs.Actions;
+
+		IEnumerable<FileReference> IAudioFileEvent.AudioFiles => (Audio.IsFile &&
+			SoundType is not SoundTypes.ClapSoundHold
+						and not SoundTypes.FreezeshotSound
+						and not SoundTypes.BurnshotSound)
+						? [Audio.Filename]
+						: [];
+		IEnumerable<FileReference> IFileEvent.Files => (Audio.IsFile &&
+			SoundType is not SoundTypes.ClapSoundHold
+						and not SoundTypes.FreezeshotSound
+						and not SoundTypes.BurnshotSound)
+						? [Audio.Filename]
+						: [];
 
 		/// <summary>  
 		/// Returns a string that represents the current object.  

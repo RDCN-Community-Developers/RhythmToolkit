@@ -57,7 +57,17 @@ namespace RhythmBase.Test
 				UnreadableEventsHandling = UnreadableEventHandling.Store,
 				// Enable indentation
 				Indented = true,
+				// Enable macro event processing
+				EnableMacroEvent = true,
+				// Unzip all files in a zip level pack into the cache path below
+				// This is usually the faster option
+				ZipFileProcessMethod = ZipFileProcessMethod.AllFiles,
+				// Load asset paths when reading or writing the level
+				LoadAssets = true,
 			};
+			// The cache path is required when reading zip level packs
+			// Default is the Temp path.
+			GlobalSettings.CachePath = @"your\cache\path";
 
 			using RDLevel _rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel", settings);
 		}
@@ -426,7 +436,6 @@ namespace RhythmBase.Test
 			// Write to a new level file
 			vfxLevel.SaveToFile(@"result.rdlevel");
 		}
-		[TestClass]
 		// Create a MyEvent type  
 		//   Inherit from CustomEvent  
 		public class MyEvent : ForwardEvent
@@ -434,7 +443,7 @@ namespace RhythmBase.Test
 			// Override property  
 			public override Tabs Tab => Tabs.Actions;
 
-			// All implemented properties need to be bound to and checked for null in the CustomEvent.Data field.  
+			// All implemented properties need to be bound to and checked for null in the ForwardEvent.ExtraData field.  
 
 			// Implement an RDPointE type property  
 			public RDPointE? MyProperty

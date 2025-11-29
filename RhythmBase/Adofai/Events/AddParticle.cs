@@ -4,7 +4,7 @@ namespace RhythmBase.Adofai.Events;
 /// <summary>
 /// Represents an event that adds a particle effect to the level.
 /// </summary>
-public class AddParticle : BaseEvent, IBeginningEvent
+public class AddParticle : BaseEvent, IBeginningEvent, IImageFileEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.AddParticle;
@@ -17,7 +17,7 @@ public class AddParticle : BaseEvent, IBeginningEvent
 	/// <summary>
 	/// Gets or sets the decoration image used for the particle effect.
 	/// </summary>
-	public string DecorationImage { get; set; } = string.Empty;
+	public FileReference DecorationImage { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Gets or sets the random texture tiling for the particle effect.
@@ -85,7 +85,7 @@ public class AddParticle : BaseEvent, IBeginningEvent
 	/// <summary>
 	/// Gets or sets the velocity range of the particles in the X and Y directions.
 	/// </summary>
-	public ValueRangePair Velocity { get; set; } = new ValueRangePair(new(0),new(0));
+	public ValueRangePair Velocity { get; set; } = new ValueRangePair(new(0), new(0));
 
 	/// <summary>
 	/// Gets or sets the rotation of the particles over time.
@@ -176,6 +176,8 @@ public class AddParticle : BaseEvent, IBeginningEvent
 	/// Gets or sets a value indicating whether the scale of the particle effect is locked.
 	/// </summary>
 	public bool LockScale { get; set; } = false;
+	IEnumerable<FileReference> IImageFileEvent.ImageFiles => [DecorationImage];
+	IEnumerable<FileReference> IFileEvent.Files => [DecorationImage];
 }
 /// <summary>
 /// Specifies the mode of the arc emission.

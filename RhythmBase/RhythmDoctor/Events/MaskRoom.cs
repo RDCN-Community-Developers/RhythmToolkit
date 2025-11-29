@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents a MaskRoom event in the RhythmBase system.
 	/// </summary>
-	public class MaskRoom : BaseEvent, IColorEvent
+	public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MaskRoom"/> class.
@@ -31,7 +31,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the list of image assets.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Image")]
-		public List<string> Image { get; set; } = [];
+		public List<FileReference> Image { get; set; } = [];
 		/// <summary>
 		/// Gets or sets the frames per second.
 		/// </summary>
@@ -66,6 +66,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the room associated with the event.
 		/// </summary>
 		public RDRoom Room => new RDSingleRoom(checked((byte)Y));
+		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Image];
+		IEnumerable<FileReference> IFileEvent.Files => [.. Image];
 	}
 	/// <summary>
 	/// Defines the types of masks available.

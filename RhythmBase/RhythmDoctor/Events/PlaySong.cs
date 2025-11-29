@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event to play a song with specific beats per minute and other properties.
 	/// </summary>
-	public class PlaySong : BaseBeatsPerMinute, IBarBeginningEvent
+	public class PlaySong : BaseBeatsPerMinute, IBarBeginningEvent, IAudioFileEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PlaySong"/> class.
@@ -38,9 +38,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets a value indicating whether the song should loop.
 		/// </summary>
 		public bool Loop { get; set; } = false; ///???
-		/// <summary>
-		/// Gets the type of the event.
-		/// </summary>
+																						/// <summary>
+																						/// Gets the type of the event.
+																						/// </summary>
 		public override EventType Type { get; } = EventType.PlaySong;
 		/// <summary>
 		/// Gets the tab associated with the event.
@@ -58,5 +58,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		{
 			Filename = "sndOrientalTechno"
 		};
+		IEnumerable<FileReference> IAudioFileEvent.AudioFiles => Song.IsFile ? [Song.Filename] : [];
+		IEnumerable<FileReference> IFileEvent.Files => Song.IsFile ? [Song.Filename] : [];
 	}
 }

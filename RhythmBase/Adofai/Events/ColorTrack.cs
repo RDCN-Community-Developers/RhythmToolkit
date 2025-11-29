@@ -1,10 +1,11 @@
 ﻿using RhythmBase.Adofai.Components;
+
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents the ColorTrack event in ADOFAI.  
 /// </summary>  
-public class ColorTrack : BaseTileEvent, ISingleEvent
+public class ColorTrack : BaseTileEvent, ISingleEvent, IImageFileEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.ColorTrack;
@@ -41,7 +42,7 @@ public class ColorTrack : BaseTileEvent, ISingleEvent
 	/// Gets or sets the texture of the track.  
 	/// </summary>  
 	[RDJsonCondition($"$&.{nameof(TrackStyle)} is RhythmBase.Adofai.Components.{nameof(Components.TrackStyle)}.{nameof(TrackStyle.Standard)}")]
-	public string TrackTexture { get; set; } = string.Empty;
+	public FileReference TrackTexture { get; set; } = string.Empty;
 	/// <summary>  
 	/// Gets or sets the scale of the track texture.  
 	/// </summary>  
@@ -59,4 +60,6 @@ public class ColorTrack : BaseTileEvent, ISingleEvent
 	/// Gets or sets a value indicating whether only the current tile should be processed.
 	/// </summary>
 	public bool JustThisTile { get; set; } = false;
+	IEnumerable<FileReference> IImageFileEvent.ImageFiles => [TrackTexture];
+	IEnumerable<FileReference> IFileEvent.Files => [TrackTexture];
 }

@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event to set clap sounds for different players and CPU.
 	/// </summary>
-	public class SetClapSounds : BaseEvent
+	public class SetClapSounds : BaseEvent, IAudioFileEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetClapSounds"/> class.
@@ -45,5 +45,34 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; } = Tabs.Sounds;
+		IEnumerable<FileReference> IAudioFileEvent.AudioFiles
+		{
+			get
+			{
+				IEnumerable<FileReference> files = [];
+				if (P1Sound is not null && P1Sound.IsFile)
+					files = files.Append(P1Sound.Filename);
+				if (P2Sound is not null && P2Sound.IsFile)
+					files = files.Append(P2Sound.Filename);
+				if (CpuSound is not null && CpuSound.IsFile)
+					files = files.Append(CpuSound.Filename);
+				return files;
+			}
+		}
+
+		IEnumerable<FileReference> IFileEvent.Files 
+		{
+			get
+			{
+				IEnumerable<FileReference> files = [];
+				if (P1Sound is not null && P1Sound.IsFile)
+					files = files.Append(P1Sound.Filename);
+				if (P2Sound is not null && P2Sound.IsFile)
+					files = files.Append(P2Sound.Filename);
+				if (CpuSound is not null && CpuSound.IsFile)
+					files = files.Append(CpuSound.Filename);
+				return files;
+			}
+		}
 	}
 }

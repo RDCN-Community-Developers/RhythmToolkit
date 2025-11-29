@@ -6,7 +6,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event to set the background properties in the Adofai event system.  
 	/// </summary>  
-	public class SetBackground : BaseTaggedTileEvent, IBeginningEvent
+	public class SetBackground : BaseTaggedTileEvent, IBeginningEvent, IImageFileEvent
 	{
 		/// <summary>  
 		/// Gets the type of the event, which is <see cref="EventType.SetBackground"/>.  
@@ -21,7 +21,8 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the background image file path.  
 		/// </summary>  
-		public string BgImage { get; set; } = string.Empty;
+		[RDJsonProperty("bgImage")]
+		public FileReference BackgroundImage { get; set; } = string.Empty;
 
 		/// <summary>  
 		/// Gets or sets the color applied to the background image.  
@@ -57,5 +58,7 @@ namespace RhythmBase.Adofai.Events
 		/// Gets or sets the scaling ratio of the background image.  
 		/// </summary>  
 		public float ScalingRatio { get; set; } = 100f;
+		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [BackgroundImage];
+		IEnumerable<FileReference> IFileEvent.Files => [BackgroundImage];
 	}
 }

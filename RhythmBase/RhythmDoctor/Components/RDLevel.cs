@@ -170,7 +170,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				if (extension is not ".rdlevel" and not ".json")
 					throw new RhythmBaseException("File not supported.");
 				using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-				level = FromStream(stream, settings);
+				level = FromStream(stream, Path.GetDirectoryName(Path.GetFullPath(filepath)) ?? "", settings);
 				level.Filepath = level.SourceFilePath = Path.GetFullPath(filepath);
 				return level;
 			}
@@ -335,6 +335,17 @@ namespace RhythmBase.RhythmDoctor.Components
 			settings.OnAfterReading();
 			return level ?? [];
 		}
+		private static RDLevel FromStream(Stream rdlevelStream, string dirPath, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(dirPath, settings);
+			RDLevel? level;
+			settings.OnBeforeReading();
+			using EscapeNewLineStream stream = new(rdlevelStream);
+			level = JsonSerializer.Deserialize<RDLevel>(stream, options);
+			settings.OnAfterReading();
+			return level ?? [];
+		}
 		/// <summary>
 		/// Asynchronously reads a level from a stream.
 		/// </summary>
@@ -404,7 +415,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public void SaveToFile(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(filepath) ?? "", settings);
 			DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 			if (!directory.Exists)
 				directory.Create();
@@ -416,6 +427,13 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			settings.OnAfterWriting();
 		}
+		public void SaveToFileAsPack(string filepath, LevelReadOrWriteSettings? settings = null)
+		{
+			settings ??= new();
+			using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+			ZipArchive archive = new(stream, ZipArchiveMode.Create);
+			archive.CreateEntry("main.rdlevel");
+		}
 		/// <summary>
 		/// Asynchronously saves the current level to a file in JSON format.
 		/// </summary>
@@ -425,7 +443,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public async void SaveToFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(filepath) ?? "", settings);
 			DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 			if (!directory.Exists)
 				directory.Create();
@@ -836,7 +854,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		private void RefreshBPMs(RDBeat start)
 		{
-			foreach (KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
+			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
 				item.Key.ResetBPM();
 			foreach (IBaseEvent? item in this.Where(i => i.Beat > start))
 				item.Beat.ResetBPM();
@@ -845,7 +863,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		private void RefreshCPBs(RDBeat start)
 		{
-			foreach (KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
+			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
 				item.Key.ResetCPB();
 			foreach (IBaseEvent? item in this.Where(i => i.Beat > start))
 				item.Beat.ResetCPB();

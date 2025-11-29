@@ -13,7 +13,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// including tagging, parent association, and event generation.  
 /// </remarks>
 [RDJsonObjectNotSerializable]
-public abstract partial class MacroEvent : BaseEvent
+public abstract partial class MacroEvent : BaseEvent, IAudioFileEvent, IImageFileEvent
 {
 	/// <summary>
 	/// Gets the type of the event, which is always <see cref="EventType.MacroEvent"/> for this class.
@@ -85,6 +85,8 @@ public abstract partial class MacroEvent : BaseEvent
 		HashSet<string> tags = [];
 		foreach (BaseEvent ev in events)
 		{
+			if (ev is SetCrotchetsPerBar)
+				throw new RhythmBaseException($"{nameof(SetCrotchetsPerBar)} events are not allowed within a {nameof(MacroEvent)}.");
 			if (string.IsNullOrEmpty(ev.Tag))
 				ev.Tag = tag;
 			else
@@ -194,8 +196,8 @@ public abstract partial class MacroEvent : BaseEvent
 		return true;
 	}
 	internal static bool TryMatch(TagAction tagAction) => !string.IsNullOrEmpty(tagAction.ActionTag) &&
-														  tagAction.ActionTag.StartsWith(RhythmBaseMacroEventHeader) &&
-														  tagAction.ActionTag.Length >= RhythmBaseMacroEventHeader.Length + 16;
+															tagAction.ActionTag.StartsWith(RhythmBaseMacroEventHeader) &&
+															tagAction.ActionTag.Length >= RhythmBaseMacroEventHeader.Length + 16;
 	internal abstract void Flush();
 	internal static bool MatchTag(string tag, out int type, out int id, out string tagsTag)
 	{
@@ -232,6 +234,9 @@ public abstract partial class MacroEvent : BaseEvent
 	internal bool _instanceLoaded = false;
 	internal object _instance = new();
 	internal abstract int DataId { get; set; }
+	IEnumerable<FileReference> IImageFileEvent.ImageFiles => GenerateEvents().OfType<IImageFileEvent>().SelectMany(i => i.ImageFiles);
+	IEnumerable<FileReference> IFileEvent.Files => GenerateEvents().OfType<IFileEvent>().SelectMany(i => i.Files);
+	IEnumerable<FileReference> IAudioFileEvent.AudioFiles => GenerateEvents().OfType<IAudioFileEvent>().SelectMany(i => i.AudioFiles);
 }
 /// <summary>
 /// Represents a group of events in Rhythm Doctor.

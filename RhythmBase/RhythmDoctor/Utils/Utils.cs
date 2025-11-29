@@ -26,10 +26,11 @@ namespace RhythmBase.RhythmDoctor.Utils
 					new DialogueExchangeConverter(),
 					new PatternConverter(),
 					new TabsConverter(),
-					new	RDPointsConverter(),
+					new RDPointsConverter(),
 					new RoomConverter(),
 					new SingleRoomConverter(),
 					new ExpressionConverter(),
+					new FileReferenceConverter(),
 				}
 			};
 		}
@@ -77,7 +78,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <summary>
 		/// Gets the <see cref="JsonSerializerOptions"/> configured for serializing or deserializing a level, and sets the file path for the converter.
 		/// </summary>
-		/// <param name="filepath">
+		/// <param name="dirPath">
 		/// The file path to associate with the level converter.
 		/// </param>
 		/// <param name="settings">
@@ -86,7 +87,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <returns>
 		/// A <see cref="JsonSerializerOptions"/> instance configured with converters, indentation settings, and file path.
 		/// </returns>
-		public static JsonSerializerOptions GetJsonSerializerOptions(string filepath, LevelReadOrWriteSettings? settings = null)
+		public static JsonSerializerOptions GetJsonSerializerOptions(string dirPath, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = new(Utils.options);
@@ -97,6 +98,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			LevelConverter levelConverter = new()
 			{
 				Settings = settings,
+				DirectoryName = dirPath,
 			};
 			options.Converters.Add(levelConverter);
 			return options;

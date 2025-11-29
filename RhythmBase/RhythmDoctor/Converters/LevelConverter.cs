@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class LevelConverter : JsonConverter<RDLevel>
+	internal sealed class LevelConverter : JsonConverter<RDLevel>
 	{
 		private static readonly SettingsConverter settingsConverter = new();
 		private static readonly RowConverter rowConverter = new();
@@ -16,9 +16,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 		private static readonly BookmarkConverter bookmarkConverter = new();
 		private static readonly ConditionalConverter conditionalConverter = new();
 		internal LevelReadOrWriteSettings Settings { get; set; } = new();
+		internal string? DirectoryName { get; set; }
 		public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			RDLevel level = [];
+			Settings.FileReferences.Clear();
 			if (reader.TokenType != JsonTokenType.StartObject)
 				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
 			reader.Read();
@@ -37,6 +39,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 					if (reader.TokenType != JsonTokenType.StartObject)
 						throw new JsonException($"Expected StartObject token for 'settings', but got {reader.TokenType}.");
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
+					if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+						foreach (FileReference file in level.Settings.GetAllFileReferences())
+							if (!file.IsEmpty && file.IsExist(DirectoryName))
+								Settings.FileReferences.Add(file);
 					if (level.Settings.Version < GlobalSettings.MinimumSupportedVersionRhythmDoctor)
 #if DEBUG
 						Console.WriteLine($"Current version {level.Settings.Version} is too low.");
@@ -55,7 +61,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 							break;
 						Row? e = rowConverter.Read(ref reader, typeof(Row), options);
 						if (e != null)
+						{
 							level.Rows.Add(e);
+							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+								foreach (FileReference file in e.Character.GetAllFileReferences())
+									if (!file.IsEmpty && file.IsExist(DirectoryName))
+										Settings.FileReferences.Add(file);
+						}
 					}
 					reader.Read();
 				}
@@ -70,7 +82,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 							break;
 						Decoration? e = decorationConverter.Read(ref reader, typeof(Decoration), options);
 						if (e != null)
+						{
 							level.Decorations.Add(e);
+							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+								foreach (FileReference file in e.GetAllFileReferences())
+									if (!file.IsEmpty && file.IsExist(DirectoryName))
+										Settings.FileReferences.Add(file);
+						}
 					}
 					reader.Read();
 				}
@@ -146,6 +164,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 						}
 						else if (e is AdvanceText at)
 							advanceTexts.Add(at);
+						if (e is IFileEvent fe)
+						{
+							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+								foreach (FileReference file in fe.Files)
+									if (!file.IsEmpty && file.IsExist(DirectoryName))
+										Settings.FileReferences.Add(file);
+						}
 					}
 					reader.Read();
 					if (Settings.EnableMacroEvent && maybeDataComment != null && types != null && data != null)
@@ -247,7 +272,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
 		{
 			using MemoryStream stream = new();
-			//using Utf8JsonWriter noIndentWriter = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = false });
+			Settings.FileReferences.Clear();
 			JsonSerializerOptions localOptions = new(options)
 			{
 				WriteIndented = false,
@@ -257,6 +282,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartObject();
 			writer.WritePropertyName("settings");
 			settingsConverter.Write(writer, value.Settings, options);
+			if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+				foreach (FileReference fr in value.Settings.GetAllFileReferences())
+					if (!fr.IsEmpty && fr.IsExist(DirectoryName))
+						Settings.FileReferences.Add(fr);
+
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
 			using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
@@ -270,6 +300,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
+				if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+					foreach (FileReference file in row.Character.GetAllFileReferences())
+						if (!file.IsEmpty && file.IsExist(DirectoryName))
+							Settings.FileReferences.Add(file);
+
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("decorations");
@@ -284,6 +319,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
+				if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+					foreach (FileReference file in decoration.GetAllFileReferences())
+						if (!file.IsEmpty && file.IsExist(DirectoryName))
+							Settings.FileReferences.Add(file);
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
@@ -315,9 +354,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 							))
 							{
 								if (e2 is MacroEvent)
-									throw new ConvertingException("MacroEvent cannot contain another MacroEvent.");
+									throw new ConvertingException($"{nameof(MacroEvent)} cannot contain another {nameof(MacroEvent)}.");
 								if (e2 is SetCrotchetsPerBar)
-									throw new RhythmBaseException("SetCrotchetsPerBar events are not allowed within a MacroEvent.");
+									throw new RhythmBaseException($"{nameof(SetCrotchetsPerBar)} events are not allowed within a {nameof(MacroEvent)}.");
 								normalEvents.Add(e2);
 							}
 						}
@@ -334,6 +373,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 						writer.WriteRawValue(sl);
 						noIndentWriter.Reset();
 					}
+					if (Settings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
+						foreach (FileReference file in fe.Files)
+							if (!file.IsEmpty && file.IsExist(DirectoryName))
+								Settings.FileReferences.Add(file);
 				}
 				StringBuilder sb = new() { };
 				sb.AppendLine(Utils.Utils.RhythmBaseMacroEventDataHeader);
@@ -380,6 +423,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 						writer.WriteRawValue(sl);
 						noIndentWriter.Reset();
 					}
+					if (Settings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
+						foreach (FileReference file in fe.Files)
+							if (!file.IsEmpty && file.IsExist(DirectoryName))
+								Settings.FileReferences.Add(file);
 				}
 			}
 			writer.WriteEndArray();

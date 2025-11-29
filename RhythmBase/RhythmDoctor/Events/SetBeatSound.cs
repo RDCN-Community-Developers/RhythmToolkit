@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an action to set the beat sound in the rhythm base.
 	/// </summary>
-	public class SetBeatSound : BaseRowAction
+	public class SetBeatSound : BaseRowAction, IAudioFileEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SetBeatSound"/> class.
@@ -31,5 +31,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; }
+		IEnumerable<FileReference> IAudioFileEvent.AudioFiles => Sound.IsFile ? [Sound.Filename] : [];
+		IEnumerable<FileReference> IFileEvent.Files => Sound.IsFile ? [Sound.Filename] : [];
 	}
 }

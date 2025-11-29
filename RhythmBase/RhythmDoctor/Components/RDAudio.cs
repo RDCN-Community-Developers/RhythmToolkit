@@ -12,7 +12,7 @@ public class RDAudio
 	/// <summary>
 	/// Gets or sets the file name of the audio.
 	/// </summary>
-	public string Filename { get; set; } = "";
+	public FileReference Filename { get; set; } = "";
 	/// <summary>
 	/// Gets or sets the volume of the audio.
 	/// </summary>

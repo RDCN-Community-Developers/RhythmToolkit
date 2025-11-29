@@ -53,7 +53,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>  
 		/// File path for proof of artist's permission.  
 		/// </summary>  
-		public string ArtistPermission { get; set; }
+		public FileReference ArtistPermission { get; set; }
 		/// <summary>  
 		/// Artist links.  
 		/// </summary>  
@@ -73,15 +73,15 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>  
 		/// Preview image file path.  
 		/// </summary>  
-		public string PreviewImage { get; set; }
+		public FileReference PreviewImage { get; set; }
 		/// <summary>  
 		/// Syringe packaging image file path.  
 		/// </summary>  
-		public string SyringeIcon { get; set; }
+		public FileReference SyringeIcon { get; set; }
 		/// <summary>  
 		/// The file path of the music used for previewing.  
 		/// </summary>  
-		public string PreviewSong { get; set; }
+		public FileReference PreviewSong { get; set; }
 		/// <summary>  
 		/// Start time of preview music.  
 		/// </summary>  
@@ -155,6 +155,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// primary data model. The keys must be unique, and the values are represented as <see
 		/// cref="System.Text.Json.JsonElement"/> objects, allowing for flexible data storage.</remarks>
 		public Dictionary<string, JsonElement> ExtraData = [];
+		internal IEnumerable<FileReference> GetAllFileReferences()
+		{
+			yield return ArtistPermission;
+			yield return PreviewImage;
+			yield return SyringeIcon;
+			yield return PreviewSong;
+		}
 	}
 	/// <summary>  
 	/// Difficulty level of the level.  

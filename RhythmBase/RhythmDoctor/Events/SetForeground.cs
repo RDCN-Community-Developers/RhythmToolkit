@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>  
 	/// Represents an event to set the foreground in a room.  
 	/// </summary>  
-	public class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
+	public class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent, IImageFileEvent
 	{
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetForeground"/> class.  
@@ -35,7 +35,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the list of images for the foreground.  
 		/// </summary>  
 		[RDJsonProperty("image")]
-		public List<string> Images { get; set; } = [];
+		public List<FileReference> Images { get; set; } = [];
 		/// <summary>  
 		/// Gets or sets the frames per second for the foreground animation.  
 		/// </summary>  
@@ -117,6 +117,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.  
 		/// </summary>  
 		public override Tabs Tab => Tabs.Actions;
+		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Images];
+		IEnumerable<FileReference> IFileEvent.Files => [.. Images];
 
 		/// <summary>  
 		/// Returns a string that represents the current object.  

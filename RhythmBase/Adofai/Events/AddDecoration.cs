@@ -4,14 +4,14 @@ namespace RhythmBase.Adofai.Events;
 /// <summary>  
 /// Represents an event to add a decoration to a tile in the game.  
 /// </summary>  
-public class AddDecoration : BaseTileEvent, IBeginningEvent
+public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.AddDecoration;
 	/// <summary>  
 	/// Gets or sets the image of the decoration.  
 	/// </summary>  
-	public string DecorationImage { get; set; } = string.Empty;
+	public FileReference DecorationImage { get; set; } = "";
 	/// <summary>  
 	/// Gets or sets the position of the decoration.  
 	/// </summary>  
@@ -105,7 +105,7 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	/// <summary>
 	/// Gets or sets the target string to be masked.
 	/// </summary>
-	public string MaskingTarget { get; set; } = string.Empty;
+	public FileReference MaskingTarget { get; set; } = string.Empty;
 	/// <summary>  
 	/// Gets or sets a value indicating whether masking depth is used.  
 	/// </summary>  
@@ -168,6 +168,8 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent
 	/// Gets or sets the components associated with the decoration.  
 	/// </summary>  
 	public string Components { get; set; } = string.Empty;
+    IEnumerable<FileReference> IImageFileEvent.ImageFiles => [DecorationImage, MaskingTarget];
+	IEnumerable<FileReference> IFileEvent.Files => [DecorationImage, MaskingTarget];
 }
 /// <summary>
 /// Specifies how a decoration's hitbox trigger should behave when activated.

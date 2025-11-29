@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event to play a sound.
 	/// </summary>
-	public class PlaySound : BaseEvent
+	public class PlaySound : BaseEvent, IAudioFileEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PlaySound"/> class.
@@ -33,6 +33,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab => Tabs.Sounds;
+
+		IEnumerable<FileReference> IAudioFileEvent.AudioFiles => Sound is not null && Sound.IsFile ? [Sound.Filename] : [];
+		IEnumerable<FileReference> IFileEvent.Files => Sound is not null && Sound.IsFile ? [Sound.Filename] : [];
 
 		/// <summary>
 		/// Returns a string that represents the current object.
