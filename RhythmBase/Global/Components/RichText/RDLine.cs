@@ -180,44 +180,60 @@ namespace RhythmBase.Global.Components.RichText
 #endif
 		public RDLine<TStyle> Deserialize(string text)
 		{
+			if (string.IsNullOrEmpty(text))
+				return new() { texts = [] };
 			RDLine<TStyle> line = "";
 			TStyle style = new();
-			int start = 0;
-			while (start < text.Length)
+			int pl = 0;
+			int p = text.IndexOf('<');
+			if (p == -1)
+				return DeserializeStringPart(text, style);
+			while (p < text.Length)
 			{
-				TStyle tempStyle = style;
-				int end = text.IndexOf('<', start);
-				if (end == -1)
+				string stringPart;
+				int tagend = text.IndexOf('>', p);
+				if (tagend == -1)
 				{
-#if NETCOREAPP3_0_OR_GREATER
-					line += DeserializeStringPart(text[start..], tempStyle);
-#else
-					line += DeserializeStringPart(text.Substring(start), tempStyle);
-#endif
-					break;
+					stringPart = text.Substring(pl);
+					line += DeserializeStringPart(stringPart, style);
+					return line;
 				}
-				int start2 = text.IndexOf('>', end);
-				int end2 = text.IndexOf('<', end + 1);
-				if (start2 == -1)
-					break;
-				if (end2 == -1)
-					end2 = text.Length;
-#if NETCOREAPP3_0_OR_GREATER
-				line += DeserializeStringPart(text[start..end2], tempStyle);
-				string textpart = text[start..end];
-				string[] keyvalue = text[(end + 1)..start2].Split('=', 2);
-				if (keyvalue[0].StartsWith('/') && style.ResetProperty(keyvalue[0][1..]))
-#else
-				line += DeserializeStringPart(text.Substring(start, end2 - start), tempStyle);
-				string textpart = text.Substring(start, end - start);
-				string[] keyvalue = text.Substring(end + 1, start2 - (end + 1)).Split(['='], 2);
-				if (keyvalue[0].StartsWith("/") && style.ResetProperty(keyvalue[0].Substring(1)))
-#endif
-					start = start2 + 1;
-				else if (style.SetProperty(keyvalue[0], keyvalue.Length == 2 ? keyvalue[1] : "true"))
-					start = start2 + 1;
 				else
-					start = start2 + 1;
+					stringPart = text.Substring(pl, p - pl);
+				if (stringPart.Length > 0)
+					line += DeserializeStringPart(stringPart, style);
+				string tagContent = text.Substring(p + 1, tagend - (p + 1));
+#if NET7_0_OR_GREATER
+				if (tagContent.StartsWith('/') && style.ResetProperty(tagContent[1..])) { }
+				else
+				{
+					string[] parts = tagContent.Split('=', 2);
+					if (style.SetProperty(parts[0], parts.Length == 2 ? parts[1] : "true")) { }
+					else
+					{
+						//line += DeserializeStringPart(text.Substring(p, tagend + 1 - p), style);
+					}
+				}
+				pl = tagend + 1;
+				p = text.IndexOf('<', pl);
+				if (p == -1)
+					return line + DeserializeStringPart(text[pl..], style);
+#else
+				if (tagContent.StartsWith("/") && style.ResetProperty(tagContent.Substring(1))) { }
+				else
+				{
+					string[] parts = tagContent.Split(['='], 2);
+					if (style.SetProperty(parts[0], parts.Length == 2 ? parts[1] : "true")) { }
+					else
+					{
+						//line += DeserializeStringPart(text.Substring(p, tagend + 1 - p), style);
+					}
+				}
+				pl = tagend + 1;
+				p = text.IndexOf('<', pl);
+				if (p == -1)
+					return line + DeserializeStringPart(text.Substring(pl), style);
+#endif
 			}
 			return line;
 		}
@@ -255,7 +271,7 @@ namespace RhythmBase.Global.Components.RichText
 				string btag = text[(pend + 1)..pstart2];
 #endif
 				if (RDDialogueTone.Create(btag, pend, out RDDialogueTone? e) && e is RDDialogueTone ei)
-					events = events.Concat(new[] { ei }).ToArray();
+					events = [.. events, ei];
 #if NETSTANDARD2_0
 				text = text.Substring(0, pend) + text.Substring(pstart2 + 1);
 #else
