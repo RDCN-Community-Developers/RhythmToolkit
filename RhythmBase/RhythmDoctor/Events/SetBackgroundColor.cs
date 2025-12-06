@@ -75,14 +75,15 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[RDJsonCondition($"""
 			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(Image)}.Count > 1
+			$&.{nameof(Images)}.Count > 1
 			""")]
 		public float Fps { get; set; } = 30f;
 		/// <summary>
 		/// Gets or sets the list of images for the background.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
-		public List<FileReference> Image { get; set; } = [];
+		[RDJsonProperty("image")]
+		public List<FileReference> Images { get; set; } = [];
 		/// <summary>
 		/// Gets or sets the horizontal scroll value.
 		/// </summary>
@@ -146,8 +147,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the tab associated with the event.
 		/// </summary>
 		public override Tabs Tab { get; } = Tabs.Actions;
-		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Image];
-		IEnumerable<FileReference> IFileEvent.Files => [.. Image];
+		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Images];
+		IEnumerable<FileReference> IFileEvent.Files => [.. Images];
 
 		/// <summary>
 		/// Returns a string that represents the current object.
@@ -156,9 +157,9 @@ namespace RhythmBase.RhythmDoctor.Events
 		public override string ToString() => BackgroundType == BackgroundTypes.Color
 		? base.ToString() + $" {Color}"
 #if NETSTANDARD
-		: base.ToString() + $" {string.Join(",", Image)}";
+		: base.ToString() + $" {string.Join(",", Images)}";
 #else
-		: base.ToString() + $" {string.Join(',', Image)}";
+		: base.ToString() + $" {string.Join(',', Images)}";
 #endif
 	}
 	/// <summary>
