@@ -19,25 +19,25 @@ public class MoveRoom : BaseEvent, IEaseEvent
 	[Tween]
 	[RDJsonProperty("roomPosition")]
 	[RDJsonCondition($"$&.{nameof(Position)} is not null")]
-	public RDPointE? Position { get; set; }
+	public RDPoint? Position { get; set; }
 	/// <summary>
 	/// Gets or sets the scale of the room.
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
-	public RDSizeE? Scale { get; set; } = null;
+	public RDSize? Scale { get; set; } = null;
 	/// <summary>
 	/// Gets or sets the angle of the room.
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
-	public RDExpression? Angle { get; set; } = null;
+	public float? Angle { get; set; } = null;
 	/// <summary>
 	/// Gets or sets the pivot point of the room.
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Pivot)} is not null")]
-	public RDPointE? Pivot { get; set; } = null;
+	public RDPoint? Pivot { get; set; } = null;
 	/// <summary>
 	/// Gets or sets the duration of the move event.
 	/// </summary>
