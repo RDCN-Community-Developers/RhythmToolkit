@@ -18,6 +18,10 @@ namespace RhythmBase.RhythmDoctor.Components
 	{
 		private Patterns[] _ps;
 		/// <summary>
+		/// Gets the number of elements contained in the collection.
+		/// </summary>
+		public readonly int Length => _ps.Length;
+		/// <summary>
 		/// Gets or sets the pattern at the specified index within the collection.
 		/// </summary>
 		/// <param name="index">The zero-based index of the pattern to get or set. Must be between 0 and 5, inclusive.</param>
@@ -133,6 +137,10 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			return pc;
 		}
+		/// <summary>
+		/// Returns an enumerator that iterates through the collection of patterns.
+		/// </summary>
+		/// <returns>An enumerator that can be used to iterate through the collection of patterns.</returns>
 		public IEnumerator<Patterns> GetEnumerator()
 		{
 			foreach (Patterns p in _ps)
