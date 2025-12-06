@@ -374,7 +374,7 @@ e.IsHitable()
 		/// <param name="target">Specified position. </param>
 		public static void MovePositionMaintainVisual(this Move e, RDSizeE spriteSize, RDPointE target)
 		{
-			if (e is not {Position: not null,Pivot: not null,Angle.IsNumeric: true})
+			if (e is not { Position: not null, Pivot: not null, Angle.IsNumeric: true })
 				return;
 			e.Position = new RDPointE?(target);
 			e.Pivot = new RDPointE?((e.VisualPosition(spriteSize) - new RDSizeE(target)).Rotate(e.Angle.Value.NumericValue));
@@ -384,12 +384,10 @@ e.IsHitable()
 		/// </summary>
 		/// <param name="e">RDLevel</param>
 		/// <param name="target">Specified position. </param>
-		public static void MovePositionMaintainVisual(this MoveRoom e, RDSizeE target)
+		public static void MovePositionMaintainVisual(this MoveRoom e, RDSize target)
 		{
-			if (e is not {Position: not null,Pivot: not null,Angle.IsNumeric: true})
-				return;
-			e.Position = new RDPointE?((RDPointE)target);
-			e.Pivot = new RDPointE?((e.VisualPosition() - new RDSizeE((RDPointE)target)).Rotate(e.Angle.Value.NumericValue));
+			e.Position = (RDPoint)target;
+			e.Pivot = (RDPoint)((e.VisualPosition() - target).Rotate(e.Angle ?? 0));
 		}
 		/// <summary>
 		/// Convert beat pattern to string.
@@ -459,9 +457,9 @@ e.IsHitable()
 		/// </summary>
 		/// <returns>special tags.</returns>
 		public static SpecialTags[] SpetialTags(this TagAction e) => (SpecialTags[])(from i in (SpecialTags[])Enum.GetValues(typeof(SpecialTags))
-																					 where e.ActionTag.Contains(
-																						 $"[{i}]")
-																					 select i);
+																																								 where e.ActionTag.Contains(
+																																									 $"[{i}]")
+																																								 select i);
 		/// <summary>
 		/// Generate split event instances.
 		/// </summary>
@@ -582,7 +580,7 @@ e.IsHitable()
 			return new string[]
 			{
 				"shake","shakeRadius=\\d+","wave","waveHeight=\\d+","waveSpeed=\\d+","swirl","swirlRadius=\\d+","swirlSpeed=\\d+","static"
-			}.Aggregate(e.Text,(current,item) => Regex.Replace(current,$@"\[{item}\]",""));
+			}.Aggregate(e.Text, (current, item) => Regex.Replace(current, $@"\[{item}\]", ""));
 		}
 		/// <summary>
 		/// The visual position of the lower left corner of the image.
@@ -590,7 +588,7 @@ e.IsHitable()
 		public static RDPointE VisualPosition(this Move e, RDSizeE spriteSize)
 		{
 			RDPointE visualPosition = default;
-			if (e is not {Position: not null,Pivot: not null,Angle.IsNumeric: true,Scale: not null})
+			if (e is not { Position: not null, Pivot: not null, Angle.IsNumeric: true, Scale: not null })
 				return visualPosition;
 			RDPointE previousPosition = e.Position.Value;
 			RDExpression? x = e.Pivot?.X * (e.Scale?.Width) * spriteSize.Width / 100f;
@@ -601,14 +599,14 @@ e.IsHitable()
 		/// <summary>
 		/// The visual position of the lower left corner of the image.
 		/// </summary>
-		public static RDPointE VisualPosition(this MoveRoom e)
+		public static RDPoint VisualPosition(this MoveRoom e)
 		{
-			RDPointE visualPosition = default;
-			if (e is not {Position: not null,Pivot: not null,Angle: not null})
+			RDPoint visualPosition = default;
+			if (e is not { Position: not null, Pivot: not null, Angle: not null })
 				return visualPosition;
-			RDPointE previousPosition = e.Position.Value;
-			RDPointE previousPivot = new((e.Pivot?.X) * (e.Scale?.Width), (e.Pivot?.Y) * (e.Scale?.Height));
-			visualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
+			RDPoint previousPosition = e.Position.Value;
+			RDPoint previousPivot = new((e.Pivot?.X) * (e.Scale?.Width), (e.Pivot?.Y) * (e.Scale?.Height));
+			visualPosition = previousPosition + new RDSize(previousPivot.Rotate(e.Angle ?? 0));
 			return visualPosition;
 		}
 		/// <summary>
