@@ -91,5 +91,27 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			return result;
 		}
+		/// <summary>
+		/// Converts an array of integers to a RoomHeight instance by assigning up to the first four elements as height
+		/// values.
+		/// </summary>
+		/// <remarks>If the array contains fewer than four elements, only the available values are assigned. Remaining
+		/// height values are set to their default values.</remarks>
+		/// <param name="heights">An array of integers representing height values to assign. Only the first four elements are used; additional
+		/// elements are ignored.</param>
+		public static implicit operator RoomHeight(int[] heights)
+		{
+			RoomHeight rh = new();
+			for (int i = 0; i < 4 && i < heights.Length; i++)
+				rh[i] = heights[i];
+			return rh;
+		}
+		/// <summary>
+		/// Converts a RoomHeight instance to an array of integers representing the room heights.
+		/// </summary>
+		/// <remarks>This implicit conversion allows a RoomHeight object to be used wherever an int array is expected,
+		/// providing direct access to the underlying height values.</remarks>
+		/// <param name="rh"></param>
+		public static implicit operator int[](RoomHeight rh) => rh._height;
 	}
 }
