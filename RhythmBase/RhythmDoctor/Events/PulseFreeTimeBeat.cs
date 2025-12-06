@@ -40,14 +40,7 @@
 		/// Gets or sets the custom pulse value.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(Action)} is RhythmBase.RhythmDoctor.Events.{nameof(PulseActions)}.{nameof(PulseActions.Custom)}")]
-		public uint CustomPulse
-		{
-			get => field; set
-			{
-				field = value;
-				Action = PulseActions.Custom;
-			}
-		}
+		public uint CustomPulse { get; set; } = 0;
 		/// <summary>
 		/// Gets or sets the action type.
 		/// </summary>
