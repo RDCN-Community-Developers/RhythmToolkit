@@ -17,14 +17,15 @@ You can see examples [here](/RhythmBase.Test/Tutorial.cs).
 - [0x4D2](https://github.com/0x4D25F2) for amounts of testing and feedback.
 - [mfgujhgh](https://github.com/mfgujhgh) for alogrithm guidance.
 
-| Project             | Description                        | Status           | Link                                                                       | 
-|---------------------|------------------------------------|------------------|----------------------------------------------------------------------------|
-| RhythmBase          | Core library for level editing.    | WIP              | **You are here**                                                           |
-| RhythmBase.Addition | Extensions for levels.             | *Not disclosed*  | -                                                                          |
-| RhythmBase.Interact | Interact with Level editor.        | *Not disclosed*  | -                                                                          |
-| RhythmBase.Hospital | Judgement logic for levels.        | *Not disclosed*  | -                                                                          |
-| RhythmBase.Lite     | Lightweight version of RhythmBase. | WIP              | [Go there](https://github.com/RDCN-Community-Developers/RhythmToolkitLite) |
-| RhythmBase.Control  | Custom controls.                   | *Not disclosed*  | -                                                                          |
+| Project             | Description                                         | Status           | Link                                                                       | 
+|---------------------|-----------------------------------------------------|------------------|----------------------------------------------------------------------------|
+| RhythmBase          | Core library for level editing.                     | WIP              | **You are here**                                                           |
+| RhythmBase.View     | Draw all Rhythm Doctor event elements in SkiaSharp. | WIP              | -                                                                          |
+| RhythmBase.Addition | Extensions for levels.                              | *Not disclosed*  | -                                                                          |
+| RhythmBase.Interact | Interact with Level editor.                         | *Not disclosed*  | -                                                                          |
+| RhythmBase.Hospital | Judgement logic for levels.                         | *Not disclosed*  | -                                                                          |
+| RhythmBase.Lite     | Lightweight version of RhythmBase.                  | WIP              | [Go there](https://github.com/RDCN-Community-Developers/RhythmToolkitLite) |
+| RhythmBase.Control  | Custom controls.                                    | *Not disclosed*  | -                                                                          |
 
 ```mermaid
 flowchart RL
@@ -42,6 +43,7 @@ subgraph RBTitle[RhythmBase]
   RBAdd[RhythmBase.Addition]
   RBInt[RhythmBase.Interact]
   RBHos[RhythmBase.Hospital]
+  RBV[RhythmBase.View]
   subgraph RBC[RhythmBase.Control]
     RBCCore[RhythmBase.Control.Core]
     RBCWPF[RhythmBase.Control.WPF]
@@ -51,8 +53,8 @@ subgraph RBTitle[RhythmBase]
 end
 
 RBLite ---> RDL
-RBCWPF & RBCWF & RBCAva --> RBCCore
-RBCCore & RBHos & RBAdd & RBInt --> RB ---> RDL & ADL
+RBCWPF & RBCWF & RBCAva --> RBCCore --> RBV
+RBV & RBHos & RBAdd & RBInt --> RB ---> RDL & ADL
 RBInt ---> RDLE --> RDL
 RBInt ---> ADLE --> ADL
 ```
