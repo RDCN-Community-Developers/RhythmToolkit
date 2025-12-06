@@ -51,6 +51,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		public RDAudio Sound { get; set; } = new RDAudio();
 		/// <summary>
+		/// Gets or sets the length of the row.
+		/// </summary>
+		public int Length { get; set; } = 7;
+		/// <summary>
 		/// Gets or sets a value indicating whether the beats are muted.
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(MuteBeats)}")]

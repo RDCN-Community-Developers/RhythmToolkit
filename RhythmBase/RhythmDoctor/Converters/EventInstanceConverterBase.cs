@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 
 namespace RhythmBase.RhythmDoctor.Converters;
+
 internal abstract class EventInstanceConverterBase
 {
 	public abstract IBaseEvent ReadProperties(ref Utf8JsonReader reader, JsonSerializerOptions options);
@@ -19,6 +20,7 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 		float beat = 1;
 		while (reader.Read())
 		{
+			string s = Encoding.UTF8.GetString([.. reader.ValueSpan]);
 			if (reader.TokenType == JsonTokenType.EndObject)
 			{
 				value.Beat = new(bar, beat);
@@ -62,7 +64,7 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 		TEvent v = (TEvent)value;
 		writer.WriteStartObject();
 		Write(writer, ref v, options);
-		foreach (KeyValuePair<string,JsonElement> kv in ((BaseEvent)(IBaseEvent)v)._extraData)
+		foreach (KeyValuePair<string, JsonElement> kv in ((BaseEvent)(IBaseEvent)v)._extraData)
 		{
 			writer.WritePropertyName(kv.Key);
 			writer.WriteRawValue(kv.Value.GetRawText());

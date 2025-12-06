@@ -1,4 +1,6 @@
-﻿using RhythmBase.RhythmDoctor.Extensions;
+﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -27,8 +29,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the pattern.
 		/// </summary>
-		//[JsonConverter(typeof(PatternConverter))]
-		public Patterns[] Pattern { get; set; } = new Patterns[6];
+		[RDJsonConverter(typeof(PatternConverter))]
+		public PatternCollection Pattern { get; set; } = "------";
 		/// <summary>
 		/// Gets or sets the synco beat.
 		/// </summary>
