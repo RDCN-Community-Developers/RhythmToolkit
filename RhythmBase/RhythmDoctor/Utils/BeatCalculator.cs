@@ -1,5 +1,6 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Utils
 {
 	internal record struct Bpm(int Bar, int Beat, float BPM);
@@ -18,8 +19,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>
 		public void Refresh()
 		{
-			_BPMList = [];
-			_CPBList = [];
+			_BPMList = [.. Collection.OfEvent<BaseBeatsPerMinute>()];
+			_CPBList = [.. Collection.OfEvent<SetCrotchetsPerBar>()];
 			_BpmTree = [];
 			_CpbTree = [];
 		}
