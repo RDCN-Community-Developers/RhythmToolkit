@@ -65,7 +65,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			i++;
 			while (i < text.Length && char.IsDigit(text[i]))
 				duration = duration * 10 + (text[i++] - '0');
-			if(i < text.Length && text[i] is '.')
+			if (i < text.Length && text[i] is '.')
 			{
 				++i;
 				float frac = 0.1f;
@@ -85,7 +85,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public string Serialize()
 		{
 			StringBuilder sb = new();
-			foreach(KeyValuePair<int,bool> pair in ConditionLists)
+			foreach (KeyValuePair<int, bool> pair in ConditionLists)
 			{
 				if (sb.Length > 0)
 					sb.Append('&');
@@ -104,6 +104,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			return Deserialize(Serialize());
 		}
+		/// <summary>
+		/// Converts a <see cref="Condition"/> instance to its string representation.
+		/// </summary>
+		/// <remarks>This operator enables implicit conversion of a <see cref="Condition"/> object to a string,
+		/// typically for serialization or display purposes.</remarks>
+		/// <param name="c">The <see cref="Condition"/> instance to convert.</param>
+		public static implicit operator string(Condition c) => c.Serialize();
 		/// <inheritdoc/>
 		public override string ToString() => Serialize();
 	}
