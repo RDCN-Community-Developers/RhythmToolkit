@@ -19,7 +19,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="tgt3">The ID of the third room.</param>
 		/// <param name="tgt4">The ID of the fourth room.</param>
 		/// <exception cref="ArgumentException">Thrown when room IDs are not unique.</exception>
-		public RoomOrder(byte tgt1, byte tgt2, byte tgt3, byte tgt4)
+		public RoomOrder(int tgt1, int tgt2, int tgt3, int tgt4)
 		{
 			if (tgt1 == tgt2 || tgt1 == tgt3 || tgt1 == tgt4 ||
 				tgt2 == tgt3 || tgt2 == tgt4 ||
@@ -84,10 +84,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Implicitly converts a <see cref="RoomOrder"/> to a byte array.
 		/// </summary>
 		/// <param name="order">The <see cref="RoomOrder"/> to convert.</param>
-		public static implicit operator byte[](RoomOrder order)
-		{
-			return order.Order;
-		}
+		public static implicit operator int[](RoomOrder order) => [.. order.Order.Cast<byte>()];
 
 		/// <summary>
 		/// Implicitly converts a byte array to a <see cref="RoomOrder"/>.
@@ -95,7 +92,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="order">The byte array to convert.</param>
 		/// <returns>A <see cref="RoomOrder"/> instance.</returns>
 		/// <exception cref="ArgumentException">Thrown when the byte array length is not 4.</exception>
-		public static implicit operator RoomOrder(byte[] order)
+		public static implicit operator RoomOrder(int[] order)
 		{
 			if (order.Length != 4)
 				throw new ArgumentException("Order must be an array of 4 bytes.");
