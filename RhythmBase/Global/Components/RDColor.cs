@@ -922,6 +922,22 @@ namespace RhythmBase.Global.Components
 		public static bool operator ==(RDColor left, RDColor right) => left.color == right.color;
 		/// <inheritdoc/>
 		public static bool operator !=(RDColor left, RDColor right) => left.color != right.color;
+		/// <summary>
+		/// Defines an implicit conversion from a 32-bit unsigned integer to an RDColor instance.
+		/// </summary>
+		/// <remarks>This operator allows a uint value to be assigned directly to an RDColor variable without explicit
+		/// casting. The interpretation of the uint value depends on the RDColor format, typically encoding color channels in
+		/// ARGB or RGBA order.</remarks>
+		/// <param name="color">The 32-bit unsigned integer representing the color value to convert.</param>
+		public static implicit operator RDColor(uint color) => new(color);
+		/// <summary>
+		/// Converts an RDColor instance to its 32-bit unsigned integer representation.
+		/// </summary>
+		/// <remarks>This operator enables implicit conversion from RDColor to uint, allowing RDColor values to be
+		/// used wherever a 32-bit unsigned integer is expected. The returned value represents the packed color value as
+		/// defined by the RDColor structure.</remarks>
+		/// <param name="color">The RDColor instance to convert.</param>
+		public static implicit operator uint(RDColor color) => color.color;
 		/// <inheritdoc/>
 		public override readonly string ToString() => ToString("#AARRGGBB");
 		private readonly string GetDebuggerDisplay() => ToString();
