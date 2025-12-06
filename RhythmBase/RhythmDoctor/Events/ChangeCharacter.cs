@@ -11,7 +11,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		public override EventType Type => EventType.ChangeCharacter;
 
 		/// <inheritdoc/>  
-		public override Tabs Tab => Tabs.Rows;
+		public override Tabs Tab => Tabs.Actions;
 
 		/// <summary>  
 		/// Gets or sets the character to be changed to.  
