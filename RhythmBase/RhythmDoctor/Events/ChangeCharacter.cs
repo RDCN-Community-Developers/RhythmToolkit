@@ -16,8 +16,13 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the character to be changed to.  
 		/// </summary>  
+		[RDJsonIgnore]
 		public RDCharacter Character { get; set; } = RDCharacters.Samurai;
-
+		[RDJsonNotIgnore]
+		internal RDCharacters EnumCharacter => Character.Character ?? RDCharacters.Custom;
+		[RDJsonNotIgnore]
+		[RDJsonCondition($"$&.{nameof(Character)}.{nameof(RDCharacter.IsCustom)}")]
+		internal string StringCharacter => Character.CustomCharacter ?? string.Empty;
 		/// <summary>  
 		/// Gets or sets the transition type for the character change.  
 		/// </summary>  

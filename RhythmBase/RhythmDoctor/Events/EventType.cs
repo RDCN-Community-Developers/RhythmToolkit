@@ -50,6 +50,7 @@
 		/// Custom flash event.
 		/// </summary>
 		CustomFlash,
+		DesktopColor,
 		/// <summary>
 		/// Fade the room.
 		/// </summary>
@@ -89,6 +90,7 @@
 		/// Hide the row.
 		/// </summary>
 		HideRow,
+		HideWindow,
 		/// <summary>
 		/// Invert the colors.
 		/// </summary>
@@ -158,6 +160,10 @@
 		/// </summary>
 		ReadNarration,
 		/// <summary>
+		/// Rename the window.
+		/// </summary>
+		RenameWindow,
+		/// <summary>
 		/// Reorder the rooms.
 		/// </summary>
 		ReorderRooms,
@@ -169,6 +175,7 @@
 		/// Reorder the sprites.  
 		/// </summary>  
 		ReorderSprite,
+		ReorderWindows,
 		/// <summary>
 		/// Say "Ready, Get Set, Go".
 		/// </summary>
@@ -217,6 +224,7 @@
 		/// Set the heart explode volume.
 		/// </summary>
 		SetHeartExplodeVolume,
+		SetMainWindow,
 		/// <summary>
 		/// Set the oneshot wave.
 		/// </summary>
@@ -285,6 +293,10 @@
 		/// Displays the rows of subdivisions.
 		/// </summary>
 		ShowSubdivisionsRows,
+		/// <summary>
+		/// Spin the rows.
+		/// </summary>
+		SpinningRows,
 		/// <summary>
 		/// Stutter effect.
 		/// </summary>

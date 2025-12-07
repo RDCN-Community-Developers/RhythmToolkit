@@ -15,6 +15,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets the target window for this event.  
 		/// This is derived from the <see cref="BaseEvent.Y"/> property.  
 		/// </summary>
-		public RDSingleRoom TargetWindow => new((byte)Y);
+		public RDSingleRoom TargetWindow { get => new((byte)Y); set => Y = value.Value; }
 	}
 }

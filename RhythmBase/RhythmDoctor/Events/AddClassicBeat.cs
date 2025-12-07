@@ -1,4 +1,6 @@
-﻿using RhythmBase.RhythmDoctor.Extensions;
+﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Extensions;
 using System.Diagnostics;
 namespace RhythmBase.RhythmDoctor.Events
 {
@@ -32,6 +34,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>   
 		[RDJsonCondition("$&.Length != 7")]
 		public ushort Length { get; set; } = 7;
+		[RDJsonCondition($"$&.{nameof(Sound)} is not null")]
+		public RDAudio? Sound { get; set; } = new RDAudio();
 		/// <summary>
 		/// Gets or sets the classic beat pattern.
 		/// </summary>
