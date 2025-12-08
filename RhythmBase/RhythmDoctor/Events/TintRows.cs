@@ -31,6 +31,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		[Tween]
 		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
 		public PaletteColor BorderColor { get; set; } = RDColor.White;
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		public bool BorderPulse { get; set; }
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		public float BorderPulseMin { get; set; }
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		public float BorderPulseMax { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity level.
 		/// </summary>
