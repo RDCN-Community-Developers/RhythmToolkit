@@ -1,18 +1,19 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>  
 	/// Represents an event to set a theme in a room.  
 	/// </summary>  
-	public class SetTheme : BaseEvent, IRoomEvent
+	public class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
 	{
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="SetTheme"/> class.  
 		/// </summary>  
 		public SetTheme()
 		{
-			Preset = Themes.None;
+			Preset = Theme.None;
 			Type = EventType.SetTheme;
 			Tab = Tabs.Actions;
 			Rooms = new RDRoom([0]);
@@ -20,12 +21,66 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>  
 		/// Gets or sets the theme preset.  
 		/// </summary>  
-		public Themes Preset { get; set; } = Themes.None;
+		public Theme Preset { get; set; } = Theme.None;
 		/// <summary>  
 		/// Gets or sets the variant of the theme.  
 		/// </summary>  
-#warning 需要细致区分
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Intimate)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.InsomniacDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.CrossesStraight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.CubesFalling)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Rooftop)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Sky)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.CoffeeShop)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Garden)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.HospitalWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.ColeWardNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Skyline)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.FloatingHeart)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.FloatingHeartBroken)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Stadium)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWard)}
+			""")]
 		public byte Variant { get; set; }
+		[RDJsonCondition($"""
+			$&.{nameof(Preset)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.HospitalWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.PaigeOffice)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Basement)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.RollerDisco)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWardNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Airport)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.RecordsRoom)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AbandonedWard)}
+			""")]
+		public bool EnablePosition { get; set; }
+		[RDJsonCondition($"""
+			$&.{nameof(EnablePosition)} &&
+			$&.{nameof(Preset)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.HospitalWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.PaigeOffice)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Basement)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.RollerDisco)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWardNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Airport)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.RecordsRoom)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AbandonedWard)}
+			""")]
+		public float PositionX { get; set; }
 		/// <summary>  
 		/// Gets the type of the event.  
 		/// </summary>  
@@ -47,6 +102,45 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[RDJsonCondition($"$&.{nameof(FirstRowOnFloor)}")]
 		public bool FirstRowOnFloor { get; set; } = false;
+		[RDJsonProperty("positionEase")]
+		[RDJsonCondition($"""
+			$&.{nameof(EnablePosition)} &&
+			$&.{nameof(Preset)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.HospitalWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.PaigeOffice)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Basement)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.RollerDisco)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWardNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Airport)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.RecordsRoom)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AbandonedWard)}
+			""")]
+		public EaseType Ease { get; set; }
+		[RDJsonProperty("positionDuration")]
+		[RDJsonCondition($"""
+			$&.{nameof(EnablePosition)} &&
+			$&.{nameof(Preset)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.TrainNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertDay)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.DesertNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.HospitalWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.PaigeOffice)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Basement)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.RollerDisco)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AthleteWardNight)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.Airport)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.RecordsRoom)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(Events.Theme)}.{nameof(Theme.AbandonedWard)}
+			""")]
+		public float Duration { get; set; }
+
 		/// <summary>  
 		/// Returns a string that represents the current object.  
 		/// </summary>  
@@ -57,7 +151,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Represents the available themes.  
 	/// </summary>  
 	[RDJsonEnumSerializable]
-	public enum Themes
+	public enum Theme
 	{
 #pragma warning disable CS1591
 		None,
@@ -111,7 +205,10 @@ namespace RhythmBase.RhythmDoctor.Events
 		StadiumStormy,
 		AthleteWard,
 		AthleteWardNight,
-		ProceduralTree
+		ProceduralTree,
+		RecordsRoom,
+		Airport,
+		AbandonedWard,
 #pragma warning restore CS1591
 	}
 }
