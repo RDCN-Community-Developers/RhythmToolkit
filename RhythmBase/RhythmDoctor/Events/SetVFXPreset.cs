@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Enum representing various VFX presets.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum VFXPreset
+	public enum VfxPreset
 	{
 #pragma warning disable CS1591
 		SilhouettesOnHBeat,
@@ -33,6 +33,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		FallingPetals,
 		FallingPetalsInstant,
 		FallingPetalsSnow,
+		FallingLeaves,
+		ConfettiBurst,
 		Snow,
 		Bloom,
 		OrangeBloom,
@@ -95,12 +97,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the VFX preset.
 		/// </summary>
-		public VFXPreset Preset { get; set; }
+		public VfxPreset Preset { get; set; }
 		/// <summary>
 		/// Gets or sets a value indicating whether the VFX is enabled.
 		/// </summary>
 		[RDJsonCondition($"""
-			$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.DisableAll)}
+			$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.DisableAll)}
 			""")]
 		public bool Enable { get; set; } = true;
 		/// <summary>
@@ -109,7 +111,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Bloom)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Bloom)}
 			""")]
 		public float Threshold { get; set; } = 100f;
 		/// <summary>
@@ -118,26 +120,26 @@ namespace RhythmBase.RhythmDoctor.Events
 		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)} 
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.HueShift)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Brightness)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Contrast)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Saturation)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Rain)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Bloom)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.JPEG)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Mosaic)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.ScreenWaves)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Grain)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Blizzard)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Drawing)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Aberration)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Blur)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.RadialBlur)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Dots)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Tutorial)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.WavyRows)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Fisheye)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Diamonds)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.HueShift)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Brightness)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Contrast)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Saturation)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Rain)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Bloom)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.JPEG)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Mosaic)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.ScreenWaves)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Grain)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Blizzard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Drawing)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Aberration)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Blur)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.RadialBlur)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Dots)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Tutorial)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.WavyRows)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Fisheye)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Diamonds)}
 			""")]
 		public float Intensity { get; set; } = 0f;
 		/// <summary>
@@ -146,8 +148,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Bloom)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Tutorial)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Bloom)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Tutorial)}
 			""")]
 		public PaletteColor Color { get; set; } = RDColor.White;
 		/// <summary>
@@ -156,8 +158,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		[Tween]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.TileN)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.CustomScreenScroll)}
 			""")]
 		public float? FloatX
 		{
@@ -175,8 +177,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		[Tween]
 		[RDJsonCondition($"""
 			$&.{(nameof(Enable))} && $&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.TileN)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.CustomScreenScroll)}
 			""")]
 		public float? FloatY
 		{
@@ -198,8 +200,8 @@ namespace RhythmBase.RhythmDoctor.Events
 		public RDPoint Speed { get;set; } = new(1, 1);
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)} 
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
-			or  RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.TileN)}
+			or  RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.CustomScreenScroll)}
 			""")]
 		public RDPoint Amount { get; set; } = new(1, 1);
 		/// <summary>
@@ -209,7 +211,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		[RDJsonProperty("speedPerc")]
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)} 
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.WavyRows)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.WavyRows)}
 			""")]
 		public float SpeedPercentage { get; set; } = 100f;
 		/// <summary>
@@ -217,26 +219,26 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)} 
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.HueShift)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Brightness)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Contrast)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Saturation)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Rain)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Bloom)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.JPEG)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Mosaic)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.ScreenWaves)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Grain)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Blizzard)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Drawing)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Aberration)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Blur)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.RadialBlur)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Dots)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Tutorial)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Fisheye)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.HueShift)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Brightness)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Contrast)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Saturation)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Rain)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Bloom)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.TileN)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.CustomScreenScroll)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.JPEG)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Mosaic)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.ScreenWaves)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Grain)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Blizzard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Drawing)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Aberration)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Blur)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.RadialBlur)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Dots)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Tutorial)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Fisheye)}
 			""")]
 		public EaseType Ease { get; set; } = EaseType.Linear;
 		/// <summary>
@@ -244,26 +246,26 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		[RDJsonCondition($"""
 			$&.{nameof(Enable)} && $&.{nameof(Preset)} 
-			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.HueShift)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Brightness)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Contrast)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Saturation)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Rain)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Bloom)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.JPEG)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Mosaic)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.ScreenWaves)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Grain)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Blizzard)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Drawing)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Aberration)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Blur)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.RadialBlur)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Dots)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Tutorial)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.Fisheye)}
+			is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.HueShift)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Brightness)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Contrast)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Saturation)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Rain)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Bloom)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.TileN)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.CustomScreenScroll)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.JPEG)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Mosaic)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.ScreenWaves)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Grain)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Blizzard)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Drawing)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Aberration)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Blur)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.RadialBlur)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Dots)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Tutorial)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Fisheye)}
 			""")]
 		public float Duration { get; set; } = 0f;
 		/// <summary>

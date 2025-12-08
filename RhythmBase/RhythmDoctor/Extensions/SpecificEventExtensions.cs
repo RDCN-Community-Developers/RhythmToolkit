@@ -561,12 +561,12 @@ e.IsHitable()
 		/// <returns>An RDRange representing the duration of the VFX effect.</returns>
 		public static RDRange VFXDuration(this SetVFXPreset e)
 		{
-			if (e.Preset != VFXPreset.DisableAll && e.Enable)
+			if (e.Preset != VfxPreset.DisableAll && e.Enable)
 			{
 				SetVFXPreset? close = e.After().FirstOrDefault(i =>
 					i.Rooms.Contains(e.Rooms) && (
 						i.Preset == e.Preset ||
-						i.Preset == VFXPreset.DisableAll
+						i.Preset == VfxPreset.DisableAll
 				));
 				return new(e.Beat, close?.Beat);
 			}
