@@ -58,6 +58,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		Diamonds,
 		Tutorial,
 		Balloons,
+		GlassShatter,
 
 		WavyRows,
 		Tile2,
@@ -195,6 +196,12 @@ namespace RhythmBase.RhythmDoctor.Events
 			false
 			""")]
 		public RDPoint Speed { get;set; } = new(1, 1);
+		[RDJsonCondition($"""
+			$&.{nameof(Enable)} && $&.{nameof(Preset)} 
+			is RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.TileN)}
+			or  RhythmBase.RhythmDoctor.Events.{nameof(VFXPreset)}.{nameof(VFXPreset.CustomScreenScroll)}
+			""")]
+		public RDPoint Amount { get; set; } = new(1, 1);
 		/// <summary>
 		/// Gets or sets the speed percentage for the effect.
 		/// </summary>

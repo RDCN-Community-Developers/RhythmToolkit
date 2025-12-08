@@ -1,4 +1,6 @@
 ﻿
+using RhythmBase.RhythmDoctor.Components;
+
 namespace RhythmBase.RhythmDoctor.Events
 {
 	/// <summary>
@@ -47,7 +49,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event that says "Ready, Get Set, Go" with various voice sources and phrases.
 	/// </summary>
-	public class SayReadyGetSetGo : BaseEvent
+	public class SayReadyGetSetGo : BaseEvent, IRoomEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SayReadyGetSetGo"/> class.
@@ -94,6 +96,9 @@ namespace RhythmBase.RhythmDoctor.Events
 			SayReadyGetSetGoWords.SayReaDyGetSetOne or
 			SayReadyGetSetGoWords.SayGetSetOne or
 			SayReadyGetSetGoWords.SayReadyGetSetGo;
+
+		public RDRoom Rooms { get; set; } = new(0);
+
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
