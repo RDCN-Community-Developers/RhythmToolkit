@@ -19,18 +19,18 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the border type for the tint event.
 		/// </summary>
-		public Borders Border { get; set; } = Borders.None;
+		public Border Border { get; set; } = Border.None;
 		/// <summary>
 		/// Gets or sets the border color for the tint event.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)}")]
 		public PaletteColor BorderColor { get; set; } = RDColor.White;
-		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
 		public bool BorderPulse { get; set; }
-		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
 		public float BorderPulseMin { get; set; }
-		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
 		public float BorderPulseMax { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity for the tint event.
@@ -68,6 +68,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() => base.ToString() +
-		                                     $" {Border}{(Border == Borders.None ? "" : ":" + BorderColor.ToString())}";
+		                                     $" {Border}{(Border == Border.None ? "" : ":" + BorderColor.ToString())}";
 	}
 }

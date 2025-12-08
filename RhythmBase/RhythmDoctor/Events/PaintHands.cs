@@ -25,18 +25,18 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <summary>
 		/// Gets or sets the border style of the hands.
 		/// </summary>
-		public Borders Border { get; set; } = Borders.None;
+		public Border Border { get; set; } = Border.None;
 		/// <summary>
 		/// Gets or sets the border color of the hands.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition($"$&.{nameof(Border)} != RhythmBase.RhythmDoctor.Events.Borders.None")]
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)}")]
 		public PaletteColor BorderColor { get; set; } = RDColor.White;
-		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
 		public bool BorderPulse { get; set; }
-		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
 		public float BorderPulseMin { get; set; }
-		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+		[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
 		public float BorderPulseMax { get; set; }
 		/// <summary>
 		/// Gets or sets the opacity of the hands.

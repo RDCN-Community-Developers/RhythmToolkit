@@ -62,7 +62,7 @@ public record class DecorationTimeline
 	/// <summary>
 	/// Gets or sets the border type curve of the decoration over time.
 	/// </summary>
-	public Curve<Borders> Border { get; internal set; }
+	public Curve<Border> Border { get; internal set; }
 
 	/// <summary>
 	/// Gets or sets the border color curve of the decoration over time.

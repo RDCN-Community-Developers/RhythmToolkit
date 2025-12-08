@@ -56,7 +56,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 
 			List<CurveNode<string>>[] animations = new List<CurveNode<string>>[decoCount];
 
-			List<CurveNode<Borders>>[] borders = new List<CurveNode<Borders>>[decoCount];
+			List<CurveNode<Border>>[] borders = new List<CurveNode<Border>>[decoCount];
 			List<TweenCurveNode<RDColor>>[] borderColors = new List<TweenCurveNode<RDColor>>[decoCount];
 			List<TweenCurveNode<RDColor>>[] tints = new List<TweenCurveNode<RDColor>>[decoCount];
 			List<TweenCurveNode<int>>[] opacities = new List<TweenCurveNode<int>>[decoCount];
@@ -126,7 +126,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 						if (tint.Parent is null) continue;
 						if (tint.IsTint)
 							(tints[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.TintColor, new(tint.Ease, tint.Duration)));
-						if (tint.Border != Borders.None)
+						if (tint.Border != Border.None)
 							(borderColors[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.BorderColor, new(tint.Ease, tint.Duration)));
 						(borders[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.Border));
 						(opacities[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.Opacity, new(tint.Ease, tint.Duration)));
@@ -222,7 +222,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 					Room = new([.. rooms[i]], level.Decorations[i].Room.Room),
 					Blend = new([.. blends[i]], BlendTypes.None),
 					Animation = new([.. animations[i]], ""),
-					Border = new([.. borders[i]], Borders.None),
+					Border = new([.. borders[i]], Border.None),
 					BorderColor = new([.. borderColors[i]], RDColor.Transparent, (from, to, x) => RDColor.Lerp(from, to, (float)x)),
 					TintColor = new([.. tints[i]], RDColor.White, (from, to, x) => RDColor.Lerp(from, to, (float)x)),
 					Opacity = new([.. opacities[i]], 100, (from, to, x) => (int)(from + (to - from) * x)),
