@@ -1,3 +1,4 @@
+using RhythmBase.Global.Extensions;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
@@ -42,38 +43,37 @@ namespace RhythmBase.Test
 				if (type == EventType.AdvanceText)
 					continue;
 				IBaseEvent? e = (IBaseEvent?)Activator.CreateInstance(EventTypeUtils.ToType(type));
-				if (e is not null)
+				if (e is null)
+					continue;
+				if (e.GetType().Name != e.Type.ToEnumString())
+					throw new NotImplementedException();
+				if (e is IBarBeginningEvent eb)
+					level.Add(eb);
+				else
 				{
-					if (e is IBarBeginningEvent eb)
+					if (!count.TryGetValue(e.Tab, out int value))
 					{
-						level.Add(eb);
+						value = 0;
+						count[e.Tab] = value;
 					}
-					else
+					e.Beat = new(count[e.Tab] + 1);
+					if (e is BaseRowAction er)
 					{
-						if (!count.TryGetValue(e.Tab, out int value))
+						if (er is BaseBeat beat)
 						{
-							value = 0;
-							count[e.Tab] = value;
-						}
-						e.Beat = new(count[e.Tab] + 1);
-						if (e is BaseRowAction er)
-						{
-							if (er is BaseBeat beat)
-							{
-								if (er is AddClassicBeat or AddFreeTimeBeat or PulseFreeTimeBeat or SetRowXs)
-									level.Rows[0].Add(beat);
-								else
-									level.Rows[1].Add(beat);
-							}
+							if (er is AddClassicBeat or AddFreeTimeBeat or PulseFreeTimeBeat or SetRowXs)
+								level.Rows[0].Add(beat);
 							else
-								level.Rows[0].Add(er);
+								level.Rows[1].Add(beat);
 						}
-						else if (e is BaseDecorationAction ed)
-							level.Decorations[0].Add(ed);
 						else
-							level.Add(e);
-						count[e.Tab] = ++value;
+							level.Rows[0].Add(er);
 					}
+					else if (e is BaseDecorationAction ed)
+						level.Decorations[0].Add(ed);
+					else
+						level.Add(e);
+					count[e.Tab] = ++value;
 				}
 			}
 			level.SaveToFile("out.rdlevel");
@@ -101,7 +101,7 @@ namespace RhythmBase.Test
 					sw.Restart();
 					level.SaveToFile("out.rdlevel");
 					Console.WriteLine($"|Write\t|{sw.ElapsedMilliseconds,10} ms\t|");
-					foreach(var file in settings.FileReferences)
+					foreach (var file in settings.FileReferences)
 					{
 						Console.WriteLine($"Cached file: {file.Path}");
 					}
