@@ -55,7 +55,11 @@
 			/// <summary>
 			/// Condition based on the player mode.
 			/// </summary>
-			PlayerMode
+			PlayerMode,
+			/// <summary>
+			/// Narration.
+			/// </summary>
+			Narration,
 		}
 	}
 }

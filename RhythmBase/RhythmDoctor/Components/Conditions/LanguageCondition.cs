@@ -1,71 +1,57 @@
-﻿namespace RhythmBase.RhythmDoctor.Components.Conditions
+﻿namespace RhythmBase.RhythmDoctor.Components.Conditions;
+
+/// <summary>
+/// Represents a condition based on the game language.
+/// </summary>
+public class LanguageCondition : BaseConditional
 {
 	/// <summary>
-	/// Represents a condition based on the game language.
+	/// Gets or sets the game language.
 	/// </summary>
-	public class LanguageCondition : BaseConditional
+	public Languages Language { get; set; }
+	///<inheritdoc/>
+	public override ConditionType Type => ConditionType.Language;
+	/// <summary>
+	/// Represents the supported game languages.
+	/// </summary>
+	[RDJsonEnumSerializable]
+	public enum Languages
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="LanguageCondition"/> class.
+		/// English language.
 		/// </summary>
-		public LanguageCondition()
-		{
-			Type = ConditionType.Language;
-		}
+		English,
 		/// <summary>
-		/// Gets or sets the game language.
+		/// Spanish language.
 		/// </summary>
-		public Languages Language
-		{
-			get;
-			set;
-		}
+		Spanish,
 		/// <summary>
-		/// Gets the type of the condition.
+		/// Portuguese language.
 		/// </summary>
-		public override ConditionType Type { get; }
+		Portuguese,
 		/// <summary>
-		/// Represents the supported game languages.
+		/// Simplified Chinese language.
 		/// </summary>
-		[RDJsonEnumSerializable]
-		public enum Languages
-		{
-			/// <summary>
-			/// English language.
-			/// </summary>
-			English,
-			/// <summary>
-			/// Spanish language.
-			/// </summary>
-			Spanish,
-			/// <summary>
-			/// Portuguese language.
-			/// </summary>
-			Portuguese,
-			/// <summary>
-			/// Simplified Chinese language.
-			/// </summary>
-			ChineseSimplified,
-			/// <summary>
-			/// Traditional Chinese language.
-			/// </summary>
-			ChineseTraditional,
-			/// <summary>
-			/// Korean language.
-			/// </summary>
-			Korean,
-			/// <summary>
-			/// Polish language.
-			/// </summary>
-			Polish,
-			/// <summary>
-			/// Japanese language.
-			/// </summary>
-			Japanese,
-			/// <summary>
-			/// German language.
-			/// </summary>
-			German
-		}
+		ChineseSimplified,
+		/// <summary>
+		/// Traditional Chinese language.
+		/// </summary>
+		ChineseTraditional,
+		/// <summary>
+		/// Korean language.
+		/// </summary>
+		Korean,
+		/// <summary>
+		/// Polish language.
+		/// </summary>
+		Polish,
+		/// <summary>
+		/// Japanese language.
+		/// </summary>
+		Japanese,
+		/// <summary>
+		/// German language.
+		/// </summary>
+		German
 	}
 }
