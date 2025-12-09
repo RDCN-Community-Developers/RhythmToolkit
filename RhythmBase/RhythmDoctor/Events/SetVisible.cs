@@ -1,32 +1,19 @@
-﻿namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>
+/// Represents an action to set the visibility of a decoration.
+/// </summary>
+public class SetVisible : BaseDecorationAction
 {
+	///<inheritdoc/>
+	public override EventType Type => EventType.SetVisible;
+	///<inheritdoc/>
+	public override Tab Tab => Tab.Decorations;
+
 	/// <summary>
-	/// Represents an action to set the visibility of a decoration.
+	/// Gets or sets a value indicating whether the decoration is visible.
 	/// </summary>
-	public class SetVisible : BaseDecorationAction
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SetVisible"/> class.
-		/// </summary>
-		public SetVisible() { }
-		/// <summary>
-		/// Gets the type of the event.
-		/// </summary>
-		public override EventType Type => EventType.SetVisible;
-
-		/// <summary>
-		/// Gets the tab to which the event belongs.
-		/// </summary>
-		public override Tabs Tab => Tabs.Decorations;
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the decoration is visible.
-		/// </summary>
-		public bool Visible { get; set; } = true;
-		/// <summary>
-		/// Returns a string that represents the current object.
-		/// </summary>
-		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => base.ToString() + $" {Visible}";
-	}
+	public bool Visible { get; set; } = true;
+	///<inheritdoc/>
+	public override string ToString() => base.ToString() + $" {Visible}";
 }

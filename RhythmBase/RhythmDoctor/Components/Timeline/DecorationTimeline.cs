@@ -52,7 +52,7 @@ public record class DecorationTimeline
 	/// <summary>
 	/// Gets or sets the blend type curve of the decoration over time.
 	/// </summary>
-	public Curve<BlendTypes> Blend { get; internal set; }
+	public Curve<BlendType> Blend { get; internal set; }
 
 	/// <summary>
 	/// Gets or sets the animation curve of the decoration over time.

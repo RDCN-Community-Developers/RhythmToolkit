@@ -47,7 +47,7 @@ namespace RhythmBase.RhythmDoctor.Components.Timeline
 		/// <summary>
 		/// Gets or sets the type of row for this timeline.
 		/// </summary>
-		public RowTypes RowType { get; internal set; }
+		public RowType RowType { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the curve representing the hit index over time.
@@ -72,7 +72,7 @@ namespace RhythmBase.RhythmDoctor.Components.Timeline
 		/// <summary>
 		/// Gets or sets the curve representing the patterns for each beat.
 		/// </summary>
-		public Curve<Patterns[]> Patterns { get; internal set; }
+		public Curve<Pattern[]> Patterns { get; internal set; }
 	}
 	/// <summary>
 	/// Represents a oneshot beat timeline, including pulse type, beat count, skipping, and pulse state curves.
@@ -82,7 +82,7 @@ namespace RhythmBase.RhythmDoctor.Components.Timeline
 		/// <summary>
 		/// Gets or sets the curve representing the pulse shape type over time.
 		/// </summary>
-		public Curve<OneshotPulseShapeTypes> PulseType { get; internal set; }
+		public Curve<OneshotPulseShapeType> PulseType { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the curve representing the beat count over time.

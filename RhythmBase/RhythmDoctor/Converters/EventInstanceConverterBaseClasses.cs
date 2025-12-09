@@ -76,7 +76,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		protected override void Write(Utf8JsonWriter writer, ref TEvent value, JsonSerializerOptions options)
 		{
 			base.Write(writer, ref value, options);
-			if (value is not Comment cmt || cmt.CustomTab == Tabs.Decorations)
+			if (value is not Comment cmt || cmt.CustomTab == Tab.Decorations)
 				writer.WriteString("target"u8, value.Parent?.Id ?? value._decoId);
 		}
 	}

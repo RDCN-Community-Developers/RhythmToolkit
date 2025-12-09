@@ -410,45 +410,45 @@ e.IsHitable()
 		/// Get the actual beat pattern.
 		/// </summary>
 		/// <returns>The actual beat pattern.</returns>
-		public static Patterns[] RowXs(this AddClassicBeat e)
+		public static Pattern[] RowXs(this AddClassicBeat e)
 		{
 			return e.SetXs switch
 			{
-				ClassicBeatPatterns.ThreeBeat =>
+                ClassicBeatPattern.ThreeBeat =>
 				[
-					Patterns.None,
-					Patterns.X,
-					Patterns.X,
-					Patterns.None,
-					Patterns.X,
-					Patterns.X
+                    Events.Pattern.None,
+                    Events.Pattern.X,
+                    Events.Pattern.X,
+                    Events.Pattern.None,
+                    Events.Pattern.X,
+                    Events.Pattern.X
 				],
-				ClassicBeatPatterns.FourBeat =>
+                ClassicBeatPattern.FourBeat =>
 				[
-					Patterns.None,
-					Patterns.X,
-					Patterns.None,
-					Patterns.X,
-					Patterns.None,
-					Patterns.X
+                    Events.Pattern.None,
+                    Events.Pattern.X,
+                    Events.Pattern.None,
+                    Events.Pattern.X,
+                    Events.Pattern.None,
+                    Events.Pattern.X
 				],
-				ClassicBeatPatterns.NoChange => e.FrontOrDefault()?.RowXs() ??
+                ClassicBeatPattern.NoChange => e.FrontOrDefault()?.RowXs() ??
 				[
-					Patterns.None,
-					Patterns.None,
-					Patterns.None,
-					Patterns.None,
-					Patterns.None,
-					Patterns.None
+                    Events.Pattern.None,
+                    Events.Pattern.None,
+                    Events.Pattern.None,
+                    Events.Pattern.None,
+                    Events.Pattern.None,
+                    Events.Pattern.None
 				],
 				_ =>
 				[
-					Patterns.None,
-					Patterns.None,
-					Patterns.None,
-					Patterns.None,
-					Patterns.None,
-					Patterns.None
+                    Events.Pattern.None,
+                    Events.Pattern.None,
+                    Events.Pattern.None,
+                    Events.Pattern.None,
+                    Events.Pattern.None,
+                    Events.Pattern.None
 				]
 			};
 		}
@@ -536,10 +536,10 @@ e.IsHitable()
 			int i = 1;
 			do
 			{
-				if (!(i < 6 && xs.Pattern[i] == Patterns.X))
+				if (!(i < 6 && xs.Pattern[i] == Events.Pattern.X))
 				{
-					PulseFreeTimeBeat pulse = e.Clone<PulseFreeTimeBeat>();
-					PulseFreeTimeBeat pulseFreeTimeBeat;
+                    PulseFreeTimeBeat pulse = e.Clone<PulseFreeTimeBeat>();
+                    PulseFreeTimeBeat pulseFreeTimeBeat;
 					(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * i;
 					if (i >= xs.SyncoBeat)
 						(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat - xs.SyncoSwing;

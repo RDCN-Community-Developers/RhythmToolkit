@@ -2,190 +2,178 @@
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 
-namespace RhythmBase.RhythmDoctor.Events
+namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>
+/// Represents an event to set the background color.
+/// </summary>
+public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent, IImageFileEvent
 {
 	/// <summary>
-	/// Represents an event to set the background color.
+	/// Gets or sets the rooms associated with the event.
 	/// </summary>
-	public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent, IImageFileEvent
+	public RDRoom Rooms { get; set; } = new RDRoom([0]);
+	/// <summary>
+	/// Gets or sets the easing type for the event.
+	/// </summary>
+	[RDJsonCondition($"""
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+		""")]
+	public EaseType Ease { get; set; } = EaseType.Linear;
+	/// <summary>
+	/// Gets or sets the content mode for the event.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
+	public ContentMode ContentMode { get; set; } = ContentMode.ScaleToFill;
+	/// <summary>
+	/// Gets or sets the filter mode for the event.
+	/// </summary>
+	public BackgroundFilterModes Filter { get; set; } = BackgroundFilterModes.NearestNeighbor;
+	/// <summary>
+	/// Gets or sets the color for the background.
+	/// </summary>
+	[Tween]
+	public PaletteColor Color { get; set; } = RDColor.White;
+	/// <summary>
+	/// Gets or sets the interval for the event.
+	/// </summary>
+	[RDJsonCondition($"""
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+		$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.Events.TilingTypes.Pulse
+		""")]
+	public float Interval
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SetBackgroundColor"/> class.
-		/// </summary>
-		public SetBackgroundColor()
+		get => field > 0.01f ? field : 0.01f;
+		set => field = value > 0.01f ? value : 0.01f;
+	}
+	/// <summary>
+	/// Gets or sets the background type for the event.
+	/// </summary>
+	public BackgroundTypes BackgroundType { get; set; } = BackgroundTypes.Color;
+	/// <summary>
+	/// Gets or sets the duration of the event.
+	/// </summary>
+	[RDJsonCondition($"""
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+		""")]
+	public float Duration { get; set; } = 0f;
+	/// <summary>
+	/// Gets or sets the frames per second for the event.
+	/// </summary>
+	[RDJsonCondition($"""
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+		$&.{nameof(Images)}.Count > 1
+		""")]
+	public float Fps { get; set; } = 30f;
+	/// <summary>
+	/// Gets or sets the list of images for the background.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
+	[RDJsonProperty("image")]
+	public List<FileReference> Images { get; set; } = [];
+	/// <summary>
+	/// Gets or sets the horizontal scroll value.
+	/// </summary>
+	[Tween]
+	[RDJsonCondition($"""
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+		""")]
+	public float? ScrollX
+	{
+		get => Speed.X;
+		set
 		{
-			Rooms = new RDRoom([0]);
-			Color = new PaletteColor(true);
-			Type = EventType.SetBackgroundColor;
-			Tab = Tabs.Actions;
+			RDPoint speed = Speed;
+			speed.X = value;
+			Speed = speed;
 		}
-		/// <summary>
-		/// Gets or sets the rooms associated with the event.
-		/// </summary>
-		public RDRoom Rooms { get; set; } = new RDRoom([0]);
-		/// <summary>
-		/// Gets or sets the easing type for the event.
-		/// </summary>
-		[RDJsonCondition($"""
-			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
-			""")]
-		public EaseType Ease { get; set; } = EaseType.Linear;
-		/// <summary>
-		/// Gets or sets the content mode for the event.
-		/// </summary>
-		[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
-		public ContentModes ContentMode { get; set; } = ContentModes.ScaleToFill;
-		/// <summary>
-		/// Gets or sets the filter mode for the event.
-		/// </summary>
-		public BackgroundFilterModes Filter { get; set; } = BackgroundFilterModes.NearestNeighbor;
-		/// <summary>
-		/// Gets or sets the color for the background.
-		/// </summary>
-		[Tween]
-		public PaletteColor Color { get; set; } = RDColor.White;
-		/// <summary>
-		/// Gets or sets the interval for the event.
-		/// </summary>
-		[RDJsonCondition($"""
-			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
-			$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.Events.TilingTypes.Pulse
-			""")]
-		public float Interval
+	}
+	/// <summary>
+	/// Gets or sets the vertical scroll value.
+	/// </summary>
+	[Tween]
+	[RDJsonCondition($"""
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+		""")]
+	public float? ScrollY
+	{
+		get => Speed.Y;
+		set
 		{
-			get => field > 0.01f ? field : 0.01f;
-			set => field = value > 0.01f ? value : 0.01f;
+			RDPoint speed = Speed;
+			speed.Y = value;
+			Speed = speed;
 		}
-		/// <summary>
-		/// Gets or sets the background type for the event.
-		/// </summary>
-		public BackgroundTypes BackgroundType { get; set; } = BackgroundTypes.Color;
-		/// <summary>
-		/// Gets or sets the duration of the event.
-		/// </summary>
-		[RDJsonCondition($"""
-			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
-			""")]
-		public float Duration { get; set; } = 0f;
-		/// <summary>
-		/// Gets or sets the frames per second for the event.
-		/// </summary>
-		[RDJsonCondition($"""
-			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(Images)}.Count > 1
-			""")]
-		public float Fps { get; set; } = 30f;
-		/// <summary>
-		/// Gets or sets the list of images for the background.
-		/// </summary>
-		[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image")]
-		[RDJsonProperty("image")]
-		public List<FileReference> Images { get; set; } = [];
-		/// <summary>
-		/// Gets or sets the horizontal scroll value.
-		/// </summary>
-		[Tween]
-		[RDJsonCondition($"""
-			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
-			!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
-			""")]
-		public float? ScrollX
-		{
-			get => Speed.X;
-			set
-			{
-				RDPoint speed = Speed;
-				speed.X = value;
-				Speed = speed;
-			}
-		}
-		/// <summary>
-		/// Gets or sets the vertical scroll value.
-		/// </summary>
-		[Tween]
-		[RDJsonCondition($"""
-			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
-			!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
-			""")]
-		public float? ScrollY
-		{
-			get => Speed.Y;
-			set
-			{
-				RDPoint speed = Speed;
-				speed.Y = value;
-				Speed = speed;
-			}
-		}
-		/// <summary>
-		/// Gets or sets the speed of the background scrolling when the content mode is set to tiled.
-		/// </summary>
-		[RDJsonCondition($"""
-			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
-			($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
-			""")]
-		public RDPoint Speed { get; set; } = new(0, 0);
-		/// <summary>
-		/// Gets or sets the tiling type for the background.
-		/// </summary>
-		[RDJsonCondition($"""
-			$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
-			$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
-			""")]
-		public TilingTypes TilingType { get; set; } = TilingTypes.Scroll;
-		/// <summary>
-		/// Gets the event type.
-		/// </summary>
-		public override EventType Type { get; } = EventType.SetBackgroundColor;
-		/// <summary>
-		/// Gets the tab associated with the event.
-		/// </summary>
-		public override Tabs Tab { get; } = Tabs.Actions;
-		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Images];
-		IEnumerable<FileReference> IFileEvent.Files => [.. Images];
+	}
+	/// <summary>
+	/// Gets or sets the speed of the background scrolling when the content mode is set to tiled.
+	/// </summary>
+	[RDJsonCondition($"""
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled &&
+		($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+		""")]
+	public RDPoint Speed { get; set; } = new(0, 0);
+	/// <summary>
+	/// Gets or sets the tiling type for the background.
+	/// </summary>
+	[RDJsonCondition($"""
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.BackgroundTypes.Image &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.ContentModes.Tiled
+		""")]
+	public TilingTypes TilingType { get; set; } = TilingTypes.Scroll;
+	/// <summary>
+	/// Gets the event type.
+	/// </summary>
+	public override EventType Type  => EventType.SetBackgroundColor;
+	/// <summary>
+	/// Gets the tab associated with the event.
+	/// </summary>
+	public override Tab Tab => Tab.Actions;
+	IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Images];
+	IEnumerable<FileReference> IFileEvent.Files => [.. Images];
 
-		/// <summary>
-		/// Returns a string that represents the current object.
-		/// </summary>
-		/// <returns>A string that represents the current object.</returns>
-		public override string ToString() => BackgroundType == BackgroundTypes.Color
-		? base.ToString() + $" {Color}"
+	/// <summary>
+	/// Returns a string that represents the current object.
+	/// </summary>
+	public override string ToString() => BackgroundType == BackgroundTypes.Color
+	? base.ToString() + $" {Color}"
 #if NETSTANDARD
-		: base.ToString() + $" {string.Join(",", Images)}";
+	: base.ToString() + $" {string.Join(",", Images)}";
 #else
-		: base.ToString() + $" {string.Join(',', Images)}";
+	: base.ToString() + $" {string.Join(',', Images)}";
 #endif
-	}
+}
+/// <summary>
+/// Specifies the types of backgrounds.
+/// </summary>
+[RDJsonEnumSerializable]
+public enum BackgroundTypes
+{
 	/// <summary>
-	/// Specifies the types of backgrounds.
+	/// Background is a color.
 	/// </summary>
-	[RDJsonEnumSerializable]
-	public enum BackgroundTypes
-	{
-		/// <summary>
-		/// Background is a color.
-		/// </summary>
-		Color,
-		/// <summary>
-		/// Background is an image.
-		/// </summary>
-		Image
-	}
+	Color,
 	/// <summary>
-	/// Specifies the filter modes.
+	/// Background is an image.
 	/// </summary>
-	[RDJsonEnumSerializable]
-	public enum BackgroundFilterModes
-	{
-		/// <summary>
-		/// Nearest neighbor filtering.
-		/// </summary>
-		NearestNeighbor
-	}
+	Image
+}
+/// <summary>
+/// Specifies the filter modes.
+/// </summary>
+[RDJsonEnumSerializable]
+public enum BackgroundFilterModes
+{
+	/// <summary>
+	/// Nearest neighbor filtering.
+	/// </summary>
+	NearestNeighbor
 }

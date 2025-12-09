@@ -9,13 +9,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 public class MoveCamera : BaseEvent, IEaseEvent, IRoomEvent
 {
-	/// <summary>
-	/// Initializes a new instance of the <see cref="MoveCamera"/> class.
-	/// </summary>
-	public MoveCamera() { }
-	/// <summary>
-	/// Gets or sets the rooms associated with the event.
-	/// </summary>
+	///<inheritdoc/>
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);
 	/// <summary>
 	/// Gets or sets the camera position.
@@ -35,9 +29,7 @@ public class MoveCamera : BaseEvent, IEaseEvent, IRoomEvent
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
 	public RDExpression? Angle { get; set; }
-	/// <summary>
-	/// Gets or sets the duration of the event.
-	/// </summary>
+	///<inheritdoc/>
 	public float Duration { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets a value indicating whether the camera is a real physical device.
@@ -45,17 +37,10 @@ public class MoveCamera : BaseEvent, IEaseEvent, IRoomEvent
 	[RDJsonProperty("real")]
 	[RDJsonCondition($"$&.{nameof(RealCamera)} == true")]
 	public bool RealCamera { get; set; } = false;
-	/// <summary>
-	/// Gets or sets the easing type of the event.
-	/// </summary>
+	///<inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
-	/// <summary>
-	/// Gets the type of the event.
-	/// </summary>
+	///<inheritdoc/>
 	public override EventType Type => EventType.MoveCamera;
-
-	/// <summary>
-	/// Gets the tab associated with the event.
-	/// </summary>
-	public override Tabs Tab => Tabs.Actions;
+	///<inheritdoc/>
+	public override Tab Tab => Tab.Actions;
 }

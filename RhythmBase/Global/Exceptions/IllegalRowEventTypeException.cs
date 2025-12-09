@@ -14,7 +14,7 @@ namespace RhythmBase.Global.Exceptions
 		/// <summary>
 		/// Gets the row type that the event type is not legal for.
 		/// </summary>
-		public RowTypes RowType { get; }
+		public RowType RowType { get; }
 		/// <summary>
 		/// Gets the error message that explains the reason for the exception.
 		/// </summary>
@@ -24,7 +24,7 @@ namespace RhythmBase.Global.Exceptions
 		/// </summary>
 		/// <param name="eventType">The event type that caused the exception.</param>
 		/// <param name="rowType">The row type that the event type is not legal for.</param>
-		public IllegalRowEventTypeException(EventType eventType, RowTypes rowType)
+		public IllegalRowEventTypeException(EventType eventType, RowType rowType)
 		{
 			EventType = eventType;
 			RowType = rowType;

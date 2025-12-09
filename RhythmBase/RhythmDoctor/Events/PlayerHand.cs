@@ -4,7 +4,7 @@
 	/// Represents the hands of a player.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum PlayerHands
+	public enum PlayerHand
 	{
 		/// <summary>
 		/// The left hand of the player.

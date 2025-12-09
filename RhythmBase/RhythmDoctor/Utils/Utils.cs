@@ -39,15 +39,15 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>
 		/// <param name="pattern">List of patterns.</param>
 		/// <returns>String representation of patterns.</returns>
-		public static string GetPatternString(Patterns[] pattern) => string.Join("",
+		public static string GetPatternString(Pattern[] pattern) => string.Join("",
 				pattern?.Select(p => p switch
 				{
-					Patterns.None => "-",
-					Patterns.X => "x",
-					Patterns.Up => "u",
-					Patterns.Down => "d",
-					Patterns.Banana => "b",
-					Patterns.Return => "r",
+					Pattern.None => "-",
+					Pattern.X => "x",
+					Pattern.Up => "u",
+					Pattern.Down => "d",
+					Pattern.Banana => "b",
+					Pattern.Return => "r",
 					_ => throw new ConvertingException($"Invalid pattern: {p}")
 				}) ?? throw new ConvertingException($"Cannot write pattern."));
 		/// <summary>

@@ -427,12 +427,18 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 			settings.OnAfterWriting();
 		}
+		/// <summary>
+		/// Saves the current level data to a file in packed (ZIP) format at the specified path. (This method is not fully implemented yet.)
+		/// </summary>
+		/// <param name="filepath">The path of the file to create and write the packed level data to. Must not be null or empty.</param>
+		/// <param name="settings">Optional settings that control how the level data is written. If null, default settings are used.</param>
 		public void SaveToFileAsPack(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
 			using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
 			ZipArchive archive = new(stream, ZipArchiveMode.Create);
 			archive.CreateEntry("main.rdlevel");
+			throw new NotImplementedException();
 		}
 		/// <summary>
 		/// Asynchronously saves the current level to a file in JSON format.

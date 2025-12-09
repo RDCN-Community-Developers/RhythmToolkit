@@ -24,7 +24,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					result.Character = CharacterConverter.Read(ref reader, typeof(RDCharacter), options);//JsonSerializer.Deserialize<RDCharacter>(ref reader, options);
 				else if (propertyName.SequenceEqual("cpuMarker"u8) && EnumConverter.TryParse(reader.ValueSpan, out RDCharacters value0))
 					result.CpuMarker = value0;
-				else if (propertyName.SequenceEqual("rowType"u8) && EnumConverter.TryParse(reader.ValueSpan, out RowTypes value1))
+				else if (propertyName.SequenceEqual("rowType"u8) && EnumConverter.TryParse(reader.ValueSpan, out RowType value1))
 					result.RowType = value1;
 				else if (propertyName.SequenceEqual("rooms"u8))
 					result.Rooms = JsonSerializer.Deserialize<RDSingleRoom>(ref reader, options);

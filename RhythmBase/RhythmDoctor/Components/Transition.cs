@@ -4,7 +4,7 @@
 	/// Defines the possible transition types for hiding the row.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum Transitions
+	public enum Transition
 	{
 		/// <summary>
 		/// Smooth transition.

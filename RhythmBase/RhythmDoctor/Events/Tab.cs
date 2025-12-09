@@ -3,9 +3,7 @@
 	/// <summary>  
 	/// Specifies the different tabs available in the RhythmBase application.  
 	/// </summary>  
-	//[RDJsonEnumSerializable]
-	//[JsonConverter(typeof(TabsConverter))]
-	public enum Tabs
+	public enum Tab
 	{
 		/// <summary>  
 		/// Represents the Sounds tab.  

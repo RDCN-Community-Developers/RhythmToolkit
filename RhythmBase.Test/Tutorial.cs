@@ -425,7 +425,7 @@ namespace RhythmBase.Test
 
 			// Copy necessary sound events
 			foreach (IBaseEvent sound in audioLevel.Where(e =>
-				e.Tab == Tabs.Sounds &&       // Event is in the Sounds tab
+				e.Tab == Tab.Sounds &&       // Event is in the Sounds tab
 				e is not BaseRowAction &&     // Sound events contain row events; adding row events here would cause reference errors
 				e is not PlaySong &&          // No need to copy PlaySong if the music is the same
 				e is not SetCrotchetsPerBar)) // The timing of these events is independent of the number of crotchets per bar, so they don't need to be added
@@ -441,7 +441,7 @@ namespace RhythmBase.Test
 		public class MyEvent : ForwardEvent
 		{
 			// Override property  
-			public override Tabs Tab => Tabs.Actions;
+			public override Tab Tab => Tab.Actions;
 
 			// All implemented properties need to be bound to and checked for null in the ForwardEvent.ExtraData field.  
 

@@ -1,43 +1,61 @@
 ﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 
-namespace RhythmBase.RhythmDoctor.Events
+namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>  
+/// Represents an event to set the content of a window.  
+/// </summary>  
+public class SetWindowContent : BaseWindowEvent, IEaseEvent
+{
+	/// <inheritdoc/>
+	public override EventType Type => EventType.SetWindowContent;
+
+	/// <summary>  
+	/// Gets or sets the mode for displaying the content.  
+	/// Defaults to <see cref="WindowContentMode.OnTop"/>.  
+	/// </summary>  
+	public WindowContentMode ContentMode { get; set; } = WindowContentMode.OnTop;
+	/// <summary>
+	/// Gets or sets the index of the room.
+	/// </summary>
+	public int RoomIndex { get; set; } = 0;
+	/// <summary>
+	/// Gets or sets the position represented by a two-dimensional point.
+	/// </summary>
+	[Tween]
+	[RDJsonCondition($"$&.{nameof(Position)} is not null")]
+	public RDPoint? Position { get; set; }
+	/// <summary>
+	/// Gets or sets the zoom level for the content.
+	/// </summary>
+	[Tween]
+	[RDJsonCondition($"$&.{nameof(Zoom)} is not null")]
+	public int? Zoom { get; set; }
+	/// <summary>
+	/// Gets or sets the angle value.
+	/// </summary>
+	[Tween]
+	[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
+	public float? Angle { get; set; }
+	///<inheritdoc/>
+	public EaseType Ease { get; set; }
+	///<inheritdoc/>
+	public float Duration { get; set; }
+}
+
+/// <summary>  
+/// Specifies the available modes for displaying content in the window.  
+/// </summary>  
+[RDJsonEnumSerializable]
+public enum WindowContentMode
 {
 	/// <summary>  
-	/// Represents an event to set the content of a window.  
-	/// Inherits from <see cref="BaseWindowEvent"/>.  
+	/// Show all rooms in this window.  
 	/// </summary>  
-	public class SetWindowContent : BaseWindowEvent, IEaseEvent
-	{
-		/// <inheritdoc/>
-		public override EventType Type => EventType.SetWindowContent;
-
-		/// <summary>  
-		/// Gets or sets the mode for displaying the content.  
-		/// Defaults to <see cref="WindowContentModes.OnTop"/>.  
-		/// </summary>  
-		public WindowContentModes ContentMode { get; set; } = WindowContentModes.OnTop;
-		public int RoomIndex { get; set; } = 0;
-		[RDJsonCondition($"$&.{nameof(Position)} is not null")]
-		public RDPoint? Position { get; set; }
-		[RDJsonCondition($"$&.{nameof(Zoom)} is not null")]
-		public int? Zoom { get; set; }
-		[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
-		public float? Angle { get; set; }
-		public EaseType Ease { get; set; }
-		public float Duration { get; set; }
-	}
-
-	/// <summary>  
-	/// Specifies the available modes for displaying content in the window.  
-	/// </summary>  
-	[RDJsonEnumSerializable]
-	public enum WindowContentModes
-	{
-		/// <summary>  
-		/// Displays the content on top of other elements.  
-		/// </summary>  
-		OnTop,
-		Room,
-	}
+	OnTop,
+	/// <summary>
+	/// Show one room in this window.
+	/// </summary>
+	Room,
 }

@@ -4,7 +4,7 @@
 	/// Specifies the different modes for content display.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum ContentModes
+	public enum ContentMode
 	{
 		/// <summary>
 		/// Scales the content to fill the available space.

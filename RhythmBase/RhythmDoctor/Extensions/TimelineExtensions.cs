@@ -52,7 +52,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			List<CurveNode<int>>[] depths = new List<CurveNode<int>>[decoCount];
 			List<CurveNode<RDRoomIndex>>[] rooms = new List<CurveNode<RDRoomIndex>>[decoCount];
 
-			List<CurveNode<BlendTypes>>[] blends = new List<CurveNode<BlendTypes>>[decoCount];
+			List<CurveNode<BlendType>>[] blends = new List<CurveNode<BlendType>>[decoCount];
 
 			List<CurveNode<string>>[] animations = new List<CurveNode<string>>[decoCount];
 
@@ -71,9 +71,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			List<CurveNode<bool>>[] isHoldings = new List<CurveNode<bool>>[rowCount];
 
 			List<CurveNode<int>>[] beatIndices = new List<CurveNode<int>>[rowCount];
-			List<CurveNode<Patterns[]>>[] patterns = new List<CurveNode<Patterns[]>>[rowCount];
+			List<CurveNode<Pattern[]>>[] patterns = new List<CurveNode<Pattern[]>>[rowCount];
 
-			List<CurveNode<OneshotPulseShapeTypes>>[] pulseTypes = new List<CurveNode<OneshotPulseShapeTypes>>[rowCount];
+			List<CurveNode<OneshotPulseShapeType>>[] pulseTypes = new List<CurveNode<OneshotPulseShapeType>>[rowCount];
 			List<CurveNode<int>>[] beatCounts = new List<CurveNode<int>>[rowCount];
 			List<CurveNode<bool>>[] isSkippings = new List<CurveNode<bool>>[rowCount];
 			List<CurveNode<OneshotPulseState>>[] pulseStates = new List<CurveNode<OneshotPulseState>>[rowCount];
@@ -134,19 +134,19 @@ namespace RhythmBase.RhythmDoctor.Extensions
 					#endregion
 					#region rows
 					case AddClassicBeat addClassicBeat:
-						if (addClassicBeat.Parent is null || addClassicBeat.Parent.RowType is not RowTypes.Classic) continue;
+						if (addClassicBeat.Parent is null || addClassicBeat.Parent.RowType is not RowType.Classic) continue;
 
 						break;
 					case AddOneshotBeat addOneshotBeat:
-						if (addOneshotBeat.Parent is null || addOneshotBeat.Parent.RowType is not RowTypes.Oneshot) continue;
+						if (addOneshotBeat.Parent is null || addOneshotBeat.Parent.RowType is not RowType.Oneshot) continue;
 
 						break;
 					case PulseFreeTimeBeat pulseFreeTimeBeat:
-						if (pulseFreeTimeBeat.Parent is null || pulseFreeTimeBeat.Parent.RowType is not RowTypes.Oneshot) continue;
+						if (pulseFreeTimeBeat.Parent is null || pulseFreeTimeBeat.Parent.RowType is not RowType.Oneshot) continue;
 
 						break;
 					case SetRowXs setRowXs:
-						if (setRowXs.Parent is null || setRowXs.Parent.RowType is not RowTypes.Classic) continue;
+						if (setRowXs.Parent is null || setRowXs.Parent.RowType is not RowType.Classic) continue;
 
 						break;
 					case PlayExpression playExpression:
@@ -220,7 +220,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 					Visible = new([.. visibles[i]], level.Decorations[i].Visible),
 					Depth = new([.. depths[i]], level.Decorations[i].Depth),
 					Room = new([.. rooms[i]], level.Decorations[i].Room.Room),
-					Blend = new([.. blends[i]], BlendTypes.None),
+					Blend = new([.. blends[i]], BlendType.None),
 					Animation = new([.. animations[i]], ""),
 					Border = new([.. borders[i]], Border.None),
 					BorderColor = new([.. borderColors[i]], RDColor.Transparent, (from, to, x) => RDColor.Lerp(from, to, (float)x)),

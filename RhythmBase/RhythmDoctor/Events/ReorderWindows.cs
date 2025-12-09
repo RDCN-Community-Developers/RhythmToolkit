@@ -4,14 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RhythmBase.RhythmDoctor.Events
+namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>
+/// Represents an event that reorders the windows (window slots) in the Rhythm Doctor UI.
+/// </summary>
+public class ReorderWindows : BaseWindowEvent
 {
-	public class ReorderWindows : BaseWindowEvent
-	{
-		/// <inheritdoc/>
-		public override int Y => 0;
-		[RDJsonConverter(typeof(RoomOrderConverter))]
-		public RoomOrder Order { get; set; } = new();
-		public override EventType Type => EventType.ReorderWindows;
-	}
+	/// <inheritdoc/>
+	public override int Y => 0;
+
+	/// <summary>
+	/// Gets or sets the order of rooms used to rearrange windows.
+	/// </summary>
+	[RDJsonConverter(typeof(RoomOrderConverter))]
+	public RoomOrder Order { get; set; } = new();
+	///<inheritdoc/>
+	public override EventType Type => EventType.ReorderWindows;
 }

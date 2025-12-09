@@ -3,12 +3,12 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace RhythmBase.Converters
 {
-	internal class AnchorStyleConverter : JsonConverter<FloatingTextAnchorStyles>
+	internal class AnchorStyleConverter : JsonConverter<FloatingTextAnchorStyle>
 	{
-		public override void Write(Utf8JsonWriter writer, FloatingTextAnchorStyles value, JsonSerializerOptions serializer)
+		public override void Write(Utf8JsonWriter writer, FloatingTextAnchorStyle value, JsonSerializerOptions serializer)
 		{
-			FloatingTextAnchorStyles horizontal = value & (FloatingTextAnchorStyles.Left | FloatingTextAnchorStyles.Right);
-			FloatingTextAnchorStyles vertical = value & (FloatingTextAnchorStyles.Upper | FloatingTextAnchorStyles.Lower);
+			FloatingTextAnchorStyle horizontal = value & (FloatingTextAnchorStyle.Left | FloatingTextAnchorStyle.Right);
+			FloatingTextAnchorStyle vertical = value & (FloatingTextAnchorStyle.Upper | FloatingTextAnchorStyle.Lower);
 			writer.WriteStringValue(
 				(vertical == 0 ?
 					"Middle"
@@ -16,18 +16,18 @@ namespace RhythmBase.Converters
 				+ horizontal.ToString()
 			);
 		}
-		public override FloatingTextAnchorStyles Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
+		public override FloatingTextAnchorStyle Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions serializer)
 		{
 			ReadOnlySpan<byte> value = reader.ValueSpan;
-			FloatingTextAnchorStyles result = FloatingTextAnchorStyles.Center;
+			FloatingTextAnchorStyle result = FloatingTextAnchorStyle.Center;
 			switch (value)
 			{
 				case var v when v.StartsWith("Upper"u8):
-					result |= FloatingTextAnchorStyles.Upper;
+					result |= FloatingTextAnchorStyle.Upper;
 					value = value.Slice(5);
 					break;
 				case var v when v.StartsWith("Lower"u8):
-					result |= FloatingTextAnchorStyles.Lower;
+					result |= FloatingTextAnchorStyle.Lower;
 					value = value.Slice(5);
 					break;
 				case var v when v.StartsWith("Middle"u8):
@@ -39,10 +39,10 @@ namespace RhythmBase.Converters
 			switch (value)
 			{
 				case var v when v.SequenceEqual("Left"u8):
-					result |= FloatingTextAnchorStyles.Left;
+					result |= FloatingTextAnchorStyle.Left;
 					break;
 				case var v when v.SequenceEqual("Right"u8):
-					result |= FloatingTextAnchorStyles.Right;
+					result |= FloatingTextAnchorStyle.Right;
 					break;
 				case var v when v.SequenceEqual("Center"u8):
 					break;

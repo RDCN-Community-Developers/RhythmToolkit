@@ -1,37 +1,27 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 
-namespace RhythmBase.RhythmDoctor.Events
+namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>
+/// Represents an action to set the beat sound in the rhythm base.
+/// </summary>
+public class SetBeatSound : BaseRowAction, IAudioFileEvent
 {
 	/// <summary>
-	/// Represents an action to set the beat sound in the rhythm base.
+	/// Gets or sets the audio sound for the beat.
 	/// </summary>
-	public class SetBeatSound : BaseRowAction, IAudioFileEvent
+	public RDAudio Sound { get; set; } = new()
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SetBeatSound"/> class.
-		/// </summary>
-		public SetBeatSound()
-		{
-			Sound = new RDAudio();
-			Type = EventType.SetBeatSound;
-			Tab = Tabs.Sounds;
-		}
-		/// <summary>
-		/// Gets or sets the audio sound for the beat.
-		/// </summary>
-		public RDAudio Sound { get; set; } = new()
-		{
-			Filename = "Shaker",
-		};
-		/// <summary>
-		/// Gets the type of the event.
-		/// </summary>
-		public override EventType Type { get; }
-		/// <summary>
-		/// Gets the tab associated with the event.
-		/// </summary>
-		public override Tabs Tab { get; }
-		IEnumerable<FileReference> IAudioFileEvent.AudioFiles => Sound.IsFile ? [Sound.Filename] : [];
-		IEnumerable<FileReference> IFileEvent.Files => Sound.IsFile ? [Sound.Filename] : [];
-	}
+		Filename = "Shaker",
+	};
+	/// <summary>
+	/// Gets the type of the event.
+	/// </summary>
+	public override EventType Type => EventType.SetBeatSound;
+	/// <summary>
+	/// Gets the tab associated with the event.
+	/// </summary>
+	public override Tab Tab => Tab.Sounds;
+	IEnumerable<FileReference> IAudioFileEvent.AudioFiles => Sound.IsFile ? [Sound.Filename] : [];
+	IEnumerable<FileReference> IFileEvent.Files => Sound.IsFile ? [Sound.Filename] : [];
 }

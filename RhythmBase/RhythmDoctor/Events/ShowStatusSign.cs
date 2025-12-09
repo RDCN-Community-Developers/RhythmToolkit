@@ -6,12 +6,6 @@
 public class ShowStatusSign : BaseEvent, IDurationEvent
 {
 	/// <summary>
-	/// Initializes a new instance of the <see cref="ShowStatusSign"/> class.
-	/// </summary>
-	public ShowStatusSign()
-	{
-	}
-	/// <summary>
 	/// Gets or sets a value indicating whether to use beats.
 	/// </summary>
 	public bool UseBeats { get; set; } = true;
@@ -24,9 +18,7 @@ public class ShowStatusSign : BaseEvent, IDurationEvent
 	/// Gets or sets the text to display.
 	/// </summary>
 	public string Text { get; set; } = "";
-	/// <summary>
-	/// Gets or sets the duration of the status sign in seconds.
-	/// </summary>
+	///<inheritdoc/>
 	public float Duration { get; set; }
 	/// <summary>
 	/// Gets or sets the duration of the status sign as a <see cref="TimeSpan"/>.
@@ -47,17 +39,10 @@ public class ShowStatusSign : BaseEvent, IDurationEvent
 			Duration = (float)value.TotalSeconds;
 		}
 	}
-	/// <summary>
-	/// Gets the type of the event.
-	/// </summary>
+	///<inheritdoc/>
 	public override EventType Type { get; } = EventType.ShowStatusSign;
-	/// <summary>
-	/// Gets the tab of the event.
-	/// </summary>
-	public override Tabs Tab { get; } =  Tabs.Actions;
-	/// <summary>
-	/// Returns a string that represents the current object.
-	/// </summary>
-	/// <returns>A string that represents the current object.</returns>
+	///<inheritdoc/>
+	public override Tab Tab { get; } =  Tab.Actions;
+	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" {Text}";
 }

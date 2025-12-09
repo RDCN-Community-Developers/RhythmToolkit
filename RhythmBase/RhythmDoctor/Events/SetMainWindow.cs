@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RhythmBase.RhythmDoctor.Events
+namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>
+/// Represents an event that sets the main application window.
+/// </summary>
+public class SetMainWindow : BaseWindowEvent
 {
-    internal class SetMainWindow : BaseWindowEvent
-    {
-        public override EventType Type => EventType.SetMainWindow;
-	}
+	///<inheritdoc/>
+	public override EventType Type => EventType.SetMainWindow;
 }

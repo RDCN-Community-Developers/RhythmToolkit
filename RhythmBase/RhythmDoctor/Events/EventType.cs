@@ -1,331 +1,342 @@
-﻿namespace RhythmBase.RhythmDoctor.Events
+﻿namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>
+/// Rhythm Doctor event types.
+/// </summary>
+[RDJsonEnumSerializable]
+public enum EventType
 {
 	/// <summary>
-	/// Rhythm Doctor event types.
+	/// Add a classic beat.
 	/// </summary>
-	[RDJsonEnumSerializable]
-	public enum EventType
-	{
-		/// <summary>
-		/// Add a classic beat.
-		/// </summary>
-		AddClassicBeat,
-		/// <summary>
-		/// Add a free time beat.
-		/// </summary>
-		AddFreeTimeBeat,
-		/// <summary>
-		/// Add a oneshot beat.
-		/// </summary>
-		AddOneshotBeat,
-		/// <summary>
-		/// Advance the text.
-		/// </summary>
-		AdvanceText,
-		/// <summary>
-		/// Drop the bass.
-		/// </summary>
-		BassDrop,
-		/// <summary>  
-		/// Blend effect.  
-		/// </summary>  
-		Blend,
-		/// <summary>
-		/// Call a custom method.
-		/// </summary>
-		CallCustomMethod,
-		/// <summary>  
-		/// Change the character.  
-		/// </summary>  
-		ChangeCharacter,
-		/// <summary>
-		/// Change the players' rows.
-		/// </summary>
-		ChangePlayersRows,
-		/// <summary>
-		/// Add a comment.
-		/// </summary>
-		Comment,
-		/// <summary>
-		/// Custom flash event.
-		/// </summary>
-		CustomFlash,
-		DesktopColor,
-		/// <summary>
-		/// Fade the room.
-		/// </summary>
-		FadeRoom,
-		/// <summary>
-		/// Finish the level.
-		/// </summary>
-		FinishLevel,
-		/// <summary>
-		/// Flash the screen.
-		/// </summary>
-		Flash,
-		/// <summary>
-		/// Flip the screen.
-		/// </summary>
-		FlipScreen,
-		/// <summary>
-		/// Display floating text.
-		/// </summary>
-		FloatingText,
-		/// <summary>
-		/// Represents a decoration event that is not natively recognized by the engine,
-		/// used to preserve unknown or user-defined decoration event data during serialization and deserialization.
-		/// </summary>
-		ForwardDecorationEvent,
-		/// <summary>
-		/// Represents a general event that is not natively recognized by the engine,
-		/// used to preserve unknown or user-defined event data during serialization and deserialization.
-		/// </summary>
-		ForwardEvent,
-		/// <summary>
-		/// Represents a row event that is not natively recognized by the engine,
-		/// used to preserve unknown or user-defined row event data during serialization and deserialization.
-		/// </summary>
-		ForwardRowEvent,
-		/// <summary>
-		/// Hide the row.
-		/// </summary>
-		HideRow,
-		HideWindow,
-		/// <summary>
-		/// Invert the colors.
-		/// </summary>
-		InvertColors,
-		/// <summary>
-		/// A group of events, from user-defined event.
-		/// </summary>
-		MacroEvent,
-		/// <summary>
-		/// Mask the room.
-		/// </summary>
-		MaskRoom,
-		/// <summary>
-		/// Move an object.
-		/// </summary>
-		Move,
-		/// <summary>
-		/// Move the camera.
-		/// </summary>
-		MoveCamera,
-		/// <summary>
-		/// Move the room.
-		/// </summary>
-		MoveRoom,
-		/// <summary>
-		/// Move the row.
-		/// </summary>
-		MoveRow,
-		/// <summary>
-		/// Narrate row information.
-		/// </summary>
-		NarrateRowInfo,
-		/// <summary>
-		/// Start a new window dance.
-		/// </summary>
-		NewWindowDance,
-		/// <summary>
-		/// Paint the hands.
-		/// </summary>
-		PaintHands,
-		/// <summary>
-		/// Play an animation.
-		/// </summary>
-		PlayAnimation,
-		/// <summary>
-		/// Play an expression.
-		/// </summary>
-		PlayExpression,
-		/// <summary>
-		/// Play a song.
-		/// </summary>
-		PlaySong,
-		/// <summary>
-		/// Play a sound.
-		/// </summary>
-		PlaySound,
-		/// <summary>
-		/// Pulse the camera.
-		/// </summary>
-		PulseCamera,
-		/// <summary>
-		/// Pulse a free time beat.
-		/// </summary>
-		PulseFreeTimeBeat,
-		/// <summary>
-		/// Read the narration.
-		/// </summary>
-		ReadNarration,
-		/// <summary>
-		/// Rename the window.
-		/// </summary>
-		RenameWindow,
-		/// <summary>
-		/// Reorder the rooms.
-		/// </summary>
-		ReorderRooms,
-		/// <summary>  
-		/// Reorder the rows.  
-		/// </summary>  
-		ReorderRow,
-		/// <summary>  
-		/// Reorder the sprites.  
-		/// </summary>  
-		ReorderSprite,
-		ReorderWindows,
-		/// <summary>
-		/// Say "Ready, Get Set, Go".
-		/// </summary>
-		SayReadyGetSetGo,
-		/// <summary>
-		/// Set the background color.
-		/// </summary>
-		SetBackgroundColor,
-		/// <summary>
-		/// Set the beat sound.
-		/// </summary>
-		SetBeatSound,
-		/// <summary>
-		/// Set the beats per minute.
-		/// </summary>
-		SetBeatsPerMinute,
-		/// <summary>
-		/// Set the clap sounds.
-		/// </summary>
-		SetClapSounds,
-		/// <summary>
-		/// Set the counting sound.
-		/// </summary>
-		SetCountingSound,
-		/// <summary>
-		/// Set the crotchets per bar.
-		/// </summary>
-		SetCrotchetsPerBar,
-		/// <summary>
-		/// Set the foreground.
-		/// </summary>
-		SetForeground,
-		/// <summary>
-		/// Set the game sound.
-		/// </summary>
-		SetGameSound,
-		/// <summary>
-		/// Set the hand owner.
-		/// </summary>
-		SetHandOwner,
-		/// <summary>
-		/// Set the heart explode interval.
-		/// </summary>
-		SetHeartExplodeInterval,
-		/// <summary>
-		/// Set the heart explode volume.
-		/// </summary>
-		SetHeartExplodeVolume,
-		SetMainWindow,
-		/// <summary>
-		/// Set the oneshot wave.
-		/// </summary>
-		SetOneshotWave,
-		/// <summary>
-		/// Set the play style.
-		/// </summary>
-		SetPlayStyle,
-		/// <summary>
-		/// Set the room content mode.
-		/// </summary>
-		SetRoomContentMode,
-		/// <summary>
-		/// Set the room perspective.
-		/// </summary>
-		SetRoomPerspective,
-		/// <summary>
-		/// Set the row X positions.
-		/// </summary>
-		SetRowXs,
-		/// <summary>
-		/// Set the speed.
-		/// </summary>
-		SetSpeed,
-		/// <summary>
-		/// Set the theme.
-		/// </summary>
-		SetTheme,
-		/// <summary>
-		/// Set the VFX preset.
-		/// </summary>
-		SetVFXPreset,
-		/// <summary>
-		/// Set the visibility.
-		/// </summary>
-		SetVisible,
-		/// <summary>  
-		/// Sets the content of the window.  
-		/// </summary>  
-		SetWindowContent,
-		/// <summary>
-		/// Shake the screen.
-		/// </summary>
-		ShakeScreen,
-		/// <summary>
-		/// Shake the screen, the custom version.
-		/// </summary>
-		ShakeScreenCustom,
-		/// <summary>
-		/// Show the dialogue.
-		/// </summary>
-		ShowDialogue,
-		/// <summary>
-		/// Show the hands.
-		/// </summary>
-		ShowHands,
-		/// <summary>
-		/// Show the rooms.
-		/// </summary>
-		ShowRooms,
-		/// <summary>
-		/// Show the status sign.
-		/// </summary>
-		ShowStatusSign,
-		/// <summary>
-		/// Displays the rows of subdivisions.
-		/// </summary>
-		ShowSubdivisionsRows,
-		/// <summary>
-		/// Spin the rows.
-		/// </summary>
-		SpinningRows,
-		/// <summary>
-		/// Stutter effect.
-		/// </summary>
-		Stutter,
-		/// <summary>
-		/// Tag an action.
-		/// </summary>
-		TagAction,
-		/// <summary>
-		/// Text explosion effect.
-		/// </summary>
-		TextExplosion,
-		/// <summary>
-		/// Tile effect.
-		/// </summary>
-		Tile,
-		/// <summary>
-		/// Tint effect.
-		/// </summary>
-		Tint,
-		/// <summary>
-		/// Tint rows effect.
-		/// </summary>
-		TintRows,
-		/// <summary>  
-		/// Resize the game window.  
-		/// </summary>  
-		WindowResize,
+	AddClassicBeat,
+	/// <summary>
+	/// Add a free time beat.
+	/// </summary>
+	AddFreeTimeBeat,
+	/// <summary>
+	/// Add a oneshot beat.
+	/// </summary>
+	AddOneshotBeat,
+	/// <summary>
+	/// Advance the text.
+	/// </summary>
+	AdvanceText,
+	/// <summary>
+	/// Drop the bass.
+	/// </summary>
+	BassDrop,
+	/// <summary>  
+	/// Blend effect.  
+	/// </summary>  
+	Blend,
+	/// <summary>
+	/// Call a custom method.
+	/// </summary>
+	CallCustomMethod,
+	/// <summary>  
+	/// Change the character.  
+	/// </summary>  
+	ChangeCharacter,
+	/// <summary>
+	/// Change the players' rows.
+	/// </summary>
+	ChangePlayersRows,
+	/// <summary>
+	/// Add a comment.
+	/// </summary>
+	Comment,
+	/// <summary>
+	/// Custom flash event.
+	/// </summary>
+	CustomFlash,
+	/// <summary>
+	/// Set the desktop color.
+	/// </summary>
+	DesktopColor,
+	/// <summary>
+	/// Fade the room.
+	/// </summary>
+	FadeRoom,
+	/// <summary>
+	/// Finish the level.
+	/// </summary>
+	FinishLevel,
+	/// <summary>
+	/// Flash the screen.
+	/// </summary>
+	Flash,
+	/// <summary>
+	/// Flip the screen.
+	/// </summary>
+	FlipScreen,
+	/// <summary>
+	/// Display floating text.
+	/// </summary>
+	FloatingText,
+	/// <summary>
+	/// Represents a decoration event that is not natively recognized by the engine,
+	/// used to preserve unknown or user-defined decoration event data during serialization and deserialization.
+	/// </summary>
+	ForwardDecorationEvent,
+	/// <summary>
+	/// Represents a general event that is not natively recognized by the engine,
+	/// used to preserve unknown or user-defined event data during serialization and deserialization.
+	/// </summary>
+	ForwardEvent,
+	/// <summary>
+	/// Represents a row event that is not natively recognized by the engine,
+	/// used to preserve unknown or user-defined row event data during serialization and deserialization.
+	/// </summary>
+	ForwardRowEvent,
+	/// <summary>
+	/// Hide the row.
+	/// </summary>
+	HideRow,
+	/// <summary>
+	/// Hides the window.
+	/// </summary>
+	HideWindow,
+	/// <summary>
+	/// Invert the colors.
+	/// </summary>
+	InvertColors,
+	/// <summary>
+	/// A group of events, from user-defined event.
+	/// </summary>
+	MacroEvent,
+	/// <summary>
+	/// Mask the room.
+	/// </summary>
+	MaskRoom,
+	/// <summary>
+	/// Move an object.
+	/// </summary>
+	Move,
+	/// <summary>
+	/// Move the camera.
+	/// </summary>
+	MoveCamera,
+	/// <summary>
+	/// Move the room.
+	/// </summary>
+	MoveRoom,
+	/// <summary>
+	/// Move the row.
+	/// </summary>
+	MoveRow,
+	/// <summary>
+	/// Narrate row information.
+	/// </summary>
+	NarrateRowInfo,
+	/// <summary>
+	/// Start a new window dance.
+	/// </summary>
+	NewWindowDance,
+	/// <summary>
+	/// Paint the hands.
+	/// </summary>
+	PaintHands,
+	/// <summary>
+	/// Play an animation.
+	/// </summary>
+	PlayAnimation,
+	/// <summary>
+	/// Play an expression.
+	/// </summary>
+	PlayExpression,
+	/// <summary>
+	/// Play a song.
+	/// </summary>
+	PlaySong,
+	/// <summary>
+	/// Play a sound.
+	/// </summary>
+	PlaySound,
+	/// <summary>
+	/// Pulse the camera.
+	/// </summary>
+	PulseCamera,
+	/// <summary>
+	/// Pulse a free time beat.
+	/// </summary>
+	PulseFreeTimeBeat,
+	/// <summary>
+	/// Read the narration.
+	/// </summary>
+	ReadNarration,
+	/// <summary>
+	/// Rename the window.
+	/// </summary>
+	RenameWindow,
+	/// <summary>
+	/// Reorder the rooms.
+	/// </summary>
+	ReorderRooms,
+	/// <summary>  
+	/// Reorder the rows.  
+	/// </summary>  
+	ReorderRow,
+	/// <summary>  
+	/// Reorder the sprites.  
+	/// </summary>  
+	ReorderSprite,
+	/// <summary>
+	/// Reorder the windows.
+	/// </summary>
+	ReorderWindows,
+	/// <summary>
+	/// Say "Ready, Get Set, Go".
+	/// </summary>
+	SayReadyGetSetGo,
+	/// <summary>
+	/// Set the background color.
+	/// </summary>
+	SetBackgroundColor,
+	/// <summary>
+	/// Set the beat sound.
+	/// </summary>
+	SetBeatSound,
+	/// <summary>
+	/// Set the beats per minute.
+	/// </summary>
+	SetBeatsPerMinute,
+	/// <summary>
+	/// Set the clap sounds.
+	/// </summary>
+	SetClapSounds,
+	/// <summary>
+	/// Set the counting sound.
+	/// </summary>
+	SetCountingSound,
+	/// <summary>
+	/// Set the crotchets per bar.
+	/// </summary>
+	SetCrotchetsPerBar,
+	/// <summary>
+	/// Set the foreground.
+	/// </summary>
+	SetForeground,
+	/// <summary>
+	/// Set the game sound.
+	/// </summary>
+	SetGameSound,
+	/// <summary>
+	/// Set the hand owner.
+	/// </summary>
+	SetHandOwner,
+	/// <summary>
+	/// Set the heart explode interval.
+	/// </summary>
+	SetHeartExplodeInterval,
+	/// <summary>
+	/// Set the heart explode volume.
+	/// </summary>
+	SetHeartExplodeVolume,
+	/// <summary>
+	/// Sets the game's main window.
+	/// </summary>
+	SetMainWindow,
+	/// <summary>
+	/// Set the oneshot wave.
+	/// </summary>
+	SetOneshotWave,
+	/// <summary>
+	/// Set the play style.
+	/// </summary>
+	SetPlayStyle,
+	/// <summary>
+	/// Set the room content mode.
+	/// </summary>
+	SetRoomContentMode,
+	/// <summary>
+	/// Set the room perspective.
+	/// </summary>
+	SetRoomPerspective,
+	/// <summary>
+	/// Set the row X positions.
+	/// </summary>
+	SetRowXs,
+	/// <summary>
+	/// Set the speed.
+	/// </summary>
+	SetSpeed,
+	/// <summary>
+	/// Set the theme.
+	/// </summary>
+	SetTheme,
+	/// <summary>
+	/// Set the VFX preset.
+	/// </summary>
+	SetVFXPreset,
+	/// <summary>
+	/// Set the visibility.
+	/// </summary>
+	SetVisible,
+	/// <summary>  
+	/// Sets the content of the window.  
+	/// </summary>  
+	SetWindowContent,
+	/// <summary>
+	/// Shake the screen.
+	/// </summary>
+	ShakeScreen,
+	/// <summary>
+	/// Shake the screen, the custom version.
+	/// </summary>
+	ShakeScreenCustom,
+	/// <summary>
+	/// Show the dialogue.
+	/// </summary>
+	ShowDialogue,
+	/// <summary>
+	/// Show the hands.
+	/// </summary>
+	ShowHands,
+	/// <summary>
+	/// Show the rooms.
+	/// </summary>
+	ShowRooms,
+	/// <summary>
+	/// Show the status sign.
+	/// </summary>
+	ShowStatusSign,
+	/// <summary>
+	/// Displays the rows of subdivisions.
+	/// </summary>
+	ShowSubdivisionsRows,
+	/// <summary>
+	/// Spin the rows.
+	/// </summary>
+	SpinningRows,
+	/// <summary>
+	/// Stutter effect.
+	/// </summary>
+	Stutter,
+	/// <summary>
+	/// Tag an action.
+	/// </summary>
+	TagAction,
+	/// <summary>
+	/// Text explosion effect.
+	/// </summary>
+	TextExplosion,
+	/// <summary>
+	/// Tile effect.
+	/// </summary>
+	Tile,
+	/// <summary>
+	/// Tint effect.
+	/// </summary>
+	Tint,
+	/// <summary>
+	/// Tint rows effect.
+	/// </summary>
+	TintRows,
+	/// <summary>  
+	/// Resize the game window.  
+	/// </summary>  
+	WindowResize,
 #if DEBUG
 #endif
-	}
 }

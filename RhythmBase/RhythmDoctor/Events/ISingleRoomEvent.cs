@@ -1,14 +1,13 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
-namespace RhythmBase.RhythmDoctor.Events
+namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>
+/// Represents an event that occurs within a single room.
+/// </summary>
+public interface ISingleRoomEvent : IBaseEvent
 {
 	/// <summary>
-	/// Represents an event that occurs within a single room.
+	/// Gets or sets the room associated with the event.
 	/// </summary>
-	public interface ISingleRoomEvent : IBaseEvent
-	{
-		/// <summary>
-		/// Gets or sets the room associated with the event.
-		/// </summary>
-		RDSingleRoom Room { get; set; }
-	}
+	RDSingleRoom Room { get; set; }
 }

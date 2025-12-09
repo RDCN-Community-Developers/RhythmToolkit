@@ -31,10 +31,10 @@ namespace RhythmBase.Test
 		public void GenerateLevelWithAllEventTypes()
 		{
 			RDLevel level = [];
-			level.Rows.Add(new() { RowType = RowTypes.Classic });
-			level.Rows.Add(new() { RowType = RowTypes.Oneshot });
+			level.Rows.Add(new() { RowType = RowType.Classic });
+			level.Rows.Add(new() { RowType = RowType.Oneshot });
 			level.Decorations.Add([]);
-			Dictionary<Tabs, int> count = [];
+			Dictionary<Tab, int> count = [];
 			foreach (EventType type in ((EventType[])Enum.GetValues(typeof(EventType))).Where(i => !EventTypeUtils.CustomTypes.Contains(i)))
 			{
 				if (EventTypeUtils.CustomTypes.Contains(type))

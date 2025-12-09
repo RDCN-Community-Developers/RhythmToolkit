@@ -14,9 +14,9 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// of patterns, including arrays of Patterns and string-based pattern codes. Implicit conversion operators allow for
 	/// concise and readable code when working with pattern data. Each pattern is mapped to a specific character for string
 	/// representations, facilitating serialization and parsing scenarios.</remarks>
-	public struct PatternCollection : IEnumerable<Patterns>
+	public struct PatternCollection : IEnumerable<Pattern>
 	{
-		private Patterns[] _ps;
+		private Pattern[] _ps;
 		/// <summary>
 		/// Gets the number of elements contained in the collection.
 		/// </summary>
@@ -27,7 +27,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="index">The zero-based index of the pattern to get or set. Must be between 0 and 5, inclusive.</param>
 		/// <returns>The pattern located at the specified index.</returns>
 		/// <exception cref="IndexOutOfRangeException">Thrown when <paramref name="index"/> is less than 0 or greater than 5.</exception>
-		public readonly Patterns this[int index]
+		public readonly Pattern this[int index]
 		{
 			get
 			{
@@ -46,7 +46,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Initializes a new instance of the PatternCollection class with the specified patterns.
 		/// </summary>
 		/// <param name="pts">An array of Patterns objects to include in the collection. Cannot be null.</param>
-		public PatternCollection(params Patterns[] pts) => _ps = pts;
+		public PatternCollection(params Pattern[] pts) => _ps = pts;
 		/// <summary>
 		/// Initializes a new instance of the PatternCollection class by parsing a string of pattern characters.
 		/// </summary>
@@ -57,17 +57,17 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <exception cref="NotImplementedException">Thrown if the input string contains a character that does not correspond to a supported pattern.</exception>
 		public PatternCollection(string pts)
 		{
-			_ps = new Patterns[pts.Length];
+			_ps = new Pattern[pts.Length];
 			for (int i = 0; i < pts.Length; i++)
 			{
 				_ps[i] = pts[i] switch
 				{
-					'-' => Patterns.None,
-					'x' => Patterns.X,
-					'u' => Patterns.Up,
-					'd' => Patterns.Down,
-					'b' => Patterns.Banana,
-					'r' => Patterns.Return,
+					'-' => Pattern.None,
+					'x' => Pattern.X,
+					'u' => Pattern.Up,
+					'd' => Pattern.Down,
+					'b' => Pattern.Banana,
+					'r' => Pattern.Return,
 					_ => throw new NotImplementedException(),
 				};
 			}
@@ -76,14 +76,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Converts a PatternCollection instance to an array of Patterns objects.
 		/// </summary>
 		/// <param name="pc">The PatternCollection instance to convert.</param>
-		public static implicit operator Patterns[](PatternCollection pc) => pc._ps;
+		public static implicit operator Pattern[](PatternCollection pc) => pc._ps;
 		/// <summary>
 		/// Defines an implicit conversion from an array of Patterns to a PatternCollection.
 		/// </summary>
 		/// <remarks>This operator enables passing a Patterns array where a PatternCollection is expected, allowing
 		/// for more concise and readable code.</remarks>
 		/// <param name="ps">An array of Patterns to convert to a PatternCollection. Cannot be null.</param>
-		public static implicit operator PatternCollection(Patterns[] ps) => new(ps);
+		public static implicit operator PatternCollection(Pattern[] ps) => new(ps);
 		/// <summary>
 		/// Converts a PatternCollection instance to its string representation using pattern-specific characters.
 		/// </summary>
@@ -98,12 +98,12 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				sb.Append(pc._ps[i] switch
 				{
-					Patterns.None => '-',
-					Patterns.X => 'x',
-					Patterns.Up => 'u',
-					Patterns.Down => 'd',
-					Patterns.Banana => 'b',
-					Patterns.Return => 'r',
+					Pattern.None => '-',
+					Pattern.X => 'x',
+					Pattern.Up => 'u',
+					Pattern.Down => 'd',
+					Pattern.Banana => 'b',
+					Pattern.Return => 'r',
 					_ => throw new NotImplementedException(),
 				});
 			}
@@ -121,17 +121,17 @@ namespace RhythmBase.RhythmDoctor.Components
 		public static implicit operator PatternCollection(string s)
 		{
 			PatternCollection pc = new();
-			pc._ps = new Patterns[s.Length];
+			pc._ps = new Pattern[s.Length];
 			for (int i = 0; i < s.Length; i++)
 			{
 				pc._ps[i] = s[i] switch
 				{
-					'-' => Patterns.None,
-					'x' => Patterns.X,
-					'u' => Patterns.Up,
-					'd' => Patterns.Down,
-					'b' => Patterns.Banana,
-					'r' => Patterns.Return,
+					'-' => Pattern.None,
+					'x' => Pattern.X,
+					'u' => Pattern.Up,
+					'd' => Pattern.Down,
+					'b' => Pattern.Banana,
+					'r' => Pattern.Return,
 					_ => throw new NotImplementedException(),
 				};
 			}
@@ -141,9 +141,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns an enumerator that iterates through the collection of patterns.
 		/// </summary>
 		/// <returns>An enumerator that can be used to iterate through the collection of patterns.</returns>
-		public IEnumerator<Patterns> GetEnumerator()
+		public IEnumerator<Pattern> GetEnumerator()
 		{
-			foreach (Patterns p in _ps)
+			foreach (Pattern p in _ps)
 				yield return p;
 		}
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

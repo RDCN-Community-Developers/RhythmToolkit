@@ -6,27 +6,22 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event to add a one-shot beat.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-//[RDJsonObjectNotSerializable]
 public class AddOneshotBeat : BaseBeat
 {
 	/// <summary>
-	/// Initializes a new instance of the <see cref="AddOneshotBeat"/> class.
-	/// </summary>
-	public AddOneshotBeat() { }
-	/// <summary>
 	/// Gets or sets the type of pulse.
 	/// </summary>
-	public OneshotPulseShapeTypes PulseType { get; set; }
+	public OneshotPulseShapeType PulseType { get; set; }
 	/// <summary>
 	/// Gets or sets the number of subdivisions.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(PulseType)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeTypes)}.{nameof(OneshotPulseShapeTypes.Wave)}")]
+	[RDJsonCondition($"$&.{nameof(PulseType)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Wave)}")]
 	public byte Subdivisions { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets a value indicating whether the subdivision sound is enabled.
 	/// </summary>
 	[RDJsonProperty("subdivSound")]
-	[RDJsonCondition($"$&.{nameof(PulseType)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeTypes)}.{nameof(OneshotPulseShapeTypes.Wave)}")]
+	[RDJsonCondition($"$&.{nameof(PulseType)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Wave)}")]
 	public bool SubdivisionSound { get; set; }
 	/// <summary>
 	/// Gets or sets the tick value.
@@ -41,7 +36,7 @@ public class AddOneshotBeat : BaseBeat
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(Skipshot)} ||
-		$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotTypes)}.{nameof(OneshotTypes.Wave)} ||
+		$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotType)}.{nameof(OneshotType.Wave)} ||
 		$&.{nameof(Loops)} > 0
 		""")]
 	public float Interval { get; set; } = 2;
@@ -66,8 +61,8 @@ public class AddOneshotBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets the freeze burn mode.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotTypes)}.{nameof(OneshotTypes.Wave)}")]
-	public OneshotTypes FreezeBurnMode { get; set; }
+	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotType)}.{nameof(OneshotType.Wave)}")]
+	public OneshotType FreezeBurnMode { get; set; }
 	/// <summary>
 	/// Gets or sets the delay value.
 	/// </summary>
@@ -75,7 +70,7 @@ public class AddOneshotBeat : BaseBeat
 	public float Delay
 	{
 		get;
-		set => field = FreezeBurnMode != OneshotTypes.Freezeshot
+		set => field = FreezeBurnMode != OneshotType.Freezeshot
 			? 0f : value <= 0f
 				? 0.5f : value;
 	} = 0f;
@@ -88,11 +83,8 @@ public class AddOneshotBeat : BaseBeat
 /// <summary>
 /// Represents the freeze burn mode.
 /// </summary>
-/// <remarks>
-/// The freeze burn mode determines the effect applied to the beat.
-/// </remarks>
 [RDJsonEnumSerializable]
-public enum OneshotTypes
+public enum OneshotType
 {
 	/// <summary>
 	/// A wave freeze burn mode.
@@ -110,11 +102,8 @@ public enum OneshotTypes
 /// <summary>
 /// Represents the type of pulse.
 /// </summary>
-/// <remarks>
-/// The pulse type determines the shape of the beat's waveform.
-/// </remarks>
 [RDJsonEnumSerializable]
-public enum OneshotPulseShapeTypes
+public enum OneshotPulseShapeType
 {
 	/// <summary>
 	/// A wave pulse.
@@ -133,10 +122,22 @@ public enum OneshotPulseShapeTypes
 	/// </summary>
 	Heart
 }
+/// <summary>
+/// Specifies when a hold cue should be triggered for a oneshot beat.
+/// </summary>
 [RDJsonEnumSerializable]
 public enum HoldCue
 {
+	/// <summary>
+	/// Let the system select the most appropriate cue timing automatically.
+	/// </summary>
 	Auto,
+	/// <summary>
+	/// Force the hold cue to trigger earlier than the default timing.
+	/// </summary>
 	Early,
+	/// <summary>
+	/// Force the hold cue to trigger later than the default timing.
+	/// </summary>
 	Late,
 }

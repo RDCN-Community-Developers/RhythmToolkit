@@ -69,6 +69,12 @@ namespace RhythmBase.Global.Settings
 		/// Gets or sets the method used to process zip files.
 		/// </summary>
 		public ZipFileProcessMethod ZipFileProcessMethod { get; set; } = ZipFileProcessMethod.AllFiles;
+		/// <summary>
+		/// Gets the collection of file references associated with this instance.
+		/// </summary>
+		/// <remarks>The returned collection is read-only and reflects the current set of file references.
+		/// Modifications to the collection itself are not supported; to update the set of file references, use the
+		/// appropriate methods provided by the class.</remarks>
 		public HashSet<FileReference> FileReferences { get; } = [];
 		/// <summary>
 		/// Stores unreadable event data when the <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.UnreadableEventsHandling" /> is <see cref="F:RhythmBase.Global.Settings.UnreadableEventHandling.Store" />.

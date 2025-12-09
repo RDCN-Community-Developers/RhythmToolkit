@@ -10,10 +10,6 @@ namespace RhythmBase.RhythmDoctor.Events;
 public class MoveRoom : BaseEvent, IEaseEvent
 {
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MoveRoom"/> class.
-	/// </summary>
-	public MoveRoom() { }
-	/// <summary>
 	/// Gets or sets the position of the room.
 	/// </summary>
 	[Tween]
@@ -38,23 +34,14 @@ public class MoveRoom : BaseEvent, IEaseEvent
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Pivot)} is not null")]
 	public RDPoint? Pivot { get; set; } = null;
-	/// <summary>
-	/// Gets or sets the duration of the move event.
-	/// </summary>
+	///<inheritdoc/>
 	public float Duration { get; set; } = 1;
-	/// <summary>
-	/// Gets or sets the easing type of the move event.
-	/// </summary>
+	///<inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
-	/// <summary>
-	/// Gets the type of the event.
-	/// </summary>
+	///<inheritdoc/>
 	public override EventType Type => EventType.MoveRoom;
-
-	/// <summary>
-	/// Gets the tab associated with the event.
-	/// </summary>
-	public override Tabs Tab => Tabs.Rooms;
+	///<inheritdoc/>
+	public override Tab Tab => Tab.Rooms;
 
 	/// <summary>
 	/// Gets the room associated with the event.

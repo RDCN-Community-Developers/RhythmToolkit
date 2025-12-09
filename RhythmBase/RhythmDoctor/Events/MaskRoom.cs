@@ -1,110 +1,100 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
 
-namespace RhythmBase.RhythmDoctor.Events
+namespace RhythmBase.RhythmDoctor.Events;
+
+/// <summary>
+/// Represents a MaskRoom event in the RhythmBase system.
+/// </summary>
+public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 {
 	/// <summary>
-	/// Represents a MaskRoom event in the RhythmBase system.
+	/// Gets or sets the type of the mask.
 	/// </summary>
-	public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="MaskRoom"/> class.
-		/// </summary>
-		public MaskRoom() { }
-		/// <summary>
-		/// Gets or sets the type of the mask.
-		/// </summary>
-		public RoomMaskTypes MaskType { get; set; } = RoomMaskTypes.None;
-		/// <summary>
-		/// Gets or sets the alpha mode.
-		/// </summary>
-		[RDJsonCondition($"$&.{nameof(MaskType)} != RhythmBase.RhythmDoctor.Events.RoomMaskTypes.None")]
-		public MaskAlphaModes AlphaMode { get; set; } = MaskAlphaModes.Normal;
-		/// <summary>
-		/// Gets or sets the source room.
-		/// </summary>
-		[RDJsonConverter(typeof(RoomIndexConverter))]
-		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Room")]
-		public RDRoomIndex SourceRoom { get; set; } = RDRoomIndex.Room1;
-		/// <summary>
-		/// Gets or sets the list of image assets.
-		/// </summary>
-		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Image")]
-		public List<FileReference> Image { get; set; } = [];
-		/// <summary>
-		/// Gets or sets the frames per second.
-		/// </summary>
-		[RDJsonCondition($"$&.{nameof(Image)}.Count > 1")]
-		public uint Fps { get; set; } = 30;
-		/// <summary>
-		/// Gets or sets the key color.
-		/// </summary>
-		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
-		public PaletteColor KeyColor { get; set; } = RDColor.White;
-		/// <summary>
-		/// Gets or sets the color cutoff value.
-		/// </summary>
-		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
-		public int ColorCutoff { get; set; } = 0;
-		/// <summary>
-		/// Gets or sets the color feathering value.
-		/// </summary>
-		[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
-		public int ColorFeathering { get; set; } = 0;
-		/// <summary>
-		/// Gets the event type.
-		/// </summary>
-		public override EventType Type => EventType.MaskRoom;
-
-		/// <summary>
-		/// Gets the tab type.
-		/// </summary>
-		public override Tabs Tab => Tabs.Rooms;
-
-		/// <summary>
-		/// Gets the room associated with the event.
-		/// </summary>
-		public RDRoom Room => new RDSingleRoom(checked((byte)Y));
-		IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Image];
-		IEnumerable<FileReference> IFileEvent.Files => [.. Image];
-	}
+	public RoomMaskTypes MaskType { get; set; } = RoomMaskTypes.None;
 	/// <summary>
-	/// Defines the types of masks available.
+	/// Gets or sets the alpha mode.
 	/// </summary>
-	[RDJsonEnumSerializable]
-	public enum RoomMaskTypes
-	{
-		/// <summary>
-		/// Uses an image as the mask.
-		/// </summary>
-		Image,
-		/// <summary>
-		/// Uses a room as the mask.
-		/// </summary>
-		Room,
-		/// <summary>
-		/// Uses a color as the mask.
-		/// </summary>
-		Color,
-		/// <summary>
-		/// No mask is applied.
-		/// </summary>
-		None
-	}
+	[RDJsonCondition($"$&.{nameof(MaskType)} != RhythmBase.RhythmDoctor.Events.RoomMaskTypes.None")]
+	public MaskAlphaModes AlphaMode { get; set; } = MaskAlphaModes.Normal;
 	/// <summary>
-	/// Defines the alpha modes available.
+	/// Gets or sets the source room.
 	/// </summary>
-	[RDJsonEnumSerializable]
-	public enum MaskAlphaModes
-	{
-		/// <summary>
-		/// Normal alpha mode.
-		/// </summary>
-		Normal,
-		/// <summary>
-		/// Inverted alpha mode.
-		/// </summary>
-		Inverted
-	}
+	[RDJsonConverter(typeof(RoomIndexConverter))]
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Room")]
+	public RDRoomIndex SourceRoom { get; set; } = RDRoomIndex.Room1;
+	/// <summary>
+	/// Gets or sets the list of image assets.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Image")]
+	public List<FileReference> Image { get; set; } = [];
+	/// <summary>
+	/// Gets or sets the frames per second.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(Image)}.Count > 1")]
+	public uint Fps { get; set; } = 30;
+	/// <summary>
+	/// Gets or sets the key color.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
+	public PaletteColor KeyColor { get; set; } = RDColor.White;
+	/// <summary>
+	/// Gets or sets the color cutoff value.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
+	public int ColorCutoff { get; set; } = 0;
+	/// <summary>
+	/// Gets or sets the color feathering value.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
+	public int ColorFeathering { get; set; } = 0;
+	///<inheritdoc/>
+	public override EventType Type => EventType.MaskRoom;
+	///<inheritdoc/>
+	public override Tab Tab => Tab.Rooms;
+
+	/// <summary>
+	/// Gets the room associated with the event.
+	/// </summary>
+	public RDRoom Room => new RDSingleRoom(checked((byte)Y));
+	IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Image];
+	IEnumerable<FileReference> IFileEvent.Files => [.. Image];
+}
+/// <summary>
+/// Defines the types of masks available.
+/// </summary>
+[RDJsonEnumSerializable]
+public enum RoomMaskTypes
+{
+	/// <summary>
+	/// Uses an image as the mask.
+	/// </summary>
+	Image,
+	/// <summary>
+	/// Uses a room as the mask.
+	/// </summary>
+	Room,
+	/// <summary>
+	/// Uses a color as the mask.
+	/// </summary>
+	Color,
+	/// <summary>
+	/// No mask is applied.
+	/// </summary>
+	None
+}
+/// <summary>
+/// Defines the alpha modes available.
+/// </summary>
+[RDJsonEnumSerializable]
+public enum MaskAlphaModes
+{
+	/// <summary>
+	/// Normal alpha mode.
+	/// </summary>
+	Normal,
+	/// <summary>
+	/// Inverted alpha mode.
+	/// </summary>
+	Inverted
 }

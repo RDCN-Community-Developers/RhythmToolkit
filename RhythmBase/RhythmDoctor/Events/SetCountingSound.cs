@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents the different voice sources for the counting sound.
 /// </summary>
 [RDJsonEnumSerializable]
-public enum CountingSoundVoiceSources
+public enum CountingSoundVoiceSource
 {
 	/// <summary>
 	/// Jyi Count
@@ -117,16 +117,10 @@ public enum CountingSoundVoiceSources
 public class SetCountingSound : BaseRowAction
 {
 	/// <summary>
-	/// Initializes a new instance of the <see cref="SetCountingSound"/> class.
-	/// </summary>
-	public SetCountingSound()
-	{
-	}
-	/// <summary>
 	/// Gets or sets the voice source for the counting sound.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(VoiceSource)} != RhythmBase.RhythmDoctor.Events.CountingSoundVoiceSources.Custom")]
-	public CountingSoundVoiceSources VoiceSource { get; set; } = CountingSoundVoiceSources.JyiCount;
+	public CountingSoundVoiceSource VoiceSource { get; set; } = CountingSoundVoiceSource.JyiCount;
 	/// <summary>
 	/// Gets or sets a value indicating whether this <see cref="SetCountingSound"/> is enabled.
 	/// </summary>
@@ -161,5 +155,5 @@ public class SetCountingSound : BaseRowAction
 	/// <summary>
 	/// Gets the tab associated with the event.
 	/// </summary>
-	public override Tabs Tab => Tabs.Sounds;
+	public override Tab Tab => Tab.Sounds;
 }

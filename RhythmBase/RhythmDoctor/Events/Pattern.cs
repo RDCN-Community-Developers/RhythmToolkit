@@ -3,7 +3,7 @@
 	/// <summary>  
 	/// Enum representing different rhythm patterns.  
 	/// </summary>  
-	public enum Patterns
+	public enum Pattern
 	{
 		/// <summary>  
 		/// No pattern.  

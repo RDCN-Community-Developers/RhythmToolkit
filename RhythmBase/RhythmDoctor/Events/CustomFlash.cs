@@ -8,10 +8,6 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 public class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 {
-	/// <summary>
-	/// Initializes a new instance of the <see cref="CustomFlash"/> class.
-	/// </summary>
-	public CustomFlash() { }
 	/// <inheritdoc />
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);
 	/// <inheritdoc />
@@ -48,7 +44,7 @@ public class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	public override EventType Type => EventType.CustomFlash;
 
 	/// <inheritdoc />
-	public override Tabs Tab => Tabs.Actions;
+	public override Tab Tab => Tab.Actions;
 
 	/// <inheritdoc />
 	public override string ToString() => base.ToString() + $" {StartColor} {StartOpacity}%=>{EndColor} {EndOpacity}%";

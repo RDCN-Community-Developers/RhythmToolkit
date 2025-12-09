@@ -8,25 +8,13 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents a base class for grouping events in Rhythm Doctor.  
 /// </summary>  
-/// <remarks>  
-/// This class provides functionality for managing and processing collections of events,  
-/// including tagging, parent association, and event generation.  
-/// </remarks>
 [RDJsonObjectNotSerializable]
 public abstract partial class MacroEvent : BaseEvent, IAudioFileEvent, IImageFileEvent
 {
-	/// <summary>
-	/// Gets the type of the event, which is always <see cref="EventType.MacroEvent"/> for this class.
-	/// </summary>
+	///<inheritdoc/>
 	public override EventType Type => EventType.MacroEvent;
-	/// <summary>
-	/// Gets the tab associated with this event, which is <see cref="Tabs.Unknown"/> by default.
-	/// </summary>
-	public override Tabs Tab => Tabs.Unknown;
-	/// <summary>  
-	/// Initializes a new instance of the <see cref="MacroEvent"/> class.  
-	/// </summary>  
-	internal MacroEvent() { }
+	///<inheritdoc/>
+	public override Tab Tab => Tab.Unknown;
 	/// <summary>
 	/// Retrieves the collection of events contained within this group.
 	/// </summary>
@@ -35,10 +23,6 @@ public abstract partial class MacroEvent : BaseEvent, IAudioFileEvent, IImageFil
 	/// <summary>  
 	/// Sets the parent row for the specified event.  
 	/// </summary>  
-	/// <typeparam name="TEvent">The type of the event, which must inherit from <see cref="BaseRowAction"/>.</typeparam>  
-	/// <param name="ev">The event to set the parent for.</param>  
-	/// <param name="row">The parent row to associate with the event.</param>  
-	/// <returns>The event with its parent row set.</returns>  
 	protected static TEvent SetParent<TEvent>(TEvent ev, Row row) where TEvent : BaseRowAction
 	{
 		ev._row = row.Index;
@@ -47,10 +31,6 @@ public abstract partial class MacroEvent : BaseEvent, IAudioFileEvent, IImageFil
 	/// <summary>  
 	/// Sets the parent decoration for the specified event.  
 	/// </summary>  
-	/// <typeparam name="TEvent">The type of the event, which must inherit from <see cref="BaseDecorationAction"/>.</typeparam>  
-	/// <param name="ev">The event to set the parent for.</param>  
-	/// <param name="deco">The parent decoration to associate with the event.</param>  
-	/// <returns>The event with its parent decoration set.</returns>  
 	protected static TEvent SetParent<TEvent>(TEvent ev, Decoration deco) where TEvent : BaseDecorationAction
 	{
 		ev._decoId = deco.Id;
@@ -59,18 +39,10 @@ public abstract partial class MacroEvent : BaseEvent, IAudioFileEvent, IImageFil
 	/// <summary>  
 	/// Gets the collection of rows associated with the current beat's base level.  
 	/// </summary>  
-	/// <remarks>  
-	/// This property retrieves the rows from the base level of the current beat.  
-	/// If the base level is null, the property will return null.  
-	/// </remarks>  
 	protected RowCollection? Rows => _beat.BaseLevel?.Rows;
 	/// <summary>  
 	/// Gets the collection of decorations associated with the current beat's base level.  
 	/// </summary>  
-	/// <remarks>  
-	/// This property retrieves the decorations from the base level of the current beat.  
-	/// If the base level is null, the property will return null.  
-	/// </remarks>  
 	protected DecorationCollection? Decorations => _beat.BaseLevel?.Decorations;
 	internal IEnumerable<BaseEvent> GenerateTaggedEvents(string tag)
 	{

@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Specifies the category of the narration.  
 /// </summary>  
 [RDJsonEnumSerializable]
-public enum NarrationCategorys
+public enum NarrationCategory
 {
 	/// <summary>  
 	/// Fallback category, used as a default when no other category applies.  
@@ -42,7 +42,6 @@ public enum NarrationCategorys
 /// <summary>
 /// Represents a floating text event in a room.
 /// </summary>
-//[RDJsonObjectNotSerializable]
 public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 {
 	/// <summary>
@@ -52,7 +51,7 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// <summary>
 	/// Gets the tab associated with the event.
 	/// </summary>
-	public override Tabs Tab => Tabs.Actions;
+	public override Tab Tab => Tab.Actions;
 	/// <summary>
 	/// Gets the list of child advance texts.
 	/// </summary>
@@ -97,7 +96,7 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// Gets or sets the anchor style of the text.
 	/// </summary>
 	[RDJsonConverter(typeof(FloatingTextAnchorStylesConverter))]
-	public FloatingTextAnchorStyles Anchor { get; set; } = FloatingTextAnchorStyles.Center;
+	public FloatingTextAnchorStyle Anchor { get; set; } = FloatingTextAnchorStyle.Center;
 	/// <summary>
 	/// Gets or sets a value indicating whether to narrate the text.
 	/// </summary>
@@ -107,11 +106,11 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// Gets or sets the narration category of the text.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Narrate)}")]
-	public NarrationCategorys NarrationCategory { get; set; } = NarrationCategorys.Subtitles;
+	public NarrationCategory NarrationCategory { get; set; } = NarrationCategory.Subtitles;
 	/// <summary>
 	/// Gets or sets the mode of the text.
 	/// </summary>
-	public FloatingTextFadeOutModes Mode { get; set; } = FloatingTextFadeOutModes.FadeOut;
+	public FloatingTextFadeOutMode Mode { get; set; } = FloatingTextFadeOutMode.FadeOut;
 	/// <summary>
 	/// Gets or sets a value indicating whether to show child texts.
 	/// </summary>
@@ -127,7 +126,6 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// <summary>
 	/// Returns a string that represents the current object.
 	/// </summary>
-	/// <returns>A string that represents the current object.</returns>
 	public override string ToString() => base.ToString() + $" {Text}";
 	private readonly List<AdvanceText> _children = [];
 }
@@ -136,7 +134,7 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 /// </summary>
 [Flags]
 [RDJsonEnumSerializable]
-public enum FloatingTextFadeOutModes
+public enum FloatingTextFadeOutMode
 {
 	/// <summary>
 	/// The text will fade out gradually.
@@ -151,7 +149,7 @@ public enum FloatingTextFadeOutModes
 /// Specifies the anchor style of the text.
 /// </summary>
 [Flags]
-public enum FloatingTextAnchorStyles
+public enum FloatingTextAnchorStyle
 {
 	/// <summary>
 	/// The lower anchor style.
