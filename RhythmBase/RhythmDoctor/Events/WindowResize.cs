@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents a window resize event.  
 /// </summary>
-public class WindowResize : BaseEvent, IEaseEvent, IRoomEvent
+public class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.WindowResize;
@@ -31,7 +31,7 @@ public class WindowResize : BaseEvent, IEaseEvent, IRoomEvent
 	/// </summary>
 	[RDJsonProperty("tab")]
 	[RDJsonConverter(typeof(TabsConverter))]
-	[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.Tabs.Windows")]
+	[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.{nameof(Tabs)}.{nameof(Tabs.Windows)}")]
 	public Tabs CustomTab
 	{
 		get;

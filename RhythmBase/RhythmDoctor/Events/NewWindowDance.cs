@@ -34,7 +34,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents a new window dance event.
 	/// </summary>
-	public class NewWindowDance : BaseEvent, IEaseEvent
+	public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NewWindowDance"/> class.
