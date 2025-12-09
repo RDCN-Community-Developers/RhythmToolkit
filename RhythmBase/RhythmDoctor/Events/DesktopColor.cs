@@ -6,7 +6,7 @@ using System.Text;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
-	public class DesktopColor : BaseEvent, IEaseEvent
+	public class DesktopColor : BaseWindowEvent, IEaseEvent
 	{
 		public override int Y => 0;
 		[RDJsonCondition($"$&.{nameof(StartColor)} is not null")]
@@ -14,7 +14,6 @@ namespace RhythmBase.RhythmDoctor.Events
 		[RDJsonCondition($"$&.{nameof(EndColor)} is not null")]
 		public PaletteColor? EndColor { get; set; }
 		public override EventType Type => EventType.DesktopColor;
-		public override Tabs Tab { get; }
 		public EaseType Ease { get; set; }
 		public float Duration { get; set; }
 	}
