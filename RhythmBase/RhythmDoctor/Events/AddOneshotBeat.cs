@@ -66,7 +66,7 @@ public class AddOneshotBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets the delay value.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} == RhythmBase.RhythmDoctor.Events.OneshotTypes.Freezeshot")]
+	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} == RhythmBase.RhythmDoctor.Events.{nameof(OneshotType)}.{nameof(OneshotType.Freezeshot)}")]
 	public float Delay
 	{
 		get;

@@ -11,22 +11,22 @@ public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 	/// <summary>
 	/// Gets or sets the type of the mask.
 	/// </summary>
-	public RoomMaskTypes MaskType { get; set; } = RoomMaskTypes.None;
+	public RoomMaskType MaskType { get; set; } = RoomMaskType.None;
 	/// <summary>
 	/// Gets or sets the alpha mode.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(MaskType)} != RhythmBase.RhythmDoctor.Events.RoomMaskTypes.None")]
+	[RDJsonCondition($"$&.{nameof(MaskType)} != RhythmBase.RhythmDoctor.Events.{nameof(RoomMaskType)}.{nameof(RoomMaskType.None)}")]
 	public MaskAlphaModes AlphaMode { get; set; } = MaskAlphaModes.Normal;
 	/// <summary>
 	/// Gets or sets the source room.
 	/// </summary>
 	[RDJsonConverter(typeof(RoomIndexConverter))]
-	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Room")]
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.{nameof(RoomMaskType)}.{nameof(RoomMaskType.Room)}")]
 	public RDRoomIndex SourceRoom { get; set; } = RDRoomIndex.Room1;
 	/// <summary>
 	/// Gets or sets the list of image assets.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Image")]
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.{nameof(RoomMaskType)}.{nameof(RoomMaskType.Image)}")]
 	public List<FileReference> Image { get; set; } = [];
 	/// <summary>
 	/// Gets or sets the frames per second.
@@ -36,17 +36,17 @@ public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 	/// <summary>
 	/// Gets or sets the key color.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.{nameof(RoomMaskType)}.{nameof(RoomMaskType.Color)}")]
 	public PaletteColor KeyColor { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets the color cutoff value.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.{nameof(RoomMaskType)}.{nameof(RoomMaskType.Color)}")]
 	public int ColorCutoff { get; set; } = 0;
 	/// <summary>
 	/// Gets or sets the color feathering value.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.RoomMaskTypes.Color")]
+	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.{nameof(RoomMaskType)}.{nameof(RoomMaskType.Color)}")]
 	public int ColorFeathering { get; set; } = 0;
 	///<inheritdoc/>
 	public override EventType Type => EventType.MaskRoom;
@@ -64,7 +64,7 @@ public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 /// Defines the types of masks available.
 /// </summary>
 [RDJsonEnumSerializable]
-public enum RoomMaskTypes
+public enum RoomMaskType
 {
 	/// <summary>
 	/// Uses an image as the mask.

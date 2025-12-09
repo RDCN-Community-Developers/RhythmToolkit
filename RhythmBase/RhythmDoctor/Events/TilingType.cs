@@ -4,7 +4,7 @@
 /// Represents the types of tiling that can be applied.
 /// </summary>
 [RDJsonEnumSerializable]
-public enum TilingTypes
+public enum TilingType
 {
 	/// <summary>
 	/// Tiling type where the content scrolls.

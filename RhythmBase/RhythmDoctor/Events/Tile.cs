@@ -34,11 +34,11 @@ public class Tile : BaseDecorationAction, IEaseEvent
 	/// Gets or sets the type of tiling.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
-	public TilingTypes TilingType { get; set; } = TilingTypes.Scroll;
+	public TilingType TilingType { get; set; } = TilingType.Scroll;
 	/// <summary>
 	/// Gets or sets the interval for the tiling.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(TilingType)} is RhythmBase.RhythmDoctor.Events.TilingTypes.Pulse")]
+	[RDJsonCondition($"$&.{nameof(TilingType)} is RhythmBase.RhythmDoctor.Events.{nameof(TilingType)}.{nameof(Tile.TilingType.Pulse)}")]
 	public float Interval { get; set; } = 0.01f;
 	///<inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;

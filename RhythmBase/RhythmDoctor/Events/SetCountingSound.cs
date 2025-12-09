@@ -119,7 +119,7 @@ public class SetCountingSound : BaseRowAction
 	/// <summary>
 	/// Gets or sets the voice source for the counting sound.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(VoiceSource)} != RhythmBase.RhythmDoctor.Events.CountingSoundVoiceSources.Custom")]
+	[RDJsonCondition($"$&.{nameof(VoiceSource)} != RhythmBase.RhythmDoctor.Events.{nameof(CountingSoundVoiceSource)}.{nameof(CountingSoundVoiceSource.Custom)}")]
 	public CountingSoundVoiceSource VoiceSource { get; set; } = CountingSoundVoiceSource.JyiCount;
 	/// <summary>
 	/// Gets or sets a value indicating whether this <see cref="SetCountingSound"/> is enabled.
@@ -137,7 +137,7 @@ public class SetCountingSound : BaseRowAction
 	/// Gets or sets the list of sounds for the counting sound.
 	/// </summary>
 	[RDJsonConverter(typeof(CountingSoundCollectionConverter))]
-	[RDJsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(VoiceSource)} == RhythmBase.RhythmDoctor.Events.CountingSoundVoiceSources.Custom")]
+	[RDJsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(VoiceSource)} == RhythmBase.RhythmDoctor.Events.{nameof(CountingSoundVoiceSource)}.{nameof(CountingSoundVoiceSource.Custom)}")]
 	public RDAudio[] Sounds { get; set; } = [
 		new RDAudio(){Filename = "Jyi - ChineseCount1" },
 		new RDAudio(){Filename = "Jyi - ChineseCount2" },

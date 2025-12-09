@@ -43,7 +43,7 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// <summary>
 	/// Gets or sets the same preset behavior.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move")]
+	[RDJsonCondition($"$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}")]
 	public SamePresetBehavior SamePresetBehavior { get; set; } = SamePresetBehavior.Reset;
 	/// <summary>
 	/// Gets or sets the position.
@@ -53,14 +53,14 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// <summary>
 	/// Gets or sets the reference.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move")]
+	[RDJsonCondition($"$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}")]
 	public WindowDanceReference Reference { get; set; } = WindowDanceReference.Center;
 	/// <summary>
 	/// Gets or sets a value indicating whether to use a circle.
 	/// </summary>
 	[RDJsonCondition($"""
-		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Ellipse &&
-		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)} &&
+		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Reset)}
 		""")]
 	public bool UseCircle { get; set; } = false;
 	/// <summary>
@@ -69,10 +69,10 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	[Tween]
 	[RDJsonCondition($"""
 		$&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Wrap
-			or RhythmBase.RhythmDoctor.Events.WindowDancePresets.Ellipse
+			is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Wrap)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)}
 			&&
-		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Reset)}
 		""")]
 	public float Speed { get; set; } = 0;
 	/// <summary>
@@ -81,8 +81,8 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	[Tween]
 	[RDJsonCondition($"""
 		$&.{nameof(Preset)}
-		is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move
-		or RhythmBase.RhythmDoctor.Events.WindowDancePresets.Sway
+		is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}
+		or RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)}
 		""")]
 	public float Amplitude { get; set; } = 0f;
 	/// <summary>
@@ -91,15 +91,15 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	[Tween]
 	[RDJsonCondition($"""
 		$&.{nameof(Preset)}
-		is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Ellipse
-		or RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer
+		is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)}
+		or RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)}
 		""")]
 	public RDPointE AmplitudeVector { get; set; } = new(0f, 0f);
 	/// <summary>
 	/// Gets or sets the angle.
 	/// </summary>
 	[Tween]
-	[RDJsonCondition($"$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.WindowDancePresets.Move")]
+	[RDJsonCondition($"$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}")]
 	public float? Angle { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the frequency.
@@ -107,10 +107,10 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	[Tween]
 	[RDJsonCondition($"""
 		$&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Wrap
-			or RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer
+			is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Wrap)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)}
 			&&
-		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Reset)}
 		""")]
 	public float Frequency { get; set; } = 0f;
 	/// <summary>
@@ -118,16 +118,16 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"""
-		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer &&
-		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
+		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Reset)}
 		""")]
 	public float Period { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the ease type.
 	/// </summary>
 	[RDJsonCondition($"""
-		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Sway &&
-		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)} &&
+		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Reset)}
 		""")]
 	public WindowDanceEaseTypes EaseType { get; set; } = WindowDanceEaseTypes.Repeat;
 	/// <summary>
@@ -135,9 +135,9 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.Events.WindowDancePresets.Sway
-			or RhythmBase.RhythmDoctor.Events.WindowDancePresets.ShakePer &&
-		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.SamePresetBehaviors.Reset
+			is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)}
+			or RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
+		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Reset)}
 		""")]
 	public EaseType SubEase { get; set; } = Global.Components.Easing.EaseType.Linear;
 	///<inheritdoc/>

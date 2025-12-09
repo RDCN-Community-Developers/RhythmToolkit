@@ -40,7 +40,7 @@ public class AddClassicBeat : BaseBeat
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(Hold)} != 0f &&
-		$&.{nameof(SetXs)} != RhythmBase.RhythmDoctor.Events.ClassicBeatPatterns.NoChange
+		$&.{nameof(SetXs)} != RhythmBase.RhythmDoctor.Events.{nameof(ClassicBeatPattern)}.{nameof(ClassicBeatPattern.NoChange)}
 		""")]
 	public ClassicBeatPattern SetXs { get; set; }
 	/// <inheritdoc/>
