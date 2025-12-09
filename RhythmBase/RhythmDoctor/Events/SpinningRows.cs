@@ -55,7 +55,7 @@ public class SpinningRows : BaseRowAnimation, IEaseEvent
 		""")]
 	public float Duration { get; set; }
 	public override EventType Type => EventType.SpinningRows;
-	public override Tabs Tab => Tabs.Windows;
+	public override Tabs Tab => Tabs.Actions;
 }
 [RDJsonEnumSerializable]
 public enum SpiningAction
