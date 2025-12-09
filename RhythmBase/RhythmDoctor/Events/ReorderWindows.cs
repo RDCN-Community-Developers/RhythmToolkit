@@ -11,7 +11,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// <inheritdoc/>
 		public override int Y => 0;
 		[RDJsonConverter(typeof(RoomOrderConverter))]
-		public RoomOrder RoomOrder { get; set; } = new();
+		public RoomOrder Order { get; set; } = new();
 		public override EventType Type => EventType.ReorderWindows;
 	}
 }
