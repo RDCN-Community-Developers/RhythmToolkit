@@ -17,12 +17,12 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets a value indicating whether a custom position is used.
 		/// </summary>
 		[RDJsonProperty("customPosition")]
-		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)}")]
+		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)}")]
 		public bool EnableCustomPosition { get; set; } = true;
 		/// <summary>
 		/// Gets or sets the target of the move row event.
 		/// </summary>
-		public MoveRowTargets Target { get; set; } = MoveRowTargets.WholeRow;
+		public MoveRowTarget Target { get; set; } = MoveRowTarget.WholeRow;
 		/// <summary>
 		/// Gets or sets the row position.
 		/// </summary>
@@ -46,7 +46,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		/// Gets or sets the pivot.
 		/// </summary>
 		[Tween]
-		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTargets)}.{nameof(MoveRowTargets.WholeRow)} &&" +
+		[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)} &&" +
 			$"$&.{nameof(Pivot)} is not null")]
 		public float? Pivot { get; set; }
 		/// <summary>
@@ -56,6 +56,16 @@ namespace RhythmBase.RhythmDoctor.Events
 			$&.{nameof(EnableCustomPosition)}
 			""")]
 		public float Duration { get; set; } = 1;
+		[RDJsonCondition($"""
+			$&.{nameof(AccelerationDuration)} is not null &&
+			($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
+			""")]
+		public float? AccelerationDuration { get; set; }
+		[RDJsonCondition($"""
+			$&.{nameof(AccelerationDuration)} is not null &&
+			($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
+			""")]
+		public float? DecelerationDuration { get; set; }
 		/// <summary>
 		/// Gets or sets the easing type of the move row event.
 		/// </summary>
@@ -77,7 +87,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// Specifies the targets for the move row event.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum MoveRowTargets
+	public enum MoveRowTarget
 	{
 		/// <summary>
 		/// Target the whole row.
