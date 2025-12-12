@@ -108,7 +108,7 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetGameSound;
 	///<inheritdoc/>
-	public override Tab Tab => Tab.Actions;
+	public override Tab Tab => Tab.Sounds;
 
 	IEnumerable<FileReference> IAudioFileEvent.AudioFiles => (Audio.IsFile &&
 		SoundType is not SoundTypes.ClapSoundHold
