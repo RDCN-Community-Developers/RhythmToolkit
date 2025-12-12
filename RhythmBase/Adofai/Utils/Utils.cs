@@ -22,6 +22,7 @@ namespace RhythmBase.Adofai.Utils
 					new LevelConverter(),
 					new RDPointsConverter(),
 					new TileReferenceConverter(),
+					new FileReferenceConverter(),
 				}
 			};
 		}
