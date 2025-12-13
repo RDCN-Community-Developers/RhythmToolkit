@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace RhythmBase.Global.Components
@@ -12,7 +13,7 @@ namespace RhythmBase.Global.Components
 	/// with file references, such as checking existence, retrieving the file extension, and determining if the
 	/// reference is empty. Implicit conversions to and from <see cref="string"/> are provided for convenience.
 	/// </remarks>
-	public struct FileReference
+	public struct FileReference : IEqualityComparer<FileReference>
 	{
 		/// <summary>
 		/// Gets or sets the file path for this reference.
@@ -86,5 +87,21 @@ namespace RhythmBase.Global.Components
 		/// <param name="path">The path to wrap as a <see cref="FileReference"/>.</param>
 		/// <returns>A new <see cref="FileReference"/> instance with <see cref="Path"/> set to <paramref name="path"/>.</returns>
 		public static implicit operator FileReference(string path) => new() { Path = path };
+		public static bool operator ==(FileReference left, FileReference right) => left.Path == right.Path;
+		public static bool operator !=(FileReference left, FileReference right) => left.Path != right.Path;
+		///<inheritdoc/>
+		public override readonly bool Equals(object? obj) => obj is FileReference other && this == other;
+		///<inheritdoc/>
+		public readonly override int GetHashCode() => Path.GetHashCode();
+		///<inheritdoc/>
+		public override string ToString() => Path;
+		///<inheritdoc/>
+		public bool Equals(FileReference x, FileReference y) => x.Path == y.Path;
+		///<inheritdoc/>
+		public int GetHashCode(
+#if NET7_0_OR_GREATER
+				[DisallowNull]
+#endif
+		FileReference obj) => obj.Path.GetHashCode();
 	}
 }
