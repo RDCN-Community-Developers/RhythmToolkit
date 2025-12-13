@@ -18,18 +18,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the type of the row.
 		/// </summary>
-		public RowType RowType
-		{
-			get => _rowType;
-			set
-			{
-				if (value != _rowType)
-				{
-					Clear();
-					_rowType = value;
-				}
-			}
-		}
+		public RowType RowType { get; set; }
 		/// <summary>
 		/// Gets the index of the row.
 		/// </summary>
@@ -119,11 +108,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="item">The row event to add.</param>
 		public override bool Add(BaseRowAction item)
 		{
-			if (item is BaseBeat &&
-				(item is not BaseBeat || (!EventTypeEnumsForRowClassic.Contains(item.Type) || RowType is not Events.RowType.Classic) &&
-				(!EventTypeEnumsForRowOneshot.Contains(item.Type) || RowType is not Events.RowType.Oneshot))
-				)
-				throw new IllegalRowEventTypeException(item.Type, RowType);
 			item._parent?.Remove(item);
 			item._parent = this;
 			bool success = base.Add(item);
@@ -137,7 +121,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="item">The row event to remove.</param>
 		/// <returns>True if the item was successfully removed; otherwise, false.</returns>
 		public override bool Remove(BaseRowAction item) => Parent?.RemoveInternal(item) ?? false;
-		private RowType _rowType;
 		[RDJsonIgnore]
 		internal RDLevel? Parent = null;
 	}
