@@ -415,7 +415,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		public void SaveToFile(string filepath, LevelReadOrWriteSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(filepath) ?? "", settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Filepath) ?? "", settings);
 			DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 			if (!directory.Exists)
 				directory.Create();
@@ -426,19 +426,6 @@ namespace RhythmBase.RhythmDoctor.Components
 				JsonSerializer.Serialize(stream, this, options);
 			}
 			settings.OnAfterWriting();
-		}
-		/// <summary>
-		/// Saves the current level data to a file in packed (ZIP) format at the specified path. (This method is not fully implemented yet.)
-		/// </summary>
-		/// <param name="filepath">The path of the file to create and write the packed level data to. Must not be null or empty.</param>
-		/// <param name="settings">Optional settings that control how the level data is written. If null, default settings are used.</param>
-		public void SaveToFileAsPack(string filepath, LevelReadOrWriteSettings? settings = null)
-		{
-			settings ??= new();
-			using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
-			ZipArchive archive = new(stream, ZipArchiveMode.Create);
-			archive.CreateEntry("main.rdlevel");
-			throw new NotImplementedException();
 		}
 		/// <summary>
 		/// Asynchronously saves the current level to a file in JSON format.
@@ -460,6 +447,77 @@ namespace RhythmBase.RhythmDoctor.Components
 				await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
 			}
 			settings.OnAfterWriting();
+		}
+		/// <summary>
+		/// Saves the current level data to a file in packed (ZIP) format at the specified path. (This method is not fully implemented yet.)
+		/// </summary>
+		/// <param name="filepath">The path of the file to create and write the packed level data to. Must not be null or empty.</param>
+		/// <param name="settings">Optional settings that control how the level data is written. If null, default settings are used.</param>
+		public void SaveToZip(string filepath, LevelReadOrWriteSettings? settings = null)
+		{
+			if (string.IsNullOrEmpty(this.Directory))
+				throw new NotImplementedException();
+			settings ??= new();
+			settings.FileReferences.Clear();
+			bool loadAssets = settings.LoadAssets;
+			settings.LoadAssets = true;
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Filepath) ?? "", settings);
+			DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
+			if (!directory.Exists)
+				directory.Create();
+			settings.OnBeforeWriting();
+			using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+			ZipArchive archive = new(stream, ZipArchiveMode.Create);
+			ZipArchiveEntry entry = archive.CreateEntry("main.rdlevel");
+			using (Stream rdlevelStream = entry.Open())
+			{
+				JsonSerializer.Serialize(rdlevelStream, this, options);
+			}
+			foreach(var file in settings.FileReferences)
+			{
+				archive.CreateEntryFromFile(Path.Combine(Directory, file.Path), Path.GetFileName(file.Path));
+			}
+			archive.Dispose();
+			settings.OnAfterWriting();
+			settings.LoadAssets = loadAssets;
+		}
+		/// <summary>
+		/// Asynchronously saves the current level and its associated assets to a ZIP archive at the specified file path.
+		/// </summary>
+		/// <remarks>The resulting ZIP archive will contain the main level data as a JSON file and any referenced
+		/// asset files. This method is asynchronous but returns void; exceptions will be thrown on the calling thread if the
+		/// operation fails.</remarks>
+		/// <param name="filepath">The full path to the ZIP file to create. If the file exists, it will be overwritten.</param>
+		/// <param name="settings">Optional settings that control how the level and its assets are serialized. If null, default settings are used.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the save operation.</param>
+		/// <exception cref="NotImplementedException">Thrown if the level's directory is not set.</exception>
+		public async void SaveToZipAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		{
+			if (string.IsNullOrEmpty(this.Directory))
+				throw new NotImplementedException();
+			settings ??= new();
+			settings.FileReferences.Clear();
+			bool loadAssets = settings.LoadAssets;
+			settings.LoadAssets = true;
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Filepath) ?? "", settings);
+			DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
+			if (!directory.Exists)
+				directory.Create();
+			settings.OnBeforeWriting();
+			using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+			ZipArchive archive = new(stream, ZipArchiveMode.Create);
+			ZipArchiveEntry entry = archive.CreateEntry("main.rdlevel");
+			using (Stream rdlevelStream = entry.Open())
+			{
+				await JsonSerializer.SerializeAsync(rdlevelStream, this, options, cancellationToken);
+			}
+			foreach (var file in settings.FileReferences)
+			{
+				archive.CreateEntryFromFile(Path.Combine(Directory, file.Path), Path.GetFileName(file.Path));
+			}
+			archive.Dispose();
+			settings.OnAfterWriting();
+			settings.LoadAssets = loadAssets;
 		}
 		/// <summary>
 		/// Serializes the current level to a JSON string.
