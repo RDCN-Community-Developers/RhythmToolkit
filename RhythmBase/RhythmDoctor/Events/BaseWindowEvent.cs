@@ -13,5 +13,5 @@ public abstract class BaseWindowEvent : BaseEvent
 	/// <summary>  
 	/// Gets the target window for this event.  
 	/// </summary>
-	public RDSingleRoom TargetWindow { get => new((byte)Y); set => Y = value.Value; }
+	public int TargetWindow { get => Y; set => Y = value; }
 }
