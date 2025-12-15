@@ -1,0 +1,63 @@
+name: Publish NuGet on version change
+
+on:
+  push:
+    branches: [ master ]
+    paths: [ 'RhythmBase/RhythmBase.csproj' ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get new version
+        id: new
+        run: |
+          NEW=$(grep -oP '<Version>\K[^<]+' RhythmBase/RhythmBase.csproj)
+          echo "ver=$NEW" >> $GITHUB_OUTPUT
+
+      - name: Get old version
+        id: old
+        run: |
+          git show HEAD~1:RhythmBase/RhythmBase.csproj > /tmp/old.csproj
+          OLD=$(grep -oP '<Version>\K[^<]+' /tmp/old.csproj)
+          echo "ver=$OLD" >> $GITHUB_OUTPUT
+
+      - name: Check if version changed
+        id: check
+        run: |
+          if [ "${{ steps.old.outputs.ver }}" == "${{ steps.new.outputs.ver }}" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Version unchanged: ${{ steps.old.outputs.ver }}"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Version changed: ${{ steps.old.outputs.ver }} → ${{ steps.new.outputs.ver }}"
+          fi
+
+      - name: Skip if version not changed
+        if: steps.check.outputs.changed == 'false'
+        run: echo "Version unchanged, skip publishing." && exit 0
+
+      - name: Setup .NET
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Pack
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          dotnet pack -c Release \
+            -o ./pkg \
+            /p:Version="${{ steps.new.outputs.ver }}"
+
+      - name: Push to NuGet.org
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          dotnet nuget push ./pkg/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --skip-duplicate
