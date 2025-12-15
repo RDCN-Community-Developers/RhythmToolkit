@@ -20,7 +20,7 @@ You can see examples [here](/RhythmBase.Test/Tutorial.cs).
 | Project             | Description                                         | Status           | Link                                                                       | 
 |---------------------|-----------------------------------------------------|------------------|----------------------------------------------------------------------------|
 | RhythmBase          | Core library for level editing.                     | WIP              | **You are here**                                                           |
-| RhythmBase.View     | Draw all Rhythm Doctor event elements in SkiaSharp. | WIP              | -                                                                          |
+| RhythmBase.View     | Draw all Rhythm Doctor event elements in SkiaSharp. | WIP              | [Go there](https://github.com/OLDRedstone/RhythmBase.View)                 |
 | RhythmBase.Addition | Extensions for levels.                              | *Not disclosed*  | -                                                                          |
 | RhythmBase.Interact | Interact with Level editor.                         | *Not disclosed*  | -                                                                          |
 | RhythmBase.Hospital | Judgement logic for levels.                         | *Not disclosed*  | -                                                                          |
