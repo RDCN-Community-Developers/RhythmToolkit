@@ -50,7 +50,7 @@ jobs:
       - name: Pack
         if: steps.check.outputs.changed == 'true'
         run: |
-          dotnet pack -c Release \
+          dotnet pack RhythmBase/RhythmBase.csproj -c Release \
             -o ./pkg \
             /p:Version="${{ steps.new.outputs.ver }}"
 
