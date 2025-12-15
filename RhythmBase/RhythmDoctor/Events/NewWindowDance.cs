@@ -1,6 +1,7 @@
 ﻿using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -150,7 +151,14 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	///<inheritdoc/>
 	public override EventType Type { get; } = EventType.NewWindowDance;
 	///<inheritdoc/>
-	public override Tab Tab { get; } = Tab.Actions;
+	[RDJsonIgnore]
+	public override Tab Tab => CustomTab;
+	/// <summary>
+	/// Gets or sets the custom tab associated with this instance.
+	/// </summary>
+	[RDJsonConverter(typeof(TabsConverter))]
+	[RDJsonProperty("tab")]
+	public Tab CustomTab { get; set => field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException(); }
 }
 /// <summary>
 /// Represents the same preset behaviors.

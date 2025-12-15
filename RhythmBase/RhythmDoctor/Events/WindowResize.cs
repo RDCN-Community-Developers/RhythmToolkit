@@ -20,6 +20,10 @@ public class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 	[Tween]
 	public RDSizeE? Scale { get; set; } = new(1, 1);
 	/// <summary>
+	/// Gets or sets the zoom mode applied to the content.
+	/// </summary>
+	public ZoomMode ZoomMode { get; set; } = ZoomMode.None;
+	/// <summary>
 	/// Gets or sets the mode used for pivot operations.
 	/// </summary>
 	public PivotMode PivotMode { get; set; } = PivotMode.Default;
@@ -41,7 +45,7 @@ public class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 	public Tab CustomTab
 	{
 		get;
-		set => field = CustomTab is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
+		set => field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
 	} = Tab.Actions;
 	/// <inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
@@ -97,4 +101,23 @@ public enum WindowAnchorType
 	/// Anchor to the top edge of the window.
 	/// </summary>
 	TopEdge,
+}
+/// <summary>
+/// Specifies how content is scaled or positioned within a container when zooming is applied.
+/// </summary>
+[RDJsonEnumSerializable]
+public enum ZoomMode
+{
+	/// <summary>
+	/// Gets or sets the fill brush used to paint the interior of the shape.
+	/// </summary>
+	Fill,
+	/// <summary>
+	/// Specifies how content is resized to fit within a given space.
+	/// </summary>
+	Fit,
+	/// <summary>
+	/// Represents the absence of a value or a default state.
+	/// </summary>
+	None,
 }

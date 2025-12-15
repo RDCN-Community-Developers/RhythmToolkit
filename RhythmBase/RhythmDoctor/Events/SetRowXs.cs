@@ -49,10 +49,20 @@ public class SetRowXs : BaseBeat
 	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0 && $&.{nameof(SyncoStyle)} is RhythmBase.RhythmDoctor.Events.{nameof(SetRowXsSyncoStyle)}.{nameof(SetRowXsSyncoStyle.Chirp)}")]
 	public bool SyncoPlayModifierSound { get; set; } = true;
 	/// <summary>
+	/// Gets or sets a value indicating whether the sound for turning off the SyncoPlay modifier is enabled.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0 && $&.{nameof(SyncoStyle)} is RhythmBase.RhythmDoctor.Events.{nameof(SetRowXsSyncoStyle)}.{nameof(SetRowXsSyncoStyle.Chirp)}")]
+	public bool SyncoPlayModifierOffSound { get; set; } = true;
+	/// <summary>
 	/// Gets or sets the synco volume.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
 	public int SyncoVolume { get; set; } = 70;
+	/// <summary>
+	/// Gets or sets the pitch adjustment value for synchronization operations.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
+	public int SyncoPitch { get; set; } = 100;	
 	/// <inheritdoc />
 	public override string ToString() => base.ToString() + $" {this.GetPatternString()}";
 }
