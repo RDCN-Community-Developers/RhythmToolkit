@@ -780,7 +780,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (base.Contains(item)) return false;
 			Row? parent = item.Parent ?? (item.Index < Rows.Count ? Rows[item.Index] : null);
 			if (parent == null) Rows._unhandledRowEvents.Add(item);
-			else ((OrderedEventCollection)parent).Add(item);
+			else { ((OrderedEventCollection)parent).Add(item); item._parent = parent; }
 			base.Add(item);
 			return true;
 		}
@@ -788,7 +788,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			Decoration? parent = item.Parent ?? Decorations[item._decoId];
 			if (parent == null) Decorations._unhandledRowEvents.Remove(item);
-			else ((OrderedEventCollection)parent).Remove(item);
+			else { ((OrderedEventCollection)parent).Remove(item); item._parent = parent; }
 			return base.Remove(item);
 		}
 		internal bool RemoveInternal(BaseRowAction item)
