@@ -22,4 +22,9 @@ public class ReorderSprite : BaseDecorationAction
 	/// Gets or sets the depth level of the object.
 	/// </summary>
 	public int Depth { get; set; } = 0;
+	/// <summary>
+	/// Gets or sets the type of layer used for sorting or rendering purposes.
+	/// </summary>
+	[RDJsonProperty("sortingLayerName")]
+	public LayerType LayerType { get; set; } = LayerType.Default;
 }
