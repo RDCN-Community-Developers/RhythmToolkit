@@ -1,4 +1,4 @@
-name: Publish NuGet on version change
+name: Publish NuGet on demand
 
 on:
   push:
@@ -13,49 +13,40 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get new version
-        id: new
+      - name: Check commit message
+        id: msg
         run: |
-          NEW=$(grep -oP '<Version>\K[^<]+' RhythmBase/RhythmBase.csproj)
-          echo "ver=$NEW" >> $GITHUB_OUTPUT
+          MSG=$(git log -1 --pretty=%B)
+          echo "full_message<<EOF" >> $GITHUB_OUTPUT
+          echo "$MSG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Get old version
-        id: old
+      - name: Should publish?
+        id: should
         run: |
-          git show HEAD~1:RhythmBase/RhythmBase.csproj > /tmp/old.csproj
-          OLD=$(grep -oP '<Version>\K[^<]+' /tmp/old.csproj)
-          echo "ver=$OLD" >> $GITHUB_OUTPUT
-
-      - name: Check if version changed
-        id: check
-        run: |
-          if [ "${{ steps.old.outputs.ver }}" == "${{ steps.new.outputs.ver }}" ]; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-            echo "Version unchanged: ${{ steps.old.outputs.ver }}"
+          if echo "${{ steps.msg.outputs.full_message }}" | grep -qi '\[PUBLISH\]'; then
+            echo "publish=true"  >> $GITHUB_OUTPUT
           else
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Version changed: ${{ steps.old.outputs.ver }} → ${{ steps.new.outputs.ver }}"
+            echo "publish=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Skip if version not changed
-        if: steps.check.outputs.changed == 'false'
-        run: echo "Version unchanged, skip publishing." && exit 0
-
+      # 后续步骤只在 publish==true 时执行
       - name: Setup .NET
-        if: steps.check.outputs.changed == 'true'
+        if: steps.should.outputs.publish == 'true'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
       - name: Pack
-        if: steps.check.outputs.changed == 'true'
+        if: steps.should.outputs.publish == 'true'
         run: |
+          VER=$(grep -oP '<Version>\K[^<]+' RhythmBase/RhythmBase.csproj)
           dotnet pack RhythmBase/RhythmBase.csproj -c Release \
             -o ./pkg \
-            /p:Version="${{ steps.new.outputs.ver }}"
+            /p:Version="$VER"
 
       - name: Push to NuGet.org
-        if: steps.check.outputs.changed == 'true'
+        if: steps.should.outputs.publish == 'true'
         run: |
           dotnet nuget push ./pkg/*.nupkg \
             --source https://api.nuget.org/v3/index.json \
