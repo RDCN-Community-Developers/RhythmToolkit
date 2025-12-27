@@ -28,8 +28,9 @@ public class NarrateRowInfo : BaseRowAction
 	/// <summary>
 	/// Gets or sets the custom pattern for the narration.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(NarrateSkipBeat)} is RhythmBase.RhythmDoctor.Events.NarrateInfoTypes.{nameof(NarrateSkipBeat.Custom)}")]
-	public PatternCollection CustomPattern { get; } = "------";
+	[RDJsonCondition($"$&.{nameof(NarrateSkipBeat)} is RhythmBase.RhythmDoctor.Events.{nameof(NarrateSkipBeat)}.{nameof(NarrateSkipBeat.Custom)}")]
+	[RDJsonProperty("customPattern")]
+	public PatternCollection Pattern { get; set; }
 	/// <summary>
 	/// Gets or sets a value indicating whether to skip unstable beats.
 	/// </summary>
