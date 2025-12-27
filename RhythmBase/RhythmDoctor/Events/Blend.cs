@@ -14,26 +14,3 @@ public class Blend : BaseDecorationAction
 	/// </summary>  
 	public BlendType BlendType { get; set; } = BlendType.None;
 }
-/// <summary>  
-/// Specifies the different types of blend effects available.  
-/// </summary>  
-[RDJsonEnumSerializable]
-public enum BlendType
-{
-	/// <summary>  
-	/// No blend effect.  
-	/// </summary>  
-	None,
-	/// <summary>
-	/// Additive blend effect.
-	/// </summary>
-	Additive,
-	/// <summary>
-	/// Multiply blend effect.
-	/// </summary>
-	Multiply,
-	/// <summary>
-	/// Invert blend effect.
-	/// </summary>
-	Invert,
-}

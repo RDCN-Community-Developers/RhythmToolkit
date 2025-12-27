@@ -29,7 +29,7 @@ public class AddClassicBeat : BaseBeat
 	/// Gets or sets the number of beats in a classic beat pattern.  
 	/// </summary>   
 	[RDJsonCondition("$&.Length != 7")]
-	public ushort Length { get; set; } = 7;
+	public int Length { get; set; } = 7;
 	/// <summary>
 	/// Gets or sets the audio content associated with this instance.
 	/// </summary>
@@ -49,23 +49,4 @@ public class AddClassicBeat : BaseBeat
 	public override string ToString() => base.ToString() +
 		$" {Utils.Utils.GetPatternString(this.RowXs())} {((Swing is 0.5f or 0f) ? "" : " Swing")}";
 	private string GetDebuggerDisplay() => ToString();
-}
-/// <summary>
-/// Defines the classic beat patterns.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum ClassicBeatPattern
-{
-	/// <summary>
-	/// No change in the beat pattern.
-	/// </summary>
-	NoChange,
-	/// <summary>
-	/// Three beat pattern.
-	/// </summary>
-	ThreeBeat,
-	/// <summary>
-	/// Four beat pattern.
-	/// </summary>
-	FourBeat
 }

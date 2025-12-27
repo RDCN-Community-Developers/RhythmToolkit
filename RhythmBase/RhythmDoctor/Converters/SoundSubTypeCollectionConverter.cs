@@ -1,5 +1,6 @@
 ﻿using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Events;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -29,7 +30,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 						throw new JsonException("Expected PropertyName token");
 					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName.SequenceEqual("groupSubtype"u8) && EnumConverter.TryParse(reader.ValueSpan, out SoundTypes result1))
+					if (propertyName.SequenceEqual("groupSubtype"u8) && EnumConverter.TryParse(reader.ValueSpan, out SoundType result1))
 						item.GroupSubtype = result1;
 					else if (propertyName.SequenceEqual("used"u8))
 						item.Used = reader.GetBoolean();

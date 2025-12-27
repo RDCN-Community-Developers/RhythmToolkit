@@ -14,7 +14,7 @@ public class PlaySound : BaseEvent, IAudioFileEvent
 	/// <summary>
 	/// Gets or sets the type of the custom sound.
 	/// </summary>
-	public CustomSoundTypes CustomSoundType { get; set; } = CustomSoundTypes.CueSound;
+	public CustomSoundType CustomSoundType { get; set; } = CustomSoundType.CueSound;
 	/// <summary>
 	/// Gets or sets the audio sound.
 	/// </summary>
@@ -29,31 +29,4 @@ public class PlaySound : BaseEvent, IAudioFileEvent
 	IEnumerable<FileReference> IFileEvent.Files => Sound is not null && Sound.IsFile ? [Sound.Filename] : [];
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" {(IsCustom ? Sound?.ToString() : CustomSoundType.ToString())}";
-}
-/// <summary>
-/// Defines the types of custom sounds.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum CustomSoundTypes
-{
-	/// <summary>
-	/// Cue sound type.
-	/// </summary>
-	CueSound,
-	/// <summary>
-	/// Music sound type.
-	/// </summary>
-	MusicSound,
-	/// <summary>
-	/// Beat sound type.
-	/// </summary>
-	BeatSound,
-	/// <summary>
-	/// Hit sound type.
-	/// </summary>
-	HitSound,
-	/// <summary>
-	/// Other sound type.
-	/// </summary>
-	OtherSound
 }

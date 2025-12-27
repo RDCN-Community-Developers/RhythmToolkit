@@ -56,7 +56,7 @@ public class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the row effect.
 	/// </summary>
-	public TintRowEffects Effect { get; set; } = TintRowEffects.None;
+	public TintRowEffect Effect { get; set; } = TintRowEffect.None;
 	///<inheritdoc/>
 	public override EventType Type => EventType.TintRows;
 	///<inheritdoc/>
@@ -74,22 +74,3 @@ public class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 	                                     $" {Border}{(Border == Border.None ? "" : ":" + BorderColor.ToString())}";
 }
 
-/// <summary>
-/// Specifies the row effects.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum TintRowEffects
-{
-	/// <summary>
-	/// No effect.
-	/// </summary>
-	None,
-	/// <summary>
-	/// Electric effect.
-	/// </summary>
-	Electric,
-	/// <summary>
-	/// Smoke effect.
-	/// </summary>
-	Smoke
-}

@@ -113,5 +113,5 @@ public class RowTimeline
 	/// <summary>
 	/// Gets or sets the curve representing the special effects applied to the row over time.
 	/// </summary>
-	public Curve<TintRowEffects> Effect { get; internal set; }
+	public Curve<TintRowEffect> Effect { get; internal set; }
 }

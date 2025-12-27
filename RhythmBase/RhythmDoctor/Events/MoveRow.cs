@@ -78,22 +78,3 @@ public class MoveRow : BaseRowAnimation, IEaseEvent
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Actions;
 }
-/// <summary>
-/// Specifies the targets for the move row event.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum MoveRowTarget
-{
-	/// <summary>
-	/// Target the whole row.
-	/// </summary>
-	WholeRow,
-	/// <summary>
-	/// Target the heart.
-	/// </summary>
-	Heart,
-	/// <summary>
-	/// Target the character.
-	/// </summary>
-	Character
-}

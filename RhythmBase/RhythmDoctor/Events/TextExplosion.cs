@@ -24,11 +24,11 @@ public class TextExplosion : BaseEvent, IRoomEvent, IColorEvent
 	/// <summary>
 	/// Gets or sets the direction of the text explosion.
 	/// </summary>
-	public TextExplosionDirections Direction { get; set; } = TextExplosionDirections.Left;
+	public TextExplosionDirection Direction { get; set; } = TextExplosionDirection.Left;
 	/// <summary>
 	/// Gets or sets the mode of the text explosion.
 	/// </summary>
-	public TextExplosionModes Mode { get; set; } = TextExplosionModes.OneColor;
+	public TextExplosionMode Mode { get; set; } = TextExplosionMode.OneColor;
 	///<inheritdoc/>
 	public override EventType Type => EventType.TextExplosion;
 	///<inheritdoc/>
@@ -40,34 +40,4 @@ public class TextExplosion : BaseEvent, IRoomEvent, IColorEvent
 	public EaseType Ease { get; set; }
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" {Text}";
-}
-/// <summary>
-/// Specifies the direction of the text explosion.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum TextExplosionDirections
-{
-	/// <summary>
-	/// The text explodes to the left.
-	/// </summary>
-	Left,
-	/// <summary>
-	/// The text explodes to the right.
-	/// </summary>
-	Right
-}
-/// <summary>
-/// Specifies the mode of the text explosion.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum TextExplosionModes
-{
-	/// <summary>
-	/// The text explosion uses one color.
-	/// </summary>
-	OneColor,
-	/// <summary>
-	/// The text explosion uses random colors.
-	/// </summary>
-	Random
 }

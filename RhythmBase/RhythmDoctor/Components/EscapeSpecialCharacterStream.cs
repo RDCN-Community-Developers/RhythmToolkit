@@ -1,6 +1,6 @@
 ﻿namespace RhythmBase.RhythmDoctor.Components
 {
-	internal class EscapeNewLineStream : Stream
+	internal class EscapeSpecialCharacterStream : Stream
 	{
 		private readonly Stream _inner;
 		private readonly byte[] _buffer;
@@ -8,7 +8,7 @@
 		private bool _prevIsEscape = false;
 		private int _peeked = -1; // 用于缓存下一个字节
 
-		public EscapeNewLineStream(Stream inner)
+		public EscapeSpecialCharacterStream(Stream inner)
 		{
 			_inner = inner;
 			_buffer = new byte[1];

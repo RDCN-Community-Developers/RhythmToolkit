@@ -90,7 +90,7 @@ public abstract partial class MacroEvent : BaseEvent, IAudioFileEvent, IImageFil
 			Tag = Tag,
 			Condition = Condition,
 			Active = Active,
-			Action = TagActions.Run,
+			Action = ActionTagAction.Run,
 			ActionTag = $"{RhythmBaseMacroEventHeader}{EventTypeUtils.MacroTypes.IndexOf(GetType()):X8}{DataId:X8}",
 		};
 	}

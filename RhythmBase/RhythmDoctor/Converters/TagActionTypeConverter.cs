@@ -4,24 +4,24 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters
 {
-	internal class TagActionTypeConverter : JsonConverter<TagActions>
+	internal class TagActionTypeConverter : JsonConverter<ActionTagAction>
 	{
-		public override TagActions Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		public override ActionTagAction Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			ReadOnlySpan<byte> value = reader.ValueSpan;
-			TagActions result = 0;
+			ActionTagAction result = 0;
 			switch(value)
 			{
 				case var v when v.StartsWith("Run"u8):
-					result |= TagActions.Run;
+					result |= ActionTagAction.Run;
 					value = value.Slice(3);
 					break;
 					case var v when v.StartsWith("Enable"u8):
-					result |= TagActions.Enable;
+					result |= ActionTagAction.Enable;
 					value = value.Slice(6);
 					break;
 					case var v when v.StartsWith("Disable"u8):
-					result |= TagActions.Disable;
+					result |= ActionTagAction.Disable;
 					value = value.Slice(7);
 					break;
 				default:
@@ -32,7 +32,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				case var v when v.IsEmpty:
 					break;
 				case var v when v.SequenceEqual("All"u8):
-					result |= TagActions.All;
+					result |= ActionTagAction.All;
 					break;
 				default:
 					throw new ConvertingException("Cannot read the TagAction.");
@@ -40,10 +40,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 			return result;
 		}
 
-		public override void Write(Utf8JsonWriter writer, TagActions value, JsonSerializerOptions options)
+		public override void Write(Utf8JsonWriter writer, ActionTagAction value, JsonSerializerOptions options)
 		{
-			bool isAll = value.HasFlag(TagActions.All);
-			TagActions action = value & (TagActions.Run | TagActions.Enable | TagActions.Disable);
+			bool isAll = value.HasFlag(ActionTagAction.All);
+			ActionTagAction action = value & (ActionTagAction.Run | ActionTagAction.Enable | ActionTagAction.Disable);
 			writer.WriteStringValue(
 				isAll
 					? action.ToString() + "All"

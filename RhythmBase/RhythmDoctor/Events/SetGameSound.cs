@@ -15,15 +15,15 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// <summary>  
 	/// Gets or sets the type of the sound.  
 	/// </summary>  
-	public SoundTypes SoundType { get; set; } = SoundTypes.SmallMistake;
+	public SoundType SoundType { get; set; } = SoundType.SmallMistake;
 	/// <summary>  
 	/// Gets or sets the filename of the audio.  
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
 		""")]
 	public string Filename
 	{
@@ -35,9 +35,9 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// </summary>  
 	[RDJsonCondition($"""
 		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
 		&& $&.{nameof(Volume)} != 100
 		""")]
 	public int Volume
@@ -50,9 +50,9 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// </summary>  
 	[RDJsonCondition($"""
 		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
 		&& $&.{nameof(Pitch)} != 100
 		""")]
 	public int Pitch
@@ -65,9 +65,9 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// </summary>  
 	[RDJsonCondition($"""
 		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
 		&& $&.{nameof(Pan)} != 0
 		""")]
 	public int Pan
@@ -81,9 +81,9 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	[RDJsonTime("milliseconds")]
 	[RDJsonCondition($"""
 		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound)
+		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
 		&& $&.{nameof(Offset)} != TimeSpan.Zero
 		""")]
 	public TimeSpan Offset
@@ -96,12 +96,12 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// </summary>  
 	[RDJsonCondition($"""
 		$&.{nameof(SoundType)}
-		is RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHold
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.ClapSoundHoldP2
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.PulseSoundHold
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.PulseSoundHoldP2
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.BurnshotSound
-		or RhythmBase.RhythmDoctor.Components.SoundTypes.FreezeshotSound
+		is RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHoldP2)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.PulseSoundHold)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.PulseSoundHoldP2)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)}
+		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
 		""")]
 	[RDJsonConverter(typeof(SoundSubTypeCollectionConverter))]
 	public SoundSubTypeCollection SoundSubtypes { get; set; } = [];
@@ -111,15 +111,15 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	public override Tab Tab => Tab.Sounds;
 
 	IEnumerable<FileReference> IAudioFileEvent.AudioFiles => (Audio.IsFile &&
-		SoundType is not SoundTypes.ClapSoundHold
-					and not SoundTypes.FreezeshotSound
-					and not SoundTypes.BurnshotSound)
+		SoundType is not SoundType.ClapSoundHold
+					and not SoundType.FreezeshotSound
+					and not SoundType.BurnshotSound)
 					? [Audio.Filename]
 					: [];
 	IEnumerable<FileReference> IFileEvent.Files => (Audio.IsFile &&
-		SoundType is not SoundTypes.ClapSoundHold
-					and not SoundTypes.FreezeshotSound
-					and not SoundTypes.BurnshotSound)
+		SoundType is not SoundType.ClapSoundHold
+					and not SoundType.FreezeshotSound
+					and not SoundType.BurnshotSound)
 					? [Audio.Filename]
 					: [];
 

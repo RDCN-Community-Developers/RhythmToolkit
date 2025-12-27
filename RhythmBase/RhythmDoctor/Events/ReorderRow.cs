@@ -19,7 +19,8 @@ public class ReorderRow : BaseRowAction
 	/// </summary>  
 	[RDJsonDefaultSerializer]
 	[RDJsonConverter(typeof(RoomIndexConverter))]
-	public RDRoomIndex NewRoom { get; set; } = RDRoomIndex.Room1;
+	[RDJsonCondition($"$&.{nameof(NewRoom)} is not null")]
+	public RDRoomIndex? NewRoom { get; set; }
 	/// <summary>
 	/// Gets or sets the order of the room. The default value is <see langword="0"/>.
 	/// </summary>

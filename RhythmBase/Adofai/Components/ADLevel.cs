@@ -205,7 +205,7 @@ namespace RhythmBase.Adofai.Components
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
 			ADLevel? level;
 			settings.OnBeforeReading();
-			using EscapeNewLineStream stream = new(adlevelStream);
+			using EscapeSpecialCharacterStream stream = new(adlevelStream);
 			level = JsonSerializer.Deserialize<ADLevel>(stream, options);
 			settings.OnAfterReading();
 			return level ?? [];

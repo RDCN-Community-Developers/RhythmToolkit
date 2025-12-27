@@ -7,7 +7,7 @@
 	/// 
 	/// </remarks>
 	/// <param name="enableAlpha">Specifies whether this object supports alpha channel.</param>
-	public struct PaletteColor(bool enableAlpha)
+	public struct PaletteColor
 	{
 		/// <summary>
 		/// Get or set a custom color.
@@ -46,7 +46,7 @@
 		/// Specifies whether this object supports alpha channel.
 		/// </summary>
 		/// <returns></returns>
-		public readonly bool EnableAlpha => enableAlpha;
+		public readonly bool EnableAlpha { get; }
 		/// <summary>
 		/// Specifies whether this object is used for this color.
 		/// </summary>
@@ -63,6 +63,24 @@
 		/// If not, it's a custom color.
 		/// </summary>
 		public RDColor Value => EnablePanel ? default : _color;
+		/// <summary>
+		/// Initializes a new instance of <see cref="PaletteColor"/> using the provided custom color.
+		/// </summary>
+		/// <param name="color">The custom <see cref="RDColor"/> value to be assigned.</param>
+		/// <param name="enableAlpha">Specifies whether the supplied color should retain its alpha component.</param>
+		public PaletteColor(RDColor color, bool enableAlpha = false)
+		{
+			Color = color;
+			EnableAlpha = enableAlpha;
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="PaletteColor"/> with a default color value.
+		/// </summary>
+		/// <param name="enableAlpha">Specifies whether the default color should retain its alpha component.</param>
+		public PaletteColor(bool enableAlpha = false)
+		{
+			Color = default; EnableAlpha = enableAlpha;
+		}
 		/// <inheritdoc/>
 		public override string ToString() => EnablePanel ? $"[{_panel}]{Value:#AARRGGBB}" : "[-]" + Value.ToString();
 		/// <summary>

@@ -20,34 +20,3 @@ public class SetOneshotWave : BaseBeat
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetOneshotWave;
 }
-/// <summary>  
-/// Defines the types of waves.  
-/// </summary>  
-[RDJsonEnumSerializable]
-public enum OneshotWaveShapeType
-{
-	/// <summary>  
-	/// Boom and rush wave.  
-	/// </summary>  
-	BoomAndRush,
-	/// <summary>  
-	/// Ball wave.  
-	/// </summary>  
-	Ball,
-	/// <summary>  
-	/// Spring wave.  
-	/// </summary>  
-	Spring,
-	/// <summary>  
-	/// Spike wave.  
-	/// </summary>  
-	Spike,
-	/// <summary>  
-	/// Huge spike wave.  
-	/// </summary>  
-	SpikeHuge,
-	/// <summary>  
-	/// Single wave.  
-	/// </summary>  
-	Single
-}

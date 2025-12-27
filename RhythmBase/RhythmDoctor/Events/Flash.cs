@@ -22,22 +22,3 @@ public class Flash : BaseEvent
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" {Duration}";
 }
-/// <summary>
-/// Specifies the possible durations for a flash event.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum DurationType
-{
-	/// <summary>
-	/// A short duration.
-	/// </summary>
-	Short = 1,
-	/// <summary>
-	/// A medium duration.
-	/// </summary>
-	Medium = 2,
-	/// <summary>
-	/// A long duration.
-	/// </summary>
-	Long = 4,
-}

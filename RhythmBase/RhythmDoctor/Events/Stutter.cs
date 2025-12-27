@@ -20,7 +20,7 @@ public class Stutter : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the action of the stutter event.
 	/// </summary>
-	public StutterActions Action { get; set; } = StutterActions.Add;
+	public StutterAction Action { get; set; } = StutterAction.Add;
 	/// <summary>
 	/// Gets or sets the number of loops for the stutter event.
 	/// </summary>
@@ -29,19 +29,4 @@ public class Stutter : BaseEvent, IRoomEvent
 	public override EventType Type => EventType.Stutter;
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Actions;
-}
-/// <summary>
-/// Defines the possible actions for the stutter event.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum StutterActions
-{
-	/// <summary>
-	/// Add action.
-	/// </summary>
-	Add,
-	/// <summary>
-	/// Cancel action.
-	/// </summary>
-	Cancel
 }

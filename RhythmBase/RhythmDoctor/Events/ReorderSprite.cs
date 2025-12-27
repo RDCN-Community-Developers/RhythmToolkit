@@ -17,11 +17,12 @@ public class ReorderSprite : BaseDecorationAction
 	/// Gets or sets the new room to which the sprite will be moved.
 	/// </summary>
 	[RDJsonConverter(typeof(RoomIndexConverter))]
-	public RDRoomIndex NewRoom { get; set; } = RDRoomIndex.Room1;
+	[RDJsonCondition($"$&.{nameof(NewRoom)} is not null")]
+	public RDRoomIndex? NewRoom { get; set; }
 	/// <summary>
 	/// Gets or sets the depth level of the object.
 	/// </summary>
-	public int Depth { get; set; } = 0;
+	public int? Depth { get; set; }
 	/// <summary>
 	/// Gets or sets the type of layer used for sorting or rendering purposes.
 	/// </summary>

@@ -627,8 +627,17 @@ public class ConverterGenerator : IIncrementalGenerator
 			bool isNullable = false;
 			if (converterAttr != null)
 			{
+				isNullable = type.NullableAnnotation == NullableAnnotation.Annotated;
 				string converterTypeName = converterAttr.ConstructorArguments[0].Value?.ToString() ?? "?";
 				sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{jsonName}\"u8))");
+				if(isNullable)
+				{
+					sb.AppendLine($"""
+									if(reader.TokenType is JsonTokenType.Null)
+										value.{propertyName} = null;
+									else
+						""");
+				}
 				sb.AppendLine($"			value.{propertyName} = new {converterTypeName}().Read(ref reader, typeof({TypeNameOf(type)}), options);");
 				isFirst = false;
 				continue;
@@ -670,9 +679,7 @@ public class ConverterGenerator : IIncrementalGenerator
 				}
 				if (type2.TypeKind == TypeKind.Enum)
 				{
-					sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{jsonName}\"u8){
-						(isNullable ? $" && reader.TokenType is not JsonTokenType.Null)" : ")")
-						}");
+					sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{jsonName}\"u8){(isNullable ? $" && reader.TokenType is not JsonTokenType.Null)" : ")")}");
 					sb.AppendLine($$"""
 									if(reader.TokenType is JsonTokenType.String && TryParse(reader.ValueSpan, out {{type.ToDisplayString().TrimEnd('?')}} enumValue{{enumIndex}}))
 										value.{{propertyName}} = enumValue{{enumIndex}};
@@ -776,6 +783,7 @@ public class ConverterGenerator : IIncrementalGenerator
 			string name2 = propertyName;
 			ITypeSymbol type2 = type;
 			bool hasCondition = !string.IsNullOrEmpty(condition);
+			bool isNullable = false;
 			if (hasCondition)
 			{
 				sb.AppendLine($"		if ({condition})".Replace("$&", "value").Replace("\n", "\n\t\t\t"));
@@ -783,11 +791,25 @@ public class ConverterGenerator : IIncrementalGenerator
 			}
 			if (converterAttr != null)
 			{
+				if (type.NullableAnnotation == NullableAnnotation.Annotated)
+					isNullable = true;
 				string converterTypeName = converterAttr.ConstructorArguments[0].Value?.ToString() ?? "?";
 				if (hasCondition)
 					sb.Append("		{\n	");
 				sb.AppendLine($"		writer.WritePropertyName(\"{jsonName}\"u8);");
-				sb.AppendLine($"		new {converterTypeName}().Write(writer, value.{propertyName}, options);");
+				if(isNullable)
+				{
+					sb.AppendLine($"		if (value.{propertyName} is null)");
+					sb.AppendLine("		{");
+					sb.AppendLine("			writer.WriteNullValue();");
+					sb.AppendLine("		}");
+					sb.AppendLine("		else");
+					sb.AppendLine("		{");
+					sb.Append("		");
+				}
+				sb.AppendLine($"		new {converterTypeName}().Write(writer, value.{propertyName}{(isNullable ?  ".Value" : "")}, options);");
+				if(isNullable)
+					sb.AppendLine("		}");
 				if (hasCondition)
 					sb.AppendLine("		}");
 				continue;
@@ -831,10 +853,11 @@ public class ConverterGenerator : IIncrementalGenerator
 					type2 = ((INamedTypeSymbol)type).TypeArguments[0];
 					sb.AppendLine($"// Found GenericType: {type2.Name}, {type2.MetadataName}");
 				}
+				isNullable = true;
 			}
 			if (type.TypeKind == TypeKind.Enum)
 			{
-				sb.AppendLine($"		writer.WriteString(\"{jsonName}\"u8, value.{propertyName}.ToEnumString());");
+					sb.AppendLine($"		writer.WriteString(\"{jsonName}\"u8, value.{propertyName}.ToEnumString());");
 			}
 			else
 			{

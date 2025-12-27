@@ -15,7 +15,7 @@ public class SetWindowContent : BaseWindowEvent, IEaseEvent
 	/// Gets or sets the mode for displaying the content.  
 	/// Defaults to <see cref="WindowContentMode.OnTop"/>.  
 	/// </summary>  
-	public WindowContentMode ContentMode { get; set; } = WindowContentMode.OnTop;
+	public WindowContentMode? ContentMode { get; set; } = WindowContentMode.OnTop;
 	/// <summary>
 	/// Gets or sets the index of the room.
 	/// </summary>
@@ -44,18 +44,3 @@ public class SetWindowContent : BaseWindowEvent, IEaseEvent
 	public float Duration { get; set; }
 }
 
-/// <summary>  
-/// Specifies the available modes for displaying content in the window.  
-/// </summary>  
-[RDJsonEnumSerializable]
-public enum WindowContentMode
-{
-	/// <summary>  
-	/// Show all rooms in this window.  
-	/// </summary>  
-	OnTop,
-	/// <summary>
-	/// Show one room in this window.
-	/// </summary>
-	Room,
-}

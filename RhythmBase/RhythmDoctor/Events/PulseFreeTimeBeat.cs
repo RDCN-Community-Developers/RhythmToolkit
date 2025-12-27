@@ -1,29 +1,6 @@
 ﻿namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Defines the action types for the pulse free time beat.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum PulseActions
-{
-	/// <summary>
-	/// Increment action.
-	/// </summary>
-	Increment,
-	/// <summary>
-	/// Decrement action.
-	/// </summary>
-	Decrement,
-	/// <summary>
-	/// Custom action.
-	/// </summary>
-	Custom,
-	/// <summary>
-	/// Remove action.
-	/// </summary>
-	Remove
-}
-/// <summary>
 /// Represents a pulse free time beat event.
 /// </summary>
 public class PulseFreeTimeBeat : BaseBeat
@@ -35,12 +12,12 @@ public class PulseFreeTimeBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets the custom pulse value.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Action)} is RhythmBase.RhythmDoctor.Events.{nameof(PulseActions)}.{nameof(PulseActions.Custom)}")]
+	[RDJsonCondition($"$&.{nameof(Action)} is RhythmBase.RhythmDoctor.Events.{nameof(PulseAction)}.{nameof(PulseAction.Custom)}")]
 	public uint CustomPulse { get; set; } = 0;
 	/// <summary>
 	/// Gets or sets the action type.
 	/// </summary>
-	public PulseActions Action { get; set; } = PulseActions.Increment;
+	public PulseAction Action { get; set; } = PulseAction.Increment;
 	///<inheritdoc/>
 	public override EventType Type => EventType.PulseFreeTimeBeat;
 	///<inheritdoc/>
@@ -49,16 +26,16 @@ public class PulseFreeTimeBeat : BaseBeat
 		string Out = "";
 		switch (Action)
 		{
-			case PulseActions.Increment:
+			case PulseAction.Increment:
 				Out = ">";
 				break;
-			case PulseActions.Decrement:
+			case PulseAction.Decrement:
 				Out = "<";
 				break;
-			case PulseActions.Custom:
+			case PulseAction.Custom:
 				Out = (CustomPulse + 1).ToString();
 				break;
-			case PulseActions.Remove:
+			case PulseAction.Remove:
 				Out = "X";
 				break;
 		}

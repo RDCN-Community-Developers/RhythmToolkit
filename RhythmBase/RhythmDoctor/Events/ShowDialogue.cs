@@ -60,33 +60,3 @@ public class ShowDialogue : BaseEvent, IRoomEvent
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" {Text}";
 }
-/// <summary>
-/// Specifies the sides where the dialogue panel can be shown.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum DialogueSide
-{
-	/// <summary>
-	/// The bottom side.
-	/// </summary>
-	Bottom,
-	/// <summary>
-	/// The top side.
-	/// </summary>
-	Top
-}
-/// <summary>
-/// Specifies the sides where the portrait can be shown.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum DialoguePortraitSide
-{
-	/// <summary>
-	/// The left side.
-	/// </summary>
-	Left,
-	/// <summary>
-	/// The right side.
-	/// </summary>
-	Right
-}

@@ -3,29 +3,6 @@
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Defines the possible actions for the event.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum ShowHandsAction
-{
-	/// <summary>
-	/// Show the hands.
-	/// </summary>
-	Show,
-	/// <summary>
-	/// Hide the hands.
-	/// </summary>
-	Hide,
-	/// <summary>
-	/// Raise the hands.
-	/// </summary>
-	Raise,
-	/// <summary>
-	/// Lower the hands.
-	/// </summary>
-	Lower
-}
-/// <summary>
 /// Represents an event to show hands in a room.
 /// </summary>
 public class ShowHands : BaseEvent, IRoomEvent
@@ -60,19 +37,4 @@ public class ShowHands : BaseEvent, IRoomEvent
 	public override EventType Type => EventType.ShowHands;
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Actions;
-}
-/// <summary>
-/// Defines the possible extents for the action.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum ShowHandsExtent
-{
-	/// <summary>
-	/// Full extent.
-	/// </summary>
-	Full,
-	/// <summary>
-	/// Short extent.
-	/// </summary>
-	Short
 }

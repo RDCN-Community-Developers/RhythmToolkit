@@ -29,7 +29,7 @@ public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// <summary>
 	/// Gets or sets the filter mode for the event.
 	/// </summary>
-	public BackgroundFilterModes Filter { get; set; } = BackgroundFilterModes.NearestNeighbor;
+	public Filter Filter { get; set; } = Filter.NearestNeighbor;
 	/// <summary>
 	/// Gets or sets the color for the background.
 	/// </summary>
@@ -150,30 +150,4 @@ public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 #else
 	: base.ToString() + $" {string.Join(',', Images)}";
 #endif
-}
-/// <summary>
-/// Specifies the types of backgrounds.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum BackgroundType
-{
-	/// <summary>
-	/// Background is a color.
-	/// </summary>
-	Color,
-	/// <summary>
-	/// Background is an image.
-	/// </summary>
-	Image
-}
-/// <summary>
-/// Specifies the filter modes.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum BackgroundFilterModes
-{
-	/// <summary>
-	/// Nearest neighbor filtering.
-	/// </summary>
-	NearestNeighbor
 }

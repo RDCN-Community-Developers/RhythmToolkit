@@ -330,7 +330,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
 			RDLevel? level;
 			settings.OnBeforeReading();
-			using EscapeNewLineStream stream = new(rdlevelStream);
+			using EscapeSpecialCharacterStream stream = new(rdlevelStream);
 			level = JsonSerializer.Deserialize<RDLevel>(stream, options);
 			settings.OnAfterReading();
 			return level ?? [];
@@ -341,7 +341,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(dirPath, settings);
 			RDLevel? level;
 			settings.OnBeforeReading();
-			using EscapeNewLineStream stream = new(rdlevelStream);
+			using EscapeSpecialCharacterStream stream = new(rdlevelStream);
 			level = JsonSerializer.Deserialize<RDLevel>(stream, options);
 			settings.OnAfterReading();
 			return level ?? [];
@@ -359,7 +359,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
 			RDLevel? level;
 			settings.OnBeforeReading();
-			using EscapeNewLineStream stream = new(rdlevelStream);
+			using EscapeSpecialCharacterStream stream = new(rdlevelStream);
 			level = await JsonSerializer.DeserializeAsync<RDLevel>(stream, options, cancellationToken);
 			settings.OnAfterReading();
 			return level ?? [];
@@ -473,7 +473,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				JsonSerializer.Serialize(rdlevelStream, this, options);
 			}
-			foreach(var file in settings.FileReferences)
+			foreach (var file in settings.FileReferences)
 			{
 				archive.CreateEntryFromFile(Path.Combine(Directory, file.Path), Path.GetFileName(file.Path));
 			}

@@ -1,5 +1,6 @@
 ﻿using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -41,7 +42,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					else if (reader.ValueSpan.SequenceEqual("filter"u8))
 					{
 						reader.Read();
-						if (EnumConverter.TryParse(reader.ValueSpan, out Filters result))
+						if (EnumConverter.TryParse(reader.ValueSpan, out Filter result))
 							decoration.Filter = result;
 					}
 					else if (reader.ValueSpan.SequenceEqual("visible"u8))
@@ -63,7 +64,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			JsonSerializer.Serialize(writer, value.Room, options);
 			writer.WriteString("filename"u8, value.Filename);
 			writer.WriteNumber("depth"u8, value.Depth);
-			if (value.Filter is not Filters.NearestNeighbor)
+			if (value.Filter is not Filter.NearestNeighbor)
 				writer.WriteString("filter"u8, EnumConverter.ToEnumString(value.Filter));
 			if (!value.Visible)
 				writer.WriteBoolean("visible"u8, value.Visible);

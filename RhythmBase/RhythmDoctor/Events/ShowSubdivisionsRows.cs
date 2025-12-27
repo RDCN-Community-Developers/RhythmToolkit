@@ -1,20 +1,5 @@
 ﻿namespace RhythmBase.RhythmDoctor.Events;
 
-/// <summary>
-/// Specifies the display mode for subdivision rows.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum ShowSubdivisionsRowsMode
-{
-	/// <summary>
-	/// Mini mode for displaying subdivision rows.
-	/// </summary>
-	Mini,
-	/// <summary>
-	/// Normal mode for displaying subdivision rows.
-	/// </summary>
-	Normal,
-}
 ///<inheritdoc/>
 public class ShowSubdivisionsRows : BaseEvent
 {

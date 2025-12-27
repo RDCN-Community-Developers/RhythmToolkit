@@ -106,8 +106,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 						break;
 					case ReorderSprite reorderSprite:
 						if (reorderSprite.Parent is null) continue;
-						(depths[reorderSprite.Parent.Index] ??= []).Add(new(reorderSprite.Beat.BeatOnly, reorderSprite.Depth));
-						(rooms[reorderSprite.Parent.Index] ??= []).Add(new(reorderSprite.Beat.BeatOnly, reorderSprite.NewRoom));
+						if(reorderSprite.Depth is not null)
+							(depths[reorderSprite.Parent.Index] ??= []).Add(new(reorderSprite.Beat.BeatOnly, reorderSprite.Depth.Value));
+						if(reorderSprite.NewRoom is not null)
+							(rooms[reorderSprite.Parent.Index] ??= []).Add(new(reorderSprite.Beat.BeatOnly, reorderSprite.NewRoom.Value));
 						break;
 					case SetVisible setVisible:
 						if (setVisible.Parent is null) continue;

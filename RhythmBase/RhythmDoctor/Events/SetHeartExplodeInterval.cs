@@ -18,26 +18,3 @@ public class SetHeartExplodeInterval : BaseEvent
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Sounds;
 }
-/// <summary>
-/// Defines the types of intervals.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum HeartExplodeIntervalType
-{
-	/// <summary>
-	/// Interval of one beat after.
-	/// </summary>
-	OneBeatAfter,
-	/// <summary>
-	/// Instant interval.
-	/// </summary>
-	Instant,
-	/// <summary>
-	/// Gather without ceiling.
-	/// </summary>
-	GatherNoCeil,
-	/// <summary>
-	/// Gather and ceiling.
-	/// </summary>
-	GatherAndCeil
-}

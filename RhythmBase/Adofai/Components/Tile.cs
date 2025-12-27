@@ -41,7 +41,21 @@ namespace RhythmBase.Adofai.Components
 		/// If there is no next tile, the tick is set to 0.  
 		/// Otherwise, the tick is calculated as the normalized angular difference between the previous tile and the current tile.  
 		/// </summary>  
-		public float Tick => (((Previous?.Angle ?? 0) - _angle) % 360 + 540) % 360 / 180;
+		public float Tick
+		{
+			get
+			{
+				float v = (float)(((Previous?.Angle ?? 0) - _angle) / 360f) - 0.5f;
+				float tick;
+#if NETSTANDARD
+				tick = (1 + v + (float)Math.Floor(-v)) * 2;
+#else
+				tick = (1 + v + float.Floor(-v)) * 2;
+#endif
+				return tick;
+			}
+		}
+
 		///// <summary>
 		///// Gets the beat associated with the tile, calculated based on its angle and index.
 		///// </summary>
@@ -140,7 +154,7 @@ namespace RhythmBase.Adofai.Components
 					switch (item)
 					{
 						case SetSpeed setSpeed: // tick
-							//Parent.Calculator
+												//Parent.Calculator
 							break;
 						case Twirl twirl: // reverse
 							break;
@@ -178,9 +192,27 @@ namespace RhythmBase.Adofai.Components
 			)}>{(
 				this.Any() ? $"[{Count}]" : string.Empty
 			)}";
+		public static implicit operator Tile(float angle)
+		{
+			if (angle == 999)
+				return new(true);
+			return new(angle);
+		}
+
+		public static implicit operator Tile(bool isMidSpin) => new(isMidSpin);
 		/// <summary>
 		/// The internal storage for the angle of the tile.
 		/// </summary>
 		private float _angle = 0;
+		internal Status _status;
+	}
+	internal struct Status
+	{
+		internal int _index;
+		internal bool _flip;
+		internal float _bpm;
+		internal TimeSpan _time;
+		internal Planets _planet;
+		internal float _tick;
 	}
 }

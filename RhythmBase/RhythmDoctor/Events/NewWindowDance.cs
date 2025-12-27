@@ -6,33 +6,6 @@ using RhythmBase.RhythmDoctor.Converters;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents the presets.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum WindowDancePreset
-{
-	/// <summary>
-	/// Move preset.
-	/// </summary>
-	Move,
-	/// <summary>
-	/// Sway preset.
-	/// </summary>
-	Sway,
-	/// <summary>
-	/// Wrap preset.
-	/// </summary>
-	Wrap,
-	/// <summary>
-	/// Ellipse preset.
-	/// </summary>
-	Ellipse,
-	/// <summary>
-	/// Shake per preset.
-	/// </summary>
-	ShakePer
-}
-/// <summary>
 /// Represents a new window dance event.
 /// </summary>
 public class NewWindowDance : BaseWindowEvent, IEaseEvent
@@ -130,7 +103,7 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)} &&
 		$&.{nameof(SamePresetBehavior)} is RhythmBase.RhythmDoctor.Events.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Reset)}
 		""")]
-	public WindowDanceEaseTypes EaseType { get; set; } = WindowDanceEaseTypes.Repeat;
+	public WindowDanceEaseType EaseType { get; set; } = WindowDanceEaseType.Repeat;
 	/// <summary>
 	/// Gets or sets the sub ease type.
 	/// </summary>
@@ -159,49 +132,4 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	[RDJsonConverter(typeof(TabsConverter))]
 	[RDJsonProperty("tab")]
 	public Tab CustomTab { get; set => field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException(); }
-}
-/// <summary>
-/// Represents the same preset behaviors.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum SamePresetBehavior
-{
-	/// <summary>
-	/// Reset behavior.
-	/// </summary>
-	Reset,
-	/// <summary>
-	/// Keep behavior.
-	/// </summary>
-	Keep
-}
-/// <summary>
-/// Represents the references.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum WindowDanceReference
-{
-	/// <summary>
-	/// Center reference.
-	/// </summary>
-	Center,
-	/// <summary>
-	/// Edge reference.
-	/// </summary>
-	Edge
-}
-/// <summary>
-/// Represents the ease types.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum WindowDanceEaseTypes
-{
-	/// <summary>
-	/// Repeat ease type.
-	/// </summary>
-	Repeat,
-	/// <summary>
-	/// Mirror ease type.
-	/// </summary>
-	Mirror,
 }

@@ -12,7 +12,7 @@ public class PulseCamera : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the strength of the pulse.
 	/// </summary>
-	public byte Strength { get; set; } = 1;
+	public int Strength { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets the count of pulses.
 	/// </summary>

@@ -28,18 +28,3 @@ public partial class CallCustomMethod : BaseEvent, IRoomEvent
 	/// <inheritdoc/>
 	public override string ToString() => base.ToString() + $" {MethodName}";
 }
-/// <summary>
-/// Specifies the execution time options for the method.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum EventExecutionTimeOption
-{
-	/// <summary>
-	/// Execute the method on prebar.
-	/// </summary>
-	OnPrebar,
-	/// <summary>
-	/// Execute the method on bar.
-	/// </summary>
-	OnBar
-}

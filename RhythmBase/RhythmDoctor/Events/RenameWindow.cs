@@ -22,26 +22,3 @@ public class RenameWindow : BaseWindowEvent
 	/// <inheritdoc/>
 	public override EventType Type => EventType.RenameWindow;
 }
-
-/// <summary>
-/// Indicates how the window name should be modified by a <see cref="RenameWindow"/> event.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum WindowNameAction
-{
-	/// <summary>
-	/// Replace the current window name with the provided <see cref="RenameWindow.Text"/>.
-	/// </summary>
-	Set,
-
-	/// <summary>
-	/// Append the provided <see cref="RenameWindow.Text"/> to the existing window name.
-	/// </summary>
-	Append,
-
-	/// <summary>
-	/// Reset the window name to its default value. Any provided <see cref="RenameWindow.Text"/>
-	/// is ignored when this action is used.
-	/// </summary>
-	Reset,
-}

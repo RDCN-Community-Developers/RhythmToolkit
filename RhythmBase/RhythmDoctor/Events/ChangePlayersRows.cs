@@ -3,9 +3,19 @@ using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
-/// <inheritdoc />
+/// <summary>
+/// Represents an event that changes the configuration of player rows, including player assignments, player mode, and
+/// CPU markers.
+/// </summary>
 public class ChangePlayersRows : BaseEvent
 {
+	/// <summary>
+	/// Initializes a new instance of the ChangePlayersRows class.
+	/// </summary>
+	public ChangePlayersRows()
+	{
+		CpuMarkers[0] = RDCharacters.Otto;
+	}
 	/// <summary>
 	/// Gets or sets the list of players.
 	/// </summary>
@@ -14,65 +24,15 @@ public class ChangePlayersRows : BaseEvent
 	/// <summary>
 	/// Gets or sets the player mode.
 	/// </summary>
-	public PlayingModes PlayerMode { get; set; } = PlayingModes.OnePlayer;
+	public PlayingMode PlayerMode { get; set; } = PlayingMode.OnePlayer;
 	/// <summary>
 	/// Gets or sets the list of CPU markers.
 	/// </summary>
 	[RDJsonConverter(typeof(CpuTypeGroupConverter))]
-	public CpuTypeGroup CpuMarkers { get; set; } = new CpuTypeGroup() { [0] = CpuType.Otto };
+	public RDCharacters[] CpuMarkers { get; set; } = new RDCharacters[16];
 	/// <inheritdoc />
 	public override EventType Type => EventType.ChangePlayersRows;
 
 	/// <inheritdoc />
 	public override Tab Tab => Tab.Actions;
-}
-/// <summary>
-/// Represents the types of CPUs.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum CpuType
-{
-	/// <summary>
-	/// No CPU.
-	/// </summary>
-	None,
-	/// <summary>
-	/// Otto CPU type.
-	/// </summary>
-	Otto,
-	/// <summary>
-	/// Ian CPU type.
-	/// </summary>
-	Ian,
-	/// <summary>
-	/// Paige CPU type.
-	/// </summary>
-	Paige,
-	/// <summary>
-	/// Edega CPU type.
-	/// </summary>
-	Edega,
-	/// <summary>
-	/// Blank CPU type.
-	/// </summary>
-	BlankCPU,
-	/// <summary>
-	/// Samurai CPU type.
-	/// </summary>
-	Samurai
-}
-/// <summary>
-/// Represents the modes of players.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum PlayingModes
-{
-	/// <summary>
-	/// Single player mode.
-	/// </summary>
-	OnePlayer,
-	/// <summary>
-	/// Two players mode.
-	/// </summary>
-	TwoPlayers
 }

@@ -16,7 +16,7 @@ public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 	/// Gets or sets the alpha mode.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(MaskType)} != RhythmBase.RhythmDoctor.Events.{nameof(RoomMaskType)}.{nameof(RoomMaskType.None)}")]
-	public MaskAlphaModes AlphaMode { get; set; } = MaskAlphaModes.Normal;
+	public MaskAlphaMode AlphaMode { get; set; } = MaskAlphaMode.Normal;
 	/// <summary>
 	/// Gets or sets the source room.
 	/// </summary>
@@ -32,7 +32,7 @@ public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 	/// Gets or sets the frames per second.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Image)}.Count > 1")]
-	public uint Fps { get; set; } = 30;
+	public float Fps { get; set; } = 30;
 	/// <summary>
 	/// Gets or sets the key color.
 	/// </summary>
@@ -59,42 +59,4 @@ public class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 	public RDRoom Room => new RDSingleRoom(checked((byte)Y));
 	IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Image];
 	IEnumerable<FileReference> IFileEvent.Files => [.. Image];
-}
-/// <summary>
-/// Defines the types of masks available.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum RoomMaskType
-{
-	/// <summary>
-	/// Uses an image as the mask.
-	/// </summary>
-	Image,
-	/// <summary>
-	/// Uses a room as the mask.
-	/// </summary>
-	Room,
-	/// <summary>
-	/// Uses a color as the mask.
-	/// </summary>
-	Color,
-	/// <summary>
-	/// No mask is applied.
-	/// </summary>
-	None
-}
-/// <summary>
-/// Defines the alpha modes available.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum MaskAlphaModes
-{
-	/// <summary>
-	/// Normal alpha mode.
-	/// </summary>
-	Normal,
-	/// <summary>
-	/// Inverted alpha mode.
-	/// </summary>
-	Inverted
 }

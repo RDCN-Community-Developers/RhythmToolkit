@@ -3,21 +3,6 @@ using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Events;
 
-/// <summary>
-/// Specifies the style of the synco sound for the SetRowXs event.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum SetRowXsSyncoStyle
-{
-	/// <summary>
-	/// Use the "Chirp" style for the synco sound.
-	/// </summary>
-	Chirp,
-	/// <summary>
-	/// Use the "Beep" style for the synco sound.
-	/// </summary>
-	Beep,
-}
 /// <inheritdoc />
 //[RDJsonObjectNotSerializable]
 public class SetRowXs : BaseBeat
@@ -32,7 +17,7 @@ public class SetRowXs : BaseBeat
 	/// <summary>
 	/// Gets or sets the synco beat.
 	/// </summary>
-	public sbyte SyncoBeat { get; set; } = -1;
+	public int SyncoBeat { get; set; } = -1;
 	/// <summary>
 	/// Gets or sets the synco swing.
 	/// </summary>

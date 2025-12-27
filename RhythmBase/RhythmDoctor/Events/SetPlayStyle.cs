@@ -9,7 +9,7 @@ public class SetPlayStyle : BaseEvent
 	/// Gets or sets the play style.
 	/// </summary>
 	[RDJsonProperty("PlayStyle")]
-	public PlayStyleTypes PlayStyle { get; set; } = PlayStyleTypes.Normal;
+	public PlayStyleType PlayStyle { get; set; } = PlayStyleType.Normal;
 	/// <summary>
 	/// Gets or sets the next bar.
 	/// </summary>
@@ -24,35 +24,4 @@ public class SetPlayStyle : BaseEvent
 	public override EventType Type => EventType.SetPlayStyle;
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Actions;
-}
-/// <summary>
-/// Defines the play styles.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum PlayStyleTypes
-{
-	/// <summary>
-	/// Normal play style.
-	/// </summary>
-	Normal,
-	/// <summary>
-	/// Loop play style.
-	/// </summary>
-	Loop,
-	/// <summary>
-	/// Prolong play style.
-	/// </summary>
-	Prolong,
-	/// <summary>
-	/// Immediate play style.
-	/// </summary>
-	Immediately,
-	/// <summary>
-	/// Extra immediate play style.
-	/// </summary>
-	ExtraImmediately,
-	/// <summary>
-	/// Prolong one bar play style.
-	/// </summary>
-	ProlongOneBar
 }

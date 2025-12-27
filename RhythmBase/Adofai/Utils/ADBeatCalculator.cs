@@ -1,4 +1,5 @@
 ﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Events;
 namespace RhythmBase.Adofai.Utils
 {
 	/// <summary>
@@ -20,9 +21,78 @@ namespace RhythmBase.Adofai.Utils
 			////this._Holds = this.Collection.EventsWhere<ADHold>().ToList<ADHold>();
 			////this._Freeroams = this.Collection.EventsWhere<ADFreeRoam>().ToList<ADFreeRoam>();
 		}
+		public float TickOf(Tile tile)
+		{
+			bool flip;
+			float ticks = 0;
+			_cacheTile ??= Collection.Start;
+			Status s = _cacheTile._status;
+			float lastAngle = 0;
+
+			foreach (var t in Collection)
+			{
+				float tick = 0;
+				float angle = t.Angle;
+				float temp = 0;
+
+				bool hairPin = Math.Abs(angle - lastAngle) - 180f < GlobalSettings.Tolerance;
+				if (t.ContainsType(EventType.Twirl))
+					s._flip = !s._flip;
+				if (t.ContainsType(EventType.MultiPlanet))
+				{
+					MultiPlanet mp = t.OfType<MultiPlanet>().Single()!;
+					s._planet = mp.Planets;
+				}
+				if (t.IsMidSpin)
+				{
+					tick = 0;
+					lastAngle += 180;
+				}
+				else
+				{
+#if NETSTANDARD
+					if (Math.Abs(lastAngle - angle) < GlobalSettings.Tolerance)
+#else
+					if (float.Abs(angle - lastAngle) - 180f is > -GlobalSettings.Tolerance and < GlobalSettings.Tolerance)
+#endif
+					{
+						// hearpin
+
+					}
+					else
+					{
+						temp = 0.5f - (lastAngle - angle) / 360f;
+						var v = s._planet switch
+						{
+							Planets.TwoPlanets => 0.5f + (float)((lastAngle - angle) / 360f),
+							Planets.ThreePlanets => 0.5f + (float)((lastAngle - angle) / 360f) - (1f / 6f),
+							_ => throw new NotImplementedException(),
+						};
+#if NETSTANDARD
+						tick = (1 + v + (float)Math.Floor(-v)) * 2;
+#else
+						tick = (1 + v + float.Floor(-v)) * 2;
+#endif
+						if (s._flip)
+						{
+							tick = 2 - tick;
+						}
+					}
+					lastAngle = angle;
+				}
+				//Console.WriteLine($"angle: {lastAngle,5} diff: {(temp),5:F2} tick: {tick,5:F2}");
+				ticks += tick;
+				s._tick = ticks;
+				t._status = s;
+				s._index++;
+				_cacheTile = t;
+			}
+			return tile._status._tick;
+		}
 #pragma warning disable IDE0052 // 删除未读的私有成员
 		internal ADLevel Collection;
 		private float _DefaultBpm = 100;
+		private Tile? _cacheTile = null;
 #pragma warning restore IDE0052 // 删除未读的私有成员
 
 		/*

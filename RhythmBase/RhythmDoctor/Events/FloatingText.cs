@@ -4,41 +4,6 @@ using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
-/// <summary>  
-/// Specifies the category of the narration.  
-/// </summary>  
-[RDJsonEnumSerializable]
-public enum NarrationCategory
-{
-	/// <summary>  
-	/// Fallback category, used as a default when no other category applies.  
-	/// </summary>  
-	Fallback,
-	/// <summary>  
-	/// Navigation category, used for guiding the user through the interface or level.  
-	/// </summary>  
-	Navigation,
-	/// <summary>  
-	/// Instruction category, used for providing instructions or tutorials.  
-	/// </summary>  
-	Instruction,
-	/// <summary>  
-	/// Notification category, used for alerts or notifications.  
-	/// </summary>  
-	Notification,
-	/// <summary>  
-	/// Dialogue category, used for character or story dialogues.  
-	/// </summary>  
-	Dialogue,
-	/// <summary>  
-	/// Description category, used for descriptive text or explanations.  
-	/// </summary>  
-	Description,
-	/// <summary>  
-	/// Subtitles category, used for displaying subtitles.  
-	/// </summary>  
-	Subtitles,
-}
 /// <summary>
 /// Represents a floating text event in a room.
 /// </summary>
@@ -77,7 +42,7 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// <summary>
 	/// Gets or sets the size of the text.
 	/// </summary>
-	public uint Size { get; set; } = 8;
+	public int Size { get; set; } = 8;
 	/// <summary>
 	/// Gets or sets the outline color of the text.
 	/// </summary>
@@ -120,6 +85,10 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// </summary>
 	public string Text { get; set; } = "等/呀/等/得/好/心/慌……";
 	/// <summary>
+	/// Gets or sets the font style to use for rendering text.
+	/// </summary>
+	public RDFontType Font { get; set; } = RDFontType.Default;
+	/// <summary>
 	/// Initializes a new instance of the <see cref="FloatingText"/> class.
 	/// </summary>
 	public FloatingText() { }
@@ -128,47 +97,4 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// </summary>
 	public override string ToString() => base.ToString() + $" {Text}";
 	private readonly List<AdvanceText> _children = [];
-}
-/// <summary>
-/// Specifies the mode of the text.
-/// </summary>
-[Flags]
-[RDJsonEnumSerializable]
-public enum FloatingTextFadeOutMode
-{
-	/// <summary>
-	/// The text will fade out gradually.
-	/// </summary>
-	FadeOut = 0,
-	/// <summary>
-	/// The text will hide abruptly.
-	/// </summary>
-	HideAbruptly = 1
-}
-/// <summary>
-/// Specifies the anchor style of the text.
-/// </summary>
-[Flags]
-public enum FloatingTextAnchorStyle
-{
-	/// <summary>
-	/// The lower anchor style.
-	/// </summary>
-	Lower = 1,
-	/// <summary>
-	/// The upper anchor style.
-	/// </summary>
-	Upper = 2,
-	/// <summary>
-	/// The left anchor style.
-	/// </summary>
-	Left = 4,
-	/// <summary>
-	/// The right anchor style.
-	/// </summary>
-	Right = 8,
-	/// <summary>
-	/// The center anchor style.
-	/// </summary>
-	Center = 0
 }

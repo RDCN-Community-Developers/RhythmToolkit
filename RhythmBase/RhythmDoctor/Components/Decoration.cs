@@ -33,7 +33,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// The filter used for this decoration.
 		/// </summary>
-		public Filters Filter { get; set; }
+		public Filter Filter { get; set; }
 		/// <summary>
 		/// The initial visibility of this decoration.
 		/// </summary>

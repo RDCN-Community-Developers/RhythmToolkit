@@ -4,49 +4,6 @@ using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents the sources of the voice.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum SayReadyGetSetGoVoiceSources
-{
-	/// <summary>
-	/// Represents the voice source "Nurse".
-	/// </summary>
-	Nurse,
-	/// <summary>
-	/// Represents the voice source "Nurse Tired".
-	/// </summary>
-	NurseTired,
-	/// <summary>
-	/// Represents the voice source "Nurse Swing".
-	/// </summary>
-	NurseSwing,
-	/// <summary>
-	/// Represents the voice source "Nurse Swing Calm".
-	/// </summary>
-	NurseSwingCalm,
-	/// <summary>
-	/// Represents the voice source "Ian Excited".
-	/// </summary>
-	IanExcited,
-	/// <summary>
-	/// Represents the voice source "Ian Calm".
-	/// </summary>
-	IanCalm,
-	/// <summary>
-	/// Represents the voice source "Ian Slow".
-	/// </summary>
-	IanSlow,
-	/// <summary>
-	/// Represents the voice source "None Bottom".
-	/// </summary>
-	NoneBottom,
-	/// <summary>
-	/// Represents the voice source "None Top".
-	/// </summary>
-	NoneTop
-}
-/// <summary>
 /// Represents an event that says "Ready, Get Set, Go" with various voice sources and phrases.
 /// </summary>
 public class SayReadyGetSetGo : BaseEvent, IRoomEvent
@@ -54,11 +11,11 @@ public class SayReadyGetSetGo : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the phrase to say.
 	/// </summary>
-	public SayReadyGetSetGoWords PhraseToSay { get; set; } = SayReadyGetSetGoWords.SayReaDyGetSetGoNew;
+	public SayReadyGetSetGoWord PhraseToSay { get; set; } = SayReadyGetSetGoWord.SayReaDyGetSetGoNew;
 	/// <summary>
 	/// Gets or sets the voice source.
 	/// </summary>
-	public SayReadyGetSetGoVoiceSources VoiceSource { get; set; } = SayReadyGetSetGoVoiceSources.Nurse;
+	public SayReadyGetSetGoVoiceSource VoiceSource { get; set; } = SayReadyGetSetGoVoiceSource.Nurse;
 	/// <summary>
 	/// Gets or sets the tick value.
 	/// </summary>
@@ -83,11 +40,11 @@ public class SayReadyGetSetGo : BaseEvent, IRoomEvent
 	/// Gets a value indicating whether the phrase is splitable.
 	/// </summary>
 	public bool Splitable => PhraseToSay is
-		SayReadyGetSetGoWords.SayReaDyGetSetGoNew or
-		SayReadyGetSetGoWords.SayGetSetGo or
-		SayReadyGetSetGoWords.SayReaDyGetSetOne or
-		SayReadyGetSetGoWords.SayGetSetOne or
-		SayReadyGetSetGoWords.SayReadyGetSetGo;
+		SayReadyGetSetGoWord.SayReaDyGetSetGoNew or
+		SayReadyGetSetGoWord.SayGetSetGo or
+		SayReadyGetSetGoWord.SayReaDyGetSetOne or
+		SayReadyGetSetGoWord.SayGetSetOne or
+		SayReadyGetSetGoWord.SayReadyGetSetGo;
 	///<inheritdoc/>
 	public RDRoom Rooms { get; set; } = new(0);
 
@@ -96,119 +53,4 @@ public class SayReadyGetSetGo : BaseEvent, IRoomEvent
 	/// </summary>
 	/// <returns>A string that represents the current object.</returns>
 	public override string ToString() => base.ToString() + $" {VoiceSource}: {PhraseToSay}";
-}
-/// <summary>
-/// Represents the phrases that can be said.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum SayReadyGetSetGoWords
-{
-	/// <summary>
-	/// Represents the phrase "Ready, Get Set, Go New".
-	/// </summary>
-	SayReaDyGetSetGoNew,
-	/// <summary>
-	/// Represents the phrase "Get Set, Go".
-	/// </summary>
-	SayGetSetGo,
-	/// <summary>
-	/// Represents the phrase "Ready, Get Set, One".
-	/// </summary>
-	SayReaDyGetSetOne,
-	/// <summary>
-	/// Represents the phrase "Get Set, One".
-	/// </summary>
-	SayGetSetOne,
-	/// <summary>
-	/// Represents the phrase "Rea".
-	/// </summary>
-	JustSayRea,
-	/// <summary>
-	/// Represents the phrase "Dy".
-	/// </summary>
-	JustSayDy,
-	/// <summary>
-	/// Represents the phrase "Get".
-	/// </summary>
-	JustSayGet,
-	/// <summary>
-	/// Represents the phrase "Set".
-	/// </summary>
-	JustSaySet,
-	/// <summary>
-	/// Represents the phrase "And".
-	/// </summary>
-	JustSayAnd,
-	/// <summary>
-	/// Represents the phrase "Go".
-	/// </summary>
-	JustSayGo,
-	/// <summary>
-	/// Represents the phrase "Stop".
-	/// </summary>
-	JustSayStop,
-	/// <summary>
-	/// Represents the phrase "And Stop".
-	/// </summary>
-	JustSayAndStop,
-	/// <summary>
-	/// Represents the phrase "Switch".
-	/// </summary>
-	SaySwitch,
-	/// <summary>
-	/// Represents the phrase "Watch".
-	/// </summary>
-	SayWatch,
-	/// <summary>
-	/// Represents the phrase "Listen".
-	/// </summary>
-	SayListen,
-	/// <summary>
-	/// Represents the count "1".
-	/// </summary>
-	Count1,
-	/// <summary>
-	/// Represents the count "2".
-	/// </summary>
-	Count2,
-	/// <summary>
-	/// Represents the count "3".
-	/// </summary>
-	Count3,
-	/// <summary>
-	/// Represents the count "4".
-	/// </summary>
-	Count4,
-	/// <summary>
-	/// Represents the count "5".
-	/// </summary>
-	Count5,
-	/// <summary>
-	/// Represents the count "6".
-	/// </summary>
-	Count6,
-	/// <summary>
-	/// Represents the count "7".
-	/// </summary>
-	Count7,
-	/// <summary>
-	/// Represents the count "8".
-	/// </summary>
-	Count8,
-	/// <summary>
-	/// Represents the count "9".
-	/// </summary>
-	Count9,
-	/// <summary>
-	/// Represents the count "10".
-	/// </summary>
-	Count10,
-	/// <summary>
-	/// Represents the phrase "Ready, Get Set, Go".
-	/// </summary>
-	SayReadyGetSetGo,
-	/// <summary>
-	/// Represents the phrase "Ready".
-	/// </summary>
-	JustSayReady
 }
