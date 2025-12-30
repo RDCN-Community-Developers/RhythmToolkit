@@ -32,7 +32,7 @@
 		/// </summary>
 		public int PaletteIndex
 		{
-			get => _panel;
+			readonly get => _panel;
 			set
 			{
 				if (value >= 0)
