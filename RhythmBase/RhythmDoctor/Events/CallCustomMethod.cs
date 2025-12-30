@@ -22,7 +22,7 @@ public partial class CallCustomMethod : BaseEvent, IRoomEvent
 	public override EventType Type => EventType.CallCustomMethod;
 	/// <inheritdoc/>
 	[RDJsonIgnore]
-	public RDRoom Rooms { get; set; } = RDRoom.Default();
+	public RDRoom Rooms { get; set; } = RDRoom.Default;
 	/// <inheritdoc/>
 	public override Tab Tab => Tab.Actions;
 	/// <inheritdoc/>

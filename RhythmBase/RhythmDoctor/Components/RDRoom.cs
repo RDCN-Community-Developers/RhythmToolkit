@@ -64,7 +64,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns an instance with only room 1 enabled.
 		/// </summary>
 		/// <returns>An instance with only room 1 enabled.</returns>
-		public static RDRoom Default() => new([])
+		public static RDRoom Default => new([])
 		{
 			_data = RDRoomIndex.Room1
 		};
@@ -145,7 +145,6 @@ namespace RhythmBase.RhythmDoctor.Components
 			room.Rooms.Length == 1
 				? new RDSingleRoom(room.Rooms[0])
 				: throw new InvalidCastException("This object has multiple rooms.");
-
 		/// <inheritdoc/>
 		public override readonly bool Equals(object? obj) => obj is RDRoom e && Equals(e);
 		/// <inheritdoc/>
