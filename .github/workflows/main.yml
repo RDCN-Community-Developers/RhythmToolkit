@@ -3,6 +3,7 @@ name: Publish NuGet on demand
 on:
   push:
     branches: [ master ]
+    paths: [ 'RhythmBase/RhythmBase.csproj' ]
 
 jobs:
   publish:
