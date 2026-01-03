@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections;
+using System.Text;
 
 namespace RhythmBase.RhythmDoctor.Components
 {
@@ -7,10 +8,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// </summary>
 	public class Condition
 	{
-		/// <summary>
-		/// Condition list.
-		/// </summary>
-		public Dictionary<int, bool> ConditionLists { get; } = [];
+		private readonly HashSet<int> conditions = [];
 		/// <summary>
 		/// The time of effectiveness of the condition.
 		/// </summary>
@@ -18,7 +16,56 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets a value indicating whether the collection contains any conditions.
 		/// </summary>
-		public bool HasValue => ConditionLists.Count > 0;
+		public bool HasValue => conditions.Count > 0;
+		/// <summary>
+		/// Gets an array of indices derived from the current set of conditions.
+		/// </summary>
+		public int[] Indices => [.. conditions.Select(c => ~(1 << 31) & c)];
+		/// <summary>
+		/// Gets or sets the enabled or disabled state associated with the specified condition index.
+		/// </summary>
+		/// <remarks>Setting the value to <see langword="null"/> removes any explicit enabled or disabled state for
+		/// the specified index.</remarks>
+		/// <param name="index">The zero-based index of the condition to retrieve or modify.</param>
+		/// <returns>A nullable Boolean value indicating the state of the condition at the specified index: <see langword="true"/> if
+		/// enabled; <see langword="false"/> if disabled; or <see langword="null"/> if the state is not set.</returns>
+		public bool? this[int index]
+		{
+			get
+			{
+				int disabledCondition = (~(1 << 31) & index);
+				int enabledCondition = (1 << 31) | index;
+				if (conditions.Contains(enabledCondition))
+					return true;
+				else if (conditions.Contains(disabledCondition))
+					return false;
+				else
+					return null;
+			}
+			set
+			{
+				if (value is bool v)
+					if (v)
+					{
+						int disabledCondition = (~(1 << 31) & index);
+						conditions.Remove(disabledCondition);
+						conditions.Add((1 << 31) | index);
+					}
+					else
+					{
+						int enabledCondition = (1 << 31) | index;
+						conditions.Remove(enabledCondition);
+						conditions.Add(~(1 << 31) & index);
+					}
+				else
+				{
+					int disabledCondition = (~(1 << 31) & index);
+					int enabledCondition = (1 << 31) | index;
+					conditions.Remove(disabledCondition);
+					conditions.Remove(enabledCondition);
+				}
+			}
+		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Condition"/> class.
 		/// </summary>
@@ -50,13 +97,13 @@ namespace RhythmBase.RhythmDoctor.Components
 					index = index * 10 + (text[i++] - '0');
 				if (text[i] is '&')
 				{
-					o.ConditionLists[index] = enabled;
+					o[index] = enabled;
 					++i;
 					continue;
 				}
 				if (text[i] is 'd')
 				{
-					o.ConditionLists[index] = enabled;
+					o[index] = enabled;
 					break;
 				}
 				throw new RhythmBaseException($"Illegal condition: {text}.");
@@ -85,13 +132,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		public string Serialize()
 		{
 			StringBuilder sb = new();
-			foreach (KeyValuePair<int, bool> pair in ConditionLists)
+			foreach (int pair in conditions)
 			{
 				if (sb.Length > 0)
 					sb.Append('&');
-				if (!pair.Value)
+				if (pair >> 31 == 0)
 					sb.Append('~');
-				sb.Append(pair.Key);
+				sb.Append(pair & ~(1 << 31));
 			}
 			sb.Append('d').Append(Duration.ToString("0.########"));
 			return sb.ToString();
