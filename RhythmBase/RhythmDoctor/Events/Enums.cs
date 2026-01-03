@@ -1699,7 +1699,7 @@ public enum Filter
 	/// <summary>
 	/// Bilinear filtering.
 	/// </summary>
-	BiliNear
+	Bilinear
 }
 /// <summary>  
 /// Defines the types of sounds.  
