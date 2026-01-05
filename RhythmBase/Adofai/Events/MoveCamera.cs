@@ -45,5 +45,10 @@ namespace RhythmBase.Adofai.Events
 		/// </summary>  
 		[RDJsonCondition($"$&.{nameof(Zoom)} is not null")]
 		public float? Zoom { get; set; }
+		/// <summary>
+		/// indicates whether it is the real camera movement.
+		/// </summary>
+		[RDJsonCondition($"$&.{nameof(Real)}")]
+		public bool Real { get; set; }
 	}
 }
