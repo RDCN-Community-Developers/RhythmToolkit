@@ -34,7 +34,7 @@ public class AddClassicBeat : BaseBeat
 	/// Gets or sets the audio content associated with this instance.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Sound)} is not null")]
-	public RDAudio? Sound { get; set; } = new RDAudio();
+	public RDAudio? Sound { get; set; } = null;
 	/// <summary>
 	/// Gets or sets the classic beat pattern.
 	/// </summary>
