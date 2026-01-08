@@ -41,7 +41,7 @@ jobs:
         if: steps.should.outputs.publish == 'true'
         run: |
           VER=$(grep -oP '<Version>\K[^<]+' RhythmBase/RhythmBase.csproj)
-          dotnet pack RhythmBase/RhythmBase.csproj -c Release \
+          dotnet build RhythmBase/RhythmBase.csproj -c Release \
             -o ./pkg \
             /p:Version="$VER"
 
