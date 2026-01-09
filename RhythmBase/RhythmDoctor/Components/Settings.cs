@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using RhythmBase.Global.Components.RichText;
+using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Components;
 
 /// <summary>  
@@ -45,7 +46,7 @@ public class Settings
 	/// <summary>  
 	/// Song name.  
 	/// </summary>  
-	public string Song { get; set; }
+	public RDLine<RDRichStringStyle> Song { get; set; }
 	/// <summary>  
 	/// Special artist type.  
 	/// </summary>  
@@ -61,7 +62,7 @@ public class Settings
 	/// <summary>  
 	/// Level author.  
 	/// </summary>  
-	public string Author { get; set; }
+	public RDLine<RDRichStringStyle> Author { get; set; }
 	/// <summary>  
 	/// Level difficulty.  
 	/// </summary>  
@@ -101,11 +102,11 @@ public class Settings
 	/// <summary>  
 	/// Level description.  
 	/// </summary>  
-	public string Description { get; set; }
+	public RDLine<RDRichStringStyle> Description { get; set; }
 	/// <summary>  
 	/// Level tags.  
 	/// </summary>  
-	public string Tags { get; set; }
+	public RDLine<RDRichStringStyle> Tags { get; set; }
 	/// <summary>  
 	/// Separate two-player level file paths.  
 	/// It is uncertain if this attribute is still being used.  

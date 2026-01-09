@@ -237,7 +237,7 @@ namespace RhythmBase.Test
 		public void RichTextUsage()
 		{
 #if NETFRAMEWORK
-			RDLine<RDRichStringStyle> line = new RDLine<RDRichStringStyle>().Deserialize("Hel<color=#00FF00>lo");
+			RDLine<RDRichStringStyle> line = RDLine<RDRichStringStyle>.Empty.Deserialize("Hel<color=#00FF00>lo");
 #elif NETCOREAPP
 			RDLine<RDRichStringStyle> line = RDLine<RDRichStringStyle>.Deserialize("Hel<color=#00FF00>lo");
 #endif
@@ -263,7 +263,7 @@ namespace RhythmBase.Test
 		public void RichTextModify()
 		{
 #if NETFRAMEWORK
-			RDLine<RDRichStringStyle> line = new RDLine<RDRichStringStyle>().Deserialize("Hel<color=#00FF00>lo Rhythm</color> Doctor!");
+			RDLine<RDRichStringStyle> line = RDLine<RDRichStringStyle>.Empty.Deserialize("Hel<color=#00FF00>lo Rhythm</color> Doctor!");
 #elif NETCOREAPP
 			RDLine<RDRichStringStyle> line = RDLine<RDRichStringStyle>.Deserialize("Hel<color=#00FF00>lo Rhythm</color> Doctor!");
 #endif
@@ -290,7 +290,7 @@ namespace RhythmBase.Test
 					Character = "Paige",
 					Expression = "neutral",
 #if NETFRAMEWORK
-					Content = new RDLine<RDDialoguePhraseStyle>().Deserialize("Hel<color=#00FF00>lo [2]<shake>Rhythm</color> Doctor</shake>!"),
+					Content = RDLine<RDDialoguePhraseStyle>.Empty.Deserialize("Hel<color=#00FF00>lo [2]<shake>Rhythm</color> Doctor</shake>!"),
 #elif NETCOREAPP
 					Content = RDLine<RDDialoguePhraseStyle>.Deserialize("Hel<color=#00FF00>lo [2]<shake>Rhythm</color> Doctor</shake>!"),
 #endif

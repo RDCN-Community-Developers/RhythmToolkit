@@ -1,4 +1,6 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+﻿using RhythmBase.Global.Components.RichText;
+
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
 /// Represents an event to show a status sign.
@@ -17,7 +19,8 @@ public class ShowStatusSign : BaseEvent, IDurationEvent
 	/// <summary>
 	/// Gets or sets the text to display.
 	/// </summary>
-	public string Text { get; set; } = "";
+	[RDJsonConverter(typeof(RichTextConverter<RDRichStringStyle>))]
+	public RDLine<RDRichStringStyle> Text { get; set; } = "";
 	///<inheritdoc/>
 	public float Duration { get; set; }
 	/// <summary>

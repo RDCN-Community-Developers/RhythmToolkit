@@ -1,4 +1,5 @@
-﻿using RhythmBase.Global.Extensions;
+﻿using RhythmBase.Global.Components.RichText;
+using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -30,7 +31,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 				else if (propertyName.SequenceEqual("artist"u8))
 					settings.Artist = reader.GetString() ?? "";
 				else if (propertyName.SequenceEqual("song"u8))
-					settings.Song = reader.GetString() ?? "";
+					settings.Song = RDLine<RDRichStringStyle>
+#if NETSTANDARD
+						.Empty
+#endif
+						.Deserialize(reader.GetString() ?? "");
 				else if (propertyName.SequenceEqual("specialArtistType"u8) && EnumConverter.TryParse(reader.ValueSpan, out SpecialArtistTypes value))
 					settings.SpecialArtistType = value;
 				else if (propertyName.SequenceEqual("artistPermission"u8))
@@ -38,7 +43,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 				else if (propertyName.SequenceEqual("artistLinks"u8))
 					settings.ArtistLinks = reader.GetString() ?? "";
 				else if (propertyName.SequenceEqual("author"u8))
-					settings.Author = reader.GetString() ?? "";
+					settings.Author = RDLine<RDRichStringStyle>
+#if NETSTANDARD
+						.Empty
+#endif
+						.Deserialize(reader.GetString() ?? "");
 				else if (propertyName.SequenceEqual("difficulty"u8) && EnumConverter.TryParse(reader.ValueSpan, out DifficultyLevel difficulty))
 					settings.Difficulty = difficulty;
 				else if (propertyName.SequenceEqual("seizureWarning"u8))
@@ -58,9 +67,17 @@ namespace RhythmBase.RhythmDoctor.Converters
 				else if (propertyName.SequenceEqual("songLabelGrayscale"u8))
 					settings.SongLabelGrayscale = reader.GetBoolean();
 				else if (propertyName.SequenceEqual("description"u8))
-					settings.Description = reader.GetString() ?? "";
+					settings.Description = RDLine<RDRichStringStyle>
+#if NETSTANDARD
+						.Empty
+#endif
+						.Deserialize(reader.GetString() ?? "");
 				else if (propertyName.SequenceEqual("tags"u8))
-					settings.Tags = reader.GetString() ?? "";
+					settings.Tags = RDLine<RDRichStringStyle>
+#if NETSTANDARD
+						.Empty
+#endif
+						.Deserialize(reader.GetString() ?? "");
 				else if (propertyName.SequenceEqual("separate2PLevelFilename"u8))
 					settings.Separate2PLevelFilename = reader.GetString() ?? "";
 				else if (propertyName.SequenceEqual("canBePlayedOn"u8) && EnumConverter.TryParse(reader.ValueSpan, out LevelPlayedMode playedMode))
@@ -144,11 +161,11 @@ namespace RhythmBase.RhythmDoctor.Converters
 
 			writer.WriteNumber("version"u8, value.Version);
 			writer.WriteString("artist"u8, value.Artist ?? "");
-			writer.WriteString("song"u8, value.Song ?? "");
+			writer.WriteString("song"u8, value.Song.Serialize());
 			writer.WriteString("specialArtistType"u8, EnumConverter.ToEnumString(value.SpecialArtistType));
 			writer.WriteString("artistPermission"u8, value.ArtistPermission.Path ?? "");
 			writer.WriteString("artistLinks"u8, value.ArtistLinks ?? "");
-			writer.WriteString("author"u8, value.Author ?? "");
+			writer.WriteString("author"u8, value.Author.Serialize());
 			writer.WriteString("difficulty"u8, EnumConverter.ToEnumString(value.Difficulty));
 			writer.WriteBoolean("seizureWarning"u8, value.SeizureWarning);
 			writer.WriteString("previewImage"u8, value.PreviewImage.Path ?? "");
@@ -158,8 +175,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteNumber("previewSongDuration"u8, (float)value.PreviewSongDuration.TotalSeconds);
 			writer.WriteNumber("songNameHue"u8, value.SongNameHueOrGrayscale);
 			writer.WriteBoolean("songLabelGrayscale"u8, value.SongLabelGrayscale);
-			writer.WriteString("description"u8, value.Description ?? "");
-			writer.WriteString("tags"u8, value.Tags ?? "");
+			writer.WriteString("description"u8, value.Description.Serialize());
+			writer.WriteString("tags"u8, value.Tags.Serialize());
 			writer.WriteString("separate2PLevelFilename"u8, value.Separate2PLevelFilename ?? "");
 			writer.WriteString("canBePlayedOn"u8, EnumConverter.ToEnumString(value.CanBePlayedOn));
 			writer.WriteString("firstBeatBehavior"u8, EnumConverter.ToEnumString(value.FirstBeatBehavior));
@@ -209,7 +226,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			// ExtraData
 			if (value.ExtraData != null)
 			{
-				foreach (KeyValuePair<string,JsonElement> kv in value.ExtraData)
+				foreach (KeyValuePair<string, JsonElement> kv in value.ExtraData)
 				{
 					writer.WritePropertyName(kv.Key);
 					kv.Value.WriteTo(writer);

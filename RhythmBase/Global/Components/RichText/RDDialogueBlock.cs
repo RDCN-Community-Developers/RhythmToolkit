@@ -72,7 +72,7 @@ namespace RhythmBase.Global.Components.RichText
 #if !NETSTANDARD
 				RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
 #else
-			new RDLine<RDDialoguePhraseStyle>().Deserialize(str.Substring(mi + 1));
+			RDLine<RDDialoguePhraseStyle>.Empty.Deserialize(str.Substring(mi + 1));
 #endif
 			return line;
 		}
@@ -109,9 +109,9 @@ namespace RhythmBase.Global.Components.RichText
 				{
 					line.Content =
 #if NET7_0_OR_GREATER
-						RDLine<RDDialoguePhraseStyle>.Deserialize(str);
+					RDLine<RDDialoguePhraseStyle>.Deserialize(str);
 #else
-				new RDLine<RDDialoguePhraseStyle>().Deserialize(str);
+					RDLine<RDDialoguePhraseStyle>.Empty.Deserialize(str);
 #endif
 					return line;
 				}
@@ -123,7 +123,7 @@ namespace RhythmBase.Global.Components.RichText
 #if NET7_0_OR_GREATER
 				RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
 #else
-			new RDLine<RDDialoguePhraseStyle>().Deserialize(str.Substring(mi + 1));
+				RDLine<RDDialoguePhraseStyle>.Empty.Deserialize(str.Substring(mi + 1));
 #endif
 			return line;
 		}

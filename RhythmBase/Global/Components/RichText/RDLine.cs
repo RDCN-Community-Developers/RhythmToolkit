@@ -106,6 +106,10 @@ namespace RhythmBase.Global.Components.RichText
 			}
 		}
 #endif
+		/// <summary>
+		/// Gets the default <see cref="RDPhrase{RDPhraseStyle}"/> instance.
+		/// </summary>
+		public static readonly RDLine<TStyle> Empty = new();
 		/// <inheritdoc/>
 		public
 #if NET7_0_OR_GREATER
@@ -167,6 +171,10 @@ namespace RhythmBase.Global.Components.RichText
 		/// <param name="text">The <see cref="string"/> to convert.</param>
 		/// <returns>A new <see cref="RDLine{RDPhraseStyle}"/> containing the specified <see cref="string"/>.</returns>
 		public static implicit operator RDLine<TStyle>(string text) => new() { texts = [new RDPhrase<TStyle>(text)] };
+		/// <summary>
+		/// Converts the specified <see cref="RDLine{TStyle}"/> instance to its string representation.
+		/// </summary>
+		public static explicit operator string(RDLine<TStyle> line) => line.ToString();
 		/// <summary>
 		/// Deserializes a string into an <see cref="RDLine{RDPhraseStyle}"/>.
 		/// </summary>
