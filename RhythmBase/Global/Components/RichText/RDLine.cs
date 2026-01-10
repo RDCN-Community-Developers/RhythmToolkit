@@ -117,41 +117,44 @@ namespace RhythmBase.Global.Components.RichText
 #endif
 			RDLine<TStyle> Concat(params RDLine<TStyle>[] lines)
 		{
-			RDPhrase<TStyle>[] texts = [.. lines[0].texts];
-#if NETSTANDARD2_0
-			foreach (RDLine<TStyle> line in lines.Skip(1))
+			if (lines.Length == 0)
+				return Empty;
+			int total = lines.Sum(i => i.texts.Length);
+
+			RDPhrase<TStyle>[] parts = new RDPhrase<TStyle>[total];
+			int idx = 0;
+
+			RDPhrase<TStyle>[] first = lines[0].texts;
+			foreach (var text in first)
 			{
-				if (texts.Last().Style.Equals(line.texts[0].Style))
+				if (text.Length == 0)
+					continue;
+				parts[idx++] = text;
+			}
+			for (int il = 1; il < lines.Length; il++)
+			{
+				int it = 0;
+				RDPhrase<TStyle>[] txts = lines[il].texts;
+				if (idx > 0 && txts.Length > 0 && parts[idx - 1].Style.Equals(txts[0].Style))
 				{
-					RDPhrase<TStyle> before = texts.Last(), after = line.texts[0];
+					RDPhrase<TStyle> before = parts[idx - 1], after = txts[0];
 					RDPhrase<TStyle> richString = new(before.Text + after.Text)
 					{
 						Style = before.Style,
 						Events = [.. before.Events, .. after.Events.Select(i => new RDDialogueTone(i.Type, i.Index + before.Length) { Pause = i.Pause })]
 					};
-					texts = [.. texts.Take(texts.Length - 1), richString, .. line.texts.Skip(1)];
+					parts[idx - 1] = richString;
+					it++;
 				}
-				else
-					texts = [.. texts, .. line.texts];
-			}
-#else
-			foreach (RDLine<TStyle> line in lines[1..])
-			{
-				if (texts[^1].Style.Equals(line.texts[0].Style))
+				for (; it < txts.Length; it++)
 				{
-					RDPhrase<TStyle> before = texts[^1], after = line.texts[0];
-					RDPhrase<TStyle> richString = new(before.Text + after.Text)
-					{
-						Style = before.Style,
-						Events = [.. before.Events, .. after.Events.Select(i => new RDDialogueTone(i.Type, i.Index + before.Length) { Pause = i.Pause })]
-					};
-					texts = [.. texts[..^1], richString, .. line.texts[1..]];
+					if (txts[it].Length == 0)
+						continue;
+					parts[idx++] = txts[it];
 				}
-				else
-					texts = [.. texts, .. line.texts];
 			}
-#endif
-			return new() { texts = texts };
+			Array.Resize(ref parts, idx);
+			return new() { texts = parts };
 		}
 		/// <summary>
 		/// Implicitly converts a <see cref="RDPhrase{RDPhraseStyle}"/> to a <see cref="RDLine{RDPhraseStyle}"/>.
@@ -338,7 +341,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// <returns>A new <see cref="RDLine{RDPhraseStyle}"/> that is the result of concatenating the two specified instances.</returns>
 		public static RDLine<TStyle> operator +(RDLine<TStyle> left, RDLine<TStyle> right) =>
 #if NETSTANDARD2_0
-			left.
+			Empty.
 #endif
 			Concat([.. left.texts, .. right.texts]);
 		/// <inheritdoc/>
