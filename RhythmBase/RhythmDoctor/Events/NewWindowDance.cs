@@ -130,6 +130,11 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// Gets or sets the custom tab associated with this instance.
 	/// </summary>
 	[RDJsonConverter(typeof(TabsConverter))]
+	[RDJsonCondition($"$&.{nameof(CustomTab)} is not RhythmBase.RhythmDoctor.Events.{nameof(Tab)}.{nameof(Tab.Windows)}")]
 	[RDJsonProperty("tab")]
-	public Tab CustomTab { get; set => field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException(); }
+	public Tab CustomTab
+	{
+		get;
+		set => field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
+	} = Tab.Actions;
 }

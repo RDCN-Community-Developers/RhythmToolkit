@@ -66,14 +66,14 @@ Operating System: Windows 25H2 26200.7462
 CPU: 12th Gen Intel® Core™ i7-12650H  
 RAM: 16GB  
 
-<span style="color:#FF0000;font-weight: bold;">Rhythm Doctor Level Editor v1.0.3/r42 Windows da9f047</span>
+**🟥Rhythm Doctor Level Editor v1.0.3/r42(r65) Windows da9f047**
 - Utilizes `scrEditor.Decode` to open the `main.rdlevel` file and `scrEditor.Encode` by pressing `Ctrl + S` in the Editor Interface.  
 
-<span style="color:#00FF88;font-weight: bold;">RhythmBase v1.3.4 .NET Standard 2.0</span>  
+**🟩RhythmBase v1.3.4 .NET Standard 2.0**
 - Uses `RDLeve.FromFile` to read the complete `rdzip` file and `RDLevel.SaveToFile` to save it as an `rdlevel` file.  
 - Tested in .NET Framework 4.8.9221.0
 
-<span style="color:#00FFDD;font-weight: bold;">RhythmBase v1.3.4 .NET 8.0</span>
+**🟦RhythmBase v1.3.4 .NET 8.0**
 - Uses `RDLeve.FromFile` to read the complete `rdzip` file and `RDLevel.SaveToFile` to save it as an `rdlevel` file.  
 - Tested in .NET 8.0.11
 
@@ -85,7 +85,7 @@ config:
         height: 300
     themeVariables:
         xyChart:
-            plotColorPalette: '#FF0000, #00FF88, #00FFDD'
+            plotColorPalette: '#FF0000, #00FF88, #0088FF'
 ---
 xychart
   title "Read Time"
@@ -104,7 +104,7 @@ config:
         height: 300
     themeVariables:
         xyChart:
-            plotColorPalette: '#FF0000, #00FF88, #00FFDD'
+            plotColorPalette: '#FF0000, #00FF88, #0088FF'
 ---
 xychart
   title "Write Time"
