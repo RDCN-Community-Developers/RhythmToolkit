@@ -32,17 +32,20 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void ReadOrWriteLevel()
 		{
-			// Directly read a level file
-			using RDLevel rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel");
+			lock (this)
+			{
+				// Directly read a level file
+				using RDLevel rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel");
 
-			// Read a level pack file
-			using RDLevel rdlevel2 = RDLevel.FromFile(@"your\level.rdzip");
+				// Read a level pack file
+				using RDLevel rdlevel2 = RDLevel.FromFile(@"your\level.rdzip");
 
-			// Read a compressed level pack
-			using RDLevel rdlevel3 = RDLevel.FromFile(@"your\level.zip");
+				// Read a compressed level pack
+				using RDLevel rdlevel3 = RDLevel.FromFile(@"your\level.zip");
 
-			// Write a level file
-			rdlevel1.SaveToFile(@"your\outLevel.rdlevel");
+				// Write a level file
+				rdlevel1.SaveToFile(@"your\outLevel.rdlevel");
+			}
 		}
 		[TestMethod]
 		public void ReadOrWriteLevelWithSettings()
@@ -69,7 +72,8 @@ namespace RhythmBase.Test
 			// Default is the Temp path.
 			GlobalSettings.CachePath = @"your\cache\path";
 
-			using RDLevel _rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel", settings);
+			lock (this)
+			{ using RDLevel _rdlevel1 = RDLevel.FromFile(@"your\level.rdlevel", settings); }
 		}
 		[TestMethod]
 		public void ConvertLevelToJsonDocument()

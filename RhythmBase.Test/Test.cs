@@ -1,3 +1,4 @@
+using RhythmBase.Global.Components;
 using RhythmBase.Global.Extensions;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
@@ -76,7 +77,8 @@ namespace RhythmBase.Test
 					count[e.Tab] = ++value;
 				}
 			}
-			level.SaveToFile("out.rdlevel");
+			lock (this)
+				level.SaveToFile("out.rdlevel");
 			level = RDLevel.FromJsonString(level.ToJsonString());
 		}
 		[TestMethod]
@@ -91,16 +93,17 @@ namespace RhythmBase.Test
 					ZipFileProcessMethod = ZipFileProcessMethod.AllFiles,
 					LoadAssets = false,
 				};
-				Console.WriteLine("|Action\t|Elapsed\t|");
+				Console.WriteLine("|Action\t|Read\t|Write|");
 				Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 				for (int i = 0; i < 10; i++)
 				{
 					sw.Restart();
 					using RDLevel level = RDLevel.FromFile("the-powe-S7V1kg9RWYK.rdzip", settings);
-					Console.WriteLine($"|Read\t|{sw.ElapsedMilliseconds,10} ms\t|");
+					Console.Write($"|{i}\t|{sw.Elapsed.TotalMilliseconds,10} ms\t|");
 					sw.Restart();
-					level.SaveToFile("out.rdlevel");
-					Console.WriteLine($"|Write\t|{sw.ElapsedMilliseconds,10} ms\t|");
+					lock (this)
+						level.SaveToFile("out.rdlevel");
+					Console.WriteLine($"{sw.Elapsed.TotalMilliseconds,10} ms\t|");
 					foreach (var file in settings.FileReferences)
 					{
 						Console.WriteLine($"Cached file: {file.Path}");
@@ -192,6 +195,18 @@ namespace RhythmBase.Test
 			var allTypes = (EventType[])Enum.GetValues(typeof(EventType));
 			foreach (var type in EventTypeUtils.CustomTypes)
 				Console.WriteLine(type);
+		}
+		[TestMethod]
+		public void RDColorTest()
+		{
+			RDColor color1 = RDColor.FromArgb(255, 0, 0, 255);
+			RDColor color2 = RDColor.FromRgba("#00FF00");
+			RDColor.TryFromName("red", out RDColor color3);
+			Console.WriteLine(color1);
+			Console.WriteLine(color2);
+			Console.WriteLine(color3);
+			Console.WriteLine(color1.ToString("#AARRGGBB"));
+			Console.WriteLine(color2.ToString("RRGGBBAA"));
 		}
 	}
 }
