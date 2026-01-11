@@ -6,6 +6,7 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Diagnostics;
+using System.Text;
 
 namespace RhythmBase.Test
 {
@@ -199,14 +200,33 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void RDColorTest()
 		{
-			RDColor color1 = RDColor.FromArgb(255, 0, 0, 255);
-			RDColor color2 = RDColor.FromRgba("#00FF00");
-			RDColor.TryFromName("red", out RDColor color3);
-			Console.WriteLine(color1);
-			Console.WriteLine(color2);
-			Console.WriteLine(color3);
-			Console.WriteLine(color1.ToString("#AARRGGBB"));
-			Console.WriteLine(color2.ToString("RRGGBBAA"));
+			Random random = new();
+			string color = $"{((ushort)random.Next(0, 0x10000)):X4}";
+			char a = color[0], r = color[1], g = color[2], b = color[3];
+			Console.WriteLine(RDColor.FromArgb($"{r}{g}{b}").ToString());
+			Console.WriteLine(RDColor.FromArgb($"{a}{r}{g}{b}").ToString());
+			Console.WriteLine(RDColor.FromArgb($"{r}{r}{g}{g}{b}{b}").ToString());
+			Console.WriteLine(RDColor.FromArgb($"{a}{a}{r}{r}{g}{g}{b}{b}").ToString());
+			Console.WriteLine(RDColor.FromRgba($"{r}{g}{b}").ToString());
+			Console.WriteLine(RDColor.FromRgba($"{r}{g}{b}{a}").ToString());
+			Console.WriteLine(RDColor.FromRgba($"{r}{r}{g}{g}{b}{b}").ToString());
+			Console.WriteLine(RDColor.FromRgba($"{r}{r}{g}{g}{b}{b}{a}{a}").ToString());
+			Console.WriteLine(RDColor.FromArgb(Encoding.UTF8.GetBytes($"{r}{g}{b}")).ToString());
+			Console.WriteLine(RDColor.FromArgb(Encoding.UTF8.GetBytes($"{a}{r}{g}{b}")).ToString());
+			Console.WriteLine(RDColor.FromArgb(Encoding.UTF8.GetBytes($"{r}{r}{g}{g}{b}{b}")).ToString());
+			Console.WriteLine(RDColor.FromArgb(Encoding.UTF8.GetBytes($"{a}{a}{r}{r}{g}{g}{b}{b}")).ToString());
+			Console.WriteLine(RDColor.FromRgba(Encoding.UTF8.GetBytes($"{r}{g}{b}")).ToString());
+			Console.WriteLine(RDColor.FromRgba(Encoding.UTF8.GetBytes($"{r}{g}{b}{a}")).ToString());
+			Console.WriteLine(RDColor.FromRgba(Encoding.UTF8.GetBytes($"{r}{r}{g}{g}{b}{b}")).ToString());
+			Console.WriteLine(RDColor.FromRgba(Encoding.UTF8.GetBytes($"{r}{r}{g}{g}{b}{b}{a}{a}")).ToString());
+			Console.WriteLine(RDColor.FromName("grAy").ToString());
+			Console.WriteLine(RDColor.FromName("GRAY").ToString());
+			try
+			{
+				Console.WriteLine(RDColor.FromName("None").ToString());
+			}
+			catch (ArgumentException) { }
+			catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 		}
 	}
 }

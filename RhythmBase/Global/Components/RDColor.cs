@@ -1,6 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Buffers.Text;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Numerics;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace RhythmBase.Global.Components
@@ -160,7 +164,7 @@ namespace RhythmBase.Global.Components
 		/// <param name="b">Blue component</param>
 		/// <param name="a">Alpha component (default is 255)</param>
 		/// <returns>RDColor instance</returns>
-		public static RDColor FromRgba(byte r, byte g, byte b, byte a = 255) => new((uint)(a << 24 | r << 16 | g << 8 | b));
+		public static RDColor FromRgba(byte r, byte g, byte b, byte a = 255) => (uint)(a << 24 | r << 16 | g << 8 | b);
 		/// <summary>
 		/// Creates an <see cref="RDColor"/> instance from a hexadecimal string in RGBA format.
 		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
@@ -168,13 +172,7 @@ namespace RhythmBase.Global.Components
 		/// <param name="hex">The hexadecimal string representing the color.</param>
 		/// <returns>An <see cref="RDColor"/> instance created from the hexadecimal string.</returns>
 		/// <exception cref="ArgumentException">Thrown when the hexadecimal string length is not 3, 4, 6, or 8.</exception>
-		public static RDColor FromRgba(string hex)
-		{
-			if (TryFromRgba(hex, out RDColor color))
-				return color;
-			throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
-		}
-
+		public static RDColor FromRgba(string hex) => TryFromRgba(hex, out RDColor color) ? color : Empty;
 		/// <summary>
 		/// Creates an <see cref="RDColor"/> instance from a hexadecimal byte span in RGBA format.
 		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
@@ -182,12 +180,13 @@ namespace RhythmBase.Global.Components
 		/// <param name="hex">The byte span representing the hexadecimal color string.</param>
 		/// <returns>An <see cref="RDColor"/> instance created from the hexadecimal byte span.</returns>
 		/// <exception cref="ArgumentException">Thrown when the hexadecimal string length is not 3, 4, 6, or 8.</exception>
-		public static RDColor FromRgba(ReadOnlySpan<byte> hex)
-		{
-			if (TryFromRgba(hex, out RDColor color))
-				return color;
-			throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long.");
-		}
+		public static RDColor FromRgba(ReadOnlySpan<byte> hex) => TryFromRgba(hex, out RDColor color) ? color : Empty;
+		/// <summary>
+		/// Creates an RDColor instance from a 32-bit RGBA value.
+		/// </summary>
+		/// <param name="hex">The 32-bit RGBA value.</param>
+		/// <returns>A new RDColor instance.</returns>
+		public static RDColor FromRgba(uint hex) => hex & 0x00FFFFFFu | ((hex & 0xFFu) << 24);
 		/// <summary>
 		/// Converts a byte representing a hexadecimal character to its corresponding numeric value.
 		/// </summary>
@@ -219,11 +218,7 @@ namespace RhythmBase.Global.Components
 		/// color string, if the conversion succeeded; otherwise, contains the default value of <see cref="RDColor"/>.</param>
 		/// <returns><see langword="true"/> if the hexadecimal string was successfully converted to an <see cref="RDColor"/>;
 		/// otherwise, <see langword="false"/>.</returns>
-#if NETSTANDARD
 		public static bool TryFromRgba(string hex, out RDColor color)
-#else
-		public static bool TryFromRgba(string hex, [MaybeNullWhen(false)] out RDColor color)
-#endif
 		{
 			color = default;
 			if (string.IsNullOrEmpty(hex))
@@ -240,35 +235,32 @@ namespace RhythmBase.Global.Components
 #else
 				hex = hex[1..];
 #endif
+			if (!uint.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint value))
+				return false;
 			switch (hex.Length)
 			{
 				case 3:
-					color = new RDColor(
-						(uint)(255 << 24 |
-						(Convert.ToByte(new string(hex[0], 2), 16) << 16) |
-						Convert.ToByte(new string(hex[1], 2), 16) << 8 |
-						Convert.ToByte(new string(hex[2], 2), 16)));
+					color =
+						0xFF000000 |
+						(((value & 0xF00) * 0x11) << 8) |
+						(((value & 0x0F0) * 0x11) << 4) |
+						(((value & 0x00F) * 0x11));
 					return true;
 				case 4:
-					color = new RDColor(
-						(uint)(Convert.ToByte(new string(hex[3], 2), 16) << 24 |
-						(Convert.ToByte(new string(hex[0], 2), 16) << 16) |
-						Convert.ToByte(new string(hex[1], 2), 16) << 8 |
-						Convert.ToByte(new string(hex[2], 2), 16)));
+					color =
+						(((value & 0xF000) * 0x11) << 4) |
+						(((value & 0x0F00) * 0x11)) |
+						(((value & 0x00F0) * 0x11) >> 4) |
+						(((value & 0x000F) * 0x11) << 24);
 					return true;
 				case 6:
-					color = new RDColor(
-						(uint)(255 << 24 |
-						(Convert.ToByte(hex.Substring(0, 2), 16) << 16) |
-						Convert.ToByte(hex.Substring(2, 2), 16) << 8 |
-						Convert.ToByte(hex.Substring(4, 2), 16)));
+					color =
+						0xFF000000 | value;
 					return true;
 				case 8:
-					color = new RDColor(
-						(uint)(Convert.ToByte(hex.Substring(6, 2), 16) << 24 |
-						(Convert.ToByte(hex.Substring(0, 2), 16) << 16) |
-						Convert.ToByte(hex.Substring(2, 2), 16) << 8 |
-						Convert.ToByte(hex.Substring(4, 2), 16)));
+					color =
+						((value & 0x000000FF) << 24) |
+						((value & 0xFFFFFF00) >> 8);
 					return true;
 				default:
 					color = default;
@@ -287,68 +279,46 @@ namespace RhythmBase.Global.Components
 		/// <param name="color">When this method returns, contains the resulting <see cref="RDColor"/> if the conversion was successful;
 		/// otherwise, the default value of <see cref="RDColor"/>.</param>
 		/// <returns><see langword="true"/> if the conversion was successful; otherwise, <see langword="false"/>.</returns>
-#if NETSTANDARD
 		public static bool TryFromRgba(ReadOnlySpan<byte> hex, out RDColor color)
-#else
-		public static bool TryFromRgba(ReadOnlySpan<byte> hex, [MaybeNullWhen(false)] out RDColor color)
-#endif
 		{
+			color = default;
 			if (hex.Length == 0)
 			{
-				color = default;
 				return false;
 			}
 			if (hex[0] == '#')
 				hex = hex.Slice(1);
+			if (!Utf8Parser.TryParse(hex, out uint value, out int bytesConsumed, 'X'))
+				return false;
 			switch (hex.Length)
 			{
 				case 3:
-					color = new RDColor(
-						(uint)(
-						255 << 24 |
-						((FromChar(hex[0]) * 17) << 16) |
-						((FromChar(hex[1]) * 17) << 8) |
-						(FromChar(hex[2]) * 17)));
+					color =
+						0xFF000000 |
+						(((value & 0xF00) * 0x11) << 8) |
+						(((value & 0x0F0) * 0x11) << 4) |
+						(((value & 0x00F) * 0x11));
 					return true;
 				case 4:
-					color = new RDColor(
-						(uint)(
-						((FromChar(hex[3]) * 17) << 24) |
-						((FromChar(hex[0]) * 17) << 16) |
-						((FromChar(hex[1]) * 17) << 8) |
-						(FromChar(hex[2]) * 17)));
+					color =
+						(((value & 0xF000) * 0x11) << 4) |
+						(((value & 0x0F00) * 0x11)) |
+						(((value & 0x00F0) * 0x11) >> 4) |
+						(((value & 0x000F) * 0x11) << 24);
 					return true;
 				case 6:
-					color = new RDColor(
-						(uint)(
-						255 << 24 |
-						((FromChar(hex[0]) * 16 + FromChar(hex[1])) << 16) |
-						((FromChar(hex[2]) * 16 + FromChar(hex[3])) << 8) |
-						(FromChar(hex[4]) * 16 + FromChar(hex[5]))));
+					color =
+						0xFF000000 | value;
 					return true;
 				case 8:
-					string str = hex.Slice(6, 2).ToString();
-					color = new RDColor(
-						(uint)(
-						((FromChar(hex[6]) * 16 + FromChar(hex[7])) << 24) |
-						((FromChar(hex[0]) * 16 + FromChar(hex[1])) << 16) |
-						((FromChar(hex[2]) * 16 + FromChar(hex[3])) << 8) |
-						(FromChar(hex[4]) * 16 + FromChar(hex[5]))));
+					color =
+						((value & 0x000000FF) << 24) |
+						((value & 0xFFFFFF00) >> 8);
 					return true;
 				default:
 					color = default;
 					return false;
 			}
-		}
-		/// <summary>
-		/// Creates an RDColor instance from a 32-bit RGBA value.
-		/// </summary>
-		/// <param name="hex">The 32-bit RGBA value.</param>
-		/// <returns>A new RDColor instance.</returns>
-		public static RDColor FromRgba(uint hex)
-		{
-			uint argb = hex & 0x00FFFFFFu | (hex & 0xFFu) << 24;
-			return new RDColor(argb);
 		}
 		/// <summary>
 		/// Creates an RDColor instance from ARGB values.
@@ -359,6 +329,7 @@ namespace RhythmBase.Global.Components
 		/// <param name="b">Blue component</param>
 		/// <returns>RDColor instance</returns>
 		public static RDColor FromArgb(byte a, byte r, byte g, byte b) => new((uint)(a << 24 | r << 16 | g << 8 | b));
+		public static RDColor FromArgb(ReadOnlySpan<byte> hex) => TryFromArgb(hex, out RDColor color) ? color : Empty;
 		/// <summary>
 		/// Creates an RDColor instance from a hexadecimal string in ARGB format.
 		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
@@ -366,26 +337,13 @@ namespace RhythmBase.Global.Components
 		/// <param name="hex">Hexadecimal string</param>
 		/// <returns>RDColor instance</returns>
 		/// <exception cref="ArgumentException">Thrown when the hexadecimal string length is not 3, 4, 6, or 8</exception>
-		public static RDColor FromArgb(string hex)
-		{
-			hex = hex.Trim();
-#if NETSTANDARD
-			if (hex.StartsWith("#"))
-				hex = hex.Substring(1);
-#else
-			if (hex.StartsWith('#'))
-				hex = hex[1..];
-#endif
-			hex = hex.Length switch
-			{
-				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
-				4 => $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}{hex[3]}{hex[3]}",
-				6 => $"FF{hex}",
-				8 => hex,
-				_ => throw new ArgumentException("Hex string must be 3, 4, 6, or 8 characters long."),
-			};
-			return new RDColor(Convert.ToUInt32(hex, 16));
-		}
+		public static RDColor FromArgb(string hex) => TryFromArgb(hex, out RDColor color) ? color : Empty;
+		/// <summary>
+		/// Creates an <see cref="RDColor"/> instance from a 32-bit ARGB value.
+		/// </summary>
+		/// <param name="hex">The 32-bit ARGB value.</param>
+		/// <returns>A new <see cref="RDColor"/> instance.</returns>
+		public static RDColor FromArgb(uint hex) => new(hex);
 		/// <summary>
 		/// Tries to create an RDColor instance from a hexadecimal string.
 		/// Supports hexadecimal strings of length 3, 4, 6, or 8.
@@ -393,35 +351,53 @@ namespace RhythmBase.Global.Components
 		/// <param name="hex">The hexadecimal string representing the color.</param>
 		/// <param name="color">When this method returns, contains the RDColor instance created from the hexadecimal string, if the conversion succeeded, or the default value if the conversion failed.</param>
 		/// <returns>true if the hexadecimal string was converted successfully; otherwise, false.</returns>
-#if NETSTANDARD
 		public static bool TryFromArgb(string hex, out RDColor color)
-#else
-		public static bool TryFromArgb(string hex, [MaybeNullWhen(false)] out RDColor color)
-#endif
 		{
+			color = default;
+			if (string.IsNullOrEmpty(hex))
+				return false;
 			hex = hex.Trim();
-#if NETSTANDARD
-			if (hex.StartsWith("#"))
-				hex = hex.Substring(1);
-#else
-			if (hex.StartsWith('#'))
-				hex = hex[1..];
-#endif
-			string? hex2 = hex.Length switch
-			{
-				3 => $"FF{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}",
-				4 => $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}{hex[3]}{hex[3]}",
-				6 => $"FF{hex}",
-				8 => hex,
-				_ => null,
-			};
-			if (hex2 is null)
+			if (hex.Length == 0)
 			{
 				color = default;
 				return false;
 			}
-			color = new RDColor(Convert.ToUInt32(hex2, 16));
-			return true;
+			if (hex[0] == '#')
+#if NETSTANDARD
+				hex = hex.Substring(1);
+#else
+				hex = hex[1..];
+#endif
+			if (!uint.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint value))
+				return false;
+			switch (hex.Length)
+			{
+				case 3:
+					color =
+						0xFF000000 |
+						(((value & 0xF00) * 0x11) << 8) |
+						(((value & 0x0F0) * 0x11) << 4) |
+						(((value & 0x00F) * 0x11));
+					return true;
+				case 4:
+					color =
+						(((value & 0xF000) * 0x11) << 12) |
+						(((value & 0x0F00) * 0x11) << 8) |
+						(((value & 0x00F0) * 0x11) << 4) |
+						(((value & 0x000F) * 0x11));
+					return true;
+				case 6:
+					color =
+						0xFF000000 | value;
+					return true;
+				case 8:
+					color =
+						value;
+					return true;
+				default:
+					color = default;
+					return false;
+			}
 		}
 		/// <summary>
 		/// Attempts to create an <see cref="RDColor"/> instance from a hexadecimal ARGB color representation.
@@ -434,65 +410,46 @@ namespace RhythmBase.Global.Components
 		/// <param name="color">When this method returns, contains the resulting <see cref="RDColor"/> instance if the conversion was successful;
 		/// otherwise, contains the default value of <see cref="RDColor"/>.</param>
 		/// <returns><see langword="true"/> if the conversion was successful; otherwise, <see langword="false"/>.</returns>
-#if NETSTANDARD
 		public static bool TryFromArgb(ReadOnlySpan<byte> hex, out RDColor color)
-#else
-		public static bool TryFromArgb(ReadOnlySpan<byte> hex, [MaybeNullWhen(true)] out RDColor color)
-#endif
 		{
+			color = default;
 			if (hex.Length == 0)
 			{
-				color = default;
 				return false;
 			}
 			if (hex[0] == '#')
 				hex = hex.Slice(1);
+			if (!Utf8Parser.TryParse(hex, out uint value, out int bytesConsumed, 'X'))
+				return false;
 			switch (hex.Length)
 			{
 				case 3:
-					color = new RDColor(
-						(uint)(
-						255 << 24 |
-						((FromChar(hex[0]) * 17) << 16) |
-						((FromChar(hex[1]) * 17) << 8) |
-						(FromChar(hex[2]) * 17)));
+					color =
+						0xFF000000 |
+						(((value & 0xF00) * 0x11) << 8) |
+						(((value & 0x0F0) * 0x11) << 4) |
+						(((value & 0x00F) * 0x11));
 					return true;
 				case 4:
-					color = new RDColor(
-						(uint)(
-						((FromChar(hex[0]) * 17) << 24) |
-						((FromChar(hex[1]) * 17) << 16) |
-						((FromChar(hex[2]) * 17) << 8) |
-						(FromChar(hex[3]) * 17)));
+					color =
+						(((value & 0xF000) * 0x11) << 12) |
+						(((value & 0x0F00) * 0x11) << 8) |
+						(((value & 0x00F0) * 0x11) << 4) |
+						(((value & 0x000F) * 0x11));
 					return true;
 				case 6:
-					color = new RDColor(
-						(uint)(
-						255 << 24 |
-						((FromChar(hex[0]) * 16 + FromChar(hex[1])) << 16) |
-						((FromChar(hex[2]) * 16 + FromChar(hex[3])) << 8) |
-						(FromChar(hex[4]) * 16 + FromChar(hex[5]))));
+					color =
+						0xFF000000 | value;
 					return true;
 				case 8:
-					string str = hex.Slice(6, 2).ToString();
-					color = new RDColor(
-						(uint)(
-						((FromChar(hex[0]) * 16 + FromChar(hex[1])) << 24) |
-						((FromChar(hex[2]) * 16 + FromChar(hex[3])) << 16) |
-						((FromChar(hex[4]) * 16 + FromChar(hex[5])) << 8) |
-						(FromChar(hex[6]) * 16 + FromChar(hex[7]))));
+					color =
+						value;
 					return true;
 				default:
 					color = default;
 					return false;
 			}
 		}
-		/// <summary>
-		/// Creates an <see cref="RDColor"/> instance from a 32-bit ARGB value.
-		/// </summary>
-		/// <param name="hex">The 32-bit ARGB value.</param>
-		/// <returns>A new <see cref="RDColor"/> instance.</returns>
-		public static RDColor FromArgb(uint hex) => new(hex);
 		/// <summary>
 		/// Creates an RDColor object from the HSL color space.
 		/// </summary>
@@ -578,13 +535,11 @@ namespace RhythmBase.Global.Components
 		/// <param name="name">The name of the color.</param>
 		/// <param name="color">When this method returns, contains the RDColor instance created from the color name, if the conversion succeeded, or the default value if the conversion failed.</param>
 		/// <returns>true if the color name was converted successfully; otherwise, false.</returns>
-#if NETSTANDARD
-		public static bool TryFromName(string name, out RDColor color)
-#else
-		public static bool TryFromName(string name, [MaybeNullWhen(false)] out RDColor color)
-#endif
+		public static bool TryFromName(ReadOnlySpan<char> name, out RDColor color)
 		{
-			RDColor? color2 = name.ToLower() switch
+			Span<char> nameLower = new char[name.Length];
+			name.ToLowerInvariant(nameLower);
+			RDColor? color2 = nameLower switch
 			{
 				"aliceblue" => AliceBlue,
 				"antiquewhite" => AntiqueWhite,
@@ -637,6 +592,7 @@ namespace RhythmBase.Global.Components
 				"gold" => Gold,
 				"goldenrod" => Goldenrod,
 				"gray" => Gray,
+				"grey" => Gray,
 				"green" => Green,
 				"greenyellow" => GreenYellow,
 				"honeydew" => Honeydew,
@@ -739,6 +695,13 @@ namespace RhythmBase.Global.Components
 			return true;
 		}
 		/// <summary>
+		/// Tries to create an RDColor instance from a color name.
+		/// </summary>
+		/// <param name="name">The name of the color.</param>
+		/// <param name="color">When this method returns, contains the RDColor instance created from the color name, if the conversion succeeded, or the default value if the conversion failed.</param>
+		/// <returns>true if the color name was converted successfully; otherwise, false.</returns>
+		public static bool TryFromName(string name, out RDColor color) => TryFromName((ReadOnlySpan<char>)name, out color);
+		/// <summary>
 		/// Tries to get the name(s) of the color.
 		/// </summary>
 		/// <param name="names">When this method returns, contains the name(s) of the color if the conversion succeeded, or an empty array if the conversion failed.</param>
@@ -799,7 +762,7 @@ namespace RhythmBase.Global.Components
 				4294506751u => ["GhostWhite"],
 				4294956800u => ["Gold"],
 				4292519200u => ["Goldenrod"],
-				4286611584u => ["Gray"],
+				4286611584u => ["Gray", "Grey"],
 				4278222848u => ["Green"],
 				4289593135u => ["GreenYellow"],
 				4293984240u => ["Honeydew"],
@@ -1162,6 +1125,10 @@ namespace RhythmBase.Global.Components
 		///Gets the predefined color of gray, or #FF808080.
 		///</summary>
 		public static readonly RDColor Gray = new(4286611584u);
+		///<summary>
+		///Gets the predefined color of grey, or #FF808080.
+		///</summary>
+		public static readonly RDColor Grey = new(4286611584u);
 		///<summary>
 		///Gets the predefined color of green, or #FF008000.
 		///</summary>
