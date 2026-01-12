@@ -41,7 +41,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
 					if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 						foreach (FileReference file in level.Settings.GetAllFileReferences())
-							if (!file.IsEmpty && file.IsExist(DirectoryName))
+							if (!file.IsEmpty && file.IsExist(DirectoryName!))
 								Settings.FileReferences.Add(file);
 					if (level.Settings.Version < GlobalSettings.MinimumSupportedVersionRhythmDoctor)
 #if DEBUG
@@ -65,7 +65,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 							level.Rows.Add(e);
 							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 								foreach (FileReference file in e.Character.GetAllFileReferences())
-									if (!file.IsEmpty && file.IsExist(DirectoryName))
+									if (!file.IsEmpty && file.IsExist(DirectoryName!))
 										Settings.FileReferences.Add(file);
 						}
 					}
@@ -86,7 +86,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 							level.Decorations.Add(e);
 							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 								foreach (FileReference file in e.GetAllFileReferences())
-									if (!file.IsEmpty && file.IsExist(DirectoryName))
+									if (!file.IsEmpty && file.IsExist(DirectoryName!))
 										Settings.FileReferences.Add(file);
 						}
 					}
@@ -168,7 +168,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 						{
 							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 								foreach (FileReference file in fe.Files)
-									if (!file.IsEmpty && file.IsExist(DirectoryName))
+									if (!file.IsEmpty && file.IsExist(DirectoryName!))
 										Settings.FileReferences.Add(file);
 						}
 					}
@@ -284,7 +284,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			settingsConverter.Write(writer, value.Settings, options);
 			if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 				foreach (FileReference fr in value.Settings.GetAllFileReferences())
-					if (!fr.IsEmpty && fr.IsExist(DirectoryName))
+					if (!fr.IsEmpty && fr.IsExist(DirectoryName!))
 						Settings.FileReferences.Add(fr);
 
 			writer.WritePropertyName("rows");
@@ -302,7 +302,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				noIndentWriter.Reset();
 				if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 					foreach (FileReference file in row.Character.GetAllFileReferences())
-						if (!file.IsEmpty && file.IsExist(DirectoryName))
+						if (!file.IsEmpty && file.IsExist(DirectoryName!))
 							Settings.FileReferences.Add(file);
 
 			}
@@ -321,7 +321,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				noIndentWriter.Reset();
 				if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 					foreach (FileReference file in decoration.GetAllFileReferences())
-						if (!file.IsEmpty && file.IsExist(DirectoryName))
+						if (!file.IsEmpty && file.IsExist(DirectoryName!))
 							Settings.FileReferences.Add(file);
 			}
 			writer.WriteEndArray();
@@ -375,7 +375,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					}
 					if (Settings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
 						foreach (FileReference file in fe.Files)
-							if (!file.IsEmpty && file.IsExist(DirectoryName))
+							if (!file.IsEmpty && file.IsExist(DirectoryName!))
 								Settings.FileReferences.Add(file);
 				}
 				StringBuilder sb = new() { };
@@ -425,7 +425,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					}
 					if (Settings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
 						foreach (FileReference file in fe.Files)
-							if (!file.IsEmpty && file.IsExist(DirectoryName))
+							if (!file.IsEmpty && file.IsExist(DirectoryName!))
 								Settings.FileReferences.Add(file);
 				}
 			}

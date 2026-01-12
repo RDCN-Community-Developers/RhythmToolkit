@@ -38,28 +38,6 @@ namespace RhythmBase.RhythmDoctor.Components
 				return _beat + 1f;
 			}
 		}
-		///// <summary>
-		///// The actual bar and beat of this moment.
-		///// </summary>
-		//public (int bar, float beat) BarBeat
-		//{
-		//	get
-		//	{
-		//		if (!_isBarBeatLoaded && _calculator is not null)
-		//		{
-		//			if (_isBeatLoaded)
-		//				_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1f);
-		//			else if (_isTimeSpanLoaded)
-		//			{
-		//				_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
-		//				_isBeatLoaded = true;
-		//				_BarBeat = _calculator.BeatOnlyToBarBeat(_beat + 1f);
-		//			}
-		//			_isBarBeatLoaded = true;
-		//		}
-		//		return _BarBeat;
-		//	}
-		//}
 		/// <summary>
 		/// The total amount of time from the beginning of the level to this beat.
 		/// </summary>
@@ -88,7 +66,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// The number of beats per minute followed at this moment.
 		/// </summary>
-		public float BPM
+		public float Bpm
 		{
 			get
 			{
@@ -103,7 +81,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// The number of beats per bar followed at this moment.
 		/// </summary>
-		public int CPB
+		public int Cpb
 		{
 			get
 			{
@@ -297,6 +275,9 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// 校验这个实例是否缺少在转换单位时必需的参数并抛出异常
 		/// </summary>
 		/// <exception cref="InvalidRDBeatException"></exception>
+	#if NET8_0
+		[MemberNotNull(nameof(_calculator))]
+#endif
 		internal readonly void IfNullThrowException()
 		{
 			if (IsEmpty)

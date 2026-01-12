@@ -414,7 +414,7 @@ namespace RhythmBase.Test
 				// Copy row information
 				Row row2 = new()
 				{
-					Rooms = row.Rooms,
+					Room = row.Room,
 					Character = row.Character,
 					Sound = row.Sound,
 					RowType = row.RowType

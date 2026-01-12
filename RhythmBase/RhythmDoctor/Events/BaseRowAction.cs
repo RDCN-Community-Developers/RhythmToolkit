@@ -25,7 +25,7 @@ public abstract class BaseRowAction : BaseEvent
 	/// <summary>
 	/// Gets the room associated with this action.
 	/// </summary>
-	public RDSingleRoom Room => _parent?.Rooms ?? RDSingleRoom.Default;
+	public RDSingleRoom Room => _parent?.Room ?? RDSingleRoom.Default;
 	/// <summary>
 	/// Gets the index of the row in the parent collection.
 	/// </summary>

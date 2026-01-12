@@ -74,7 +74,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				foreach (Row? item in _items)
 				{
-					if (room.Contains(item.Rooms))
+					if (room.Contains(item.Room))
 						yield return item;
 				}
 			}
@@ -92,6 +92,6 @@ namespace RhythmBase.RhythmDoctor.Components
 			_items.RemoveAt(index);
 		}
 		/// <inheritdoc/>
-		public override IEnumerable<Row> ElementsOf(RDRoom room) => _items.Where(item => room.Contains(item.Rooms));
+		public override IEnumerable<Row> ElementsOf(RDRoom room) => _items.Where(item => room.Contains(item.Room));
 	}
 }

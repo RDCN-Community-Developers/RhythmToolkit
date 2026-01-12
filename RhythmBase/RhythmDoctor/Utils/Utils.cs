@@ -35,22 +35,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 			};
 		}
 		/// <summary>
-		/// Converts Xs patterns to string form.
-		/// </summary>
-		/// <param name="pattern">List of patterns.</param>
-		/// <returns>String representation of patterns.</returns>
-		public static string GetPatternString(Pattern[] pattern) => string.Join("",
-				pattern?.Select(p => p switch
-				{
-					Pattern.None => "-",
-					Pattern.X => "x",
-					Pattern.Up => "u",
-					Pattern.Down => "d",
-					Pattern.Banana => "b",
-					Pattern.Return => "r",
-					_ => throw new ConvertingException($"Invalid pattern: {p}")
-				}) ?? throw new ConvertingException($"Cannot write pattern."));
-		/// <summary>
 		/// Gets the <see cref="JsonSerializerOptions"/> configured for serializing or deserializing a level.
 		/// </summary>
 		/// <param name="settings">
@@ -136,8 +120,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static string ToJsonString(this IBaseEvent ev, JsonSerializerOptions? options = null)
 		{
 			options ??= JsonSerializerOptions.Default;
-			using MemoryStream stream = new MemoryStream();
-			using Utf8JsonWriter writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = options.WriteIndented, });
+			using MemoryStream stream = new();
+			using Utf8JsonWriter writer = new(stream, new JsonWriterOptions { Indented = options.WriteIndented, });
 			evc.Write(writer, ev, options);
 			writer.Flush();
 			return Encoding.UTF8.GetString(stream.ToArray());
@@ -153,7 +137,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static IBaseEvent? FromJsonString(string json, JsonSerializerOptions? options = null)
 		{
 			options ??= JsonSerializerOptions.Default;
-			Utf8JsonReader reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+			Utf8JsonReader reader = new(Encoding.UTF8.GetBytes(json));
 			reader.Read();
 			return evc.Read(ref reader, typeof(IBaseEvent), options);
 		}

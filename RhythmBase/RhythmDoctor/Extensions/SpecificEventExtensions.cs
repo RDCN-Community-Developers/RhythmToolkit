@@ -1,5 +1,6 @@
 ﻿using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components.Linq;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,92 +9,505 @@ namespace RhythmBase.RhythmDoctor.Extensions
 {
 	public static partial class Extensions
 	{
-		/// <summary>
-		/// Get the pulse sound effect of row beat event.
-		/// </summary>
-		/// <returns>The sound effect of row beat event.</returns>
-		public static RDAudio BeatSound(this BaseBeat e)
+		extension(AddClassicBeat e)
 		{
-			SetBeatSound? setBeatSound = e.Parent?.OfEvent<SetBeatSound>().LastOrDefault((SetBeatSound i) => i.Beat < e.Beat && i.Active);
-			return (setBeatSound?.Sound) ?? e.Parent?.Sound ?? throw new NotImplementedException();
+			/// <summary>
+			/// Gets the hit information for the current instance.
+			/// </summary>
+			public RDHit Hit => new(
+				e,
+				e.Beat + (e.Tick * (e.Length - ((e.Swing == 0) ? 1 : e.Swing))),
+				e.Hold);
+			/// <summary>
+			/// Gets the synchronization offset value for the current event, based on the most recent active parent row's
+			/// synchronization settings.
+			/// </summary>
+			public float SyncoOffset
+			{
+				get
+				{
+					SetRowXs? x = e.Parent?
+						.OfEvent<SetRowXs>()
+						.LastOrDefault(i => i.Active && e.IsBehind(i));
+					if (x is null || 0 > x.SyncoBeat)
+						return 0f;
+					else if (x.SyncoSwing == 0f)
+						return 0.5f;
+					else
+						return x.SyncoSwing;
+				}
+			}
+			/// <summary>
+			/// Gets the collection of beat patterns associated with the current event.
+			/// </summary>
+			public PatternCollection Pattern
+			{
+				get
+				{
+					if (e.SetXs is not ClassicBeatPattern.NoChange)
+					{
+						return e.SetXs switch
+						{
+							ClassicBeatPattern.ThreeBeat => "-xx-xx",
+							ClassicBeatPattern.FourBeat => "-x-x-x",
+							ClassicBeatPattern.NoChange or _ => "------",
+						};
+					}
+					SetRowXs? last = e.Beat.BaseLevel?
+						.OfEvent<SetRowXs>()
+						.InRange(null, e.Beat)
+						.LastOrDefault(i => i.Active && e.IsBehind(i));
+					return last?.Pattern ?? "------";
+				}
+			}
+			/// <summary>
+			/// Returns the pulse beat of the specified 0-based index.
+			/// </summary>
+			/// <exception cref="T:RhythmBase.Global.Exceptions.RhythmBaseException">THIS IS 7TH BEAT GAMES!</exception>
+			public RDBeat BeatOf(byte index)
+			{
+				if (index >= 7)
+					throw new RhythmBaseException("THIS IS 7TH BEAT GAMES!");
+				SetRowXs x = e.Parent?.OfEvent<SetRowXs>().LastOrDefault(i => i.Active && e.IsBehind(i)) ?? new();
+				float synco = 0 <= x.SyncoBeat && x.SyncoBeat < (sbyte)index ? (float)((x.SyncoSwing == 0f) ? 0.5 : ((double)x.SyncoSwing)) : 0f;
+				return e.Beat.DurationOffset(e.Tick * (index - synco));
+			}
+			/// <summary>
+			/// Generate split event instances.
+			/// </summary>
+			public BaseBeat[] Splitted()
+			{
+				SetRowXs? x = e.Parent?.OfEvent<SetRowXs>().LastOrDefault(i => i.Active && e.IsBehind(i));
+				return e.Splitted(x?.Pattern ?? PatternCollection.Default, x?.SyncoBeat ?? -1, x?.SyncoSwing ?? 0);
+			}
+			/// <summary>
+			/// Generate split event instances.
+			/// </summary>
+			public BaseBeat[] Splitted(PatternCollection patterns, int syncoBeat = -1, float syncoSwing = 0)
+			{
+				List<BaseBeat> l = [];
+				AddFreeTimeBeat head = e.Clone<AddFreeTimeBeat>();
+				head.Pulse = 0;
+				head.Hold = e.Hold;
+				l.Add(head);
+				int i = 1;
+				do
+				{
+					if (!(i < 6 && patterns[i] == Pattern.X))
+					{
+						PulseFreeTimeBeat pulse = e.Clone<PulseFreeTimeBeat>();
+						PulseFreeTimeBeat pulseFreeTimeBeat;
+						(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * i;
+						if (i >= syncoBeat)
+							(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat - syncoSwing;
+						if (i % 2 == 1)
+							(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));
+						pulse.Hold = e.Hold;
+						pulse.Action = PulseAction.Increment;
+						l.Add(pulse);
+					}
+					i++;
+				}
+				while (i <= 6);
+				return [.. l];
+			}
+		}
+		extension(AddFreeTimeBeat e)
+		{
+			/// <summary>
+			/// Check if it can be hit by player or cpu.
+			/// </summary>
+			public bool IsHitable
+			{
+				get
+				{
+					return e.Pulse == 6;
+				}
+			}
+			/// <summary>
+			/// Gets the hit information for the current instance.
+			/// </summary>
+			public RDHit Hit => new(e, e.Beat, e.Hold);
+			/// <summary>
+			/// Get the sequence of <see cref="T:RhythmBase.RhythmDoctor.Events.PulseFreeTimeBeat" /> belonging to this <see cref="T:RhythmBase.RhythmDoctor.Events.AddFreeTimeBeat" />, return all of the <see cref="T:RhythmBase.Events.PulseFreeTimeBeat" /> from the time the pulse was created to the time it was removed or hit.
+			/// </summary>
+			public PulseFreeTimeBeat[] Pulses
+			{
+				get
+				{
+					if (e.Parent == null)
+						return [];
+					List<PulseFreeTimeBeat> result = [];
+					byte pulse = e.Pulse;
+					foreach (PulseFreeTimeBeat item in e.Parent.OfEvent<PulseFreeTimeBeat>().Where(i => i.Active && e.IsInFrontOf(i)))
+					{
+						switch (item.Action)
+						{
+							case PulseAction.Increment:
+								pulse += 1;
+								result.Add(item);
+								break;
+							case PulseAction.Decrement:
+								pulse = (byte)((pulse > 0b1) ? (pulse - 0b1) : 0b1);
+								result.Add(item);
+								break;
+							case PulseAction.Custom:
+								pulse = (byte)item.CustomPulse;
+								result.Add(item);
+								break;
+							case PulseAction.Remove:
+								result.Add(item);
+								break;
+						}
+						if (pulse == e.Parent.Length - 1)
+							break;
+					}
+					return [.. result];
+				}
+			}
+		}
+		extension(AddOneshotBeat e)
+		{
+			/// <summary>
+			/// Gets the hit information for the current instance.
+			/// </summary>
+			public RDHit[] Hits
+			{
+				get
+				{
+					RDHit[] hits = new RDHit[e.Loops + 1];
+					for (int i = 0; i <= e.Loops; ++i)
+						hits[i] = new RDHit(
+							e,
+							e.Beat + (i * e.Interval) + e.Tick,
+							e.Hold ? e.Interval - e.Tick : 0);
+					return hits;
+				}
+			}
+			/// <summary>
+			/// Generate split event instances.
+			/// </summary>
+			public AddOneshotBeat[] Splitted()
+			{
+				e._beat.IfNullThrowException();
+				AddOneshotBeat[] l = new AddOneshotBeat[e.Loops + 1];
+				uint loops = e.Loops;
+				for (uint i = 0U; i <= loops; i += 1U)
+				{
+					AddOneshotBeat T = e.MemberwiseClone();
+					T.Loops = 0U;
+					T.Interval = 0f;
+					T.Beat = new RDBeat(e._beat._calculator!, unchecked(e.Beat.BeatOnly + i * e.Interval));
+					l[i] = T;
+				}
+				return l;
+			}
+		}
+		extension(PulseFreeTimeBeat e)
+		{
+			/// <summary>
+			/// Check if it can be hit by player or cpu.
+			/// </summary>
+			public bool IsHitable
+			{
+				get
+				{
+
+					int pulseIndexMin = 6;
+					int pulseIndexMax = 6;
+					if (e.Parent is null)
+						return false;
+					foreach (BaseBeat item in ((IEnumerable<BaseBeat>)e.Parent
+					.OfEvent<BaseBeat>()
+					.InRange(new RDRange(e.Beat, null))
+					.Where(e.IsBehind))
+					.Reverse())
+					{
+						EventType type = item.Type;
+						switch (type)
+						{
+							case EventType.AddFreeTimeBeat:
+								{
+									AddFreeTimeBeat temp2 = (AddFreeTimeBeat)item;
+									if (pulseIndexMin <= temp2.Pulse & temp2.Pulse <= pulseIndexMax)
+										return true;
+									break;
+								}
+							case EventType.PulseFreeTimeBeat:
+								{
+									PulseFreeTimeBeat temp = (PulseFreeTimeBeat)item;
+									switch (temp.Action)
+									{
+										case PulseAction.Increment:
+											if (pulseIndexMin > 0)
+												pulseIndexMin--;
+											if (!(pulseIndexMax > 0))
+												return false;
+											pulseIndexMax--;
+											break;
+										case PulseAction.Decrement:
+											if (pulseIndexMin > 0)
+												pulseIndexMin++;
+											if (!(pulseIndexMax < 6))
+												return false;
+											pulseIndexMax++;
+											break;
+										case PulseAction.Custom:
+											if (!(pulseIndexMin <= temp.CustomPulse & temp.CustomPulse <= pulseIndexMax))
+												return false;
+											pulseIndexMin = 0;
+											pulseIndexMax = 5;
+											break;
+										case PulseAction.Remove:
+											return false;
+										default:
+											throw new RhythmBaseException("Unknown PulseAction");
+									}
+									if (pulseIndexMin > pulseIndexMax)
+										return false;
+									break;
+								}
+							default:
+								break;
+						}
+					}
+					return false;
+				}
+			}
+			/// <summary>
+			/// Gets the hit information for the current instance.
+			/// </summary>
+			public RDHit Hit => new(e, e.Beat, e.Hold);
+		}
+		extension(FloatingText e)
+		{
+			/// <summary>
+			/// Splits the <see cref="FloatingText"/> text into an array of strings based on custom delimiters.
+			/// Supports '/' as a line break, '\n' as a newline, and escape sequences such as '\\n' and '\/'.
+			/// </summary>
+			public string[] Splitted
+			{
+				get
+				{
+					if (string.IsNullOrEmpty(e.Text))
+						return [];
+					List<string> strs = [];
+					StringBuilder sb = new();
+					int i = 0;
+					while (i < e.Text.Length)
+					{
+						char c = e.Text[i];
+						switch (c)
+						{
+							case '/':
+								strs.Add(sb.ToString());
+								break;
+							case '\\':
+								if (i + 1 >= e.Text.Length)
+								{
+									sb.Append(c);
+									break;
+								}
+								i++;
+								char nextChar = e.Text[i];
+								switch (nextChar)
+								{
+									case 'n':
+										sb.Append('\n');
+										break;
+									case '/':
+										sb.Append('/');
+										break;
+									default:
+										sb.Append(c);
+										sb.Append(nextChar);
+										break;
+								}
+								break;
+							case '\n':
+								strs.Add(sb.ToString());
+								sb.Clear();
+								break;
+							default:
+								sb.Append(c);
+								break;
+						}
+						i++;
+					}
+					return [.. strs];
+				}
+			}
+			/// <summary>
+			/// Creates a new <see cref="T:RhythmBase.RhythmDoctor.Events.AdvanceText" /> subordinate to <see cref="T:RhythmBase.RhythmDoctor.Events.FloatingText" /> at the specified beat. The new event created will be attempted to be added to the <see cref="T:RhythmBase.RhythmDoctor.Events.FloatingText" />'s source level.
+			/// </summary>
+			/// <param name="e">RDLevel</param>
+			/// <param name="beat">Specified beat.</param>
+			public AdvanceText CreateChild(RDBeat beat)
+			{
+				AdvanceText A = new()
+				{
+					Parent = e,
+					Beat = beat.WithoutLink()
+				};
+				e.Children.Add(A);
+				return A;
+			}
+		}
+		extension(SayReadyGetSetGo e)
+		{
+			/// <summary>
+			/// Generate split event instances. These instances are not insert into the level.
+			/// </summary>
+			public SayReadyGetSetGo[] Splitted() => e.PhraseToSay switch
+			{
+				SayReadyGetSetGoWord.SayReaDyGetSetGoNew => [
+					e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayRea),
+				e.SplitCopy(e.Tick, SayReadyGetSetGoWord.JustSayDy),
+				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.JustSayGet),
+				e.SplitCopy(e.Tick * 3f, SayReadyGetSetGoWord.JustSaySet),
+				e.SplitCopy(e.Tick * 4f, SayReadyGetSetGoWord.JustSayGo)
+				],
+				SayReadyGetSetGoWord.SayGetSetGo => [
+					e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayGet),
+				e.SplitCopy(e.Tick, SayReadyGetSetGoWord.JustSaySet),
+				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.JustSayGo)
+				],
+				SayReadyGetSetGoWord.SayReaDyGetSetOne => [
+					e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayRea),
+				e.SplitCopy(e.Tick, SayReadyGetSetGoWord.JustSayDy),
+				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.JustSayGet),
+				e.SplitCopy(e.Tick * 3f, SayReadyGetSetGoWord.JustSaySet),
+				e.SplitCopy(e.Tick * 4f, SayReadyGetSetGoWord.Count1)
+				],
+				SayReadyGetSetGoWord.SayGetSetOne => [
+					e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayGet),
+				e.SplitCopy(e.Tick, SayReadyGetSetGoWord.JustSaySet),
+				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.Count1)
+				],
+				SayReadyGetSetGoWord.SayReadyGetSetGo => [
+					e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayReady),
+				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.JustSayGet),
+				e.SplitCopy(e.Tick * 3f, SayReadyGetSetGoWord.JustSaySet),
+				e.SplitCopy(e.Tick * 4f, SayReadyGetSetGoWord.JustSayGo)
+				],
+				_ => [e],
+			};
+		}
+		extension(Row e)
+		{
+			/// <summary>
+			/// Gets the audio associated with the specified beat, taking into account any active sound overrides.
+			/// </summary>
+			public RDAudio PulseSoundAt(RDBeat beat) =>
+				e.Parent?
+					.OfEvent<SetBeatSound>()
+					.InRange(null, beat)
+					.LastOrDefault(i => i.Active)?.Sound ??
+					e.Sound;
+			/// <summary>
+			/// Gets the player type assigned at the specified beat.
+			/// </summary>
+			public PlayerType PlayerAt(RDBeat beat)
+			{
+				return
+					e.Parent?
+						.OfEvent<ChangePlayersRows>()
+						.InRange(null, beat)
+						.LastOrDefault(i => i.Active && i.Players[e.Index] != PlayerType.NoChange)?.Players[e.Index]
+						?? e.Player;
+			}
+			/// <summary>
+			/// Gets the hit sound associated with the specified beat, based on the current player and event state.
+			/// </summary>
+			public RDAudio HitSoundAt(RDBeat beat)
+			{
+				IEnumerable<IBaseEvent>? events = e.Parent?.OfEvents(
+					EventType.ChangePlayersRows,
+					EventType.SetClapSounds
+					).InRange(null, beat);
+				PlayerType playerType = e.Player;
+				RDAudio? p1s = null, p2s = null, cpus = null;
+				foreach (var ev in events ?? [])
+				{
+					switch (ev)
+					{
+						case ChangePlayersRows cpr:
+							{
+								PlayerType pt = cpr.Players[e.Index];
+								if (pt != PlayerType.NoChange)
+									playerType = pt;
+								break;
+							}
+						case SetClapSounds scs:
+							{
+								p1s ??= scs.P1Sound;
+								p2s ??= scs.P2Sound;
+								cpus ??= scs.CpuSound;
+								break;
+							}
+					}
+				}
+				return playerType switch
+				{
+					PlayerType.P1 => p1s,
+					PlayerType.P2 => p2s,
+					PlayerType.CPU => cpus,
+					_ => null
+				} ?? new()
+				{
+					Filename = "sndClapHit",
+					Offset = TimeSpan.Zero,
+					Pan = 100,
+					Pitch = 100,
+					Volume = 100
+				};
+			}
+			/// <summary>
+			/// Gets the index of the row at the specified beat.
+			/// </summary>
+			public int IndexAt(RDBeat beat) => e.InRange(null, beat).OfEvent<ReorderRow>().LastOrDefault()?.Order ?? e.Index;
+			/// <summary>
+			/// Gets the room of the row at the specified beat.
+			/// </summary>
+			public RDRoomIndex RoomAt(RDBeat beat) => e.InRange(null, beat).OfEvent<ReorderRow>().LastOrDefault()?.NewRoom ?? e.Room.Room;
+		}
+		extension(SetVFXPreset e)
+		{
+			/// <summary>
+			/// Calculates the duration of the VFX effect for the given preset.
+			/// </summary>
+			public RDRange VfxDuration
+			{
+				get
+				{
+					if (e.Preset != VfxPreset.DisableAll && e.Enable)
+					{
+						SetVFXPreset? close = e.After().FirstOrDefault(i =>
+							i.Rooms.Contains(e.Rooms) && (
+								i.Preset == e.Preset ||
+								i.Preset == VfxPreset.DisableAll
+						));
+						return new(e.Beat, close?.Beat);
+					}
+					return new(e.Beat, e.Beat);
+				}
+			}
+		}
+		extension(Decoration e)
+		{
+			/// <summary>
+			/// Gets the depth of the decoration at the specified beat.
+			/// </summary>
+			public int DepthAt(RDBeat beat) => e.InRange(null, beat).OfEvent<ReorderSprite>().LastOrDefault()?.Depth ?? e.Depth;
+			/// <summary>
+			/// Gets the room of the decoration at the specified beat.
+			/// </summary>
+			public RDRoomIndex RoomAt(RDBeat beat) => e.InRange(null, beat).OfEvent<ReorderSprite>().LastOrDefault()?.NewRoom ?? e.Room.Room;
 		}
 		/// <summary>
 		/// Getting controlled events.
 		/// </summary>
 		public static IEnumerable<IGrouping<string, IBaseEvent>> ControllingEvents(this TagAction e) => e.Beat.BaseLevel?.GetTaggedEvents(e.ActionTag, e.Action.HasFlag(ActionTagAction.All)) ?? [];
-		/// <summary>
-		/// Creates a new <see cref="T:RhythmBase.RhythmDoctor.Events.AdvanceText" /> subordinate to <see cref="T:RhythmBase.RhythmDoctor.Events.FloatingText" /> at the specified beat. The new event created will be attempted to be added to the <see cref="T:RhythmBase.RhythmDoctor.Events.FloatingText" />'s source level.
-		/// </summary>
-		/// <param name="e">RDLevel</param>
-		/// <param name="beat">Specified beat.</param>
-		public static AdvanceText CreateAdvanceText(this FloatingText e, RDBeat beat)
-		{
-			AdvanceText A = new()
-			{
-				Parent = e,
-				Beat = beat.WithoutLink()
-			};
-			e.Children.Add(A);
-			return A;
-		}
-		/// <summary>
-		/// Splits the <see cref="FloatingText"/> text into an array of strings based on custom delimiters.
-		/// Supports '/' as a line break, '\n' as a newline, and escape sequences such as '\\n' and '\/'.
-		/// </summary>
-		/// <param name="e">The <see cref="FloatingText"/> instance whose text will be split.</param>
-		/// <returns>
-		/// An array of strings, each representing a split segment of the original text.
-		/// Returns an empty array if <see cref="FloatingText.Text"/> is null or empty.
-		/// </returns>
-		public static string[] Texts(this FloatingText e)
-		{
-			if (string.IsNullOrEmpty(e.Text))
-				return [];
-			List<string> strs = [];
-			StringBuilder sb = new();
-			int i = 0;
-			while (i < e.Text.Length)
-			{
-				char c = e.Text[i];
-				switch (c)
-				{
-					case '/':
-						strs.Add(sb.ToString());
-						break;
-					case '\\':
-						if (i + 1 >= e.Text.Length)
-						{
-							sb.Append(c);
-							break;
-						}
-						i++;
-						char nextChar = e.Text[i];
-						switch (nextChar)
-						{
-							case 'n':
-								sb.Append('\n');
-								break;
-							case '/':
-								sb.Append('/');
-								break;
-							default:
-								sb.Append(c);
-								sb.Append(nextChar);
-								break;
-						}
-						break;
-					case '\n':
-						strs.Add(sb.ToString());
-						sb.Clear();
-						break;
-					default:
-						sb.Append(c);
-						break;
-				}
-				i++;
-			}
-			return [.. strs];
-		}
 		/// <summary>
 		/// Get the end beat of the duration.
 		/// </summary>
@@ -103,153 +517,15 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <exception cref="InvalidRDBeatException"></exception>
 		public static RDBeat DurationOffset(this RDBeat beat, float duration)
 		{
-			SetBeatsPerMinute setBPM = beat.BaseLevel?.OfEvent<SetBeatsPerMinute>().First(i => i.Beat > beat) ?? throw new InvalidRDBeatException();
+			SetBeatsPerMinute? setBpm = beat.BaseLevel?.InRange(beat, null).OfEvent<SetBeatsPerMinute>().FirstOrDefault();
 			(int bbar, _) = beat;
-			(int sbar, _) = setBPM.Beat;
+			(int sbar, _) = setBpm.Beat;
 			RDBeat DurationOffset =
 				bbar == sbar
 				? beat + duration
-				: beat + TimeSpan.FromMinutes(duration / beat.BPM);
+				: beat + TimeSpan.FromMinutes(duration / beat.Bpm);
 			return DurationOffset;
 		}
-		/// <summary>
-		/// Returns the pulse beat of the specified 0-based index.
-		/// </summary>
-		/// <exception cref="T:RhythmBase.Global.Exceptions.RhythmBaseException">THIS IS 7TH BEAT GAMES!</exception>
-		public static RDBeat GetBeat(this AddClassicBeat e, byte index)
-		{
-			SetRowXs x = e.Parent?.OfEvent<SetRowXs>().LastOrDefault(i => i.Active && e.IsBehind(i)) ?? new();
-			float synco = 0 <= x.SyncoBeat && x.SyncoBeat < (sbyte)index ? (float)((x.SyncoSwing == 0f) ? 0.5 : ((double)x.SyncoSwing)) : 0f;
-			if (index >= 7)
-				throw new RhythmBaseException("THIS IS 7TH BEAT GAMES!");
-			return e.Beat.DurationOffset(e.Tick * (index - synco));
-		}
-		/// <summary>
-		/// Converts Xs patterns to string form.
-		/// </summary>
-		public static string GetPatternString(this SetRowXs e) => Utils.Utils.GetPatternString(e.Pattern);
-		/// <summary>
-		/// Get the sequence of <see cref="T:RhythmBase.RhythmDoctor.Events.PulseFreeTimeBeat" /> belonging to this <see cref="T:RhythmBase.RhythmDoctor.Events.AddFreeTimeBeat" />, return all of the <see cref="T:RhythmBase.Events.PulseFreeTimeBeat" /> from the time the pulse was created to the time it was removed or hit.
-		/// </summary>
-		public static IEnumerable<PulseFreeTimeBeat> GetPulses(this AddFreeTimeBeat e)
-		{
-			List<PulseFreeTimeBeat> result = [];
-			byte pulse = e.Pulse;
-			if (e.Parent == null)
-				yield break;
-			foreach (PulseFreeTimeBeat item in e.Parent.OfEvent<PulseFreeTimeBeat>().Where(i => i.Active && e.IsInFrontOf(i)))
-			{
-				switch (item.Action)
-				{
-					case PulseAction.Increment:
-						pulse += 1;
-						yield return item;
-						break;
-					case PulseAction.Decrement:
-						pulse = (byte)((pulse > 0b1) ? (pulse - 0b1) : 0b1);
-						yield return item;
-						break;
-					case PulseAction.Custom:
-						pulse = (byte)item.CustomPulse;
-						yield return item;
-						break;
-					case PulseAction.Remove:
-						yield return item;
-						break;
-				}
-				if (pulse == 6)
-					break;
-			}
-		}
-		/// <summary>
-		/// Get the hit sound effect of row beat event.
-		/// </summary>
-		/// <returns>The sound effect of row beat event.</returns>
-		public static RDAudio HitSound(this BaseBeat e)
-		{
-			RDAudio defaultAudio = new()
-			{
-				Filename = "sndClapHit",
-				Offset = TimeSpan.Zero,
-				Pan = 100,
-				Pitch = 100,
-				Volume = 100
-			};
-			RDAudio? HitSound;
-			switch (e.Player())
-			{
-				case PlayerType.P1:
-					{
-						SetClapSounds? setClapSounds = e.Beat.BaseLevel?.OfEvent<SetClapSounds>().LastOrDefault(i => i.Active && i.P1Sound != null);
-						HitSound = (setClapSounds?.P1Sound) ?? defaultAudio;
-						break;
-					}
-				case PlayerType.P2:
-					{
-						SetClapSounds? setClapSounds2 = e.Beat.BaseLevel?.OfEvent<SetClapSounds>().LastOrDefault(i => i.Active && i.P2Sound != null);
-						HitSound = (setClapSounds2?.P2Sound) ?? defaultAudio;
-						break;
-					}
-				case PlayerType.CPU:
-					{
-						SetClapSounds? setClapSounds3 = e.Beat.BaseLevel?.OfEvent<SetClapSounds>().LastOrDefault(i => i.Active && i.CpuSound != null);
-						HitSound = (setClapSounds3?.CpuSound) ?? defaultAudio;
-						break;
-					}
-				default:
-					HitSound = defaultAudio;
-					break;
-			}
-			return HitSound;
-		}
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<RDHit> HitTimes(this AddClassicBeat e) =>
-			new List<RDHit> { new(e, e.GetBeat(6), e.Hold) }
-			.AsEnumerable();
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<RDHit> HitTimes(this AddOneshotBeat e)
-		{
-			e._beat.IfNullThrowException();
-			List<RDHit> l = [];
-			uint loops = e.Loops;
-			for (uint i = 0U; i <= loops; i += 1U)
-			{
-				sbyte b = (sbyte)(e.Subdivisions - 1);
-				for (sbyte j = 0; j <= b; j += 1)
-					l.Add(new RDHit(e, new RDBeat(e._beat._calculator!, e._beat.BeatOnly + i * e.Interval + e.Tick + e.Delay + j * (e.Tick / e.Subdivisions)), 0f));
-			}
-			return l.AsEnumerable();
-		}
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<RDHit> HitTimes(this AddFreeTimeBeat e) =>
-			e.Pulse == 6
-				? [new(e, e.Beat, e.Hold)]
-				: ([]);
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<RDHit> HitTimes(this PulseFreeTimeBeat e) =>
-e.IsHitable()
-				? [new(e, e.Beat, e.Hold)]
-				: ([]);
-		/// <summary>
-		/// Get all hits.
-		/// </summary>
-		public static IEnumerable<RDHit> HitTimes(this BaseBeat e) => e.Type switch
-		{
-			EventType.AddClassicBeat => ((AddClassicBeat)e).HitTimes(),
-			EventType.AddFreeTimeBeat => ((AddFreeTimeBeat)e).HitTimes(),
-			EventType.AddOneshotBeat => ((AddOneshotBeat)e).HitTimes(),
-			_ => e.Type != EventType.PulseFreeTimeBeat
-				? Array.Empty<RDHit>().AsEnumerable()
-				: ((PulseFreeTimeBeat)e).HitTimes(),
-		};
 		/// <summary>
 		/// Determine if <paramref name="item1" /> is after <paramref name="item2" />
 		/// </summary>
@@ -263,84 +539,6 @@ e.IsHitable()
 		/// </summary>
 		public static bool IsBehind(this IBaseEvent e, IBaseEvent item) => e.Beat.BaseLevel?.IsBehind(e, item) ?? throw new InvalidRDBeatException();
 		/// <summary>
-		/// Check if it can be hit by player.
-		/// </summary>
-		public static bool IsHitable(this PulseFreeTimeBeat e)
-		{
-			int pulseIndexMin = 6;
-			int pulseIndexMax = 6;
-			if (e.Parent is null)
-				return false;
-			foreach (BaseBeat item in ((IEnumerable<BaseBeat>)e.Parent
-			.OfEvent<BaseBeat>()
-			.InRange(new RDRange(e.Beat, null))
-			.Where(e.IsBehind))
-			.Reverse())
-			{
-				EventType type = item.Type;
-				switch (type)
-				{
-					case EventType.AddFreeTimeBeat:
-						{
-							AddFreeTimeBeat temp2 = (AddFreeTimeBeat)item;
-							if (pulseIndexMin <= temp2.Pulse & temp2.Pulse <= pulseIndexMax)
-								return true;
-							break;
-						}
-					case EventType.PulseFreeTimeBeat:
-						{
-							PulseFreeTimeBeat temp = (PulseFreeTimeBeat)item;
-							switch (temp.Action)
-							{
-								case PulseAction.Increment:
-									if (pulseIndexMin > 0)
-										pulseIndexMin--;
-									if (!(pulseIndexMax > 0))
-										return false;
-									pulseIndexMax--;
-									break;
-								case PulseAction.Decrement:
-									if (pulseIndexMin > 0)
-										pulseIndexMin++;
-									if (!(pulseIndexMax < 6))
-										return false;
-									pulseIndexMax++;
-									break;
-								case PulseAction.Custom:
-									if (!(pulseIndexMin <= temp.CustomPulse & temp.CustomPulse <= pulseIndexMax))
-										return false;
-									pulseIndexMin = 0;
-									pulseIndexMax = 5;
-									break;
-								case PulseAction.Remove:
-									return false;
-								default:
-									throw new RhythmBaseException("Unknown PulseAction");
-							}
-							if (pulseIndexMin > pulseIndexMax)
-								return false;
-							break;
-						}
-					default:
-						break;
-				}
-			}
-			return false;
-		}
-		/// <summary>
-		/// Check if it can be hit by player.
-		/// </summary>
-		public static bool IsHitable(this AddFreeTimeBeat e) => e.Pulse == 6;
-		/// <summary>
-		/// Check if it can be hit by player.
-		/// </summary>
-		public static bool IsHitable(this BaseBeat e) => e.Type switch
-		{
-			EventType.AddClassicBeat or EventType.AddOneshotBeat => true,
-			EventType.AddFreeTimeBeat => ((AddFreeTimeBeat)e).IsHitable(),
-			_ => e.Type == EventType.PulseFreeTimeBeat && ((PulseFreeTimeBeat)e).IsHitable(),
-		};
-		/// <summary>
 		/// Determine if <paramref name="item1" /> is in front of <paramref name="item2" />
 		/// </summary>
 		/// <returns><list type="table">
@@ -352,20 +550,6 @@ e.IsHitable()
 		/// Check if another event is in front of itself, including events of the same beat but executed before itself.
 		/// </summary>
 		public static bool IsInFrontOf(this IBaseEvent e, IBaseEvent item) => e.Beat.BaseLevel?.IsInFrontOf(e, item) ?? throw new InvalidRDBeatException();
-		/// <summary>
-		/// Get the total length of the oneshot.
-		/// </summary>
-		/// <returns></returns>
-		public static float Length(this AddOneshotBeat e) => e.Tick * e.Loops + e.Interval * e.Loops - 1f;
-		/// <summary>
-		/// Get the total length of the classic beat.
-		/// </summary>
-		/// <returns></returns>
-		public static float Length(this AddClassicBeat e)
-		{
-			float syncoSwing = e.Parent?.OfEvent<SetRowXs>().LastOrDefault((SetRowXs i) => i.Active && e.IsBehind(i))?.SyncoSwing ?? 0;
-			return (float)((double)(e.Tick * 6f) - ((syncoSwing == 0f) ? 0.5 : ((double)syncoSwing)) * (double)e.Tick);
-		}
 		/// <summary>
 		/// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
 		/// </summary>
@@ -387,200 +571,7 @@ e.IsHitable()
 		public static void MovePositionMaintainVisual(this MoveRoom e, RDSize target)
 		{
 			e.Position = (RDPoint)target;
-			e.Pivot = (RDPoint)((e.VisualPosition() - target).Rotate(e.Angle ?? 0));
-		}
-		/// <summary>
-		/// Convert beat pattern to string.
-		/// </summary>
-		/// <returns>The pattern string.</returns>
-		public static string Pattern(this AddClassicBeat e) => Utils.Utils.GetPatternString(e.RowXs());
-		/// <summary>
-		/// Get current player of the beat event.
-		/// </summary>
-		/// <param name="e"></param>
-		/// <returns></returns>
-		public static PlayerType Player(this BaseBeat e)
-		{
-			ChangePlayersRows? changePlayersRows = e.Beat.BaseLevel?.OfEvent<ChangePlayersRows>().LastOrDefault(i => i.Active && i.Players[e.Index] != PlayerType.NoChange);
-			return (changePlayersRows != null)
-					? changePlayersRows.Players[e.Index]
-					: e.Parent?.Player ?? throw new NotImplementedException();
-		}
-		/// <summary>
-		/// Get the actual beat pattern.
-		/// </summary>
-		/// <returns>The actual beat pattern.</returns>
-		public static Pattern[] RowXs(this AddClassicBeat e)
-		{
-			return e.SetXs switch
-			{
-                ClassicBeatPattern.ThreeBeat =>
-				[
-                    Events.Pattern.None,
-                    Events.Pattern.X,
-                    Events.Pattern.X,
-                    Events.Pattern.None,
-                    Events.Pattern.X,
-                    Events.Pattern.X
-				],
-                ClassicBeatPattern.FourBeat =>
-				[
-                    Events.Pattern.None,
-                    Events.Pattern.X,
-                    Events.Pattern.None,
-                    Events.Pattern.X,
-                    Events.Pattern.None,
-                    Events.Pattern.X
-				],
-                ClassicBeatPattern.NoChange => e.FrontOrDefault()?.RowXs() ??
-				[
-                    Events.Pattern.None,
-                    Events.Pattern.None,
-                    Events.Pattern.None,
-                    Events.Pattern.None,
-                    Events.Pattern.None,
-                    Events.Pattern.None
-				],
-				_ =>
-				[
-                    Events.Pattern.None,
-                    Events.Pattern.None,
-                    Events.Pattern.None,
-                    Events.Pattern.None,
-                    Events.Pattern.None,
-                    Events.Pattern.None
-				]
-			};
-		}
-		/// <summary>
-		/// Get the special tag of the tag event.
-		/// </summary>
-		/// <returns>special tags.</returns>
-		public static SpecialTag[] SpetialTags(this TagAction e) => (SpecialTag[])(from i in (SpecialTag[])Enum.GetValues(typeof(SpecialTag))
-																																								 where e.ActionTag.Contains(
-																																									 $"[{i}]")
-																																								 select i);
-		/// <summary>
-		/// Generate split event instances.
-		/// </summary>
-		public static IEnumerable<SayReadyGetSetGo> Split(this SayReadyGetSetGo e) => e.PhraseToSay switch
-		{
-			SayReadyGetSetGoWord.SayReaDyGetSetGoNew => [
-				e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayRea),
-				e.SplitCopy(e.Tick, SayReadyGetSetGoWord.JustSayDy),
-				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.JustSayGet),
-				e.SplitCopy(e.Tick * 3f, SayReadyGetSetGoWord.JustSaySet),
-				e.SplitCopy(e.Tick * 4f, SayReadyGetSetGoWord.JustSayGo)
-			],
-			SayReadyGetSetGoWord.SayGetSetGo => [
-				e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayGet),
-				e.SplitCopy(e.Tick, SayReadyGetSetGoWord.JustSaySet),
-				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.JustSayGo)
-			],
-			SayReadyGetSetGoWord.SayReaDyGetSetOne => [
-				e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayRea),
-				e.SplitCopy(e.Tick, SayReadyGetSetGoWord.JustSayDy),
-				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.JustSayGet),
-				e.SplitCopy(e.Tick * 3f, SayReadyGetSetGoWord.JustSaySet),
-				e.SplitCopy(e.Tick * 4f, SayReadyGetSetGoWord.Count1)
-			],
-			SayReadyGetSetGoWord.SayGetSetOne => [
-				e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayGet),
-				e.SplitCopy(e.Tick, SayReadyGetSetGoWord.JustSaySet),
-				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.Count1)
-			],
-			SayReadyGetSetGoWord.SayReadyGetSetGo => [
-				e.SplitCopy(0f, SayReadyGetSetGoWord.JustSayReady),
-				e.SplitCopy(e.Tick * 2f, SayReadyGetSetGoWord.JustSayGet),
-				e.SplitCopy(e.Tick * 3f, SayReadyGetSetGoWord.JustSaySet),
-				e.SplitCopy(e.Tick * 4f, SayReadyGetSetGoWord.JustSayGo)
-			],
-			_ => [e],
-		};
-		/// <summary>
-		/// Generate split event instances.
-		/// </summary>
-		public static IEnumerable<AddOneshotBeat> Split(this AddOneshotBeat e)
-		{
-			e._beat.IfNullThrowException();
-			List<AddOneshotBeat> l = [];
-			uint loops = e.Loops;
-			for (uint i = 0U; i <= loops; i += 1U)
-			{
-				AddOneshotBeat T = e.MemberwiseClone();
-				T.Loops = 0U;
-				T.Interval = 0f;
-				T.Beat = new RDBeat(e._beat._calculator!, unchecked(e.Beat.BeatOnly + i * e.Interval));
-				l.Add(T);
-			}
-			return l.AsEnumerable();
-		}
-		/// <summary>
-		/// Generate split event instances. Follow the most recently activated Xs.
-		/// </summary>
-		public static IEnumerable<BaseBeat> Split(this AddClassicBeat e)
-		{
-			SetRowXs x = e.Parent?.OfEvent<SetRowXs>().LastOrDefault(i => i.Active && e.IsBehind(i)) ?? new();
-			return e.Split(x);
-		}
-		/// <summary>
-		/// Generate split event instances.
-		/// </summary>
-		public static IEnumerable<BaseBeat> Split(this AddClassicBeat e, SetRowXs xs)
-		{
-			List<BaseBeat> l = [];
-			AddFreeTimeBeat head = e.Clone<AddFreeTimeBeat>();
-			head.Pulse = 0;
-			head.Hold = e.Hold;
-			l.Add(head);
-			int i = 1;
-			do
-			{
-				if (!(i < 6 && xs.Pattern[i] == Events.Pattern.X))
-				{
-                    PulseFreeTimeBeat pulse = e.Clone<PulseFreeTimeBeat>();
-                    PulseFreeTimeBeat pulseFreeTimeBeat;
-					(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * i;
-					if (i >= xs.SyncoBeat)
-						(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat - xs.SyncoSwing;
-					if (i % 2 == 1)
-						(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));
-					pulse.Hold = e.Hold;
-					pulse.Action = PulseAction.Increment;
-					l.Add(pulse);
-				}
-				i++;
-			}
-			while (i <= 6);
-			return l.AsEnumerable();
-		}
-		/// <summary>
-		/// Calculates the duration of the VFX effect for the given preset.
-		/// </summary>
-		/// <param name="e">The SetVFXPreset event.</param>
-		/// <returns>An RDRange representing the duration of the VFX effect.</returns>
-		public static RDRange VFXDuration(this SetVFXPreset e)
-		{
-			if (e.Preset != VfxPreset.DisableAll && e.Enable)
-			{
-				SetVFXPreset? close = e.After().FirstOrDefault(i =>
-					i.Rooms.Contains(e.Rooms) && (
-						i.Preset == e.Preset ||
-						i.Preset == VfxPreset.DisableAll
-				));
-				return new(e.Beat, close?.Beat);
-			}
-			return new(e.Beat, e.Beat);
-		}
-		/// <summary>
-		/// Remove auxiliary symbols.
-		/// </summary>
-		public static string TextOnly(this ShowDialogue e)
-		{
-			return new string[]
-			{
-				"shake","shakeRadius=\\d+","wave","waveHeight=\\d+","waveSpeed=\\d+","swirl","swirlRadius=\\d+","swirlSpeed=\\d+","static"
-			}.Aggregate(e.Text, (current, item) => Regex.Replace(current, $@"\[{item}\]", ""));
+			e.Pivot = (e.VisualPosition() - target).Rotate(e.Angle ?? 0);
 		}
 		/// <summary>
 		/// The visual position of the lower left corner of the image.

@@ -73,6 +73,10 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 		}
 		/// <summary>
+		/// Default pattern.
+		/// </summary>
+		public static PatternCollection Default => "------";
+		/// <summary>
 		/// Converts a PatternCollection instance to an array of Patterns objects.
 		/// </summary>
 		/// <param name="pc">The PatternCollection instance to convert.</param>

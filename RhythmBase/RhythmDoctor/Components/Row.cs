@@ -26,7 +26,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets the rooms associated with the row.
 		/// </summary>
-		public RDSingleRoom Rooms { get; set; } = new(RDRoomIndex.Room1);
+		public RDSingleRoom Room { get; set; } = new(RDRoomIndex.Room1);
 		/// <summary>
 		/// Gets or sets a value indicating whether the row is hidden at the start.
 		/// </summary>

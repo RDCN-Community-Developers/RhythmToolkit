@@ -37,7 +37,7 @@ public class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 	/// <inheritdoc/>
 	public override string ToString()
 	{
-		string[]? texts = Parent?.Texts();
+		string[]? texts = Parent?.Splitted;
 		int? index = Parent?.Children.IndexOf(this);
 		if (texts is not null && index is not null && texts.Length > index + 1)
 		{

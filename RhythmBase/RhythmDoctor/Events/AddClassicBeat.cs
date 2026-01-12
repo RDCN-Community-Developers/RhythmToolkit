@@ -46,6 +46,6 @@ public class AddClassicBeat : BaseBeat
 	public override EventType Type => EventType.AddClassicBeat;
 	/// <inheritdoc/>
 	public override string ToString() => base.ToString() +
-		$" {Utils.Utils.GetPatternString(this.RowXs())} {((Swing is 0.5f or 0f) ? "" : " Swing")}";
+		$" {this.Pattern} {((Swing is 0.5f or 0f) ? "" : " Swing")}";
 	private string GetDebuggerDisplay() => ToString();
 }

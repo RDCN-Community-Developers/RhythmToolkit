@@ -37,16 +37,16 @@ public class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
 	{
 		_extraData = data.Deserialize<Dictionary<string, JsonElement>>() ?? [];
 		Beat =
-			_extraData.TryGetValue("bar".ToLowerCamelCase(), out JsonElement barElement) && barElement.ValueKind == JsonValueKind.Number ?
-			_extraData.TryGetValue("beat".ToLowerCamelCase(), out JsonElement beatElement) && beatElement.ValueKind == JsonValueKind.Number ?
+			_extraData.TryGetValue("bar", out JsonElement barElement) && barElement.ValueKind == JsonValueKind.Number ?
+			_extraData.TryGetValue("beat", out JsonElement beatElement) && beatElement.ValueKind == JsonValueKind.Number ?
 			new(barElement.GetInt32(), beatElement.GetSingle()) : new(barElement.GetInt32(), 1) : default;
-		Tag = _extraData.TryGetValue("tag".ToLowerCamelCase(), out JsonElement tagElement) && tagElement.ValueKind == JsonValueKind.String ?
+		Tag = _extraData.TryGetValue("tag", out JsonElement tagElement) && tagElement.ValueKind == JsonValueKind.String ?
 			tagElement.GetString() ?? "" : "";
-		Active = (!_extraData.TryGetValue("active".ToLowerCamelCase(), out JsonElement activeElement) || activeElement.ValueKind != JsonValueKind.True) && activeElement.ValueKind != JsonValueKind.False || activeElement.GetBoolean();
-		RunTag = (_extraData.TryGetValue("runTag".ToLowerCamelCase(), out JsonElement runTagElement) && runTagElement.ValueKind == JsonValueKind.True || runTagElement.ValueKind == JsonValueKind.False) && runTagElement.GetBoolean();
-		Condition = _extraData.TryGetValue("condition".ToLowerCamelCase(), out JsonElement conditionElement) && conditionElement.ValueKind == JsonValueKind.String ?
+		Active = (!_extraData.TryGetValue("active", out JsonElement activeElement) || activeElement.ValueKind != JsonValueKind.True) && activeElement.ValueKind != JsonValueKind.False || activeElement.GetBoolean();
+		RunTag = (_extraData.TryGetValue("runTag", out JsonElement runTagElement) && runTagElement.ValueKind == JsonValueKind.True || runTagElement.ValueKind == JsonValueKind.False) && runTagElement.GetBoolean();
+		Condition = _extraData.TryGetValue("condition", out JsonElement conditionElement) && conditionElement.ValueKind == JsonValueKind.String ?
 			Condition.Deserialize( conditionElement.GetString() ?? "") : new();
-		_decoId = _extraData.TryGetValue("target".ToLowerCamelCase(), out JsonElement targetElement) && targetElement.ValueKind == JsonValueKind.String ?
+		_decoId = _extraData.TryGetValue("target", out JsonElement targetElement) && targetElement.ValueKind == JsonValueKind.String ?
 			targetElement.GetString() ?? "" : "";
 		_extraData.Remove("bar");
 		_extraData.Remove("beat");

@@ -2,6 +2,7 @@
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 namespace RhythmBase.RhythmDoctor.Extensions
 {
 	/// <summary>
@@ -60,6 +61,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <item>when both are empty,<br />Returns false.</item>
 		/// </list>
 		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NullableEquals(this float? e, float? obj) => (e != null && obj != null && e.Value == obj.Value) || (e == null && obj == null);
 		/// <summary>
 		/// Make strings follow the Upper Camel Case.
@@ -81,14 +83,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			S[0] = S[0].ToString().ToLower()[0];
 			return string.Join("", [new string(S)]);
 		}
-		/// <summary>
-		/// Convert color format from RGBA to ARGB
-		/// </summary>
-		public static int RgbaToArgb(this int Rgba) => (Rgba >> 8 & 16777215) | (Rgba << 24 & -16777216);
-		/// <summary>
-		/// Convert color format from ARGB to RGBA
-		/// </summary>
-		public static int ArgbToRgba(this int Argb) => (Argb >> 24 & 255) | (Argb << 8 & -256);
 		/// <summary>
 		/// Calculate the fraction of <paramref name="splitBase" /> equal to the nearest floating point number.
 		/// <example>
@@ -163,19 +157,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			return count;
 		}
 		/// <summary>
-		/// Get all the hit of the level.
-		/// </summary>
-		public static IEnumerable<RDHit> GetHitBeat(this RDLevel e)
-		{
-			foreach (Row item in e.Rows)
-				foreach (RDHit hit in item.HitBeats())
-					yield return hit;
-		}
-		/// <summary>
-		/// Get all the hit event of the level.
-		/// </summary>
-		public static IEnumerable<BaseBeat> GetHitEvents(this RDLevel e) => e.OfEvent<BaseBeat>().Where(IsHitable);
-		/// <summary>
 		/// Get all events with the specified tag.
 		/// </summary>
 		/// <param name="e">Collection</param>
@@ -201,23 +182,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// Get all oneshot beat events.
 		/// </summary>
 		private static IEnumerable<BaseBeat> OneshotBeats(this Row e) => e.OfEvent<BaseBeat>().Where(i => i.Type == EventType.AddOneshotBeat);
-		/// <summary>
-		/// Get all hits of all beats.
-		/// </summary>
-		public static IEnumerable<RDHit> HitBeats(this Row e)
-		{
-			RowType rowType = e.RowType;
-			IEnumerable<RDHit> HitBeats;
-			if (rowType != RowType.Classic)
-			{
-				if (rowType != RowType.Oneshot)
-					throw new RhythmBaseException("How?");
-				HitBeats = e.OneshotBeats().SelectMany(i => i.HitTimes());
-			}
-			else
-				HitBeats = e.ClassicBeats().SelectMany(i => i.HitTimes());
-			return HitBeats;
-		}
 		/// <summary>
 		/// Get an instance of the beat associated with the level.
 		/// </summary>
@@ -265,7 +229,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <returns>
 		/// The room index at the specified beat, or the row's default room if no <see cref="ReorderRow"/> event is found.
 		/// </returns>
-		public static RDRoomIndex RoomOf(this Row e, RDBeat beat) => e.InRange(new(), beat).OfEvent<ReorderRow>().LastOrDefault()?.NewRoom ?? e.Rooms.Room;
+		public static RDRoomIndex RoomOf(this Row e, RDBeat beat) => e.InRange(new(), beat).OfEvent<ReorderRow>().LastOrDefault()?.NewRoom ?? e.Room.Room;
 		/// <summary>
 		/// Get the row beat status
 		/// </summary>
@@ -334,7 +298,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
@@ -361,7 +325,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> Before<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
 				if (enumerator.Current.Value.ContainsTypes(types))
@@ -388,7 +352,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> After<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
 			if (!moved)
@@ -421,7 +385,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static IEnumerable<TEvent> After<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
 			if (!moved)
@@ -462,7 +426,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FrontOrDefault<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			TEvent? front = null;
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
@@ -491,7 +455,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? FrontOrDefault<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			TEvent? front = null;
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
@@ -528,10 +492,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? NextOrDefault<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
-			if(!moved)
+			if (!moved)
 				return null;
 			bool flag = false;
 			if (enumerator.Current.Key == e.Beat && enumerator.Current.Value.ContainsTypes(types))
@@ -563,7 +527,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static TEvent? NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
 			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
-			IEnumerator<KeyValuePair<RDBeat,TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
+			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
 			if (!moved)
@@ -634,9 +598,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			return copy;
 		}
 		/// <inheritdoc/>
-		public static string GetCloseTag(string name) => $"</{name}>";
+		internal static string GetCloseTag(string name) => $"</{name}>";
 		/// <inheritdoc/>
-		public static string GetOpenTag(string name, string? arg = null) => arg is null ? $"<{name}>" : $"<{name}={arg}>";
+		internal static string GetOpenTag(string name, string? arg = null) => arg is null ? $"<{name}>" : $"<{name}={arg}>";
 		/// <summary>
 		/// Tries to add a tag to the specified string based on the provided name and boolean values.
 		/// </summary>
@@ -644,7 +608,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="name">The name of the tag.</param>
 		/// <param name="before">A boolean value indicating whether the tag is before.</param>
 		/// <param name="after">A boolean value indicating whether the tag is after.</param>
-		public static void TryAddTag(ref string tag, string name, bool before, bool after)
+		internal static void TryAddTag(ref string tag, string name, bool before, bool after)
 		{
 			if (before != after)
 				tag += after
@@ -658,7 +622,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="name">The name of the tag.</param>
 		/// <param name="before">An optional string value indicating the tag before.</param>
 		/// <param name="after">An optional string value indicating the tag after.</param>
-		public static void TryAddTag(ref string tag, string name, string? before, string? after)
+		internal static void TryAddTag(ref string tag, string name, string? before, string? after)
 		{
 			if (before != after)
 				tag += after is null
