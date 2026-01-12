@@ -6,7 +6,7 @@ namespace RhythmBase.Global.Components.RichText
 	/// <summary>
 	/// Represents the style of a rich string.
 	/// </summary>
-	public struct RDDialoguePhraseStyle : IRDRichStringStyle<RDDialoguePhraseStyle>
+	public record struct RDDialoguePhraseStyle : IRDRichStringStyle<RDDialoguePhraseStyle>
 	{
 		/// <summary>
 		/// Gets or sets the color of the text.
@@ -80,6 +80,8 @@ namespace RhythmBase.Global.Components.RichText
 		public
 #if !NETSTANDARD
 			static
+#else
+		readonly
 #endif
 			bool HasPhrase => true;
 		/// <summary>
@@ -88,65 +90,83 @@ namespace RhythmBase.Global.Components.RichText
 		/// <param name="name">The name of the property to set.</param>
 		/// <param name="value">The value to set for the property.</param>
 		/// <returns>True if the property was successfully set; otherwise, false.</returns>
-		public bool SetProperty(string name, string value)
+		public bool SetProperty(ReadOnlySpan<char> name, ReadOnlySpan<char> value)
 		{
 			switch (name)
 			{
 				case "color":
 					if (RDColor.TryFromName(value, out RDColor color))
 						Color = color;
-					else if (RDColor.TryFromRgba(value, out color))
+					else if (RDColor.TryFromRgba(value.ToString(), out color))
 						Color = color;
 					else
 						return false;
 					break;
 				case "speed":
-					Speed = float.Parse(value);
+					if (!float.TryParse(value.ToString(), out float speed))
+						return false;
+					Speed = speed;
 					break;
 				case "volume":
-					Volume = float.Parse(value);
+					if(!float.TryParse(value.ToString(), out float volume))
+						return false;
+					Volume = volume;
 					break;
 				case "pitch":
-					Pitch = float.Parse(value);
+					if(!float.TryParse(value.ToString(), out float pitch))
+						return false;
+					Pitch = pitch;
 					break;
 				case "pitchRange":
-					PitchRange = float.Parse(value);
+					if(!float.TryParse(value.ToString(), out float pitchRange))
+						return false;
+					PitchRange = pitchRange;
 					break;
 				case "shake":
-					Shake = bool.Parse(value);
+					Shake = true;
 					break;
 				case "shakeRadius":
-					ShakeRadius = float.Parse(value);
+					if(!float.TryParse(value.ToString(), out float shakeRadius))
+						return false;
+					ShakeRadius = shakeRadius;
 					break;
 				case "wave":
-					Wave = bool.Parse(value);
+					Wave = true;
 					break;
 				case "waveHeight":
-					WaveHeight = float.Parse(value);
+					if(!float.TryParse(value.ToString(), out float waveHeight))
+						return false;
+					WaveHeight = waveHeight;
 					break;
 				case "waveSpeed":
-					WaveSpeed = float.Parse(value);
+					if(!float.TryParse(value.ToString(), out float waveSpeed))
+						return false;
+					WaveSpeed = waveSpeed;
 					break;
 				case "swirl":
-					Swirl = bool.Parse(value);
+					Swirl = true;
 					break;
 				case "swirlRadius":
-					SwirlRadius = float.Parse(value);
+					if(!float.TryParse(value.ToString(), out float swirlRadius))
+						return false;
+					SwirlRadius = swirlRadius;
 					break;
 				case "swirlSpeed":
-					SwirlSpeed = float.Parse(value);
+					if(!float.TryParse(value.ToString(), out float swirlSpeed))
+						return false;
+					SwirlSpeed = swirlSpeed;
 					break;
 				case "sticky":
-					Sticky = bool.Parse(value);
+					Sticky = true;
 					break;
 				case "loud":
-					Loud = bool.Parse(value);
+					Loud = true;
 					break;
 				case "bold":
-					Bold = bool.Parse(value);
+					Bold = true;
 					break;
 				case "whisper":
-					Whisper = bool.Parse(value);
+					Whisper = true;
 					break;
 				default:
 					return false;
@@ -158,7 +178,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// </summary>
 		/// <param name="name">The name of the property to remove.</param>
 		/// <returns>True if the property was successfully removed; otherwise, false.</returns>
-		public bool ResetProperty(string name)
+		public bool ResetProperty(ReadOnlySpan<char> name)
 		{
 			switch (name)
 			{
@@ -220,7 +240,9 @@ namespace RhythmBase.Global.Components.RichText
 		}
 		/// <inheritdoc/>
 		public
-#if !NETSTANDARD
+#if NETSTANDARD
+			readonly
+#else
 			static
 #endif
 			string GetXmlTag(RDDialoguePhraseStyle before, RDDialoguePhraseStyle after)
@@ -251,35 +273,6 @@ namespace RhythmBase.Global.Components.RichText
 			TryAddTag(ref tag, "whisper", before.Whisper, after.Whisper);
 			return tag;
 		}
-		/// <inheritdoc/>
-		public static bool operator ==(RDDialoguePhraseStyle left, RDDialoguePhraseStyle right) =>
-				   left.Color == right.Color
-				&& left.Speed == right.Speed
-				&& left.Volume == right.Volume
-				&& left.Pitch == right.Pitch
-				&& left.PitchRange == right.PitchRange
-				&& left.Shake == right.Shake
-				&& left.ShakeRadius == right.ShakeRadius
-				&& left.Wave == right.Wave
-				&& left.WaveHeight == right.WaveHeight
-				&& left.WaveSpeed == right.WaveSpeed
-				&& left.Swirl == right.Swirl
-				&& left.SwirlRadius == right.SwirlRadius
-				&& left.SwirlSpeed == right.SwirlSpeed
-				&& left.Sticky == right.Sticky
-				&& left.Loud == right.Loud
-				&& left.Bold == right.Bold
-				&& left.Whisper == right.Whisper;
-		/// <inheritdoc/>
-		public static bool operator !=(RDDialoguePhraseStyle left, RDDialoguePhraseStyle right) => !(left == right);
-		/// <inheritdoc/>
-#if NETSTANDARD
-		public readonly override bool Equals(object? obj) => obj is RDDialoguePhraseStyle e && base.Equals(e);
-#else
-		public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is RDDialoguePhraseStyle e && base.Equals(e);
-#endif
-		/// <inheritdoc/>
-		public readonly bool Equals(RDDialoguePhraseStyle other) => this == other;
 		/// <inheritdoc/>
 		public readonly override int GetHashCode()
 		{

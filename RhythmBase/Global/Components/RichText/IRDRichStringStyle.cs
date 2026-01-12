@@ -54,14 +54,14 @@ namespace RhythmBase.Global.Components.RichText
 		/// </summary>
 		/// <param name="name">The name of the property to reset.</param>
 		/// <returns>True if the property was successfully reset; otherwise, false.</returns>
-		bool ResetProperty(string name);
+		internal bool ResetProperty(ReadOnlySpan<char> name);
 		/// <summary>
 		/// Sets the property of the rich string style based on the provided name and value.
 		/// </summary>
 		/// <param name="name">The name of the property to set.</param>
 		/// <param name="value">The value to set for the property.</param>
 		/// <returns>True if the property was successfully set; otherwise, false.</returns>
-		bool SetProperty(string name, string value);
+		internal bool SetProperty(ReadOnlySpan<char> name, ReadOnlySpan<char> value);
 		/// <summary>
 		/// Gets a value indicating whether the style has a phrase.
 		/// </summary>

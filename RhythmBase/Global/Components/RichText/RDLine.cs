@@ -215,7 +215,7 @@ namespace RhythmBase.Global.Components.RichText
 					line += DeserializeStringPart(stringPart, style);
 				string tagContent = text.Substring(p + 1, tagend - (p + 1));
 #if NET7_0_OR_GREATER
-				if (tagContent.StartsWith('/') && style.ResetProperty(tagContent[1..])) { }
+				if (tagContent.StartsWith('/') && style.ResetProperty(tagContent.AsSpan()[1..])) { }
 				else
 				{
 					string[] parts = tagContent.Split('=', 2);
@@ -247,6 +247,27 @@ namespace RhythmBase.Global.Components.RichText
 #endif
 			}
 			return line;
+		}
+		private static void ParseAttributes(ReadOnlySpan<char> tag, ref TStyle style)
+		{
+			int pos = 0;
+			int eq = tag.Slice(pos).IndexOf('=');
+			ReadOnlySpan<char> key, val;
+			if (eq == -1)
+			{
+				key = tag.Slice(pos).Trim();
+				val = ReadOnlySpan<char>.Empty;
+				pos = tag.Length;
+			}
+			else
+			{
+				eq += pos;
+				key = tag.Slice(pos, eq - pos).Trim();
+				int valStart = eq + 1;
+				val = tag.Slice(valStart).Trim();
+				pos = tag.Length;
+			}
+			style.SetProperty(key, val);
 		}
 		private static RDPhrase<TStyle> DeserializeStringPart(string text, TStyle style)
 		{
