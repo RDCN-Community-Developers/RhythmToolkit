@@ -15,13 +15,13 @@ public class AddOneshotBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets the number of subdivisions.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(PulseType)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Wave)}")]
+	[RDJsonCondition($"$&.{nameof(Subdivisions)} > 0")]
 	public byte Subdivisions { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets a value indicating whether the subdivision sound is enabled.
 	/// </summary>
 	[RDJsonProperty("subdivSound")]
-	[RDJsonCondition($"$&.{nameof(PulseType)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Wave)}")]
+	[RDJsonCondition($"$&.{nameof(Subdivisions)} > 0")]
 	public bool SubdivisionSound { get; set; }
 	/// <summary>
 	/// Gets or sets the tick value.
