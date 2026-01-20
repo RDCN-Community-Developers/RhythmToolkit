@@ -8,21 +8,21 @@ public struct EyesVision1 : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>_EyeWave</b>.
 	/// </summary>
-	[RDJsonProperty("_EyeWave")]
+	[RDJsonAlias("_EyeWave")]
 	public float EyeWave { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_EyeSpeed</b>.
 	/// </summary>
-	[RDJsonProperty("_EyeSpeed")]
+	[RDJsonAlias("_EyeSpeed")]
 	public float EyeSpeed { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_EyeMove</b>.
 	/// </summary>
-	[RDJsonProperty("_EyeMove")]
+	[RDJsonAlias("_EyeMove")]
 	public float EyeMove { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_EyeBlink</b>.
 	/// </summary>
-	[RDJsonProperty("_EyeBlink")]
+	[RDJsonAlias("_EyeBlink")]
 	public float EyeBlink { get; set; }
 }

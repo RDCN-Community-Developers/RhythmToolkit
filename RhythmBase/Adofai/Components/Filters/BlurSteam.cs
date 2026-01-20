@@ -8,11 +8,11 @@ public struct BlurSteam : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Radius</b>.
 	/// </summary>
-	[RDJsonProperty("Radius")]
+	[RDJsonAlias("Radius")]
 	public float Radius { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Quality</b>.
 	/// </summary>
-	[RDJsonProperty("Quality")]
+	[RDJsonAlias("Quality")]
 	public float Quality { get; set; }
 }

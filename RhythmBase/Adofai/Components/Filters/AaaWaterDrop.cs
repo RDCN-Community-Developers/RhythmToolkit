@@ -8,21 +8,21 @@ public struct AaaWaterDrop : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Distortion</b>.
 	/// </summary>
-	[RDJsonProperty("Distortion")]
+	[RDJsonAlias("Distortion")]
 	public float Distortion { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>SizeX</b>.
 	/// </summary>
-	[RDJsonProperty("SizeX")]
+	[RDJsonAlias("SizeX")]
 	public float SizeX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>SizeY</b>.
 	/// </summary>
-	[RDJsonProperty("SizeY")]
+	[RDJsonAlias("SizeY")]
 	public float SizeY { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>
-	[RDJsonProperty("Speed")]
+	[RDJsonAlias("Speed")]
 	public float Speed { get; set; }
 }

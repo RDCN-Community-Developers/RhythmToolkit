@@ -23,7 +23,7 @@ public partial class Comment : BaseDecorationAction, IColorEvent
 	/// <summary>
 	/// Gets or sets the custom tab.
 	/// </summary>
-	[RDJsonProperty(name: "tab")]
+	[RDJsonAlias(name: "tab")]
 	[RDJsonConverter(typeof(TabsConverter))]
 	public Tab CustomTab { get; set; }
 	/// <inheritdoc />

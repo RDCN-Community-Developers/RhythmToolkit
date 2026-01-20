@@ -8,6 +8,6 @@ public struct ColorContrast : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Contrast</b>.
 	/// </summary>
-	[RDJsonProperty("Contrast")]
+	[RDJsonAlias("Contrast")]
 	public float Contrast { get; set; }
 }

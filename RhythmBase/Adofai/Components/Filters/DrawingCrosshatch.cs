@@ -8,6 +8,6 @@ public struct DrawingCrosshatch : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Width</b>.
 	/// </summary>
-	[RDJsonProperty("Width")]
+	[RDJsonAlias("Width")]
 	public float Width { get; set; }
 }

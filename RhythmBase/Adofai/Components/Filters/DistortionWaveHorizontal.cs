@@ -8,6 +8,6 @@ public struct DistortionWaveHorizontal : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>WaveIntensity</b>.
 	/// </summary>
-	[RDJsonProperty("WaveIntensity")]
+	[RDJsonAlias("WaveIntensity")]
 	public float WaveIntensity { get; set; }
 }

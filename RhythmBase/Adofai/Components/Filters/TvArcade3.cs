@@ -8,16 +8,16 @@ public struct TvArcade3 : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Interferance_Size</b>.
 	/// </summary>
-	[RDJsonProperty("Interferance_Size")]
+	[RDJsonAlias("Interferance_Size")]
 	public float InterferanceSize { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Interferance_Speed</b>.
 	/// </summary>
-	[RDJsonProperty("Interferance_Speed")]
+	[RDJsonAlias("Interferance_Speed")]
 	public float InterferanceSpeed { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Contrast</b>.
 	/// </summary>
-	[RDJsonProperty("Contrast")]
+	[RDJsonAlias("Contrast")]
 	public float Contrast { get; set; }
 }

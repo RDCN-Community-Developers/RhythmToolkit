@@ -8,11 +8,11 @@ public struct PixelisationDot : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>
-	[RDJsonProperty("Size")]
+	[RDJsonAlias("Size")]
 	public float Size { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>LightBackGround</b>.
 	/// </summary>
-	[RDJsonProperty("LightBackGround")]
+	[RDJsonAlias("LightBackGround")]
 	public float LightBackGround { get; set; }
 }

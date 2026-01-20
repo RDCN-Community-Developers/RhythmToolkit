@@ -10,7 +10,7 @@ public class PlaySong : BaseBeatsPerMinute, IBarBeginningEvent, IAudioFileEvent
 	/// <summary>
 	/// Gets or sets the beats per minute (BPM) for the song.
 	/// </summary>
-	[RDJsonProperty("bpm")]
+	[RDJsonAlias("bpm")]
 	public override float BeatsPerMinute
 	{
 		get => base.BeatsPerMinute;

@@ -8,21 +8,21 @@ public struct OculusNightVision5 : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>FadeFX</b>.
 	/// </summary>
-	[RDJsonProperty("FadeFX")]
+	[RDJsonAlias("FadeFX")]
 	public float FadeFX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_Size</b>.
 	/// </summary>
-	[RDJsonProperty("_Size")]
+	[RDJsonAlias("_Size")]
 	public float Size { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_Smooth</b>.
 	/// </summary>
-	[RDJsonProperty("_Smooth")]
+	[RDJsonAlias("_Smooth")]
 	public float Smooth { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_Dist</b>.
 	/// </summary>
-	[RDJsonProperty("_Dist")]
+	[RDJsonAlias("_Dist")]
 	public float Dist { get; set; }
 }

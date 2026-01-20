@@ -8,11 +8,11 @@ public struct AlienVision : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Therma_Variation</b>.
 	/// </summary>
-	[RDJsonProperty("Therma_Variation")]
+	[RDJsonAlias("Therma_Variation")]
 	public float ThermaVariation { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>
-	[RDJsonProperty("Speed")]
+	[RDJsonAlias("Speed")]
 	public float Speed { get; set; }
 }

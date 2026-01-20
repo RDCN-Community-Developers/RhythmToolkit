@@ -28,7 +28,7 @@ public class FreeRoam : BaseTileEvent, IEaseEvent, ISingleEvent
 	/// <summary>
 	/// Gets or sets the easing type for the Free Roam event.
 	/// </summary>
-	[RDJsonProperty("outEase")]
+	[RDJsonAlias("outEase")]
 	public EaseType Ease { get; set; } = EaseType.InOutSine;
 	/// <summary>
 	/// Gets or sets the hitsound to be played on beats during the Free Roam event.
@@ -45,7 +45,7 @@ public class FreeRoam : BaseTileEvent, IEaseEvent, ISingleEvent
 	/// <summary>
 	/// Gets or sets the angle correction direction for the Free Roam event.
 	/// </summary>
-	[RDJsonProperty("angleCorrectionDir")]
+	[RDJsonAlias("angleCorrectionDir")]
 	public AngleCorrectionDirection AngleCorrectionDirection { get; set; } = AngleCorrectionDirection.Backward;
 }
 /// <summary>

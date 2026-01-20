@@ -8,6 +8,6 @@ public struct ColorsBrightness : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>_Brightness</b>.
 	/// </summary>
-	[RDJsonProperty("_Brightness")]
+	[RDJsonAlias("_Brightness")]
 	public float Brightness { get; set; }
 }

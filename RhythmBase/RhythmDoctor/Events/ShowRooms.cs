@@ -12,7 +12,7 @@ public class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent
 	/// Gets or sets the height configuration for the room.  
 	/// </summary>  
 	//[JsonIgnore]
-	[RDJsonProperty("heights")]
+	[RDJsonAlias("heights")]
 	public RoomHeight Height { get; set; } = new RoomHeight();
 	/// <summary>  
 	/// Gets or sets the room configuration associated with the height.  
@@ -26,7 +26,7 @@ public class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent
 	/// <summary>  
 	/// Gets or sets the duration of the transition.  
 	/// </summary>  
-	[RDJsonProperty("transitionTime")]
+	[RDJsonAlias("transitionTime")]
 	public float Duration { get; set; } = 1;
 	/// <summary>  
 	/// Gets the type of the event.  

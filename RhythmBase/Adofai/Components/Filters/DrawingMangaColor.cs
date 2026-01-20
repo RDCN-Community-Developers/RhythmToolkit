@@ -8,6 +8,6 @@ public struct DrawingMangaColor : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>DotSize</b>.
 	/// </summary>
-	[RDJsonProperty("DotSize")]
+	[RDJsonAlias("DotSize")]
 	public float DotSize { get; set; }
 }

@@ -8,11 +8,11 @@ public struct DrawingCellShading : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>EdgeSize</b>.
 	/// </summary>
-	[RDJsonProperty("EdgeSize")]
+	[RDJsonAlias("EdgeSize")]
 	public float EdgeSize { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>ColorLevel</b>.
 	/// </summary>
-	[RDJsonProperty("ColorLevel")]
+	[RDJsonAlias("ColorLevel")]
 	public float ColorLevel { get; set; }
 }

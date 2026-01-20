@@ -8,6 +8,6 @@ public struct BlendToCameraLighten : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>
-	[RDJsonProperty("BlendFX")]
+	[RDJsonAlias("BlendFX")]
 	public float BlendFX { get; set; }
 }

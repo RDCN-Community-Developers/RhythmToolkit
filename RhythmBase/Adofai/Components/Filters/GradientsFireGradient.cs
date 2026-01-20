@@ -8,11 +8,11 @@ public struct GradientsFireGradient : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Switch</b>.
 	/// </summary>
-	[RDJsonProperty("Switch")]
+	[RDJsonAlias("Switch")]
 	public float Switch { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>
-	[RDJsonProperty("Fade")]
+	[RDJsonAlias("Fade")]
 	public float Fade { get; set; }
 }

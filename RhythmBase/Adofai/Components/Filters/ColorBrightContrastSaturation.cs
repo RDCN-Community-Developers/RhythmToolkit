@@ -8,16 +8,16 @@ public struct ColorBrightContrastSaturation : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Brightness</b>.
 	/// </summary>
-	[RDJsonProperty("Brightness")]
+	[RDJsonAlias("Brightness")]
 	public float Brightness { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Saturation</b>.
 	/// </summary>
-	[RDJsonProperty("Saturation")]
+	[RDJsonAlias("Saturation")]
 	public float Saturation { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Contrast</b>.
 	/// </summary>
-	[RDJsonProperty("Contrast")]
+	[RDJsonAlias("Contrast")]
 	public float Contrast { get; set; }
 }

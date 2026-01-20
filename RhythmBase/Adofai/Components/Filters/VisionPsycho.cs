@@ -8,21 +8,21 @@ public struct VisionPsycho : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>HoleSize</b>.
 	/// </summary>
-	[RDJsonProperty("HoleSize")]
+	[RDJsonAlias("HoleSize")]
 	public float HoleSize { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>HoleSmooth</b>.
 	/// </summary>
-	[RDJsonProperty("HoleSmooth")]
+	[RDJsonAlias("HoleSmooth")]
 	public float HoleSmooth { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Color1</b>.
 	/// </summary>
-	[RDJsonProperty("Color1")]
+	[RDJsonAlias("Color1")]
 	public float Color1 { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Color2</b>.
 	/// </summary>
-	[RDJsonProperty("Color2")]
+	[RDJsonAlias("Color2")]
 	public float Color2 { get; set; }
 }

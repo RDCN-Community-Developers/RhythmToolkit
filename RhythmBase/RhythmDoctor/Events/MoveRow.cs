@@ -12,7 +12,7 @@ public class MoveRow : BaseRowAnimation, IEaseEvent
 	/// <summary>
 	/// Gets or sets a value indicating whether a custom position is used.
 	/// </summary>
-	[RDJsonProperty("customPosition")]
+	[RDJsonAlias("customPosition")]
 	[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)}")]
 	public bool EnableCustomPosition { get; set; } = true;
 	/// <summary>
@@ -23,7 +23,7 @@ public class MoveRow : BaseRowAnimation, IEaseEvent
 	/// Gets or sets the row position.
 	/// </summary>
 	[Tween]
-	[RDJsonProperty("rowPosition")]
+	[RDJsonAlias("rowPosition")]
 	[RDJsonCondition($"$&.{nameof(EnableCustomPosition)} is true && $&.{nameof(Position)} is not null")]
 	public RDPointE? Position { get; set; }
 	/// <summary>

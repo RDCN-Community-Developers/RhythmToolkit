@@ -115,7 +115,7 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 		""")]
 	public EaseType SubEase { get; set; } = Global.Components.Easing.EaseType.Linear;
 	///<inheritdoc/>
-	[RDJsonProperty("easingDuration")]
+	[RDJsonAlias("easingDuration")]
 	public float Duration { get; set; } = 0;
 	///<inheritdoc/>
 	public EaseType Ease { get; set; } = Global.Components.Easing.EaseType.Linear;
@@ -131,7 +131,7 @@ public class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// </summary>
 	[RDJsonConverter(typeof(TabsConverter))]
 	[RDJsonCondition($"$&.{nameof(CustomTab)} is not RhythmBase.RhythmDoctor.Events.{nameof(Tab)}.{nameof(Tab.Windows)}")]
-	[RDJsonProperty("tab")]
+	[RDJsonAlias("tab")]
 	public Tab CustomTab
 	{
 		get;

@@ -8,26 +8,26 @@ public struct BlurTiltShift : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Amount</b>.
 	/// </summary>
-	[RDJsonProperty("Amount")]
+	[RDJsonAlias("Amount")]
 	public float Amount { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>FastFilter</b>.
 	/// </summary>
-	[RDJsonProperty("FastFilter")]
+	[RDJsonAlias("FastFilter")]
 	public int FastFilter { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Smooth</b>.
 	/// </summary>
-	[RDJsonProperty("Smooth")]
+	[RDJsonAlias("Smooth")]
 	public float Smooth { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>
-	[RDJsonProperty("Size")]
+	[RDJsonAlias("Size")]
 	public float Size { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Position</b>.
 	/// </summary>
-	[RDJsonProperty("Position")]
+	[RDJsonAlias("Position")]
 	public float Position { get; set; }
 }

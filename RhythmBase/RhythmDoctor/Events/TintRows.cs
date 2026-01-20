@@ -48,7 +48,7 @@ public class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets a value indicating whether to apply tint.
 	/// </summary>
-	[RDJsonProperty("tint")]
+	[RDJsonAlias("tint")]
 	public bool IsTint { get; set; } = false;
 	///<inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]

@@ -8,21 +8,21 @@ public struct LightWaterTo : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>
-	[RDJsonProperty("Speed")]
+	[RDJsonAlias("Speed")]
 	public float Speed { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed_X</b>.
 	/// </summary>
-	[RDJsonProperty("Speed_X")]
+	[RDJsonAlias("Speed_X")]
 	public float SpeedX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed_Y</b>.
 	/// </summary>
-	[RDJsonProperty("Speed_Y")]
+	[RDJsonAlias("Speed_Y")]
 	public float SpeedY { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.
 	/// </summary>
-	[RDJsonProperty("Intensity")]
+	[RDJsonAlias("Intensity")]
 	public float Intensity { get; set; }
 }

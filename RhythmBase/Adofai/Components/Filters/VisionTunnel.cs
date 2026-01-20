@@ -8,16 +8,16 @@ public struct VisionTunnel : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>
-	[RDJsonProperty("Value")]
+	[RDJsonAlias("Value")]
 	public float Value { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Value2</b>.
 	/// </summary>
-	[RDJsonProperty("Value2")]
+	[RDJsonAlias("Value2")]
 	public float Value2 { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.
 	/// </summary>
-	[RDJsonProperty("Intensity")]
+	[RDJsonAlias("Intensity")]
 	public float Intensity { get; set; }
 }

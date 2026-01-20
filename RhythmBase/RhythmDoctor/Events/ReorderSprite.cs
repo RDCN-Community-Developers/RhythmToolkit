@@ -26,6 +26,6 @@ public class ReorderSprite : BaseDecorationAction
 	/// <summary>
 	/// Gets or sets the type of layer used for sorting or rendering purposes.
 	/// </summary>
-	[RDJsonProperty("sortingLayerName")]
+	[RDJsonAlias("sortingLayerName")]
 	public LayerType LayerType { get; set; } = LayerType.Default;
 }

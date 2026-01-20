@@ -8,6 +8,6 @@ public struct OculusThermaVision : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Therma_Variation</b>.
 	/// </summary>
-	[RDJsonProperty("Therma_Variation")]
+	[RDJsonAlias("Therma_Variation")]
 	public float ThermaVariation { get; set; }
 }

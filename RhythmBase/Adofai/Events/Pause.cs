@@ -18,7 +18,7 @@
 		/// <summary>  
 		/// Gets or sets the direction of angle correction during the pause.  
 		/// </summary>  
-		[RDJsonProperty("angleCorrectionDir")]
+		[RDJsonAlias("angleCorrectionDir")]
 		public AngleCorrectionDirection AngleCorrectionDirection { get; set; } = AngleCorrectionDirection.Backward;
 	}
 }

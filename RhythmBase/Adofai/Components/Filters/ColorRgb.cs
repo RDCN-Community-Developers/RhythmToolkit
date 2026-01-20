@@ -8,6 +8,6 @@ public struct ColorRgb : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>ColorRGB</b>.
 	/// </summary>
-	[RDJsonProperty("ColorRGB")]
+	[RDJsonAlias("ColorRGB")]
 	public RDColor ColorRGB { get; set; }
 }

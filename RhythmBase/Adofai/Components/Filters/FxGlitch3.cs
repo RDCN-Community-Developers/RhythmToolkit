@@ -8,11 +8,11 @@ public struct FxGlitch3 : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>_Glitch</b>.
 	/// </summary>
-	[RDJsonProperty("_Glitch")]
+	[RDJsonAlias("_Glitch")]
 	public float Glitch { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_Noise</b>.
 	/// </summary>
-	[RDJsonProperty("_Noise")]
+	[RDJsonAlias("_Noise")]
 	public float Noise { get; set; }
 }

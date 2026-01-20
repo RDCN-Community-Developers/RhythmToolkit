@@ -8,12 +8,12 @@ public struct FxScreens : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Tiles</b>.
 	/// </summary>
-	[RDJsonProperty("Tiles")]
+	[RDJsonAlias("Tiles")]
 	public float Tiles { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>
-	[RDJsonProperty("Speed")]
+	[RDJsonAlias("Speed")]
 	public float Speed { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>color</b>.

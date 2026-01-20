@@ -51,7 +51,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets or sets a value indicating whether audio should be muted when the game is in single-player mode.
 		/// </summary>
-		[RDJsonProperty("muteIn1P")]
+		[RDJsonAlias("muteIn1P")]
 		[RDJsonCondition($"$&.{nameof(MuteInSinglePlayerMode)}")]
 		public bool MuteInSinglePlayerMode { get; set; }
 		/// <summary>

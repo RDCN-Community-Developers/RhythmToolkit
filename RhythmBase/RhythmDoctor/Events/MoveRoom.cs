@@ -13,7 +13,7 @@ public class MoveRoom : BaseEvent, IEaseEvent
 	/// Gets or sets the position of the room.
 	/// </summary>
 	[Tween]
-	[RDJsonProperty("roomPosition")]
+	[RDJsonAlias("roomPosition")]
 	[RDJsonCondition($"$&.{nameof(Position)} is not null")]
 	public RDPoint? Position { get; set; }
 	/// <summary>

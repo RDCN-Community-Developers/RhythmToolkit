@@ -34,7 +34,7 @@ public class MoveCamera : BaseEvent, IEaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets a value indicating whether the camera is a real physical device.
 	/// </summary>
-	[RDJsonProperty("real")]
+	[RDJsonAlias("real")]
 	[RDJsonCondition($"$&.{nameof(RealCamera)} == true")]
 	public bool RealCamera { get; set; } = false;
 	///<inheritdoc/>

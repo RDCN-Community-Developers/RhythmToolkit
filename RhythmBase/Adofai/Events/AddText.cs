@@ -12,7 +12,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the text to be displayed.  
 		/// </summary>  
-		[RDJsonProperty("decText")]
+		[RDJsonAlias("decText")]
 		public string DecorationText { get; set; } = string.Empty;
 		/// <summary>  
 		/// Gets or sets the font of the text.  

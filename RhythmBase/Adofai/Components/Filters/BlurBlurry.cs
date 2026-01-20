@@ -8,11 +8,11 @@ public struct BlurBlurry : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Amount</b>.
 	/// </summary>
-	[RDJsonProperty("Amount")]
+	[RDJsonAlias("Amount")]
 	public float Amount { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>FastFilter</b>.
 	/// </summary>
-	[RDJsonProperty("FastFilter")]
+	[RDJsonAlias("FastFilter")]
 	public int FastFilter { get; set; }
 }

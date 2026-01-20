@@ -8,6 +8,6 @@ public struct NoiseTv : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>
-	[RDJsonProperty("Fade")]
+	[RDJsonAlias("Fade")]
 	public float Fade { get; set; }
 }
