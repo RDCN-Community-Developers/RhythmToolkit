@@ -60,6 +60,10 @@
 			/// Narration.
 			/// </summary>
 			Narration,
+			/// <summary>
+			/// Accessibility.
+			/// </summary>
+			Accessibility,
 		}
 	}
 }

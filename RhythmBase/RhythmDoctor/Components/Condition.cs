@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Text;
 
 namespace RhythmBase.RhythmDoctor.Components
@@ -8,7 +9,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// </summary>
 	public class Condition
 	{
-		private readonly HashSet<int> conditions = [];
+		private readonly HashSet<uint> conditions = [];
 		/// <summary>
 		/// The time of effectiveness of the condition.
 		/// </summary>
@@ -20,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Gets an array of indices derived from the current set of conditions.
 		/// </summary>
-		public int[] Indices => [.. conditions.Select(c => ~(1 << 31) & c)];
+		public int[] Indices => [.. conditions.Select(c => (int)(0x3FFFFFFF & c))];
 		/// <summary>
 		/// Gets or sets the enabled or disabled state associated with the specified condition index.
 		/// </summary>
@@ -33,36 +34,69 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				int disabledCondition = (~(1 << 31) & index);
-				int enabledCondition = (1 << 31) | index;
-				if (conditions.Contains(enabledCondition))
+				uint d = (uint)(index) & 0x3FFFFFFF;
+				uint e = d | 0x80000000;
+				if (conditions.Contains(e))
 					return true;
-				else if (conditions.Contains(disabledCondition))
+				else if (conditions.Contains(d))
 					return false;
 				else
 					return null;
 			}
 			set
 			{
+				uint d = (uint)(index) & 0x3FFFFFFF;
+				uint e = d | 0x80000000;
 				if (value is bool v)
 					if (v)
 					{
-						int disabledCondition = (~(1 << 31) & index);
-						conditions.Remove(disabledCondition);
-						conditions.Add((1 << 31) | index);
+						conditions.Remove(d);
+						conditions.Add(e);
 					}
 					else
 					{
-						int enabledCondition = (1 << 31) | index;
-						conditions.Remove(enabledCondition);
-						conditions.Add(~(1 << 31) & index);
+						conditions.Remove(e);
+						conditions.Add(d);
 					}
 				else
 				{
-					int disabledCondition = (~(1 << 31) & index);
-					int enabledCondition = (1 << 31) | index;
-					conditions.Remove(disabledCondition);
-					conditions.Remove(enabledCondition);
+					conditions.Remove(d);
+					conditions.Remove(e);
+				}
+			}
+		}
+		public bool? this[char key]
+		{
+			get
+			{
+				uint d = (uint)(key) & 0x3FFFFFFF;
+				uint e = d | 0x80000000;
+				if (conditions.Contains(e))
+					return true;
+				else if (conditions.Contains(d))
+					return false;
+				else
+					return null;
+			}
+			set
+			{
+				uint d = ((uint)(key) & 0x3FFFFFFF) | 0x40000000;
+				uint e = d | 0x80000000;
+				if (value is bool v)
+					if (v)
+					{
+						conditions.Remove(d);
+						conditions.Add(e);
+					}
+					else
+					{
+						conditions.Remove(e);
+						conditions.Add(d);
+					}
+				else
+				{
+					conditions.Remove(d);
+					conditions.Remove(e);
 				}
 			}
 		}
@@ -80,24 +114,43 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <exception cref="RhythmBaseException">Thrown when the condition is illegal.</exception>
 		public static Condition Deserialize(string text)
 		{
-			// "1&~2&3d4.5"
+			// "p&f&~n&~o&1&~2&3d4.5"
 			int i = 0;
-			Condition o = new Condition();
+			Condition o = new();
 			while (i < text.Length && text[i] != 'd')
 			{
 				bool enabled = true;
 				int index = 0;
+				char globalIndex = '\0';
 				char c = text[i];
 				if (text[i] is '~')
 				{
 					enabled = false;
 					++i;
+					c = text[i];
 				}
-				while (i < text.Length && char.IsDigit(text[i]))
-					index = index * 10 + (text[i++] - '0');
+				if (char.IsDigit(text[i]))
+				{
+					while (i < text.Length && char.IsDigit(text[i]))
+						index = index * 10 + (text[i++] - '0');
+				}
+				else
+				{
+					globalIndex = c switch
+					{
+						'p' or 'f' or 'n' or 'o' => c,
+						_ => throw new RhythmBaseException($"Illegal condition: {text}."),
+					};
+					++i;
+				}
+				//while (i < text.Length && char.IsDigit(text[i]))
+				//	index = index * 10 + (text[i++] - '0');
 				if (text[i] is '&')
 				{
-					o[index] = enabled;
+					if (globalIndex == '\0')
+						o[index] = enabled;
+					else
+						o[globalIndex] = enabled;
 					++i;
 					continue;
 				}
@@ -132,13 +185,19 @@ namespace RhythmBase.RhythmDoctor.Components
 		public string Serialize()
 		{
 			StringBuilder sb = new();
-			foreach (int pair in conditions)
+			foreach (uint i in conditions)
 			{
+				bool isChar = (i & 0x40000000) > 0;
+				bool isEnabled = (i & 0x80000000) > 0;
+				int index = (int)(i & 0x3FFFFFFF);
 				if (sb.Length > 0)
 					sb.Append('&');
-				if (pair >> 31 == 0)
+				if (!isEnabled)
 					sb.Append('~');
-				sb.Append(pair & ~(1 << 31));
+				if (isChar)
+					sb.Append((char)index);
+				else
+					sb.Append(index);
 			}
 			sb.Append('d').Append(Duration.ToString("0.########"));
 			return sb.ToString();

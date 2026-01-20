@@ -49,6 +49,29 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			return (1, 1);
 		}
 #endif
+		extension(Condition e)
+		{
+			public bool? TwoPlayerMode
+			{
+				get => e['p'];
+				set => e['p'] = value;
+			}
+			public bool? EnableFlashEffect
+			{
+				get => e['f'];
+				set => e['f'] = value;
+			}
+			public bool? EnableNarration
+			{
+				get => e['f'];
+				set => e['f'] = value;
+			}
+			public bool? RunOnlyOnce
+			{
+				get => e['f'];
+				set => e['f'] = value;
+			}
+		}
 		/// <summary>
 		/// Null or equal.
 		/// </summary>

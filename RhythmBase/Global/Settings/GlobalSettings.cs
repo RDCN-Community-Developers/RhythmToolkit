@@ -57,7 +57,7 @@
 		/// value when the codebase adds support for newer Rhythm Doctor versions and you want the default
 		/// behavior to change accordingly.
 		/// </remarks>
-		public const int DefaultVersionRhythmDoctor = 65;
+		public const int DefaultVersionRhythmDoctor = 66;
 		/// <summary>
 		/// 
 		/// </summary>

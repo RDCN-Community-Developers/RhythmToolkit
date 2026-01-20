@@ -1270,6 +1270,11 @@ public enum VfxPreset
 	Tutorial,
 	Balloons,
 	GlassShatter,
+	Embers,
+	HeatDistortion,
+	Pixelate,
+	Scanlines,
+	VHSRewind,
 
 	WavyRows,
 	Tile2,
@@ -1288,6 +1293,7 @@ public enum VfxPreset
 	BlackAndWhite,
 	Blackout,
 	MiawMiaw,
+
 #pragma warning restore CS1591
 }
 /// <summary>  
@@ -1795,4 +1801,16 @@ public enum LayerType
 	Default,
 	Background,
 	BackgroundParticles,
+}
+[RDJsonEnumSerializable]
+public enum HeartType
+{
+	Default,
+	Infected,
+	Cracked,
+	SplitLeft,
+	SplitRight,
+	Halloween,
+	Unbeatable,
+	None,
 }

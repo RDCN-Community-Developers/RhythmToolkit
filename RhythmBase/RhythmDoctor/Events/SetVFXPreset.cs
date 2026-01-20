@@ -49,7 +49,9 @@ public class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	[RDJsonCondition($"""
 		$&.{nameof(Enable)} && $&.{nameof(Preset)}
 		is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Bloom)}
+		or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Diamonds)}
 		or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Tutorial)}
+		or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Embers)}
 		""")]
 	public PaletteColor Color { get; set; } = RDColor.White;
 	/// <summary>
@@ -60,6 +62,7 @@ public class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 		$&.{nameof(Enable)} && $&.{nameof(Preset)}
 		is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.TileN)}
 		or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.CustomScreenScroll)}
+		or RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.Pixelate)}
 		""")]
 	public float? FloatX
 	{
@@ -155,6 +158,8 @@ public class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 		VfxPreset.RadialBlur,
 		VfxPreset.Dots,
 		VfxPreset.Tutorial,
-		VfxPreset.Fisheye
+		VfxPreset.Fisheye,
+		VfxPreset.HeatDistortion,
+		VfxPreset.VHSRewind
 		);
 }

@@ -8,14 +8,14 @@ public class LanguageCondition : BaseConditional
 	/// <summary>
 	/// Gets or sets the game language.
 	/// </summary>
-	public Languages Language { get; set; }
+	public Language TargetLanguage { get; set; }
 	///<inheritdoc/>
 	public override ConditionType Type => ConditionType.Language;
 	/// <summary>
 	/// Represents the supported game languages.
 	/// </summary>
 	[RDJsonEnumSerializable]
-	public enum Languages
+	public enum Language
 	{
 		/// <summary>
 		/// English language.

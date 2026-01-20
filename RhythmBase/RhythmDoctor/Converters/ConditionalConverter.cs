@@ -32,13 +32,16 @@ namespace RhythmBase.RhythmDoctor.Converters
 					writer.WriteNumber("time"u8, ((TimesExecutedCondition)value).MaxTimes);
 					break;
 				case BaseConditional.ConditionType.Language:
-					writer.WriteString("Language"u8, ((LanguageCondition)value).Language.ToEnumString());
+					writer.WriteString("Language"u8, ((LanguageCondition)value).TargetLanguage.ToEnumString());
 					break;
 				case BaseConditional.ConditionType.PlayerMode:
 					writer.WriteBoolean("twoPlayerMode"u8, ((PlayerModeCondition)value).TwoPlayerMode);
 					break;
 				case BaseConditional.ConditionType.Narration:
 					writer.WriteBoolean("narrationEnabled"u8, ((NarrationCondition)value).NarrationEnabled);
+					break;
+				case BaseConditional.ConditionType.Accessibility:
+					writer.WriteString("effectType"u8, ((AccessibilityCondition)value).TargetEffectType.ToEnumString());
 					break;
 				default:
 					break;
@@ -97,6 +100,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 				conditional = ReadTimesExecuted(ref reader, serializer);
 			else if (type.SequenceEqual("narration"u8))
 				conditional = ReadNarration(ref reader, serializer);
+			else if (type.SequenceEqual("Accessibility"u8))
+				conditional = ReadAccessibility(ref reader, serializer);
 			else
 				return null;
 			reader.Read();
@@ -132,8 +137,8 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName.SequenceEqual("Language"u8) && TryParse(reader.ValueSpan, out LanguageCondition.Languages languages))
-						condition.Language = languages;
+					if (propertyName.SequenceEqual("Language"u8) && TryParse(reader.ValueSpan, out LanguageCondition.Language languages))
+						condition.TargetLanguage = languages;
 				}
 			}
 			return condition;
@@ -204,6 +209,23 @@ namespace RhythmBase.RhythmDoctor.Converters
 					reader.Read();
 					if (propertyName.SequenceEqual("narrationEnabled"u8))
 						condition.NarrationEnabled = reader.GetBoolean();
+				}
+			}
+			return condition;
+		}
+		private static AccessibilityCondition ReadAccessibility(ref Utf8JsonReader reader, JsonSerializerOptions options)
+		{
+			AccessibilityCondition condition = new();
+			while (reader.Read())
+			{
+				if (reader.TokenType == JsonTokenType.EndObject)
+					break;
+				if (reader.TokenType == JsonTokenType.PropertyName)
+				{
+					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
+					reader.Read();
+					if (propertyName.SequenceEqual("effectType"u8) && TryParse(reader.ValueSpan, out AccessibilityCondition.EffectType effectType))
+						condition.TargetEffectType = effectType;
 				}
 			}
 			return condition;

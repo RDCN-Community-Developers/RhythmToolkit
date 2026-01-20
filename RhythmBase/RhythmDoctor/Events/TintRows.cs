@@ -56,12 +56,16 @@ public class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the row effect.
 	/// </summary>
-	public TintRowEffect Effect { get; set; } = TintRowEffect.None;
+	[RDJsonCondition($"$&.{nameof(Effect)} is not null")]
+	public TintRowEffect? Effect { get; set; } = TintRowEffect.None;
 	///<inheritdoc/>
 	public override EventType Type => EventType.TintRows;
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Actions;
-
+	[RDJsonCondition($"$&.{nameof(Heart)} is not null")]
+	public HeartType? Heart { get; set; }
+	[RDJsonCondition($"$&.{nameof(HeartTransition)} is not null")]
+	public bool? HeartTransition { get; set; }
 	/// <inheritdoc/>
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);
 	/// <summary>

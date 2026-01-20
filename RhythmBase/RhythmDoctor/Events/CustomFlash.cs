@@ -40,6 +40,8 @@ public class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// Gets or sets a value indicating whether the background is affected.
 	/// </summary>
 	public bool Background { get; set; } = false;
+	[RDJsonCondition($"$&.{nameof(ReducedStrength)} is not null")]
+	public int? ReducedStrength { get; set; }
 	/// <inheritdoc />
 	public override EventType Type => EventType.CustomFlash;
 
