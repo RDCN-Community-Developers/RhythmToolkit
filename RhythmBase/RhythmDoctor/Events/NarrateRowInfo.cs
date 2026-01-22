@@ -30,7 +30,7 @@ public class NarrateRowInfo : BaseRowAction
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(NarrateSkipBeat)} is RhythmBase.RhythmDoctor.Events.{nameof(NarrateSkipBeat)}.{nameof(NarrateSkipBeat.Custom)}")]
 	[RDJsonAlias("customPattern")]
-	public PatternCollection Pattern { get; set; }
+	public PatternCollection Pattern { get; set; } = "------";
 	/// <summary>
 	/// Gets or sets a value indicating whether to skip unstable beats.
 	/// </summary>
