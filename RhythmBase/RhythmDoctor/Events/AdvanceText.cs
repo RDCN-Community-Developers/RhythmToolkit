@@ -26,7 +26,7 @@ public class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 	[RDJsonIgnore]
 	public FloatingText? Parent { get; internal set; }
 	///<inheritdoc/>
-	[RDJsonProperty("fadeOutDuration")]
+	[RDJsonAlias("fadeOutDuration")]
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0")]
 	public float Duration { get; set; }
 	/// <summary>

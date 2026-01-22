@@ -8,17 +8,17 @@ public class SetPlayStyle : BaseEvent
 	/// <summary>
 	/// Gets or sets the play style.
 	/// </summary>
-	[RDJsonProperty("PlayStyle")]
+	[RDJsonAlias("PlayStyle")]
 	public PlayStyleType PlayStyle { get; set; } = PlayStyleType.Normal;
 	/// <summary>
 	/// Gets or sets the next bar.
 	/// </summary>
-	[RDJsonProperty("NextBar")]
+	[RDJsonAlias("NextBar")]
 	public int NextBar { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets a value indicating whether the play style is relative.
 	/// </summary>
-	[RDJsonProperty("Relative")]
+	[RDJsonAlias("Relative")]
 	public bool IsRelative { get; set; } = true;
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetPlayStyle;

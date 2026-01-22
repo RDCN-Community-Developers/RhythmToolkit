@@ -8,6 +8,6 @@ public struct EdgeEdgeFilter : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>GreenAmplifier</b>.
 	/// </summary>
-	[RDJsonProperty("GreenAmplifier")]
+	[RDJsonAlias("GreenAmplifier")]
 	public float GreenAmplifier { get; set; }
 }

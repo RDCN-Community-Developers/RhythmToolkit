@@ -43,7 +43,7 @@ public class Tint : BaseDecorationAction, IEaseEvent, IColorEvent
 	/// <summary>
 	/// Gets or sets a value indicating whether this event is a tint.
 	/// </summary>
-	[RDJsonProperty("tint")]
+	[RDJsonAlias("tint")]
 	public bool IsTint { get; set; } = false;
 	/// <summary>
 	/// Gets or sets the tint color for the tint event.

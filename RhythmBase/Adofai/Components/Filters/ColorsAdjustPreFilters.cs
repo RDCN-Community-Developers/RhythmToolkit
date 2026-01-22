@@ -8,6 +8,6 @@ public struct ColorsAdjustPreFilters : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>FadeFX</b>.
 	/// </summary>
-	[RDJsonProperty("FadeFX")]
+	[RDJsonAlias("FadeFX")]
 	public float FadeFX { get; set; }
 }

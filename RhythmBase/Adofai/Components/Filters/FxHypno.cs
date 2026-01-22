@@ -8,16 +8,16 @@ public struct FxHypno : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>
-	[RDJsonProperty("Speed")]
+	[RDJsonAlias("Speed")]
 	public float Speed { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Green</b>.
 	/// </summary>
-	[RDJsonProperty("Green")]
+	[RDJsonAlias("Green")]
 	public float Green { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Blue</b>.
 	/// </summary>
-	[RDJsonProperty("Blue")]
+	[RDJsonAlias("Blue")]
 	public float Blue { get; set; }
 }

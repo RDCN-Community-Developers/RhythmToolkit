@@ -30,7 +30,7 @@ public class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent, IIm
 	/// <summary>  
 	/// Gets or sets the list of images for the foreground.  
 	/// </summary>  
-	[RDJsonProperty("image")]
+	[RDJsonAlias("image")]
 	public List<FileReference> Images { get; set; } = [];
 	/// <summary>  
 	/// Gets or sets the frames per second for the foreground animation.  

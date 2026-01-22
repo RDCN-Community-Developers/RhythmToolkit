@@ -29,7 +29,7 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// <summary>
 	/// Gets or sets the fade out rate of the text.
 	/// </summary>
-	[RDJsonProperty("fadeOutRate")]
+	[RDJsonAlias("fadeOutRate")]
 	public float Duration { get; set; }
 	/// <summary>
 	/// Gets or sets the color of the text.
@@ -51,7 +51,7 @@ public class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
 	/// Gets the ID of the event.
 	/// </summary>
 	[RDJsonNotIgnore]
-	[RDJsonProperty("id")]
+	[RDJsonAlias("id")]
 	internal int _id => _beat.BaseLevel?._floatingTexts.IndexOf(this) ?? -1;
 	/// <summary>
 	/// Gets or sets the position of the text.

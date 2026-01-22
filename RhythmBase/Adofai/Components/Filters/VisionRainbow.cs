@@ -8,26 +8,26 @@ public struct VisionRainbow : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>
-	[RDJsonProperty("Speed")]
+	[RDJsonAlias("Speed")]
 	public float Speed { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>PosX</b>.
 	/// </summary>
-	[RDJsonProperty("PosX")]
+	[RDJsonAlias("PosX")]
 	public float PosX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>PosY</b>.
 	/// </summary>
-	[RDJsonProperty("PosY")]
+	[RDJsonAlias("PosY")]
 	public float PosY { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Colors</b>.
 	/// </summary>
-	[RDJsonProperty("Colors")]
+	[RDJsonAlias("Colors")]
 	public float Colors { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Vision</b>.
 	/// </summary>
-	[RDJsonProperty("Vision")]
+	[RDJsonAlias("Vision")]
 	public float Vision { get; set; }
 }

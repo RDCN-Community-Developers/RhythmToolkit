@@ -14,7 +14,7 @@ public class ConverterGenerator : IIncrementalGenerator
 	// Attribute 名称常量
 	private const string JsonEnumAttrName = "RhythmBase.Global.Converters.RDJsonEnumSerializableAttribute";
 	private const string JsonObjectNotSerializableAttrName = "RhythmBase.Global.Converters.RDJsonObjectNotSerializableAttribute";
-	private const string JsonPropertyAttrName = "RhythmBase.Global.Converters.RDJsonPropertyAttribute";
+	private const string JsonAliasAttrName = "RhythmBase.Global.Converters.RDJsonAliasAttribute";
 	private const string JsonIgnoreAttrName = "RhythmBase.Global.Converters.RDJsonIgnoreAttribute";
 	private const string JsonNotIgnoreAttrName = "RhythmBase.Global.Converters.RDJsonNotIgnoreAttribute";
 	private const string JsonDefaultSerializerAttrName = "RhythmBase.Global.Converters.RDJsonDefaultSerializerAttribute";
@@ -39,248 +39,668 @@ public class ConverterGenerator : IIncrementalGenerator
 		// 	.Select((x, _) => x.symbol)
 		// 	.Collect();
 	}
+
+
 	#region Attribute 生成
 
 	private static void GenerateAttribute(IncrementalGeneratorInitializationContext context)
 	{
 		context.RegisterPostInitializationOutput(ctx =>
 		{
-			ctx.AddSource("JsonSerializableAttribute.g.cs",
+			ctx.AddSource("RDJsonAttributes.g.cs",
 				"""
 				using System;
 				#pragma warning disable CS9113
-				namespace RhythmBase.Global.Converters
+				namespace RhythmBase.Global.Converters;
+				internal sealed class RDJsonEnumSerializableAttribute : Attribute { }
+				internal sealed class RDJsonObjectNotSerializableAttribute : Attribute { }
+				internal sealed class RDJsonIgnoreAttribute : Attribute { }
+				internal sealed class RDJsonNotIgnoreAttribute : Attribute { }
+				internal sealed class RDJsonConditionAttribute(string condition) : Attribute { }
+				internal sealed class RDJsonAliasAttribute(string name) : Attribute { }
+				internal sealed class RDJsonDefaultSerializerAttribute : Attribute { }
+				internal sealed class RDJsonTimeAttribute(RDJsonTimeType type) : Attribute { }
+				internal sealed class RDJsonConverterAttribute(Type converterType) : Attribute { }
+				internal sealed class RDJsonSpecialIDAttribute(string id) : Attribute { }
+				internal enum RDJsonTimeType
 				{
-					internal sealed class RDJsonEnumSerializableAttribute : Attribute { }
-					internal sealed class RDJsonObjectNotSerializableAttribute : Attribute { }
-					internal sealed class RDJsonIgnoreAttribute : Attribute { }
-					internal sealed class RDJsonNotIgnoreAttribute : Attribute { }
-					internal sealed class RDJsonConditionAttribute(string condition) : Attribute { }
-					internal sealed class RDJsonPropertyAttribute(string name) : Attribute { }
-					internal sealed class RDJsonDefaultSerializerAttribute : Attribute { }
-					internal sealed class RDJsonTimeAttribute(string type) : Attribute { }
-					internal sealed class RDJsonConverterAttribute(Type converterType) : Attribute { }
-					internal sealed class RDJsonSpecialIDAttribute(string id) : Attribute { }
+					Milliseconds,
+					Seconds,
+					Beats,
 				}
 				"""
 			);
 		});
 	}
 
+
+
 	#endregion
+
+	private static bool HasAttribute(SyntaxList<AttributeListSyntax> list, string attributeFullName)
+	{
+		string attributeFullNameWithoutPostfix = attributeFullName.Remove(attributeFullName.Length - "Attribute".Length);
+		string attributeShortName = attributeFullName.Split('.').Last();
+		string attributeShortNameWithoutPostfix = attributeShortName.Remove(attributeShortName.Length - "Attribute".Length);
+		return list.Any(i => i.Attributes.Any(j =>
+		{
+			string name = j.Name.ToString();
+			return
+				name == attributeShortName ||
+				name == attributeFullName ||
+				name == attributeShortNameWithoutPostfix ||
+				name == attributeFullNameWithoutPostfix;
+		}));
+	}
+
+
 
 	#region Enum Converter 生成
 
+	private record struct FieldName(string Name, string FullName, string? Alias = null);
+	private struct EnumInfo
+	{
+		public FieldName Symbol;
+		public FieldName[] Fields;
+	}
 	private static void GenerateEnumConverter(IncrementalGeneratorInitializationContext context)
 	{
-		IncrementalValueProvider<ImmutableArray<INamedTypeSymbol?>> enums = context.SyntaxProvider.CreateSyntaxProvider(
-			predicate: (s, _) => s is EnumDeclarationSyntax,
-			transform: (ctx, _) =>
+		IncrementalValueProvider<ImmutableArray<EnumInfo>> enums = context.SyntaxProvider.CreateSyntaxProvider(
+		predicate: (syntaxNode, e) =>
+		{
+			return syntaxNode is EnumDeclarationSyntax enumDeclaration &&
+			 HasAttribute(enumDeclaration.AttributeLists, JsonEnumAttrName);
+		},
+		transform: (ctx, e) =>
+		{
+			EnumDeclarationSyntax enumDeclaration = (EnumDeclarationSyntax)ctx.Node;
+			EnumMemberDeclarationSyntax[] enumMemberDeclaration = [.. enumDeclaration.ChildNodes().OfType<EnumMemberDeclarationSyntax>()];
+			EnumInfo info = new();
+			INamedTypeSymbol? symbol = ctx.SemanticModel.GetDeclaredSymbol(enumDeclaration);
+			info.Symbol = new(symbol.Name, symbol.ToDisplayString());
+			info.Fields = [.. enumMemberDeclaration.Select(i =>
 			{
-				EnumDeclarationSyntax decl = (EnumDeclarationSyntax)ctx.Node;
-				INamedTypeSymbol? symbol = ctx.SemanticModel.GetDeclaredSymbol(decl);
-				return (symbol, symbol?.GetAttributes()
-					.Any(a => a.AttributeClass?.ToDisplayString() == JsonEnumAttrName) == true);
-			})
-			.Where(x => x.Item2)
-			.Select((x, _) => x.symbol)
-			.Collect();
+				IFieldSymbol? symbol = ctx.SemanticModel.GetDeclaredSymbol(i);
+				return new FieldName(i.Identifier.Text, symbol.ToDisplayString());
+			})];
+			return info;
+		}
+		).Collect();
 
 		context.RegisterSourceOutput(enums, (spc, enumSymbols) =>
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("// <auto-generated/>");
-			sb.AppendLine("#nullable enable");
-			sb.AppendLine("using System;");
-			sb.AppendLine("using System.Runtime.CompilerServices;");
-			sb.AppendLine();
-			sb.AppendLine("namespace RhythmBase.Global.Extensions");
-			sb.AppendLine("{");
-			sb.AppendLine("	/// <summary>");
-			sb.AppendLine($"	/// Provides extension methods for converting enums to and from string representations.");
-			sb.AppendLine("	/// </summary>");
-			sb.AppendLine("	public static class EnumConverter");
-			sb.AppendLine("	{");
+			StringBuilder sb = new();
+			sb.AppendLine("""
+				
+					// <auto-generated/>
+					#nullable enable
+					using System;
+					using System.Runtime.CompilerServices;
+				
+					namespace RhythmBase.Global.Extensions
+					{
+						/// <summary>
+						/// Provides extension methods for converting enums to and from string representations.
+						/// </summary>
+						public static class EnumConverter
+						{
+					""");
 
-			foreach (INamedTypeSymbol e in enumSymbols.Cast<INamedTypeSymbol>())
+			foreach (EnumInfo e in enumSymbols.OrderBy(i => i.Symbol.FullName))
 			{
-				string fullName = e.ToDisplayString();
+				string fullName = e.Symbol.FullName;
 				sb.AppendLine($"/* {fullName} */");
 
 				// TryParse(string)
-				sb.AppendLine("		/// <summary>");
-				sb.AppendLine($"		/// Attempts to parse the specified string value to a <see cref=\"{fullName}\"/> enum value.");
-				sb.AppendLine("		/// </summary>");
-				sb.AppendLine("		/// <param name=\"value\">The string representation of the enum value.</param>");
-				sb.AppendLine($"		/// <param name=\"result\">When this method returns, contains the parsed <see cref=\"{fullName}\"/> value if parsing succeeded; otherwise, the default value.</param>");
-				sb.AppendLine("		/// <returns><c>true</c> if parsing succeeded; otherwise, <c>false</c>.</returns>");
-				sb.AppendLine("		[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-				sb.AppendLine($"		public static bool TryParse(string? value, out {fullName} result)");
-				sb.AppendLine("		{");
-				sb.AppendLine("			switch(value) {");
-				foreach (IFieldSymbol? field in e.GetMembers().OfType<IFieldSymbol>())
+				sb.AppendLine($$"""
+							/// <summary>
+							/// Attempts to parse the specified string value to a <see cref="{{fullName}}"/> enum value.
+							/// </summary>
+							/// <param name="value">The string representation of the enum value.</param>
+							/// <param name="result">When this method returns, contains the parsed <see cref="{{fullName}}"/> value if parsing succeeded; otherwise, the default value.</param>
+							/// <returns><c>true</c> if parsing succeeded; otherwise, <c>false</c>.</returns>
+							[MethodImpl(MethodImplOptions.AggressiveInlining)]
+							public static bool TryParse(string? value, out {{fullName}} result)
+							{
+								switch(value) {
+					""");
+				foreach (FieldName field in e.Fields)
 				{
-					if (field.HasConstantValue)
-					{
-						sb.AppendLine($"				case \"{field.Name}\":");
-						sb.AppendLine($"					result = {fullName}.{field.Name};");
-						sb.AppendLine("					return true;");
-					}
+					sb.AppendLine($$"""
+									case "{{field.Name}}":
+										result = {{field.FullName}};
+										return true;
+					""");
 				}
-				sb.AppendLine("				default:");
-				sb.AppendLine("					result = default;");
-				sb.AppendLine("					return false;");
-				sb.AppendLine("			}");
-				sb.AppendLine("		}");
+				sb.AppendLine("""
+					
+									default:
+										result = default;
+										return false;
+								}
+							}
+					
+					""");
 				sb.AppendLine();
 
 				// TryParse(ReadOnlySpan<byte>)
-				sb.AppendLine("		/// <summary>");
-				sb.AppendLine($"		/// Attempts to parse the specified UTF-8 byte span to a <see cref=\"{fullName}\"/> enum value.");
-				sb.AppendLine("		/// </summary>");
-				sb.AppendLine("		/// <param name=\"value\">The UTF-8 byte span representing the enum value.</param>");
-				sb.AppendLine($"		/// <param name=\"result\">When this method returns, contains the parsed <see cref=\"{fullName}\"/> value if parsing succeeded; otherwise, the default value.</param>");
-				sb.AppendLine("		/// <returns><c>true</c> if parsing succeeded; otherwise, <c>false</c>.</returns>");
-				sb.AppendLine("		[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-				sb.AppendLine($"		public static bool TryParse(ReadOnlySpan<byte> value, out {fullName} result)");
-				sb.AppendLine("		{");
+				sb.AppendLine($$"""
+							/// <summary>
+							/// Attempts to parse the specified UTF-8 byte span to a <see cref="{{fullName}}"/> enum value.
+							/// </summary>
+							/// <param name="value">The UTF-8 byte span representing the enum value.</param>
+							/// <param name="result">When this method returns, contains the parsed <see cref="{{fullName}}"/> value if parsing succeeded; otherwise, the default value.</param>
+							/// <returns><c>true</c> if parsing succeeded; otherwise, <c>false</c>.</returns>
+							[MethodImpl(MethodImplOptions.AggressiveInlining)]
+							public static bool TryParse(ReadOnlySpan<byte> value, out {{fullName}} result)
+							{
+					""");
 				bool isFirst = true;
-				foreach (IFieldSymbol? field in e.GetMembers().OfType<IFieldSymbol>())
+				foreach (FieldName field in e.Fields.OrderBy(i => i.FullName))
 				{
-					if (field.HasConstantValue && !(fullName.EndsWith("EventType") && (field.Name.StartsWith("Forward") || field.Name.EndsWith("Event"))))
-					{
-						sb.AppendLine(isFirst
-							? $"			if (value.SequenceEqual(\"{field.Name}\"u8))"
-							: $"			else if (value.SequenceEqual(\"{field.Name}\"u8))");
-						sb.AppendLine("			{");
-						sb.AppendLine($"				result = {fullName}.{field.Name};");
-						sb.AppendLine("				return true;");
-						sb.AppendLine("			}");
-						isFirst = false;
-					}
+					sb.AppendLine($$"""
+								{{(isFirst ? "" : "else ")}}if (value.SequenceEqual("{{field.Name}}"u8))
+								{
+									result = {{field.FullName}};
+									return true;
+								}
+					""");
+					isFirst = false;
 				}
-				sb.AppendLine("			else");
-				sb.AppendLine("			{");
-				sb.AppendLine("				result = default;");
-				sb.AppendLine("				return false;");
-				sb.AppendLine("			}");
-				sb.AppendLine("		}");
-				sb.AppendLine();
+				sb.AppendLine("""
+								else
+								{
+									result = default;
+									return false;
+								}
+							}
+
+					""");
 
 				// ToEnumString
-				sb.AppendLine("		/// <summary>");
-				sb.AppendLine($"		/// Converts the <see cref=\"{fullName}\"/> enum value to its string representation.");
-				sb.AppendLine("		/// </summary>");
-				sb.AppendLine("		/// <param name=\"value\">The enum value to convert.</param>");
-				sb.AppendLine("		/// <returns>The string representation of the enum value.</returns>");
-				sb.AppendLine("		[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-				sb.AppendLine($"		public static string ToEnumString(this {fullName} value) => value switch");
-				sb.AppendLine("		{");
-				foreach (IFieldSymbol? field in e.GetMembers().OfType<IFieldSymbol>())
+				sb.AppendLine($$"""
+							/// <summary>
+							/// Converts the <see cref="{{fullName}}"/> enum value to its string representation.
+							/// </summary>
+							/// <param name="value">The enum value to convert.</param>
+							/// <returns>The string representation of the enum value.</returns>
+							[MethodImpl(MethodImplOptions.AggressiveInlining)]
+							public static string ToEnumString(this {{fullName}} value) => value switch
+							{
+					""");
+				foreach (FieldName field in e.Fields)
 				{
-					if (field.HasConstantValue)
-						sb.AppendLine($"			{fullName}.{field.Name} => \"{field.Name}\",");
+					sb.AppendLine($"""
+								{field.FullName} => "{field.Name}",
+					""");
 				}
-				sb.AppendLine("			_ => value.ToString(),");
-				sb.AppendLine("		};");
+				sb.AppendLine("""
+								_ => value.ToString(),
+							};
+					""");
 			}
-			sb.AppendLine("	}");
-			sb.AppendLine("}");
+			sb.AppendLine("""
+						}
+					}
+					""");
 
 			spc.AddSource("EnumConverters.g.cs", sb.ToString());
 		});
 	}
 
+
+
+
+
 	#endregion
 
 	#region Event Converter 生成
 
+	private struct PropertyInfo
+	{
+		public string? Alias;
+		public IPropertySymbol Symbol;
+		public string? Condition;
+		public string? Converter;
+		public ISymbol? ConverterSymbol;
+		public int? TimeType;
+	}
+	private struct ClassInfo
+	{
+		public string Name;
+		public string BaseTypeName;
+		public string? SpecialID;
+		public string? Alias;
+		public PropertyInfo[] Properties;
+	}
+	private struct GenerateSettings()
+	{
+		public bool WithTypeEnum = false;
+	}
+	private static AttributeSyntax? GetAttribute(SyntaxList<AttributeListSyntax> list, string attributeFullName)
+	{
+		string attributeFullNameWithoutPostfix = attributeFullName.Remove(attributeFullName.Length - "Attribute".Length);
+		string attributeShortName = attributeFullName.Split('.').Last();
+		string attributeShortNameWithoutPostfix = attributeShortName.Remove(attributeShortName.Length - "Attribute".Length);
+		foreach (var attrList in list)
+		{
+			foreach (var attr in attrList.Attributes)
+			{
+				string name = attr.Name.ToString();
+				if (name == attributeShortName ||
+					name == attributeFullName ||
+					name == attributeShortNameWithoutPostfix ||
+					name == attributeFullNameWithoutPostfix)
+				{
+					return attr;
+				}
+			}
+		}
+		return null;
+	}
+	static string ToShorter(string name)
+	{
+		string[] splitted = name.Split('.');
+		return splitted[splitted.Length - 1];
+	}
+	static string ToLowerCamelCase(string name)
+	{
+		if (string.IsNullOrEmpty(name) || char.IsLower(name[0]))
+			return name;
+		if (name.Length == 1)
+			return name.ToLower();
+		return char.ToLower(name[0]) + name.Substring(1);
+	}
+	static bool IsConcreteEnumerable(ITypeSymbol type)
+	{
+		if (type is IArrayTypeSymbol)
+			return true;
+		if (type.SpecialType == SpecialType.System_String)
+			return false;
+		return type.AllInterfaces.Any(i =>
+			i.IsGenericType && i.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T
+			|| (!i.IsGenericType && i.SpecialType == SpecialType.System_Collections_IEnumerable));
+	}
+	static ITypeSymbol WithoutNullable(ITypeSymbol type)
+	{
+		if (type.IsReferenceType)
+		{
+			return type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
+		}
+		else if (type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
+		{
+			return ((INamedTypeSymbol)type).TypeArguments[0];
+		}
+		return type;
+	}
+
 	private static void GenerateEventConverterForRDLevel(IncrementalGeneratorInitializationContext context)
 	{
 		HashSet<string> names = [];
-		IncrementalValueProvider<ImmutableArray<(INamedTypeSymbol? symbol, INamedTypeSymbol? baseType)>> eventClasses = context.SyntaxProvider.CreateSyntaxProvider(
-			predicate: (s, _) => s is ClassDeclarationSyntax,
-			transform: (ctx, _) =>
+		var classes = context.SyntaxProvider.CreateSyntaxProvider(
+			predicate: (s, e) =>
+			{
+				return
+				s is ClassDeclarationSyntax classDeclaration &&
+				classDeclaration.BaseList is not null &&
+				!HasAttribute(classDeclaration.AttributeLists, JsonObjectNotSerializableAttrName);
+			},
+			transform: (ctx, e) =>
 			{
 				ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)ctx.Node;
-				INamedTypeSymbol? symbol = ctx.SemanticModel.GetDeclaredSymbol(classDeclaration);
-				if (symbol is INamedTypeSymbol namedTypeSymbol
-				&& (namedTypeSymbol.AllInterfaces.Any(i => i.ToDisplayString().Contains("IBaseEvent")))//namedTypeSymbol.AllInterfaces.Any(i => i.Name.Contains("IBaseEvent"))
-				&& (namedTypeSymbol.ContainingNamespace?.ToDisplayString().Contains("RhythmBase.RhythmDoctor.Events") ?? false)
-				&& !namedTypeSymbol.IsAbstract
-				)
-				{
-					INamedTypeSymbol? baseType = namedTypeSymbol.BaseType;
-					if (names.Add(symbol.Name))
-						return (symbol, baseType);
-				}
-#pragma warning disable CS8619 // 值中的引用类型的为 Null 性与目标类型不匹配。
-				return (null, null);
-#pragma warning restore CS8619 // 值中的引用类型的为 Null 性与目标类型不匹配。
-			})
-			.Where(i => i.symbol is not null)
-			.Collect();
+				PropertyDeclarationSyntax[] propertyDeclarations = [.. classDeclaration.ChildNodes().OfType<PropertyDeclarationSyntax>()];
+				INamedTypeSymbol? classDeclarationSymbol = ctx.SemanticModel.GetDeclaredSymbol(classDeclaration) ?? throw new NotImplementedException();
+				bool isTargetEvent =
+					(!classDeclarationSymbol.IsAbstract) &&
+					(classDeclarationSymbol.ContainingNamespace?.ToDisplayString().Contains("RhythmBase.RhythmDoctor.Events") ?? false) &&
+					classDeclarationSymbol.AllInterfaces.Any(i => i.ToDisplayString().Contains("IBaseEvent"));
+				if (!isTargetEvent)
+					return (ClassInfo?)null;
+				PropertyInfo[] props = [.. propertyDeclarations
+					.Where(i =>
+					{
+						IPropertySymbol propSymbol = ctx.SemanticModel.GetDeclaredSymbol(i) ?? throw new NotImplementedException();
+						bool isEnum = propSymbol.Type.TypeKind == TypeKind.Enum;
+						bool notIgnore = HasAttribute(i.AttributeLists, JsonNotIgnoreAttrName);
+						bool ignore = HasAttribute(i.AttributeLists, JsonIgnoreAttrName);
+						bool isPublic = propSymbol.DeclaredAccessibility == Accessibility.Public; return
+							!propSymbol.IsStatic &&
+							(isPublic || notIgnore) &&
+							!ignore; })
+					.Select(i =>
+					{
+						IPropertySymbol propSymbol = ctx.SemanticModel.GetDeclaredSymbol(i) ?? throw new NotImplementedException();
+						PropertyInfo prop = new();
+						var aliasAttr = GetAttribute(i.AttributeLists, JsonAliasAttrName);
+						var conditionAttr = GetAttribute(i.AttributeLists, JsonConditionAttrName);
+						var converterAttr = GetAttribute(i.AttributeLists, JsonConverterAttrName);
+						var timeAttr = GetAttribute(i.AttributeLists, JsonTimeAttrName);
+						var specialIdAttr = GetAttribute(i.AttributeLists, JsonSpecialIDAttrName);
+						if(aliasAttr is AttributeSyntax aliasAttrNotNull)
+						{
+							var arg = aliasAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
+							if (arg?.Expression is LiteralExpressionSyntax les && les.IsKind(SyntaxKind.StringLiteralExpression))
+							{
+								prop.Alias = les.Token.ValueText;
+							}
+						}
+						if(conditionAttr is AttributeSyntax conditionAttrNotNull)
+						{
+							var arg = conditionAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
+							if (arg?.Expression is LiteralExpressionSyntax les && les.IsKind(SyntaxKind.StringLiteralExpression))
+							{
+								prop.Condition = les.Token.ValueText;
+							}
+						}
+						if(converterAttr is AttributeSyntax converterAttrNotNull)
+						{
+							var arg = converterAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
+							if (arg?.Expression is TypeOfExpressionSyntax toes)
+							{
+								prop.Converter = ctx.SemanticModel.GetSymbolInfo(toes.Type).Symbol?.ToDisplayString();
+							}
+						}
+						if(timeAttr is  AttributeSyntax timeAttrNotNull)
+						{
+							var arg = timeAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
+							// Enum value
+							if (arg?.Expression is MemberAccessExpressionSyntax maes)
+							{
+								prop.TimeType = (int?)(ctx.SemanticModel.GetConstantValue(maes).Value);
+							}
+						}
+						prop.Symbol = propSymbol;
+						return prop;
+					})];
 
-		context.RegisterSourceOutput(eventClasses, (ctx, symbols) =>
+				ClassInfo classInfo = new()
+				{
+					Name = classDeclarationSymbol.ToDisplayString(),
+					BaseTypeName = classDeclarationSymbol.BaseType?.ToDisplayString() ?? "object",
+					Properties = props
+				};
+				return classInfo;
+			}
+			).Collect();
+
+		context.RegisterSourceOutput(classes, (ctx, classSymbols) =>
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("// <auto-generated/>");
-			sb.AppendLine("#nullable enable");
-			sb.AppendLine();
-			sb.AppendLine("using System;");
-			sb.AppendLine("using RhythmBase.Global.Extensions;");
-			sb.AppendLine("using RhythmBase.Global.Components;");
-			sb.AppendLine("using RhythmBase.Global.Components.Vector;");
-			sb.AppendLine("using RhythmBase.Global.Components.Easing;");
-			sb.AppendLine("using RhythmBase.Global.Components.RichText;");
-			sb.AppendLine("using RhythmBase.RhythmDoctor.Events;");
-			sb.AppendLine("using RhythmBase.RhythmDoctor.Components;");
-			sb.AppendLine("using System.Text.Json;");
-			sb.AppendLine("using static RhythmBase.Global.Extensions.EnumConverter;");
-			sb.AppendLine();
-			sb.AppendLine("namespace RhythmBase.RhythmDoctor.Converters;");
-			sb.AppendLine();
+			StringBuilder sb = new();
+			StringBuilder sb2 = new();
+			sb.AppendLine("""
+// <auto-generated/>
+#nullable enable
 
-			foreach ((INamedTypeSymbol? symbol, INamedTypeSymbol? baseType) in symbols
-				.Where(i => !i.symbol.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == JsonObjectNotSerializableAttrName))
-				.OrderBy(i => i.symbol.Name))
+using System;
+using RhythmBase.Global.Extensions;
+using RhythmBase.RhythmDoctor.Components;
+using System.Text.Json;
+using static RhythmBase.Global.Extensions.EnumConverter;
+
+namespace RhythmBase.RhythmDoctor.Converters;
+""");
+			foreach (ClassInfo? classInfo in classSymbols.OrderBy(i => i?.Name))
 			{
-				if (symbol is null)
-					continue;
-				INamedTypeSymbol e = symbol;
-				List<IPropertySymbol> properties = e.GetMembers()
-					.OfType<IPropertySymbol>()
-					.Where(p =>
-						p.DeclaredAccessibility.HasFlag(Accessibility.Public) && p.SetMethod != null ||
-						p.GetAttributes().Any(i => i.AttributeClass?.ToDisplayString() == JsonNotIgnoreAttrName))
-					.ToList();
-
-				sb.AppendLine($"internal class EventInstanceConverter{e.Name} : EventInstanceConverter{baseType?.Name}<{e.ToDisplayString()}>");
-				sb.AppendLine("{");
-				// Read
-				sb.AppendLine($"	protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref {e.ToDisplayString()} value, JsonSerializerOptions options)");
-				sb.AppendLine("	{");
-				if (properties.Count > 0)
+				if (classInfo is not ClassInfo ci) continue;
+				sb.AppendLine($$"""
+internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConverter{{ToShorter(ci.BaseTypeName)}}<{{ci.Name}}>
+{
+	protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref {{ci.Name}} value, JsonSerializerOptions options)
+	{
+""");
+				if (ci.Properties.Length > 0)
 				{
-					sb.AppendLine("		if(base.Read(ref reader, propertyName, ref value, options))");
-					sb.AppendLine("			return true;");
-					AppendEventReadBody(sb, properties, e);
+					sb.AppendLine($$"""
+		if(base.Read(ref reader, propertyName, ref value, options))
+			return true;
+""");
+					bool isFirst = true;
+					int enumIndex = 0;
+					foreach (var pi in ci.Properties)
+					{
+						// ReadOnly properties are skipped
+						if (pi.Symbol.SetMethod is null) continue;
+						string propName = pi.Alias ?? ToLowerCamelCase(pi.Symbol.Name);
+						bool newlineNeeded = false;
+						// Custom converter
+						if (!string.IsNullOrEmpty(pi.Converter))
+						{
+							if (pi.Symbol.Type.NullableAnnotation == NullableAnnotation.Annotated)
+							{
+								sb.AppendLine($$"""
+		{{(isFirst ? "" : "else ")}}if (propertyName.SequenceEqual("{{propName}}"u8)){ if (reader.TokenType is not JsonTokenType.Null)
+""");
+								newlineNeeded = true;
+							}
+							else
+								sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{propName}\"u8))");
+							sb.AppendLine($"			value.{pi.Symbol.Name} = new {pi.Converter}().Read(ref reader, typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), options);");
+							if (newlineNeeded)
+								sb.AppendLine("		}");
+						}
+						else
+						{
+							// Nullable
+							if (pi.Symbol.Type.NullableAnnotation == NullableAnnotation.Annotated)
+							{
+								sb.AppendLine($$"""		{{(isFirst ? "" : "else ")}}if (propertyName.SequenceEqual("{{propName}}"u8)){ if(reader.TokenType is not JsonTokenType.Null)""");
+								newlineNeeded = true;
+							}
+							else
+								sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{propName}\"u8))");
+
+							// Enum
+							if (pi.Symbol.Type.TypeKind == TypeKind.Enum)
+							{
+								sb.AppendLine($$"""
+			if(reader.TokenType is JsonTokenType.String && TryParse(reader.ValueSpan, out {{WithoutNullable(pi.Symbol.Type).ToDisplayString()}} enumValue{{enumIndex}}))
+				value.{{pi.Symbol.Name}} = enumValue{{enumIndex}};
+			else if(reader.TokenType is JsonTokenType.Number && reader.TryGetInt32(out int intValue{{enumIndex}}))
+				value.{{pi.Symbol.Name}} = ({{WithoutNullable(pi.Symbol.Type).ToDisplayString()}})intValue{{enumIndex}};
+			else
+				value.{{pi.Symbol.Name}} = default;
+""");
+								enumIndex++;
+							}
+							else if (pi.TimeType is int t)
+							{
+								sb.AppendLine($"			value.{pi.Symbol.Name} = {t switch
+								{
+									0 => "TimeSpan.FromSeconds(reader.GetDouble())",
+									1 => "TimeSpan.FromMilliseconds(reader.GetDouble())",
+									_ => throw new NotImplementedException(),
+								}};");
+							}
+							else
+							{
+								// Other types
+								switch (pi.Symbol.Type.SpecialType)
+								{
+									case
+										SpecialType.System_Byte or
+										SpecialType.System_SByte or
+										SpecialType.System_Char or
+										SpecialType.System_Decimal or
+										SpecialType.System_Double or
+										SpecialType.System_Single or
+										SpecialType.System_Int16 or
+										SpecialType.System_Int32 or
+										SpecialType.System_Int64 or
+										SpecialType.System_UInt16 or
+										SpecialType.System_UInt32 or
+										SpecialType.System_UInt64:
+										string typePostfix = pi.Symbol.Type.SpecialType.ToString().Replace("System_", "");
+										sb.AppendLine($"			value.{pi.Symbol.Name} = reader.Get{typePostfix}();");
+										break;
+									case SpecialType.System_Boolean:
+										sb.AppendLine($"""
+			if (reader.TokenType is JsonTokenType.True or JsonTokenType.False)
+				value.{pi.Symbol.Name} = reader.GetBoolean();
+			else if (reader.TokenType is JsonTokenType.String)
+				value.{pi.Symbol.Name} = "Enabled" == reader.GetString();
+			else
+				value.{pi.Symbol.Name} = false;
+""");
+										break;
+									case SpecialType.System_String:
+										sb.AppendLine($"			value.{pi.Symbol.Name} = reader.GetString() ?? \"\";");
+										break;
+									default:
+										if (pi.Symbol.Type.TypeKind == TypeKind.Struct)
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{pi.Symbol.Type.ToDisplayString()}>(ref reader, options);");
+										else if (IsConcreteEnumerable(pi.Symbol.Type))
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{pi.Symbol.Type.ToDisplayString()}>(ref reader, options) ?? [];");
+										else
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{pi.Symbol.Type.ToDisplayString()}>(ref reader, options) ?? new();");
+										break;
+								}
+							}
+							if (newlineNeeded)
+								sb.AppendLine("		}");
+						}
+						isFirst = false;
+					}
+					sb.AppendLine($$"""
+		else return false;
+		return true;
+""");
 				}
 				else
 				{
 					sb.AppendLine("		return base.Read(ref reader, propertyName, ref value, options);");
 				}
-				sb.AppendLine("	}");
+				sb.AppendLine($$"""
+	}
+	protected override void Write(Utf8JsonWriter writer, ref {{ci.Name}} value, JsonSerializerOptions options)
+	{
+		base.Write(writer, ref value, options);
+""");
+				if (ci.Properties.Length > 0)
+				{
+					foreach (var pi in ci.Properties)
+					{
+						if (pi.Symbol.GetMethod is null || (pi.Symbol.SetMethod is null && pi.Alias is null)) continue;
+						string propName = pi.Alias ?? ToLowerCamelCase(pi.Symbol.Name);
+						bool multiline = false;
+						// Custom converter
+						if (!string.IsNullOrEmpty(pi.Converter))
+						{
+							sb2.AppendLine($"		writer.WritePropertyName(\"{propName}\"u8);");
+							if (pi.Symbol.NullableAnnotation == NullableAnnotation.Annotated)
+							{
+								sb2.AppendLine($"""
+		if (value.{pi.Symbol.Name} is {WithoutNullable(pi.Symbol.Type).ToDisplayString()} t)
+			new {pi.Converter}().Write(writer, t, options);
+		else
+			writer.WriteNullValue();
+""");
+							}
+							else
+							{
+								sb2.AppendLine($"		new {pi.Converter}().Write(writer, value.{pi.Symbol.Name}, options);");
+							}
+							multiline = true;
+						}
+						else
+						{
+							if (pi.Symbol.NullableAnnotation == NullableAnnotation.Annotated)
+							{
+								sb2.AppendLine($"""
+		if (value.{pi.Symbol.Name} is null)
+			writer.WriteNull("{propName}"u8);
+		else
+""");
+							}
 
-				// Write
-				sb.AppendLine($"	protected override void Write(Utf8JsonWriter writer, ref {e.Name} value, JsonSerializerOptions options)");
-				sb.AppendLine("	{");
-				sb.AppendLine("		base.Write(writer, ref value, options);");
-				AppendEventWriteBody(sb, properties, e);
-				sb.AppendLine("	}");
-				sb.AppendLine("}");
+							if (pi.Symbol.Type.TypeKind == TypeKind.Enum)
+								sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{pi.Symbol.Name}.ToEnumString());");
+							else if (pi.TimeType is int t)
+							{
+								sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, {(t switch
+								{
+									0 => "value." + pi.Symbol.Name + ".TotalMilliseconds",
+									1 => "value." + pi.Symbol.Name + ".TotalSeconds",
+									_ => throw new NotImplementedException(),
+								})});");
+							}
+							else
+							{
+								switch (pi.Symbol.Type.SpecialType)
+								{
+									case SpecialType.System_Boolean:
+										sb2.AppendLine($"		writer.WriteBoolean(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)});");
+										break;
+									case SpecialType.System_String:
+										sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)});");
+										break;
+									case SpecialType.System_Byte or
+										SpecialType.System_Int16 or
+										SpecialType.System_Int32 or
+										SpecialType.System_Int64 or
+										SpecialType.System_UInt16 or
+										SpecialType.System_UInt32 or
+										SpecialType.System_UInt64 or
+										SpecialType.System_Single or
+										SpecialType.System_Double or
+										SpecialType.System_Decimal:
+										sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)});");
+										break;
+									default:
+										sb2.AppendLine($$"""
+		{
+			writer.WritePropertyName("{{propName}}"u8);
+			JsonSerializer.Serialize(writer, value.{{pi.Symbol.Name}}, options);
+		}
+		""");
+										break;
+								}
+							}
+						}
+						// Condition
+						if (!string.IsNullOrEmpty(pi.Condition))
+						{
+							string condition = pi.Condition!.Replace("$&", "value");
+							if (multiline)
+							{
+								string[] lines = [.. sb2.ToString()
+									.Split(['\n'], StringSplitOptions.RemoveEmptyEntries)
+									.Where(i=>!string.IsNullOrWhiteSpace(i))
+									.Select(i => "\t" + i)];
+								sb.AppendLine($$"""
+		if ({{condition}})
+		{
+{{string.Concat(lines)}}
+		}
+""");
+							}
+							else
+							{
+								sb.AppendLine($$"""
+		if ({{condition}})
+			{{sb2.ToString().Trim()}}
+""");
+							}
+						}
+						else
+							sb.Append(sb2);
+						sb2.Clear();
+					}
+				}
+				else
+				{
+
+				}
+				sb.AppendLine($$"""
+	}
+}
+""");
 			}
 			ctx.AddSource("EventInstanceConvertersRDLevel.g.cs", sb.ToString());
+		});
+
+		context.RegisterSourceOutput(classes, (ctx, classSymbols) =>
+		{
+			StringBuilder sb = new StringBuilder();
 
 			// EventTypeUtils
 			sb.Clear();
@@ -295,11 +715,16 @@ public class ConverterGenerator : IIncrementalGenerator
 			sb.AppendLine("{");
 			sb.AppendLine("	internal static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase> converters = new(new Dictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase>()");
 			sb.AppendLine("	{");
-			foreach ((INamedTypeSymbol? symbol, INamedTypeSymbol? _) in symbols
-				.Where(i => !(i.symbol.Name.StartsWith("Forward") && i.symbol.Name.EndsWith("Event")))
-				.OrderBy(i => i.symbol.Name))
+			foreach (ClassInfo info in classSymbols
+				.Where(i =>
+				{
+					if (i is null) return false;
+					string className = i?.Name ?? "";
+					return !(className.StartsWith("Forward") && className.EndsWith("Event"));
+				})
+				.OrderBy(i => i?.Name))
 			{
-				sb.AppendLine($"			[RhythmBase.RhythmDoctor.Events.EventType.{symbol.Name}] = new RhythmBase.RhythmDoctor.Converters.EventInstanceConverter{symbol.Name}(),");
+				sb.AppendLine($"			[RhythmBase.RhythmDoctor.Events.EventType.{ToShorter(info.Name)}] = new RhythmBase.RhythmDoctor.Converters.EventInstanceConverter{ToShorter(info.Name)}(),");
 			}
 			sb.AppendLine("	});");
 			sb.AppendLine("}");
@@ -325,8 +750,12 @@ public class ConverterGenerator : IIncrementalGenerator
 					if (names.Add(symbol.Name))
 						return (symbol, baseType);
 				}
+
+
 #pragma warning disable CS8619 // 值中的引用类型的为 Null 性与目标类型不匹配。
 				return (null, null);
+
+
 #pragma warning restore CS8619 // 值中的引用类型的为 Null 性与目标类型不匹配。
 			})
 			.Where(i => i.symbol is not null)
@@ -417,6 +846,10 @@ public class ConverterGenerator : IIncrementalGenerator
 			ctx.AddSource("EventTypeUtilsADLevel.g.cs", sb.ToString());
 		});
 	}
+
+
+
+
 	#endregion
 
 	#region Filter Converter 生成
@@ -437,7 +870,7 @@ public class ConverterGenerator : IIncrementalGenerator
 				INamedTypeSymbol? symbol = ctx.SemanticModel.GetDeclaredSymbol(classDeclaration);
 				if (symbol is INamedTypeSymbol namedTypeSymbol
 				&& (namedTypeSymbol.AllInterfaces.Any(i => i.ToDisplayString().Contains("IFilter")))//namedTypeSymbol.AllInterfaces.Any(i => i.Name.Contains("IBaseEvent"))
-				&& (namedTypeSymbol.ContainingNamespace?.ToDisplayString().Contains("RhythmBase.Adofai.Components.Filters") ?? false)
+																																								&& (namedTypeSymbol.ContainingNamespace?.ToDisplayString().Contains("RhythmBase.Adofai.Components.Filters") ?? false)
 				&& !namedTypeSymbol.IsAbstract
 				)
 				{
@@ -445,8 +878,12 @@ public class ConverterGenerator : IIncrementalGenerator
 					if (names.Add(symbol.Name))
 						return (symbol, baseType);
 				}
+
+
 #pragma warning disable CS8619 // 值中的引用类型的为 Null 性与目标类型不匹配。
 				return (null, null);
+
+
 #pragma warning restore CS8619 // 值中的引用类型的为 Null 性与目标类型不匹配。
 			})
 			.Where(i => i.symbol is not null)
@@ -571,23 +1008,6 @@ public class ConverterGenerator : IIncrementalGenerator
 	}
 
 	private static string LastPartOf(string str) => str.Split('.').Last();
-
-	private static string ToLowerCamelCase(string str)
-	{
-		if (string.IsNullOrEmpty(str) || str.Length < 2)
-			return str.ToLower();
-		return char.ToLower(str[0]) + str.Substring(1);
-	}
-	private static string GetFullNamespace(INamedTypeSymbol type)
-	{
-		if (type == null) return string.Empty;
-
-		INamespaceSymbol? ns = type.ContainingNamespace;
-		if (ns == null || ns.IsGlobalNamespace)   // 顶级命名空间
-			return string.Empty;
-
-		return ns.ToDisplayString();   // 自带“.”连接
-	}
 	#endregion
 
 #pragma warning disable IDE0060
@@ -607,7 +1027,7 @@ public class ConverterGenerator : IIncrementalGenerator
 				continue;
 			if (p.SetMethod == null)
 				continue;
-			AttributeData? nameAttr = p.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonPropertyAttrName);
+			AttributeData? nameAttr = p.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonAliasAttrName);
 			AttributeData? timeAttr = p.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonTimeAttrName);
 			AttributeData? converterAttr = p.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonConverterAttrName);
 			if (nameAttr is not null)
@@ -630,7 +1050,7 @@ public class ConverterGenerator : IIncrementalGenerator
 				isNullable = type.NullableAnnotation == NullableAnnotation.Annotated;
 				string converterTypeName = converterAttr.ConstructorArguments[0].Value?.ToString() ?? "?";
 				sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{jsonName}\"u8))");
-				if(isNullable)
+				if (isNullable)
 				{
 					sb.AppendLine($"""
 									if(reader.TokenType is JsonTokenType.Null)
@@ -755,7 +1175,7 @@ public class ConverterGenerator : IIncrementalGenerator
 				continue;
 			if (p.GetMethod == null && !p.GetAttributes().Any(i => i.AttributeClass?.ToDisplayString() == JsonNotIgnoreAttrName))
 				continue;
-			AttributeData? nameAttr = p.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonPropertyAttrName);
+			AttributeData? nameAttr = p.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonAliasAttrName);
 			AttributeData? timeAttr = p.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonTimeAttrName);
 			AttributeData? converterAttr = p.GetAttributes().FirstOrDefault(i => i.AttributeClass?.ToDisplayString() == JsonConverterAttrName);
 			if (nameAttr is not null)
@@ -797,7 +1217,7 @@ public class ConverterGenerator : IIncrementalGenerator
 				if (hasCondition)
 					sb.Append("		{\n	");
 				sb.AppendLine($"		writer.WritePropertyName(\"{jsonName}\"u8);");
-				if(isNullable)
+				if (isNullable)
 				{
 					sb.AppendLine($"		if (value.{propertyName} is null)");
 					sb.AppendLine("		{");
@@ -807,8 +1227,8 @@ public class ConverterGenerator : IIncrementalGenerator
 					sb.AppendLine("		{");
 					sb.Append("		");
 				}
-				sb.AppendLine($"		new {converterTypeName}().Write(writer, value.{propertyName}{(isNullable ?  ".Value" : "")}, options);");
-				if(isNullable)
+				sb.AppendLine($"		new {converterTypeName}().Write(writer, value.{propertyName}{(isNullable ? ".Value" : "")}, options);");
+				if (isNullable)
 					sb.AppendLine("		}");
 				if (hasCondition)
 					sb.AppendLine("		}");
@@ -857,7 +1277,7 @@ public class ConverterGenerator : IIncrementalGenerator
 			}
 			if (type.TypeKind == TypeKind.Enum)
 			{
-					sb.AppendLine($"		writer.WriteString(\"{jsonName}\"u8, value.{propertyName}.ToEnumString());");
+				sb.AppendLine($"		writer.WriteString(\"{jsonName}\"u8, value.{propertyName}.ToEnumString());");
 			}
 			else
 			{

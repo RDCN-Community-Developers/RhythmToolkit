@@ -114,7 +114,7 @@ public class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// Gets or sets the speed percentage for the effect.
 	/// </summary>
 	[Tween]
-	[RDJsonProperty("speedPerc")]
+	[RDJsonAlias("speedPerc")]
 	[RDJsonCondition($"""
 		$&.{nameof(Enable)} && $&.{nameof(Preset)} 
 		is RhythmBase.RhythmDoctor.Events.{nameof(VfxPreset)}.{nameof(VfxPreset.WavyRows)}

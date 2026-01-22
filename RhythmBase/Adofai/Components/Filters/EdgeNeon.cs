@@ -8,6 +8,6 @@ public struct EdgeNeon : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>EdgeWeight</b>.
 	/// </summary>
-	[RDJsonProperty("EdgeWeight")]
+	[RDJsonAlias("EdgeWeight")]
 	public float EdgeWeight { get; set; }
 }

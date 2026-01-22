@@ -19,7 +19,7 @@ public class ChangeCharacter : BaseRowAction
 	[RDJsonIgnore]
 	public RDCharacter Character { get; set; } = RDCharacters.Samurai;
 	[RDJsonNotIgnore]
-	[RDJsonProperty("character")]
+	[RDJsonAlias("character")]
 	internal RDCharacters EnumCharacter
 	{
 		get => Character.Character ?? RDCharacters.Custom; set => Character = value;
@@ -27,7 +27,7 @@ public class ChangeCharacter : BaseRowAction
 
 	[RDJsonNotIgnore]
 	[RDJsonCondition($"$&.{nameof(Character)}.{nameof(RDCharacter.IsCustom)} && !string.IsNullOrEmpty($&.{nameof(StringCharacter)})")]
-	[RDJsonProperty("customCharacter")]
+	[RDJsonAlias("customCharacter")]
 	internal string StringCharacter { get => Character.IsCustom ? Character.CustomCharacter ?? string.Empty : string.Empty; set => Character = value; }
 	/// <summary>  
 	/// Gets or sets the transition type for the character change.  

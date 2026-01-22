@@ -8,6 +8,6 @@ public struct ColorsDarkColor : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Alpha</b>.
 	/// </summary>
-	[RDJsonProperty("Alpha")]
+	[RDJsonAlias("Alpha")]
 	public float Alpha { get; set; }
 }

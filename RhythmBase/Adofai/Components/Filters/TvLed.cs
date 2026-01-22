@@ -8,6 +8,6 @@ public struct TvLed : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>
-	[RDJsonProperty("Size")]
+	[RDJsonAlias("Size")]
 	public int Size { get; set; }
 }

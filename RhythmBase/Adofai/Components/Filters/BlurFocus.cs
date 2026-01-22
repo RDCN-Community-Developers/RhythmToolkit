@@ -8,11 +8,11 @@ public struct BlurFocus : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>_Size</b>.
 	/// </summary>
-	[RDJsonProperty("_Size")]
+	[RDJsonAlias("_Size")]
 	public float Size { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>_Eyes</b>.
 	/// </summary>
-	[RDJsonProperty("_Eyes")]
+	[RDJsonAlias("_Eyes")]
 	public float Eyes { get; set; }
 }

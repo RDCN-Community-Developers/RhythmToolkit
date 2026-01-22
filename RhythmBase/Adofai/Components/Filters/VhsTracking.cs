@@ -8,6 +8,6 @@ public struct VhsTracking : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Tracking</b>.
 	/// </summary>
-	[RDJsonProperty("Tracking")]
+	[RDJsonAlias("Tracking")]
 	public float Tracking { get; set; }
 }

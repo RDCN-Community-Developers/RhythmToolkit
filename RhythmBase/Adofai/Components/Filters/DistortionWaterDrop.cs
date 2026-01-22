@@ -8,11 +8,11 @@ public struct DistortionWaterDrop : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>WaveIntensity</b>.
 	/// </summary>
-	[RDJsonProperty("WaveIntensity")]
+	[RDJsonAlias("WaveIntensity")]
 	public float WaveIntensity { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>NumberOfWaves</b>.
 	/// </summary>
-	[RDJsonProperty("NumberOfWaves")]
+	[RDJsonAlias("NumberOfWaves")]
 	public int NumberOfWaves { get; set; }
 }

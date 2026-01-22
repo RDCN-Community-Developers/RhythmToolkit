@@ -8,26 +8,26 @@ public struct BlendToCameraSplitScreen : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>
-	[RDJsonProperty("BlendFX")]
+	[RDJsonAlias("BlendFX")]
 	public float BlendFX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>SplitX</b>.
 	/// </summary>
-	[RDJsonProperty("SplitX")]
+	[RDJsonAlias("SplitX")]
 	public float SplitX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>SplitY</b>.
 	/// </summary>
-	[RDJsonProperty("SplitY")]
+	[RDJsonAlias("SplitY")]
 	public float SplitY { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Smooth</b>.
 	/// </summary>
-	[RDJsonProperty("Smooth")]
+	[RDJsonAlias("Smooth")]
 	public float Smooth { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Rotation</b>.
 	/// </summary>
-	[RDJsonProperty("Rotation")]
+	[RDJsonAlias("Rotation")]
 	public float Rotation { get; set; }
 }

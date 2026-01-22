@@ -8,6 +8,6 @@ public struct ColorsThreshold : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Threshold</b>.
 	/// </summary>
-	[RDJsonProperty("Threshold")]
+	[RDJsonAlias("Threshold")]
 	public float Threshold { get; set; }
 }

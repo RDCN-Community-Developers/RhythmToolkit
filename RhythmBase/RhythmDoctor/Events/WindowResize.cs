@@ -39,7 +39,7 @@ public class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the custom tab.
 	/// </summary>
-	[RDJsonProperty("tab")]
+	[RDJsonAlias("tab")]
 	[RDJsonConverter(typeof(TabsConverter))]
 	[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.{nameof(Events.Tab)}.{nameof(Tab.Windows)}")]
 	public Tab CustomTab

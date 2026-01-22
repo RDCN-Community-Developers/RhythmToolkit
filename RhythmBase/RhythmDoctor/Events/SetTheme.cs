@@ -64,14 +64,14 @@ public class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
 	[RDJsonCondition($"$&.{nameof(FirstRowOnFloor)}")]
 	public bool FirstRowOnFloor { get; set; } = false;
 	///<inheritdoc/>
-	[RDJsonProperty("positionEase")]
+	[RDJsonAlias("positionEase")]
 	[RDJsonCondition($"""
 		$&.{nameof(EnablePosition)} &&
 		RhythmBase.RhythmDoctor.Events.{nameof(SetTheme)}.{nameof(ThemesHasPosition)}.{nameof(ReadOnlyEnumCollection<>.Contains)}($&.{nameof(Preset)})
 		""")]
 	public EaseType Ease { get; set; }
 	///<inheritdoc/>
-	[RDJsonProperty("positionDuration")]
+	[RDJsonAlias("positionDuration")]
 	[RDJsonCondition($"""
 		$&.{nameof(EnablePosition)} &&
 		RhythmBase.RhythmDoctor.Events.{nameof(SetTheme)}.{nameof(ThemesHasPosition)}.{nameof(ReadOnlyEnumCollection<>.Contains)}($&.{nameof(Preset)})

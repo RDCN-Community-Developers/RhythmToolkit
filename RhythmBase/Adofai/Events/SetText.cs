@@ -9,7 +9,7 @@ public class SetText : BaseTaggedTileEvent, IBeginningEvent
 	/// <summary>  
 	/// Gets or sets the text to be displayed in the level.  
 	/// </summary>  
-	[RDJsonProperty("decText")]
+	[RDJsonAlias("decText")]
 	public string DecorationText { get; set; } = string.Empty;	/// <summary>  
 	/// Gets or sets the tag associated with the text event.  
 	/// </summary>  

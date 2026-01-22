@@ -8,11 +8,11 @@ public struct Fx8Bits : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>ResolutionX</b>.
 	/// </summary>
-	[RDJsonProperty("ResolutionX")]
+	[RDJsonAlias("ResolutionX")]
 	public int ResolutionX { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>ResolutionY</b>.
 	/// </summary>
-	[RDJsonProperty("ResolutionY")]
+	[RDJsonAlias("ResolutionY")]
 	public int ResolutionY { get; set; }
 }

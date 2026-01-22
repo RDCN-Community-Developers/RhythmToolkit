@@ -8,6 +8,6 @@ public struct ColorInvert : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>_Fade</b>.
 	/// </summary>
-	[RDJsonProperty("_Fade")]
+	[RDJsonAlias("_Fade")]
 	public float Fade { get; set; }
 }

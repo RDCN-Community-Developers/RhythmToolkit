@@ -8,11 +8,11 @@ public struct TvPosterize : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Posterize</b>.
 	/// </summary>
-	[RDJsonProperty("Posterize")]
+	[RDJsonAlias("Posterize")]
 	public float Posterize { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>
-	[RDJsonProperty("Fade")]
+	[RDJsonAlias("Fade")]
 	public float Fade { get; set; }
 }

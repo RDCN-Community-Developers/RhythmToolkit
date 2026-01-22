@@ -8,6 +8,6 @@ public struct ColorChromaticAberration : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Offset</b>.
 	/// </summary>
-	[RDJsonProperty("Offset")]
+	[RDJsonAlias("Offset")]
 	public float Offset { get; set; }
 }

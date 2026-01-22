@@ -16,7 +16,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the background image file path.  
 		/// </summary>  
-		[RDJsonProperty("bgImage")]
+		[RDJsonAlias("bgImage")]
 		public FileReference BackgroundImage { get; set; } = string.Empty;
 		/// <summary>  
 		/// Gets or sets the color applied to the background image.  
@@ -31,7 +31,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the display mode of the background image.  
 		/// </summary>  
-		[RDJsonProperty("bgDisplayMode")]
+		[RDJsonAlias("bgDisplayMode")]
 		[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(BackgroundImage)})")]
 		public BackgroundDisplayMode BackgroundDisplayMode { get; set; } = BackgroundDisplayMode.FitToScreen;
 		/// <summary>  
@@ -41,13 +41,13 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets a value indicating whether the background rotation is locked.  
 		/// </summary>  
-		[RDJsonProperty("lockRot")]
+		[RDJsonAlias("lockRot")]
 		[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(BackgroundImage)})")]
 		public bool LockRotation { get; set; }
 		/// <summary>  
 		/// Gets or sets a value indicating whether the background image should loop.  
 		/// </summary>  
-		[RDJsonProperty("loopBG")]
+		[RDJsonAlias("loopBG")]
 		[RDJsonCondition($"!string.IsNullOrEmpty($&.{nameof(BackgroundImage)})")]
 		public bool LoopBackground { get; set; }
 		/// <summary>  

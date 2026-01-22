@@ -10,7 +10,7 @@ public class PlaySong : BaseBeatsPerMinute, IBarBeginningEvent, IAudioFileEvent
 	/// <summary>
 	/// Gets or sets the beats per minute (BPM) for the song.
 	/// </summary>
-	[RDJsonProperty("bpm")]
+	[RDJsonAlias("bpm")]
 	public override float BeatsPerMinute
 	{
 		get => base.BeatsPerMinute;
@@ -19,7 +19,7 @@ public class PlaySong : BaseBeatsPerMinute, IBarBeginningEvent, IAudioFileEvent
 	/// <summary>
 	/// Gets or sets the offset time for the song.
 	/// </summary>
-	[RDJsonTime("milliseconds")]
+	[RDJsonTime(RDJsonTimeType.Milliseconds)]
 	[RDJsonCondition($"$&.{nameof(Offset)} != TimeSpan.Zero")]
 	public TimeSpan Offset
 	{

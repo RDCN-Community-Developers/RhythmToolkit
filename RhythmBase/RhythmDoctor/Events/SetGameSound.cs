@@ -1,5 +1,6 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.Global.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -20,10 +21,7 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// Gets or sets the filename of the audio.  
 	/// </summary>
 	[RDJsonCondition($"""
-		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
+		!$&.{nameof(MultipleSoundTypes)}.Contains($&.{nameof(SoundType)})
 		""")]
 	public string Filename
 	{
@@ -34,10 +32,7 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// Gets or sets the volume of the audio.  
 	/// </summary>  
 	[RDJsonCondition($"""
-		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
+		!$&.{nameof(MultipleSoundTypes)}.Contains($&.{nameof(SoundType)})
 		&& $&.{nameof(Volume)} != 100
 		""")]
 	public int Volume
@@ -49,10 +44,7 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// Gets or sets the pitch of the audio.  
 	/// </summary>  
 	[RDJsonCondition($"""
-		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
+		!$&.{nameof(MultipleSoundTypes)}.Contains($&.{nameof(SoundType)})
 		&& $&.{nameof(Pitch)} != 100
 		""")]
 	public int Pitch
@@ -64,10 +56,7 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// Gets or sets the pan of the audio.  
 	/// </summary>  
 	[RDJsonCondition($"""
-		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
+		!$&.{nameof(MultipleSoundTypes)}.Contains($&.{nameof(SoundType)})
 		&& $&.{nameof(Pan)} != 0
 		""")]
 	public int Pan
@@ -78,12 +67,9 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// <summary>  
 	/// Gets or sets the offset time of the audio.  
 	/// </summary>  
-	[RDJsonTime("milliseconds")]
+	[RDJsonTime(RDJsonTimeType.Milliseconds)]
 	[RDJsonCondition($"""
-		$&.{nameof(SoundType)} is not
-		(  RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)})
+		!$&.{nameof(MultipleSoundTypes)}.Contains($&.{nameof(SoundType)})
 		&& $&.{nameof(Offset)} != TimeSpan.Zero
 		""")]
 	public TimeSpan Offset
@@ -94,15 +80,7 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 	/// <summary>  
 	/// Gets or sets the list of sound subtypes.  
 	/// </summary>  
-	[RDJsonCondition($"""
-		$&.{nameof(SoundType)}
-		is RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHold)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.ClapSoundHoldP2)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.PulseSoundHold)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.PulseSoundHoldP2)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.BurnshotSound)}
-		or RhythmBase.RhythmDoctor.{nameof(Events)}.{nameof(Events.SoundType)}.{nameof(SoundType.FreezeshotSound)}
-		""")]
+	[RDJsonCondition($"$&.{nameof(MultipleSoundTypes)}.Contains($&.{nameof(SoundType)})")]
 	[RDJsonConverter(typeof(SoundSubTypeCollectionConverter))]
 	public SoundSubTypeCollection SoundSubtypes { get; set; } = [];
 	///<inheritdoc/>
@@ -122,7 +100,14 @@ public partial class SetGameSound : BaseEvent, IAudioFileEvent
 					and not SoundType.BurnshotSound)
 					? [Audio.Filename]
 					: [];
-
+	internal readonly ReadOnlyEnumCollection<SoundType> MultipleSoundTypes = new(
+		SoundType.ClapSoundHold,
+		SoundType.ClapSoundHoldP2,
+		SoundType.PulseSoundHold,
+		SoundType.PulseSoundHoldP2,
+		SoundType.BurnshotSound,
+		SoundType.FreezeshotSound
+	);
 	/// <summary>  
 	/// Returns a string that represents the current object.  
 	/// </summary>  

@@ -21,7 +21,7 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the background image file path.  
 		/// </summary>  
-		[RDJsonProperty("bgImage")]
+		[RDJsonAlias("bgImage")]
 		public FileReference BackgroundImage { get; set; } = string.Empty;
 
 		/// <summary>  

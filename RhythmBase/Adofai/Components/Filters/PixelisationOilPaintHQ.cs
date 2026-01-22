@@ -8,6 +8,6 @@ public struct PixelisationOilPaintHQ : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>
-	[RDJsonProperty("Value")]
+	[RDJsonAlias("Value")]
 	public float Value { get; set; }
 }

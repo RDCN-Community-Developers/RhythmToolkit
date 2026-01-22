@@ -10,11 +10,11 @@ public struct BlurNoise : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Level</b>.
 	/// </summary>
-	[RDJsonProperty("Level")]
+	[RDJsonAlias("Level")]
 	public int Level { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Distance</b>.
 	/// </summary>
-	[RDJsonProperty("Distance")]
+	[RDJsonAlias("Distance")]
 	public RDPointN Distance { get; set; }
 }

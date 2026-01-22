@@ -8,16 +8,16 @@ public struct ColorsNewPosterize : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Gamma</b>.
 	/// </summary>
-	[RDJsonProperty("Gamma")]
+	[RDJsonAlias("Gamma")]
 	public float Gamma { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Colors</b>.
 	/// </summary>
-	[RDJsonProperty("Colors")]
+	[RDJsonAlias("Colors")]
 	public float Colors { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Green_Mod</b>.
 	/// </summary>
-	[RDJsonProperty("Green_Mod")]
+	[RDJsonAlias("Green_Mod")]
 	public float GreenMod { get; set; }
 }

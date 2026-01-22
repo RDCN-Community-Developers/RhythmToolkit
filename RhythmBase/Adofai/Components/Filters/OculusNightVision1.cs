@@ -8,11 +8,11 @@ public struct OculusNightVision1 : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Vignette</b>.
 	/// </summary>
-	[RDJsonProperty("Vignette")]
+	[RDJsonAlias("Vignette")]
 	public float Vignette { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Linecount</b>.
 	/// </summary>
-	[RDJsonProperty("Linecount")]
+	[RDJsonAlias("Linecount")]
 	public float Linecount { get; set; }
 }

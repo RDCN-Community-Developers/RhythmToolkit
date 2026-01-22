@@ -8,16 +8,16 @@ public struct AtmosphereSnow8Bits : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Threshold</b>.
 	/// </summary>
-	[RDJsonProperty("Threshold")]
+	[RDJsonAlias("Threshold")]
 	public float Threshold { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>
-	[RDJsonProperty("Size")]
+	[RDJsonAlias("Size")]
 	public float Size { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>
-	[RDJsonProperty("Fade")]
+	[RDJsonAlias("Fade")]
 	public float Fade { get; set; }
 }

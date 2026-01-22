@@ -72,7 +72,7 @@ public class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// Gets or sets the list of images for the background.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)}")]
-	[RDJsonProperty("image")]
+	[RDJsonAlias("image")]
 	public List<FileReference> Images { get; set; } = [];
 	/// <summary>
 	/// Gets or sets the horizontal scroll value.

@@ -8,11 +8,11 @@ public struct DrawingLines : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Number</b>.
 	/// </summary>
-	[RDJsonProperty("Number")]
+	[RDJsonAlias("Number")]
 	public float Number { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Random</b>.
 	/// </summary>
-	[RDJsonProperty("Random")]
+	[RDJsonAlias("Random")]
 	public float Random { get; set; }
 }

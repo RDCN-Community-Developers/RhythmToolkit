@@ -20,7 +20,7 @@ public class AddOneshotBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets a value indicating whether the subdivision sound is enabled.
 	/// </summary>
-	[RDJsonProperty("subdivSound")]
+	[RDJsonAlias("subdivSound")]
 	[RDJsonCondition($"$&.{nameof(Subdivisions)} > 0")]
 	public bool SubdivisionSound { get; set; }
 	/// <summary>

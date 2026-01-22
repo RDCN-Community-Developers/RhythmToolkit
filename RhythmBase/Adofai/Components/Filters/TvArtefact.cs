@@ -8,21 +8,21 @@ public struct TvArtefact : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>
-	[RDJsonProperty("Fade")]
+	[RDJsonAlias("Fade")]
 	public float Fade { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Colorisation</b>.
 	/// </summary>
-	[RDJsonProperty("Colorisation")]
+	[RDJsonAlias("Colorisation")]
 	public float Colorisation { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Parasite</b>.
 	/// </summary>
-	[RDJsonProperty("Parasite")]
+	[RDJsonAlias("Parasite")]
 	public float Parasite { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Noise</b>.
 	/// </summary>
-	[RDJsonProperty("Noise")]
+	[RDJsonAlias("Noise")]
 	public float Noise { get; set; }
 }

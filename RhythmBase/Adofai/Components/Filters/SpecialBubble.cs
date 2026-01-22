@@ -8,16 +8,16 @@ public struct SpecialBubble : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>X</b>.
 	/// </summary>
-	[RDJsonProperty("X")]
+	[RDJsonAlias("X")]
 	public float X { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Y</b>.
 	/// </summary>
-	[RDJsonProperty("Y")]
+	[RDJsonAlias("Y")]
 	public float Y { get; set; }
 	/// <summary>
 	/// Gets or sets the value of the <b>Rate</b>.
 	/// </summary>
-	[RDJsonProperty("Rate")]
+	[RDJsonAlias("Rate")]
 	public float Rate { get; set; }
 }

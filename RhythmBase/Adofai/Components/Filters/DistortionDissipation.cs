@@ -8,6 +8,6 @@ public struct DistortionDissipation : IFilter
 	/// <summary>
 	/// Gets or sets the value of the <b>Dissipation</b>.
 	/// </summary>
-	[RDJsonProperty("Dissipation")]
+	[RDJsonAlias("Dissipation")]
 	public float Dissipation { get; set; }
 }
