@@ -481,8 +481,10 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 						else
 						{
 							// Nullable
-							if (pi.Symbol.Type.NullableAnnotation == NullableAnnotation.Annotated)
+							var typeNotNull = pi.Symbol.Type;
+							if (pi.Symbol.NullableAnnotation == NullableAnnotation.Annotated)
 							{
+								typeNotNull = WithoutNullable(pi.Symbol.Type);
 								sb.AppendLine($$"""		{{(isFirst ? "" : "else ")}}if (propertyName.SequenceEqual("{{propName}}"u8)){ if(reader.TokenType is not JsonTokenType.Null)""");
 								newlineNeeded = true;
 							}
@@ -490,7 +492,7 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 								sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{propName}\"u8))");
 
 							// Enum
-							if (pi.Symbol.Type.TypeKind == TypeKind.Enum)
+							if (pi.Symbol.Type.TypeKind == TypeKind.Enum || WithoutNullable(pi.Symbol.Type).TypeKind == TypeKind.Enum)
 							{
 								sb.AppendLine($$"""
 			if(reader.TokenType is JsonTokenType.String && TryParse(reader.ValueSpan, out {{WithoutNullable(pi.Symbol.Type).ToDisplayString()}} enumValue{{enumIndex}}))
@@ -547,11 +549,11 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 										break;
 									default:
 										if (pi.Symbol.Type.TypeKind == TypeKind.Struct)
-											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{pi.Symbol.Type.ToDisplayString()}>(ref reader, options);");
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{typeNotNull.ToDisplayString()}>(ref reader, options);");
 										else if (IsConcreteEnumerable(pi.Symbol.Type))
-											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{pi.Symbol.Type.ToDisplayString()}>(ref reader, options) ?? [];");
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{typeNotNull.ToDisplayString()}>(ref reader, options) ?? [];");
 										else
-											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{pi.Symbol.Type.ToDisplayString()}>(ref reader, options) ?? new();");
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{typeNotNull.ToDisplayString()}>(ref reader, options) ?? new();");
 										break;
 								}
 							}
@@ -603,8 +605,12 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 						}
 						else
 						{
+							var typeNotNull = pi.Symbol.Type;
+							bool isNullable = false;
 							if (pi.Symbol.NullableAnnotation == NullableAnnotation.Annotated)
 							{
+								typeNotNull = WithoutNullable(pi.Symbol.Type);
+								isNullable = true;
 								sb2.AppendLine($"""
 		if (value.{pi.Symbol.Name} is null)
 			writer.WriteNull("{propName}"u8);
@@ -612,8 +618,8 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 """);
 							}
 
-							if (pi.Symbol.Type.TypeKind == TypeKind.Enum)
-								sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{pi.Symbol.Name}.ToEnumString());");
+							if (pi.Symbol.Type.TypeKind == TypeKind.Enum || WithoutNullable(pi.Symbol.Type).TypeKind == TypeKind.Enum)
+								sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{pi.Symbol.Name}{(isNullable ? "?" : "")}.ToEnumString());");
 							else if (pi.TimeType is int t)
 							{
 								sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, {(t switch
