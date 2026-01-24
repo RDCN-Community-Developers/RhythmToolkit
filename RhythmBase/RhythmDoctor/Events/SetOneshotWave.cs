@@ -3,7 +3,7 @@
 /// <summary>  
 /// Represents an event to set a one-shot wave.  
 /// </summary>  
-public class SetOneshotWave : BaseBeat
+public record class SetOneshotWave : BaseBeat
 {
 	/// <summary>  
 	/// Gets or sets the type of wave.  

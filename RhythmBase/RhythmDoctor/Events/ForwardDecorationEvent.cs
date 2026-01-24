@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// decoration processing.
 /// </summary>
 [RDJsonObjectNotSerializable]
-public class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
+public record class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
 {
 	/// <inheritdoc />
 	public override EventType Type => EventType.ForwardDecorationEvent;

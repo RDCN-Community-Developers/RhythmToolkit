@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an event to show rooms.  
 /// </summary>  
-public class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent
+public record class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent
 {
 	/// <summary>  
 	/// Gets or sets the height configuration for the room.  

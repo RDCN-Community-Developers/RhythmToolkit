@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event to add a free time beat.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class AddFreeTimeBeat : BaseBeat
+public record class AddFreeTimeBeat : BaseBeat
 {
 	/// <summary>
 	/// Gets or sets the hold duration of the beat.

@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that sets the main application window.
 /// </summary>
-public class SetMainWindow : BaseWindowEvent
+public record class SetMainWindow : BaseWindowEvent
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetMainWindow;

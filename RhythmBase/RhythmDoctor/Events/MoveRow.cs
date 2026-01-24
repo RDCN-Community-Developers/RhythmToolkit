@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to move a row with various properties such as position, scale, angle, and pivot.
 /// </summary>
-public class MoveRow : BaseRowAnimation, IEaseEvent
+public record class MoveRow : BaseRowAnimation, IEaseEvent
 {
 	/// <summary>
 	/// Gets or sets a value indicating whether a custom position is used.

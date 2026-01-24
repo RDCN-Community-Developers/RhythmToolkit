@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event for reading narration.
 /// </summary>
-public class ReadNarration : BaseEvent
+public record class ReadNarration : BaseEvent
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.ReadNarration;

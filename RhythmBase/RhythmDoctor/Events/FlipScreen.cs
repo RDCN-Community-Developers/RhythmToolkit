@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event that flips the screen in a room.
 	/// </summary>
-	public class FlipScreen : BaseEvent, IRoomEvent
+	public record class FlipScreen : BaseEvent, IRoomEvent
 	{
 		///<inheritdoc/>
 		public RDRoom Rooms { get; set; } = new RDRoom([0]);

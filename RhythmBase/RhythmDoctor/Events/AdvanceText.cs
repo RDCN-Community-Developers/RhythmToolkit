@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event that advances text in a room.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
+public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.AdvanceText;

@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to play a sound.
 /// </summary>
-public class PlaySound : BaseEvent, IAudioFileEvent
+public record class PlaySound : BaseEvent, IAudioFileEvent
 {
 	/// <summary>
 	/// Gets or sets a value indicating whether the sound is custom.

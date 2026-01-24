@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents the base class for all window-related events.  
 /// </summary>  
-public abstract class BaseWindowEvent : BaseEvent
+public abstract record class BaseWindowEvent : BaseEvent
 {
 	/// <inheritdoc/>
 	public override Tab Tab => Tab.Windows;

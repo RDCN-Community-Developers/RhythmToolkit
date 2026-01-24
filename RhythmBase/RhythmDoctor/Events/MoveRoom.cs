@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to move a room with easing properties.
 /// </summary>
-public class MoveRoom : BaseEvent, IEaseEvent
+public record class MoveRoom : BaseEvent, IEaseEvent
 {
 	/// <summary>
 	/// Gets or sets the position of the room.

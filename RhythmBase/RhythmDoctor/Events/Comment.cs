@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents a summary or description for the associated code element.
 /// </summary>
 [JsonConverter(typeof(BaseEventConverter))]
-public partial class Comment : BaseDecorationAction, IColorEvent
+public partial record class Comment : BaseDecorationAction, IColorEvent
 {
 	/// <inheritdoc />
 	public override int Y

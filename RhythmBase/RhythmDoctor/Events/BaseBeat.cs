@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an abstract base class for beat actions in a rhythm-based application.
 /// </summary>
-public abstract class BaseBeat : BaseRowAction
+public abstract record class BaseBeat : BaseRowAction
 {
 	/// <summary>
 	/// Gets the tab associated with the beat action, which is always set to Rows.

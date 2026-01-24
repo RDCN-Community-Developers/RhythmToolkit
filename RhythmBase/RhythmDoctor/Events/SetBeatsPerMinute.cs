@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an event to set the beats per minute (BPM) in the rhythm base.
 /// </summary>
-public class SetBeatsPerMinute : BaseBeatsPerMinute
+public record class SetBeatsPerMinute : BaseBeatsPerMinute
 {
 	/// <inheritdoc/>
 	public override float BeatsPerMinute { get => base.BeatsPerMinute; set => base.BeatsPerMinute = value; }

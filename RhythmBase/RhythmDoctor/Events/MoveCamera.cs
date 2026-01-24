@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to move the camera.
 /// </summary>
-public class MoveCamera : BaseEvent, IEaseEvent, IRoomEvent
+public record class MoveCamera : BaseEvent, IEaseEvent, IRoomEvent
 {
 	///<inheritdoc/>
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);

@@ -3,7 +3,7 @@ using RhythmBase.Global.Components.Vector;
 using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
 namespace RhythmBase.RhythmDoctor.Events;
-public partial class Comment
+public partial record class Comment
 {
 	/// <summary>
 	/// Contains a series of default custom method implementations.

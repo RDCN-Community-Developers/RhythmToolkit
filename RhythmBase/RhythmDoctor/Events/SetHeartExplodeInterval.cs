@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an event to set the heart explode interval.
 /// </summary>
-public class SetHeartExplodeInterval : BaseEvent
+public record class SetHeartExplodeInterval : BaseEvent
 {
 	/// <summary>
 	/// Gets or sets the type of interval.

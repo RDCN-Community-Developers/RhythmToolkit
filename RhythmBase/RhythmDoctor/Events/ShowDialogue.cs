@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to show a dialogue in the game.
 /// </summary>
-public class ShowDialogue : BaseEvent, IRoomEvent
+public record class ShowDialogue : BaseEvent, IRoomEvent
 {
 	private RDDialogueExchange dialogueList = [];
 	private string text = "";

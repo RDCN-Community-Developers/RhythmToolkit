@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that narrates row information.
 /// </summary>
-public class NarrateRowInfo : BaseRowAction
+public record class NarrateRowInfo : BaseRowAction
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.NarrateRowInfo;

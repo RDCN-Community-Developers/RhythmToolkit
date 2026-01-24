@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an action to set the visibility of a decoration.
 /// </summary>
-public class SetVisible : BaseDecorationAction
+public record class SetVisible : BaseDecorationAction
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetVisible;

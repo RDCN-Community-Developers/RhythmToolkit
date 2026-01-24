@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to set the room content mode.
 /// </summary>
-public class SetRoomContentMode : BaseEvent
+public record class SetRoomContentMode : BaseEvent
 {
 	/// <summary>
 	/// Gets or sets the mode of the room content.

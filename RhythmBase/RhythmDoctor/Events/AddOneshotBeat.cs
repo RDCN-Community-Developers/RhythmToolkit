@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event to add a one-shot beat.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class AddOneshotBeat : BaseBeat
+public record class AddOneshotBeat : BaseBeat
 {
 	/// <summary>
 	/// Gets or sets the type of pulse.

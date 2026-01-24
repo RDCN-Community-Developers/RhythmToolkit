@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that renames or modifies the name of a game window.
 /// </summary>
-public class RenameWindow : BaseWindowEvent
+public record class RenameWindow : BaseWindowEvent
 {
 	/// <summary>
 	/// The text to set, append, or use when renaming the window.

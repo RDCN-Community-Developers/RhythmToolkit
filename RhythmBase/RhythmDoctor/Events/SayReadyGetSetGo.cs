@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that says "Ready, Get Set, Go" with various voice sources and phrases.
 /// </summary>
-public class SayReadyGetSetGo : BaseEvent, IRoomEvent
+public record class SayReadyGetSetGo : BaseEvent, IRoomEvent
 {
 	/// <summary>
 	/// Gets or sets the phrase to say.

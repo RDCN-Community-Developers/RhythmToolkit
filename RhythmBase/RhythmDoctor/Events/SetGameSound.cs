@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to set the game sound.
 /// </summary>
-public partial class SetGameSound : BaseEvent, IAudioFileEvent
+public partial record class SetGameSound : BaseEvent, IAudioFileEvent
 {
 	/// <summary>  
 	/// Gets or sets the audio associated with the event.  

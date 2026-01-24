@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a camera pulse event in a room.
 /// </summary>
-public class PulseCamera : BaseEvent, IRoomEvent
+public record class PulseCamera : BaseEvent, IRoomEvent
 {
 	///<inheritdoc/>
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);

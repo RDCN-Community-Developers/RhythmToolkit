@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to set a VFX preset.
 /// </summary>
-public class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
+public record class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 {
 	///<inheritdoc/>
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);

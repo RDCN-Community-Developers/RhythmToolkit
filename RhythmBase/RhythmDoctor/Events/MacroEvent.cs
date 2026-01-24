@@ -9,7 +9,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents a base class for grouping events in Rhythm Doctor.  
 /// </summary>  
 [RDJsonObjectNotSerializable]
-public abstract partial class MacroEvent : BaseEvent, IAudioFileEvent, IImageFileEvent
+public abstract partial record class MacroEvent : BaseEvent, IAudioFileEvent, IImageFileEvent
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.MacroEvent;
@@ -213,7 +213,7 @@ public abstract partial class MacroEvent : BaseEvent, IAudioFileEvent, IImageFil
 /// <summary>
 /// Represents a group of events in Rhythm Doctor.
 /// </summary>
-public abstract partial class MacroEvent<T> : MacroEvent where T : new()
+public abstract partial record class MacroEvent<T> : MacroEvent where T : new()
 {
 	/// <summary>
 	/// Retrieves the events in the group with additional tagging and comments.

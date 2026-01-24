@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that tints rows with specified colors and effects.
 /// </summary>
-public class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
+public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 {
 	/// <summary>
 	/// Gets or sets the tint color.

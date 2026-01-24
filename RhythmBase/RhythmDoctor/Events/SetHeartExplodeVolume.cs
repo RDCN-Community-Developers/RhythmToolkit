@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Represents an event to set the volume of the heart explosion sound.
 	/// </summary>
-	public class SetHeartExplodeVolume : BaseEvent, IBarBeginningEvent
+	public record class SetHeartExplodeVolume : BaseEvent, IBarBeginningEvent
 	{
 		/// <summary>
 		/// Gets or sets the volume of the heart explosion sound.

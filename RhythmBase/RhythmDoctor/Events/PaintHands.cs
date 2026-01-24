@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to paint hands with specified properties.
 /// </summary>
-public class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
+public record class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 {
 	/// <summary>
 	/// Gets or sets the tint color of the hands.

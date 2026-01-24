@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to reorder rooms.
 /// </summary>
-public class ReorderRooms : BaseEvent
+public record class ReorderRooms : BaseEvent
 {
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ReorderRooms"/> class.

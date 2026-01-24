@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an event to set a theme in a room.  
 /// </summary>  
-public class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
+public record class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
 {
 	/// <summary>  
 	/// Gets or sets the theme preset.  

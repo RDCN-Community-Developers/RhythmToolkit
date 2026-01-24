@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a Flash event in the rhythm base.
 /// </summary>
-public class Flash : BaseEvent
+public record class Flash : BaseEvent
 {
 	/// <summary>
 	/// Gets or sets the rooms associated with the flash event.

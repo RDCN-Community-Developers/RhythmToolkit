@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// and extensible event data.
 /// </summary>
 [RDJsonObjectNotSerializable]
-public class ForwardRowEvent : BaseRowAction, IForwardEvent
+public record class ForwardRowEvent : BaseRowAction, IForwardEvent
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.ForwardRowEvent;

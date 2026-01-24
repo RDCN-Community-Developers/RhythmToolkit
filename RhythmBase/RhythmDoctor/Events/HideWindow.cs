@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that hides or shows a specific window.
 /// </summary>
-public class HideWindow : BaseWindowEvent
+public record class HideWindow : BaseWindowEvent
 {
   /// <inheritdoc />
   public override EventType Type => EventType.HideWindow;

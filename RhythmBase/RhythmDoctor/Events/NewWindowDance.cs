@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a new window dance event.
 /// </summary>
-public class NewWindowDance : BaseWindowEvent, IEaseEvent
+public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 {
 	/// <summary>
 	/// Gets or sets the preset.

@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an event to set the play style.
 /// </summary>
-public class SetPlayStyle : BaseEvent
+public record class SetPlayStyle : BaseEvent
 {
 	/// <summary>
 	/// Gets or sets the play style.

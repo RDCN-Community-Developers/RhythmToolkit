@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an event to set the number of crotchets per bar.
 /// </summary>
-public class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
+public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 {
 	/// <summary>
 	/// Gets the type of the event.

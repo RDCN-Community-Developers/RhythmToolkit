@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event to add a classic beat.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class AddClassicBeat : BaseBeat
+public record class AddClassicBeat : BaseBeat
 {
 	/// <summary>
 	/// Gets or sets the tick value.

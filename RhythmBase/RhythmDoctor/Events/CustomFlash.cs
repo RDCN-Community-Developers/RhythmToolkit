@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a custom flash event.
 /// </summary>
-public class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
+public record class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 {
 	/// <inheritdoc />
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);

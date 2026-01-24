@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents a window resize event.  
 /// </summary>
-public class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
+public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.WindowResize;

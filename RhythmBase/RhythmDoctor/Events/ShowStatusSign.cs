@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to show a status sign.
 /// </summary>
-public class ShowStatusSign : BaseEvent, IDurationEvent
+public record class ShowStatusSign : BaseEvent, IDurationEvent
 {
 	/// <summary>
 	/// Gets or sets a value indicating whether to use beats.

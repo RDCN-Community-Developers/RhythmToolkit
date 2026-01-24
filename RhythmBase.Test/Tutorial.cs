@@ -442,7 +442,7 @@ namespace RhythmBase.Test
 		}
 		// Create a MyEvent type  
 		//   Inherit from CustomEvent  
-		public class MyEvent : ForwardEvent
+		public record class MyEvent : ForwardEvent
 		{
 			// Override property  
 			public override Tab Tab => Tab.Actions;
@@ -481,7 +481,7 @@ namespace RhythmBase.Test
 			public RDSize Size { get; set; }
 			public int RowIndex { get; set; }
 		}
-		public class MoveCameraRectangle : MacroEvent<GroupData1>
+		public record class MoveCameraRectangle : MacroEvent<GroupData1>
 		{
 			public RDSize Size
 			{

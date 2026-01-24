@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event that changes the configuration of player rows, including player assignments, player mode, and
 /// CPU markers.
 /// </summary>
-public class ChangePlayersRows : BaseEvent
+public record class ChangePlayersRows : BaseEvent
 {
 	/// <summary>
 	/// Initializes a new instance of the ChangePlayersRows class.

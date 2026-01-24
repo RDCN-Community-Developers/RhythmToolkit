@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an action to reorder a row in the Rhythm Doctor editor.  
 /// </summary>  
-public class ReorderRow : BaseRowAction
+public record class ReorderRow : BaseRowAction
 {
 	/// <inheritdoc/>  
 	public override EventType Type => EventType.ReorderRow;

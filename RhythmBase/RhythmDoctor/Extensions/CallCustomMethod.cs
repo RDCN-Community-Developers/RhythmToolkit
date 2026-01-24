@@ -5,7 +5,7 @@ using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
-	public partial class CallCustomMethod
+	public partial record class CallCustomMethod
 	{
 		/// <summary>
 		/// Contains a series of default custom method implementations.

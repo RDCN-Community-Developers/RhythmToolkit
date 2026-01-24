@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a tile event in the rhythm base system.
 /// </summary>
-public class Tile : BaseDecorationAction, IEaseEvent
+public record class Tile : BaseDecorationAction, IEaseEvent
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.Tile;

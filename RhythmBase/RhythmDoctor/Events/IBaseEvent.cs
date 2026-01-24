@@ -46,16 +46,16 @@ public interface IBaseEvent : IEvent
 	/// <param name="propertyName">The name of the property whose value is to be retrieved or set. The property name is case-sensitive.</param>
 	/// <returns></returns>
 	JsonElement this[string propertyName] { get; set; }
-	/// <summary>  
-	/// Creates a deep copy of the current event instance.  
-	/// </summary>  
-	/// <typeparam name="TEvent">The type of the event to clone, which must implement <see cref="IBaseEvent"/> and have a parameterless constructor.</typeparam>  
-	/// <returns>A new instance of <typeparamref name="TEvent"/> that is a copy of the current event.</returns>  
-	TEvent Clone<TEvent>() where TEvent : IBaseEvent, new();
+	///// <summary>  
+	///// Creates a deep copy of the current event instance.  
+	///// </summary>  
+	///// <typeparam name="TEvent">The type of the event to clone, which must implement <see cref="IBaseEvent"/> and have a parameterless constructor.</typeparam>  
+	///// <returns>A new instance of <typeparamref name="TEvent"/> that is a copy of the current event.</returns>  
+	//TEvent Clone<TEvent>() where TEvent : IBaseEvent, new();
 
-	/// <summary>  
-	/// Creates a deep copy of the current event instance as an <see cref="IBaseEvent"/>.  
-	/// </summary>  
-	/// <returns>A new instance of <see cref="IBaseEvent"/> that is a copy of the current event.</returns>  
-	IBaseEvent Clone();
+	///// <summary>  
+	///// Creates a deep copy of the current event instance as an <see cref="IBaseEvent"/>.  
+	///// </summary>  
+	///// <returns>A new instance of <see cref="IBaseEvent"/> that is a copy of the current event.</returns>  
+	//IBaseEvent Clone();
 }

@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to set clap sounds for different players and CPU.
 /// </summary>
-public class SetClapSounds : BaseEvent, IAudioFileEvent
+public record class SetClapSounds : BaseEvent, IAudioFileEvent
 {
 	/// <summary>
 	/// Gets or sets the clap sound for player 1.

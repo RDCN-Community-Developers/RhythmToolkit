@@ -85,31 +85,32 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			/// </summary>
 			public BaseBeat[] Splitted(PatternCollection patterns, int syncoBeat = -1, float syncoSwing = 0)
 			{
-				List<BaseBeat> l = [];
-				AddFreeTimeBeat head = e.Clone<AddFreeTimeBeat>();
-				head.Pulse = 0;
-				head.Hold = e.Hold;
-				l.Add(head);
-				int i = 1;
-				do
-				{
-					if (!(i < 6 && patterns[i] == Pattern.X))
-					{
-						PulseFreeTimeBeat pulse = e.Clone<PulseFreeTimeBeat>();
-						PulseFreeTimeBeat pulseFreeTimeBeat;
-						(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * i;
-						if (i >= syncoBeat)
-							(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat - syncoSwing;
-						if (i % 2 == 1)
-							(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));
-						pulse.Hold = e.Hold;
-						pulse.Action = PulseAction.Increment;
-						l.Add(pulse);
-					}
-					i++;
-				}
-				while (i <= 6);
-				return [.. l];
+				throw new NotImplementedException();
+				//List<BaseBeat> l = [];
+				//AddFreeTimeBeat head = e.Clone<AddFreeTimeBeat>();
+				//head.Pulse = 0;
+				//head.Hold = e.Hold;
+				//l.Add(head);
+				//int i = 1;
+				//do
+				//{
+				//	if (!(i < 6 && patterns[i] == Pattern.X))
+				//	{
+				//		PulseFreeTimeBeat pulse = e.Clone<PulseFreeTimeBeat>();
+				//		PulseFreeTimeBeat pulseFreeTimeBeat;
+				//		(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * i;
+				//		if (i >= syncoBeat)
+				//			(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat - syncoSwing;
+				//		if (i % 2 == 1)
+				//			(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));
+				//		pulse.Hold = e.Hold;
+				//		pulse.Action = PulseAction.Increment;
+				//		l.Add(pulse);
+				//	}
+				//	i++;
+				//}
+				//while (i <= 6);
+				//return [.. l];
 			}
 		}
 		extension(AddFreeTimeBeat e)
@@ -626,7 +627,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		public static RDRotatedRectE RotatedRect(this Move e) => new(e.Position, e.Scale, e.Pivot, e.Angle);
 		private static SayReadyGetSetGo SplitCopy(this SayReadyGetSetGo e, float extraBeat, SayReadyGetSetGoWord word)
 		{
-			SayReadyGetSetGo temp = e.Clone<SayReadyGetSetGo>();
+			SayReadyGetSetGo temp = e with { };
 			temp.Beat += extraBeat;
 			temp.PhraseToSay = word;
 			temp.Volume = e.Volume;

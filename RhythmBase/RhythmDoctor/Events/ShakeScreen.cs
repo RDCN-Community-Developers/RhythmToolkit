@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that shakes the screen.
 /// </summary>
-public class ShakeScreen : BaseEvent, IRoomEvent
+public record class ShakeScreen : BaseEvent, IRoomEvent
 {
 	///<inheritdoc/>
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);

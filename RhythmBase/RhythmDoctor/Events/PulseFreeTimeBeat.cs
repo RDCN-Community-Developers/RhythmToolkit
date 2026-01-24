@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a pulse free time beat event.
 /// </summary>
-public class PulseFreeTimeBeat : BaseBeat
+public record class PulseFreeTimeBeat : BaseBeat
 {
 	/// <summary>
 	/// Gets or sets the hold duration.

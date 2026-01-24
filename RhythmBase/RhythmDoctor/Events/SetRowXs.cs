@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 
 /// <inheritdoc />
 //[RDJsonObjectNotSerializable]
-public class SetRowXs : BaseBeat
+public record class SetRowXs : BaseBeat
 {
 	/// <inheritdoc />
 	public override EventType Type => EventType.SetRowXs;

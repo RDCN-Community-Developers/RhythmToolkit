@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an event to set the content of a window.  
 /// </summary>  
-public class SetWindowContent : BaseWindowEvent, IEaseEvent
+public record class SetWindowContent : BaseWindowEvent, IEaseEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.SetWindowContent;

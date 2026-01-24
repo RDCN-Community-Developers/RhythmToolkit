@@ -9,7 +9,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that sets the simulated desktop background for the simulated desktop mode.
 /// </summary>
-public class DesktopColor : BaseWindowEvent, IEaseEvent
+public record class DesktopColor : BaseWindowEvent, IEaseEvent
 {
 	///<inheritdoc/>
 	public override int Y => 0;

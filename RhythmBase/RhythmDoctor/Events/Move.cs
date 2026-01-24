@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a move event in the rhythm base system.
 /// </summary>
-public class Move : BaseDecorationAction, IEaseEvent
+public record class Move : BaseDecorationAction, IEaseEvent
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.Move;

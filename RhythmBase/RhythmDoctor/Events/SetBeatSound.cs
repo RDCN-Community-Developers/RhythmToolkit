@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an action to set the beat sound in the rhythm base.
 /// </summary>
-public class SetBeatSound : BaseRowAction, IAudioFileEvent
+public record class SetBeatSound : BaseRowAction, IAudioFileEvent
 {
 	/// <summary>
 	/// Gets or sets the audio sound for the beat.

@@ -9,7 +9,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// properties.
 /// </summary>
 [RDJsonObjectNotSerializable]
-public class ForwardEvent : BaseEvent, IForwardEvent
+public record class ForwardEvent : BaseEvent, IForwardEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.ForwardEvent;

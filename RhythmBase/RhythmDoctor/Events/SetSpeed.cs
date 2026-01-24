@@ -4,7 +4,7 @@ namespace RhythmBase.RhythmDoctor.Events
 	/// <summary>
 	/// Represents an event that sets the speed in the rhythm base.
 	/// </summary>
-	public class SetSpeed : BaseEvent, IEaseEvent
+	public record class SetSpeed : BaseEvent, IEaseEvent
 	{
 		///<inheritdoc/>
 		public EaseType Ease { get; set; } = EaseType.Linear;

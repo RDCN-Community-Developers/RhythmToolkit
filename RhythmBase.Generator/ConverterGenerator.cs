@@ -30,14 +30,6 @@ public class ConverterGenerator : IIncrementalGenerator
 		GenerateEventConverterForRDLevel(context);
 		GenerateEventConverterForADLevel(context);
 		GenerateFilterConverter(context);
-
-		// 预留：类处理
-		// var classes = context.SyntaxProvider.CreateSyntaxProvider(
-		// 	predicate: (s, _) => s is ClassDeclarationSyntax,
-		// 	transform: (ctx, _) => { ... })
-		// 	.Where(x => x.Item2)
-		// 	.Select((x, _) => x.symbol)
-		// 	.Collect();
 	}
 
 
@@ -341,15 +333,16 @@ public class ConverterGenerator : IIncrementalGenerator
 			predicate: (s, e) =>
 			{
 				return
-				s is ClassDeclarationSyntax classDeclaration &&
-				classDeclaration.BaseList is not null &&
-				!HasAttribute(classDeclaration.AttributeLists, JsonObjectNotSerializableAttrName);
+				(s is TypeDeclarationSyntax typeDeclaration &&
+				(typeDeclaration is ClassDeclarationSyntax or RecordDeclarationSyntax) &&
+				typeDeclaration.BaseList is not null &&
+				!HasAttribute(typeDeclaration.AttributeLists, JsonObjectNotSerializableAttrName));
 			},
 			transform: (ctx, e) =>
 			{
-				ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)ctx.Node;
-				PropertyDeclarationSyntax[] propertyDeclarations = [.. classDeclaration.ChildNodes().OfType<PropertyDeclarationSyntax>()];
-				INamedTypeSymbol? classDeclarationSymbol = ctx.SemanticModel.GetDeclaredSymbol(classDeclaration) ?? throw new NotImplementedException();
+				TypeDeclarationSyntax typeDeclaration = (TypeDeclarationSyntax)ctx.Node;
+				PropertyDeclarationSyntax[] propertyDeclarations = [.. typeDeclaration.ChildNodes().OfType<PropertyDeclarationSyntax>()];
+				INamedTypeSymbol? classDeclarationSymbol = ctx.SemanticModel.GetDeclaredSymbol(typeDeclaration) ?? throw new NotImplementedException();
 				bool isTargetEvent =
 					(!classDeclarationSymbol.IsAbstract) &&
 					(classDeclarationSymbol.ContainingNamespace?.ToDisplayString().Contains("RhythmBase.RhythmDoctor.Events") ?? false) &&

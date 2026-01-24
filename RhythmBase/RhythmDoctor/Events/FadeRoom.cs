@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that fades a room.
 /// </summary>
-public class FadeRoom : BaseEvent, IEaseEvent
+public record class FadeRoom : BaseEvent, IEaseEvent
 {
 	///<inheritdoc/>
 	public EaseType Ease { get; set; }

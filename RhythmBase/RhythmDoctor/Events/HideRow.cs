@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an event to hide a row with specific transitions and visibility options.
 /// </summary>
-public class HideRow : BaseRowAnimation
+public record class HideRow : BaseRowAnimation
 {
 	/// <summary>
 	/// Gets or sets the transition type for hiding the row.

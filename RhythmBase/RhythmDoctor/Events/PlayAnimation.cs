@@ -4,7 +4,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an action to play an animation.
 /// </summary>
-public class PlayAnimation : BaseDecorationAction
+public record class PlayAnimation : BaseDecorationAction
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.PlayAnimation;

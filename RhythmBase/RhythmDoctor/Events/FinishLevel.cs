@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an event that occurs when a level is finished.
 /// </summary>
-public class FinishLevel : BaseEvent
+public record class FinishLevel : BaseEvent
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.FinishLevel;

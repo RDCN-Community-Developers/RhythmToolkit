@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an event that plays an expression.
 /// </summary>
-public class PlayExpression : BaseRowAnimation
+public record class PlayExpression : BaseRowAnimation
 {
 	/// <summary>
 	/// Gets or sets the expression to be played.

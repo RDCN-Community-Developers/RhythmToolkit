@@ -1,7 +1,7 @@
 ﻿namespace RhythmBase.RhythmDoctor.Events;
 
 ///<inheritdoc/>
-public class ShowSubdivisionsRows : BaseEvent
+public record class ShowSubdivisionsRows : BaseEvent
 {
 	///<inheritdoc/>
 	public override EventType Type => EventType.ShowSubdivisionsRows;

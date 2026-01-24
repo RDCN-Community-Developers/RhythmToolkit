@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a tag action event.
 /// </summary>
-public class TagAction : BaseEvent
+public record class TagAction : BaseEvent
 {
 	/// <summary>
 	/// Gets or sets the action associated with the tag.

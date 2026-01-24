@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a Tint event which is a type of BaseDecorationAction and implements IEaseEvent.
 /// </summary>
-public class Tint : BaseDecorationAction, IEaseEvent, IColorEvent
+public record class Tint : BaseDecorationAction, IEaseEvent, IColorEvent
 {
 	///<inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;

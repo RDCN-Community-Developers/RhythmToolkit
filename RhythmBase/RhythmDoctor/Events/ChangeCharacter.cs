@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an action to change the character in a row event.  
 /// </summary>  
-public class ChangeCharacter : BaseRowAction
+public record class ChangeCharacter : BaseRowAction
 {
 	/// <inheritdoc/>  
 	public override EventType Type => EventType.ChangeCharacter;

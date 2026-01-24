@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents a BassDrop event in the rhythm base.  
 /// </summary>  
-public class BassDrop : BaseEvent, IRoomEvent
+public record class BassDrop : BaseEvent, IRoomEvent
 {
 	/// <inheritdoc/>
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);

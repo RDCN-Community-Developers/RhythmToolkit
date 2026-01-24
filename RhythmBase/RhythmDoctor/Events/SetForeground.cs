@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an event to set the foreground in a room.  
 /// </summary>  
-public class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent, IImageFileEvent
+public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent, IImageFileEvent
 {
 	/// <summary>  
 	/// Gets or sets the rooms associated with the event.  
