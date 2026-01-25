@@ -35,8 +35,13 @@ public record class MoveCamera : BaseEvent, IEaseEvent, IRoomEvent
 	/// Gets or sets a value indicating whether the camera is a real physical device.
 	/// </summary>
 	[RDJsonAlias("real")]
-	[RDJsonCondition($"$&.{nameof(RealCamera)} == true")]
+	[RDJsonCondition($"$&.{nameof(RealCamera)}")]
 	public bool RealCamera { get; set; } = false;
+	/// <summary>
+	/// Gets or sets the window identifier associated with the camera.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(RealCamera)} && $&.{nameof(Window)} != -1")]
+	public int Window { get; set; } = -1;
 	///<inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	///<inheritdoc/>
