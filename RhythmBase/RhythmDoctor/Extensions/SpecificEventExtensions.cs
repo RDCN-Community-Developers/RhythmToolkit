@@ -85,32 +85,31 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			/// </summary>
 			public BaseBeat[] Splitted(PatternCollection patterns, int syncoBeat = -1, float syncoSwing = 0)
 			{
-				throw new NotImplementedException();
-				//List<BaseBeat> l = [];
-				//AddFreeTimeBeat head = e.Clone<AddFreeTimeBeat>();
-				//head.Pulse = 0;
-				//head.Hold = e.Hold;
-				//l.Add(head);
-				//int i = 1;
-				//do
-				//{
-				//	if (!(i < 6 && patterns[i] == Pattern.X))
-				//	{
-				//		PulseFreeTimeBeat pulse = e.Clone<PulseFreeTimeBeat>();
-				//		PulseFreeTimeBeat pulseFreeTimeBeat;
-				//		(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * i;
-				//		if (i >= syncoBeat)
-				//			(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat - syncoSwing;
-				//		if (i % 2 == 1)
-				//			(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));
-				//		pulse.Hold = e.Hold;
-				//		pulse.Action = PulseAction.Increment;
-				//		l.Add(pulse);
-				//	}
-				//	i++;
-				//}
-				//while (i <= 6);
-				//return [.. l];
+				List<BaseBeat> l = [];
+				AddFreeTimeBeat head = e.CloneAs<AddFreeTimeBeat>();
+				head.Pulse = 0;
+				head.Hold = e.Hold;
+				l.Add(head);
+				int i = 1;
+				do
+				{
+					if (!(i < 6 && patterns[i] == Pattern.X))
+					{
+						PulseFreeTimeBeat pulse = e.CloneAs<PulseFreeTimeBeat>();
+						PulseFreeTimeBeat pulseFreeTimeBeat;
+						(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + e.Tick * i;
+						if (i >= syncoBeat)
+							(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat - syncoSwing;
+						if (i % 2 == 1)
+							(pulseFreeTimeBeat = pulse).Beat = pulseFreeTimeBeat.Beat + (e.Tick - ((e.Swing == 0f) ? e.Tick : e.Swing));
+						pulse.Hold = e.Hold;
+						pulse.Action = PulseAction.Increment;
+						l.Add(pulse);
+					}
+					i++;
+				}
+				while (i <= 6);
+				return [.. l];
 			}
 		}
 		extension(AddFreeTimeBeat e)

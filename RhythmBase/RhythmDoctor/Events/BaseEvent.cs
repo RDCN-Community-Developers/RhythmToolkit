@@ -53,44 +53,25 @@ public abstract record class BaseEvent : IBaseEvent
 		}
 	}
 	internal Dictionary<string, JsonElement> _extraData = [];
-	/////<inheritdoc/>
-	//public virtual TEvent Clone<TEvent>() where TEvent : IBaseEvent, new()
-	//{
-	//	if (EventTypeUtils.ToEnum<TEvent>() == Type)
-	//	{
-	//		TEvent e = (TEvent)MemberwiseClone();
-	//		((BaseEvent)(object)e)._beat = Beat.WithoutLink();
-	//		return e;
-	//	}
-	//	TEvent temp = new()
-	//	{
-	//		Beat = Beat.WithoutLink(),
-	//		Y = Y,
-	//		Tag = Tag,
-	//		Condition = Condition,
-	//		Active = Active
-	//	};
-	//		temp.Condition = Condition.Clone();
-	//	return temp;
-	//}
-	/////<inheritdoc/>
-	//public virtual IBaseEvent Clone()
-	//{
-	//	return (BaseEvent)MemberwiseClone();
-	//}
-	//internal virtual TEvent Clone<TEvent>(RDLevel level) where TEvent : IBaseEvent, new()
-	//{
-	//	TEvent temp = new()
-	//	{
-	//		Beat = Beat.WithoutLink(),
-	//		Y = Y,
-	//		Tag = Tag,
-	//		Condition = Condition,
-	//		Active = Active
-	//	};
-	//	temp.Condition = Condition.Clone();
-	//	return temp;
-	//}
+	///<inheritdoc/>
+	public virtual TEvent CloneAs<TEvent>() where TEvent : BaseEvent, new()
+	{
+		if (this is TEvent t)
+		{
+			return t with { _beat = Beat.WithoutLink() };
+		}
+		TEvent temp = new()
+		{
+			Beat = Beat.WithoutLink(),
+			Y = Y,
+			Tag = Tag,
+			RunTag = RunTag,
+			Condition = Condition,
+			Active = Active
+		};
+		temp.Condition = Condition.Clone();
+		return temp;
+	}
 	/// <inheritdoc/>
 	public override string ToString() => $"{Beat} {Type}";
 	internal RDBeat _beat = new(1f);
