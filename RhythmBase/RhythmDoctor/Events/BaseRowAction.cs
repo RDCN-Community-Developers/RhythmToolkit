@@ -9,19 +9,7 @@ public abstract record class BaseRowAction : BaseEvent
 	/// <summary>
 	/// Gets or sets the parent row event collection.
 	/// </summary>
-	public Row? Parent
-	{
-		get => _parent;
-		internal set
-		{
-			if (_parent != null)
-			{
-				_parent.Remove(this);
-				value?.Add(this);
-			}
-			_parent = value;
-		}
-	}
+	public Row? Parent => _parent;
 	/// <summary>
 	/// Gets the room associated with this action.
 	/// </summary>

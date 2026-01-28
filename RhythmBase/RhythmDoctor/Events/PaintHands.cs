@@ -19,37 +19,38 @@ public record class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// <summary>
 	/// Gets or sets the border style of the hands.
 	/// </summary>
-	public Border Border { get; set; } = Border.None;
+	[RDJsonCondition($"$&.{nameof(Border)} is not null")]
+	public Border? Border { get; set; }
 	/// <summary>
 	/// Gets or sets the border color of the hands.
 	/// </summary>
 	[Tween]
-	[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)}")]
+	[RDJsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Events.Border.None)}")]
 	public PaletteColor BorderColor { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets a value indicating whether the hand border should pulse.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+	[RDJsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Events.Border.None)} && $&.{nameof(BorderPulse)}")]
 	public bool BorderPulse { get; set; }
 	/// <summary>
 	/// Gets or sets the minimum value for the border pulse effect.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+	[RDJsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Events.Border.None)} && $&.{nameof(BorderPulse)}")]
 	public float BorderPulseMin { get; set; }
 	/// <summary>
 	/// Gets or sets the maximum value for the border pulse effect.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Border)} is not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Border.None)} && $&.{nameof(BorderPulse)}")]
+	[RDJsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Events.Border.None)} && $&.{nameof(BorderPulse)}")]
 	public float BorderPulseMax { get; set; }
 	/// <summary>
 	/// Gets or sets the opacity of the hands.
 	/// </summary>
 	[Tween]
-	public int Opacity { get; set; } = 100;
+	public int? Opacity { get; set; }
 	/// <summary>
 	/// Gets or sets a value indicating whether the hands should be tinted.
 	/// </summary>
-	public bool Tint { get; set; } = false;
+	public bool? Tint { get; set; }
 	///<inheritdoc/>
 	public float Duration { get; set; } = 0;
 	///<inheritdoc/>
@@ -62,4 +63,7 @@ public record class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	public override EventType Type => EventType.PaintHands;
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Actions;
+	///<inheritdoc/>
+	public override string ToString() => base.ToString() +
+																			 $" {Border}{(Border == Events.Border.None ? "" : ":" + BorderColor.ToString())}";
 }

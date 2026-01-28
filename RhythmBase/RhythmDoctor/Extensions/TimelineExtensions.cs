@@ -126,12 +126,14 @@ namespace RhythmBase.RhythmDoctor.Extensions
 						break;
 					case Tint tint:
 						if (tint.Parent is null) continue;
-						if (tint.IsTint)
+						if (tint.IsTint == true)
 							(tints[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.TintColor, new(tint.Ease, tint.Duration)));
-						if (tint.Border != Border.None)
+						if (tint.Border is not null and not Border.None)
 							(borderColors[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.BorderColor, new(tint.Ease, tint.Duration)));
-						(borders[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.Border));
-						(opacities[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.Opacity, new(tint.Ease, tint.Duration)));
+						if(tint.Border is not null)
+						(borders[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.Border.Value));
+						if(tint.Opacity is not null)
+						(opacities[tint.Parent.Index] ??= []).Add(new(tint.Beat.BeatOnly, tint.Opacity.Value, new(tint.Ease, tint.Duration)));
 						break;
 					#endregion
 					#region rows
