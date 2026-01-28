@@ -24,7 +24,7 @@ public record class SetRowXs : BaseBeat
 	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
 	public float SyncoSwing { get; set; } = 0;
 	/// <summary>
-	/// Gets or sets the synchronization style for row processing.
+	/// Gets or sets the syncopation beat's cue style.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
 	public SetRowXsSyncoStyle SyncoStyle { get; set; } = SetRowXsSyncoStyle.Chirp;
