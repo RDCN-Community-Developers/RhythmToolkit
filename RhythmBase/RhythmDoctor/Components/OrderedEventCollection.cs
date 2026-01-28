@@ -45,7 +45,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Adds an event to the collection.
 		/// </summary>
 		/// <param name="item">The event to add.</param>
-		public bool Add(IBaseEvent item)
+		internal bool Add(IBaseEvent item)
 		{
 			if (eventsBeatOrder.TryGetValue(item.Beat, out TypedEventCollection<IBaseEvent>? value))
 				return value.Add(item);
