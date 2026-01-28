@@ -29,7 +29,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					writer.WriteString("expression"u8, ((CustomCondition)value).Expression);
 					break;
 				case BaseConditional.ConditionType.TimesExecuted:
-					writer.WriteNumber("time"u8, ((TimesExecutedCondition)value).MaxTimes);
+					writer.WriteNumber("maxTimes"u8, ((TimesExecutedCondition)value).MaxTimes);
 					break;
 				case BaseConditional.ConditionType.Language:
 					writer.WriteString("Language"u8, ((LanguageCondition)value).TargetLanguage.ToEnumString());
@@ -190,7 +190,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName.SequenceEqual("time"u8))
+					if (propertyName.SequenceEqual("maxTimes"u8))
 						condition.MaxTimes = reader.GetInt32();
 				}
 			}
