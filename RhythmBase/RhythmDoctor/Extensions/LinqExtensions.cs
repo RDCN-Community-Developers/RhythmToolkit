@@ -70,19 +70,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				return (ordered.GetEnumerator() as EventEnumerator<IBaseEvent> ?? new EventEnumerator<IBaseEvent>(ordered)).InRange(range);
 			throw new NotSupportedException("The provided IEventEnumerable is not supported.");
 		}
-
-		/// <summary>
-		/// Filters the event enumerable to only include events at the specified beat.
-		/// </summary>
-		/// <param name="source">The source event enumerable.</param>
-		/// <param name="beat">The beat to filter for.</param>
-		/// <returns>An <see cref="IEventEnumerable{IBaseEvent}"/> containing only events at the specified beat.</returns>
-		/// <exception cref="NotImplementedException">Always thrown as this method is not implemented.</exception>
-		private static IEventEnumerable<IBaseEvent> AtBeat(this IEventEnumerable<IBaseEvent> source, RDBeat beat)
-		{
-			throw new NotImplementedException();
-		}
-
 		/// <summary>
 		/// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> within the specified beat range.
 		/// </summary>
@@ -126,9 +113,19 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <param name="beat">The beat to filter for.</param>
 		/// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> at the specified beat.</returns>
 		/// <exception cref="NotImplementedException">Always thrown as this method is not implemented.</exception>
-		private static IEventEnumerable<TEvent> AtBeat<TEvent>(this IEventEnumerable<TEvent> source, RDBeat beat) where TEvent : IBaseEvent
+		public static IEnumerable<TEvent> AtBeat<TEvent>(this IEventEnumerable<TEvent> source, RDBeat beat) where TEvent : IBaseEvent
 		{
-			throw new NotImplementedException();
+			if (source is EventEnumerator<TEvent> casted)
+				return casted.AtBeat(beat);
+			if (source is OrderedEventCollection ordered)
+			{
+				var collection = ordered.eventsBeatOrder.TryGetValue(beat, out TypedEventCollection<IBaseEvent>? b) ? b : [];
+				var types = new ReadOnlyEnumCollection<EventType>(Utils.EventTypeUtils.ToEnums(typeof(TEvent)));
+				return collection.ContainsTypes(types) ?
+					collection.Where(i => types.Contains(i.Type)).OfType<TEvent>() :
+					[];
+			}
+			throw new NotSupportedException("The provided IEventEnumerable is not supported.");
 		}
 	}
 }

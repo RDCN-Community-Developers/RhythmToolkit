@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	internal class EventEnumerator { }
 	internal class EventEnumerator<TEvent> : EventEnumerator, IEventEnumerable<TEvent>, IEnumerator<TEvent> where TEvent : IBaseEvent
 	{
-		protected readonly IEnumerator<KeyValuePair< RDBeat, TypedEventCollection<IBaseEvent>>> beats;
+		protected readonly IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> beats;
 		protected IEnumerator<IBaseEvent>? events;
 		protected readonly OrderedEventCollection collection;
 		private EventType[] types;
@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			this.types = types;
 			this.range = range;
 			while (beats.MoveNext())
-				if ((range.Start is null || beats.Current.Key >= range.Start) && beats.Current.Value.ContainsTypes(types))
+				if ((range.Start is null || beats.Current.Key > range.Start) && beats.Current.Value.ContainsTypes(types))
 				{
 					if (range.End is null || beats.Current.Key < range.End)
 						events = beats.Current.Value.GetEnumerator();
@@ -72,14 +72,25 @@ namespace RhythmBase.RhythmDoctor.Components
 		public IEventEnumerable<IBaseEvent> OfEvents(EventType[] types)
 		{
 			this.types = types;
-			return this as EventEnumerator<IBaseEvent> ?? new(collection, types, range) ;
+			return this as EventEnumerator<IBaseEvent> ?? new(collection, types, range);
 		}
 		public EventEnumerator<TEvent> InRange(RDRange range)
 		{
 			this.range = this.range.Intersect(range);
 			return this;
 		}
-
+		public IEnumerable<TEvent> AtBeat(RDBeat beat)
+		{
+			if (!range.Contains(beat))
+				yield break;
+			if (!collection.eventsBeatOrder.TryGetValue(beat, out var events))
+				yield break;
+			if(!events.ContainsTypes(types))
+				yield break;
+			foreach (var ev in events)
+				if (types.Contains(ev.Type))
+					yield return (TEvent)ev;
+		}
 		public IEnumerator<TEvent> GetEnumerator() => this;
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
