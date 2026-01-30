@@ -153,11 +153,11 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <summary>
 		/// Calculate the BPM of the moment in which the beat is.
 		/// </summary>
-		public float BeatsPerMinuteOf(RDBeat beat) => _BPMList.LastOrDefault((i) => i.Beat < beat)?.BeatsPerMinute ?? Utils.DefaultBPM;
+		public float BeatsPerMinuteOf(RDBeat beat) => _BPMList.LastOrDefault((i) => i.Beat <= beat)?.BeatsPerMinute ?? Utils.DefaultBPM;
 		/// <summary>
 		/// Calculate the CPB of the moment in which the beat is.
 		/// </summary>
-		public float CrotchetsPerBarOf(RDBeat beat) => _CPBList.LastOrDefault((i) => i.Beat < beat)?.CrotchetsPerBar ?? 8;
+		public float CrotchetsPerBarOf(RDBeat beat) => _CPBList.LastOrDefault((i) => i.Beat <= beat)?.CrotchetsPerBar ?? 8;
 		internal readonly RDLevel Collection;
 		private RedBlackTree<int, Bpm> _BpmTree = [];
 		private RedBlackTree<int, Cpb> _CpbTree = [];
