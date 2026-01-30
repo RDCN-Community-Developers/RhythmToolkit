@@ -468,6 +468,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (left._calculator != null)
 			{
 				// 用 left 的单位比较
+				left.Cache();
 				return (right._isBeatLoaded ? left.BeatOnly.CompareTo(right._beat)
 					: right._isBarBeatLoaded ? CompareInternal(left._b_bar, left._b_beat, right._b_bar, right._b_beat)
 					: right._isTimeSpanLoaded ? left.BeatOnly.CompareTo(left._calculator.TimeSpanToBeatOnly(right.TimeSpan))
@@ -477,6 +478,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (right._calculator != null)
 			{
 				// 用 right 的单位比较
+				right.Cache();
 				return (left._isBeatLoaded ? left._beat.CompareTo(right.BeatOnly)
 					: left._isBarBeatLoaded ? CompareInternal(left._b_bar, left._b_beat, right._b_bar, right._b_beat)
 					: left._isTimeSpanLoaded ? right.BeatOnly.CompareTo(right._calculator.TimeSpanToBeatOnly(left.TimeSpan))
@@ -486,10 +488,10 @@ namespace RhythmBase.RhythmDoctor.Components
 			throw new RhythmBaseException("The beat cannot be compared.");
 		}
 		/// <inheritdoc/>
-		public override string ToString()
+		public readonly override string ToString()
 		{
 			string ToString;
-			(int bar, float beat) = this;
+			Deconstruct(out int bar, out float beat);
 			if (IsEmpty)
 				ToString = $"[{(
 					_isBeatLoaded ? _beat.ToString() : "?"
