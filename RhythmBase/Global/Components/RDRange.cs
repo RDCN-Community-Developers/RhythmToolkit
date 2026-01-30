@@ -87,7 +87,7 @@ namespace RhythmBase.Global.Components
 		/// </summary>
 		/// <param name="b">The beat to check.</param>
 		/// <returns>True if the beat is within the range; otherwise, false.</returns>
-		public readonly bool Contains(RDBeat b) => (Start == null || Start < b) && (End == null || b < End);
+		public readonly bool Contains(RDBeat b) => (Start == null || Start <= b) && (End == null || b < End);
 		/// <summary>
 		/// Computes the intersection of the current range with another specified range.
 		/// </summary>
