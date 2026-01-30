@@ -165,6 +165,19 @@ public class ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : st
 		return false;
 	}
 	/// <summary>
+	/// Determines whether the collection contains any of the specified enumeration values.
+	/// </summary>
+	/// <param name="types">A parameter array of enumeration value collections to check for presence in the collection. Each enumerable may
+	/// contain one or more values to test.</param>
+	/// <returns>true if at least one of the specified enumeration values is present in the collection; otherwise, false.</returns>
+	public bool ContainsAny(ReadOnlyEnumCollection<TEnum> types)
+	{
+		for (int i = 0; i < Math.Min(_bits.Length, types._bits.Length); i++)
+			if ((_bits[i] & types._bits[i]) != 0)
+				return true;
+		return false;
+	}
+	/// <summary>
 	/// Determines whether the collection contains all of the specified enumeration values.
 	/// </summary>
 	/// <param name="types">An array of enumeration values to check for presence in the collection. Cannot be null.</param>
@@ -186,6 +199,23 @@ public class ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : st
 	{
 		foreach (TEnum type in types)
 			if (!Contains(type)) return false;
+		return true;
+	}
+	/// <summary>
+	/// Determines whether all specified enumeration values are contained within the current set.
+	/// </summary>
+	/// <remarks>If any collection in the parameter array is null, the method may throw an exception. The method
+	/// returns false as soon as a missing value is found, which may improve performance for large sets.</remarks>
+	/// <param name="types">A parameter array of enumeration value collections to check for containment. Each collection must not be null.</param>
+	/// <returns>true if every enumeration value in all provided collections is contained; otherwise, false.</returns>
+	public bool ContainsAll(ReadOnlyEnumCollection<TEnum> types)
+	{
+		for (int i = 0; i < Math.Min(_bits.Length, types._bits.Length); i++)
+		{
+			ulong tBits = types._bits[i];
+			if (tBits != 0 && (_bits[i] & tBits) != tBits)
+				return false;
+		}
 		return true;
 	}
 	/// <summary>

@@ -1,3 +1,4 @@
+using RhythmBase.RhythmDoctor.Events;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -168,6 +169,19 @@ namespace RhythmBase.Global.Components
 			return false;
 		}
 		/// <summary>
+		/// Determines whether the collection contains any of the specified enumeration values.
+		/// </summary>
+		/// <param name="types">A parameter array of enumeration value collections to check for presence in the collection. Each enumerable may
+		/// contain one or more values to test.</param>
+		/// <returns>true if at least one of the specified enumeration values is present in the collection; otherwise, false.</returns>
+		public bool ContainsAny(EnumCollection<TEnum> types)
+		{
+			for (int i = 0; i < Math.Min(_bits.Length, types._bits.Length); i++)
+				if ((_bits[i] & types._bits[i]) != 0)
+					return true;
+			return false;
+		}
+		/// <summary>
 		/// Determines whether all specified enumeration values are contained within the current set.
 		/// </summary>
 		/// <param name="types">An array of enumeration values to check for containment. Cannot be null. The method returns false if any value in
@@ -191,6 +205,33 @@ namespace RhythmBase.Global.Components
 			foreach (TEnum type in types)
 				if (!Contains(type)) return false;
 			return true;
+		}
+		/// <summary>
+		/// Determines whether all specified enumeration values are contained within the current set.
+		/// </summary>
+		/// <remarks>If any collection in the parameter array is null, the method may throw an exception. The method
+		/// returns false as soon as a missing value is found, which may improve performance for large sets.</remarks>
+		/// <param name="types">A parameter array of enumeration value collections to check for containment. Each collection must not be null.</param>
+		/// <returns>true if every enumeration value in all provided collections is contained; otherwise, false.</returns>
+		public bool ContainsAll(EnumCollection<TEnum> types)
+		{
+			for (int i = 0; i < Math.Min(_bits.Length, types._bits.Length); i++)
+			{
+				ulong tBits = types._bits[i];
+				if (tBits != 0 && (_bits[i] & tBits) != tBits)
+					return false;
+			}
+			return true;
+		}
+		/// <summary>
+		/// Returns a read-only wrapper for the current collection.
+		/// </summary>
+		/// <remarks>The returned collection reflects changes made to the underlying collection. To prevent
+		/// modifications, ensure that the original collection is not altered after creating the read-only wrapper.</remarks>
+		/// <returns>A <see cref="ReadOnlyEnumCollection{TEnum}"/> that provides a read-only view of the current collection.</returns>
+		public ReadOnlyEnumCollection<TEnum> AsReadOnly()
+		{
+			return new ReadOnlyEnumCollection<TEnum>(this);
 		}
 		/// <summary>
 		/// Returns an enumerator that iterates through the set of values contained in the collection.
