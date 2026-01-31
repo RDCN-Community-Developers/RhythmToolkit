@@ -87,7 +87,7 @@ namespace RhythmBase.Test
 		{
 			GlobalSettings.CachePath = "cache";
 			{
-				LevelReadOrWriteSettings settings = new()
+				LevelReadSettings settings = new()
 				{
 					InactiveEventsHandling = InactiveEventsHandling.Ignore,
 					UnreadableEventsHandling = UnreadableEventHandling.Store,

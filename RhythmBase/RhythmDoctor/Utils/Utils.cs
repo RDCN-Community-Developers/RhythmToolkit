@@ -34,30 +34,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 				}
 			};
 		}
-		/// <summary>
-		/// Gets the <see cref="JsonSerializerOptions"/> configured for serializing or deserializing a level.
-		/// </summary>
-		/// <param name="settings">
-		/// The <see cref="LevelReadOrWriteSettings"/> to use for serialization options. If <c>null</c>, a new instance is used.
-		/// </param>
-		/// <returns>
-		/// A <see cref="JsonSerializerOptions"/> instance configured with converters and indentation settings.
-		/// </returns>
-		public static JsonSerializerOptions GetJsonSerializerOptions(LevelReadOrWriteSettings? settings = null)
-		{
-			settings ??= new();
-			JsonSerializerOptions options = new(Utils.options);
-			if (settings.Indented)
-				options.WriteIndented = true;
-			else
-				options.WriteIndented = false;
-			LevelConverter levelConverter = new()
-			{
-				Settings = settings,
-			};
-			options.Converters.Add(levelConverter);
-			return options;
-		}
 
 		/// <summary>
 		/// Gets the <see cref="JsonSerializerOptions"/> configured for serializing or deserializing a level, and sets the file path for the converter.
@@ -71,7 +47,31 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <returns>
 		/// A <see cref="JsonSerializerOptions"/> instance configured with converters, indentation settings, and file path.
 		/// </returns>
-		public static JsonSerializerOptions GetJsonSerializerOptions(string dirPath, LevelReadOrWriteSettings? settings = null)
+		public static JsonSerializerOptions GetJsonSerializerOptions(string? dirPath = null, LevelReadSettings? settings = null)
+		{
+			settings ??= new();
+			JsonSerializerOptions options = new(Utils.options);
+			LevelConverter levelConverter = new()
+			{
+				ReadSettings = settings,
+				DirectoryName = dirPath,
+			};
+			options.Converters.Add(levelConverter);
+			return options;
+		}
+		/// <summary>
+		/// Gets the <see cref="JsonSerializerOptions"/> configured for serializing or deserializing a level, and sets the file path for the converter.
+		/// </summary>
+		/// <param name="dirPath">
+		/// The file path to associate with the level converter.
+		/// </param>
+		/// <param name="settings">
+		/// The <see cref="LevelReadOrWriteSettings"/> to use for serialization options. If <c>null</c>, a new instance is used.
+		/// </param>
+		/// <returns>
+		/// A <see cref="JsonSerializerOptions"/> instance configured with converters, indentation settings, and file path.
+		/// </returns>
+		public static JsonSerializerOptions GetJsonSerializerOptions(string? dirPath = null, LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = new(Utils.options);
@@ -81,7 +81,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 				options.WriteIndented = false;
 			LevelConverter levelConverter = new()
 			{
-				Settings = settings,
+				WriteSettings = settings,
 				DirectoryName = dirPath,
 			};
 			options.Converters.Add(levelConverter);

@@ -91,7 +91,7 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="settings">Optional settings for reading the level.</param>
 		/// <returns>An <see cref="ADLevel"/> instance loaded from the file.</returns>
 		/// <exception cref="RhythmBaseException">Thrown if the file type is not supported or extraction fails.</exception>
-		public static ADLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
+		public static ADLevel FromFile(string filepath, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
 			string extension = Path.GetExtension(filepath);
@@ -145,7 +145,7 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
 		/// <returns>A task that represents the asynchronous operation. The task result contains the loaded <see cref="ADLevel"/> instance.</returns>
 		/// <exception cref="RhythmBaseException">Thrown if the file type is not supported or extraction fails.</exception>
-		public static async Task<ADLevel> FromFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		public static async Task<ADLevel> FromFileAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
 			string extension = Path.GetExtension(filepath);
@@ -199,10 +199,10 @@ namespace RhythmBase.Adofai.Components
 		/// <returns>
 		/// An <see cref="ADLevel"/> instance loaded from the stream. If deserialization fails, returns a new empty <see cref="ADLevel"/>.
 		/// </returns>
-		public static ADLevel FromStream(Stream adlevelStream, LevelReadOrWriteSettings? settings = null)
+		public static ADLevel FromStream(Stream adlevelStream, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			ADLevel? level;
 			settings.OnBeforeReading();
 			using EscapeSpecialCharacterStream stream = new(adlevelStream);
@@ -219,10 +219,10 @@ namespace RhythmBase.Adofai.Components
 		/// <returns>
 		/// A task that represents the asynchronous operation. The task result contains the loaded <see cref="ADLevel"/> instance.
 		/// </returns>
-		public static async Task<ADLevel> FromStreamAsync(Stream stream, LevelReadOrWriteSettings? settings = null)
+		public static async Task<ADLevel> FromStreamAsync(Stream stream, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			ADLevel? level;
 			settings.OnBeforeReading();
 			level = await JsonSerializer.DeserializeAsync<ADLevel>(stream, options);
@@ -235,14 +235,14 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="json">The JSON string containing the level data.</param>
 		/// <param name="settings">Optional settings for reading the level.</param>
 		/// <returns>An <see cref="ADLevel"/> instance loaded from the JSON string.</returns>
-		public static ADLevel FromJsonString(string json, LevelReadOrWriteSettings? settings = null)
+		public static ADLevel FromJsonString(string json, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			ADLevel? level;
-			settings.OnBeforeWriting();
+			settings.OnBeforeReading();
 			level = JsonSerializer.Deserialize<ADLevel>(json, options);
-			settings.OnAfterWriting();
+			settings.OnBeforeReading();
 			return level ?? [];
 		}
 		/// <summary>
@@ -250,10 +250,10 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		/// <param name="stream">The stream to which the level will be saved.</param>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
-		public void SaveToStream(Stream stream, LevelReadOrWriteSettings? settings = null)
+		public void SaveToStream(Stream stream, LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			settings.OnBeforeWriting();
 			JsonSerializer.Serialize(stream, this, options);
 			settings.OnAfterWriting();
@@ -264,10 +264,10 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="stream">The stream to which the level will be saved.</param>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
 		/// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
-		public async void SaveToStreamAsync(Stream stream, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		public async void SaveToStreamAsync(Stream stream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			settings.OnBeforeWriting();
 			await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
 			settings.OnAfterWriting();
@@ -278,7 +278,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		/// <param name="filepath">The file path where the level will be saved.</param>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
-		public void SaveToFile(string filepath, LevelReadOrWriteSettings? settings = null)
+		public void SaveToFile(string filepath, LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
@@ -296,7 +296,7 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="filepath">The file path where the level will be saved.</param>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
 		/// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
-		public async void SaveToFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		public async void SaveToFileAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
@@ -313,10 +313,10 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
 		/// <returns>A JSON string representing the current level.</returns>
-		public string ToJsonString(LevelReadOrWriteSettings? settings = null)
+		public string ToJsonString(LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			string json;
 			settings.OnBeforeWriting();
 			json = JsonSerializer.Serialize(this, options);

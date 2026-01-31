@@ -15,12 +15,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 		private static readonly BaseEventConverter baseEventConverter = new();
 		private static readonly BookmarkConverter bookmarkConverter = new();
 		private static readonly ConditionalConverter conditionalConverter = new();
-		internal LevelReadOrWriteSettings Settings { get; set; } = new();
+		internal LevelReadSettings ReadSettings { get; set; } = new();
+		internal LevelWriteSettings WriteSettings { get; set; } = new();
 		internal string? DirectoryName { get; set; }
 		public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			RDLevel level = [];
-			Settings.FileReferences.Clear();
+			ReadSettings.FileReferences.Clear();
 			if (reader.TokenType != JsonTokenType.StartObject)
 				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
 			reader.Read();
@@ -39,10 +40,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 					if (reader.TokenType != JsonTokenType.StartObject)
 						throw new JsonException($"Expected StartObject token for 'settings', but got {reader.TokenType}.");
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
-					if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+					if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 						foreach (FileReference file in level.Settings.GetAllFileReferences())
 							if (!file.IsEmpty && file.IsExist(DirectoryName!))
-								Settings.FileReferences.Add(file);
+								ReadSettings.FileReferences.Add(file);
 					if (level.Settings.Version < GlobalSettings.MinimumSupportedVersionRhythmDoctor)
 #if DEBUG
 						Console.WriteLine($"Current version {level.Settings.Version} is too low.");
@@ -63,10 +64,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 						if (e != null)
 						{
 							level.Rows.Add(e);
-							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+							if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 								foreach (FileReference file in e.Character.GetAllFileReferences())
 									if (!file.IsEmpty && file.IsExist(DirectoryName!))
-										Settings.FileReferences.Add(file);
+										ReadSettings.FileReferences.Add(file);
 						}
 					}
 					reader.Read();
@@ -84,10 +85,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 						if (e != null)
 						{
 							level.Decorations.Add(e);
-							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+							if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 								foreach (FileReference file in e.GetAllFileReferences())
 									if (!file.IsEmpty && file.IsExist(DirectoryName!))
-										Settings.FileReferences.Add(file);
+										ReadSettings.FileReferences.Add(file);
 						}
 					}
 					reader.Read();
@@ -133,7 +134,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 #endif
 						if (e == null)
 							continue;
-						if (Settings.EnableMacroEvent)
+						if (ReadSettings.EnableMacroEvent)
 						{
 							if (e is Comment c && MacroEvent.TryGetTypeData(c, out types, out data))
 							{
@@ -166,14 +167,14 @@ namespace RhythmBase.RhythmDoctor.Converters
 							advanceTexts.Add(at);
 						if (e is IFileEvent fe)
 						{
-							if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+							if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 								foreach (FileReference file in fe.Files)
 									if (!file.IsEmpty && file.IsExist(DirectoryName!))
-										Settings.FileReferences.Add(file);
+										ReadSettings.FileReferences.Add(file);
 						}
 					}
 					reader.Read();
-					if (Settings.EnableMacroEvent && maybeDataComment != null && types != null && data != null)
+					if (ReadSettings.EnableMacroEvent && maybeDataComment != null && types != null && data != null)
 					{
 						HashSet<int> matchedIds = [];
 						foreach (TagAction? mm in maybeMacroEvents)
@@ -182,7 +183,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 							{
 								matchedIds.Add(result!.DataId);
 								if (result.DataId >= data.Length)
-									Settings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(mm, options), $"DataId {result.DataId} is out of range.");
+									ReadSettings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(mm, options), $"DataId {result.DataId} is out of range.");
 								result._data = data[result.DataId];
 								result.Flush();
 								level.Add(result);
@@ -206,7 +207,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 						}
 						else
 						{
-							Settings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(at, options), $"AdvanceText references non-existent FloatingText id {targetId}.");
+							ReadSettings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(at, options), $"AdvanceText references non-existent FloatingText id {targetId}.");
 						}
 					}
 				}
@@ -272,7 +273,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
 		{
 			using MemoryStream stream = new();
-			Settings.FileReferences.Clear();
+			WriteSettings.FileReferences.Clear();
 			JsonSerializerOptions localOptions = new(options)
 			{
 				WriteIndented = false,
@@ -282,10 +283,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartObject();
 			writer.WritePropertyName("settings");
 			settingsConverter.Write(writer, value.Settings, options);
-			if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+			if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 				foreach (FileReference fr in value.Settings.GetAllFileReferences())
 					if (!fr.IsEmpty && fr.IsExist(DirectoryName!))
-						Settings.FileReferences.Add(fr);
+						WriteSettings.FileReferences.Add(fr);
 
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
@@ -300,10 +301,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
-				if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+				if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 					foreach (FileReference file in row.Character.GetAllFileReferences())
 						if (!file.IsEmpty && file.IsExist(DirectoryName!))
-							Settings.FileReferences.Add(file);
+							WriteSettings.FileReferences.Add(file);
 
 			}
 			writer.WriteEndArray();
@@ -319,15 +320,15 @@ namespace RhythmBase.RhythmDoctor.Converters
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
-				if (Settings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+				if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 					foreach (FileReference file in decoration.GetAllFileReferences())
 						if (!file.IsEmpty && file.IsExist(DirectoryName!))
-							Settings.FileReferences.Add(file);
+							WriteSettings.FileReferences.Add(file);
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");
 			writer.WriteStartArray();
-			if (Settings.EnableMacroEvent)
+			if (WriteSettings.EnableMacroEvent)
 			{
 				JsonSerializerOptions dataOptions = new()
 				{
@@ -373,10 +374,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 						writer.WriteRawValue(sl);
 						noIndentWriter.Reset();
 					}
-					if (Settings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
+					if (WriteSettings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
 						foreach (FileReference file in fe.Files)
 							if (!file.IsEmpty && file.IsExist(DirectoryName!))
-								Settings.FileReferences.Add(file);
+								WriteSettings.FileReferences.Add(file);
 				}
 				StringBuilder sb = new() { };
 				sb.AppendLine(Utils.Utils.RhythmBaseMacroEventDataHeader);
@@ -423,10 +424,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 						writer.WriteRawValue(sl);
 						noIndentWriter.Reset();
 					}
-					if (Settings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
+					if (WriteSettings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
 						foreach (FileReference file in fe.Files)
 							if (!file.IsEmpty && file.IsExist(DirectoryName!))
-								Settings.FileReferences.Add(file);
+								WriteSettings.FileReferences.Add(file);
 				}
 			}
 			writer.WriteEndArray();

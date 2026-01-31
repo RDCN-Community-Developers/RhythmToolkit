@@ -58,8 +58,4 @@ public record class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
 	}
 	/// <inheritdoc />
 	public override string ToString() => $"{Beat} *{ActualType}";
-	/// <inheritdoc />
-	public virtual bool TryConvert(ref BaseEvent value, ref EventType? type) => TryConvert(ref value, ref type, new LevelReadOrWriteSettings());
-	/// <inheritdoc />
-	public virtual bool TryConvert(ref BaseEvent value, ref EventType? type, LevelReadOrWriteSettings settings) => TryConvert(ref value, ref type, settings);
 }

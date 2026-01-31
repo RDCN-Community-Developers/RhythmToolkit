@@ -10,7 +10,8 @@ namespace RhythmBase.Adofai.Converters
 		private static BaseEventConverter baseEventConverter = new();
 		private static SettingsConverter settingsConverter = new();
 		internal string? Filepath { get; set; }
-		internal LevelReadOrWriteSettings Settings { get; set; } = new();
+		internal LevelReadSettings ReadSettings { get; set; } = new();
+		internal LevelWriteSettings WriteSettings { get; set; } = new();
 
 		public override ADLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{

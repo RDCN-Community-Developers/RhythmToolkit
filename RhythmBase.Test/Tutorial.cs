@@ -50,16 +50,14 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void ReadOrWriteLevelWithSettings()
 		{
-			// Create custom read/write settings
-			LevelReadOrWriteSettings settings = new()
+			// Create custom read settings
+			LevelReadSettings settings = new()
 			{
 				// Handling of inactive events
 				InactiveEventsHandling = InactiveEventsHandling.Store,
 				// Handling of unreadable events
 				// Common when sprite events are not bound to sprite tracks, etc.
 				UnreadableEventsHandling = UnreadableEventHandling.Store,
-				// Enable indentation
-				Indented = true,
 				// Enable macro event processing
 				EnableMacroEvent = true,
 				// Unzip all files in a zip level pack into the cache path below
@@ -78,7 +76,7 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void ConvertLevelToJsonDocument()
 		{
-			LevelReadOrWriteSettings settings = new();
+			LevelWriteSettings settings = new();
 
 			JsonDocument jdoc = _rdlevel.ToJsonDocument();
 			string json = _rdlevel.ToJsonString(settings);
@@ -88,7 +86,7 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void ReadOrWriteEventHandling()
 		{
-			LevelReadOrWriteSettings settings = new();
+			LevelWriteSettings settings = new();
 			settings.AfterWriting += Settings_AfterReading;
 
 			// This will be triggered after writing is finished
@@ -354,7 +352,12 @@ namespace RhythmBase.Test
 		public void MacroEvents()
 		{
 
-			LevelReadOrWriteSettings settings = new()
+			LevelReadSettings readSettings = new()
+			{
+				EnableMacroEvent = true,
+				InactiveEventsHandling = InactiveEventsHandling.Retain,
+			};
+			LevelWriteSettings writeSettings = new()
 			{
 				EnableMacroEvent = true,
 				InactiveEventsHandling = InactiveEventsHandling.Retain,
@@ -367,9 +370,9 @@ namespace RhythmBase.Test
 			MoveCameraRectangle re2 = new MoveCameraRectangle() { Beat = new(9), Y = 2, Size = new RDSize(20, 20) };
 			level.Add(re1);
 			level.Add(re2);
-			string levelJson = level.ToJsonString(settings);
+			string levelJson = level.ToJsonString(settings: writeSettings);
 			Console.WriteLine(levelJson);
-			using RDLevel level2 = RDLevel.FromJsonString(levelJson, settings);
+			using RDLevel level2 = RDLevel.FromJsonString(levelJson, readSettings);
 
 			/* The following events will be generated:
 			 * {"bar":1,"beat":1,"type":"MoveCamera","rooms":[0],"cameraPosition":[10,10],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
@@ -464,7 +467,7 @@ namespace RhythmBase.Test
 					// Save the content in the Data field  
 					ExtraData["myProperty"] =
 						value.HasValue ?
-						JsonSerializer.SerializeToElement(value, Utils.GetJsonSerializerOptions()) :
+						JsonSerializer.SerializeToElement(value, Utils.GetJsonSerializerOptions(settings: null as LevelWriteSettings)) :
 						default;
 				}
 			}

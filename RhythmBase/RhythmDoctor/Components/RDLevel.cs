@@ -160,7 +160,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <returns>An <see cref="RDLevel"/> instance representing the data read from the file.</returns>
 		/// <exception cref="RhythmBaseException">Thrown if the file format is not supported, if no level file is found in the archive, or if an error occurs during
 		/// file extraction.</exception>
-		public static RDLevel FromFile(string filepath, LevelReadOrWriteSettings? settings = null)
+		public static RDLevel FromFile(string filepath, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
 			string extension = Path.GetExtension(filepath);
@@ -247,7 +247,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// instance.</returns>
 		/// <exception cref="RhythmBaseException">Thrown if the file format is unsupported, if no <c>.rdlevel</c> file is found in a compressed archive, or if an
 		/// error occurs during extraction.</exception>
-		public static async Task<RDLevel> FromFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		public static async Task<RDLevel> FromFileAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
 			string extension = Path.GetExtension(filepath);
@@ -324,10 +324,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="rdlevelStream">The stream containing the level data.</param>
 		/// <param name="settings">Optional settings for reading the level.</param>
 		/// <returns>An <see cref="RDLevel"/> instance loaded from the stream.</returns>
-		public static RDLevel FromStream(Stream rdlevelStream, LevelReadOrWriteSettings? settings = null)
+		public static RDLevel FromStream(Stream rdlevelStream, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			RDLevel? level;
 			settings.OnBeforeReading();
 			using EscapeSpecialCharacterStream stream = new(rdlevelStream);
@@ -335,7 +335,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			settings.OnAfterReading();
 			return level ?? [];
 		}
-		private static RDLevel FromStream(Stream rdlevelStream, string dirPath, LevelReadOrWriteSettings? settings = null)
+		private static RDLevel FromStream(Stream rdlevelStream, string dirPath, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(dirPath, settings);
@@ -353,10 +353,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="settings">Optional settings for reading the level.</param>
 		/// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
 		/// <returns>A <see cref="Task{RDLevel}"/> representing the asynchronous operation, with an <see cref="RDLevel"/> instance loaded from the stream.</returns>
-		public static async Task<RDLevel> FromStreamAsync(Stream rdlevelStream, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		public static async Task<RDLevel> FromStreamAsync(Stream rdlevelStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			RDLevel? level;
 			settings.OnBeforeReading();
 			using EscapeSpecialCharacterStream stream = new(rdlevelStream);
@@ -370,14 +370,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="json">The JSON string containing the level data.</param>
 		/// <param name="settings">Optional settings for reading the level.</param>
 		/// <returns>An <see cref="RDLevel"/> instance loaded from the JSON string.</returns>
-		public static RDLevel FromJsonString(string json, LevelReadOrWriteSettings? settings = null)
+		public static RDLevel FromJsonString(string json, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			RDLevel? level;
-			settings.OnBeforeWriting();
+			settings.OnBeforeReading();
 			level = JsonSerializer.Deserialize<RDLevel>(json, options);
-			settings.OnAfterWriting();
+			settings.OnAfterReading();
 			return level ?? [];
 		}
 		/// <summary>
@@ -385,10 +385,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="stream">The stream to which the level will be saved.</param>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
-		public void SaveToStream(Stream stream, LevelReadOrWriteSettings? settings = null)
+		public void SaveToStream(Stream stream, LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			settings.OnBeforeWriting();
 			JsonSerializer.Serialize(stream, this, options);
 			settings.OnAfterWriting();
@@ -399,10 +399,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="stream">The stream to which the level will be saved.</param>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
 		/// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-		public async void SaveToStreamAsync(Stream stream, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		public async void SaveToStreamAsync(Stream stream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			settings.OnBeforeWriting();
 			await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
 			settings.OnAfterWriting();
@@ -412,7 +412,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="filepath">The file path where the level will be saved.</param>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
-		public void SaveToFile(string filepath, LevelReadOrWriteSettings? settings = null)
+		public void SaveToFile(string filepath, LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Filepath) ?? "", settings);
@@ -433,7 +433,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="filepath">The file path where the level will be saved.</param>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
 		/// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-		public async void SaveToFileAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		public async void SaveToFileAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(filepath) ?? "", settings);
@@ -453,7 +453,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="filepath">The path of the file to create and write the packed level data to. Must not be null or empty.</param>
 		/// <param name="settings">Optional settings that control how the level data is written. If null, default settings are used.</param>
-		public void SaveToZip(string filepath, LevelReadOrWriteSettings? settings = null)
+		public void SaveToZip(string filepath, LevelWriteSettings? settings = null)
 		{
 			if (string.IsNullOrEmpty(this.Directory))
 				throw new NotImplementedException();
@@ -491,7 +491,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="settings">Optional settings that control how the level and its assets are serialized. If null, default settings are used.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the save operation.</param>
 		/// <exception cref="NotImplementedException">Thrown if the level's directory is not set.</exception>
-		public async void SaveToZipAsync(string filepath, LevelReadOrWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		public async void SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 		{
 			if (string.IsNullOrEmpty(this.Directory))
 				throw new NotImplementedException();
@@ -524,10 +524,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
 		/// <returns>A JSON string representing the current level.</returns>
-		public string ToJsonString(LevelReadOrWriteSettings? settings = null)
+		public string ToJsonString(LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			string json;
 			settings.OnBeforeWriting();
 			json = JsonSerializer.Serialize(this, options);
@@ -543,10 +543,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <returns>
 		/// A <see cref="JsonDocument"/> representing the current level in JSON format.
 		/// </returns>
-		public JsonDocument ToJsonDocument(LevelReadOrWriteSettings? settings = null)
+		public JsonDocument ToJsonDocument(LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
-			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings);
+			JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
 			string json;
 			settings.OnBeforeWriting();
 			json = JsonSerializer.Serialize(this, options);
@@ -565,7 +565,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <exception cref="T:RhythmBase.Exceptions.RhythmBaseException">File not supported.</exception>
 		/// <returns>An instance of a level that reads from a file.</returns>
 		[Obsolete("Use FromFile instead.", false)]
-		public static RDLevel Read(string filepath, LevelReadOrWriteSettings? settings = null) => FromFile(filepath, settings);
+		public static RDLevel Read(string filepath, LevelReadSettings? settings = null) => FromFile(filepath, settings);
 		/// <summary>
 		/// Read from a zip file as a level.
 		/// </summary>
@@ -580,7 +580,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="settings">The settings for reading the level.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
 		[Obsolete("Use FromFile instead.", true)]
-		public static RDLevel ReadFromZip(string filepath, LevelReadOrWriteSettings settings) => throw new NotImplementedException();
+		public static RDLevel ReadFromZip(string filepath, LevelReadSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Read from a zip file as a level.
 		/// </summary>
@@ -595,7 +595,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="settings">The settings for reading the level.</param>
 		/// <returns>An instance of RDLevel that reads from a zip file with specific settings.</returns>
 		[Obsolete("This method is not implemented. Use FromFile instead.", true)]
-		public static RDLevel ReadFromZip(Stream stream, LevelReadOrWriteSettings settings) => throw new NotImplementedException();
+		public static RDLevel ReadFromZip(Stream stream, LevelReadSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Save the level.
 		/// Use default output settings.
@@ -611,7 +611,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="settings">Output settings.</param>
 		/// <exception cref="T:RhythmBase.Exceptions.OverwriteNotAllowedException">Overwriting is disabled by the settings and a file with the same name already exists.</exception>
 		[Obsolete("Use SaveToFile instead.", false)]
-		public void Write(string filepath, LevelReadOrWriteSettings settings) => SaveToFile(filepath, settings);
+		public void Write(string filepath, LevelWriteSettings settings) => SaveToFile(filepath, settings);
 		/// <summary>
 		/// Save the level to a text writer.
 		/// Use default output settings.
@@ -625,7 +625,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="stream">The text writer to write the level to.</param>
 		/// <param name="settings">The settings for writing the level.</param>
 		[Obsolete("Use SaveToStream instead.", false)]
-		public void Write(TextWriter stream, LevelReadOrWriteSettings settings) => throw new NotImplementedException();
+		public void Write(TextWriter stream, LevelWriteSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Save the level to a stream.
 		/// Use default output settings.
@@ -639,7 +639,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name = "stream" > The stream to write the level to.</param>
 		/// <param name = "settings" > The settings for writing the level.</param>
 		[Obsolete("Use SaveToStream instead.", false)]
-		public void Write(Stream stream, LevelReadOrWriteSettings settings) => throw new NotImplementedException();
+		public void Write(Stream stream, LevelWriteSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Convert to JObject type.
 		/// </summary>
@@ -651,7 +651,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <returns>A JObject type that stores all the data for the level.</returns>
 		[Obsolete("Use ToJsonDocument instead.", true)]
-		public void ToJObject(LevelReadOrWriteSettings settings) => throw new NotImplementedException();
+		public void ToJObject(LevelWriteSettings settings) => throw new NotImplementedException();
 		/// <summary>
 		/// Convert to a string that can be read by the game.
 		/// Use default output settings.
@@ -665,7 +665,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name = "settings" > Output settings.</param>
 		/// <returns>Level string.</returns>
 		[Obsolete("Use ToJson instead.", true)]
-		public string ToRDLevelJson(LevelReadOrWriteSettings settings) => throw new NotImplementedException();
+		public string ToRDLevelJson(LevelWriteSettings settings) => throw new NotImplementedException();
 		#endregion
 		/// <summary>
 		/// Adds an event to the level.

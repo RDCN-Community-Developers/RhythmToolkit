@@ -226,7 +226,7 @@ public abstract partial record class MacroEvent<T> : MacroEvent where T : new()
 			T ins =
 				_instanceLoaded ? (T)_instance :
 				_data.ValueKind == JsonValueKind.Undefined ? new() :
-				_data.Deserialize<T>(GetJsonSerializerOptions()) ?? new();
+				_data.Deserialize<T>(GetJsonSerializerOptions(settings: null as LevelReadSettings)) ?? new();
 			_instance = ins;
 			_instanceLoaded = true;
 			return ins;
@@ -240,8 +240,8 @@ public abstract partial record class MacroEvent<T> : MacroEvent where T : new()
 	internal override void Flush()
 	{
 		if (!_instanceLoaded)
-			_instance = _data.Deserialize<T>(GetJsonSerializerOptions()) ?? new();
-		_data = JsonSerializer.SerializeToElement(_instance, GetJsonSerializerOptions());
+			_instance = _data.Deserialize<T>(GetJsonSerializerOptions(settings: null as LevelReadSettings)) ?? new();
+		_data = JsonSerializer.SerializeToElement(_instance, GetJsonSerializerOptions(settings: null as LevelWriteSettings));
 	}
 	/// <summary>
 	/// Initializes a new instance of the <see cref="MacroEvent{T}"/> class.  

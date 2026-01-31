@@ -121,26 +121,25 @@ namespace RhythmBase.Adofai.Utils
 			return ConvertToType;
 		}
 		/// <summary>
-		/// Creates and returns a configured <see cref="JsonSerializerOptions"/> instance.
+		/// Creates and configures a <see cref="JsonSerializerOptions"/> instance for serializing and deserializing JSON data.
 		/// </summary>
-		/// <remarks>The returned <see cref="JsonSerializerOptions"/> includes a custom converter for handling
-		/// level-specific serialization,  which is configured based on the provided <paramref name="settings"/>.</remarks>
-		/// <param name="settings">Optional settings that influence the behavior of the serializer. If <paramref name="settings"/> is null, default
-		/// settings are used.</param>
-		/// <returns>A <see cref="JsonSerializerOptions"/> instance configured with the specified settings, including indentation
-		/// preferences and custom converters.</returns>
-		public static JsonSerializerOptions GetJsonSerializerOptions(LevelReadOrWriteSettings? settings = null)
+		/// <remarks>The returned <see cref="JsonSerializerOptions"/> instance includes a <see cref="LevelConverter"/>
+		/// configured with the provided <paramref name="filepath"/> and <paramref name="settings"/>. The <see
+		/// cref="JsonSerializerOptions.WriteIndented"/> property is set based on the <see
+		/// cref="LevelReadOrWriteSettings.Indented"/> value.</remarks>
+		/// <param name="filepath">The file path associated with the JSON data. This value is used by the <see cref="LevelConverter"/> to customize
+		/// serialization behavior.</param>
+		/// <param name="settings">Optional settings that determine how the JSON data is read or written. If <c>null</c>, default settings are used.</param>
+		/// <returns>A configured <see cref="JsonSerializerOptions"/> instance with the specified settings and a custom <see
+		/// cref="LevelConverter"/> added to the converters collection.</returns>
+		public static JsonSerializerOptions GetJsonSerializerOptions(string? filepath = null, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = new(Utils.options);
-			if (settings.Indented)
-				options.WriteIndented = true;
-			else
-				options.WriteIndented = false;
 			LevelConverter levelConverter = new()
 			{
-				Settings = settings,
-				Filepath = null
+				ReadSettings = settings,
+				Filepath = filepath
 			};
 			options.Converters.Add(levelConverter);
 			return options;
@@ -157,7 +156,7 @@ namespace RhythmBase.Adofai.Utils
 		/// <param name="settings">Optional settings that determine how the JSON data is read or written. If <c>null</c>, default settings are used.</param>
 		/// <returns>A configured <see cref="JsonSerializerOptions"/> instance with the specified settings and a custom <see
 		/// cref="LevelConverter"/> added to the converters collection.</returns>
-		public static JsonSerializerOptions GetJsonSerializerOptions(string filepath, LevelReadOrWriteSettings? settings = null)
+		public static JsonSerializerOptions GetJsonSerializerOptions(string? filepath = null, LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
 			JsonSerializerOptions options = new(Utils.options);
@@ -167,7 +166,7 @@ namespace RhythmBase.Adofai.Utils
 				options.WriteIndented = false;
 			LevelConverter levelConverter = new()
 			{
-				Settings = settings,
+				WriteSettings = settings,
 				Filepath = filepath
 			};
 			options.Converters.Add(levelConverter);
