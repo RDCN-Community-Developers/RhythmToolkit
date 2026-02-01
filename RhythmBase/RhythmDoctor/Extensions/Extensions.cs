@@ -110,28 +110,41 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// Calculate the fraction of <paramref name="splitBase" /> equal to the nearest floating point number.
 		/// <example>
 		/// <code>
-		/// 2.236f.FixFraction(4) == 2.25f
-		/// float.Pi.FixFraction(5) == 3.2f
-		/// float.E.Fixfraction(2) == 2.5f
+		/// 2.236f.QuantizeBeat(4) == 2.25f
+		/// float.Pi.QuantizeBeat(5) == 3.2f
+		/// float.E.QuantizeBeat(2) == 2.5f
 		/// </code>
 		/// </example>
 		/// </summary>
 		/// <param name="beat">The float number.</param>
 		/// <param name="splitBase">Indicate what fraction this is.</param>
-		public static float FixFraction(this float beat, uint splitBase) => (float)(Math.Round((double)(beat * splitBase)) / splitBase);
+		public static float QuantizeBeat(this float beat, uint splitBase) => (float)(Math.Round(beat * splitBase) / splitBase);
 		/// <summary>
 		/// Calculate the fraction of <paramref name="splitBase" /> equal to the nearest floating point number.
 		/// <example>
 		/// <code>
-		/// 2.236f.FixFraction(4) == 2.25f
-		/// float.Pi.FixFraction(5) == 3.2f
-		/// float.E.Fixfraction(2) == 2.5f
+		/// 2.236f.QuantizeBeat(4) == 2.25f
+		/// float.Pi.QuantizeBeat(5) == 3.2f
+		/// float.E.QuantizeBeat(2) == 2.5f
+		/// </code>
+		/// </example>
+		/// </summary>
+		/// <param name="beat">The float number.</param>
+		/// <param name="splitBase">Indicate what fraction this is.</param>
+		public static double QuantizeBeat(this double beat, uint splitBase) => Math.Round(beat * splitBase) / splitBase;
+		/// <summary>
+		/// Calculate the fraction of <paramref name="splitBase" /> equal to the nearest floating point number.
+		/// <example>
+		/// <code>
+		/// 2.236f.QuantizeBeat(4) == 2.25f
+		/// float.Pi.QuantizeBeat(5) == 3.2f
+		/// float.E.QuantizeBeat(2) == 2.5f
 		/// </code>
 		/// </example>
 		/// </summary>
 		/// <param name="beat">The beat.</param>
 		/// <param name="splitBase">Indicate what fraction this is.</param>
-		public static RDBeat FixFraction(this RDBeat beat, uint splitBase) => new(beat.BeatOnly.FixFraction(splitBase));
+		public static RDBeat QuantizeBeat(this RDBeat beat, uint splitBase) => beat._calculator is BeatCalculator bc ? new(bc, beat.BeatOnly.QuantizeBeat(splitBase)) : new(beat.BeatOnly.QuantizeBeat(splitBase));
 		/// <summary>
 		/// Converting enumeration constants to in-game colors。
 		/// </summary>
