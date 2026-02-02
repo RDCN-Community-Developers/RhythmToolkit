@@ -42,7 +42,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// The file path to associate with the level converter.
 		/// </param>
 		/// <param name="settings">
-		/// The <see cref="LevelReadOrWriteSettings"/> to use for serialization options. If <c>null</c>, a new instance is used.
+		/// The <see cref="LevelReadSettings"/> to use for serialization options. If <c>null</c>, a new instance is used.
 		/// </param>
 		/// <returns>
 		/// A <see cref="JsonSerializerOptions"/> instance configured with converters, indentation settings, and file path.
@@ -66,7 +66,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// The file path to associate with the level converter.
 		/// </param>
 		/// <param name="settings">
-		/// The <see cref="LevelReadOrWriteSettings"/> to use for serialization options. If <c>null</c>, a new instance is used.
+		/// The <see cref="LevelWriteSettings"/> to use for serialization options. If <c>null</c>, a new instance is used.
 		/// </param>
 		/// <returns>
 		/// A <see cref="JsonSerializerOptions"/> instance configured with converters, indentation settings, and file path.
@@ -119,7 +119,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <returns>A JSON string representation of the <see cref="IBaseEvent"/> instance.</returns>
 		public static string ToJsonString(this IBaseEvent ev, JsonSerializerOptions? options = null)
 		{
-			options ??= JsonSerializerOptions.Default;
+			options ??= new JsonSerializerOptions(Utils.options);
 			using MemoryStream stream = new();
 			using Utf8JsonWriter writer = new(stream, new JsonWriterOptions { Indented = options.WriteIndented, });
 			evc.Write(writer, ev, options);
@@ -136,7 +136,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// langword="null"/>.</returns>
 		public static IBaseEvent? FromJsonString(string json, JsonSerializerOptions? options = null)
 		{
-			options ??= JsonSerializerOptions.Default;
+			options ??= new JsonSerializerOptions(Utils.options);
 			Utf8JsonReader reader = new(Encoding.UTF8.GetBytes(json));
 			reader.Read();
 			return evc.Read(ref reader, typeof(IBaseEvent), options);

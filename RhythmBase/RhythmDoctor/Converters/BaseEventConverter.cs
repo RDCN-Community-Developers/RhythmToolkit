@@ -8,6 +8,18 @@ namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class BaseEventConverter : JsonConverter<IBaseEvent>
 	{
+		private LevelReadSettings? _rs;
+		private LevelWriteSettings? _ws;
+		public BaseEventConverter WithReadSettings(LevelReadSettings settings)
+		{
+			_rs = settings;
+			return this;
+		}
+		public BaseEventConverter WithWriteSettings(LevelWriteSettings settings)
+		{
+			_ws = settings;
+			return this;
+		}
 		private delegate void PropertyAction(ref Utf8JsonReader reader);
 		public override bool CanConvert(Type typeToConvert)
 		{
@@ -43,7 +55,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			if (!EnumConverter.TryParse(type, out EventType typeEnum))
 				e = ReadForwardEvent(ref reader) ?? new ForwardEvent() { ActualType = type.ToString() ?? "" };
 			else
-				e = converters[typeEnum].ReadProperties(ref reader, options);
+				e = converters[typeEnum].WithReadSettings(_rs).ReadProperties(ref reader, options);
 			if (reader.TokenType != JsonTokenType.EndObject)
 				throw new JsonException($"Expected EndObject token, but got {reader.TokenType}.");
 			reader.Read();
@@ -62,7 +74,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			else
 			{
-				converters[value.Type].WriteProperties(writer, value, options);
+				converters[value.Type].WithWriteSettings(_ws).WriteProperties(writer, value, options);
 			}
 		}
 		public static IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader)

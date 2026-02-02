@@ -10,10 +10,26 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 {
+	internal bool _tabFieldSet = false;
 	/// <inheritdoc/>
 	public override EventType Type => EventType.WindowResize;
 	/// <inheritdoc/>
 	public override Tab Tab => CustomTab;
+	/// <summary>
+	/// Gets or sets the custom tab.
+	/// </summary>
+	[RDJsonAlias("tab")]
+	[RDJsonConverter(typeof(TabsConverter))]
+	[RDJsonCondition($"""$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.{nameof(Events.Tab)}.{nameof(Tab.Windows)}""")]
+	public Tab CustomTab
+	{
+		get;
+		set
+		{
+			field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
+			_tabFieldSet = true;
+		}
+	} = Tab.Actions;
 	/// <summary>  
 	/// Gets or sets the scale of the window resize event.  
 	/// </summary>  
@@ -36,17 +52,6 @@ public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 	/// </summary>  
 	[Tween]
 	public RDPointE? Pivot { get; set; } = new(50f, 50f);
-	/// <summary>
-	/// Gets or sets the custom tab.
-	/// </summary>
-	[RDJsonAlias("tab")]
-	[RDJsonConverter(typeof(TabsConverter))]
-	[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.{nameof(Events.Tab)}.{nameof(Tab.Windows)}")]
-	public Tab CustomTab
-	{
-		get;
-		set => field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
-	} = Tab.Actions;
 	/// <inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	/// <inheritdoc/>

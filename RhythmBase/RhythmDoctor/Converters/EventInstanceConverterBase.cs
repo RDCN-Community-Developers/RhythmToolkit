@@ -1,3 +1,4 @@
+using RhythmBase.Adofai.Components;
 using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
@@ -8,6 +9,18 @@ namespace RhythmBase.RhythmDoctor.Converters;
 
 internal abstract class EventInstanceConverterBase
 {
+	protected LevelReadSettings? _rs;
+	protected LevelWriteSettings? _ws;
+	internal EventInstanceConverterBase WithReadSettings(LevelReadSettings settings)
+	{
+		_rs = settings;
+		return this;
+	}
+	internal EventInstanceConverterBase WithWriteSettings(LevelWriteSettings settings)
+	{
+		_ws = settings;
+		return this;
+	}
 	public abstract IBaseEvent ReadProperties(ref Utf8JsonReader reader, JsonSerializerOptions options);
 	public abstract void WriteProperties(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options);
 }

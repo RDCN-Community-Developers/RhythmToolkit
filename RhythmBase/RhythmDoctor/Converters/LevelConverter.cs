@@ -20,6 +20,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		internal string? DirectoryName { get; set; }
 		public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
+			baseEventConverter.WithReadSettings(ReadSettings);
 			RDLevel level = [];
 			ReadSettings.FileReferences.Clear();
 			if (reader.TokenType != JsonTokenType.StartObject)
@@ -272,6 +273,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 		}
 		public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
 		{
+			baseEventConverter.WithWriteSettings(WriteSettings);
 			using MemoryStream stream = new();
 			WriteSettings.FileReferences.Clear();
 			JsonSerializerOptions localOptions = new(options)

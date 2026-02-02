@@ -12,7 +12,7 @@ public record class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// Gets or sets the tint color of the hands.
 	/// </summary>
 	[Tween]
-	[RDJsonCondition($"$&.{nameof(Tint)}")]
+	[RDJsonCondition($"$&.{nameof(IsTint)} is true")]
 	public PaletteColor TintColor { get; set; } = RDColor.White;
 	///<inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
@@ -50,7 +50,9 @@ public record class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// <summary>
 	/// Gets or sets a value indicating whether the hands should be tinted.
 	/// </summary>
-	public bool? Tint { get; set; }
+	[RDJsonAlias("tint")]
+	[RDJsonCondition($"$&.{nameof(IsTint)} is not null")]
+	public bool? IsTint { get; set; }
 	///<inheritdoc/>
 	public float Duration { get; set; } = 0;
 	///<inheritdoc/>

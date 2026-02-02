@@ -87,14 +87,30 @@ namespace RhythmBase.Global.Components
 		/// <param name="path">The path to wrap as a <see cref="FileReference"/>.</param>
 		/// <returns>A new <see cref="FileReference"/> instance with <see cref="Path"/> set to <paramref name="path"/>.</returns>
 		public static implicit operator FileReference(string path) => new() { Path = path };
+		/// <summary>
+		/// Determines whether two specified FileReference instances have the same file path.
+		/// </summary>
+		/// <remarks>The comparison is case-sensitive and compares the Path properties of the two FileReference
+		/// instances. Both operands can be null; two null references are considered equal.</remarks>
+		/// <param name="left">The first FileReference to compare.</param>
+		/// <param name="right">The second FileReference to compare.</param>
+		/// <returns>true if the file paths of left and right are equal; otherwise, false.</returns>
 		public static bool operator ==(FileReference left, FileReference right) => left.Path == right.Path;
+		/// <summary>
+		/// Determines whether two specified FileReference instances have different file paths.
+		/// </summary>
+		/// <remarks>This operator compares the Path properties of the two FileReference instances to determine
+		/// inequality.</remarks>
+		/// <param name="left">The first FileReference to compare.</param>
+		/// <param name="right">The second FileReference to compare.</param>
+		/// <returns>true if the file paths of left and right are not equal; otherwise, false.</returns>
 		public static bool operator !=(FileReference left, FileReference right) => left.Path != right.Path;
 		///<inheritdoc/>
 		public override readonly bool Equals(object? obj) => obj is FileReference other && this == other;
 		///<inheritdoc/>
 		public readonly override int GetHashCode() => Path.GetHashCode();
 		///<inheritdoc/>
-		public override string ToString() => Path;
+		public readonly override string ToString() => Path;
 		///<inheritdoc/>
 		public bool Equals(FileReference x, FileReference y) => x.Path == y.Path;
 		///<inheritdoc/>

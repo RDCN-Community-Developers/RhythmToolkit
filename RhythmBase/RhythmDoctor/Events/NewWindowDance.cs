@@ -10,6 +10,26 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 {
+	internal bool _tabFieldSet = false;
+	///<inheritdoc/>
+	public override EventType Type { get; } = EventType.NewWindowDance;
+	///<inheritdoc/>
+	public override Tab Tab => CustomTab;
+	/// <summary>
+	/// Gets or sets the custom tab associated with this instance.
+	/// </summary>
+	[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.{nameof(Tab)}.{nameof(Tab.Windows)}")]
+	[RDJsonConverter(typeof(TabsConverter))]
+	[RDJsonAlias("tab")]
+	public Tab CustomTab
+	{
+		get;
+		set
+		{
+			field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
+			_tabFieldSet = true;
+		}
+	} = Tab.Actions;
 	/// <summary>
 	/// Gets or sets the preset.
 	/// </summary>
@@ -121,20 +141,4 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 	public EaseType Ease { get; set; } = Global.Components.Easing.EaseType.Linear;
 	///<inheritdoc/>
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);
-	///<inheritdoc/>
-	public override EventType Type { get; } = EventType.NewWindowDance;
-	///<inheritdoc/>
-	[RDJsonIgnore]
-	public override Tab Tab => CustomTab;
-	/// <summary>
-	/// Gets or sets the custom tab associated with this instance.
-	/// </summary>
-	[RDJsonConverter(typeof(TabsConverter))]
-	[RDJsonCondition($"$&.{nameof(CustomTab)} is not RhythmBase.RhythmDoctor.Events.{nameof(Tab)}.{nameof(Tab.Windows)}")]
-	[RDJsonAlias("tab")]
-	public Tab CustomTab
-	{
-		get;
-		set => field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
-	} = Tab.Actions;
 }

@@ -228,5 +228,20 @@ namespace RhythmBase.Test
 			catch (ArgumentException) { }
 			catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 		}
+		[TestMethod]
+		public void WindowTabSerializationTest()
+		{
+			RDLevel level = RDLevel.Default;
+			level.Add(new NewWindowDance() { CustomTab = Tab.Actions });
+			level.Add(new NewWindowDance() { CustomTab = Tab.Windows });
+			level.Add(new WindowResize() { CustomTab = Tab.Actions });
+			level.Add(new WindowResize() { CustomTab = Tab.Windows });
+
+			LevelWriteSettings settings = new()
+			{
+
+			};
+			Console.WriteLine(level.ToJsonString(settings));
+		}
 	}
 }

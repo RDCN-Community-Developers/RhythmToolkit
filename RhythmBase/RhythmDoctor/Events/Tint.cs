@@ -45,12 +45,13 @@ public record class Tint : BaseDecorationAction, IEaseEvent, IColorEvent
 	/// Gets or sets a value indicating whether this event is a tint.
 	/// </summary>
 	[RDJsonAlias("tint")]
+	[RDJsonCondition($"$&.{nameof(IsTint)} is not null")]
 	public bool? IsTint { get; set; }
 	/// <summary>
 	/// Gets or sets the tint color for the tint event.
 	/// </summary>
 	[Tween]
-	[RDJsonCondition($"$&.{nameof(IsTint)}")]
+	[RDJsonCondition($"$&.{nameof(IsTint)} is true")]
 	public PaletteColor TintColor { get; set; } = RDColor.White;
 	///<inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]

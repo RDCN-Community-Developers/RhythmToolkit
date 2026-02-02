@@ -134,6 +134,7 @@ public class LevelWriteSettings
 	/// Defaults to <see langword="false" />.
 	/// </summary>
 	public bool LoadAssets { get; set; } = false;
+	public bool UseLegacyFormat { get; set;  } = false;
 	/// <summary>
 	/// Action on inactive items on reads or writes.
 	/// Defaults to <see cref="F:RhythmBase.Global.Settings.InactiveEventsHandling.Retain" />.

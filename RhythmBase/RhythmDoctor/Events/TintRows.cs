@@ -10,7 +10,7 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	/// <summary>
 	/// Gets or sets the tint color.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(IsTint)}")]
+	[RDJsonCondition($"$&.{nameof(IsTint)} is true")]
 	public PaletteColor TintColor { get; set; } = RDColor.White;
 	///<inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
@@ -50,6 +50,7 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	/// Gets or sets a value indicating whether to apply tint.
 	/// </summary>
 	[RDJsonAlias("tint")]
+	[RDJsonCondition($"$&.{nameof(IsTint)} is not null")]
 	public bool? IsTint { get; set; }
 	///<inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]

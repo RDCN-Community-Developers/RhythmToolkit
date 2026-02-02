@@ -278,7 +278,7 @@ public class ConverterGenerator : IIncrementalGenerator
 		{
 			foreach (var attr in attrList.Attributes)
 			{
-				string name = attr.Name.ToString();
+				string name = attr.Name.ToFullString();
 				if (name == attributeShortName ||
 					name == attributeFullName ||
 					name == attributeShortNameWithoutPostfix ||
@@ -380,9 +380,11 @@ public class ConverterGenerator : IIncrementalGenerator
 						if(conditionAttr is AttributeSyntax conditionAttrNotNull)
 						{
 							var arg = conditionAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
-							if (arg?.Expression is LiteralExpressionSyntax les && les.IsKind(SyntaxKind.StringLiteralExpression))
+							if (arg?.Expression is ExpressionSyntax les)
 							{
-								prop.Condition = les.Token.ValueText;
+								Optional<object?> constant = ctx.SemanticModel.GetConstantValue(les);
+								if(constant.HasValue && constant.Value is string str)
+									prop.Condition = str;
 							}
 						}
 						if(converterAttr is AttributeSyntax converterAttrNotNull)
@@ -485,13 +487,13 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 								sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{propName}\"u8))");
 
 							// Enum
-							if (pi.Symbol.Type.TypeKind == TypeKind.Enum || WithoutNullable(pi.Symbol.Type).TypeKind == TypeKind.Enum)
+							if (typeNotNull.TypeKind == TypeKind.Enum)
 							{
 								sb.AppendLine($$"""
-			if(reader.TokenType is JsonTokenType.String && TryParse(reader.ValueSpan, out {{WithoutNullable(pi.Symbol.Type).ToDisplayString()}} enumValue{{enumIndex}}))
+			if(reader.TokenType is JsonTokenType.String && TryParse(reader.ValueSpan, out {{typeNotNull.ToDisplayString()}} enumValue{{enumIndex}}))
 				value.{{pi.Symbol.Name}} = enumValue{{enumIndex}};
 			else if(reader.TokenType is JsonTokenType.Number && reader.TryGetInt32(out int intValue{{enumIndex}}))
-				value.{{pi.Symbol.Name}} = ({{WithoutNullable(pi.Symbol.Type).ToDisplayString()}})intValue{{enumIndex}};
+				value.{{pi.Symbol.Name}} = ({{typeNotNull.ToDisplayString()}})intValue{{enumIndex}};
 			else
 				value.{{pi.Symbol.Name}} = default;
 """);
@@ -509,7 +511,7 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 							else
 							{
 								// Other types
-								switch (pi.Symbol.Type.SpecialType)
+								switch (typeNotNull.SpecialType)
 								{
 									case
 										SpecialType.System_Byte or
@@ -524,7 +526,7 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 										SpecialType.System_UInt16 or
 										SpecialType.System_UInt32 or
 										SpecialType.System_UInt64:
-										string typePostfix = pi.Symbol.Type.SpecialType.ToString().Replace("System_", "");
+										string typePostfix = typeNotNull.SpecialType.ToString().Replace("System_", "");
 										sb.AppendLine($"			value.{pi.Symbol.Name} = reader.Get{typePostfix}();");
 										break;
 									case SpecialType.System_Boolean:
@@ -541,7 +543,7 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 										sb.AppendLine($"			value.{pi.Symbol.Name} = reader.GetString() ?? \"\";");
 										break;
 									default:
-										if (pi.Symbol.Type.TypeKind == TypeKind.Struct)
+										if (typeNotNull.TypeKind == TypeKind.Struct)
 											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{typeNotNull.ToDisplayString()}>(ref reader, options);");
 										else if (IsConcreteEnumerable(pi.Symbol.Type))
 											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{typeNotNull.ToDisplayString()}>(ref reader, options) ?? [];");
@@ -604,14 +606,15 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 							{
 								typeNotNull = WithoutNullable(pi.Symbol.Type);
 								isNullable = true;
-								sb2.AppendLine($"""
+								sb2.Append($"""
 		if (value.{pi.Symbol.Name} is null)
 			writer.WriteNull("{propName}"u8);
 		else
+	
 """);
 							}
 
-							if (pi.Symbol.Type.TypeKind == TypeKind.Enum || WithoutNullable(pi.Symbol.Type).TypeKind == TypeKind.Enum)
+							if (typeNotNull.TypeKind == TypeKind.Enum)
 								sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{pi.Symbol.Name}{(isNullable ? "?" : "")}.ToEnumString());");
 							else if (pi.TimeType is int t)
 							{
@@ -624,10 +627,10 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 							}
 							else
 							{
-								switch (pi.Symbol.Type.SpecialType)
+								switch (typeNotNull.SpecialType)
 								{
 									case SpecialType.System_Boolean:
-										sb2.AppendLine($"		writer.WriteBoolean(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)});");
+										sb2.AppendLine($"		writer.WriteBoolean(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)}{(isNullable ? ".Value" : "")});");
 										break;
 									case SpecialType.System_String:
 										sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)});");
@@ -642,29 +645,29 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 										SpecialType.System_Single or
 										SpecialType.System_Double or
 										SpecialType.System_Decimal:
-										sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)});");
+										sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)}{(isNullable ? ".Value" : "")});");
 										break;
 									default:
-										sb2.AppendLine($$"""
-		{
-			writer.WritePropertyName("{{propName}}"u8);
-			JsonSerializer.Serialize(writer, value.{{pi.Symbol.Name}}, options);
-		}
-		""");
+										sb2.AppendLine($$"""		{ writer.WritePropertyName("{{propName}}"u8);	JsonSerializer.Serialize(writer, value.{{pi.Symbol.Name}}, options); }""");
 										break;
 								}
 							}
 						}
 						// Condition
-						if (!string.IsNullOrEmpty(pi.Condition))
+						if (string.IsNullOrEmpty(pi.Condition))
+							sb.Append(sb2);
+						else
 						{
-							string condition = pi.Condition!.Replace("$&", "value");
+							string condition = pi.Condition!
+									.Replace("$&", "value")
+									.Replace("$r", "_rs")
+									.Replace("$w", "_ws");
+								string[] lines = [.. sb2.ToString()
+																		.Split(['\n'], StringSplitOptions.RemoveEmptyEntries)
+																		.Where(i=>!string.IsNullOrWhiteSpace(i))
+																		.Select(i => "\t" + i)];
 							if (multiline)
 							{
-								string[] lines = [.. sb2.ToString()
-									.Split(['\n'], StringSplitOptions.RemoveEmptyEntries)
-									.Where(i=>!string.IsNullOrWhiteSpace(i))
-									.Select(i => "\t" + i)];
 								sb.AppendLine($$"""
 		if ({{condition}})
 		{
@@ -676,12 +679,10 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 							{
 								sb.AppendLine($$"""
 		if ({{condition}})
-			{{sb2.ToString().Trim()}}
+			{{string.Concat(lines).Trim()}}
 """);
 							}
 						}
-						else
-							sb.Append(sb2);
 						sb2.Clear();
 					}
 				}
