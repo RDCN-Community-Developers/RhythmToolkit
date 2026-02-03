@@ -54,12 +54,12 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 			else if (!Read(ref reader, propertyName, ref value, options))
 			{
 #if DEBUG
-				if (!(
-					(value is FloatingText && propertyName.SequenceEqual("times"u8)) ||
-					(value is FloatingText && propertyName.SequenceEqual("id"u8)) ||
-					(value is AdvanceText && propertyName.SequenceEqual("id"u8))
-					))
-					Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.Type} not found.");
+				//if (!(
+				//	(value is FloatingText && propertyName.SequenceEqual("times"u8)) ||
+				//	(value is FloatingText && propertyName.SequenceEqual("id"u8)) ||
+				//	(value is AdvanceText && propertyName.SequenceEqual("id"u8))
+				//	))
+				//	Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.Type} not found.");
 #endif
 				value[
 #if NET8_0_OR_GREATER

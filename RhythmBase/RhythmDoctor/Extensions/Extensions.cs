@@ -333,7 +333,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static IEnumerable<TEvent> Before<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
-			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			ReadOnlyEnumCollection<EventType> types = EventTypeUtils.ToEnums<TEvent>();
 			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
@@ -360,7 +360,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static IEnumerable<TEvent> Before<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
-			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			ReadOnlyEnumCollection<EventType> types = EventTypeUtils.ToEnums<TEvent>();
 			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
 			{
@@ -387,7 +387,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static IEnumerable<TEvent> After<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
-			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			ReadOnlyEnumCollection<EventType> types = EventTypeUtils.ToEnums<TEvent>();
 			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
@@ -420,7 +420,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static IEnumerable<TEvent> After<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
-			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			ReadOnlyEnumCollection<EventType> types = EventTypeUtils.ToEnums<TEvent>();
 			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
@@ -461,7 +461,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static TEvent? FrontOrDefault<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
-			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			ReadOnlyEnumCollection<EventType> types = EventTypeUtils.ToEnums<TEvent>();
 			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			TEvent? front = null;
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
@@ -490,7 +490,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static TEvent? FrontOrDefault<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
-			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			ReadOnlyEnumCollection<EventType> types = EventTypeUtils.ToEnums<TEvent>();
 			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			TEvent? front = null;
 			while (enumerator.MoveNext() && enumerator.Current.Key < e.Beat)
@@ -527,7 +527,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static TEvent? NextOrDefault<TEvent>(this TEvent e) where TEvent : class, IBaseEvent
 		{
-			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			ReadOnlyEnumCollection<EventType> types = EventTypeUtils.ToEnums<TEvent>();
 			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }
@@ -562,7 +562,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// </summary>
 		public static TEvent? NextOrDefault<TEvent>(this IBaseEvent e) where TEvent : class, IBaseEvent
 		{
-			EventType[] types = EventTypeUtils.ToEnums<TEvent>();
+			ReadOnlyEnumCollection<EventType> types = EventTypeUtils.ToEnums<TEvent>();
 			IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> enumerator = e.Beat.BaseLevel?.eventsBeatOrder.GetEnumerator() ?? throw new InvalidRDBeatException();
 			bool moved;
 			while ((moved = enumerator.MoveNext()) && enumerator.Current.Key < e.Beat) { }

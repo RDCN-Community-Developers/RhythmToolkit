@@ -13,7 +13,7 @@ namespace RhythmBase.Global.Components;
 /// checks, making it suitable for scenarios where a fixed set of enum values needs to be referenced or queried without
 /// modification.</remarks>
 /// <typeparam name="TEnum">The enumeration type contained in the collection. Must be a value type that derives from <see cref="System.Enum"/>.</typeparam>
-public class ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
+public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
 {
 	private const int bw = sizeof(ulong) * 8;
 	private readonly ulong mask;
@@ -160,8 +160,8 @@ public class ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : st
 	/// <returns>true if at least one of the specified enumeration values is present in the collection; otherwise, false.</returns>
 	public bool ContainsAny(params IEnumerable<TEnum> types)
 	{
-			foreach (TEnum type in types)
-				if (Contains(type)) return true;
+		foreach (TEnum type in types)
+			if (Contains(type)) return true;
 		return false;
 	}
 	/// <summary>
@@ -219,23 +219,71 @@ public class ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : st
 		return true;
 	}
 	/// <summary>
-	/// Combines the values from the specified collection into the current collection, adding any elements that are
-	/// present in the other collection but not already included.
+	/// Returns a new collection containing the elements that exist in both this collection and the specified collection.
 	/// </summary>
-	/// <param name="other">The collection whose elements are to be added to the current collection. Cannot be null.</param>
-	/// <returns>true if the current collection was changed as a result of the operation; otherwise, false.</returns>
-	/// <exception cref="ArgumentNullException">Thrown if <paramref name="other"/> is null.</exception>
-	public ReadOnlyEnumCollection<TEnum> Concat(ReadOnlyEnumCollection<TEnum> other)
+	/// <param name="other">The collection to intersect with the current collection. Only elements present in both collections will be included
+	/// in the result.</param>
+	/// <returns>A read-only collection containing the intersection of elements from this collection and <paramref name="other"/>.
+	/// The result will be empty if there are no common elements.</returns>
+	public ReadOnlyEnumCollection<TEnum> Intersect(ReadOnlyEnumCollection<TEnum> other)
 	{
-		if (other == null) throw new ArgumentNullException(nameof(other));
-		ReadOnlyEnumCollection<TEnum> result = new();
+		int size = Math.Min(_bits.Length, other._bits.Length);
+		ReadOnlyEnumCollection<TEnum> result = new(size);
+		for (int i = 0; i < size; i++)
+			result._bits[i] = _bits[i] & other._bits[i];
+
+		return result;
+	}
+	/// <summary>
+	/// Creates a new collection containing the elements of this collection that are not present in the specified
+	/// collection.
+	/// </summary>
+	/// <param name="other">The collection whose elements will be excluded from the result. Cannot be null.</param>
+	/// <returns>A read-only collection containing the elements that are in this collection but not in <paramref name="other"/>.</returns>
+	public ReadOnlyEnumCollection<TEnum> Except(ReadOnlyEnumCollection<TEnum> other)
+	{
+		int size = Math.Min(_bits.Length, other._bits.Length);
+		ReadOnlyEnumCollection<TEnum> result = new(_bits.Length);
+		for (int i = 0; i < size; i++)
+			result._bits[i] = _bits[i] & ~other._bits[i];
+		for (int i = size; i < _bits.Length; i++)
+			result._bits[i] = _bits[i];
+		return result;
+	}
+	/// <summary>
+	/// Returns a new collection containing the symmetric difference between this collection and the specified collection.
+	/// </summary>
+	/// <param name="other">The collection to compare with the current collection. Elements present in either collection, but not both, will be
+	/// included in the result.</param>
+	/// <returns>A read-only collection containing elements that are present in either this collection or the specified collection,
+	/// but not in both.</returns>
+	public ReadOnlyEnumCollection<TEnum> SymmetricExcept(ReadOnlyEnumCollection<TEnum> other)
+	{
 		int size = Math.Max(_bits.Length, other._bits.Length);
+		ReadOnlyEnumCollection<TEnum> result = new(size);
 		for (int i = 0; i < size; i++)
 		{
 			ulong a = (i < _bits.Length) ? _bits[i] : 0ul;
 			ulong b = (i < other._bits.Length) ? other._bits[i] : 0ul;
-			ulong combined = a | b;
-			result._bits[i] = combined;
+			result._bits[i] = a ^ b;
+		}
+		return result;
+	}
+	/// <summary>
+	/// Returns a new collection that represents the union of the current collection and the specified collection.
+	/// </summary>
+	/// <param name="other">The collection whose elements are combined with the elements of the current collection to form the union. Cannot be
+	/// null.</param>
+	/// <returns>A new <see cref="ReadOnlyEnumCollection{TEnum}"/> containing all unique elements from both collections.</returns>
+	public ReadOnlyEnumCollection<TEnum> Union(ReadOnlyEnumCollection<TEnum> other)
+	{
+		int size = Math.Max(_bits.Length, other._bits.Length);
+		ReadOnlyEnumCollection<TEnum> result = new(size);
+		for (int i = 0; i < size; i++)
+		{
+			ulong a = (i < _bits.Length) ? _bits[i] : 0ul;
+			ulong b = (i < other._bits.Length) ? other._bits[i] : 0ul;
+			result._bits[i] = a | b;
 		}
 		return result;
 	}

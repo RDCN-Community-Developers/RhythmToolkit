@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static EventType ToEnum(Type type)
 		{
 			EventType ConvertToEnum;
-			if (EventType_Enums == null)
+			if (_eventType_Enums == null)
 			{
 				string name = type.Name;
 				if (!Enum.TryParse(name, out EventType result))
@@ -30,7 +30,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			{
 				try
 				{
-					ConvertToEnum = EventType_Enums[type].Single();
+					ConvertToEnum = _eventType_Enums[type].Single();
 				}
 				catch (Exception)
 				{
@@ -51,20 +51,22 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <param name="type">The type to convert.</param>  
 		/// <returns>An array of corresponding EventType enumerations.</returns>  
 		/// <exception cref="IllegalEventTypeException">Thrown when an unexpected exception occurs.</exception>  
-		public static EventType[] ToEnums(Type type)
+		public static ReadOnlyEnumCollection<EventType> ToEnums(Type type)
 		{
 			if (typeof(MacroEvent).IsAssignableFrom(type))
-				return [EventType.MacroEvent];
-			EventType[] ConvertToEnums;
-			ConvertToEnums = EventType_Enums[type];
-			return ConvertToEnums;
+				return new(EventType.MacroEvent);
+			if(typeof(IBaseEvent) == type)
+				type = typeof(BaseEvent);
+			if (_eventType_Enums.TryGetValue(type, out var value))
+				return value;
+			throw new IllegalEventTypeException(type);
 		}
 		/// <summary>  
 		/// Converts a generic event type to an array of corresponding EventType enumerations.  
 		/// </summary>  
 		/// <typeparam name="TEvent">The generic event type to convert.</typeparam>  
 		/// <returns>An array of corresponding EventType enumerations.</returns>
-		public static EventType[] ToEnums<TEvent>() where TEvent : IBaseEvent => ToEnums(typeof(TEvent));
+		public static ReadOnlyEnumCollection<EventType> ToEnums<TEvent>() where TEvent : IBaseEvent => ToEnums(typeof(TEvent));
 		/// <summary>  
 		/// Converts a string representation of an event type to its corresponding Type.  
 		/// </summary>  
@@ -92,7 +94,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static Type ToType(this EventType type)
 		{
 			Type ConvertToType;
-			if (Enum_EventType == null)
+			if (_eventEnum_Type == null)
 			{
 				return Type.GetType($"{typeof(IBaseEvent).Namespace}.{type}") ?? throw new RhythmBaseException(
 						$"Illegal Type: {type}.");
@@ -101,7 +103,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			{
 				try
 				{
-					ConvertToType = Enum_EventType[type];
+					ConvertToType = _eventEnum_Type[type];
 				}
 				catch
 				{
@@ -111,18 +113,18 @@ namespace RhythmBase.RhythmDoctor.Utils
 			return ConvertToType;
 		}
 
-		private static readonly ReadOnlyCollection<Type> EventTypes = (from i in typeof(IBaseEvent).Assembly.GetTypes().Where(i => i.Namespace == typeof(IBaseEvent).Namespace)
-																																	 where typeof(IBaseEvent).IsAssignableFrom(i)
-																																	 select i)
-				.ToList()
-				.AsReadOnly();
-		/// <summary>  
-		/// A dictionary that records the correspondence of event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" /> to <see cref="T:RhythmBase.Events.EventType" />.  
-		/// </summary>  
-		private static readonly ReadOnlyDictionary<Type, EventType[]> EventType_Enums = new(EventTypes.ToDictionary((i) => i, (i) => (from j in EventTypes
-																																																																	where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
-																																																																	select ToEnum(j))
-				.ToArray()));
+		//private static readonly ReadOnlyCollection<Type> EventTypes = (from i in typeof(IBaseEvent).Assembly.GetTypes().Where(i => i.Namespace == typeof(IBaseEvent).Namespace)
+		//																															 where typeof(IBaseEvent).IsAssignableFrom(i)
+		//																															 select i)
+		//		.ToList()
+		//		.AsReadOnly();
+		///// <summary>  
+		///// A dictionary that records the correspondence of event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" /> to <see cref="T:RhythmBase.Events.EventType" />.  
+		///// </summary>  
+		//private static readonly ReadOnlyDictionary<Type, EventType[]> EventType_Enums = new(EventTypes.ToDictionary((i) => i, (i) => (from j in EventTypes
+		//																																																															where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
+		//																																																															select ToEnum(j))
+		//		.ToArray()));
 		internal static readonly ReadOnlyCollection<Type> MacroTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
 																																		where
 																																				typeof(MacroEvent).IsAssignableFrom(i) &&
@@ -134,16 +136,16 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <summary>  
 		/// A dictionary that records the correspondence of <see cref="T:RhythmBase.Events.EventType" /> to event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" />.  
 		/// </summary>  
-		private static readonly ReadOnlyDictionary<EventType, Type> Enum_EventType = new(((EventType[])Enum.GetValues(typeof(EventType))).ToDictionary((i) => i, (i) => i.ToType()));
+		//private static readonly ReadOnlyDictionary<EventType, Type> Enum_EventType = new(((EventType[])Enum.GetValues(typeof(EventType))).ToDictionary((i) => i, (i) => i.ToType()));
 
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseRowAction" />.  
 		/// </summary>  
-		public static readonly ReadOnlyEnumCollection<EventType> RowTypes = new(2, ToEnums<BaseRowAction>());
+		public static readonly ReadOnlyEnumCollection<EventType> RowTypes = ToEnums<BaseRowAction>();
 		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseDecorationAction" />.  
 		/// </summary>  
-		public static readonly ReadOnlyEnumCollection<EventType> DecorationTypes = new(2, ToEnums<BaseDecorationAction>());
+		public static readonly ReadOnlyEnumCollection<EventType> DecorationTypes = ToEnums<BaseDecorationAction>();
 		/// <summary>  
 		/// Custom event types.  
 		/// </summary>  

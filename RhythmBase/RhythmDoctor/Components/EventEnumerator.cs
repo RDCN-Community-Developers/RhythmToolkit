@@ -11,11 +11,11 @@ namespace RhythmBase.RhythmDoctor.Components
 		protected readonly IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> beats;
 		protected IEnumerator<IBaseEvent>? events;
 		protected readonly OrderedEventCollection collection;
-		private EventType[] types;
+		private ReadOnlyEnumCollection<EventType> types;
 		private RDRange range;
 		public EventEnumerator(OrderedEventCollection collection) : this(collection, RDRange.Infinity) { }
 		public EventEnumerator(OrderedEventCollection collection, RDRange range) : this(collection, EventTypeUtils.ToEnums(typeof(TEvent)), range) { }
-		public EventEnumerator(OrderedEventCollection collection, EventType[] types, RDRange range)
+		public EventEnumerator(OrderedEventCollection collection, ReadOnlyEnumCollection<EventType> types, RDRange range)
 		{
 			//collection._modifierInstances[this] = [];
 			this.collection = collection;
@@ -65,11 +65,11 @@ namespace RhythmBase.RhythmDoctor.Components
 		public void Reset() => throw new NotSupportedException();
 		public IEventEnumerable<TEvent2> OfEvent<TEvent2>() where TEvent2 : IBaseEvent
 		{
-			EventType[] types = [.. this.types.Intersect(EventTypeUtils.ToEnums(typeof(TEvent2)))];
+			ReadOnlyEnumCollection<EventType> types = this.types.Intersect(EventTypeUtils.ToEnums(typeof(TEvent2)));
 			this.types = types;
 			return this as EventEnumerator<TEvent2> ?? new(collection, types, range);
 		}
-		public IEventEnumerable<IBaseEvent> OfEvents(EventType[] types)
+		public IEventEnumerable<IBaseEvent> OfEvents(ReadOnlyEnumCollection<EventType> types)
 		{
 			this.types = types;
 			return this as EventEnumerator<IBaseEvent> ?? new(collection, types, range);

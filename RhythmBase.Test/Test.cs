@@ -243,5 +243,13 @@ namespace RhythmBase.Test
 			};
 			Console.WriteLine(level.ToJsonString(settings));
 		}
+		[TestMethod]
+		public void OthersTest()
+		{
+			RDLevel level = RDLevel.Default;
+			level.Add(new RhythmBase.Test.Tutorial.MyEvent());
+			Console.WriteLine(level.OfEvent<MacroEvent>().Count());
+			RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.Events.EventType> eventTypes = EventTypeUtils.CustomTypes;
+		}
 	}
 }

@@ -15,7 +15,7 @@ namespace RhythmBase.Global.Components
 	/// The collection does not allow duplicate values and does not preserve insertion order. Thread safety is not
 	/// guaranteed; external synchronization is required for concurrent access.</remarks>
 	/// <typeparam name="TEnum">The enum type to be stored in the collection. Must be a value type that derives from Enum.</typeparam>
-	public class EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
+	public struct EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
 	{
 		private const int bw = sizeof(ulong) * 8;
 		private readonly ulong mask;
@@ -222,6 +222,75 @@ namespace RhythmBase.Global.Components
 					return false;
 			}
 			return true;
+		}
+		/// <summary>
+		/// Returns a new collection containing the elements that exist in both this collection and the specified collection.
+		/// </summary>
+		/// <param name="other">The collection to compare with the current collection. Only elements present in both collections will be included
+		/// in the result.</param>
+		/// <returns>An <see cref="EnumCollection{TEnum}"/> containing the intersection of the two collections. The result will be empty if there are
+		/// no common elements.</returns>
+		public EnumCollection<TEnum> Intersect(EnumCollection<TEnum> other)
+		{
+			int size = Math.Min(_bits.Length, other._bits.Length);
+			EnumCollection<TEnum> result = new EnumCollection<TEnum>(size);
+			for (int i = 0; i < size; i++)
+				result._bits[i] = _bits[i] & other._bits[i];
+			return result;
+		}
+		/// <summary>
+		/// Returns a new collection containing the elements of this collection that are not present in the specified
+		/// collection.
+		/// </summary>
+		/// <param name="other">The collection whose elements should be excluded from the result. Cannot be null.</param>
+		/// <returns>A new <see cref="EnumCollection{TEnum}"/> containing the elements that exist in this collection but not in
+		/// <paramref name="other"/>.</returns>
+		public EnumCollection<TEnum> Except(EnumCollection<TEnum> other)
+		{
+			int size = Math.Min(_bits.Length, other._bits.Length);
+			EnumCollection<TEnum> result = new(_bits.Length);
+			for (int i = 0; i < size; i++)
+				result._bits[i] = _bits[i] & ~other._bits[i];
+			for (int i = size; i < _bits.Length; i++)
+				result._bits[i] = _bits[i];
+			return result;
+		}
+		/// <summary>
+		/// Returns a new collection containing the symmetric difference between this collection and the specified collection.
+		/// </summary>
+		/// <param name="other">The collection to compare with the current collection. The symmetric difference will include elements present in
+		/// either collection but not in both.</param>
+		/// <returns>An <see cref="EnumCollection{TEnum}"/> containing elements that are present in either this collection or <paramref
+		/// name="other"/>, but not in both.</returns>
+		public EnumCollection<TEnum> SymmetricExcept(EnumCollection<TEnum> other)
+		{
+			int size = Math.Max(_bits.Length, other._bits.Length);
+			EnumCollection<TEnum> result = new(size);
+			for (int i = 0; i < size; i++)
+			{
+				ulong a = (i < _bits.Length) ? _bits[i] : 0ul;
+				ulong b = (i < other._bits.Length) ? other._bits[i] : 0ul;
+				result._bits[i] = a ^ b;
+			}
+			return result;
+		}
+		/// <summary>
+		/// Returns a new collection that contains all elements present in either this collection or the specified collection.
+		/// </summary>
+		/// <param name="other">The collection whose elements will be combined with those of this collection. Cannot be null.</param>
+		/// <returns>An <see cref="EnumCollection{TEnum}"/> containing the union of elements from this collection and <paramref
+		/// name="other"/>.</returns>
+		public EnumCollection<TEnum> Union(EnumCollection<TEnum> other)
+		{
+			int size = Math.Max(_bits.Length, other._bits.Length);
+			EnumCollection<TEnum> result = new EnumCollection<TEnum>(size);
+			for (int i = 0; i < size; i++)
+			{
+				ulong a = (i < _bits.Length) ? _bits[i] : 0ul;
+				ulong b = (i < other._bits.Length) ? other._bits[i] : 0ul;
+				result._bits[i] = a | b;
+			}
+			return result;
 		}
 		/// <summary>
 		/// Returns a read-only wrapper for the current collection.

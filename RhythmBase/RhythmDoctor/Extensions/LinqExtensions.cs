@@ -120,7 +120,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			if (source is OrderedEventCollection ordered)
 			{
 				var collection = ordered.eventsBeatOrder.TryGetValue(beat, out TypedEventCollection<IBaseEvent>? b) ? b : [];
-				var types = new ReadOnlyEnumCollection<EventType>(Utils.EventTypeUtils.ToEnums(typeof(TEvent)));
+				var types = Utils.EventTypeUtils.ToEnums(typeof(TEvent));
 				return collection.ContainsTypes(types) ?
 					collection.Where(i => types.Contains(i.Type)).OfType<TEvent>() :
 					[];
