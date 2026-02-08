@@ -129,7 +129,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 						catch (Exception ex)
 						{
 							JsonElement element = JsonElement.ParseValue(ref checkPoint);
-							Settings.HandleUnreadableEvent(element, ex.Message);
+							ReadSettings.HandleUnreadableEvent(element, ex.Message);
 							continue;
 						}
 #endif
