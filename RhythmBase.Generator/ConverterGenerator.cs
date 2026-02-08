@@ -368,11 +368,11 @@ public class ConverterGenerator : IIncrementalGenerator
 					{
 						IPropertySymbol propSymbol = ctx.SemanticModel.GetDeclaredSymbol(i) ?? throw new NotImplementedException();
 						bool isEnum = propSymbol.Type.TypeKind == TypeKind.Enum;
-						bool notIgnore = HasAttribute(i.AttributeLists, JsonNotIgnoreAttrName);
+						bool hasAlias = HasAttribute(i.AttributeLists, JsonAliasAttrName);
 						bool ignore = HasAttribute(i.AttributeLists, JsonIgnoreAttrName);
 						bool isPublic = propSymbol.DeclaredAccessibility == Accessibility.Public; return
 							!propSymbol.IsStatic &&
-							(isPublic || notIgnore) &&
+							(isPublic || hasAlias) &&
 							!ignore; })
 					.Select(i =>
 					{

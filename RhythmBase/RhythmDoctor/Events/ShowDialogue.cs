@@ -13,7 +13,7 @@ public record class ShowDialogue : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the text of the dialogue.
 	/// </summary>
-	[RDJsonNotIgnore]
+	[RDJsonAlias("text")]
 	internal string Text
 	{
 		get => text; set

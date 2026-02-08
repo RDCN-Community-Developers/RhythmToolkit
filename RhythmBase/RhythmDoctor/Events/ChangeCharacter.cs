@@ -18,14 +18,12 @@ public record class ChangeCharacter : BaseRowAction
 	/// </summary>  
 	[RDJsonIgnore]
 	public RDCharacter Character { get; set; } = RDCharacters.Samurai;
-	[RDJsonNotIgnore]
 	[RDJsonAlias("character")]
 	internal RDCharacters EnumCharacter
 	{
 		get => Character.Character ?? RDCharacters.Custom; set => Character = value;
 	}
 
-	[RDJsonNotIgnore]
 	[RDJsonCondition($"$&.{nameof(Character)}.{nameof(RDCharacter.IsCustom)} && !string.IsNullOrEmpty($&.{nameof(StringCharacter)})")]
 	[RDJsonAlias("customCharacter")]
 	internal string StringCharacter { get => Character.IsCustom ? Character.CustomCharacter ?? string.Empty : string.Empty; set => Character = value; }

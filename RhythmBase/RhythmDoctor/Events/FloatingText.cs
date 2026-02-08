@@ -50,7 +50,6 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	/// <summary>
 	/// Gets the ID of the event.
 	/// </summary>
-	[RDJsonNotIgnore]
 	[RDJsonAlias("id")]
 	internal int _id => _beat.BaseLevel?._floatingTexts.IndexOf(this) ?? -1;
 	/// <summary>

@@ -32,7 +32,7 @@ public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 	/// <summary>
 	/// Gets the ID of the parent floating text.
 	/// </summary>
-	[RDJsonNotIgnore]
+	[RDJsonAlias("id")]
 	internal int Id => Parent?._id ?? -1;
 	/// <inheritdoc/>
 	public override string ToString()
