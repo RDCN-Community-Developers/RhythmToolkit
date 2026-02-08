@@ -292,7 +292,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 
 			writer.WritePropertyName("rows");
 			writer.WriteStartArray();
-			using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false });
+			using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false, Encoder = options.Encoder });
 			foreach (Row row in value.Rows)
 			{
 				stream.SetLength(0);

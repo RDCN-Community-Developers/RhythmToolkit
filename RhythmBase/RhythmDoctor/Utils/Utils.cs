@@ -2,6 +2,7 @@
 using RhythmBase.RhythmDoctor.Events;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Utils
 {
@@ -79,6 +80,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 				options.WriteIndented = true;
 			else
 				options.WriteIndented = false;
+			if(settings.EnableUnsafeRelaxedJsonEscaping)
+				options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
 			LevelConverter levelConverter = new()
 			{
 				WriteSettings = settings,
