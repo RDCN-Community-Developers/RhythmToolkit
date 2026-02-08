@@ -10,7 +10,6 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 {
-	internal bool _tabFieldSet = false;
 	///<inheritdoc/>
 	public override EventType Type { get; } = EventType.NewWindowDance;
 	///<inheritdoc/>
@@ -27,9 +26,8 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 		set
 		{
 			field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
-			_tabFieldSet = true;
 		}
-	} = Tab.Actions;
+	} = Tab.Windows;
 	/// <summary>
 	/// Gets or sets the preset.
 	/// </summary>

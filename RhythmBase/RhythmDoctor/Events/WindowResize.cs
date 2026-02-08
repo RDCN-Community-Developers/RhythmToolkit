@@ -10,7 +10,6 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 {
-	internal bool _tabFieldSet = false;
 	/// <inheritdoc/>
 	public override EventType Type => EventType.WindowResize;
 	/// <inheritdoc/>
@@ -27,9 +26,8 @@ public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 		set
 		{
 			field = value is Tab.Actions or Tab.Windows ? value : throw new InvalidOperationException();
-			_tabFieldSet = true;
 		}
-	} = Tab.Actions;
+	} = Tab.Windows;
 	/// <summary>  
 	/// Gets or sets the scale of the window resize event.  
 	/// </summary>  
