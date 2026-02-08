@@ -204,6 +204,14 @@ namespace RhythmBase.RhythmDoctor.Components
 						level.isZip = true;
 						level.isExtracted = true;
 					}
+					catch (DirectoryNotFoundException)
+					{
+						throw;
+					}
+					catch (FileNotFoundException)
+					{
+						throw;
+					}
 					catch (Exception ex2)
 					{
 						tempDirectory.Delete(true);
