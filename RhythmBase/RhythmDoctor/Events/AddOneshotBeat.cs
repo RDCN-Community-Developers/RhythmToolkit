@@ -15,7 +15,13 @@ public record class AddOneshotBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets the number of subdivisions.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Subdivisions)} > 0")]
+	[RDJsonCondition($"""
+		$&.{nameof(Subdivisions)} > 0 &&(
+		$&.{nameof(PulseType)}
+		is RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Square)}
+		or RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Triangle)}
+		)
+		""")]
 	public byte Subdivisions { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets a value indicating whether the subdivision sound is enabled.
@@ -24,20 +30,30 @@ public record class AddOneshotBeat : BaseBeat
 	[RDJsonCondition($"$&.{nameof(Subdivisions)} > 0")]
 	public bool SubdivisionSound { get; set; }
 	/// <summary>
+	/// 
+	/// </summary>
+	[RDJsonAlias("subdivTickOverride")]
+	[RDJsonCondition($"$&.{nameof(SubdivisionTickOverride)} > 0")]
+	public float SubdivisionTickOverride { get; set; }
+	/// <summary>
 	/// Gets or sets the tick value.
 	/// </summary>
 	public float Tick { get; set; } = 1f;
 	/// <summary>
 	/// Gets or sets the number of loops.
 	/// </summary>
-	public uint Loops { get; set; }
+	[RDJsonAlias("loops")]
+	[RDJsonCondition($"$&.{nameof(Loop)} > 0")]
+	public uint Loop { get; set; }
 	/// <summary>
 	/// Gets or sets the interval value.
 	/// </summary>
 	[RDJsonCondition($"""
+		$&.{nameof(Interval)} > 0 &&(
 		$&.{nameof(Skipshot)} ||
+		$&.{nameof(Hold)} ||
 		$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotType)}.{nameof(OneshotType.Wave)} ||
-		$&.{nameof(Loops)} > 0
+		$&.{nameof(Loop)} > 0)
 		""")]
 	public float Interval { get; set; } = 2;
 	/// <summary>

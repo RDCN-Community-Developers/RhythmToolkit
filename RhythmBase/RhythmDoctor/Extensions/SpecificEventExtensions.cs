@@ -175,8 +175,8 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			{
 				get
 				{
-					RDHit[] hits = new RDHit[e.Loops + 1];
-					for (int i = 0; i <= e.Loops; ++i)
+					RDHit[] hits = new RDHit[e.Loop + 1];
+					for (int i = 0; i <= e.Loop; ++i)
 						hits[i] = new RDHit(
 							e,
 							e.Beat + (i * e.Interval) + e.Tick,
@@ -190,12 +190,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			public AddOneshotBeat[] Splitted()
 			{
 				e._beat.IfNullThrowException();
-				AddOneshotBeat[] l = new AddOneshotBeat[e.Loops + 1];
-				uint loops = e.Loops;
+				AddOneshotBeat[] l = new AddOneshotBeat[e.Loop + 1];
+				uint loops = e.Loop;
 				for (uint i = 0U; i <= loops; i += 1U)
 				{
 					AddOneshotBeat T = e.MemberwiseClone();
-					T.Loops = 0U;
+					T.Loop = 0U;
 					T.Interval = 0f;
 					T.Beat = new RDBeat(e._beat._calculator!, unchecked(e.Beat.BeatOnly + i * e.Interval));
 					l[i] = T;
