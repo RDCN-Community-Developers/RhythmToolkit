@@ -1,13 +1,16 @@
-﻿using System.Text.Json.Serialization;
-using RhythmBase.RhythmDoctor.Components;
+﻿using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="T:RhythmBase.Components.Expression" />
 	/// </summary>
-	[JsonConverter(typeof(RDPointsConverter))]
+#if NET8_0_OR_GREATER
+	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDSizeE))]
+#endif
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public struct RDSizeE(RDExpression? width, RDExpression? height) :
 		IRDVector<RDSizeE, RDSizeI, RDExpression>,
@@ -194,5 +197,11 @@ namespace RhythmBase.Global.Components.Vector
 		/// <returns>An <see cref="RDPointE"/> instance with the same width and height as the <see cref="RDSizeE"/> instance.</returns>
 		public static explicit operator RDPointE(RDSizeE size) => new(size.Width, size.Height);
 		private readonly string GetDebuggerDisplay() => ToString();
+		public IEnumerator<RDExpression?> GetEnumerator()
+		{
+			yield return Width;
+			yield return Height;
+			yield break;
+		}
 	}
 }

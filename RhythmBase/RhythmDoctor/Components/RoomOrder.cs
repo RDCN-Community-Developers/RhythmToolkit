@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Converters;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Components
@@ -6,6 +7,9 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <summary>
 	/// Represents a unique order of rooms identified by their IDs.
 	/// </summary>
+#if NET8_0_OR_GREATER
+	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRoomOrder))]
+#endif
 	[JsonConverter(typeof(RoomOrderConverter))]
 	public struct RoomOrder
 	{
@@ -97,6 +101,10 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (order.Length != 4)
 				throw new ArgumentException("Order must be an array of 4 bytes.");
 			return new RoomOrder(order[0], order[1], order[2], order[3]);
+		}
+		public IEnumerator<byte> GetEnumerator()
+		{
+			return (IEnumerator<byte>)Order.GetEnumerator();
 		}
 	}
 }

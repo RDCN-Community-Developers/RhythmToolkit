@@ -1,3 +1,4 @@
+using RhythmBase.RhythmDoctor.Components;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,9 @@ namespace RhythmBase.Global.Components;
 /// checks, making it suitable for scenarios where a fixed set of enum values needs to be referenced or queried without
 /// modification.</remarks>
 /// <typeparam name="TEnum">The enumeration type contained in the collection. Must be a value type that derives from <see cref="System.Enum"/>.</typeparam>
+#if NET8_0_OR_GREATER
+[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildReadOnlyEnumCollection))]
+#endif
 public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
 {
 	private const int bw = sizeof(ulong) * 8;
@@ -43,6 +47,68 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// <exception cref="InvalidOperationException">Thrown when an enumeration value exceeds the maximum supported range for the collection.</exception>
 	/// <exception cref="ArgumentOutOfRangeException">Thrown when an enumeration value is outside the valid range for the collection.</exception>
 	public ReadOnlyEnumCollection(params TEnum[] values)
+	{
+		ulong enumMax = 0;
+		int byteWidth = Unsafe.SizeOf<TEnum>();
+		ulong enumMask = (byteWidth * 8 >= 64) ? ulong.MaxValue : ((1ul << (byteWidth * 8)) - 1ul);
+		foreach (TEnum value in values)
+		{
+			ulong v = Convert.ToUInt64(value) & enumMask;
+			if (v > enumMax)
+				enumMax = v;
+		}
+		int size;
+		try
+		{
+			size = checked((int)(enumMax / bw) + 1);
+		}
+		catch
+		{
+			throw new InvalidOperationException("The enum value is too big.");
+		}
+		_bits = new ulong[size];
+		mask = enumMask;
+		foreach (TEnum value in values)
+		{
+			ulong v = ToUL(value);
+			int div = (int)(v / bw);
+			int rem = (int)(v % bw);
+			if (div < 0 || div >= _bits.Length) throw new ArgumentOutOfRangeException(nameof(values), "Enum value out of collection range.");
+			_bits[div] |= (1ul << rem);
+		}
+	}
+	public ReadOnlyEnumCollection(IEnumerable<TEnum> values) : this(values.ToArray())
+	{
+		ulong enumMax = 0;
+		int byteWidth = Unsafe.SizeOf<TEnum>();
+		ulong enumMask = (byteWidth * 8 >= 64) ? ulong.MaxValue : ((1ul << (byteWidth * 8)) - 1ul);
+		foreach (TEnum value in values)
+		{
+			ulong v = Convert.ToUInt64(value) & enumMask;
+			if (v > enumMax)
+				enumMax = v;
+		}
+		int size;
+		try
+		{
+			size = checked((int)(enumMax / bw) + 1);
+		}
+		catch
+		{
+			throw new InvalidOperationException("The enum value is too big.");
+		}
+		_bits = new ulong[size];
+		mask = enumMask;
+		foreach (TEnum value in values)
+		{
+			ulong v = ToUL(value);
+			int div = (int)(v / bw);
+			int rem = (int)(v % bw);
+			if (div < 0 || div >= _bits.Length) throw new ArgumentOutOfRangeException(nameof(values), "Enum value out of collection range.");
+			_bits[div] |= (1ul << rem);
+		}
+	}
+	public ReadOnlyEnumCollection(ReadOnlySpan<TEnum> values) : this(values.ToArray())
 	{
 		ulong enumMax = 0;
 		int byteWidth = Unsafe.SizeOf<TEnum>();

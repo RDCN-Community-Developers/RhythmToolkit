@@ -1,9 +1,13 @@
 ﻿using RhythmBase.RhythmDoctor.Converters;
+using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Components
 {
+#if NET8_0_OR_GREATER
+	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRoom))]
+#endif
 	/// <summary>
 	/// Represents a room that can be applied to multiple rooms.
 	/// </summary>
@@ -12,7 +16,7 @@ namespace RhythmBase.RhythmDoctor.Components
 #if NET7_0_OR_GREATER
 		IEqualityOperators<RDRoom, RDRoom, bool>,
 #endif
-		IEquatable<RDRoom>
+		IEquatable<RDRoom>, IEnumerable<byte>
 	{
 		/// <summary>
 		/// Gets or sets whether the specified room is enabled. 0-base.
@@ -160,6 +164,20 @@ namespace RhythmBase.RhythmDoctor.Components
 #endif
 		/// <inheritdoc/>
 		public readonly bool Equals(RDRoom other) => this == other;
+
+		public IEnumerator<byte> GetEnumerator()
+		{
+			for (int i = 0; i < 5; i++)
+				if (this[(byte)i])
+					yield return (byte)i;
+			yield break;
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
 		private RDRoomIndex _data;
 	}
 }

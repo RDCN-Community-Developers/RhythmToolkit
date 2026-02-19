@@ -1,3 +1,4 @@
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using System;
 using System.Collections;
@@ -15,6 +16,9 @@ namespace RhythmBase.Global.Components
 	/// The collection does not allow duplicate values and does not preserve insertion order. Thread safety is not
 	/// guaranteed; external synchronization is required for concurrent access.</remarks>
 	/// <typeparam name="TEnum">The enum type to be stored in the collection. Must be a value type that derives from Enum.</typeparam>
+#if NET8_0_OR_GREATER
+	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildEnumCollection))]
+#endif
 	public struct EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
 	{
 		private const int bw = sizeof(ulong) * 8;
@@ -63,6 +67,21 @@ namespace RhythmBase.Global.Components
 			}
 			_bits = new ulong[size];
 			mask = enumMask;
+		}
+		public EnumCollection(params TEnum[] values) : this()
+		{
+			foreach (TEnum value in values)
+				Add(value);
+		}
+		public EnumCollection(IEnumerable<TEnum> values) : this()
+		{
+			foreach (TEnum value in values)
+				Add(value);
+		}
+		public EnumCollection(ReadOnlySpan<TEnum> values) : this()
+		{
+			foreach (TEnum value in values)
+				Add(value);
 		}
 		private ulong ToUL(TEnum value) => Unsafe.As<TEnum, ulong>(ref value) & mask;
 		private static TEnum ToEnum(ulong value) => Unsafe.As<ulong, TEnum>(ref value);

@@ -1,12 +1,16 @@
-﻿using System.Text.Json.Serialization;
+﻿using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="integer" />
 	/// </summary>
-	[JsonConverter(typeof(RDPointsConverter))]
+#if NET8_0_OR_GREATER
+	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDSizeNI))]
+#endif
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public struct RDSizeNI(int width, int height) : IRDVector<RDSizeNI, RDSizeNI, int>
 	{
@@ -141,5 +145,11 @@ namespace RhythmBase.Global.Components.Vector
 		/// <returns>An <see cref="RDPointNI"/> with the same width and height as the input.</returns>
 		public static explicit operator RDPointNI(RDSizeNI size) => new(size.Width, size.Height);
 		private readonly string GetDebuggerDisplay() => ToString();
+		public IEnumerator<int> GetEnumerator()
+		{
+			yield return Width;
+			yield return Height;
+			yield break;
+		}
 	}
 }
