@@ -65,10 +65,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 						if (e != null)
 						{
 							level.Rows.Add(e);
+							string assPath = DirectoryName + e.Character.CustomCharacter;
 							if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-								foreach (FileReference file in e.Character.GetAllFileReferences())
+								foreach (FileReference file in e.Character.GetAllPossibleFileReferences())
 									if (!file.IsEmpty && file.IsExist(DirectoryName!))
 										ReadSettings.FileReferences.Add(file);
+									else if (file.IsExist(assPath))
+										ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
 						}
 					}
 					reader.Read();
@@ -86,10 +89,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 						if (e != null)
 						{
 							level.Decorations.Add(e);
+							string assPath = DirectoryName + e.Character.CustomCharacter;
 							if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-								foreach (FileReference file in e.GetAllFileReferences())
+								foreach (FileReference file in e.Character.GetAllPossibleFileReferences())
 									if (!file.IsEmpty && file.IsExist(DirectoryName!))
 										ReadSettings.FileReferences.Add(file);
+									else if (file.IsExist(assPath))
+										ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
 						}
 					}
 					reader.Read();
@@ -303,11 +309,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
+				string assPath = DirectoryName + e.Character.CustomCharacter;
 				if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-					foreach (FileReference file in row.Character.GetAllFileReferences())
+					foreach (FileReference file in row.Character.GetAllPossibleFileReferences())
 						if (!file.IsEmpty && file.IsExist(DirectoryName!))
-							WriteSettings.FileReferences.Add(file);
-
+							ReadSettings.FileReferences.Add(file);
+						else if (file.IsExist(assPath))
+							ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("decorations");
@@ -322,10 +330,13 @@ namespace RhythmBase.RhythmDoctor.Converters
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
+				string assPath = DirectoryName + e.Character.CustomCharacter;
 				if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-					foreach (FileReference file in decoration.GetAllFileReferences())
+					foreach (FileReference file in decoration.Character.GetAllPossibleFileReferences())
 						if (!file.IsEmpty && file.IsExist(DirectoryName!))
-							WriteSettings.FileReferences.Add(file);
+							ReadSettings.FileReferences.Add(file);
+						else if (file.IsExist(assPath))
+							ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
 			}
 			writer.WriteEndArray();
 			writer.WritePropertyName("events");

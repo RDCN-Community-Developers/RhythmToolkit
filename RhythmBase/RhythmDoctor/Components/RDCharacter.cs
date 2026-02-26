@@ -46,7 +46,7 @@ public readonly struct RDCharacter
 		IsCustom = true;
 		CustomCharacter = character;
 	}
-	internal IEnumerable<FileReference> GetAllFileReferences()
+	internal IEnumerable<FileReference> GetAllPossibleFileReferences()
 	{
 		if (IsCustom && CustomCharacter is string cc)
 		{
@@ -56,15 +56,9 @@ public readonly struct RDCharacter
 			{
 				yield return cc + ".png";
 				yield return cc + ".json";
-				string glowPath = cc + "_glow.png";
-				string outlinePath = cc + "_outline.png";
-				string freezePath = cc + "_freeze.png";
-				if (File.Exists(glowPath))
-					yield return glowPath;
-				if (File.Exists(outlinePath))
-					yield return outlinePath;
-				if (File.Exists(freezePath))
-					yield return freezePath;
+				yield return cc + "_glow.png";
+				yield return cc + "_outline.png";
+				yield return cc + "_freeze.png";
 			}
 		}
 	}

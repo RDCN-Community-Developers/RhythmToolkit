@@ -76,7 +76,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteNumber("row"u8, value.Index);
 			writer.WritePropertyName("rooms"u8);
 			JsonSerializer.Serialize(writer, value.Room, options);
-			//writer.WriteString("filename"u8, value.Filename);
 			if (!value.Character.IsCustom && value.Character.Character is RDCharacters rdc)
 				writer.WriteString("character", EnumConverter.ToEnumString(rdc));
 			else

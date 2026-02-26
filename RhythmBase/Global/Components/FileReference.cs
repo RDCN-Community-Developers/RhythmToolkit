@@ -36,18 +36,18 @@ namespace RhythmBase.Global.Components
 		/// <summary>
 		/// Determines whether the file referenced by <see cref="Path"/> exists.
 		/// </summary>
-		/// <param name="levelFile">
+		/// <param name="parentFile">
 		/// A base file path used to resolve relative <see cref="Path"/> values. If <see cref="Path"/> is absolute,
-		/// <paramref name="levelFile"/> is ignored.
+		/// <paramref name="parentFile"/> is ignored.
 		/// </param>
 		/// <returns>
 		/// <c>true</c> if the resolved file path exists on disk; otherwise, <c>false</c>.
 		/// </returns>
-		public readonly bool IsExist(string levelFile) =>
+		public readonly bool IsExist(string parentFile) =>
 #if NETCOREAPP2_1_OR_GREATER
-				System.IO.File.Exists(System.IO.Path.GetFullPath(Path, levelFile));
+				System.IO.File.Exists(System.IO.Path.GetFullPath(Path, parentFile));
 #else
-			System.IO.File.Exists(GetFullPath(Path, levelFile));
+			System.IO.File.Exists(GetFullPath(Path, parentFile));
 
 		/// <summary>
 		/// Resolves a possibly relative path to an absolute path using a provided base path.
