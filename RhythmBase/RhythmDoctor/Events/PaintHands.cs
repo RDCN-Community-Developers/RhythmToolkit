@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to paint hands with specified properties.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 {
 	/// <summary>

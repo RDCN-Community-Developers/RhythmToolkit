@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a text explosion event in a room.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class TextExplosion : BaseEvent, IRoomEvent, IColorEvent
 {
 	///<inheritdoc/>

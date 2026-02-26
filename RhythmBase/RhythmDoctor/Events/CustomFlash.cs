@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a custom flash event.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 {
 	/// <inheritdoc />

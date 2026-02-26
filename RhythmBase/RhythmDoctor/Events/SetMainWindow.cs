@@ -7,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that sets the main application window.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetMainWindow : BaseWindowEvent
 {
 	///<inheritdoc/>

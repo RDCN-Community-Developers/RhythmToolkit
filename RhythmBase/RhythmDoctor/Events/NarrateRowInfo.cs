@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that narrates row information.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class NarrateRowInfo : BaseRowAction
 {
 	///<inheritdoc/>

@@ -8,6 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an event to set the room perspective.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public record class SetRoomPerspective : BaseEvent, IEaseEvent
 {
 	private RDPoint[] cornerPositions = [

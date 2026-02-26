@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to add a one-shot beat.
 /// </summary>
+[RDJsonObjectSerializable]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public record class AddOneshotBeat : BaseBeat
 {

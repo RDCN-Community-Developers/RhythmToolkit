@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to set the owner of a hand in a room.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetHandOwner : BaseEvent, IRoomEvent
 {
 	///<inheritdoc/>

@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event for reading narration.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class ReadNarration : BaseEvent
 {
 	///<inheritdoc/>

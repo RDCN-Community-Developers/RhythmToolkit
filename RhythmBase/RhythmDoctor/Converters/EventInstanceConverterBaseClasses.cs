@@ -8,6 +8,7 @@ using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Converters.Events;
 using RhythmBase.RhythmDoctor.Events;
 */
+using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
 
@@ -34,33 +35,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 	internal abstract class EventInstanceConverterBaseBeat<TEvent> : EventInstanceConverterBaseRowAction<TEvent> where TEvent : BaseBeat, new()
 	{
 	}
-	//internal class EventInstantConverterAddClassicBeat : EventInstantConverterBaseBeat<AddClassicBeat>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref AddClassicBeat value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//		if (propertyName.SequenceEqual("tick"u8))
-	//			value.Tick = reader.GetSingle();
-	//		else if (propertyName.SequenceEqual("swing"u8))
-	//			value.Swing = reader.GetSingle();
-	//		else if (propertyName.SequenceEqual("hold"u8))
-	//			value.Hold = reader.GetSingle();
-	//		else if (propertyName.SequenceEqual("length"u8))
-	//			value.Length = reader.GetUInt16();
-	//		else if (propertyName == "setXs"u8 && TryParse(reader.ValueSpan, out ClassicBeatPatterns pattern))
-	//			value.SetXs = pattern;
-	//	}
-
-	//	protected override void Write(Utf8JsonWriter writer, ref AddClassicBeat value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//		writer.WriteNumber("tick"u8, value.Tick);
-	//		writer.WriteNumber("swing"u8, value.Swing);
-	//		writer.WriteNumber("hold"u8, value.Hold);
-	//		writer.WriteNumber("length"u8, value.Length);
-	//		writer.WriteString("setXs"u8, value.SetXs?.ToEnumString());
-	//	}
-	//}
 	internal abstract class EventInstanceConverterBaseDecorationAction<TEvent> : EventInstanceConverterBaseEvent<TEvent> where TEvent : BaseDecorationAction, new()
 	{
 		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref TEvent value, JsonSerializerOptions options)
@@ -113,115 +87,101 @@ namespace RhythmBase.RhythmDoctor.Converters
 			base.Write(writer, ref value, options);
 		}
 	}
-	//internal class EventInstantConverterAddOneshotBeat : EventInstantConverterBaseBeat<AddOneshotBeat>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref AddOneshotBeat value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//		if (propertyName == "pulseType"u8 && TryParse(propertyName, out OneshotPulseShapeTypes result))
-	//			value.PulseType = result;
-	//		else if (propertyName.SequenceEqual("subdivisions"u8))
-	//			value.Subdivisions = reader.GetByte();
-	//		else if (propertyName.SequenceEqual("subdivSound"u8))
-	//			value.SubdivSound = reader.GetBoolean();
-	//		else if (propertyName.SequenceEqual("tick"u8))
-	//			value.Tick = reader.GetSingle();
-	//		else if (propertyName.SequenceEqual("loops"u8))
-	//			value.Loops = reader.GetUInt32();
-	//		else if (propertyName.SequenceEqual("internal"u8))
-	//			value.Interval = reader.GetSingle();
-	//		else if (propertyName.SequenceEqual("skipshot"u8))
-	//			value.Skipshot = reader.GetBoolean();
-	//		else if (propertyName.SequenceEqual("hold"u8))
-	//			value.Hold = reader.GetBoolean();
-	//		else if (propertyName.SequenceEqual("suddenHoldCue"u8))
-	//			value.SuddenHoldCue = reader.GetBoolean();
-	//		else if (propertyName == "freezeBurnMode"u8 && EnumConverter.TryParse(propertyName, out OneshotTypes freezeBurnMode))
-	//			value.FreezeBurnMode = freezeBurnMode;
-	//		else if (propertyName.SequenceEqual("delay"u8))
-	//			value.Delay = reader.GetSingle();
-	//	}
-	//	protected override void Write(Utf8JsonWriter writer, ref AddOneshotBeat value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//		writer.WriteBoolean("hold"u8, value.Hold);
-	//	}
-	//}
-	//internal class EventInstantConverterCustomDecorationEvent : EventInstantConverterBaseDecorationAction<CustomDecorationEvent>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref CustomDecorationEvent value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//	}
-	//	protected override void Write(Utf8JsonWriter writer, ref CustomDecorationEvent value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//	}
-	//}
-	//internal class EventInstantConverterCustomEvent : EventInstantConverterBaseEvent<CustomEvent>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref CustomEvent value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//	}
-	//	protected override void Write(Utf8JsonWriter writer, ref CustomEvent value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//	}
-	//}
-	//internal class EventInstantConverterCustomRowEvent : EventInstantConverterBaseRowAction<CustomRowEvent>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref CustomRowEvent value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//	}
-	//	protected override void Write(Utf8JsonWriter writer, ref CustomRowEvent value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//	}
-	//}
-	//internal class EventInstantConverterFloatingText : EventInstantConverterBaseEvent<FloatingText>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref FloatingText value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//	}
-	//	protected override void Write(Utf8JsonWriter writer, ref FloatingText value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//	}
-	//}
-	//internal class EventInstantConverterSetCountingSound : EventInstantConverterBaseRowAction<SetCountingSound>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref SetCountingSound value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//	}
-	//	protected override void Write(Utf8JsonWriter writer, ref SetCountingSound value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//	}
-	//}
-	//internal class EventInstantConverterSetRoomPerspective : EventInstantConverterBaseEvent<SetRoomPerspective>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref SetRoomPerspective value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//	}
-	//	protected override void Write(Utf8JsonWriter writer, ref SetRoomPerspective value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//	}
-	//}
-	//internal class EventInstantConverterSetRowXs : EventInstantConverterBaseBeat<SetRowXs>
-	//{
-	//	protected override void Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref SetRowXs value, JsonSerializerOptions options)
-	//	{
-	//		base.Read(ref reader, propertyName, ref value, options);
-	//	}
-	//	protected override void Write(Utf8JsonWriter writer, ref SetRowXs value, JsonSerializerOptions options)
-	//	{
-	//		base.Write(writer, ref value, options);
-	//	}
-	//}
+	internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEvent<SetVFXPreset>
+	{
+		protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref SetVFXPreset value, JsonSerializerOptions options)
+		{
+			if (base.Read(ref reader, propertyName, ref value, options))
+				return true;
+			if (propertyName.SequenceEqual("rooms"u8))
+				value.Rooms = JsonSerializer.Deserialize<Components.RDRoom>(ref reader, options);
+			else if (propertyName.SequenceEqual("preset"u8))
+				if (reader.TokenType is JsonTokenType.String && EnumConverter.TryParse(reader.ValueSpan, out VfxPreset enumValue0))
+					value.Preset = enumValue0;
+				else if (reader.TokenType is JsonTokenType.Number && reader.TryGetInt32(out int intValue0))
+					value.Preset = (VfxPreset)intValue0;
+				else
+					value.Preset = default;
+			else if (propertyName.SequenceEqual("enable"u8))
+				if (reader.TokenType is JsonTokenType.True or JsonTokenType.False)
+					value.Enable = reader.GetBoolean();
+				else if (reader.TokenType is JsonTokenType.String)
+					value.Enable = "Enabled" == reader.GetString();
+				else
+					value.Enable = false;
+			else if (propertyName.SequenceEqual("threshold"u8))
+				value.Threshold = reader.GetSingle();
+			else if (propertyName.SequenceEqual("intensity"u8))
+				value.Intensity = reader.GetSingle();
+			else if (propertyName.SequenceEqual("color"u8))
+				value.Color = JsonSerializer.Deserialize<Components.PaletteColor>(ref reader, options);
+			else if (propertyName.SequenceEqual("floatX"u8))
+			{
+				if (reader.TokenType is not JsonTokenType.Null)
+				{
+					var p = value.Amount;
+					p.X = reader.GetSingle();
+					value.Amount = p;
+				}
+			}
+			else if (propertyName.SequenceEqual("floatY"u8))
+			{
+				if (reader.TokenType is not JsonTokenType.Null)
+				{
+					var p = value.Amount;
+					p.Y = reader.GetSingle();
+					value.Amount = p;
+				}
+			}
+			else if (propertyName.SequenceEqual("amount"u8))
+				value.Amount = JsonSerializer.Deserialize<Global.Components.Vector.RDPoint>(ref reader, options);
+			else if (propertyName.SequenceEqual("speedPerc"u8))
+				value.SpeedPercentage = reader.GetSingle();
+			else if (propertyName.SequenceEqual("ease"u8))
+				if (reader.TokenType is JsonTokenType.String && EnumConverter.TryParse(reader.ValueSpan, out Global.Components.Easing.EaseType enumValue1))
+					value.Ease = enumValue1;
+				else if (reader.TokenType is JsonTokenType.Number && reader.TryGetInt32(out int intValue1))
+					value.Ease = (Global.Components.Easing.EaseType)intValue1;
+				else
+					value.Ease = default;
+			else if (propertyName.SequenceEqual("duration"u8))
+				value.Duration = reader.GetSingle();
+			else return false;
+			return true;
+		}
+		protected override void Write(Utf8JsonWriter writer, ref SetVFXPreset value, JsonSerializerOptions options)
+		{
+			base.Write(writer, ref value, options);
+			{ writer.WritePropertyName("rooms"u8); JsonSerializer.Serialize(writer, value.Rooms, options); }
+			writer.WriteString("preset"u8, value.Preset.ToEnumString());
+			if (value.Preset is not VfxPreset.DisableAll)
+				writer.WriteBoolean("enable"u8, value.Enable);
+			if (value.Enable && value.Preset
+				is VfxPreset.Bloom)
+				writer.WriteNumber("threshold"u8, value.Threshold);
+			if (value.Enable &&
+				(SetVFXPreset.EaseVfxs.Contains(value.Preset)
+				|| value.Preset is VfxPreset.Diamonds))
+				writer.WriteNumber("intensity"u8, value.Intensity);
+			if (value.Enable && value.Preset
+				is VfxPreset.Bloom
+				or VfxPreset.Diamonds
+				or VfxPreset.Tutorial
+				or VfxPreset.Embers)
+			{ writer.WriteString("color"u8, value.Color.Serialize()); }
+			if (value.Enable && value.Preset
+				is VfxPreset.TileN
+				or VfxPreset.CustomScreenScroll)
+			{ writer.WritePropertyName("amount"u8); JsonSerializer.Serialize(writer, value.Amount, options); }
+			if (value.Enable && value.Preset
+				is VfxPreset.WavyRows)
+				writer.WriteNumber("speedPerc"u8, value.SpeedPercentage);
+			if (value.Enable &&
+				SetVFXPreset.EaseVfxs.Contains(value.Preset))
+				writer.WriteString("ease"u8, value.Ease.ToEnumString());
+			if (value.Enable &&
+				SetVFXPreset.EaseVfxs.Contains(value.Preset))
+				writer.WriteNumber("duration"u8, value.Duration);
+		}
+	}
 }

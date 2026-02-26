@@ -1,6 +1,7 @@
 ﻿namespace RhythmBase.RhythmDoctor.Events;
 
 ///<inheritdoc/>
+[RDJsonObjectSerializable]
 public record class ShowSubdivisionsRows : BaseEvent
 {
 	///<inheritdoc/>

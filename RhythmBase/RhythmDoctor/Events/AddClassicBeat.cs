@@ -7,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to add a classic beat.
 /// </summary>
+[RDJsonObjectSerializable]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public record class AddClassicBeat : BaseBeat
 {
@@ -17,17 +18,17 @@ public record class AddClassicBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets the swing value.
 	/// </summary>
-	[RDJsonCondition("$&.Swing is not 0.5f and not 0f")]
+	[RDJsonCondition($"$&.{nameof(Swing)} is not 1f and not 0f")]
 	public float Swing { get; set; }
 	/// <summary>
 	/// Gets or sets the hold value.
 	/// </summary>
-	[RDJsonCondition("$&.Hold != 0f")]
+	[RDJsonCondition($"$&.{nameof(Hold)} != 0f")]
 	public float Hold { get; set; }
 	/// <summary>  
 	/// Gets or sets the number of beats in a classic beat pattern.  
 	/// </summary>   
-	[RDJsonCondition("$&.Length != 7")]
+	[RDJsonCondition($"$&.{nameof(Length)} != 7")]
 	public int Length { get; set; } = 7;
 	/// <summary>
 	/// Gets or sets the audio content associated with this instance.

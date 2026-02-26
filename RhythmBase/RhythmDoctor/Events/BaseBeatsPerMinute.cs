@@ -4,6 +4,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents the base class for events that have a beats per minute (BPM) value.
 /// </summary>
+[RDJsonObjectHasSerializer]
 public abstract record class BaseBeatsPerMinute : BaseEvent
 {
 	///<inheritdoc/>

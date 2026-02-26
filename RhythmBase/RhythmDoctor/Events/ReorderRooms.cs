@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to reorder rooms.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class ReorderRooms : BaseEvent
 {
 	/// <summary>

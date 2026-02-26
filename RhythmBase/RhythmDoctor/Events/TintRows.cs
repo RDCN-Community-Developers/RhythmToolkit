@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that tints rows with specified colors and effects.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 {
 	/// <summary>
@@ -74,7 +75,7 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	/// Gets a value indicating whether to tint all rows.
 	/// </summary>
 	[RDJsonIgnore]
-	public bool TintAll => Parent != null;
+	public bool TintAll => Parent is null;
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() +
 	                                     $" {Border}{(Border == Events.Border.None ? "" : ":" + BorderColor.ToString())}";

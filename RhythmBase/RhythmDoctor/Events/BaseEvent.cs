@@ -8,6 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// The base class of the event.
 /// All event types inherit directly or indirectly from this.
 /// </summary>
+[RDJsonObjectHasSerializer]
 public abstract record class BaseEvent : IBaseEvent
 {
 	///<inheritdoc/>

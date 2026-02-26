@@ -8,6 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents a window resize event.  
 /// </summary>
+[RDJsonObjectSerializable]
 public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 {
 	/// <inheritdoc/>

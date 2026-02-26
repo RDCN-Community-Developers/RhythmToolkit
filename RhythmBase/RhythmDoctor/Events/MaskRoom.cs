@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a MaskRoom event in the RhythmBase system.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 {
 	/// <summary>

@@ -4,7 +4,7 @@ using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <inheritdoc />
-//[RDJsonObjectNotSerializable]
+[RDJsonObjectSerializable]
 public record class SetRowXs : BaseBeat
 {
 	/// <inheritdoc />

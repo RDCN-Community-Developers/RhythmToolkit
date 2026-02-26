@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a Flash event in the rhythm base.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class Flash : BaseEvent
 {
 	/// <summary>

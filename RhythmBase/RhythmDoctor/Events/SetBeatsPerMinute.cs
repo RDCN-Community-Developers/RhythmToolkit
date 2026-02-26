@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an event to set the beats per minute (BPM) in the rhythm base.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetBeatsPerMinute : BaseBeatsPerMinute
 {
 	/// <inheritdoc/>

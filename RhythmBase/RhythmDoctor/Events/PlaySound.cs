@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to play a sound.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class PlaySound : BaseEvent, IAudioFileEvent
 {
 	/// <summary>

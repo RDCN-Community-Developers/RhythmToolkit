@@ -3,6 +3,7 @@
 /// <summary>  
 /// Represents an event to set a one-shot wave.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public record class SetOneshotWave : BaseBeat
 {
 	/// <summary>  

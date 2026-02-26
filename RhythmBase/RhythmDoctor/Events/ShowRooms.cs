@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an event to show rooms.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public record class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent
 {
 	/// <summary>  

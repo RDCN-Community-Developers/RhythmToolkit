@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an event to set the heart explode interval.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetHeartExplodeInterval : BaseEvent
 {
 	/// <summary>

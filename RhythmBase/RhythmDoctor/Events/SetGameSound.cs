@@ -7,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to set the game sound.
 /// </summary>
+[RDJsonObjectSerializable]
 public partial record class SetGameSound : BaseEvent, IAudioFileEvent
 {
 	/// <summary>  

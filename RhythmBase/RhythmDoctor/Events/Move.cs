@@ -7,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a move event in the rhythm base system.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class Move : BaseDecorationAction, IEaseEvent
 {
 	///<inheritdoc/>

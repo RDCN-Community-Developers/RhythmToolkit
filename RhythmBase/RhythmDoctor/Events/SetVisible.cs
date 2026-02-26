@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an action to set the visibility of a decoration.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetVisible : BaseDecorationAction
 {
 	///<inheritdoc/>

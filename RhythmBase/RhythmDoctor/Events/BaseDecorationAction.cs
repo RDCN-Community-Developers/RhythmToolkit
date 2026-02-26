@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents the base class for decoration actions in the rhythm base.
 /// </summary>
+[RDJsonObjectHasSerializer]
 public abstract record class BaseDecorationAction : BaseEvent, IBaseEvent
 {
 	/// <summary>

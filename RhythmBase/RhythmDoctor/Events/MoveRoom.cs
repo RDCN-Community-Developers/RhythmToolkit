@@ -7,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to move a room with easing properties.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class MoveRoom : BaseEvent, IEaseEvent
 {
 	/// <summary>

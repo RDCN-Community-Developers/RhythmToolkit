@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that applies a spinning rows animation with configurable easing and duration.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SpinningRows : BaseRowAnimation, IEaseEvent
 {
 	/// <summary>

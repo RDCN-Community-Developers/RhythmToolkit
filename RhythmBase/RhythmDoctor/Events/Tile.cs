@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a tile event in the rhythm base system.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class Tile : BaseDecorationAction, IEaseEvent
 {
 	///<inheritdoc/>

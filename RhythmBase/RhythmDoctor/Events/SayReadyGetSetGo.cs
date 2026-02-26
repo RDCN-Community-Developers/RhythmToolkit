@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that says "Ready, Get Set, Go" with various voice sources and phrases.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SayReadyGetSetGo : BaseEvent, IRoomEvent
 {
 	/// <summary>

@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an action to change the character in a row event.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public record class ChangeCharacter : BaseRowAction
 {
 	/// <inheritdoc/>  

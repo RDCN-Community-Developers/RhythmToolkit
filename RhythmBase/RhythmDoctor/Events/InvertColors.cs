@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that inverts colors in a room.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class InvertColors : BaseEvent, IRoomEvent
 {
 	///<inheritdoc/>

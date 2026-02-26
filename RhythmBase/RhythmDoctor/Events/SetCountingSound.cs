@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an action to set the counting sound in the rhythm base.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetCountingSound : BaseRowAction
 {
 	/// <summary>

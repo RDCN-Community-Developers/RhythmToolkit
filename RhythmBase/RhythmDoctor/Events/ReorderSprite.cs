@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an action to reorder a sprite in the Rhythm Doctor game.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class ReorderSprite : BaseDecorationAction
 {
 	///<inheritdoc/>

@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an event that occurs when a level is finished.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class FinishLevel : BaseEvent
 {
 	///<inheritdoc/>

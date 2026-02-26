@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an event to set the play style.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetPlayStyle : BaseEvent
 {
 	/// <summary>

@@ -4,6 +4,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an action to play an animation.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class PlayAnimation : BaseDecorationAction
 {
 	///<inheritdoc/>

@@ -3,6 +3,7 @@
 /// <summary>  
 /// Represents a blend decoration action in the rhythm base.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public record class Blend : BaseDecorationAction
 {
 	///<inheritdoc/>

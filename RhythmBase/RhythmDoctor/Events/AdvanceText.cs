@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that advances text in a room.
 /// </summary>
+[RDJsonObjectSerializable]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 {

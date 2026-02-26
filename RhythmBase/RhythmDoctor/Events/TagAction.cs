@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a tag action event.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class TagAction : BaseEvent
 {
 	/// <summary>

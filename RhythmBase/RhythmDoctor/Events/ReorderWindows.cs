@@ -9,6 +9,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that reorders the windows (window slots) in the Rhythm Doctor UI.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class ReorderWindows : BaseWindowEvent
 {
 	/// <inheritdoc/>

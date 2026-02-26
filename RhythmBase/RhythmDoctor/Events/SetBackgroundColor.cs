@@ -7,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to set the background color.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent, IImageFileEvent
 {
 	/// <summary>

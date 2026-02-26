@@ -4,6 +4,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that calls a custom method.
 /// </summary>
+[RDJsonObjectSerializable]
 public partial record class CallCustomMethod : BaseEvent, IRoomEvent
 {
 	/// <summary>

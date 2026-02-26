@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an event to set the number of crotchets per bar.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 {
 	/// <summary>

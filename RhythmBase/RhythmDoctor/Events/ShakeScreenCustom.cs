@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a custom screen shake event in Rhythm Doctor.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class ShakeScreenCustom : BaseEvent, IRoomEvent, IDurationEvent
 {
 	///<inheritdoc/>

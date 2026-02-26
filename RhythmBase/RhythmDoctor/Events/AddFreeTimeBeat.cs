@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to add a free time beat.
 /// </summary>
+[RDJsonObjectSerializable]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public record class AddFreeTimeBeat : BaseBeat
 {

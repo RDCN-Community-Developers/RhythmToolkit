@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to show a status sign.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class ShowStatusSign : BaseEvent, IDurationEvent
 {
 	/// <summary>

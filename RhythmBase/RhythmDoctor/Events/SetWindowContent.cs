@@ -6,6 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents an event to set the content of a window.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public record class SetWindowContent : BaseWindowEvent, IEaseEvent
 {
 	/// <inheritdoc/>

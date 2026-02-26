@@ -13,6 +13,8 @@ public class ConverterGenerator : IIncrementalGenerator
 {
 	// Attribute 名称常量
 	private const string JsonEnumAttrName = "RhythmBase.Global.Converters.RDJsonEnumSerializableAttribute";
+	private const string JsonObjectSerializableAttrName = "RhythmBase.Global.Converters.RDJsonObjectSerializableAttribute";
+	private const string JsonObjectHasSerializerAttrName = "RhythmBase.Global.Converters.RDJsonObjectHasSerializerAttribute";
 	private const string JsonObjectNotSerializableAttrName = "RhythmBase.Global.Converters.RDJsonObjectNotSerializableAttribute";
 	private const string JsonAliasAttrName = "RhythmBase.Global.Converters.RDJsonAliasAttribute";
 	private const string JsonIgnoreAttrName = "RhythmBase.Global.Converters.RDJsonIgnoreAttribute";
@@ -45,6 +47,8 @@ public class ConverterGenerator : IIncrementalGenerator
 				#pragma warning disable CS9113
 				namespace RhythmBase.Global.Converters;
 				internal sealed class RDJsonEnumSerializableAttribute : Attribute { }
+				internal sealed class RDJsonObjectSerializableAttribute : Attribute { }
+				internal sealed class RDJsonObjectHasSerializerAttribute : Attribute { }
 				internal sealed class RDJsonObjectNotSerializableAttribute : Attribute { }
 				internal sealed class RDJsonIgnoreAttribute : Attribute { }
 				internal sealed class RDJsonNotIgnoreAttribute : Attribute { }
@@ -279,6 +283,9 @@ public class ConverterGenerator : IIncrementalGenerator
 		public string BaseTypeName;
 		public string? SpecialID;
 		public string? Alias;
+		//public bool SerializerIgnore;
+		public bool NeedSerializer;
+		public bool HasSerializer;
 		public PropertyInfo[] Properties;
 	}
 	private struct GenerateSettings()
@@ -344,21 +351,21 @@ public class ConverterGenerator : IIncrementalGenerator
 
 	private static void GenerateEventConverterForRDLevel(IncrementalGeneratorInitializationContext context)
 	{
-		HashSet<string> names = [];
 		var classes = context.SyntaxProvider.CreateSyntaxProvider(
 			predicate: (s, e) =>
 			{
 				return
 				(s is TypeDeclarationSyntax typeDeclaration &&
-				(typeDeclaration is ClassDeclarationSyntax or RecordDeclarationSyntax) &&
+				(typeDeclaration is ClassDeclarationSyntax or RecordDeclarationSyntax or InterfaceDeclarationSyntax) &&
 				typeDeclaration.BaseList is not null);
 			},
 			transform: (ctx, e) =>
 			{
-				TypeDeclarationSyntax typeDeclaration = (TypeDeclarationSyntax)ctx.Node;
-				INamedTypeSymbol? classDeclarationSymbol = ctx.SemanticModel.GetDeclaredSymbol(typeDeclaration) ?? throw new NotImplementedException();
+				TypeDeclarationSyntax? typeDeclaration = ctx.Node as TypeDeclarationSyntax;
+				//InterfaceDeclarationSyntax? interfaceDeclaration = ctx.Node as InterfaceDeclarationSyntax;
+				INamedTypeSymbol classDeclarationSymbol = ctx.SemanticModel.GetDeclaredSymbol(typeDeclaration) ?? throw new NotImplementedException();
 				bool isTargetEvent =
-					(classDeclarationSymbol.ContainingNamespace?.ToDisplayString().Contains("RhythmBase.RhythmDoctor.Events") ?? false) &&
+					(classDeclarationSymbol.ContainingNamespace.ToDisplayString().Contains("RhythmBase.RhythmDoctor.Events")) &&
 					classDeclarationSymbol.AllInterfaces.Any(i => i.ToDisplayString().Contains("IBaseEvent"));
 				PropertyDeclarationSyntax[] propertyDeclarations = [.. typeDeclaration.ChildNodes().OfType<PropertyDeclarationSyntax>()];
 				if (!isTargetEvent)
@@ -369,11 +376,11 @@ public class ConverterGenerator : IIncrementalGenerator
 						IPropertySymbol propSymbol = ctx.SemanticModel.GetDeclaredSymbol(i) ?? throw new NotImplementedException();
 						bool isEnum = propSymbol.Type.TypeKind == TypeKind.Enum;
 						bool hasAlias = HasAttribute(i.AttributeLists, JsonAliasAttrName);
-						bool ignore = HasAttribute(i.AttributeLists, JsonIgnoreAttrName);
-						bool isPublic = propSymbol.DeclaredAccessibility == Accessibility.Public; return
-							!propSymbol.IsStatic &&
-							(isPublic || hasAlias) &&
-							!ignore; })
+						bool isPublic = propSymbol.DeclaredAccessibility == Accessibility.Public;
+						bool isIgnored = HasAttribute(i.AttributeLists, JsonIgnoreAttrName);
+						return
+							!propSymbol.IsStatic && !isIgnored &&
+							(isPublic || hasAlias); })
 					.Select(i =>
 					{
 						IPropertySymbol propSymbol = ctx.SemanticModel.GetDeclaredSymbol(i) ?? throw new NotImplementedException();
@@ -409,7 +416,7 @@ public class ConverterGenerator : IIncrementalGenerator
 								prop.Converter = ctx.SemanticModel.GetSymbolInfo(toes.Type).Symbol?.ToDisplayString();
 							}
 						}
-						if(timeAttr is  AttributeSyntax timeAttrNotNull)
+						if(timeAttr is AttributeSyntax timeAttrNotNull)
 						{
 							var arg = timeAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
 							// Enum value
@@ -421,13 +428,18 @@ public class ConverterGenerator : IIncrementalGenerator
 						prop.Symbol = propSymbol;
 						return prop;
 					})];
-
+				//bool serializerIgnore = HasAttribute(classDeclarationSymbol, JsonObjectNotSerializableAttrName);
+				bool needSerializer = HasAttribute(classDeclarationSymbol, JsonObjectSerializableAttrName);
+				bool hasSerializer = HasAttribute(classDeclarationSymbol, JsonObjectHasSerializerAttrName);
 				ClassInfo classInfo = new()
 				{
 					Type = classDeclarationSymbol,
 					Name = classDeclarationSymbol.ToDisplayString(),
 					BaseTypeName = classDeclarationSymbol.BaseType?.ToDisplayString() ?? "object",
-					Properties = props
+					//SerializerIgnore = serializerIgnore,
+					NeedSerializer = needSerializer,
+					HasSerializer = hasSerializer,
+					Properties = props,
 				};
 				return classInfo;
 			}
@@ -452,8 +464,8 @@ namespace RhythmBase.RhythmDoctor.Converters;
 			foreach (ClassInfo? classInfo in classSymbols.OrderBy(i => i?.Name))
 			{
 				if (classInfo is not ClassInfo ci) continue;
+				if (!ci.NeedSerializer) continue;
 				if (ci.Type.IsAbstract) continue;
-				if (HasAttribute(ci.Type, JsonObjectNotSerializableAttrName)) continue;
 				sb.AppendLine($$"""
 internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConverter{{ToShorter(ci.BaseTypeName)}}<{{ci.Name}}>
 {
@@ -714,16 +726,15 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 			}
 			ctx.AddSource("EventInstanceConvertersRDLevel.g.cs", sb.ToString());
 
-		// EventTypeUtils
+			// EventTypeUtils
 			var validClassSymbols = classSymbols
 				.Where(i =>
 				{
 					if (i is not ClassInfo ci) return false;
 					if (ci.Type.IsAbstract) return false;
 					if (ci.Type.IsGenericType) return false;
-					if (HasAttribute(ci.Type, JsonObjectNotSerializableAttrName)) return false;
-					string className = ci.Name ?? "";
-					return !(className.StartsWith("Forward") && className.EndsWith("Event"));
+					if (!(ci.NeedSerializer || ci.HasSerializer)) return false;
+					return true;
 				})
 				.Cast<ClassInfo>()
 				.OrderBy(i => i.Name);
@@ -735,8 +746,7 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 				{
 					if (i is not ClassInfo ci) return false;
 					if (ci.Type.IsGenericType) return false;
-					string className = ci.Name ?? "";
-					return !(className.StartsWith("Forward") && className.EndsWith("Event"));
+					return true;
 				})
 				.Cast<ClassInfo>()
 				.OrderBy(i => i.Name);
@@ -747,9 +757,28 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 				 i =>
 				 {
 					 HashSet<ClassInfo> result = [..validClassSymbolsWithAbstract.Where(
-						j => SymbolEqualityComparer.Default.Equals(i,j.Type) ||  SymbolEqualityComparer.Default.Equals(i,j.Type.BaseType))];
+						j => InheritsOrImplements(j.Type,i))];
 					 return result;
 				 }, SymbolEqualityComparer.Default);
+
+			static bool InheritsOrImplements(INamedTypeSymbol type, INamedTypeSymbol target)
+			{
+				static IEnumerable<INamedTypeSymbol> GetBaseTypes(INamedTypeSymbol type)
+				{
+					for(var current = type.BaseType;
+					current != null && current.SpecialType != SpecialType.System_Object; 
+					current = current.BaseType)
+					{
+						yield return current;
+					}
+				}
+				if(SymbolEqualityComparer.Default.Equals(type, target))
+					return true;
+				
+				return target.TypeKind is TypeKind.Interface
+				? type.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, target))
+				: GetBaseTypes(type).Any(i => SymbolEqualityComparer.Default.Equals(i, target));
+			}
 			foreach (var pair in typeLink)
 			{
 				List<ClassInfo> abstracts = [];
@@ -826,6 +855,12 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 					});
 				}
 				""");
+			foreach (var classInfo in validClassSymbolsWithAbstract)
+			{
+				var ci = classInfo;
+				//if(classInfo is not ClassInfo ci) continue;
+				sb.AppendLine($"// {ci.Type.Name}");
+			}
 			ctx.AddSource("EventTypeUtilsRDLevel.g.cs", sb.ToString());
 		});
 	}

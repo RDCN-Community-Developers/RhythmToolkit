@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a stutter event in a room.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class Stutter : BaseEvent, IRoomEvent
 {
 	///<inheritdoc/>

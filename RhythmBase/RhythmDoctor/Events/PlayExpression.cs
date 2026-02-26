@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an event that plays an expression.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class PlayExpression : BaseRowAnimation
 {
 	/// <summary>

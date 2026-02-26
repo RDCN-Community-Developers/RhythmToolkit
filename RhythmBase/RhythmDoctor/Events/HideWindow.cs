@@ -7,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event that hides or shows a specific window.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class HideWindow : BaseWindowEvent
 {
   /// <inheritdoc />

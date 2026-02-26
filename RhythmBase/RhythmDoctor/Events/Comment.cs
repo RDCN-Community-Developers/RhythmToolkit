@@ -7,6 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents a summary or description for the associated code element.
 /// </summary>
+[RDJsonObjectSerializable]
 public partial record class Comment : BaseDecorationAction, IColorEvent
 {
 	/// <inheritdoc />

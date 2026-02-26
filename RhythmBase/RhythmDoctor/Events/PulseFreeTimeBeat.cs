@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents a pulse free time beat event.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class PulseFreeTimeBeat : BaseBeat
 {
 	/// <summary>

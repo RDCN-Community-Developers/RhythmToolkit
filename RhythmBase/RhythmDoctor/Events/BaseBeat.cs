@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an abstract base class for beat actions in a rhythm-based application.
 /// </summary>
+[RDJsonObjectHasSerializer]
 public abstract record class BaseBeat : BaseRowAction
 {
 	/// <summary>

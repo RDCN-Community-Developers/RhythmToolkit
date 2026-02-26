@@ -3,6 +3,7 @@
 /// <summary>
 /// Represents an event to hide a row with specific transitions and visibility options.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class HideRow : BaseRowAnimation
 {
 	/// <summary>

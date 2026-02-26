@@ -5,6 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>
 /// Represents an event to play a song with specific beats per minute and other properties.
 /// </summary>
+[RDJsonObjectSerializable]
 public record class PlaySong : BaseBeatsPerMinute, IBarBeginningEvent, IAudioFileEvent
 {
 	/// <summary>
