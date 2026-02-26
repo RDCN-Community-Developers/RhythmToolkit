@@ -25,7 +25,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// The file reference used by the decoration.
 		/// </summary>
-		public string Filename { get; set; } = "";
+		public RDCharacter Character { get; set; }
+		public bool Preview { get; set; } = false;
 		/// <summary>
 		/// Decoration depth.
 		/// </summary>
@@ -76,7 +77,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		internal IEnumerable<FileReference> GetAllFileReferences()
 		{
-			string cc = Filename;
+			string cc = Character.ToString();
 			if(string.IsNullOrEmpty(cc))
 				yield break;
 			if (Path.GetExtension(cc) == ".png")
@@ -102,7 +103,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				_id,
 				Index,
 				Room,
-				Filename
+				Character
 			]);
 		/// <summary>  
 		/// Creates a shallow copy of the current <see cref="Decoration"/> instance.  

@@ -1,4 +1,5 @@
 ﻿using RhythmBase.RhythmDoctor.Converters;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Components;
@@ -6,12 +7,14 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// <summary>
 /// A Character.
 /// </summary>
-[JsonConverter(typeof(CharacterConverter))]
 public readonly struct RDCharacter
 {
 	/// <summary>
 	/// Whether  in-game character or customized character(sprite).
 	/// </summary>
+#if NET7_0_OR_GREATER
+	[MemberNotNull(nameof(Character))]
+#endif
 	public bool IsCustom { get; }
 	/// <summary>
 	/// In-game character.
@@ -73,5 +76,5 @@ public readonly struct RDCharacter
 	public override readonly string ToString() => (IsCustom
 		? CustomCharacter
 		: Character?.ToString())
-		?? "[Null]";
+		?? string.Empty;
 }

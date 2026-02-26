@@ -8,7 +8,6 @@ namespace RhythmBase.RhythmDoctor.Converters
 {
 	internal class RowConverter : JsonConverter<Row>
 	{
-		private static CharacterConverter CharacterConverter = new CharacterConverter();
 		public override Row? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			Row result = [];
@@ -17,11 +16,17 @@ namespace RhythmBase.RhythmDoctor.Converters
 				if (reader.TokenType == JsonTokenType.EndObject)
 					break;
 				if (reader.TokenType != JsonTokenType.PropertyName)
-									throw new JsonException("Expected PropertyName token");
+					throw new JsonException("Expected PropertyName token");
 				ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 				reader.Read();
 				if (propertyName.SequenceEqual("character"u8))
-					result.Character = CharacterConverter.Read(ref reader, typeof(RDCharacter), options);//JsonSerializer.Deserialize<RDCharacter>(ref reader, options);
+				{
+					string character = reader.GetString() ?? "";
+					if (character.StartsWith("custom:"))
+						result.Character = character.Substring(7);
+					else if(EnumConverter.TryParse(character, out RDCharacters rdc))
+						result.Character = rdc;
+				}
 				else if (propertyName.SequenceEqual("cpuMarker"u8) && EnumConverter.TryParse(reader.ValueSpan, out RDCharacters value0))
 					result.CpuMarker = value0;
 				else if (propertyName.SequenceEqual("rowType"u8) && EnumConverter.TryParse(reader.ValueSpan, out RowType value1))
@@ -55,14 +60,12 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartObject();
 
 			writer.WritePropertyName("character"u8);
-			CharacterConverter.Write(writer, value.Character, options);
-
+			if (value.Character.IsCustom || value.Character.Character is not RDCharacters rdc)
+				writer.WriteStringValue($"custom:{value.Character}");
+			else
+				writer.WriteStringValue(EnumConverter.ToEnumString(rdc));
 			if (value.Player == PlayerType.CPU)
-			{
-				writer.WritePropertyName("cpuMarker"u8);
-				CharacterConverter.Write(writer, value.CpuMarker, options);
-			}
-
+				writer.WriteString("cpuMarker"u8, EnumConverter.ToEnumString(value.CpuMarker));
 			writer.WriteString("rowType"u8, EnumConverter.ToEnumString(value.RowType));
 			writer.WriteNumber("row"u8, value.Index);
 

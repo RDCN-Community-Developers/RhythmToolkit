@@ -32,7 +32,21 @@ namespace RhythmBase.RhythmDoctor.Converters
 					else if (reader.ValueSpan.SequenceEqual("filename"u8))
 					{
 						reader.Read();
-						decoration.Filename = reader.GetString() ?? "";
+						decoration.Character = reader.GetString() ?? "";
+					}
+					else if (reader.ValueSpan.SequenceEqual("character"u8))
+					{
+						reader.Read();
+						string character = reader.GetString() ?? "";
+						if (EnumConverter.TryParse(character, out RDCharacters rdc))
+							decoration.Character = rdc;
+						else
+							decoration.Character = character;
+					}
+					else if (reader.ValueSpan.SequenceEqual("preview"u8))
+					{
+						reader.Read();
+						decoration.Preview = reader.GetBoolean();
 					}
 					else if (reader.ValueSpan.SequenceEqual("depth"u8))
 					{
@@ -62,7 +76,12 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteNumber("row"u8, value.Index);
 			writer.WritePropertyName("rooms"u8);
 			JsonSerializer.Serialize(writer, value.Room, options);
-			writer.WriteString("filename"u8, value.Filename);
+			//writer.WriteString("filename"u8, value.Filename);
+			if (!value.Character.IsCustom && value.Character.Character is RDCharacters rdc)
+				writer.WriteString("character", EnumConverter.ToEnumString(rdc));
+			else
+				writer.WriteString("filename", value.Character.CustomCharacter);
+			writer.WriteBoolean("preview"u8, value.Preview);
 			writer.WriteNumber("depth"u8, value.Depth);
 			if (value.Filter is not Filter.NearestNeighbor)
 				writer.WriteString("filter"u8, EnumConverter.ToEnumString(value.Filter));
