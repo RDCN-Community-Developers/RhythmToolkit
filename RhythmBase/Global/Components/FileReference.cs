@@ -13,7 +13,7 @@ namespace RhythmBase.Global.Components
 	/// with file references, such as checking existence, retrieving the file extension, and determining if the
 	/// reference is empty. Implicit conversions to and from <see cref="string"/> are provided for convenience.
 	/// </remarks>
-	public struct FileReference : IEqualityComparer<FileReference>
+	public struct FileReference : IEqualityComparer<FileReference>, IEquatable<FileReference>
 	{
 		/// <summary>
 		/// Gets or sets the file path for this reference.
@@ -32,7 +32,7 @@ namespace RhythmBase.Global.Components
 		/// If <see cref="Path"/> is null or has no extension, an empty string is returned.
 		/// </value>
 		public readonly string Extension => System.IO.Path.GetExtension(Path);
-
+		public static FileReference Empty => new() { Path = "" };
 		/// <summary>
 		/// Determines whether the file referenced by <see cref="Path"/> exists.
 		/// </summary>
@@ -111,6 +111,7 @@ namespace RhythmBase.Global.Components
 		public readonly override int GetHashCode() => Path.GetHashCode();
 		///<inheritdoc/>
 		public readonly override string ToString() => Path;
+		public bool Equals(FileReference other) => Path == other.Path;
 		///<inheritdoc/>
 		public bool Equals(FileReference x, FileReference y) => x.Path == y.Path;
 		///<inheritdoc/>
