@@ -275,7 +275,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// 校验这个实例是否缺少在转换单位时必需的参数并抛出异常
 		/// </summary>
 		/// <exception cref="InvalidRDBeatException"></exception>
-	#if NET8_0
+#if NET8_0
 		[MemberNotNull(nameof(_calculator))]
 #endif
 		internal readonly void IfNullThrowException()
@@ -323,7 +323,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				{
 					_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
 					_isBeatLoaded = true;
-					(_b_bar, _b_beat)	 = _calculator.BeatOnlyToBarBeat(_beat + 1f);
+					(_b_bar, _b_beat) = _calculator.BeatOnlyToBarBeat(_beat + 1f);
 				}
 				_isBarBeatLoaded = true;
 			}
@@ -348,6 +348,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		///  <inheritdoc/>
 		public static RDBeat operator +(RDBeat a, float b)
 		{
+			if (b == 0) return a;
 			RDBeat result;
 			if (!a.IsEmpty)
 				result = new RDBeat(a._calculator!, a.BeatOnly + b);
@@ -360,19 +361,22 @@ namespace RhythmBase.RhythmDoctor.Components
 				{
 					result._beat = a._beat + b;
 					result._isBeatLoaded = true;
+					result._isBarBeatLoaded = false;
 				}
-				if (a._isBarBeatLoaded)
+				else if (a._isBarBeatLoaded)
 				{
 					(result._b_bar, result._b_beat) = (a._b_bar, a._b_beat + b);
 					result._isBarBeatLoaded = true;
+					result._isBeatLoaded = false;
 				}
-				result._isTimeSpanLoaded = b == 0;
+				result._isTimeSpanLoaded = false;
 			}
 			return result;
 		}
 		///  <inheritdoc/>
 		public static RDBeat operator +(RDBeat a, TimeSpan b)
 		{
+			if (b == TimeSpan.Zero) return a;
 			RDBeat result;
 			if (!a.IsEmpty)
 				result = new RDBeat(a._calculator!, a.TimeSpan + b);
@@ -383,7 +387,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				{
 					result._TimeSpan = a._TimeSpan + b;
 					result._isTimeSpanLoaded = true;
-					result._isBeatLoaded = result._isBarBeatLoaded = b == TimeSpan.Zero;
+					result._isBeatLoaded = result._isBarBeatLoaded = false;
 				}
 				else
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculated.");
@@ -393,6 +397,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		///  <inheritdoc/>
 		public static RDBeat operator -(RDBeat a, float b)
 		{
+			if (b == 0f) return a;
 			RDBeat result;
 			if (!a.IsEmpty)
 				result = new RDBeat(a._calculator!, a.BeatOnly - b);
@@ -405,19 +410,22 @@ namespace RhythmBase.RhythmDoctor.Components
 				{
 					result._beat = a._beat - b;
 					result._isBeatLoaded = true;
+					result._isBarBeatLoaded = false;
 				}
 				if (a._isBarBeatLoaded)
 				{
 					(result._b_bar, result._b_beat) = (a._b_bar, a._b_beat - b);
 					result._isBarBeatLoaded = true;
+					result._isBeatLoaded = false;
 				}
-				result._isTimeSpanLoaded = b == 0;
+				result._isTimeSpanLoaded = false;
 			}
 			return result;
 		}
 		///  <inheritdoc/>
 		public static RDBeat operator -(RDBeat a, TimeSpan b)
 		{
+			if (b == TimeSpan.Zero) return a;
 			RDBeat result;
 			if (!a.IsEmpty)
 				result = new RDBeat(a._calculator!, a.TimeSpan - b);
@@ -428,7 +436,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				{
 					result._TimeSpan = a._TimeSpan - b;
 					result._isTimeSpanLoaded = true;
-					result._isBeatLoaded = result._isBarBeatLoaded = b == TimeSpan.Zero;
+					result._isBeatLoaded = result._isBarBeatLoaded = false;
 				}
 				else
 					throw new ArgumentNullException(nameof(a), "The beat cannot be calculated.");
