@@ -275,7 +275,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// 校验这个实例是否缺少在转换单位时必需的参数并抛出异常
 		/// </summary>
 		/// <exception cref="InvalidRDBeatException"></exception>
-	#if NET8_0
+#if NET8_0
 		[MemberNotNull(nameof(_calculator))]
 #endif
 		internal readonly void IfNullThrowException()
@@ -290,7 +290,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		public void ResetCache()
 		{
-			object __ = BeatOnly;
+			_ = BeatOnly;
 			_isBarBeatLoaded = false;
 			_isTimeSpanLoaded = false;
 		}
@@ -301,9 +301,11 @@ namespace RhythmBase.RhythmDoctor.Components
 		public void Cache()
 		{
 			IfNullThrowException();
-			object __ = BeatOnly;
+			_ = BeatOnly;
 			Deconstruct(out _, out _);
-			__ = TimeSpan;
+			_ = TimeSpan;
+			_ = Bpm;
+			_ = Cpb;
 		}
 		/// <summary>
 		/// Deconstructs the current instance into its bar and beat components.
@@ -323,7 +325,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				{
 					_beat = _calculator.TimeSpanToBeatOnly(_TimeSpan) - 1f;
 					_isBeatLoaded = true;
-					(_b_bar, _b_beat)	 = _calculator.BeatOnlyToBarBeat(_beat + 1f);
+					(_b_bar, _b_beat) = _calculator.BeatOnlyToBarBeat(_beat + 1f);
 				}
 				_isBarBeatLoaded = true;
 			}

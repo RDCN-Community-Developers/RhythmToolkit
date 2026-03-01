@@ -3,26 +3,51 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Utils
 {
-	internal record struct Bpm(int Bar, int Beat, float BPM);
-	internal record struct Cpb(int Bar, int CPB);
+	internal record struct BpmCache(float BeatOnly, TimeSpan TimeSpan, float Bpm) : IComparable<BpmCache>
+	{
+		public static readonly BpmCache Default = new(1, TimeSpan.Zero, Utils.DefaultBPM);
+		public int CompareTo(BpmCache other) => BeatOnly.CompareTo(other.BeatOnly);
+	}
+	internal record struct CpbCache(float BeatOnly, int Bar, int Cpb) : IComparable<CpbCache>
+	{
+		public static readonly CpbCache Default = new(1, 1, Utils.DefaultCPB);
+		public int CompareTo(CpbCache other) => BeatOnly.CompareTo(other.BeatOnly);
+	};
 	/// <summary>
 	/// Beat calculator.
 	/// </summary>
 	public class BeatCalculator
 	{
+		internal readonly RDLevel Collection;
+		//private RedBlackTree<RDBeat, List<BaseBeatsPerMinute>> _BpmTree = [];
+		//private RedBlackTree<RDBeat, List<SetCrotchetsPerBar>> _CpbTree = [];
+		private readonly SortedSet<BpmCache> _bpmCache = [];
+		private readonly SortedSet<CpbCache> _cpbCache = [];
 		internal BeatCalculator(RDLevel level)
 		{
 			Collection = level;
+		}
+		internal void Update(SetCrotchetsPerBar cpb)
+		{
+			(int bar, _) = cpb.Beat;
+			_cpbCache.Add(new CpbCache(cpb.Beat.BeatOnly, bar, cpb.CrotchetsPerBar));
+		}
+		internal void Update(BaseBeatsPerMinute bpm)
+		{
+			TimeSpan timeSpan = bpm.Beat.TimeSpan;
+			_bpmCache.Add(new BpmCache(bpm.Beat.BeatOnly, timeSpan, bpm.BeatsPerMinute));
 		}
 		/// <summary>
 		/// Refresh the cache.
 		/// </summary>
 		public void Refresh()
 		{
-			_BPMList = [.. Collection.OfEvent<BaseBeatsPerMinute>()];
-			_CPBList = [.. Collection.OfEvent<SetCrotchetsPerBar>()];
-			_BpmTree = [];
-			_CpbTree = [];
+			_cpbCache.Clear();
+			_bpmCache.Clear();
+			foreach (SetCrotchetsPerBar cpb in Collection.OfEvent<SetCrotchetsPerBar>())
+				Update(cpb);
+			foreach (BaseBeatsPerMinute bpm in Collection.OfEvent<BaseBeatsPerMinute>())
+				Update(bpm);
 		}
 		/// <summary>
 		/// Convert beat data.
@@ -30,7 +55,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
 		/// <returns>Total 1-based beats.</returns>
-		public float BarBeatToBeatOnly(int bar, float beat) => BarBeatToBeatOnly(bar, beat, _CPBList);
+		public float BarBeatToBeatOnly(int bar, float beat) => BarBeatToBeatOnly(bar, beat, in _cpbCache);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
@@ -43,78 +68,99 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
-		public (int bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, _CPBList);
+		public (int bar, float beat) BeatOnlyToBarBeat(float beat) => BeatOnlyToBarBeat(beat, in _cpbCache);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="beat">Total 1-based beats.</param>
 		/// <returns>Total time span.</returns>
-		public TimeSpan BeatOnlyToTimeSpan(float beat) => BeatOnlyToTimeSpan(beat, _BPMList);
+		public TimeSpan BeatOnlyToTimeSpan(float beat) => BeatOnlyToTimeSpan(beat, in _bpmCache);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="timeSpan">Total time span.</param>
 		/// <returns>Total 1-based beats.</returns>
-		public float TimeSpanToBeatOnly(TimeSpan timeSpan) => TimeSpanToBeatOnly(timeSpan, _BPMList);
+		public float TimeSpanToBeatOnly(TimeSpan timeSpan) => TimeSpanToBeatOnly(timeSpan, in _bpmCache);
 		/// <summary>
 		/// Convert beat data.
 		/// </summary>
 		/// <param name="timeSpan">Total time span.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
 		public (int bar, float beat) TimeSpanToBarBeat(TimeSpan timeSpan) => BeatOnlyToBarBeat(TimeSpanToBeatOnly(timeSpan));
-		private static float BarBeatToBeatOnly(int bar, float beat, IEnumerable<SetCrotchetsPerBar> collection)
+		private static float BarBeatToBeatOnly(int bar, float beat, in SortedSet<CpbCache> cacheSet)
 		{
-			(float BeatOnly, int Bar, int CPB) foreCpb = new(1f, 1, 8);
-			SetCrotchetsPerBar? lastCpb = collection.LastOrDefault((i) =>
+			CpbCache last = CpbCache.Default;
+			foreach (var cache in cacheSet)
 			{
-				(int cbar, _) = i.Beat;
-				return i.Active && cbar < bar;
-			});
-			if (lastCpb == null)
-				return foreCpb.BeatOnly + (bar - foreCpb.Bar) * foreCpb.CPB + beat - 1f;
-			(int bbar, _) = lastCpb.Beat;
-			foreCpb = new(lastCpb.Beat.BeatOnly, bbar, lastCpb.CrotchetsPerBar);
-			return foreCpb.BeatOnly + (bar - foreCpb.Bar) * foreCpb.CPB + beat - 1f;
-		}
-		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, IEnumerable<SetCrotchetsPerBar> collection)
-		{
-			(float BeatOnly, int Bar, int CPB) foreCpb = new(1f, 1, 8);
-			SetCrotchetsPerBar? lastCpb = collection.LastOrDefault((i) => i.Active && i.Beat.BeatOnly < beat);
-			if (lastCpb != null)
-			{
-				(int bbar, _) = lastCpb.Beat;
-				foreCpb = new(lastCpb.Beat.BeatOnly, bbar, lastCpb.CrotchetsPerBar);
+				int cbar = cache.Bar;
+				if(cbar < bar)
+				{
+					last = cache;
+					continue;
+				}
+				if(cbar ==  bar)
+				{
+					float beatOnly = cache.BeatOnly + beat - 1f;
+					return beatOnly;
+				}
+				break;
 			}
-			(int bar, float beat) result = ((int)Math.Round(foreCpb.Bar + Math.Floor((double)((beat - foreCpb.BeatOnly) / foreCpb.CPB))), (beat - foreCpb.BeatOnly) % foreCpb.CPB + 1f);
+			float finalBeatOnly = last.BeatOnly + (bar - last.Bar) * last.Cpb + beat - 1;
+			return finalBeatOnly;
+		}
+		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, in SortedSet<CpbCache> cacheSet)
+		{
+			CpbCache last = CpbCache.Default;
+			foreach (CpbCache cache in cacheSet)
+			{
+				float cbeat = cache.BeatOnly;
+				if (cbeat < beat)
+				{
+					last = cache;
+					continue;
+				}
+				if (cbeat == beat)
+					return (cache.Bar, 1f);
+				break;
+			}
+			(int finalBar, float finalBeat) result2 = ((int)Math.Round(last.Bar + Math.Floor((double)((beat - last.BeatOnly) / last.Cpb))), (beat - last.BeatOnly) % last.Cpb + 1f);
+			return result2;
+		}
+		private static TimeSpan BeatOnlyToTimeSpan(float beatOnly, in SortedSet<BpmCache> cacheSet)
+		{
+			BpmCache last = BpmCache.Default;
+			foreach(BpmCache cache in cacheSet)
+			{
+				float cbeat = cache.BeatOnly;
+				if (cbeat < beatOnly)
+				{
+					last = cache;
+					continue;
+				}
+				if (cbeat == beatOnly)
+					return cache.TimeSpan;
+				break;
+			}
+			float durationFromLast = (beatOnly - last.BeatOnly) / last.Bpm;
+			TimeSpan result = last.TimeSpan + TimeSpan.FromMinutes(durationFromLast);
 			return result;
 		}
-		private static TimeSpan BeatOnlyToTimeSpan(float beatOnly, IEnumerable<BaseBeatsPerMinute> bpmCollection)
+		private static float TimeSpanToBeatOnly(TimeSpan timeSpan, in SortedSet<BpmCache> cacheSet)
 		{
-			ValueTuple<float, float> fore = new(1f, Utils.DefaultBPM);
-			BaseBeatsPerMinute? foreBpm = bpmCollection.FirstOrDefault();
-			if (foreBpm != null)
-				fore = new ValueTuple<float, float>(foreBpm.Beat.BeatOnly, foreBpm.BeatsPerMinute);
-			float resultMinute = 0f;
-			foreach (BaseBeatsPerMinute item in bpmCollection)
-				if (beatOnly > item.Beat.BeatOnly)
+			BpmCache last = BpmCache.Default;
+			foreach (BpmCache cache in cacheSet)
+			{
+				TimeSpan ctime = cache.TimeSpan;
+				if (ctime < timeSpan)
 				{
-					resultMinute += (item.Beat.BeatOnly - fore.Item1) / fore.Item2;
-					fore = new ValueTuple<float, float>(item.Beat.BeatOnly, item.BeatsPerMinute);
+					last = cache;
+					continue;
 				}
-			resultMinute += (beatOnly - fore.Item1) / fore.Item2;
-			return TimeSpan.FromMinutes((double)resultMinute);
-		}
-		private static float TimeSpanToBeatOnly(TimeSpan timeSpan, IEnumerable<BaseBeatsPerMinute> bpmCollection)
-		{
-			ValueTuple<float, float> fore = new(1f, Utils.DefaultBPM);
-			BaseBeatsPerMinute? foreBpm = bpmCollection.FirstOrDefault();
-			if (foreBpm != null)
-				fore = new ValueTuple<float, float>(foreBpm.Beat.BeatOnly, foreBpm.BeatsPerMinute);
-			float beatOnly = 1f;
-			foreach (BaseBeatsPerMinute item in bpmCollection)
-				if (timeSpan > BeatOnlyToTimeSpan(item.Beat.BeatOnly, bpmCollection))
-					beatOnly = (float)((double)beatOnly + (BeatOnlyToTimeSpan(item.Beat.BeatOnly, bpmCollection) - BeatOnlyToTimeSpan(fore.Item1, bpmCollection)).TotalMinutes * fore.Item2);
-			beatOnly = (float)((double)beatOnly + (timeSpan - BeatOnlyToTimeSpan(fore.Item1, bpmCollection)).TotalMinutes * fore.Item2);
+				if (ctime == timeSpan)
+					return cache.BeatOnly;
+				break;
+			}
+			float beatOnly = last.BeatOnly + (float)((timeSpan - last.TimeSpan).TotalMinutes * last.Bpm);
 			return beatOnly;
 		}
 		/// <summary>
@@ -153,15 +199,43 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <summary>
 		/// Calculate the BPM of the moment in which the beat is.
 		/// </summary>
-		public float BeatsPerMinuteOf(RDBeat beat) => _BPMList.LastOrDefault((i) => i.Beat <= beat)?.BeatsPerMinute ?? Utils.DefaultBPM;
+		public float BeatsPerMinuteOf(RDBeat beat)
+		{
+			BpmCache last = BpmCache.Default;
+			foreach (BpmCache cache in _bpmCache)
+			{
+				float cbeat = cache.BeatOnly;
+				if (cbeat < beat.BeatOnly)
+				{
+					last = cache;
+					continue;
+				}
+				if (cbeat == beat.BeatOnly)
+					return cache.Bpm;
+				break;
+			}
+			return last.Bpm;
+		}
+
 		/// <summary>
 		/// Calculate the CPB of the moment in which the beat is.
 		/// </summary>
-		public float CrotchetsPerBarOf(RDBeat beat) => _CPBList.LastOrDefault((i) => i.Beat <= beat)?.CrotchetsPerBar ?? 8;
-		internal readonly RDLevel Collection;
-		private RedBlackTree<int, Bpm> _BpmTree = [];
-		private RedBlackTree<int, Cpb> _CpbTree = [];
-		private List<BaseBeatsPerMinute> _BPMList = [];
-		private List<SetCrotchetsPerBar> _CPBList = [];
+		public float CrotchetsPerBarOf(RDBeat beat)
+		{
+			CpbCache last = CpbCache.Default;
+			foreach (CpbCache cache in _cpbCache)
+			{
+				float cbeat = cache.BeatOnly;
+				if (cbeat < beat.BeatOnly)
+				{
+					last = cache;
+					continue;
+				}
+				if (cbeat == beat.BeatOnly)
+					return cache.Cpb;
+				break;
+			}
+			return last.Cpb;
+		}
 	}
 }

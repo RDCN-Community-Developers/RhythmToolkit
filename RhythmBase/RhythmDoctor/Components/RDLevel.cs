@@ -820,7 +820,6 @@ namespace RhythmBase.RhythmDoctor.Components
 				{
 					SetCrotchetsPerBar? frt = item.FrontOrDefault();
 					//更新计算器
-					Calculator.Refresh();
 					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
 						i.Type != EventType.SetCrotchetsPerBar &&
 						i._beat < nxt._beat);
@@ -851,7 +850,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				result = base.Add(item);
 			}
 			// 更新计算器
-			Calculator.Refresh();
+			Calculator.Update(item);
 			return result;
 		}
 		private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, bool keepCpb = true)
@@ -892,20 +891,16 @@ namespace RhythmBase.RhythmDoctor.Components
 							_beat = nxtE._beat,
 							_crotchetsPerBar = frt != null ? frt.CrotchetsPerBar : 8 - 1
 						});
-					Calculator.Refresh();
 				}
 				//更新计算器
-				Calculator.Refresh();
 				bool result = base.Remove(item);
 				item._beat._calculator = null;
-				Calculator.Refresh();
 				return result;
 			}
 			else
 			{
 				bool result = base.Remove(item);
 				item._beat._calculator = null;
-				Calculator.Refresh();
 				return result;
 			}
 		}
@@ -913,13 +908,11 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			//RefreshBPMs(item.Beat);
 			bool result = base.Add(item);
-			Calculator.Refresh();
 			return result;
 		}
 		private bool RemoveBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
 			bool result = base.Remove(item);
-			Calculator.Refresh();
 			//RefreshBPMs(item.Beat);
 			item._beat._calculator = null;
 			return result;
