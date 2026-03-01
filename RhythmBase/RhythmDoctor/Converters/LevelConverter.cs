@@ -309,7 +309,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
-				string assPath = DirectoryName + e.Character.CustomCharacter;
+				string assPath = DirectoryName + row.Character.CustomCharacter;
 				if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 					foreach (FileReference file in row.Character.GetAllPossibleFileReferences())
 						if (!file.IsEmpty && file.IsExist(DirectoryName!))
@@ -330,7 +330,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
-				string assPath = DirectoryName + e.Character.CustomCharacter;
+				string assPath = DirectoryName + decoration.Character.CustomCharacter;
 				if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 					foreach (FileReference file in decoration.Character.GetAllPossibleFileReferences())
 						if (!file.IsEmpty && file.IsExist(DirectoryName!))
