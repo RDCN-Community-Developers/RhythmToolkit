@@ -7,7 +7,8 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// <summary>
 /// A Character.
 /// </summary>
-public readonly struct RDCharacter
+[JsonConverter(typeof(CharacterConverter))]
+public readonly struct RDCharacter : IEquatable<RDCharacter>
 {
 	/// <summary>
 	/// Whether  in-game character or customized character(sprite).
@@ -66,9 +67,33 @@ public readonly struct RDCharacter
 	public static implicit operator RDCharacter(RDCharacters character) => new(character);
 	/// <inheritdoc/>
 	public static implicit operator RDCharacter(string character) => new(character);
+	public static bool operator ==(RDCharacter left, RDCharacter right) => left.Equals(right);
+	public static bool operator !=(RDCharacter left, RDCharacter right) => !(left == right);
 	/// <inheritdoc/>
 	public override readonly string ToString() => (IsCustom
 		? CustomCharacter
 		: Character?.ToString())
-		?? string.Empty;
+		?? "[Null]";
+
+	public bool Equals(RDCharacter other)
+	{
+		return IsCustom == other.IsCustom
+			&& Character == other.Character
+			&& CustomCharacter == other.CustomCharacter;
+	}
+	public override int GetHashCode()
+	{
+#if NET7_0_OR_GREATER
+		return HashCode.Combine(IsCustom, Character, CustomCharacter);
+#else
+		unchecked
+		{
+			int hash = 17;
+			hash = hash * 23 + IsCustom.GetHashCode();
+			hash = hash * 23 + Character.GetHashCode();
+			hash = hash * 23 + (CustomCharacter != null ? CustomCharacter.GetHashCode() : 0);
+			return hash;
+		}
+#endif
+	}
 }
