@@ -11,7 +11,6 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <summary>
 	/// Represents a room that can be applied to multiple rooms.
 	/// </summary>
-	[JsonConverter(typeof(RoomConverter))]
 	public struct RDRoom :
 #if NET7_0_OR_GREATER
 		IEqualityOperators<RDRoom, RDRoom, bool>,
