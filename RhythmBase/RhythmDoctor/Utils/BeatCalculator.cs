@@ -3,15 +3,27 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Utils
 {
+	[Flags]
+	public enum BeatChangeStrategy : byte
+	{
+		KeepGlobalBeat = 0b00, // 保持全局节拍不动
+		KeepMeasureRelativeBeat = 0b01, // 保持小节内相对于自身所在小节的节拍不动
+
+		KeepChangeRelativeToFirstMeasure = 0b00, // 保持变动部分小节内相对于第一个小节的节拍不动
+		KeepChangeRelativeBeat = 0b10, // 保持变动部分小节内相对于自身所在小节的节拍不动	
+
+		Default = 0b00,
+		RDLE = 0b11,
+	}
 	internal record struct BpmCache(float BeatOnly, TimeSpan TimeSpan, float Bpm) : IComparable<BpmCache>
 	{
 		public static readonly BpmCache Default = new(1, TimeSpan.Zero, Utils.DefaultBPM);
-		public int CompareTo(BpmCache other) => BeatOnly.CompareTo(other.BeatOnly);
+		public readonly int CompareTo(BpmCache other) => BeatOnly.CompareTo(other.BeatOnly);
 	}
 	internal record struct CpbCache(float BeatOnly, int Bar, int Cpb) : IComparable<CpbCache>
 	{
 		public static readonly CpbCache Default = new(1, 1, Utils.DefaultCPB);
-		public int CompareTo(CpbCache other) => BeatOnly.CompareTo(other.BeatOnly);
+		public readonly int CompareTo(CpbCache other) => BeatOnly.CompareTo(other.BeatOnly);
 	};
 	/// <summary>
 	/// Beat calculator.
@@ -22,15 +34,117 @@ namespace RhythmBase.RhythmDoctor.Utils
 		//private RedBlackTree<RDBeat, List<BaseBeatsPerMinute>> _BpmTree = [];
 		//private RedBlackTree<RDBeat, List<SetCrotchetsPerBar>> _CpbTree = [];
 		private readonly SortedSet<BpmCache> _bpmCache = [];
-		private readonly SortedSet<CpbCache> _cpbCache = [];
+		private CpbCache[] _cpbCache = [];
 		internal BeatCalculator(RDLevel level)
 		{
 			Collection = level;
 		}
-		internal void Update(SetCrotchetsPerBar cpb)
+		internal bool AddCpbAt(CpbCache cpb, byte strategy, out CpbCache fix)
 		{
-			(int bar, _) = cpb.Beat;
-			_cpbCache.Add(new CpbCache(cpb.Beat.BeatOnly, bar, cpb.CrotchetsPerBar));
+			fix = CpbCache.Default;
+			if (_cpbCache.Length == 0)
+			{
+				_cpbCache = [cpb];
+				return false;
+			}
+			int index = _cpbCache.BinarySearch(cpb);
+			if (index < 0) index = ~index - 1;
+
+			CpbCache a, b;
+			if (index < 0) a = CpbCache.Default;
+			else a = _cpbCache[index];
+			if (index >= _cpbCache.Length - 1)
+			{
+				var col = Collection.eventsBeatOrder;
+				int dbeatPerBar = cpb.Cpb - a.Cpb;
+				float st = cpb.BeatOnly + cpb.Cpb;
+				KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>[] nodes = [.. Collection.eventsBeatOrder.Where(e => e.Key.BeatOnly >= st)];
+				foreach (var node in nodes)
+				{
+					(int bar2, _) = node.Key;
+					int offset =  (bar2 - cpb.Bar) * dbeatPerBar ;
+					col.Remove(node);
+					foreach (IBaseEvent e in node.Value)
+					{
+						BaseEvent _e = (e as BaseEvent)!;
+						_e._beat += offset;
+					}
+					col.Insert(new(this, node.Key.BeatOnly + offset), node.Value);
+				}
+				_cpbCache = [.. _cpbCache, cpb];
+				return false;
+			}
+			else
+			{
+				b = _cpbCache[index + 1];
+				if (a.Cpb == cpb.Cpb)
+				{
+					return false;
+				}
+				bool needInsert = true;
+				if (cpb.BeatOnly == a.BeatOnly)
+				{
+					_cpbCache[index] = cpb;
+					needInsert = false;
+				}
+				if ((strategy & 0b001) == 0)
+				{
+					int diff = (int)(b.BeatOnly - cpb.BeatOnly) % cpb.Cpb;
+					int barDiff = (int)((b.BeatOnly - cpb.BeatOnly) / cpb.Cpb);
+					if (diff == 0)
+					{
+						if (needInsert)
+							_cpbCache = [.. _cpbCache.Take(index + 1), cpb, .. _cpbCache.Skip(index + 1).Select(c => c with { Bar = c.Bar - (b.Bar - cpb.Bar) + barDiff })];
+						else
+							_cpbCache = [.. _cpbCache.Take(index + 1), .. _cpbCache.Skip(index + 1).Select(c => c with { Bar = c.Bar - (b.Bar - cpb.Bar) + barDiff })];
+						return false;
+					}
+					else
+					{
+						fix = new(
+							cpb.BeatOnly + barDiff * cpb.Cpb,
+							cpb.Bar + barDiff,
+							diff
+							);
+						barDiff += 1;
+						if (needInsert)
+							_cpbCache = [.. _cpbCache.Take(index + 1), cpb, fix, .. _cpbCache.Skip(index + 1).Select(c => c with { Bar = c.Bar - (b.Bar - cpb.Bar) + barDiff })];
+						else
+							_cpbCache = [.. _cpbCache.Take(index + 1), fix, .. _cpbCache.Skip(index + 1).Select(c => c with { Bar = c.Bar - (b.Bar - cpb.Bar) + barDiff })];
+						return true;
+					}
+				}
+				else
+				{
+					int dbeatPerBar = cpb.Cpb - a.Cpb;
+					int barCount = b.Bar - cpb.Bar;
+					int dbeat = dbeatPerBar * barCount;
+					var col = Collection.eventsBeatOrder;
+					float st = (strategy & 0b010) == 0 ? cpb.BeatOnly + cpb.Cpb : b.BeatOnly;
+					KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>[] nodes = [.. Collection.eventsBeatOrder.Where(e => e.Key.BeatOnly >= st)];
+					foreach (var node in nodes)
+					{
+						(int bar2, _) = node.Key;
+						int offset = (strategy & 0b010) == 0 ? (bar2 < b.Bar ? (bar2 - cpb.Bar) * dbeatPerBar : dbeat) : dbeat;
+						col.Remove(node);
+						foreach (IBaseEvent e in node.Value)
+						{
+							BaseEvent _e = (e as BaseEvent)!;
+							_e._beat += offset;
+						}
+						col.Insert(new(this, node.Key.BeatOnly + offset), node.Value);
+					}
+					if (needInsert)
+						_cpbCache = [.. _cpbCache.Take(index + 1), cpb, .. _cpbCache.Skip(index + 1).Select(c => c with { BeatOnly = c.BeatOnly + dbeat })];
+					else
+						_cpbCache = [.. _cpbCache.Take(index + 1), .. _cpbCache.Skip(index + 1).Select(c => c with { BeatOnly = c.BeatOnly + dbeat })];
+					return false;
+				}
+			}
+		}
+		internal bool RemoveCpbAt(CpbCache cpb, byte strategy, out CpbCache fix)
+		{
+
 		}
 		internal void Update(BaseBeatsPerMinute bpm)
 		{
@@ -42,10 +156,15 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>
 		public void Refresh()
 		{
-			_cpbCache.Clear();
+			Array.Resize(ref _cpbCache, 0);
 			_bpmCache.Clear();
-			foreach (SetCrotchetsPerBar cpb in Collection.OfEvent<SetCrotchetsPerBar>())
-				Update(cpb);
+			SetCrotchetsPerBar[] cpbList = [.. Collection.OfEvent<SetCrotchetsPerBar>()];
+			_cpbCache = new CpbCache[cpbList.Length];
+			for (int i = 0; i < cpbList.Length; i++)
+			{
+				(int bar, _) = cpbList[i].Beat;
+				_cpbCache[i] = new CpbCache(cpbList[i].Beat.BeatOnly, bar, cpbList[i].CrotchetsPerBar);
+			}
 			foreach (BaseBeatsPerMinute bpm in Collection.OfEvent<BaseBeatsPerMinute>())
 				Update(bpm);
 		}
@@ -87,18 +206,18 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <param name="timeSpan">Total time span.</param>
 		/// <returns>The 1-based bar and the 1-based beat of bar.</returns>
 		public (int bar, float beat) TimeSpanToBarBeat(TimeSpan timeSpan) => BeatOnlyToBarBeat(TimeSpanToBeatOnly(timeSpan));
-		private static float BarBeatToBeatOnly(int bar, float beat, in SortedSet<CpbCache> cacheSet)
+		private static float BarBeatToBeatOnly(int bar, float beat, in CpbCache[] cacheSet)
 		{
 			CpbCache last = CpbCache.Default;
 			foreach (var cache in cacheSet)
 			{
 				int cbar = cache.Bar;
-				if(cbar < bar)
+				if (cbar < bar)
 				{
 					last = cache;
 					continue;
 				}
-				if(cbar ==  bar)
+				if (cbar == bar)
 				{
 					float beatOnly = cache.BeatOnly + beat - 1f;
 					return beatOnly;
@@ -108,7 +227,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			float finalBeatOnly = last.BeatOnly + (bar - last.Bar) * last.Cpb + beat - 1;
 			return finalBeatOnly;
 		}
-		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, in SortedSet<CpbCache> cacheSet)
+		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, in CpbCache[] cacheSet)
 		{
 			CpbCache last = CpbCache.Default;
 			foreach (CpbCache cache in cacheSet)
@@ -129,7 +248,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		private static TimeSpan BeatOnlyToTimeSpan(float beatOnly, in SortedSet<BpmCache> cacheSet)
 		{
 			BpmCache last = BpmCache.Default;
-			foreach(BpmCache cache in cacheSet)
+			foreach (BpmCache cache in cacheSet)
 			{
 				float cbeat = cache.BeatOnly;
 				if (cbeat < beatOnly)
