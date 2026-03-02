@@ -475,7 +475,7 @@ namespace RhythmBase.Test
 			// Initialize the type in the constructor  
 			public MyEvent()
 			{
-				// Initialize the ActureType property.
+				// Initialize the ActualType property.
 				ActualType = nameof(MyEvent);
 			}
 		}
