@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Converters;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
@@ -7,7 +7,6 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// <summary>
 /// A Character.
 /// </summary>
-[JsonConverter(typeof(CharacterConverter))]
 public readonly struct RDCharacter : IEquatable<RDCharacter>
 {
 	/// <summary>
