@@ -743,16 +743,17 @@ namespace RhythmBase.RhythmDoctor.Components
 		public bool Remove(IBaseEvent item, BeatChangeStrategy strategy = BeatChangeStrategy.Default)
 		{
 			bool Remove;
+			BaseEvent bs = item as BaseEvent ?? throw new RhythmBaseException("Inner exception that shouldn't happen");
 			if (item is BaseDecorationAction decoAction)
 			{
 				RemoveInternal(decoAction);
-				((BaseEvent)item)._beat._calculator = null;
+				bs._beat = bs._beat.WithoutLink();
 				Remove = true;
 			}
 			else if (item is BaseRowAction rowAction)
 			{
 				RemoveInternal(rowAction);
-				((BaseEvent)item)._beat._calculator = null;
+				bs._beat = bs._beat.WithoutLink();
 				Remove = true;
 			}
 			else if (Contains(item))
@@ -764,7 +765,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				else
 				{
 					bool result = base.Remove(item);
-					((BaseEvent)item)._beat._calculator = null;
+					bs._beat = bs._beat.WithoutLink();
 					Remove = result;
 				}
 			}
@@ -838,13 +839,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		private bool AddBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
-			Calculator.AddBpmAt(new BpmCache(item.Beat.BeatOnly, item.BeatsPerMinute));
+			Calculator.AddBpmAt(new BpmCache(item.Beat.BeatOnly, item.Beat.TimeSpan, item.BeatsPerMinute));
 			bool result = base.Add(item);
 			return result;
 		}
 		private bool RemoveBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
-			Calculator.RemoveBpmAt(new BpmCache(item.Beat.BeatOnly, item.BeatsPerMinute));
+			Calculator.RemoveBpmAt(new BpmCache(item.Beat.BeatOnly, item.Beat.TimeSpan, item.BeatsPerMinute));
 			bool result = base.Remove(item);
 			item._beat = item._beat.WithoutLink();
 			return result;
