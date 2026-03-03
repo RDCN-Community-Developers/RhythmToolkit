@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components.Linq;
+using RhythmBase.RhythmDoctor.Components.Linq;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
@@ -27,7 +27,6 @@ namespace RhythmBase.RhythmDoctor.Components
 		object IEnumerator.Current => Current;
 		public bool MoveNext()
 		{
-			//collection._currentModifier = this;
 			bool result;
 			while (result = (events?.MoveNext() ?? false))
 				if (types.Contains(events!.Current.Type))

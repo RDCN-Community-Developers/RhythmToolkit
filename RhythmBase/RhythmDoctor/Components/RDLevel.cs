@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 using System.IO.Compression;
@@ -731,14 +731,14 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="item">The event to be removed.</param>
 		/// <returns>True if the event was successfully removed; otherwise, false.</returns>
-		public override bool Remove(IBaseEvent item) => Remove(item, true);
+		public override bool Remove(IBaseEvent item) => Remove(item, BeatChangeStrategy.Default);
 		/// <summary>
 		/// Removes an event from the level, with an option to keep the event's position.
 		/// </summary>
 		/// <param name="item">The event to be removed.</param>
-		/// <param name="keepPos">Whether to keep the event's position (default is true).</param>
+		/// <param name="strategy">The strategy to use when removing the event, which may affect how beat changes are handled (default is <see cref="BeatChangeStrategy.Default"/>).</param>
 		/// <returns>True if the event was successfully removed; otherwise, false.</returns>
-		public bool Remove(IBaseEvent item, bool keepPos)
+		public bool Remove(IBaseEvent item, BeatChangeStrategy strategy = BeatChangeStrategy.Default)
 		{
 			bool Remove;
 			if (item is BaseDecorationAction decoAction)
@@ -756,7 +756,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			else if (Contains(item))
 			{
 				if (item.Type == EventType.SetCrotchetsPerBar)
-					Remove = RemoveSetCrotchetsPerBarInternal((SetCrotchetsPerBar)item, keepPos);
+					Remove = RemoveSetCrotchetsPerBarInternal((SetCrotchetsPerBar)item, strategy);
 				else if (EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 					Remove = RemoveBaseBeatsPerMinuteInternal((BaseBeatsPerMinute)item);
 				else
@@ -818,56 +818,17 @@ namespace RhythmBase.RhythmDoctor.Components
 				base.Add(new SetCrotchetsPerBar() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 });
 			return true;
 		}
-		private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, bool keepCpb = true)
+		private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, BeatChangeStrategy strategy)
 		{
-			if (keepCpb)
-			{
-				SetCrotchetsPerBar? nxt = item.NextOrDefault();
-				if (nxt != null)
-				{
-					SetCrotchetsPerBar? frt = item.FrontOrDefault();
-					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
-						i.Type != EventType.SetCrotchetsPerBar &&
-						i._beat < nxt._beat);
-					int cpb = item.CrotchetsPerBar;
-					int interval = (int)((nxtE ?? nxt)._beat.BeatOnly - item._beat.BeatOnly);
-					int c = interval % frt?.CrotchetsPerBar ?? 8;
-					if (c > 0)
-					{
-						c = c < 2 ? c + item.CrotchetsPerBar : c;
-						if (c == nxt.CrotchetsPerBar)
-							base.Remove(nxt);
-						base.Add(new SetCrotchetsPerBar()
-						{
-							_beat = item._beat + interval - c,
-							_crotchetsPerBar = (c - 1)
-						});
-					}
-					else
-					{
-						if (nxtE != null && nxt.CrotchetsPerBar == (frt?.CrotchetsPerBar ?? 8))
-						{
-							base.Remove(nxt);
-						}
-					}
-					if (nxtE != null)
-						base.Add(new SetCrotchetsPerBar
-						{
-							_beat = nxtE._beat,
-							_crotchetsPerBar = frt != null ? frt.CrotchetsPerBar : 8 - 1
-						});
-				}
-				//更新计算器
-				bool result = base.Remove(item);
-				item._beat._calculator = null;
-				return result;
-			}
-			else
-			{
-				bool result = base.Remove(item);
-				item._beat._calculator = null;
-				return result;
-			}
+			if(!Contains(item))
+				return false;
+			(int bar, _) = item._beat;
+			CpbCache cache = new(item.Beat.BeatOnly, bar, item.CrotchetsPerBar);
+			bool extra = Calculator.RemoveCpbAt(cache, (byte)strategy, out CpbCache fix);
+			base.Remove(item);
+			if(extra)
+				base.Add(new SetCrotchetsPerBar() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 });
+			return true;
 		}
 		private bool AddBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
