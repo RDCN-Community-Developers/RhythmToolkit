@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 using System.IO.Compression;
@@ -679,13 +679,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Adds an event to the level.
 		/// </summary>
 		/// <param name="item">The event to be added.</param>
-		public override bool Add(IBaseEvent item) => Add(item, true);
+		public override bool Add(IBaseEvent item) => Add(item, BeatChangeStrategy.Default);
 		/// <summary>
 		/// Adds an event to the level, with an option to keep the event's position.
 		/// </summary>
 		/// <param name="item">The event to be added.</param>
-		/// <param name="keepPos">Whether to keep the event's position (default is true).</param>
-		public bool Add(IBaseEvent item, bool keepPos = true)
+		/// <param name="strategy">The strategy to use when adding the event, which may affect how beat changes are handled (default is <see cref="BeatChangeStrategy.Default"/>).</param>
+		public bool Add(IBaseEvent item, BeatChangeStrategy strategy = BeatChangeStrategy.Default)
 		{
 			bool success = true;
 			// Set the default beat calculator
@@ -709,7 +709,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				success &= AddInternal(decoAction);
 			// BPM and CPB
 			else if (item is SetCrotchetsPerBar setCrochetsPerBar)
-				success &= AddSetCrotchetsPerBarInternal(setCrochetsPerBar, keepPos);
+				success &= AddSetCrotchetsPerBarInternal(setCrochetsPerBar, strategy);
 			else if (item is BaseBeatsPerMinute baseBeatsPerMinute)
 				success &= AddBaseBeatsPerMinuteInternal(baseBeatsPerMinute);
 			// Other events
@@ -724,21 +724,23 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="item">The event to check for.</param>
 		/// <returns>True if the event is contained in the level; otherwise, false.</returns>
-		public override bool Contains(IBaseEvent item) => EventTypeUtils.RowTypes.Contains(item.Type)
-			&& Rows.Any((i) => i.Contains(item)) || EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((i) => i.Contains(item)) || base.Contains(item);
+		public override bool Contains(IBaseEvent item) =>
+			EventTypeUtils.RowTypes.Contains(item.Type) && Rows.Any((i) => i.Contains(item)) ||
+			EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((i) => i.Contains(item)) ||
+			base.Contains(item);
 		/// <summary>
 		/// Removes an event from the level.
 		/// </summary>
 		/// <param name="item">The event to be removed.</param>
 		/// <returns>True if the event was successfully removed; otherwise, false.</returns>
-		public override bool Remove(IBaseEvent item) => Remove(item, true);
+		public override bool Remove(IBaseEvent item) => Remove(item, BeatChangeStrategy.Default);
 		/// <summary>
 		/// Removes an event from the level, with an option to keep the event's position.
 		/// </summary>
 		/// <param name="item">The event to be removed.</param>
-		/// <param name="keepPos">Whether to keep the event's position (default is true).</param>
+		/// <param name="strategy">The strategy to use when removing the event, which may affect how beat changes are handled (default is <see cref="BeatChangeStrategy.Default"/>).</param>
 		/// <returns>True if the event was successfully removed; otherwise, false.</returns>
-		public bool Remove(IBaseEvent item, bool keepPos)
+		public bool Remove(IBaseEvent item, BeatChangeStrategy strategy = BeatChangeStrategy.Default)
 		{
 			bool Remove;
 			if (item is BaseDecorationAction decoAction)
@@ -756,7 +758,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			else if (Contains(item))
 			{
 				if (item.Type == EventType.SetCrotchetsPerBar)
-					Remove = RemoveSetCrotchetsPerBarInternal((SetCrotchetsPerBar)item, keepPos);
+					Remove = RemoveSetCrotchetsPerBarInternal((SetCrotchetsPerBar)item, strategy);
 				else if (EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
 					Remove = RemoveBaseBeatsPerMinuteInternal((BaseBeatsPerMinute)item);
 				else
@@ -806,141 +808,46 @@ namespace RhythmBase.RhythmDoctor.Components
 			else ((OrderedEventCollection)parent).Remove(item);
 			return base.Remove(item);
 		}
-		private bool AddSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, bool keepCpb = true)
+		private bool AddSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, BeatChangeStrategy strategy)
 		{
-			bool result;
-			if (keepCpb)
-			{
-				SetCrotchetsPerBar? nxt = item.NextOrDefault();
-				//更新拍号
-				//RefreshCPBs(item._beat);
-				//添加事件
-				result = base.Add(item);
-				if (nxt != null)
-				{
-					SetCrotchetsPerBar? frt = item.FrontOrDefault();
-					//更新计算器
-					Calculator.Refresh();
-					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
-						i.Type != EventType.SetCrotchetsPerBar &&
-						i._beat < nxt._beat);
-					float interval = (nxtE != null ? nxtE._beat.BeatOnly : nxt._beat.BeatOnly) - item._beat.BeatOnly;
-					float c = interval % item.CrotchetsPerBar;
-					if (c > 0f)
-					{
-						c = c < 2f ? c + item.CrotchetsPerBar : c;
-						result &= base.Add(new SetCrotchetsPerBar
-						{
-							_beat = item._beat + interval - c,
-							_crotchetsPerBar = checked((int)Math.Round((double)unchecked(c - 1f)))
-						});
-					}
-					else if (nxt.CrotchetsPerBar == item.CrotchetsPerBar)
-						base.Remove(nxt);
-					if (nxtE != null)
-						result &= base.Add(new SetCrotchetsPerBar
-						{
-							_beat = nxtE._beat,
-							_crotchetsPerBar = frt?.CrotchetsPerBar ?? 8 - 1
-						});
-				}
-			}
-			else
-			{
-				//RefreshCPBs(item._beat);
-				result = base.Add(item);
-			}
-			// 更新计算器
-			Calculator.Refresh();
-			return result;
+			if (Contains(item))
+				return false;
+			(int bar, _) = item._beat;
+			CpbCache cache = new(item.Beat.BeatOnly, bar, item.CrotchetsPerBar);
+			bool extra = Calculator.AddCpbAt(cache, (byte)strategy, out CpbCache fix);
+			base.Add(item);
+			if (extra)
+				base.Add(new SetCrotchetsPerBar() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 });
+			return true;
 		}
-		private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, bool keepCpb = true)
+		private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, BeatChangeStrategy strategy)
 		{
-			if (keepCpb)
-			{
-				SetCrotchetsPerBar? nxt = item.NextOrDefault();
-				if (nxt != null)
-				{
-					SetCrotchetsPerBar? frt = item.FrontOrDefault();
-					BaseEvent? nxtE = item.After<BaseEvent>().FirstOrDefault((i) => i is IBarBeginningEvent &&
-						i.Type != EventType.SetCrotchetsPerBar &&
-						i._beat < nxt._beat);
-					int cpb = item.CrotchetsPerBar;
-					int interval = (int)((nxtE ?? nxt)._beat.BeatOnly - item._beat.BeatOnly);
-					int c = interval % frt?.CrotchetsPerBar ?? 8;
-					if (c > 0)
-					{
-						c = c < 2 ? c + item.CrotchetsPerBar : c;
-						if (c == nxt.CrotchetsPerBar)
-							base.Remove(nxt);
-						base.Add(new SetCrotchetsPerBar()
-						{
-							_beat = item._beat + interval - c,
-							_crotchetsPerBar = (c - 1)
-						});
-					}
-					else
-					{
-						if (nxtE != null && nxt.CrotchetsPerBar == (frt?.CrotchetsPerBar ?? 8))
-						{
-							base.Remove(nxt);
-						}
-					}
-					if (nxtE != null)
-						base.Add(new SetCrotchetsPerBar
-						{
-							_beat = nxtE._beat,
-							_crotchetsPerBar = frt != null ? frt.CrotchetsPerBar : 8 - 1
-						});
-					Calculator.Refresh();
-				}
-				//更新计算器
-				Calculator.Refresh();
-				bool result = base.Remove(item);
-				item._beat._calculator = null;
-				Calculator.Refresh();
-				return result;
-			}
-			else
-			{
-				bool result = base.Remove(item);
-				item._beat._calculator = null;
-				Calculator.Refresh();
-				return result;
-			}
+			var node = eventsBeatOrder.FindNode(item._beat);
+			if (node is null) return false;
+			var col = node.Value;
+			if (!col.ContainsType(EventType.SetCrotchetsPerBar)) return false;
+			var lastcpb = col.OfType<SetCrotchetsPerBar>().Last();
+			if (lastcpb != item) return false;
+			(int bar, _) = item._beat;
+			CpbCache cache = new(item.Beat.BeatOnly, bar, item.CrotchetsPerBar);
+			bool extra = Calculator.RemoveCpbAt(cache, (byte)strategy, out CpbCache fix);
+			base.Remove(item);
+			if (extra)
+				base.Add(new SetCrotchetsPerBar() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 });
+			return true;
 		}
 		private bool AddBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
-			//RefreshBPMs(item.Beat);
+			Calculator.AddBpmAt(new BpmCache(item.Beat.BeatOnly, item.BeatsPerMinute));
 			bool result = base.Add(item);
-			Calculator.Refresh();
 			return result;
 		}
 		private bool RemoveBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
+			Calculator.RemoveBpmAt(new BpmCache(item.Beat.BeatOnly, item.BeatsPerMinute));
 			bool result = base.Remove(item);
-			Calculator.Refresh();
-			//RefreshBPMs(item.Beat);
-			item._beat._calculator = null;
+			item._beat = item._beat.WithoutLink();
 			return result;
-		}
-		private void RefreshBPMs(RDBeat start)
-		{
-			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
-				item.Key.ResetBPM();
-			foreach (IBaseEvent? item in this.Where(i => i.Beat > start))
-				item.Beat.ResetBPM();
-			foreach (Bookmark? item in Bookmarks)
-				item.Beat.ResetBPM();
-		}
-		private void RefreshCPBs(RDBeat start)
-		{
-			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
-				item.Key.ResetCPB();
-			foreach (IBaseEvent? item in this.Where(i => i.Beat > start))
-				item.Beat.ResetCPB();
-			foreach (Bookmark? item in Bookmarks)
-				item.Beat.ResetCPB();
 		}
 		/// <inheritdoc/>
 		public void Dispose()

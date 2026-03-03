@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components.Linq;
+using RhythmBase.RhythmDoctor.Components.Linq;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
@@ -22,19 +22,11 @@ namespace RhythmBase.RhythmDoctor.Components
 			beats = collection.eventsBeatOrder.GetEnumerator();
 			this.types = types;
 			this.range = range;
-			while (beats.MoveNext())
-				if ((range.Start is null || beats.Current.Key > range.Start) && beats.Current.Value.ContainsTypes(types))
-				{
-					if (range.End is null || beats.Current.Key < range.End)
-						events = beats.Current.Value.GetEnumerator();
-					break;
-				}
 		}
 		public TEvent Current => (TEvent)(events?.Current ?? throw new InvalidOperationException());
 		object IEnumerator.Current => Current;
 		public bool MoveNext()
 		{
-			//collection._currentModifier = this;
 			bool result;
 			while (result = (events?.MoveNext() ?? false))
 				if (types.Contains(events!.Current.Type))
@@ -43,6 +35,11 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				while (beats.MoveNext())
 				{
+					if (range.Start is not null && !(beats.Current.Key > range.Start) || !beats.Current.Value.ContainsTypes(types))
+					{
+						events = beats.Current.Value.GetEnumerator();
+						continue;
+					}
 					if (!beats.Current.Value.ContainsTypes(types))
 					{
 						continue;
@@ -85,7 +82,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				yield break;
 			if (!collection.eventsBeatOrder.TryGetValue(beat, out var events))
 				yield break;
-			if(!events.ContainsTypes(types))
+			if (!events.ContainsTypes(types))
 				yield break;
 			foreach (var ev in events)
 				if (types.Contains(ev.Type))

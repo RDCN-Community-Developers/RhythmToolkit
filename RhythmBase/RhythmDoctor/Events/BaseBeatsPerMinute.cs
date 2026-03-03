@@ -14,6 +14,7 @@ public abstract record class BaseBeatsPerMinute : BaseEvent
 		set
 		{
 			base.Beat = value;
+			var calc = base.Beat._calculator;
 			ResetTimeLine();
 		}
 	}

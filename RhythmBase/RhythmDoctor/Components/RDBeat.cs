@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Utils;
+using RhythmBase.RhythmDoctor.Utils;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -16,6 +16,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <summary>
 		/// Whether this beat cannot be calculated.
 		/// </summary>
+		internal static bool MustFromCache { get; } = false;
 #if NET7_0_OR_GREATER
 		[MemberNotNullWhen(false, nameof(_calculator))]
 #endif
@@ -27,7 +28,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				if (!_isBeatLoaded && _calculator is not null)
+				if ((!MustFromCache || !_isBeatLoaded) && _calculator is not null)
 				{
 					if (_isBarBeatLoaded)
 						_beat = _calculator.BarBeatToBeatOnly(_b_bar, _b_beat) - 1f;
@@ -45,7 +46,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		{
 			get
 			{
-				if (!_isTimeSpanLoaded && _calculator is not null)
+				if ((!MustFromCache || !_isTimeSpanLoaded) && _calculator is not null)
 				{
 					if (_isBeatLoaded)
 						_TimeSpan = _calculator.BeatOnlyToTimeSpan(_beat + 1f);
@@ -87,7 +88,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			{
 				if (!_isCPBLoaded)
 				{
-					_CPB = (int)Math.Round(_calculator?.CrotchetsPerBarOf(this) ?? -1);
+					_CPB = _calculator?.CrotchetsPerBarOf(this) ?? 0;
 					_isCPBLoaded = true;
 				}
 				return _CPB;
@@ -290,7 +291,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		public void ResetCache()
 		{
-			object __ = BeatOnly;
+			_ = BeatOnly;
 			_isBarBeatLoaded = false;
 			_isTimeSpanLoaded = false;
 		}
@@ -301,9 +302,11 @@ namespace RhythmBase.RhythmDoctor.Components
 		public void Cache()
 		{
 			IfNullThrowException();
-			object __ = BeatOnly;
+			_ = BeatOnly;
 			Deconstruct(out _, out _);
-			__ = TimeSpan;
+			_ = TimeSpan;
+			_ = Bpm;
+			_ = Cpb;
 		}
 		/// <summary>
 		/// Deconstructs the current instance into its bar and beat components.

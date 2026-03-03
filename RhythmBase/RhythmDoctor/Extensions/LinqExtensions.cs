@@ -51,7 +51,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			if (source is EventEnumerator<IBaseEvent> casted)
 				return casted.InRange(new(start, end));
 			if (source is OrderedEventCollection ordered)
-				return (ordered.GetEnumerator() as EventEnumerator<IBaseEvent> ?? new EventEnumerator<IBaseEvent>(ordered)).InRange(new(start, end));
+				return (ordered.GetEnumerator() as EventEnumerator<IBaseEvent>)?.InRange(new(start, end)) ?? new EventEnumerator<IBaseEvent>(ordered, new(start, end));
 			throw new NotSupportedException("The provided IEventEnumerable is not supported.");
 		}
 

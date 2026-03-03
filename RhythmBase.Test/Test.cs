@@ -87,6 +87,7 @@ namespace RhythmBase.Test
 		{
 			GlobalSettings.CachePath = "cache";
 			{
+				List<(double, double)> results = [];
 				LevelReadSettings settings = new()
 				{
 					InactiveEventsHandling = InactiveEventsHandling.Ignore,
@@ -98,18 +99,24 @@ namespace RhythmBase.Test
 				Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 				for (int i = 0; i < 10; i++)
 				{
+					double readTime, writeTime;
 					sw.Restart();
 					using RDLevel level = RDLevel.FromFile("the-powe-S7V1kg9RWYK.rdzip", settings);
-					Console.Write($"|{i}\t|{sw.Elapsed.TotalMilliseconds,10} ms\t|");
+					readTime = sw.Elapsed.TotalMilliseconds;
+					Console.Write($"|{i}\t|{readTime,10} ms\t|");
 					sw.Restart();
 					lock (this)
 						level.SaveToFile("out.rdlevel");
-					Console.WriteLine($"{sw.Elapsed.TotalMilliseconds,10} ms\t|");
+					writeTime = sw.Elapsed.TotalMilliseconds;
+					Console.WriteLine($"{writeTime,10} ms\t|");
 					foreach (var file in settings.FileReferences)
 					{
 						Console.WriteLine($"Cached file: {file.Path}");
 					}
+					results.Add((readTime, writeTime));
 				}
+				Console.WriteLine(string.Join(",", results.Select(i => i.Item1)));
+				Console.WriteLine(string.Join(",", results.Select(i => i.Item2)));
 			}
 			//{
 			//	LevelReadOrWriteSettings settings = new()

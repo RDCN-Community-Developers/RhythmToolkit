@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
 /// Represents an event to set the number of crotchets per bar.
@@ -27,7 +27,7 @@ public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 		get => _crotchetsPerBar + 1;
 		set
 		{
-			_crotchetsPerBar = Math.Max(1, value - 1);
+			_crotchetsPerBar = Math.Max(0, value - 1);
 			if (_beat._calculator != null)
 			{
 				Beat += 0f;

@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 
@@ -29,7 +29,7 @@ public record class MoveCamera : BaseEvent, IEaseEvent, IRoomEvent
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
-	public RDExpression? Angle { get; set; }
+	public float? Angle { get; set; }
 	///<inheritdoc/>
 	public float Duration { get; set; } = 1;
 	/// <summary>

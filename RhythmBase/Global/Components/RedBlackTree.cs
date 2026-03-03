@@ -40,45 +40,48 @@
 			}
 			return null;
 		}
-
-		public RedBlackNode<TKey, TValue>? Predecessor(RedBlackNode<TKey, TValue> node)
+		public RedBlackNode<TKey, TValue>? Floor(TKey key)
 		{
-			if (node.Left != null)
+			RedBlackNode<TKey,TValue>? current = _root;
+			RedBlackNode<TKey,TValue>? floor = null;
+			while (current != null)
 			{
-				RedBlackNode<TKey,TValue>? pred = node.Left;
-				while (pred.Right != null)
-					pred = pred.Right;
-				return pred;
+				int cmp = key.CompareTo(current.Key);
+				if (cmp == 0)
+					return current;
+				if (cmp < 0)
+				{
+					current = current.Left;
+				}
+				else
+				{
+					floor = current;
+					current = current.Right;
+				}
 			}
-			RedBlackNode<TKey,TValue>? parent = node.Parent;
-			RedBlackNode<TKey,TValue> current = node;
-			while (parent != null && current == parent.Left)
-			{
-				current = parent;
-				parent = parent.Parent;
-			}
-			return parent;
+			return floor;
 		}
-
-		public RedBlackNode<TKey, TValue>? Successor(RedBlackNode<TKey, TValue> node)
+		public RedBlackNode<TKey, TValue>? Ceiling(TKey key)
 		{
-			if (node.Right != null)
+			RedBlackNode<TKey,TValue>? current = _root;
+			RedBlackNode<TKey,TValue>? ceiling = null;
+			while (current != null)
 			{
-				RedBlackNode<TKey,TValue>? succ = node.Right;
-				while (succ.Left != null)
-					succ = succ.Left;
-				return succ;
+				int cmp = key.CompareTo(current.Key);
+				if (cmp == 0)
+					return current;
+				if (cmp < 0)
+				{
+					ceiling = current;
+					current = current.Left;
+				}
+				else
+				{
+					current = current.Right;
+				}
 			}
-			RedBlackNode<TKey,TValue>? parent = node.Parent;
-			RedBlackNode<TKey,TValue> current = node;
-			while (parent != null && current == parent.Right)
-			{
-				current = parent;
-				parent = parent.Parent;
-			}
-			return parent;
+			return ceiling;
 		}
-
 		public void Insert(TKey key, TValue value)
 		{
 			RedBlackNode<TKey,TValue> newNode = new RedBlackNode<TKey, TValue>(key, value);
@@ -446,7 +449,50 @@
 			_count--;
 			return true;
 		}
-
+		public KeyValuePair<TKey, TValue> FirstOrDefault(Func<KeyValuePair<TKey, TValue>, bool> predicate)
+		{
+			var first = this._root;
+			while(first is not null)
+			{
+				if (predicate(new KeyValuePair<TKey, TValue>(first.Key, first.Value)))
+				{
+					if (first.Left is not null)
+						first = first.Left;
+					else
+						return new KeyValuePair<TKey, TValue>(first.Key, first.Value);
+				}
+				else
+				{
+					if (first.Right is not null)
+						first = first.Right;
+					else
+						return default;
+				}
+			}
+			return default;
+		}
+		public KeyValuePair<TKey, TValue> LastOrDefault(Func<KeyValuePair<TKey, TValue>, bool> predicate)
+		{
+			var last = this._root;
+			while(last is not null)
+			{
+				if (predicate(new KeyValuePair<TKey, TValue>(last.Key, last.Value)))
+				{
+					if (last.Right is not null)
+						last = last.Right;
+					else
+						return new KeyValuePair<TKey, TValue>(last.Key, last.Value);
+				}
+				else
+				{
+					if (last.Left is not null)
+						last = last.Left;
+					else
+						return default;
+				}
+			}
+			return default;
+		}
 		public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
 		{
 			return InOrderTraversal(_root).GetEnumerator();
