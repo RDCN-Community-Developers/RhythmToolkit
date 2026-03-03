@@ -94,22 +94,21 @@ RhythmBase provides a strongly-typed event model for both Rhythm Doctor and A Da
 
 ### Read/Write Performance Comparison
 
-This section compares the read and write speeds for the level *The Power of Terry* (`the-powe-S7V1kg9RWYK.rdzip`).  
+This section compares the read/write performance using the level *The Power of Terry* (`the-powe-S7V1kg9RWYK.rdzip`).  
 Operating System: Windows 25H2 26200.7462  
 CPU: 12th Gen Intel® Core™ i7-12650H  
-RAM: 16GB  
+Memory: 16GB  
 
-**🟥Rhythm Doctor Level Editor v1.0.3/r42(r65) Windows da9f047**
-- Utilizes `scrEditor.Decode` to open the `main.rdlevel` file and `scrEditor.Encode` by pressing `Ctrl + S` in the Editor Interface.  
+**Rhythm Doctor Level Editor**
+- 🟥v1.0.3/r42(r65)
+- Windows da9f047
+- Uses `scrEditor.Decode` to open the `main.rdlevel` file, and calls `scrEditor.Encode` by pressing `Ctrl + S` in the editor UI.  
 
-**🟩RhythmBase v1.3.4 .NET Standard 2.0**
-- Uses `RDLeve.FromFile` to read the complete `rdzip` file and `RDLevel.SaveToFile` to save it as an `rdlevel` file.  
-- Tested in .NET Framework 4.8.9221.0
-
-**🟦RhythmBase v1.3.4 .NET 8.0**
-- Uses `RDLeve.FromFile` to read the complete `rdzip` file and `RDLevel.SaveToFile` to save it as an `rdlevel` file.  
-- Tested in .NET 8.0.11
-
+**RhythmBase**  
+- 🟩.NET Standard 2.0 / 🟦.NET 8.0
+- ░v1.3.4 / ▒v1.3.9
+- Uses `RDLeve.FromFile` to read the complete `rdzip` file, and uses `RDLevel.SaveToFile` to save it as an `rdlevel` file.  
+- Tested on 🟩.NET Framework 4.8.9221.0 / 🟦.NET 8.0.11
 
 ```mermaid
 ---
@@ -118,18 +117,23 @@ config:
         height: 300
     themeVariables:
         xyChart:
-            plotColorPalette: '#FF0000, #00FF88, #0088FF'
+            plotColorPalette: '#F00, #0F88, #0F8, #08F8, #08F'
 ---
 xychart
   title "Read Time"
-    y-axis "Eclapsed (ms)"
+    y-axis "Duration (ms)"
     %% RDLE
     line [14441.1006, 16324.7944, 16264.1535, 16592.9209, 16411.6373, 16414.5378, 16274.7375, 16567.1659, 16288.4762, 16382.9809]
-    %% RDTK .NET Standard 2.0
+    %% RDTK .NET Standard 2.0 v1.3.4
     line [3273.9261, 2793.1168, 2796.0169, 2750.7386, 2757.9804, 2734.5127, 2715.0270, 2765.0712, 2749.9744, 2764.9854]
-    %% RDTK .NET 8.0
+    %% RDTK .NET Standard 2.0 v1.3.9
+    line [3148.9088,1226.1298,1054.2334,1134.9715,1033.4164,1030.4823,1088.7369,1178.1487,1120.97,1055.3118]
+    %% RDTK .NET 8.0 v1.3.4
     line [1887.2656, 1353.3896, 1076.3732, 1121.0746, 1080.6883, 1074.4476, 1122.7722, 1091.6990, 1103.6302, 1149.2975]
+    %% RDTK .NET 8.0 v1.3.9
+    line [2367.0337,1056.9628,966.5576,1035.8415,913.1249,946.951,908.2692,917.0895,1036.6879,1048.7651]
 ```
+
 ```mermaid
 ---
 config:
@@ -137,17 +141,21 @@ config:
         height: 300
     themeVariables:
         xyChart:
-            plotColorPalette: '#FF0000, #00FF88, #0088FF'
+            plotColorPalette: '#F00, #0F88, #0F8, #08F8, #08F'
 ---
 xychart
   title "Write Time"
-    y-axis "Eclapsed (ms)"
+    y-axis "Duration (ms)"
     %% RDLE
     line [242.5163, 280.5837, 243.9327, 238.8927, 244.9178, 243.3303, 251.8815, 243.9217, 331.3641, 265.0274]
-    %% RDTK .NET Standard 2.0
+    %% RDTK .NET Standard 2.0 v1.3.4
     line [513.1026, 361.6694, 350.3818, 347.8336, 349.8539, 356.7689, 353.0014, 350.7653, 354.2552, 348.2180]
-    %% RDTK .NET 8.0
+    %% RDTK .NET Standard 2.0 v1.3.9
+    line [403.8953,215.1384,235.0083,239.653,231.9253,215.1407,205.9433,235.8352,237.2161,252.8412]
+    %% RDTK .NET 8.0 v1.3.4
     line [460.3911, 224.0186, 165.0900, 175.7229, 150.6010, 144.8973, 155.9880, 150.8031, 155.9035, 153.7161]
+    %% RDTK .NET 8.0 v1.3.9
+    line [391.9549,256.5255,113.1473,74.3901,75.7604,126.1112,107.5059,99.014,108.391,90.731]
 ```
 
 ### Platform and Language Interoperability
@@ -266,3 +274,12 @@ Benefits of C#'s strong type system:
 
 - **RichText Engine** - Strongly-typed rich text structures supporting styles, events, and range operations
 - **JSON Serialization** - High-performance serialization based on System.Text.Json supporting complex nested structures
+
+
+## Project Direction and Positioning
+
+This project was originally named `RhythmToolkit`, with the goal of developing a few small tools for *Rhythm Doctor* to simplify level processing and related tasks.  
+As the project gradually matured, I found that most of the work was focused on reimplementing and optimizing the *Rhythm Doctor* level model. Its direction increasingly shifted toward becoming a foundational framework for other tools, while those original small utilities became relatively minor in comparison. Later, I also tried supporting the level model of *A Dance of Fire and Ice* (Adofai), so it was no longer exclusively for Rhythm Doctor (though Rhythm Doctor is still the primary focus).  
+In addition, due to certain compatibility issues with SkiaSharp, I plan to separate the image-processing part into an independent module. For these reasons, the project was renamed to `RhythmBase`, and the more tool-oriented content was migrated to other repositories.  
+Of course, you can still call it `RDTK` for short!  
+To reduce project dependencies and solve compatibility issues, I moved some feature wrappers that I consider highly practical into an unreleased project, `RhythmBase.Addition`. This part can also serve as reference examples for using `RhythmBase`.
