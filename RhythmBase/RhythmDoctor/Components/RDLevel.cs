@@ -724,8 +724,10 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="item">The event to check for.</param>
 		/// <returns>True if the event is contained in the level; otherwise, false.</returns>
-		public override bool Contains(IBaseEvent item) => EventTypeUtils.RowTypes.Contains(item.Type)
-			&& Rows.Any((i) => i.Contains(item)) || EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((i) => i.Contains(item)) || base.Contains(item);
+		public override bool Contains(IBaseEvent item) =>
+			EventTypeUtils.RowTypes.Contains(item.Type) && Rows.Any((i) => i.Contains(item)) ||
+			EventTypeUtils.DecorationTypes.Contains(item.Type) && Decorations.Any((i) => i.Contains(item)) ||
+			base.Contains(item);
 		/// <summary>
 		/// Removes an event from the level.
 		/// </summary>
@@ -820,46 +822,32 @@ namespace RhythmBase.RhythmDoctor.Components
 		}
 		private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, BeatChangeStrategy strategy)
 		{
-			if(!Contains(item))
-				return false;
+			var node = eventsBeatOrder.FindNode(item._beat);
+			if (node is null) return false;
+			var col = node.Value;
+			if (!col.ContainsType(EventType.SetCrotchetsPerBar)) return false;
+			var lastcpb = col.OfType<SetCrotchetsPerBar>().Last();
+			if (lastcpb != item) return false;
 			(int bar, _) = item._beat;
 			CpbCache cache = new(item.Beat.BeatOnly, bar, item.CrotchetsPerBar);
 			bool extra = Calculator.RemoveCpbAt(cache, (byte)strategy, out CpbCache fix);
 			base.Remove(item);
-			if(extra)
+			if (extra)
 				base.Add(new SetCrotchetsPerBar() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 });
 			return true;
 		}
 		private bool AddBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
-			//RefreshBPMs(item.Beat);
+			Calculator.AddBpmAt(new BpmCache(item.Beat.BeatOnly, item.BeatsPerMinute));
 			bool result = base.Add(item);
 			return result;
 		}
 		private bool RemoveBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
 		{
+			Calculator.RemoveBpmAt(new BpmCache(item.Beat.BeatOnly, item.BeatsPerMinute));
 			bool result = base.Remove(item);
-			//RefreshBPMs(item.Beat);
-			item._beat._calculator = null;
+			item._beat = item._beat.WithoutLink();
 			return result;
-		}
-		private void RefreshBPMs(RDBeat start)
-		{
-			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
-				item.Key.ResetBPM();
-			foreach (IBaseEvent? item in this.Where(i => i.Beat > start))
-				item.Beat.ResetBPM();
-			foreach (Bookmark? item in Bookmarks)
-				item.Beat.ResetBPM();
-		}
-		private void RefreshCPBs(RDBeat start)
-		{
-			foreach (KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>> item in eventsBeatOrder)
-				item.Key.ResetCPB();
-			foreach (IBaseEvent? item in this.Where(i => i.Beat > start))
-				item.Beat.ResetCPB();
-			foreach (Bookmark? item in Bookmarks)
-				item.Beat.ResetCPB();
 		}
 		/// <inheritdoc/>
 		public void Dispose()

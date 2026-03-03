@@ -40,38 +40,14 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// </summary>
 		RDLE = 0b11,
 	}
-
-	/// <summary>
-	/// Represents a cached BPM anchor used to quickly convert between beats and time spans.
-	/// </summary>
-	/// <param name="BeatOnly">Absolute beat where the BPM takes effect.</param>
-	/// <param name="TimeSpan">Absolute time when the BPM takes effect.</param>
-	/// <param name="Bpm">Beats per minute value.</param>
 	internal record struct BpmCache(float BeatOnly, TimeSpan TimeSpan, float Bpm) : IComparable<BpmCache>
 	{
-		/// <summary>
-		/// Gets the fallback BPM cache representing the initial state.
-		/// </summary>
 		public static readonly BpmCache Default = new(1, TimeSpan.Zero, Utils.DefaultBPM);
-
-		/// <inheritdoc />
 		public readonly int CompareTo(BpmCache other) => BeatOnly.CompareTo(other.BeatOnly);
 	}
-
-	/// <summary>
-	/// Represents a cached CPB anchor used to translate between global beats and bar-relative beats.
-	/// </summary>
-	/// <param name="BeatOnly">Absolute beat where the CPB change occurs.</param>
-	/// <param name="Bar">One-based bar index for the CPB anchor.</param>
-	/// <param name="Cpb">Number of crotchets contained in one bar.</param>
 	internal record struct CpbCache(float BeatOnly, int Bar, int Cpb) : IComparable<CpbCache>
 	{
-		/// <summary>
-		/// Gets the fallback CPB cache representing the initial state.
-		/// </summary>
 		public static readonly CpbCache Default = new(1, 1, Utils.DefaultCPB);
-
-		/// <inheritdoc />
 		public readonly int CompareTo(CpbCache other) => BeatOnly.CompareTo(other.BeatOnly);
 	};
 
@@ -80,37 +56,13 @@ namespace RhythmBase.RhythmDoctor.Utils
 	/// </summary>
 	public class BeatCalculator
 	{
-		/// <summary>
-		/// Provides access to the underlying level collection that stores beat-ordered events.
-		/// </summary>
 		internal readonly RDLevel Collection;
-
-		/// <summary>
-		/// Cached BPM anchors sorted by beat order for fast lookup.
-		/// </summary>
 		private BpmCache[] _bpmCache = [];
-
-		/// <summary>
-		/// Cached CPB anchors sorted by beat order for fast lookup.
-		/// </summary>
 		private CpbCache[] _cpbCache = [];
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="BeatCalculator"/> class.
-		/// </summary>
-		/// <param name="level">The owning level collection that provides beat events.</param>
 		internal BeatCalculator(RDLevel level)
 		{
 			Collection = level;
 		}
-
-		/// <summary>
-		/// Inserts a CPB change at the specified location and optionally returns a corrective entry when bar alignment requires it.
-		/// </summary>
-		/// <param name="cpb">The CPB cache to insert.</param>
-		/// <param name="strategy">The beat-change strategy to apply.</param>
-		/// <param name="fix">Outputs a corrective CPB entry when additional adjustments are required.</param>
-		/// <returns><c>true</c> if an extra corrective CPB entry was produced; otherwise <c>false</c>.</returns>
 		internal bool AddCpbAt(CpbCache cpb, byte strategy, out CpbCache fix)
 		{
 			fix = CpbCache.Default;
@@ -149,7 +101,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			else
 			{
 				b = _cpbCache[index + 1];
-				if (a.Cpb == cpb.Cpb)
+				if (a.BeatOnly == cpb.BeatOnly && a.Cpb == cpb.Cpb)
 				{
 					return false;
 				}
@@ -214,14 +166,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 				}
 			}
 		}
-
-		/// <summary>
-		/// Removes a CPB change and optionally returns a corrective entry when bar alignment requires it.
-		/// </summary>
-		/// <param name="cpb">The CPB cache entry to remove.</param>
-		/// <param name="strategy">The beat-change strategy to apply.</param>
-		/// <param name="fix">Outputs a corrective CPB entry when additional adjustments are required.</param>
-		/// <returns><c>true</c> if an extra corrective CPB entry was produced; otherwise <c>false</c>.</returns>
 		internal bool RemoveCpbAt(CpbCache cpb, byte strategy, out CpbCache fix)
 		{
 			fix = CpbCache.Default;
@@ -310,7 +254,70 @@ namespace RhythmBase.RhythmDoctor.Utils
 				}
 			}
 		}
+		internal void AddBpmAt(BpmCache bpm)
+		{
+			if (_bpmCache.Length == 0)
+			{
+				_bpmCache = [bpm];
+				return;
+			}
+			int index = _bpmCache.BinarySearch(bpm);
+			if (index < 0) index = ~index - 1;
 
+			BpmCache a, b;
+			if (index < 0) a = BpmCache.Default;
+			else a = _bpmCache[index];
+			if (a.BeatOnly == bpm.BeatOnly && (a.Bpm == bpm.Bpm)) return;
+			if (index >= _bpmCache.Length - 1)
+			{
+				_bpmCache = [.. _bpmCache, bpm];
+				return;
+			}
+			else
+			{
+				b = _bpmCache[index + 1];
+				TimeSpan diff = TimeSpan.FromMinutes((b.BeatOnly - bpm.BeatOnly) / bpm.Bpm) - (b.TimeSpan - bpm.TimeSpan);
+				for (int i = index + 1; i < _bpmCache.Length; ++i)
+				{
+					BpmCache ti = _bpmCache[i];
+					ti.TimeSpan += diff;
+					_bpmCache[i] = ti;
+				}
+				if (a.BeatOnly != bpm.BeatOnly)
+					_bpmCache = [.. _bpmCache.Take(index), bpm, .. _bpmCache.Skip(index)];
+				else
+					_bpmCache[index] = bpm;
+				return;
+			}
+		}
+		internal void RemoveBpmAt(BpmCache bpm)
+		{
+			if (_bpmCache.Length == 0)
+				return;
+			int index = _bpmCache.BinarySearch(bpm);
+			if (index < 0) return;
+			BpmCache a, b;
+			if (index == 0) a = BpmCache.Default;
+			else a = _bpmCache[index - 1];
+			if (index == _bpmCache.Length - 1)
+			{
+				_bpmCache = [.. _bpmCache.Take(_bpmCache.Length - 1)];
+				return;
+			}
+			else
+			{
+				b = _bpmCache[index + 1];
+				TimeSpan diff = TimeSpan.FromMinutes((b.BeatOnly - bpm.BeatOnly) / a.Bpm) - (b.TimeSpan - bpm.TimeSpan);
+				for (int i = index + 1; i < _bpmCache.Length; ++i)
+				{
+					BpmCache ti = _bpmCache[i];
+					ti.TimeSpan += diff;
+					_bpmCache[i] = ti;
+				}
+				_bpmCache = [.. _bpmCache.Take(index), .. _bpmCache.Skip(index + 1)];
+				return;
+			}
+		}
 		/// <summary>
 		/// Refreshes the BPM and CPB caches so subsequent conversions use up-to-date values.
 		/// </summary>
@@ -374,14 +381,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// <param name="timeSpan">The absolute time to convert.</param>
 		/// <returns>The one-based bar index and the one-based beat within that bar.</returns>
 		public (int bar, float beat) TimeSpanToBarBeat(TimeSpan timeSpan) => BeatOnlyToBarBeat(TimeSpanToBeatOnly(timeSpan));
-
-		/// <summary>
-		/// Converts a bar/beat pair to an absolute beat using the specified CPB cache set.
-		/// </summary>
-		/// <param name="bar">The one-based bar index.</param>
-		/// <param name="beat">The one-based beat within the bar.</param>
-		/// <param name="cacheSet">The CPB cache to consult.</param>
-		/// <returns>The absolute beat position.</returns>
 		private static float BarBeatToBeatOnly(int bar, float beat, in CpbCache[] cacheSet)
 		{
 			CpbCache last = CpbCache.Default;
@@ -403,13 +402,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 			float finalBeatOnly = last.BeatOnly + (bar - last.Bar) * last.Cpb + beat - 1;
 			return finalBeatOnly;
 		}
-
-		/// <summary>
-		/// Converts an absolute beat to a bar/beat pair using the specified CPB cache set.
-		/// </summary>
-		/// <param name="beat">The absolute beat position.</param>
-		/// <param name="cacheSet">The CPB cache to consult.</param>
-		/// <returns>The one-based bar index and the one-based beat within that bar.</returns>
 		private static (int bar, float beat) BeatOnlyToBarBeat(float beat, in CpbCache[] cacheSet)
 		{
 			CpbCache last = CpbCache.Default;
@@ -428,13 +420,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 			(int finalBar, float finalBeat) result2 = ((int)Math.Round(last.Bar + Math.Floor((double)((beat - last.BeatOnly) / last.Cpb))), (beat - last.BeatOnly) % last.Cpb + 1f);
 			return result2;
 		}
-
-		/// <summary>
-		/// Converts an absolute beat to an absolute timespan using the specified BPM cache set.
-		/// </summary>
-		/// <param name="beatOnly">The absolute beat position.</param>
-		/// <param name="cacheSet">The BPM cache to consult.</param>
-		/// <returns>The corresponding absolute time.</returns>
 		private static TimeSpan BeatOnlyToTimeSpan(float beatOnly, in BpmCache[] cacheSet)
 		{
 			BpmCache last = BpmCache.Default;
@@ -454,13 +439,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 			TimeSpan result = last.TimeSpan + TimeSpan.FromMinutes(durationFromLast);
 			return result;
 		}
-
-		/// <summary>
-		/// Converts an absolute timespan to an absolute beat using the specified BPM cache set.
-		/// </summary>
-		/// <param name="timeSpan">The absolute time value.</param>
-		/// <param name="cacheSet">The BPM cache to consult.</param>
-		/// <returns>The corresponding absolute beat.</returns>
 		private static float TimeSpanToBeatOnly(TimeSpan timeSpan, in BpmCache[] cacheSet)
 		{
 			BpmCache last = BpmCache.Default;
