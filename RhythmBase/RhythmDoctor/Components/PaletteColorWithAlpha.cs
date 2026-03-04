@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
@@ -8,8 +6,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <remarks>
 	/// 
 	/// </remarks>
-	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-	public struct PaletteColor
+	public struct PaletteColorWithAlpha
 	{
 		/// <summary>
 		/// Get or set a custom color.
@@ -24,7 +21,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			set
 			{
 				_panel = -1;
-				_color = value.WithAlpha(byte.MaxValue);
+				_color = value;
 			}
 		}
 		/// <summary>
@@ -63,20 +60,20 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// </summary>
 		/// <param name="color">The custom <see cref="RDColor"/> value to be assigned.</param>
 		/// <param name="enableAlpha">Specifies whether the supplied color should retain its alpha component.</param>
-		public PaletteColor(RDColor color)
+		public PaletteColorWithAlpha(RDColor color)
 		{
 			Color = color;
 		}
 		/// <summary>
 		/// Initializes a new instance of <see cref="PaletteColor"/> with a default color value.
 		/// </summary>
-		/// <param name="panelIndex">The index of the palette color to be used.</param>
-		public PaletteColor(int panelIndex)
+		/// <param name="index">The index of the palette color to be used.</param>
+		public PaletteColorWithAlpha(int index)
 		{
-			_panel = panelIndex;
+			Color = default; this.PaletteIndex = index;
 		}
 		/// <inheritdoc/>
-		public override string ToString() => EnablePanel ? $"[{_panel}][?]" : "[-]" + Value.ToString("#RRGGBB");
+		public override string ToString() => EnablePanel ? $"[{_panel}][?]" : "[-]" + Value.ToString("#AARRGGBB");
 		/// <summary>
 		/// Deserializes the specified string value into the current <see cref="PaletteColor"/> instance.
 		/// </summary>
@@ -98,30 +95,26 @@ namespace RhythmBase.RhythmDoctor.Components
 			}
 		}
 		/// <summary>
-		/// Serializes the current <see cref="PaletteColor"/> instance to a string representation.
+		/// Serializes the current <see cref="PaletteColorWithAlpha"/> instance to a string representation.
 		/// </summary>
 		/// <returns>
 		/// A string representing the palette color. If the color is from a palette, returns "pal" followed by the palette index.
 		/// Otherwise, returns the color in "RRGGBBAA" or "RRGGBB" format depending on whether alpha is enabled.
 		/// </returns>
-		public string Serialize() => EnablePanel ? $"pal{_panel}" :  Value.ToString("RRGGBB");
+		public string Serialize() => EnablePanel ? $"pal{_panel}" : Value.ToString("RRGGBBAA");
 		/// <summary>  
-		/// Implicitly converts a <see cref="PaletteColor"/> instance to an <see cref="RDColor"/>.  
+		/// Implicitly converts a <see cref="PaletteColorWithAlpha"/> instance to an <see cref="RDColor"/>.  
 		/// </summary>  
-		/// <param name="paletteColor">The <see cref="PaletteColor"/> instance to convert.</param>  
-		/// <returns>The <see cref="RDColor"/> value of the <see cref="PaletteColor"/>.</returns>  
-		public static implicit operator RDColor(PaletteColor paletteColor) => paletteColor.Value;
+		/// <param name="paletteColor">The <see cref="PaletteColorWithAlpha"/> instance to convert.</param>  
+		/// <returns>The <see cref="RDColor"/> value of the <see cref="PaletteColorWithAlpha"/>.</returns>  
+		public static implicit operator RDColor(PaletteColorWithAlpha paletteColor) => paletteColor.Value;
 		/// <summary>  
-		/// Implicitly converts an <see cref="RDColor"/> to a <see cref="PaletteColor"/> instance.  
+		/// Implicitly converts an <see cref="RDColor"/> to a <see cref="PaletteColorWithAlpha"/> instance.  
 		/// </summary>  
 		/// <param name="color">The <see cref="RDColor"/> to convert.</param>  
-		/// <returns>A new <see cref="PaletteColor"/> instance with the specified <see cref="RDColor"/>.</returns>  
-		public static implicit operator PaletteColor(RDColor color) => new(color);
+		/// <returns>A new <see cref="PaletteColorWithAlpha"/> instance with the specified <see cref="RDColor"/>.</returns>  
+		public static implicit operator PaletteColorWithAlpha(RDColor color) => new PaletteColorWithAlpha(color);
 		private int _panel;
 		private RDColor _color;
-		private string GetDebuggerDisplay()
-		{
-			return ToString();
-		}
 	}
 }

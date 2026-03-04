@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -27,18 +27,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 				: new() { Color = RDColor.FromRgba(t) };
 #else
 			return (t is [0x70, 0x61, 0x6c, ..])
-				? new() { PaletteIndex = int.Parse(t[3..]) }
-				: new(t.Length == 8) { Color = RDColor.FromRgba(t) };
+				? new(int.Parse(t[3..]))
+				: new(RDColor.FromRgba(t));
 #endif
-			//			var s = reader.GetString();
-			//			if (string.IsNullOrEmpty(s)) return default;
-			//			return s.StartsWith("pal")
-			//#if NETSTANDARD
-			//				? new() { PaletteIndex = int.Parse(s.Substring(3)) }
-			//#else
-			//				? new() { PaletteIndex = int.Parse(s[3..]) }
-			//#endif
-			//				: new() { Color = RDColor.FromRgba(s) };
 		}
 
 		public override void Write(Utf8JsonWriter writer, PaletteColor value, JsonSerializerOptions options)
@@ -49,9 +40,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			else
 			{
-				writer.WriteStringValue(value.EnableAlpha
-					? value.Value.ToString("RRGGBBAA")
-					: value.Value.ToString("RRGGBB"));
+				writer.WriteStringValue(value.Value.ToString("RRGGBB"));
 			}
 		}
 	}
