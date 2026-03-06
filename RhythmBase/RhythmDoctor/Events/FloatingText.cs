@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
 
@@ -53,6 +53,7 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	/// </summary>
 	[RDJsonAlias("id")]
 	internal int _id => _beat.BaseLevel?._floatingTexts.IndexOf(this) ?? -1;
+	public int Id => _id;
 	/// <summary>
 	/// Gets or sets the position of the text.
 	/// </summary>
