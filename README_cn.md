@@ -102,12 +102,16 @@ CPU：12th Gen Intel® Core™ i7-12650H
 **节奏医生关卡编辑器**
 - 🟥v1.0.3/r42(r65)
 - Windows da9f047
-- 使用 `scrEditor.Decode` 打开 `main.rdlevel` 文件，并通过在编辑器界面按 `Ctrl + S` 调用 `scrEditor.Encode`。  
+- 使用这些方法测试性能：
+  - `new RDLevelData()`，仅反序列化 `rdlevel` JSON 数据。  
+  - `scrEditor.EncodeData()`，构造数据对象并序列化为 JSON 数据。  
 
 **RhythmBase**  
 - 🟩.NET Standard 2.0 / 🟦.NET 8.0
 - ░v1.3.4 / ▒v1.3.9
-- 使用 `RDLeve.FromFile` 读取完整的 `rdzip` 文件，并使用 `RDLevel.SaveToFile` 将其保存为 `rdlevel` 文件。  
+- 使用这些方法测试性能：
+  - `RDLeve.FromFile`，读取并序列化完整的 `rdzip` 文件。  
+  - `RDLevel.SaveToFile`，将关卡写入 `rdlevel` 文件。  
 - 在 🟩.NET Framework 4.8.9221.0 / 🟦.NET 8.0.11 中测试
 
 ```mermaid
@@ -123,7 +127,7 @@ xychart
   title "读取时间"
     y-axis "耗时 (ms)"
     %% RDLE
-    line [14441.1006, 16324.7944, 16264.1535, 16592.9209, 16411.6373, 16414.5378, 16274.7375, 16567.1659, 16288.4762, 16382.9809]
+    line [2130.5224, 2855.4669, 2269.7906, 2210.3916, 2385.5643, 2238.7013, 2011.8578, 2121.1231, 2014.9036, 1984.7555]
     %% RDTK .NET Standard 2.0 v1.3.4
     line [3273.9261, 2793.1168, 2796.0169, 2750.7386, 2757.9804, 2734.5127, 2715.0270, 2765.0712, 2749.9744, 2764.9854]
     %% RDTK .NET Standard 2.0 v1.3.9

@@ -102,13 +102,17 @@ Memory: 16GB
 **Rhythm Doctor Level Editor**
 - 🟥v1.0.3/r42(r65)
 - Windows da9f047
-- Uses `scrEditor.Decode` to open the `main.rdlevel` file, and calls `scrEditor.Encode` by pressing `Ctrl + S` in the editor UI.  
+- Benchmarked using these methods:  
+  - `new RDLevelData()`, bare-bones deserialization of `rdlevel` JSON.  
+  - `EncodeData()`, full data construction plus JSON serialization.  
 
 **RhythmBase**  
 - 🟩.NET Standard 2.0 / 🟦.NET 8.0
 - ░v1.3.4 / ▒v1.3.9
-- Uses `RDLeve.FromFile` to read the complete `rdzip` file, and uses `RDLevel.SaveToFile` to save it as an `rdlevel` file.  
-- Tested on 🟩.NET Framework 4.8.9221.0 / 🟦.NET 8.0.11
+- Benchmarked using these methods:  
+  - `RDLeve.FromFile`, reads and deserializes entire `rdzip` archives.
+  - `RDLevel.SaveToFile`, writes levels out to `rdlevel` files.  
+- Tested on 🟩.NET Framework 4.8.9221.0 / 🟦.NET 8.0.11  
 
 ```mermaid
 ---
@@ -123,7 +127,7 @@ xychart
   title "Read Time"
     y-axis "Duration (ms)"
     %% RDLE
-    line [14441.1006, 16324.7944, 16264.1535, 16592.9209, 16411.6373, 16414.5378, 16274.7375, 16567.1659, 16288.4762, 16382.9809]
+    line [2130.5224, 2855.4669, 2269.7906, 2210.3916, 2385.5643, 2238.7013, 2011.8578, 2121.1231, 2014.9036, 1984.7555]
     %% RDTK .NET Standard 2.0 v1.3.4
     line [3273.9261, 2793.1168, 2796.0169, 2750.7386, 2757.9804, 2734.5127, 2715.0270, 2765.0712, 2749.9744, 2764.9854]
     %% RDTK .NET Standard 2.0 v1.3.9
