@@ -15,13 +15,13 @@ public readonly struct RDCharacter : IEquatable<RDCharacter>
 #if NET7_0_OR_GREATER
 	[MemberNotNull(nameof(Character))]
 #endif
-	public bool IsCustom { get; }
+	public bool IsCustom => Character is RDCharacters.Custom;
 	/// <summary>
 	/// In-game character.
 	/// <br />
 	/// If using a customized character, this value will be empty
 	/// </summary>
-	public RDCharacters? Character { get; }
+	public RDCharacters Character { get; } = RDCharacters.Custom;
 	/// <summary>
 	/// Customized character(sprite).
 	/// <br />
@@ -34,8 +34,8 @@ public readonly struct RDCharacter : IEquatable<RDCharacter>
 	/// <param name="character">Character type.</param>
 	public RDCharacter(RDCharacters character)
 	{
-		IsCustom = false;
 		Character = character;
+		CustomCharacter = null;
 	}
 	/// <summary>
 	/// Construct a customized character.
@@ -43,7 +43,7 @@ public readonly struct RDCharacter : IEquatable<RDCharacter>
 	/// <param name="character">A sprite.</param>
 	public RDCharacter(string character)
 	{
-		IsCustom = true;
+		Character = RDCharacters.Custom;
 		CustomCharacter = character;
 	}
 	internal IEnumerable<FileReference> GetAllPossibleFileReferences()
@@ -66,20 +66,19 @@ public readonly struct RDCharacter : IEquatable<RDCharacter>
 	public static implicit operator RDCharacter(RDCharacters character) => new(character);
 	/// <inheritdoc/>
 	public static implicit operator RDCharacter(string character) => new(character);
+	/// <inheritdoc/>
 	public static bool operator ==(RDCharacter left, RDCharacter right) => left.Equals(right);
+	/// <inheritdoc/>
 	public static bool operator !=(RDCharacter left, RDCharacter right) => !(left == right);
 	/// <inheritdoc/>
 	public override readonly string ToString() => (IsCustom
 		? CustomCharacter
-		: Character?.ToString())
+		: Character.ToString())
 		?? "[Null]";
-
-	public bool Equals(RDCharacter other)
-	{
-		return IsCustom == other.IsCustom
-			&& Character == other.Character
+	/// <inheritdoc/>
+	public bool Equals(RDCharacter other) => Character == other.Character
 			&& CustomCharacter == other.CustomCharacter;
-	}
+	/// <inheritdoc/>
 	public override int GetHashCode()
 	{
 #if NET7_0_OR_GREATER

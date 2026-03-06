@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -22,7 +22,7 @@ public record class ChangeCharacter : BaseRowAction
 	[RDJsonAlias("character")]
 	internal RDCharacters EnumCharacter
 	{
-		get => Character.Character ?? RDCharacters.Custom; set => Character = value;
+		get => Character.Character; set => Character = value;
 	}
 
 	[RDJsonCondition($"$&.{nameof(Character)}.{nameof(RDCharacter.IsCustom)} && !string.IsNullOrEmpty($&.{nameof(StringCharacter)})")]
