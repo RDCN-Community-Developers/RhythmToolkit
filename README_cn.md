@@ -110,7 +110,7 @@ CPU：12th Gen Intel® Core™ i7-12650H
 - 🟩.NET Standard 2.0 / 🟦.NET 8.0
 - ░v1.3.4 / ▒v1.3.9
 - 使用这些方法测试性能：
-  - `RDLeve.FromFile`，读取并序列化完整的 `rdzip` 文件。  
+  - `RDLeve.FromFile`，读取并反序列化完整的 `rdzip` 文件。  
   - `RDLevel.SaveToFile`，将关卡写入 `rdlevel` 文件。  
 - 在 🟩.NET Framework 4.8.9221.0 / 🟦.NET 8.0.11 中测试
 
