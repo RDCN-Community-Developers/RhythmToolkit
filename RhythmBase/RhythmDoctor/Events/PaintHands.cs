@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -14,7 +14,7 @@ public record class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(IsTint)} is true")]
-	public PaletteColor TintColor { get; set; } = RDColor.White;
+	public PaletteColorWithAlpha TintColor { get; set; } = RDColor.White;
 	///<inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	/// <summary>
@@ -27,7 +27,7 @@ public record class PaintHands : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Events.Border.None)}")]
-	public PaletteColor BorderColor { get; set; } = RDColor.White;
+	public PaletteColorWithAlpha BorderColor { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets a value indicating whether the hand border should pulse.
 	/// </summary>

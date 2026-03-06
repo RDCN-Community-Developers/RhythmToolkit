@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -38,7 +38,7 @@ public record class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 	/// Gets or sets the key color.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(MaskType)} == RhythmBase.RhythmDoctor.Events.{nameof(RoomMaskType)}.{nameof(RoomMaskType.Color)}")]
-	public PaletteColor KeyColor { get; set; } = RDColor.White;
+	public PaletteColorWithAlpha KeyColor { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets the color cutoff value.
 	/// </summary>

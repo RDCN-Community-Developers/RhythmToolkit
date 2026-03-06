@@ -35,7 +35,7 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	/// <summary>
 	/// Gets or sets the color of the text.
 	/// </summary>
-	public PaletteColor Color { get; set; } = RDColor.White;
+	public PaletteColorWithAlpha Color { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets the angle of the text.
 	/// </summary>
@@ -47,7 +47,7 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	/// <summary>
 	/// Gets or sets the outline color of the text.
 	/// </summary>
-	public PaletteColor OutlineColor { get; set; } = RDColor.Black;
+	public PaletteColorWithAlpha OutlineColor { get; set; } = RDColor.Black;
 	/// <summary>
 	/// Gets the ID of the event.
 	/// </summary>

@@ -12,7 +12,7 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	/// Gets or sets the tint color.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(IsTint)} is true")]
-	public PaletteColor TintColor { get; set; } = RDColor.White;
+	public PaletteColorWithAlpha TintColor { get; set; } = RDColor.White;
 	///<inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
 	public EaseType Ease { get; set; } = EaseType.Linear;
@@ -26,7 +26,7 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.Events.{nameof(Events.Border)}.{nameof(Events.Border.None)}")]
-	public PaletteColor BorderColor { get; set; } = RDColor.White;
+	public PaletteColorWithAlpha BorderColor { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets a value indicating whether the hand border should pulse.
 	/// </summary>

@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 using System;
 using System.Collections.Generic;
@@ -10,11 +10,10 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event that sets the simulated desktop background for the simulated desktop mode.
 /// </summary>
 [RDJsonObjectSerializable]
-public record class DesktopColor : BaseWindowEvent, IEaseEvent
+public record class DesktopColor : BaseWindowEvent, IEaseEvent, IColorEvent
 {
 	///<inheritdoc/>
 	public override int Y => 0;
-
 	/// <summary>
 	/// Optional start color for an eased transition.
 	/// </summary>

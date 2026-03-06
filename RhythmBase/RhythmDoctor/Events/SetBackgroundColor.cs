@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 
@@ -35,7 +35,7 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the color for the background.
 	/// </summary>
 	[Tween]
-	public PaletteColor Color { get; set; } = RDColor.White;
+	public PaletteColorWithAlpha Color { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets the interval for the event.
 	/// </summary>

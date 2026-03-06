@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 
@@ -27,7 +27,7 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// Gets or sets the color for the foreground.  
 	/// </summary>  
 	[Tween]
-	public PaletteColor Color { get; set; } = RDColor.White;
+	public PaletteColorWithAlpha Color { get; set; } = RDColor.White;
 	/// <summary>  
 	/// Gets or sets the list of images for the foreground.  
 	/// </summary>  
