@@ -696,10 +696,10 @@ namespace RhythmBase.RhythmDoctor.Components
 				throw new IllegalBeatException(e);
 			// Update the beat's associated level
 			((BaseEvent)item)._beat.ResetCache();
-			if (item is Comment comment && comment.Parent == null)
+			if (item is Comment comment && string.IsNullOrEmpty(comment._decoId))
 				// Comment events may or may not be in the decoration section
 				success &= base.Add(item);
-			else if (item is TintRows tintRows && tintRows.Parent == null)
+			else if (item is TintRows tintRows && tintRows._row == -1)
 				success &= base.Add(item);
 			else if (item is BaseRowAction rowAction)
 				// Add to the corresponding row
@@ -781,7 +781,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (base.Contains(item)) return false;
 			Decoration? parent = item.Parent ?? Decorations[item._decoId];
 			if (parent == null) Decorations._unhandledRowEvents.Add(item);
-			else ((OrderedEventCollection)parent).Add(item);
+			else { ((OrderedEventCollection)parent).Add(item); item._parent = parent; }
 			base.Add(item);
 			return true;
 		}

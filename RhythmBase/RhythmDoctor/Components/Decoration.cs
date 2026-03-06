@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
@@ -59,6 +59,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="item">Decoration event.</param>
 		public override bool Add(BaseDecorationAction item)
 		{
+			if(item._parent == this)
+				return false;
 			item._parent?.Remove(item);
 			item._parent = this;
 			bool success = base.Add(item);

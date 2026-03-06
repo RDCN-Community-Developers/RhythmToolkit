@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Events;
 using static RhythmBase.RhythmDoctor.Utils.EventTypeUtils;
 namespace RhythmBase.RhythmDoctor.Components
 {
@@ -108,6 +108,8 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="item">The row event to add.</param>
 		public override bool Add(BaseRowAction item)
 		{
+			if (item._parent == this)
+				return false;
 			item._parent?.Remove(item);
 			item._parent = this;
 			bool success = base.Add(item);
