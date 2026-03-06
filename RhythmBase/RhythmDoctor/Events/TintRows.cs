@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -8,6 +8,10 @@ namespace RhythmBase.RhythmDoctor.Events;
 [RDJsonObjectSerializable]
 public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 {
+	public TintRows()
+	{
+		_row = -1;
+	}
 	/// <summary>
 	/// Gets or sets the tint color.
 	/// </summary>
@@ -67,9 +71,9 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	public override Tab Tab => Tab.Actions;
 	[RDJsonCondition($"$&.{nameof(Heart)} is not null")]
 	public HeartType? Heart { get; set; }
-	[RDJsonCondition($"$&.{nameof(HeartTransition)} is not null")]
-	public bool? HeartTransition { get; set; }
+	public bool HeartTransition { get; set; }
 	/// <inheritdoc/>
+	[RDJsonCondition($"$&.{nameof(Index)} == -1")]
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);
 	/// <summary>
 	/// Gets a value indicating whether to tint all rows.

@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 
@@ -38,7 +38,7 @@ public record class Move : BaseDecorationAction, IEaseEvent
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Pivot)} is not null")]
-	public RDPointE? Pivot { get; set; }
+	public RDPoint? Pivot { get; set; }
 	///<inheritdoc/>
 	public float Duration { get; set; } = 1;
 	///<inheritdoc/>

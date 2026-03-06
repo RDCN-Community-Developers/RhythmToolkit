@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
@@ -50,7 +50,7 @@ public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 	/// Gets or sets the pivot point for the window resize event.  
 	/// </summary>  
 	[Tween]
-	public RDPointE? Pivot { get; set; } = new(50f, 50f);
+	public RDPoint? Pivot { get; set; } = new(50f, 50f);
 	/// <inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	/// <inheritdoc/>

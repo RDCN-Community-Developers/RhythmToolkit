@@ -1,4 +1,4 @@
-﻿
+
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -40,6 +40,8 @@ public record class NarrateRowInfo : BaseRowAction
 	/// Gets or sets the custom player option for narrating row information.  
 	/// </summary>  
 	public PlayerType CustomPlayer { get; set; } = PlayerType.AutoDetect;
+	[RDJsonCondition($"$&.{nameof(CustomRowLength)} is 7")]
+	public int CustomRowLength { get; set; } = 7;
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" {InfoType}:{NarrateSkipBeat}";
 }

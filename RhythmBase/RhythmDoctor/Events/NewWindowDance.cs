@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
@@ -42,7 +42,7 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// Gets or sets the position.
 	/// </summary>
 	[Tween]
-	public RDPointE Position { get; set; } = new(50f, 50f);
+	public RDPoint Position { get; set; } = new(50f, 50f);
 	/// <summary>
 	/// Gets or sets the reference.
 	/// </summary>
@@ -70,12 +70,13 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"""
+		$&.{nameof(Amplitude)} is not null &&
 		(
 		$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)} || $&.{nameof(UseCircle)}) &&
 		$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
 		$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}
 		""")]
-	public float Amplitude { get; set; } = 0f;
+	public float? Amplitude { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the amplitude vector.
 	/// </summary>
@@ -86,7 +87,7 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)}) &&
 		$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.Events.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}
 		""")]
-	public RDPointE AmplitudeVector { get; set; } = new(0f, 0f);
+	public RDPoint AmplitudeVector { get; set; } = new(0f, 0f);
 	/// <summary>
 	/// Gets or sets the angle.
 	/// </summary>
