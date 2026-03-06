@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Converters;
 using RhythmBase.RhythmDoctor.Events;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -24,6 +24,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 				{
 					new AudioConverter(),
 					new PaletteColorConverter(),
+					new PaletteColorWithAlphaConverter(),
 					new DialogueExchangeConverter(),
 					new PatternConverter(),
 					new TabsConverter(),
