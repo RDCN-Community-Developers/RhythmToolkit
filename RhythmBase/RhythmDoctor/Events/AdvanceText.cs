@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extensions;
 using System.Diagnostics;
 namespace RhythmBase.RhythmDoctor.Events;
@@ -28,13 +28,14 @@ public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 	public FloatingText? Parent { get; internal set; }
 	///<inheritdoc/>
 	[RDJsonAlias("fadeOutDuration")]
-	[RDJsonCondition($"$&.{nameof(Duration)} != 0")]
-	public float Duration { get; set; }
+	[RDJsonCondition($"$&.{nameof(Duration)} is not null && $&.{nameof(Duration)} != 0")]
+	public float? Duration { get; set; }
 	/// <summary>
 	/// Gets the ID of the parent floating text.
 	/// </summary>
 	[RDJsonAlias("id")]
 	internal int Id => Parent?._id ?? -1;
+	float IDurationEvent.Duration { get => Duration ?? -1; set => Duration = value; }
 	/// <inheritdoc/>
 	public override string ToString()
 	{
