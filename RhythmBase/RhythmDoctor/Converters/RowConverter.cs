@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Extensions;
+using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
@@ -60,10 +60,10 @@ namespace RhythmBase.RhythmDoctor.Converters
 			writer.WriteStartObject();
 
 			writer.WritePropertyName("character"u8);
-			if (value.Character.IsCustom || value.Character.Character is not RDCharacters rdc)
+			if (value.Character.IsCustom)
 				writer.WriteStringValue($"custom:{value.Character}");
 			else
-				writer.WriteStringValue(EnumConverter.ToEnumString(rdc));
+				writer.WriteStringValue(EnumConverter.ToEnumString(value.Character.Character));
 			if (value.Player == PlayerType.CPU)
 				writer.WriteString("cpuMarker"u8, EnumConverter.ToEnumString(value.CpuMarker));
 			writer.WriteString("rowType"u8, EnumConverter.ToEnumString(value.RowType));
