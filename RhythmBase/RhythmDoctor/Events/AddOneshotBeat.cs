@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using RhythmBase.RhythmDoctor.Components;
+using System.Diagnostics;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -91,6 +92,8 @@ public record class AddOneshotBeat : BaseBeat
 			? 0f : value <= 0f
 				? 0.5f : value;
 	} = 0f;
+	[RDJsonCondition($"$&.{nameof(Sound)} != null")]
+	public RDAudio? Sound {  get; set; }
 	/// <inheritdoc/>
 	public override EventType Type => EventType.AddOneshotBeat;
 	/// <inheritdoc/>
