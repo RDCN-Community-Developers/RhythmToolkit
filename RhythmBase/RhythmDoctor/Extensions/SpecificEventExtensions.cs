@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.Linq;
 using RhythmBase.RhythmDoctor.Events;
@@ -550,19 +550,19 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// Check if another event is in front of itself, including events of the same beat but executed before itself.
 		/// </summary>
 		public static bool IsInFrontOf(this IBaseEvent e, IBaseEvent item) => e.Beat.BaseLevel?.IsInFrontOf(e, item) ?? throw new InvalidRDBeatException();
-		/// <summary>
-		/// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
-		/// </summary>
-		/// <param name="spriteSize">Sprite size. </param>
-		/// <param name="e">RDLevel</param>
-		/// <param name="target">Specified position. </param>
-		public static void MovePositionMaintainVisual(this Move e, RDSizeE spriteSize, RDPointE target)
-		{
-			if (e is not { Position: not null, Pivot: not null, Angle.IsNumeric: true })
-				return;
-			e.Position = new RDPointE?(target);
-			e.Pivot = new RDPointE?((e.VisualPosition(spriteSize) - new RDSizeE(target)).Rotate(e.Angle.Value.NumericValue));
-		}
+		///// <summary>
+		///// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
+		///// </summary>
+		///// <param name="spriteSize">Sprite size. </param>
+		///// <param name="e">RDLevel</param>
+		///// <param name="target">Specified position. </param>
+		//public static void MovePositionMaintainVisual(this Move e, RDSizeE spriteSize, RDPoint target)
+		//{
+		//	if (e is not { Position: not null, Pivot: not null, Angle.IsNumeric: true })
+		//		return;
+		//	e.Position = new RDPointE?(target);
+		//	e.Pivot = new RDPoint?((e.VisualPosition(spriteSize) - new RDSize(target)).Rotate(e.Angle.Value.NumericValue));
+		//}
 		/// <summary>
 		/// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
 		/// </summary>
@@ -573,20 +573,20 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			e.Position = (RDPoint)target;
 			e.Pivot = (e.VisualPosition() - target).Rotate(e.Angle ?? 0);
 		}
-		/// <summary>
-		/// The visual position of the lower left corner of the image.
-		/// </summary>
-		public static RDPointE VisualPosition(this Move e, RDSizeE spriteSize)
-		{
-			RDPointE visualPosition = default;
-			if (e is not { Position: not null, Pivot: not null, Angle.IsNumeric: true, Scale: not null })
-				return visualPosition;
-			RDPointE previousPosition = e.Position.Value;
-			RDExpression? x = e.Pivot?.X * (e.Scale?.Width) * spriteSize.Width / 100f;
-			RDPointE previousPivot = new(x, e.Pivot?.Y * (e.Scale?.Height) * spriteSize.Height / 100f);
-			visualPosition = previousPosition + new RDSizeE(previousPivot.Rotate(e.Angle.Value.NumericValue));
-			return visualPosition;
-		}
+		///// <summary>
+		///// The visual position of the lower left corner of the image.
+		///// </summary>
+		//public static RDPoint VisualPosition(this Move e, RDSize spriteSize)
+		//{
+		//	RDPoint visualPosition = default;
+		//	if (e is not { Position: not null, Pivot: not null, Angle.IsNumeric: true, Scale: not null })
+		//		return visualPosition;
+		//	RDPoint previousPosition = e.Position.Value;
+		//	float? x = e.Pivot?.X * (e.Scale?.Width) * spriteSize.Width / 100f;
+		//	RDPoint previousPivot = new(x, e.Pivot?.Y * (e.Scale?.Height) * spriteSize.Height / 100f);
+		//	visualPosition = previousPosition + new RDSize(previousPivot.Rotate(e.Angle.Value.NumericValue));
+		//	return visualPosition;
+		//}
 		/// <summary>
 		/// The visual position of the lower left corner of the image.
 		/// </summary>
