@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 
 namespace RhythmBase.Global.Components.Vector
 {

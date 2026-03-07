@@ -1,13 +1,11 @@
-﻿using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Converters;
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Components
 {
-#if NET8_0_OR_GREATER
 	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRoom))]
-#endif
 	/// <summary>
 	/// Represents a room that can be applied to multiple rooms.
 	/// </summary>

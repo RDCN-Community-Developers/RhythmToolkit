@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Global.Components.Vector
@@ -102,11 +102,7 @@ namespace RhythmBase.Global.Components.Vector
 		/// <inheritdoc/>
 		public static bool operator !=(RDRotatedRectE rect1, RDRotatedRectE rect2) => !rect1.Equals(rect2);
 		/// <inheritdoc/>
-		#if NETSTANDARD
-		public override readonly bool Equals(object? obj) => obj is RDRotatedRectE e && Equals(e);
-#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDRotatedRectE e && Equals(e);
-#endif
 		/// <inheritdoc/>
 #if NETSTANDARD
 		public override readonly int GetHashCode()

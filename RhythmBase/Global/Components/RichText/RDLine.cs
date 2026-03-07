@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Text;
 
 namespace RhythmBase.Global.Components.RichText
@@ -214,7 +214,6 @@ namespace RhythmBase.Global.Components.RichText
 				if (stringPart.Length > 0)
 					line += DeserializeStringPart(stringPart, style);
 				string tagContent = text.Substring(p + 1, tagend - (p + 1));
-#if NET7_0_OR_GREATER
 				if (tagContent.StartsWith('/') && style.ResetProperty(tagContent.AsSpan()[1..])) { }
 				else
 				{
@@ -229,22 +228,6 @@ namespace RhythmBase.Global.Components.RichText
 				p = text.IndexOf('<', pl);
 				if (p == -1)
 					return line + DeserializeStringPart(text[pl..], style);
-#else
-				if (tagContent.StartsWith("/") && style.ResetProperty(tagContent.Substring(1))) { }
-				else
-				{
-					string[] parts = tagContent.Split(['='], 2);
-					if (style.SetProperty(parts[0], parts.Length == 2 ? parts[1] : "true")) { }
-					else
-					{
-						//line += DeserializeStringPart(text.Substring(p, tagend + 1 - p), style);
-					}
-				}
-				pl = tagend + 1;
-				p = text.IndexOf('<', pl);
-				if (p == -1)
-					return line + DeserializeStringPart(text.Substring(pl), style);
-#endif
 			}
 			return line;
 		}
@@ -297,18 +280,10 @@ namespace RhythmBase.Global.Components.RichText
 					pstart = pend2 + 1;
 					continue;
 				}
-#if NETSTANDARD2_0
-				string btag = text.Substring(pend + 1, pstart2 - (pend + 1));
-#else
 				string btag = text[(pend + 1)..pstart2];
-#endif
 				if (RDDialogueTone.Create(btag, pend, out RDDialogueTone? e) && e is RDDialogueTone ei)
 					events = [.. events, ei];
-#if NETSTANDARD2_0
-				text = text.Substring(0, pend) + text.Substring(pstart2 + 1);
-#else
 				text = text[..pend] + text[(pstart2 + 1)..];
-#endif
 			}
 			return new RDPhrase<TStyle>(text) { Style = style, Events = events };
 		}

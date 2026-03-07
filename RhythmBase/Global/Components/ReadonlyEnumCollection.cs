@@ -14,9 +14,7 @@ namespace RhythmBase.Global.Components;
 /// checks, making it suitable for scenarios where a fixed set of enum values needs to be referenced or queried without
 /// modification.</remarks>
 /// <typeparam name="TEnum">The enumeration type contained in the collection. Must be a value type that derives from <see cref="System.Enum"/>.</typeparam>
-#if NET8_0_OR_GREATER
 [CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildReadOnlyEnumCollection))]
-#endif
 public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
 {
 	private const int bw = sizeof(ulong) * 8;

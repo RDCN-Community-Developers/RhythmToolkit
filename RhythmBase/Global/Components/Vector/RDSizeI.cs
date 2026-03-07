@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -8,9 +8,7 @@ namespace RhythmBase.Global.Components.Vector
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="integer" />
 	/// </summary>
-#if NET8_0_OR_GREATER
 	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDSizeI))]
-#endif
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public struct RDSizeI(int? width, int? height) : IRDVector<RDSizeI, RDSizeI, int?>
 	{
@@ -76,11 +74,7 @@ namespace RhythmBase.Global.Components.Vector
 				new int?((int)Math.Round(value.Width == null ? 0.0 : Math.Round((double)value.Width.Value))),
 				new int?((int)Math.Round(value.Height == null ? 0.0 : Math.Round((double)value.Height.Value))));
 		/// <inheritdoc/>
-#if NETSTANDARD
-		public override readonly bool Equals(object? obj) => obj is RDSizeI e && Equals(e);
-#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDSizeI e && Equals(e);
-#endif
 		/// <inheritdoc/>
 #if NETSTANDARD
 		public override readonly int GetHashCode()

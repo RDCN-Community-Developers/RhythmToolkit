@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
@@ -73,15 +73,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// <summary>
 		/// Gets a new <see cref="RDPhrase{TStyle}"/> with the same style as the current instance.
 		/// </summary>
-		public TStyle Style
-		{
-			get;
-#if NET5_0_OR_GREATER
-			init;
-#else
-			set;
-#endif
-		} = new();
+		public TStyle Style { get; init; } = new();
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RDPhrase{TStyle}"/> struct with an empty text.
 		/// </summary>
@@ -99,11 +91,7 @@ namespace RhythmBase.Global.Components.RichText
 		/// <inheritdoc/>
 		public readonly bool Equals(RDPhrase<TStyle> other) => this == other;
 		/// <inheritdoc/>
-#if NET6_0_OR_GREATER
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDPhrase<TStyle> && base.Equals(obj);
-#else
-		public override readonly bool Equals(object? obj) => obj is RDPhrase<TStyle> && base.Equals(obj);
-#endif
 		/// <inheritdoc/>
 		public override readonly int GetHashCode() => Text.GetHashCode();
 		/// <inheritdoc/>

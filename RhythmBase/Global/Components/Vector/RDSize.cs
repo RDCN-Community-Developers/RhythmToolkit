@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -8,9 +8,7 @@ namespace RhythmBase.Global.Components.Vector;
 /// <summary>
 /// A size whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float" />
 /// </summary>
-#if NET8_0_OR_GREATER
 [CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDSize))]
-#endif
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public struct RDSize(float? width, float? height) : IRDVector<RDSize, RDSize, float?>
 {
@@ -76,11 +74,7 @@ public struct RDSize(float? width, float? height) : IRDVector<RDSize, RDSize, fl
 	/// <returns>An <see cref="RDPoint"/> that represents this size.</returns>
 	public readonly RDPoint ToPointF() => new(Width, Height);
 	/// <inheritdoc/>
-#if NETSTANDARD
-	public override readonly bool Equals(object? obj) => obj is RDSize e && Equals(e);
-#else
 	public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDSize e && Equals(e);
-#endif
 	/// <inheritdoc/>
 	public static RDSize operator +(RDSize sz1, RDSize sz2) => Add(sz1, sz2);
 	/// <inheritdoc/>

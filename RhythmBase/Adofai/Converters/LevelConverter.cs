@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using System.Text;
 using System.Text.Json;

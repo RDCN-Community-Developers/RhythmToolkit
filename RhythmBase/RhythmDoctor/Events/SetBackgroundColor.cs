@@ -146,9 +146,5 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// </summary>
 	public override string ToString() => BackgroundType == BackgroundType.Color
 	? base.ToString() + $" {Color}"
-#if NETSTANDARD
-	: base.ToString() + $" {string.Join(",", Images)}";
-#else
 	: base.ToString() + $" {string.Join(',', Images)}";
-#endif
 }

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
 namespace RhythmBase.Global.Components.RichText

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers.Text;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -230,11 +230,7 @@ namespace RhythmBase.Global.Components
 				return false;
 			}
 			if (hex[0] == '#')
-#if NETSTANDARD
-				hex = hex.Substring(1);
-#else
 				hex = hex[1..];
-#endif
 			if (!uint.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint value))
 				return false;
 			switch (hex.Length)
@@ -363,11 +359,7 @@ namespace RhythmBase.Global.Components
 				return false;
 			}
 			if (hex[0] == '#')
-#if NETSTANDARD
-				hex = hex.Substring(1);
-#else
 				hex = hex[1..];
-#endif
 			if (!uint.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint value))
 				return false;
 			switch (hex.Length)
@@ -907,11 +899,7 @@ namespace RhythmBase.Global.Components
 		/// <inheritdoc/>
 		public readonly bool Equals(RDColor other) => color == other.color;
 		/// <inheritdoc/>
-#if NETSTANDARD
-		public override readonly bool Equals(object? obj) => obj is RDColor e && Equals(e);
-#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDColor e && Equals(e);
-#endif
 		/// <inheritdoc/>
 		public override readonly int GetHashCode() => color.GetHashCode();
 		/// <inheritdoc/>

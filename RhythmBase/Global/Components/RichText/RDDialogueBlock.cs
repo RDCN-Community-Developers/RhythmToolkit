@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 namespace RhythmBase.Global.Components.RichText
 {
@@ -55,11 +55,7 @@ namespace RhythmBase.Global.Components.RichText
 			int mi = str.IndexOf(':');
 			if (mi != -1)
 			{
-#if NETSTANDARD
-				string character = str.Substring(0, mi);
-#else
 				string character = str[..mi];
-#endif
 				if (character.Contains('_'))
 				{
 					string[] parts = character.Split(['_'], 2);
@@ -72,7 +68,7 @@ namespace RhythmBase.Global.Components.RichText
 #if !NETSTANDARD
 				RDLine<RDDialoguePhraseStyle>.Deserialize(str[(mi + 1)..]);
 #else
-			RDLine<RDDialoguePhraseStyle>.Empty.Deserialize(str.Substring(mi + 1));
+			RDLine<RDDialoguePhraseStyle>.Empty.Deserialize(str[(mi + 1)..]);
 #endif
 			return line;
 		}
@@ -91,11 +87,7 @@ namespace RhythmBase.Global.Components.RichText
 			int mi = str.IndexOf(':');
 			if (mi != -1)
 			{
-#if NETSTANDARD
-				string character = str.Substring(0, mi);
-#else
 				string character = str[..mi];
-#endif
 				string expression = "";
 				if (character.Contains('_'))
 				{

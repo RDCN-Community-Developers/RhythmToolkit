@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Reflection;
@@ -16,7 +16,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		internal static T LastOrDefault<T>(this IEnumerable<T> e, T defaultValue) => e.LastOrDefault(defaultValue);
 		internal static T LastOrDefault<T>(this IEnumerable<T> e, Func<T, bool> predicate, T defaultValue) => e.LastOrDefault(predicate, defaultValue);
 #endif
-#if !NETSTANDARD
 		private static (float start, float end) GetRange(OrderedEventCollection e, Index index)
 		{
 			if (e.calculator is BeatCalculator c)
@@ -48,7 +47,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			}
 			return (1, 1);
 		}
-#endif
 		extension(Condition e)
 		{
 			public bool? TwoPlayerMode

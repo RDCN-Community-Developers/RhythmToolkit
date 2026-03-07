@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using static RhythmBase.RhythmDoctor.Extensions.Extensions;
 
@@ -11,11 +11,7 @@ public partial record class Comment
 	public static class Shared
 	{
 #pragma warning disable CS1591
-#if NETSTANDARD
-		private static Comment FunctionCalling(string name, params object[] @params) => new() { Text = $"()=>{name.ToLowerCamelCase()}({string.Join(",", @params.Select(i => i.ToString()))})" };
-#else
 		private static Comment FunctionCalling(string name, params object[] @params) => new() { Text = $"()=>{name.ToLowerCamelCase()}({string.Join(',', @params.Select(i => i.ToString()))})" };
-#endif
 		public static Comment TrueCameraMove(int roomId, RDPointN p, float animationDuration, EaseType ease) => FunctionCalling("TrueCameraMove", (byte)roomId, p.X, p.Y, animationDuration, ease);
 		public static Comment Create(Particle particleName, RDPointN p) => FunctionCalling("Create", $"CustomParticles/{particleName}", p.X, p.Y);
 		public static Comment Shockwave(ShockWaveType type, float value) => FunctionCalling("Shockwave", type, value);

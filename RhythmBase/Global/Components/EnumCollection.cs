@@ -16,9 +16,7 @@ namespace RhythmBase.Global.Components
 	/// The collection does not allow duplicate values and does not preserve insertion order. Thread safety is not
 	/// guaranteed; external synchronization is required for concurrent access.</remarks>
 	/// <typeparam name="TEnum">The enum type to be stored in the collection. Must be a value type that derives from Enum.</typeparam>
-#if NET8_0_OR_GREATER
 	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildEnumCollection))]
-#endif
 	public struct EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, Enum
 	{
 		private const int bw = sizeof(ulong) * 8;

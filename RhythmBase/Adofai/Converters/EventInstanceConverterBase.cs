@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Events;
+using RhythmBase.Adofai.Events;
 using RhythmBase.Global.Extensions;
 using System.Text;
 using System.Text.Json;
@@ -36,11 +36,7 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 					Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.Type} not found.");
 #endif
 				value[
-#if NET8_0_OR_GREATER
 					Encoding.UTF8.GetString(propertyName)
-#elif NETSTANDARD2_0_OR_GREATER
-						Encoding.UTF8.GetString(propertyName.ToArray())
-#endif
 					] = JsonElement.ParseValue(ref reader);
 			}
 		}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
@@ -43,28 +43,7 @@ namespace RhythmBase.Global.Components
 		/// <returns>
 		/// <c>true</c> if the resolved file path exists on disk; otherwise, <c>false</c>.
 		/// </returns>
-		public readonly bool IsExist(string parentFile) =>
-#if NETCOREAPP2_1_OR_GREATER
-				System.IO.File.Exists(System.IO.Path.GetFullPath(Path, parentFile));
-#else
-			System.IO.File.Exists(GetFullPath(Path, parentFile));
-
-		/// <summary>
-		/// Resolves a possibly relative path to an absolute path using a provided base path.
-		/// </summary>
-		/// <param name="path">The path to resolve. May be absolute or relative.</param>
-		/// <param name="basePath">The base file path used to resolve relative paths.</param>
-		/// <returns>
-		/// The absolute path for <paramref name="path"/>. If <paramref name="path"/> is already rooted, it is returned
-		/// unchanged; otherwise it is combined with the directory of <paramref name="basePath"/> and normalized.
-		/// </returns>
-		private static string GetFullPath(string path, string basePath)
-		{
-			if (System.IO.Path.IsPathRooted(path))
-				return path;
-			return System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(basePath) ?? "", path));
-		}
-#endif
+		public readonly bool IsExist(string parentFile) => System.IO.File.Exists(System.IO.Path.GetFullPath(Path, parentFile));
 
 		/// <summary>
 		/// Gets a value indicating whether this file reference has no path.
@@ -115,10 +94,6 @@ namespace RhythmBase.Global.Components
 		///<inheritdoc/>
 		public bool Equals(FileReference x, FileReference y) => x.Path == y.Path;
 		///<inheritdoc/>
-		public int GetHashCode(
-#if NET7_0_OR_GREATER
-				[DisallowNull]
-#endif
-		FileReference obj) => obj.Path.GetHashCode();
+		public int GetHashCode([NotNull] FileReference obj) => obj.Path.GetHashCode();
 	}
 }

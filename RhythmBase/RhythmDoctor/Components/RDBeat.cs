@@ -17,9 +17,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Whether this beat cannot be calculated.
 		/// </summary>
 		internal static bool MustFromCache { get; } = false;
-#if NET7_0_OR_GREATER
 		[MemberNotNullWhen(false, nameof(_calculator))]
-#endif
 		public readonly bool IsEmpty => _calculator == null || !_isBeatLoaded && !_isBarBeatLoaded && !_isTimeSpanLoaded;
 		/// <summary>
 		/// The total number of beats from this moment to the beginning of the level.
@@ -247,9 +245,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// <param name="b">Another beat.</param>
 		/// <param name="throw">If true, an exception will be thrown when two beats do not come from the same level.</param>
 		/// <returns></returns>
-#if NET7_0_OR_GREATER
 		[MemberNotNullWhen(true)]
-#endif
 		public readonly bool FromSameLevel(RDBeat b, bool @throw = false) => FromSameLevel(this, b, @throw);
 		/// <summary>
 		/// Determine if two beats are from the same level.
@@ -276,9 +272,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// 校验这个实例是否缺少在转换单位时必需的参数并抛出异常
 		/// </summary>
 		/// <exception cref="InvalidRDBeatException"></exception>
-#if NET8_0
 		[MemberNotNull(nameof(_calculator))]
-#endif
 		internal readonly void IfNullThrowException()
 		{
 			if (IsEmpty)
@@ -516,11 +510,7 @@ namespace RhythmBase.RhythmDoctor.Components
 			return ToString;
 		}
 		///  <inheritdoc/>
-#if NETSTANDARD
-		public readonly override bool Equals(object? obj) => obj is RDBeat e && Equals(e);
-#else
 		public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is RDBeat e && Equals(e);
-#endif
 		///  <inheritdoc/>
 		public readonly bool Equals(RDBeat other) => this == other;
 		///  <inheritdoc/>

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Text.Json;
@@ -94,11 +94,7 @@ public abstract partial record class MacroEvent : BaseEvent, IAudioFileEvent, II
 			ActionTag = $"{RhythmBaseMacroEventHeader}{EventTypeUtils.MacroTypes.IndexOf(GetType()):X8}{DataId:X8}",
 		};
 	}
-#if NETSTANDARD
-	internal static bool TryGetTypeData(Comment comment, out string[]? types, out JsonElement[]? data)
-#else
 		internal static bool TryGetTypeData(Comment comment, [NotNullWhen(true)] out string[]? types, [NotNullWhen(true)] out JsonElement[]? data)
-#endif
 	{
 		if (string.IsNullOrEmpty(comment.Text))
 		{
@@ -117,26 +113,16 @@ public abstract partial record class MacroEvent : BaseEvent, IAudioFileEvent, II
 		List<JsonElement> datal = [];
 		for (int i = 2; i < lines.Length; i++)
 		{
-#if NETSTANDARD
-			if (lines[i].StartsWith("@"))
-				typel.Add(lines[i].Substring(1));
-			else if (lines[i].StartsWith("{"))
-#else
 				if (lines[i].StartsWith('@'))
 					typel.Add(lines[i][1..]);
 				else if (lines[i].StartsWith('{'))
-#endif
 				datal.Add(JsonSerializer.Deserialize<JsonElement>(lines[i]));
 		}
 		types = [.. typel];
 		data = [.. datal];
 		return true;
 	}
-#if NETSTANDARD
-	internal static bool TryParse(TagAction tagAction, string[] types, out MacroEvent? result)
-#else
 		internal static bool TryParse(TagAction tagAction, string[] types, [NotNullWhen(true)] out MacroEvent? result)
-#endif
 	{
 		if (!TryMatch(tagAction))
 		{
@@ -144,13 +130,8 @@ public abstract partial record class MacroEvent : BaseEvent, IAudioFileEvent, II
 			return false;
 		}
 		string info = tagAction.ActionTag.Substring(RhythmBaseMacroEventHeader.Length, 16);
-#if NETSTANDARD
-		int typeIndex = Convert.ToInt32(info.Substring(0, 8), 16);
-		int id = Convert.ToInt32(info.Substring(8), 16);
-#else
 			int typeIndex = Convert.ToInt32(info[..8], 16);
 			int id = Convert.ToInt32(info[8..], 16);
-#endif
 		if (typeIndex < 0 || typeIndex >= types.Length)
 		{
 			result = null;
@@ -177,15 +158,6 @@ public abstract partial record class MacroEvent : BaseEvent, IAudioFileEvent, II
 		{
 			if (tag.StartsWith(RhythmBaseMacroEventHeader))
 			{
-#if NETSTANDARD
-				tag = tag.Substring(RhythmBaseMacroEventHeader.Length);
-				type = Convert.ToInt32(tag.Substring(0, 8), 16);
-				id = Convert.ToInt32(tag.Substring(8, 8), 16);
-				if (tag.Length > 17 && tag[16] == '_')
-					tagsTag = tag.Substring(17);
-				else
-					tagsTag = "";
-#else
 					tag = tag[RhythmBaseMacroEventHeader.Length..];
 					type = Convert.ToInt32(tag[..8], 16);
 					id = Convert.ToInt32(tag[8..16], 16);
@@ -193,7 +165,6 @@ public abstract partial record class MacroEvent : BaseEvent, IAudioFileEvent, II
 						tagsTag = tag[17..];
 					else
 						tagsTag = "";
-#endif
 				return true;
 			}
 		}

@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Events;
+using RhythmBase.Adofai.Events;
 using System.Diagnostics.CodeAnalysis;
 namespace RhythmBase.Adofai.Components
 {
@@ -47,11 +47,7 @@ namespace RhythmBase.Adofai.Components
 			{
 				float v = (float)(((Previous?.Angle ?? 0) - _angle) / 360f) - 0.5f;
 				float tick;
-#if NETSTANDARD
-				tick = (1 + v + (float)Math.Floor(-v)) * 2;
-#else
 				tick = (1 + v + float.Floor(-v)) * 2;
-#endif
 				return tick;
 			}
 		}
@@ -107,9 +103,7 @@ namespace RhythmBase.Adofai.Components
 		/// Gets or sets the next tile in the sequence.  
 		/// This property is set internally and represents the tile that comes after the current tile.  
 		/// </summary>  
-#if !NETSTANDARD
 		[NotNull]
-#endif
 		public Tile? Next { get; set; }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Tile"/> class with a specified mid-spin state and a collection of tile events.

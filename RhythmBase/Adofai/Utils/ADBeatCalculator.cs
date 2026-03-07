@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 namespace RhythmBase.Adofai.Utils
 {
@@ -50,11 +50,7 @@ namespace RhythmBase.Adofai.Utils
 				}
 				else
 				{
-#if NETSTANDARD
-					if (Math.Abs(lastAngle - angle) < GlobalSettings.Tolerance)
-#else
 					if (float.Abs(angle - lastAngle) - 180f is > -GlobalSettings.Tolerance and < GlobalSettings.Tolerance)
-#endif
 					{
 						// hearpin
 
@@ -68,11 +64,7 @@ namespace RhythmBase.Adofai.Utils
 							Planets.ThreePlanets => 0.5f + (float)((lastAngle - angle) / 360f) - (1f / 6f),
 							_ => throw new NotImplementedException(),
 						};
-#if NETSTANDARD
-						tick = (1 + v + (float)Math.Floor(-v)) * 2;
-#else
 						tick = (1 + v + float.Floor(-v)) * 2;
-#endif
 						if (s._flip)
 						{
 							tick = 2 - tick;

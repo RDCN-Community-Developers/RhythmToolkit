@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extensions;
 using System.Collections;
 using System.Diagnostics;
@@ -9,9 +9,7 @@ namespace RhythmBase.Global.Components.Vector;
 /// <summary>
 /// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float" />
 /// </summary>
-#if NET8_0_OR_GREATER
 [CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDPoint))]
-#endif
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public struct RDPoint(float? x, float? y) : IRDVector<RDPoint, RDSize, float?>, IRDVector<RDPoint, RDSizeI, float?>
 {
@@ -122,11 +120,7 @@ public struct RDPoint(float? x, float? y) : IRDVector<RDPoint, RDSize, float?>, 
 	/// <returns></returns>
 	public readonly RDPoint Rotate(RDPointN pivot, float angle) => (this - new RDSizeN(pivot)).Rotate(angle) + new RDSizeN(pivot);
 	/// <inheritdoc/>
-#if NETSTANDARD
-	public override readonly bool Equals(object? obj) => obj is RDPoint e && Equals(e);
-#else
 	public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDPoint e && Equals(e);
-#endif
 	/// <inheritdoc/>
 	public override readonly int GetHashCode()
 	{

@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Events;
+using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Utils;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -247,11 +247,7 @@ namespace RhythmBase.Adofai.Components
 		/// <inheritdoc/>
 		public override readonly bool Equals(object? obj) => obj is ADBeat b && Equals((ADBeat)obj);
 		/// <inheritdoc/>
-#if NETSTANDARD
-		public readonly bool Equals(ADBeat other) => this == other;
-#else
 		public readonly bool Equals([NotNull] ADBeat other) => this == other;
-#endif
 		/// <inheritdoc/>
 #if NETSTANDARD
 		public override readonly int GetHashCode()

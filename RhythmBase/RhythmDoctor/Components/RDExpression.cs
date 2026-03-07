@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 
@@ -66,11 +66,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Initializes a new instance of the <see cref="RDExpression"/> struct with a string value.
 		/// </summary>
 		/// <param name="value">The string value of the expression.</param>
-#if NETSTANDARD
-		public RDExpression(string value)
-#else
 		public RDExpression([AllowNull] string value)
-#endif
 		{
 			IsNumeric = float.TryParse(value, out float numeric);
 			if (IsNumeric)
@@ -79,11 +75,7 @@ namespace RhythmBase.RhythmDoctor.Components
 				_exp = value ?? "";
 		}
 		/// <inheritdoc/>
-#if NETSTANDARD
-		public override readonly bool Equals(object? obj) => obj is RDExpression e && Equals(e);
-#else
 		public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is RDExpression e && Equals(e);
-#endif
 		/// <inheritdoc/>
 		public readonly bool Equals(RDExpression other) => IsNumeric == other.IsNumeric && NumericValue == other.NumericValue || _exp == other._exp;
 		/// <inheritdoc/>

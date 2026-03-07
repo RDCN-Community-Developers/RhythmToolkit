@@ -121,9 +121,5 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// Returns a string that represents the current object.  
 	/// </summary>  
 	/// <returns>A string that represents the current object.</returns>  
-#if NETSTANDARD
-	public override string ToString() => base.ToString() + $" {Color},{string.Join(",", Images.Select(i => i.ToString()))}";
-#else
 	public override string ToString() => base.ToString() + $" {Color},{string.Join(',', Images.Select(i => i.ToString()))}";
-#endif
 }

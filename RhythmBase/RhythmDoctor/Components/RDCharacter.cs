@@ -12,9 +12,7 @@ public readonly struct RDCharacter : IEquatable<RDCharacter>
 	/// <summary>
 	/// Whether  in-game character or customized character(sprite).
 	/// </summary>
-#if NET7_0_OR_GREATER
 	[MemberNotNull(nameof(Character))]
-#endif
 	public bool IsCustom => Character is RDCharacters.Custom;
 	/// <summary>
 	/// In-game character.

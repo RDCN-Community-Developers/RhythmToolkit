@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 namespace RhythmBase.RhythmDoctor.Extensions
 {
 	/// <summary>
@@ -25,7 +25,8 @@ namespace RhythmBase.RhythmDoctor.Extensions
 //			Dictionary<string, ITween> values = [];
 //			foreach (var property in properties)
 //			{
-//#if NET7_0_OR_GREATER					
+//
+//NET7_0_OR_GREATER					
 //				if (property.PropertyType.IsAssignableFrom(typeof(RDExpression)))
 //				{
 //					values[property.Name] =	TweenCurveFloat.CreateEaseProperty(0, [.. obj], property);
