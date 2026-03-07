@@ -29,15 +29,15 @@ You can see examples [here](/RhythmBase.Test/Tutorial.cs).
     - [只能用宽判的屑 | kuanpan](https://space.bilibili.com/1928620300)
     - [mfgujhgh](https://space.bilibili.com/1369651)
 
-| Project             | Description                                         | Status           | Link                                                                       | 
-|---------------------|-----------------------------------------------------|------------------|:---------------------------------------------------------------------------|
-| RhythmBase          | Core library for level editing proxy.                     | Maintained       | **You are here**                                                           |
-| RhythmBase.View     | Draw all Rhythm Doctor events with SkiaSharp and TypeScript DOM versions. | Under Development | [Go there](https://github.com/OLDRedstone/RhythmBase.View)                 |
-| RhythmBase.Addition | Extensions for the core library.                              | *Not disclosed*  | -                                                                          |
-| RhythmBase.Interact | Interact with game level editors.                         | *Not disclosed*  | -                                                                          |
-| RhythmBase.Hospital | Level review, hints, and assistance features.                         | *Not disclosed*  | -                                                                          |
-| RhythmBase.Lite     | Lightweight version of RhythmBase.                  | Under Development | [Go there](https://github.com/RDCN-Community-Developers/RhythmToolkitLite) |
-| RhythmBase.Control  | UI control library for level editing proxy.                                    | *Not disclosed*  | -                                                                          |
+| Project             | Description                                                          | Status            | Link                                                                         | 
+|---------------------|----------------------------------------------------------------------|-------------------|:-----------------------------------------------------------------------------|
+| RhythmBase          | Core library for level editing proxy.                                | Maintained        | **You are here**                                                             |
+| RhythmBase.View     | Draw all Rhythm Doctor event icons (include TypeScript DOM version). | Under Development | [Go there](https://github.com/OLDRedstone/RhythmBase.View)                   |
+| RhythmBase.Addition | Extensions for the core library.                                     | Under Development | [Go there](https://github.com/RDCN-Community-Developers/RhythmBase.Addition) |
+| RhythmBase.Interact | Interact with game level editors.                                    | *Not disclosed*   | -                                                                            |
+| RhythmBase.Hospital | Level review, hints, and assistance features.                        | *Not disclosed*   | -                                                                            |
+| RhythmBase.Lite     | Lightweight version of RhythmBase.                                   | Under Development | [Go there](https://github.com/RDCN-Community-Developers/RhythmToolkitLite)   |
+| RhythmBase.Control  | UI control library for level editing proxy.                          | *Not disclosed*   | -                                                                            |
 
 ```mermaid
 flowchart RL

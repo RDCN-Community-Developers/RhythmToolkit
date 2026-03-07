@@ -29,15 +29,15 @@
     - [只能用宽判的屑 | kuanpan](https://space.bilibili.com/1928620300)
     - [mfgujhgh](https://space.bilibili.com/1369651)
 
-| 项目                | 描述                                      | 状态       | 链接                                                                        | 
-|--------------------|------------------------------------------|-----------|:---------------------------------------------------------------------------|
-| RhythmBase          | 关卡编辑代理核心库。                            | 维护中     | **您在这里**                                                                |
-| RhythmBase.View     | 绘制所有节奏医生事件。包含 SkiaSharp 和 TypeScript DOM 两个版本。      | 开发中     | [前往](https://github.com/OLDRedstone/RhythmBase.View)                      |
-| RhythmBase.Addition | 为核心库扩展功能。                              | *未公开*  | -                                                                          |
-| RhythmBase.Interact | 与游戏关卡编辑器交互。                          | *未公开*  | -                                                                          |
-| RhythmBase.Hospital | 关卡的审核、提示、辅助等功能。                              | *未公开*  | -                                                                          |
-| RhythmBase.Lite     | RhythmBase 的轻量版本。                    | 开发中     | [前往](https://github.com/RDCN-Community-Developers/RhythmToolkitLite)      |
-| RhythmBase.Control  | 关卡代理 UI 控件库。                                | *未公开*  | -                                                                          |
+| 项目                | 描述                                              | 状态     | 链接                                                                     | 
+|--------------------|----------------------------------------------------|----------|:-------------------------------------------------------------------------|
+| RhythmBase          | 关卡编辑代理核心库。                              | 维护中   | **您在这里**                                                             |
+| RhythmBase.View     | 绘制所有节奏医生事件。（包括 TypeScript DOM 版本）| 开发中   | [前往](https://github.com/OLDRedstone/RhythmBase.View)                   |
+| RhythmBase.Addition | 为核心库扩展功能。                                | 开发中   | [前往](https://github.com/RDCN-Community-Developers/RhythmBase.Addition) |
+| RhythmBase.Interact | 与游戏关卡编辑器交互。                            | *未公开* | -                                                                        |
+| RhythmBase.Hospital | 关卡的审核、提示、辅助等功能。                    | *未公开* | -                                                                        |
+| RhythmBase.Lite     | RhythmBase 的轻量版本。                           | 开发中   | [前往](https://github.com/RDCN-Community-Developers/RhythmToolkitLite)   |
+| RhythmBase.Control  | 关卡代理 UI 控件库。                              | *未公开* | -                                                                        |
 
 ```mermaid
 flowchart RL
