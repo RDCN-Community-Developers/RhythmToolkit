@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.RichText;
+using RhythmBase.Global.Components.RichText;
 using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Components;
 
@@ -123,14 +123,18 @@ public class Settings
 	/// Mods enabled for the level.  
 	/// </summary>  
 	public List<string> Mods { get; set; } = [];
-	/// <summary>
-	/// Represents a collection of additional data as key-value pairs, where the keys are strings and the values are JSON
-	/// elements.
-	/// </summary>
-	/// <remarks>This dictionary can be used to store extra information that is not explicitly defined in the
-	/// primary data model. The keys must be unique, and the values are represented as <see
-	/// cref="System.Text.Json.JsonElement"/> objects, allowing for flexible data storage.</remarks>
-	public Dictionary<string, JsonElement> ExtraData = [];
+	public JsonElement this[string propertyName]
+	{
+		get => _extraData.TryGetValue(propertyName, out JsonElement value) ? value : default;
+		set
+		{
+			if (value.ValueKind == JsonValueKind.Undefined)
+				_extraData.Remove(propertyName);
+			else
+				_extraData[propertyName] = value;
+		}
+	}
+	internal Dictionary<string, JsonElement> _extraData = [];
 	internal IEnumerable<FileReference> GetAllFileReferences()
 	{
 		yield return ArtistPermission;

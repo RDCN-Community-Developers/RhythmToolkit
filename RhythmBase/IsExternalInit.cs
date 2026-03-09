@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 #if NETSTANDARD2_0
+#pragma warning disable IDE0130
 namespace System
 {
 	internal readonly struct Index : IEquatable<Index>
@@ -93,7 +94,11 @@ namespace System
 				{
 					endIndex = e.IndexOf(separator, startIndex);
 					if (endIndex == -1)
-						throw new ArgumentException("Not enough separators in the string.", nameof(separator));
+					{
+						Array.Resize(ref result, i + 1);
+						result[i] = e[startIndex..];
+						return result;
+					}
 					result[i] = e[startIndex..endIndex];
 					startIndex = endIndex + 1;
 				}

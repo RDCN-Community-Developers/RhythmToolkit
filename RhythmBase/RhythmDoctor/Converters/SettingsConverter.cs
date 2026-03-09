@@ -1,8 +1,9 @@
-﻿using RhythmBase.Global.Components.RichText;
+using RhythmBase.Global.Components.RichText;
 using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static System.Text.EncodingExtensions;
 
 namespace RhythmBase.RhythmDoctor.Converters
 {
@@ -147,7 +148,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 					settings.Mods = mods;
 				}
 				else
-					settings.ExtraData[propertyName.ToString()] = JsonDocument.ParseValue(ref reader).RootElement;
+					settings._extraData[System.Text.Encoding.UTF8.GetString(propertyName)] = JsonElement.ParseValue(ref reader);
 			}
 			throw new JsonException("Unexpected end of JSON.");
 		}
@@ -224,9 +225,9 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 
 			// ExtraData
-			if (value.ExtraData != null)
+			if (value._extraData != null)
 			{
-				foreach (KeyValuePair<string, JsonElement> kv in value.ExtraData)
+				foreach (KeyValuePair<string, JsonElement> kv in value._extraData)
 				{
 					writer.WritePropertyName(kv.Key);
 					kv.Value.WriteTo(writer);
