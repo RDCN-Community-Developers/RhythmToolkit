@@ -5,7 +5,7 @@ using RhythmBase.RhythmDoctor.Converters;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents a floating text event in a room.
+/// Represents a event that displays floating text on the screen, which can be used for various purposes such as showing lyrics, dialogue, or other textual information during gameplay.
 /// </summary>
 [RDJsonObjectSerializable]
 public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
@@ -29,6 +29,9 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);
 	/// <summary>
 	/// Gets or sets the fade out rate of the text.
+	/// <remark>
+	/// Must be a non-negative value.
+	/// </remark>
 	/// </summary>
 	[RDJsonAlias("fadeOutRate")]
 	public float Duration { get; set; }
@@ -38,10 +41,16 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	public PaletteColorWithAlpha Color { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets the angle of the text.
+	/// <remark>
+	/// Unit is degree.
+	/// </remark>
 	/// </summary>
 	public float Angle { get; set; } = 0;
 	/// <summary>
 	/// Gets or sets the size of the text.
+	/// <remark>
+	/// Must be a non-negative value.
+	/// </remark>
 	/// </summary>
 	public int Size { get; set; } = 8;
 	/// <summary>
@@ -49,11 +58,10 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	/// </summary>
 	public PaletteColorWithAlpha OutlineColor { get; set; } = RDColor.Black;
 	/// <summary>
-	/// Gets the ID of the event.
+	/// Gets the unique identifier for the entity.
 	/// </summary>
 	[RDJsonAlias("id")]
-	internal int _id => _beat.BaseLevel?._floatingTexts.IndexOf(this) ?? -1;
-	public int Id => _id;
+	public int Id => _beat.BaseLevel?._floatingTexts.IndexOf(this) ?? -1;
 	/// <summary>
 	/// Gets or sets the position of the text.
 	/// </summary>

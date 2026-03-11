@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -19,9 +19,12 @@ public record class TextExplosion : BaseEvent, IRoomEvent, IColorEvent
 	/// </summary>
 	public string Text { get; set; } = "";
 	/// <summary>
-	/// Gets or sets the speed value. The value is constrained to be at least 1.0.
+	/// Gets or sets the speed value.
 	/// </summary>
-	public float Speed { get; set => field = value > 1f ? value : 1f; } = 100f;
+	/// <remarks>
+	/// Must be a value greater than 1. A higher value means a faster explosion.
+	/// </remarks>
+	public float Speed { get; set => field = value > 1f ? value : 1f; }
 	/// <summary>
 	/// Gets or sets the direction of the text explosion.
 	/// </summary>

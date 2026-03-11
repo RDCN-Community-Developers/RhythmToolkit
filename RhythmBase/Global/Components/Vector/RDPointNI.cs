@@ -1,14 +1,10 @@
-using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Components.Vector;
 
 /// <summary>
 /// A point whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="integer" />
 /// </summary>
-[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDPointNI))]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public struct RDPointNI(int x, int y) : IRDVector<RDPointNI, RDSizeNI, int>
 {
@@ -190,10 +186,17 @@ public struct RDPointNI(int x, int y) : IRDVector<RDPointNI, RDSizeNI, int>
 	/// <returns>An <see cref="RDSizeNI"/> with the same dimensions.</returns>
 	public static explicit operator RDSizeNI(RDPointNI p) => new(p.X, p.Y);
 	private readonly string GetDebuggerDisplay() => ToString();
-	public IEnumerator<int> GetEnumerator()
-	{
-		yield return X;
-		yield return Y;
-		yield break;
-	}
+	/// <summary>
+	/// Implicitly converts a tuple containing two <see cref="int"/>.
+	/// </summary>
+	/// <remarks>This conversion enables concise and readable initialization of <see cref="RDPointNI"/> instances from tuples,
+	/// allowing for more flexible assignment and construction patterns.</remarks>
+	/// <param name="tuple">A tuple whose elements represent the x and y coordinates as <see cref="int"/>.</param>
+	public static implicit operator RDPointNI((int x, int y) tuple) => new(tuple.x, tuple.y);
+	/// <summary>
+	/// Deconstructs the current instance into its X and Y component values.
+	/// </summary>
+	/// <param name="x">When this method returns, contains the value of the X component of the current instance.</param>
+	/// <param name="y">When this method returns, contains the value of the Y component of the current instance.</param>
+	public readonly void Deconstruct(out int x, out int y) { x = X; y = Y; }
 }

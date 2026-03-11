@@ -13,11 +13,19 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 {
 	///<inheritdoc/>
 	public override EventType Type { get; } = EventType.NewWindowDance;
-	///<inheritdoc/>
+	/// <summary>
+	/// Gets the custom tab associated with this instance.
+	/// </summary>
+	/// <remarks>
+	/// Set <see cref="CustomTab"/> to determine the tab of this event. The default value is Tab.Windows."/>
+	/// </remarks>
 	public override Tab Tab => CustomTab;
 	/// <summary>
 	/// Gets or sets the custom tab associated with this instance.
 	/// </summary>
+	/// <remarks>
+	/// It can only be Tab.Actions or Tab.Windows. This property is used to determine the tab of this event. The default value is Tab.Windows.
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.{nameof(Tab)}.{nameof(Tab.Windows)}")]
 	[RDJsonConverter(typeof(TabsConverter))]
 	[RDJsonAlias("tab")]
@@ -41,6 +49,9 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// <summary>
 	/// Gets or sets the position.
 	/// </summary>
+	/// <remarks>
+	/// Percentage of the screen width and height. (0,0) is the bottom-left corner, (100,100) is the top-right corner.
+	/// </remarks>
 	[Tween]
 	public RDPoint Position { get; set; } = new(50f, 50f);
 	/// <summary>
@@ -145,24 +156,4 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 	public float Duration { get; set; } = 0;
 	///<inheritdoc/>
 	public EaseType Ease { get; set; } = Global.Components.Easing.EaseType.Linear;
-	///<inheritdoc/>
-	public RDRoom Rooms { get; set; } = new RDRoom([0]);
-	private bool AmplitudeIsVector => (Preset is WindowDancePreset.Ellipse && !UseCircle) || Preset is WindowDancePreset.ShakePer;
-	private bool PresetBehaviorIsKeep => SamePresetBehavior is SamePresetBehavior.Keep;
-	private bool AngleIf()
-	{
-		return
-			Preset
-			is WindowDancePreset.Sway
-			or WindowDancePreset.Ellipse ||
-			(Preset is WindowDancePreset.Wrap && SamePresetBehavior is not SamePresetBehavior.Keep);
-		switch (this.Preset)
-		{
-			case WindowDancePreset.Sway:
-			case WindowDancePreset.Ellipse:
-				return true;
-			default:
-				return this.Preset is WindowDancePreset.Wrap && SamePresetBehavior is not SamePresetBehavior.Keep;
-		}
-	}
 }

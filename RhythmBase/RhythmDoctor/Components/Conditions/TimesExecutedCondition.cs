@@ -1,7 +1,7 @@
-﻿namespace RhythmBase.RhythmDoctor.Components.Conditions;
+namespace RhythmBase.RhythmDoctor.Components.Conditions;
 
 /// <summary>
-/// Represents a condition based on the number of times it has been executed.
+/// Represents a condition based on the number of times it can be executed.
 /// </summary>
 public class TimesExecutedCondition : BaseConditional
 {

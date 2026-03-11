@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Events;
 using System.Collections.ObjectModel;
 
 namespace RhythmBase.RhythmDoctor.Utils
@@ -57,9 +57,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 				return new(EventType.MacroEvent);
 			if(typeof(IBaseEvent) == type)
 				type = typeof(BaseEvent);
-			if (_eventType_Enums.TryGetValue(type, out var value))
-				return value;
-			throw new IllegalEventTypeException(type);
+			return _eventType_Enums.TryGetValue(type, out var value) ? value : throw new IllegalEventTypeException(type);
 		}
 		/// <summary>  
 		/// Converts a generic event type to an array of corresponding EventType enumerations.  

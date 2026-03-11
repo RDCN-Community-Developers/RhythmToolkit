@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Converters;
+using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Events;
 using System.Collections.ObjectModel;
 using System.Text.Json;
@@ -9,7 +9,7 @@ namespace RhythmBase.Adofai.Utils
 	/// </summary>
 	public static class Utils
 	{
-		private static JsonSerializerOptions options;
+		private static readonly JsonSerializerOptions options;
 		static Utils()
 		{
 			options = new()
@@ -41,9 +41,9 @@ namespace RhythmBase.Adofai.Utils
 			if (ADETypesToEnum == null)
 			{
 				string name = type.Name;
-				if (Enum.TryParse(name, out EventType result))
-					return result;
-				throw new IllegalEventTypeException(type, "Unable to find a matching EventType.");
+				return Enum.TryParse(name, out EventType result)
+					? result
+					: throw new IllegalEventTypeException(type, "Unable to find a matching EventType.");
 			}
 			EventType ADConvertToEnum;
 			try

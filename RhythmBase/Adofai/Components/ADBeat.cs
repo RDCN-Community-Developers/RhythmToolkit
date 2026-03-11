@@ -181,7 +181,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		public void ResetCache()
 		{
-			float i = BeatOnly;
+			_ = BeatOnly;
 			_isTimeSpanLoaded = false;
 		}
 		internal void ResetBPM()
@@ -245,7 +245,7 @@ namespace RhythmBase.Adofai.Components
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"[{BeatOnly}]";
 		/// <inheritdoc/>
-		public override readonly bool Equals(object? obj) => obj is ADBeat b && Equals((ADBeat)obj);
+		public override readonly bool Equals(object? obj) => obj is ADBeat && Equals((ADBeat)obj);
 		/// <inheritdoc/>
 		public readonly bool Equals([NotNull] ADBeat other) => this == other;
 		/// <inheritdoc/>

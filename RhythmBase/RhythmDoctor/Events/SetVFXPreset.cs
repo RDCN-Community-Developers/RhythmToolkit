@@ -1,7 +1,6 @@
 using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Events;
 namespace RhythmBase.RhythmDoctor.Events;
 
 
@@ -25,12 +24,12 @@ public record class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEven
 	/// Gets or sets the threshold value for the VFX.
 	/// </summary>
 	[Tween]
-	public float Threshold { get; set; } = 100f;
+	public float Threshold { get; set; }
 	/// <summary>
 	/// Gets or sets the intensity of the VFX.
 	/// </summary>
 	[Tween]
-	public float Intensity { get; set; } = 0f;
+	public float Intensity { get; set; }
 	/// <summary>
 	/// Gets or sets the color of the VFX.
 	/// </summary>
@@ -55,28 +54,4 @@ public record class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEven
 	public override Tab Tab => Tab.Actions;
 	///<inheritdoc/>
 	public override string ToString() => $"{base.ToString()} {Preset}";
-	internal static readonly ReadOnlyEnumCollection<VfxPreset> EaseVfxs = new(
-		VfxPreset.HueShift,
-		VfxPreset.Brightness,
-		VfxPreset.Contrast,
-		VfxPreset.Saturation,
-		VfxPreset.Rain,
-		VfxPreset.Bloom,
-		VfxPreset.TileN,
-		VfxPreset.CustomScreenScroll,
-		VfxPreset.JPEG,
-		VfxPreset.Mosaic,
-		VfxPreset.ScreenWaves,
-		VfxPreset.Grain,
-		VfxPreset.Blizzard,
-		VfxPreset.Drawing,
-		VfxPreset.Aberration,
-		VfxPreset.Blur,
-		VfxPreset.RadialBlur,
-		VfxPreset.Dots,
-		VfxPreset.Tutorial,
-		VfxPreset.Fisheye,
-		VfxPreset.HeatDistortion,
-		VfxPreset.VHSRewind
-		);
 }

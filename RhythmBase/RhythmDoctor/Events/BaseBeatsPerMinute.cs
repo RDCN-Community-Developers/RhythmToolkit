@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
@@ -14,7 +14,7 @@ public abstract record class BaseBeatsPerMinute : BaseEvent
 		set
 		{
 			base.Beat = value;
-			var calc = base.Beat._calculator;
+			_ = base.Beat._calculator;
 			ResetTimeLine();
 		}
 	}

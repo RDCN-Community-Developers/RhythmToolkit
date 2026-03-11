@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
@@ -12,10 +12,14 @@ public record class SetSpeed : BaseEvent, IEaseEvent
 	/// <summary>
 	/// Gets or sets the speed for the event.
 	/// </summary>
+	/// <remarks>
+	/// Must be a non-negative value.
+	/// 1 is the original speed, less than 1 is slower, and greater than 1 is faster.
+	/// </remarks>
 	[Tween]
-	public float Speed { get; set; } = 1f;
+	public float Speed { get; set; }
 	///<inheritdoc/>
-	public float Duration { get; set; } = 0;
+	public float Duration { get; set; }
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetSpeed;
 	///<inheritdoc/>

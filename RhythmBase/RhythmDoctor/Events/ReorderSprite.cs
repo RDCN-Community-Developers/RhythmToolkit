@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -13,7 +13,6 @@ public record class ReorderSprite : BaseDecorationAction
 	public override EventType Type => EventType.ReorderSprite;
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Decorations;
-
 	/// <summary>
 	/// Gets or sets the new room to which the sprite will be moved.
 	/// </summary>
@@ -23,6 +22,9 @@ public record class ReorderSprite : BaseDecorationAction
 	/// <summary>
 	/// Gets or sets the depth level of the object.
 	/// </summary>
+	/// <remarks>
+	/// Leave it null to keep the original depth.
+	/// </remarks>
 	public int? Depth { get; set; }
 	/// <summary>
 	/// Gets or sets the type of layer used for sorting or rendering purposes.

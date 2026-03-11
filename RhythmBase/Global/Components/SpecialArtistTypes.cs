@@ -1,22 +1,21 @@
-﻿namespace RhythmBase.Global.Components
+namespace RhythmBase.Global.Components;
+
+/// <summary>
+/// Enum representing special types of artists.
+/// </summary>
+[RDJsonEnumSerializable]
+public enum SpecialArtistTypes
 {
 	/// <summary>
-	/// Enum representing special types of artists.
+	/// No special artist type.
 	/// </summary>
-	[RDJsonEnumSerializable]
-	public enum SpecialArtistTypes
-	{
-		/// <summary>
-		/// No special artist type.
-		/// </summary>
-		None,
-		/// <summary>
-		/// The author is also the artist.
-		/// </summary>
-		AuthorIsArtist,
-		/// <summary>
-		/// The artist's work is under a public license.
-		/// </summary>
-		PublicLicense
-	}
+	None,
+	/// <summary>
+	/// The author is also the artist.
+	/// </summary>
+	AuthorIsArtist,
+	/// <summary>
+	/// The artist's work is under a public license.
+	/// </summary>
+	PublicLicense
 }

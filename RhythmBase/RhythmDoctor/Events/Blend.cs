@@ -1,7 +1,7 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>  
-/// Represents a blend decoration action in the rhythm base.  
+/// Represents a blend decoration action.  
 /// </summary>  
 [RDJsonObjectSerializable]
 public record class Blend : BaseDecorationAction

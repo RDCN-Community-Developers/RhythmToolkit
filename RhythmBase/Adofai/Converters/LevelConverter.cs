@@ -7,8 +7,8 @@ namespace RhythmBase.Adofai.Converters
 {
 	internal class LevelConverter : JsonConverter<ADLevel>
 	{
-		private static BaseEventConverter baseEventConverter = new();
-		private static SettingsConverter settingsConverter = new();
+		private static readonly BaseEventConverter baseEventConverter = new();
+		private static readonly SettingsConverter settingsConverter = new();
 		internal string? Filepath { get; set; }
 		internal LevelReadSettings ReadSettings { get; set; } = new();
 		internal LevelWriteSettings WriteSettings { get; set; } = new();
@@ -53,11 +53,11 @@ namespace RhythmBase.Adofai.Converters
 				{
 					reader.Read();
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
-					if (level.Settings.Version < GlobalSettings.MinimumSupportedVersionAdofai)
+					if (level.Settings.Version < Global.Constants.Constants.MinimumSupportedVersionAdofai)
 #if DEBUG
 						Console.WriteLine($"Current version {level.Settings.Version} is too low.");
 #else
-						throw new VersionTooLowException(GlobalSettings.MinimumSupportedVersionAdofai);
+						throw new VersionTooLowException(Global.Constants.Constants.MinimumSupportedVersionAdofai);
 #endif
 				}
 				else if (reader.ValueSpan.SequenceEqual("actions"u8))

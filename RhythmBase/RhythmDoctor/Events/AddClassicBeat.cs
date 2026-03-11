@@ -1,5 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extensions;
 using System.Diagnostics;
 namespace RhythmBase.RhythmDoctor.Events;
@@ -13,20 +12,32 @@ public record class AddClassicBeat : BaseBeat
 {
 	/// <summary>
 	/// Gets or sets the tick value.
+	/// <remark>
+	/// Must be non-negative value.
+	/// </remark>
 	/// </summary>
 	public float Tick { get; set; } = 1f;
 	/// <summary>
 	/// Gets or sets the swing value.
+	/// <remark>
+	/// Must be value between 0 and 2, inclusive. 0 and 1 are considered as no swing.   
+	/// </remark>
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Swing)} is not 1f and not 0f")]
 	public float Swing { get; set; }
 	/// <summary>
 	/// Gets or sets the hold value.
+	/// <remark>
+	/// Must be non-negative value. 0 is considered as no hold.
+	/// </remark>
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Hold)} != 0f")]
 	public float Hold { get; set; }
 	/// <summary>  
 	/// Gets or sets the number of beats in a classic beat pattern.  
+	/// <remark>
+	/// Must be value between 1 and 7, inclusive. 7 is considered as no change to the beat pattern.
+	/// </remark>
 	/// </summary>   
 	[RDJsonCondition($"$&.{nameof(Length)} != 7")]
 	public int Length { get; set; } = 7;
@@ -37,6 +48,9 @@ public record class AddClassicBeat : BaseBeat
 	public RDAudio? Sound { get; set; } = null;
 	/// <summary>
 	/// Gets or sets the classic beat pattern.
+	/// <remark>
+	/// Active only when Hold is not 0. 
+	/// </remark>
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(Hold)} != 0f &&

@@ -17,11 +17,16 @@ public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 	/// <summary>
 	/// Gets or sets the visual beat multiplier.
 	/// </summary>
-	/// <exception cref="OverflowException">Thrown when the value is less than 1.</exception>
+	/// <remarks>
+	/// Must be a value greater than 1.
+	/// </remarks>
 	public float VisualBeatMultiplier { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets the number of crotchets per bar.
 	/// </summary>
+	/// <remarks>
+	/// Must be a value greater than 1.
+	/// </remarks>
 	public int CrotchetsPerBar
 	{
 		get => _crotchetsPerBar + 1;
@@ -38,8 +43,5 @@ public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 	/// Returns a string that represents the current object.
 	/// </summary>
 	public override string ToString() => base.ToString() + $" CPB:{_crotchetsPerBar + 1}";
-	/// <summary>
-	/// The number of crotchets per bar.
-	/// </summary>
-	protected internal int _crotchetsPerBar = 7;
+	internal int _crotchetsPerBar = 7;
 }

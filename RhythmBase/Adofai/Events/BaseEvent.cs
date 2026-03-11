@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace RhythmBase.Adofai.Events
 {
@@ -27,9 +27,7 @@ namespace RhythmBase.Adofai.Events
 		{
 			get
 			{
-				if (_extraData.ContainsKey(key))
-					return _extraData[key];
-				return new JsonElement();
+				return _extraData.ContainsKey(key) ? _extraData[key] : new JsonElement();
 			}
 			set
 			{

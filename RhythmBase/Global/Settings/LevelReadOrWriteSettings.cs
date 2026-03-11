@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 namespace RhythmBase.Global.Settings;
 
 /// <summary>
@@ -134,7 +134,14 @@ public class LevelWriteSettings
 	/// Defaults to <see langword="false" />.
 	/// </summary>
 	public bool LoadAssets { get; set; } = false;
-	public bool UseLegacyFormat { get; set;  } = false;
+	/// <summary>
+	/// Gets or sets a value indicating whether to enable unsafe relaxed JSON escaping during serialization.
+	/// </summary>
+	/// <remarks>When set to <see langword="true"/>, this property allows certain characters in JSON strings to be
+	/// serialized without escaping, which may improve readability or compatibility with some consumers. However, enabling
+	/// this option can introduce security risks, such as cross-site scripting (XSS) vulnerabilities, if untrusted data is
+	/// serialized. Use with caution and ensure that all data is properly validated and sanitized before
+	/// serialization.</remarks>
 	public bool EnableUnsafeRelaxedJsonEscaping { get; set; } = true;
 	/// <summary>
 	/// Action on inactive items on reads or writes.

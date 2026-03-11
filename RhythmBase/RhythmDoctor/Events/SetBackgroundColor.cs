@@ -18,14 +18,14 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the easing type for the event.
 	/// </summary>
 	[RDJsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)} &&
 		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.ContentMode)}.{nameof(ContentMode.Tiled)}
 		""")]
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	/// <summary>
 	/// Gets or sets the content mode for the event.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)}")]
+	[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)}")]
 	public ContentMode ContentMode { get; set; } = ContentMode.ScaleToFill;
 	/// <summary>
 	/// Gets or sets the filter mode for the event.
@@ -37,8 +37,11 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	[Tween]
 	public PaletteColorWithAlpha Color { get; set; } = RDColor.White;
 	/// <summary>
-	/// Gets or sets the interval for the event.
+	/// Gets or sets the interval beat for the event when the background type is set to image, content mode is set to tiled, and tiling type is set to pulse.
 	/// </summary>
+	/// <remarks>
+	/// Recommended to be a value greater than or equals to 0.01 to avoid potential issues with extremely small values.
+	/// </remarks>
 	[RDJsonCondition($"""
 		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
 		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.ContentMode)}.{nameof(ContentMode.Tiled)} &&

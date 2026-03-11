@@ -1,9 +1,9 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>  
-/// Represents a BassDrop event in the rhythm base.  
+/// Represents a BassDrop event.  
 /// </summary>  
 [RDJsonObjectSerializable]
 public record class BassDrop : BaseEvent, IRoomEvent

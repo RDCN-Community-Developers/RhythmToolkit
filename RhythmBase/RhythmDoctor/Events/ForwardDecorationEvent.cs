@@ -1,5 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Extensions;
+using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -45,7 +44,7 @@ public record class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
 		Active = (!_extraData.TryGetValue("active", out JsonElement activeElement) || activeElement.ValueKind != JsonValueKind.True) && activeElement.ValueKind != JsonValueKind.False || activeElement.GetBoolean();
 		RunTag = (_extraData.TryGetValue("runTag", out JsonElement runTagElement) && runTagElement.ValueKind == JsonValueKind.True || runTagElement.ValueKind == JsonValueKind.False) && runTagElement.GetBoolean();
 		Condition = _extraData.TryGetValue("condition", out JsonElement conditionElement) && conditionElement.ValueKind == JsonValueKind.String ?
-			Condition.Deserialize( conditionElement.GetString() ?? "") : new();
+			Condition.Deserialize(conditionElement.GetString() ?? "") : new();
 		_decoId = _extraData.TryGetValue("target", out JsonElement targetElement) && targetElement.ValueKind == JsonValueKind.String ?
 			targetElement.GetString() ?? "" : "";
 		_extraData.Remove("bar");

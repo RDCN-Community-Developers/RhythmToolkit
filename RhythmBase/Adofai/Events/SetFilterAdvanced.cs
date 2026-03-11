@@ -1,5 +1,4 @@
-﻿using RhythmBase.Adofai.Components.Filters;
-using RhythmBase.Adofai.Converters;
+using RhythmBase.Adofai.Components.Filters;
 using RhythmBase.Global.Components.Easing;
 
 namespace RhythmBase.Adofai.Events;

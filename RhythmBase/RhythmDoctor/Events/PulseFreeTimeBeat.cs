@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
 /// Represents a pulse free time beat event.
@@ -9,12 +9,18 @@ public record class PulseFreeTimeBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets the hold duration.
 	/// </summary>
-	public float Hold { get; set; } = 0;
+	/// <remarks>
+	/// Must be a non-negative value. If it's greater than 0, the pulse will be held for the specified duration in seconds.
+	/// </remarks>
+	public float Hold { get; set; }
 	/// <summary>
 	/// Gets or sets the custom pulse value.
 	/// </summary>
+	/// <remarks>
+	/// Must be an integer between 0 and 6, inclutive. This property is only applicable when the <see cref="Action"/> is set to <see cref="PulseAction.Custom"/>.
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(Action)} is RhythmBase.RhythmDoctor.Events.{nameof(PulseAction)}.{nameof(PulseAction.Custom)}")]
-	public uint CustomPulse { get; set; } = 0;
+	public uint CustomPulse { get; set; }
 	/// <summary>
 	/// Gets or sets the action type.
 	/// </summary>

@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
@@ -20,6 +20,11 @@ public record class SetRoomPerspective : BaseEvent, IEaseEvent
 	/// <summary>  
 	/// Gets or sets the corner positions of the room.  
 	/// </summary>  
+	/// <remarks>
+	/// Percentage of the screen width and height.
+	/// (0,0) is the bottom-left corner, (100,100) is the top-right corner.
+	/// The order of the corners is bottom-left, bottom-right, top-left, top-right. Leave it null to keep the original corner positions.
+	/// </remarks>
 	[Tween]
 	[RDJsonConverter(typeof(RDPointArrayConverter<RDPoint>))]
 	[RDJsonCondition("$&.CornerPositions is not null")]
@@ -29,9 +34,9 @@ public record class SetRoomPerspective : BaseEvent, IEaseEvent
 		set => cornerPositions = value?.Length == 4 ? value : throw new RhythmBaseException();
 	}
 	///<inheritdoc/>
-	public float Duration { get; set; } = 1;
+	public float Duration { get; set; }
 	///<inheritdoc/>
-	public EaseType Ease { get; set; } = EaseType.Linear;
+	public EaseType Ease { get; set; }
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetRoomPerspective;
 	///<inheritdoc/>

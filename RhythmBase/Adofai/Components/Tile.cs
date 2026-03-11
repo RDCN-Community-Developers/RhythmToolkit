@@ -147,18 +147,18 @@ namespace RhythmBase.Adofai.Components
 				if (Parent is not null)
 					switch (item)
 					{
-						case SetSpeed setSpeed: // tick
-												//Parent.Calculator
+						case SetSpeed: // tick
+													 //Parent.Calculator
 							break;
-						case Twirl twirl: // reverse
+						case Twirl: // reverse
 							break;
-						case Pause pause: // delay
+						case Pause: // delay
 							break;
-						case Hold hold: // delay
+						case Hold: // delay
 							break;
-						case FreeRoam freeRoam: // delay
+						case FreeRoam: // delay
 							break;
-						case MultiPlanet multiPlanet: // runtype
+						case MultiPlanet: // runtype
 							break;
 					}
 				result = base.Add(item);
@@ -188,9 +188,7 @@ namespace RhythmBase.Adofai.Components
 			)}";
 		public static implicit operator Tile(float angle)
 		{
-			if (angle == 999)
-				return new(true);
-			return new(angle);
+			return angle == 999 ? new(true) : new(angle);
 		}
 
 		public static implicit operator Tile(bool isMidSpin) => new(isMidSpin);

@@ -13,11 +13,19 @@ public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.WindowResize;
-	/// <inheritdoc/>
+	/// <summary>
+	/// Gets the custom tab associated with this instance.
+	/// </summary>
+	/// <remarks>
+	/// Set <see cref="CustomTab"/> to determine the tab of this event. The default value is Tab.Windows."/>
+	/// </remarks>
 	public override Tab Tab => CustomTab;
 	/// <summary>
 	/// Gets or sets the custom tab.
 	/// </summary>
+	/// <remarks>
+	/// It can only be Tab.Actions or Tab.Windows. This property is used to determine the tab of this event. The default value is Tab.Windows.
+	/// </remarks>
 	[RDJsonAlias("tab")]
 	[RDJsonConverter(typeof(TabsConverter))]
 	[RDJsonCondition($"""$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.{nameof(Events.Tab)}.{nameof(Tab.Windows)}""")]
@@ -32,29 +40,37 @@ public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 	/// <summary>  
 	/// Gets or sets the scale of the window resize event.  
 	/// </summary>  
+	/// <remarks>
+	/// Percentage of the original size. (100,100) is the original size. (0,0) will make the content disappear(or run into issues).
+	/// Leave it null to keep the original size.
+	/// </remarks>
 	[Tween]
-	public RDSizeE? Scale { get; set; } = new(1, 1);
+	public RDSizeE? Scale { get; set; }
 	/// <summary>
 	/// Gets or sets the zoom mode applied to the content.
 	/// </summary>
-	public ZoomMode ZoomMode { get; set; } = ZoomMode.None;
+	public ZoomMode ZoomMode { get; set; }
 	/// <summary>
 	/// Gets or sets the mode used for pivot operations.
 	/// </summary>
-	public PivotMode PivotMode { get; set; } = PivotMode.Default;
+	public PivotMode PivotMode { get; set; }
 	/// <summary>
 	/// Gets or sets the edge of the window to which the content is anchored.
 	/// </summary>
-	public WindowAnchorType AnchorType { get; set; } = WindowAnchorType.LeftEdge;
+	public WindowAnchorType AnchorType { get; set; }
 	/// <summary>  
 	/// Gets or sets the pivot point for the window resize event.  
 	/// </summary>  
+	/// <remarks>
+	/// Percentage of the original size. (0,0) is the bottom-left corner, (100,100) is the top-right corner.
+	/// Leave it null to keep the original pivot.
+	/// </remarks>
 	[Tween]
-	public RDPoint? Pivot { get; set; } = new(50f, 50f);
+	public RDPoint? Pivot { get; set; }
 	/// <inheritdoc/>
-	public EaseType Ease { get; set; } = EaseType.Linear;
+	public EaseType Ease { get; set; }
 	/// <inheritdoc/>
-	public float Duration { get; set; } = 0f;
+	public float Duration { get; set; }
 	/// <inheritdoc/>
 	public RDRoom Rooms { get; set; }
 }

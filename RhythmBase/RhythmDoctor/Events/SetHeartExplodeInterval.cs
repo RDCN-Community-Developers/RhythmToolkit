@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
 /// Represents an event to set the heart explode interval.

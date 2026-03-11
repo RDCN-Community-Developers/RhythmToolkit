@@ -18,7 +18,7 @@ public record class NarrateRowInfo : BaseRowAction
 	/// </summary>
 	public NarrateInfoType InfoType { get; set; } = NarrateInfoType.Online;
 	/// <summary>
-	/// Gets or sets a value indicating whether the narration is sound only.
+	/// Gets or sets the value indicating whether the narration is sound only.
 	/// </summary>
 	public bool SoundOnly { get; set; } = false;
 	/// <summary>
@@ -40,6 +40,9 @@ public record class NarrateRowInfo : BaseRowAction
 	/// Gets or sets the custom player option for narrating row information.  
 	/// </summary>  
 	public PlayerType CustomPlayer { get; set; } = PlayerType.AutoDetect;
+	/// <summary>
+	/// Gets or sets the custom length of the row. The default value is 7.
+	/// </summary>
 	[RDJsonCondition($"$&.{nameof(CustomRowLength)} is 7")]
 	public int CustomRowLength { get; set; } = 7;
 	///<inheritdoc/>

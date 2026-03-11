@@ -10,10 +10,13 @@ namespace RhythmBase.RhythmDoctor.Events;
 public record class Tint : BaseDecorationAction, IEaseEvent, IColorEvent
 {
 	///<inheritdoc/>
-	public EaseType Ease { get; set; } = EaseType.Linear;
+	public EaseType Ease { get; set; }
 	/// <summary>
 	/// Gets or sets the border type for the tint event.
 	/// </summary>
+	/// <remarks>
+	/// Leave it null to keep the original border. Set it to <see cref="Border.None"/> to remove the border."/>
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(Border)} is not null")]
 	public Border? Border { get; set; }
 	/// <summary>
@@ -56,7 +59,7 @@ public record class Tint : BaseDecorationAction, IEaseEvent, IColorEvent
 	public PaletteColorWithAlpha TintColor { get; set; } = RDColor.White;
 	///<inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
-	public float Duration { get; set; } = 0f;
+	public float Duration { get; set; }
 	///<inheritdoc/>
 	public override EventType Type => EventType.Tint;
 	///<inheritdoc/>

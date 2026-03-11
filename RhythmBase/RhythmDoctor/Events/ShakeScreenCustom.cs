@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -19,13 +19,17 @@ public record class ShakeScreenCustom : BaseEvent, IRoomEvent, IDurationEvent
 	/// Gets or sets the type of shake effect.
 	/// </summary>
 	public ShakeType ShakeType { get; set; } = ShakeType.Normal;
-	///<inheritdoc/>
-	public float Duration { get; set; } = 0.5f;
+	/// <summary>
+	/// Gets or sets the duration of the event, in seconds or beats depending on the value of <see cref="UseBeats"/>.
+	/// </summary>
+	/// <remarks>The duration value must be a non-negative floating-point number. A value of zero indicates that the
+	/// event has no duration.</remarks>
+	public float Duration { get; set; }
 
 	/// <summary>
 	/// Gets or sets the amplitude of the shake effect.
 	/// </summary>
-	public float Amplitude { get; set; } = 1f;
+	public float Amplitude { get; set; }
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the duration is measured in beats.
@@ -37,7 +41,7 @@ public record class ShakeScreenCustom : BaseEvent, IRoomEvent, IDurationEvent
 	/// Only used when <see cref="ShakeType"/> is not <see cref="ShakeType.Normal"/>.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(ShakeType)} is not RhythmBase.RhythmDoctor.Events.{nameof(ShakeType)}.{nameof(ShakeType.Normal)}")]
-	public float Frequency { get; set; } = 10f;
+	public float Frequency { get; set; }
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the shake effect should fade out.

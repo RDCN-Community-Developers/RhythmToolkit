@@ -1,14 +1,10 @@
-using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Components.Vector;
 
 /// <summary>
 /// A point whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="float" />
 /// </summary>
-[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDPointN))]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public struct RDPointN(float x, float y) : IRDVector<RDPointN, RDSizeN, float>, IRDVector<RDPointN, RDSizeNI, float>
 {
@@ -187,10 +183,17 @@ public struct RDPointN(float x, float y) : IRDVector<RDPointN, RDSizeN, float>, 
 	/// <returns>A new <see cref="RDSizeN"/> with the same dimensions.</returns>
 	public static explicit operator RDSizeN(RDPointN p) => new(p.X, p.Y);
 	private readonly string GetDebuggerDisplay() => ToString();
-	public IEnumerator<float> GetEnumerator()
-	{
-		yield return X;
-		yield return Y;
-		yield break;
-	}
+	/// <summary>
+	/// Implicitly converts a tuple containing two <see cref="float"/>.
+	/// </summary>
+	/// <remarks>This conversion enables concise and readable initialization of <see cref="RDPointN"/> instances from tuples,
+	/// allowing for more flexible assignment and construction patterns.</remarks>
+	/// <param name="tuple">A tuple whose elements represent the x and y coordinates as <see cref="float"/>.</param>
+	public static implicit operator RDPointN((float x, float y) tuple) => new(tuple.x, tuple.y);
+	/// <summary>
+	/// Deconstructs the current instance into its X and Y component values.
+	/// </summary>
+	/// <param name="x">When this method returns, contains the value of the X component of the current instance.</param>
+	/// <param name="y">When this method returns, contains the value of the Y component of the current instance.</param>
+	public readonly void Deconstruct(out float x, out float y) { x = X; y = Y; }
 }

@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
@@ -598,7 +594,7 @@ public enum Pattern
 	/// <summary>  
 	/// Pattern Return.  
 	/// </summary>  
-	Return
+	ReturnBanana
 }
 /// <summary>
 /// Represents the hands of a player.
@@ -1518,8 +1514,12 @@ public enum ActionTagAction
 	/// </summary>
 	Run = 2,
 	/// <summary>
-	/// Represents all actions.
+	/// Matches the tags which contains the specified tag.
 	/// </summary>
+	/// <remarks>
+	/// Otherwise, the tag matching will only match tags that are exactly the same as the specified tag.
+	/// This option allows for more flexible matching by including any tags that contain the specified tag as a substring.
+	/// </remarks>
 	All = 1,
 	/// <summary>
 	/// Represents the enable action.
@@ -1529,36 +1529,6 @@ public enum ActionTagAction
 	/// Represents the disable action.
 	/// </summary>
 	Disable = 4
-}
-/// <summary>
-/// Defines special tags for the action.
-/// </summary>
-public enum SpecialTag
-{
-#pragma warning disable CS1591
-	onHit,
-	onMiss,
-	onHeldPressHit,
-	onHeldReleaseHit,
-	onHeldPressMiss,
-	onHeldReleaseMiss,
-	row0,
-	row1,
-	row2,
-	row3,
-	row4,
-	row5,
-	row6,
-	row7,
-	row8,
-	row9,
-	row10,
-	row11,
-	row12,
-	row13,
-	row14,
-	row15
-#pragma warning restore CS1591
 }
 /// <summary>
 /// Specifies the direction of the text explosion.
@@ -1792,25 +1762,73 @@ public enum RDFontType
 	/// </summary>
 	Flash
 }
+/// <summary>
+/// Defines the types of visual layers used in the rendering process for organizing and displaying scene elements.
+/// </summary>
 [RDJsonEnumSerializable]
 public enum LayerType
 {
+	/// <summary>
+	/// Dialogue layer.
+	/// </summary>
 	Dialogue,
+	/// <summary>
+	/// Foreground layer for particles.
+	/// </summary>
 	ForegroundParticles,
+	/// <summary>
+	/// Foreground layer.
+	/// </summary>
 	Foreground,
+	/// <summary>
+	/// Default layer.
+	/// </summary>
 	Default,
+	/// <summary>
+	/// Background layer.
+	/// </summary>
 	Background,
+	/// <summary>
+	/// Background layer for particles.
+	/// </summary>
 	BackgroundParticles,
 }
+/// <summary>
+/// The heart types of the row.
+/// </summary>
 [RDJsonEnumSerializable]
 public enum HeartType
 {
+	/// <summary>
+	/// Default heart type.
+	/// </summary>
 	Default,
+	/// <summary>
+	/// The heart is infected by Connectifa.
+	/// </summary>
 	Infected,
+	/// <summary>
+	/// The heart is cracked.
+	/// </summary>
 	Cracked,
+	/// <summary>
+	/// The left half of the heart.
+	/// </summary>
 	SplitLeft,
+	/// <summary>
+	/// The right half of the heart.
+	/// </summary>
 	SplitRight,
+	/// <summary>
+	/// The pumpkin.
+	/// </summary>
 	Halloween,
+	/// <summary>
+	/// The heart of game Unbeatable.
+	/// </summary>
 	Unbeatable,
+	/// <summary>
+	/// None.
+	/// </summary>
 	None,
 }

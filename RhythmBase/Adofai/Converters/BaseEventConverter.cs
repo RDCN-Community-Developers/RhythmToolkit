@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Events;
+using RhythmBase.Adofai.Events;
 using RhythmBase.Global.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -62,8 +62,7 @@ namespace RhythmBase.Adofai.Converters
 				if (prop.NameEquals("floor"))
 					isTile = true;
 			}
-			if (isTile) return new ForwardTileEvent(doc);
-			else return new ForwardEvent(doc);
+			return isTile ? new ForwardTileEvent(doc) : new ForwardEvent(doc);
 		}
 		public static void WriteForwardEvent(Utf8JsonWriter writer, IForwardEvent value)
 		{

@@ -4,7 +4,10 @@ using System.Diagnostics;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents an event that advances text in a room.
+/// Represents an event that advances the text of the <see cref="FloatingText"/>.
+/// This event is used to progress through the lines of the <see cref="FloatingText"/>.
+/// The event can specify a duration for the fade-out effect when advancing the text,
+/// allowing for a smooth transition between lines.
 /// </summary>
 [RDJsonObjectSerializable]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
@@ -26,9 +29,14 @@ public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 	/// </summary>
 	[RDJsonIgnore]
 	public FloatingText? Parent { get; internal set; }
-	///<inheritdoc/>
+	/// <summary>
+	/// Gets or sets the duration of the fade-out effect, in beats. A value of null indicates that the duration is not
+	/// specified.
+	/// </summary>
+	/// <remarks>The duration must be a non-negaiive value if specified. If set to zero, the fade-out effect will not
+	/// occur.</remarks>
 	[RDJsonAlias("fadeOutDuration")]
-	[RDJsonCondition($"$&.{nameof(Duration)} is not null && $&.{nameof(Duration)} != 0")]
+	[RDJsonCondition($"$&.{nameof(Duration)} is not null")]
 	public float? Duration { get; set; }
 	/// <summary>
 	/// Gets the ID of the parent floating text.
@@ -41,11 +49,9 @@ public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 	{
 		string[]? texts = Parent?.Splitted;
 		int? index = Parent?.Children.IndexOf(this);
-		if (texts is not null && index is not null && texts.Length > index + 1)
-		{
-			return base.ToString() + $" \"{texts[index.Value + 1]}\"";
-		}
-		return base.ToString() + $" ?";
+		return texts is not null && index is not null && texts.Length > index + 1
+			? base.ToString() + $" \"{texts[index.Value + 1]}\""
+			: base.ToString() + $" ?";
 	}
 	private string GetDebuggerDisplay() => ToString();
 }

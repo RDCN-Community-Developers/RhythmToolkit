@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.Timeline;
@@ -11,7 +11,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 	{
 		private class MethodList
 		{
-			private List<(float time, int action)> list = [];
+			private readonly List<(float time, int action)> list = [];
 			public int this[float time]
 			{
 				set => list.Add((time, value));

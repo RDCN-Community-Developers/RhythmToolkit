@@ -1,14 +1,11 @@
 using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>nullable</strong> <seealso cref="T:RhythmBase.Components.Expression" />
 	/// </summary>
-	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDSizeE))]
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public struct RDSizeE(RDExpression? width, RDExpression? height) :
 		IRDVector<RDSizeE, RDSizeI, RDExpression>,
@@ -191,11 +188,18 @@ namespace RhythmBase.Global.Components.Vector
 		/// <returns>An <see cref="RDPointE"/> instance with the same width and height as the <see cref="RDSizeE"/> instance.</returns>
 		public static explicit operator RDPointE(RDSizeE size) => new(size.Width, size.Height);
 		private readonly string GetDebuggerDisplay() => ToString();
-		public IEnumerator<RDExpression?> GetEnumerator()
-		{
-			yield return Width;
-			yield return Height;
-			yield break;
-		}
+		/// <summary>
+		/// Implicitly converts a tuple containing two <see cref="RDExpression"/>?.
+		/// </summary>
+		/// <remarks>This conversion enables concise and readable initialization of <see cref="RDSizeE"/> instances from tuples,
+		/// allowing for more flexible assignment and construction patterns.</remarks>
+		/// <param name="tuple">A tuple whose elements represent the x and y coordinates as <see cref="RDExpression"/>?. Either element may be null.</param>
+		public static implicit operator RDSizeE((RDExpression? width, RDExpression? height) tuple) => new(tuple.width, tuple.height);
+		/// <summary>
+		/// Deconstructs the current instance into its Width and Height component values.
+		/// </summary>
+		/// <param name="width">When this method returns, contains the value of the Width component of the current instance.</param>
+		/// <param name="height">When this method returns, contains the value of the Height component of the current instance.</param>
+		public readonly void Deconstruct(out RDExpression? width, out RDExpression? height) { width = Width; height = Height; }
 	}
 }

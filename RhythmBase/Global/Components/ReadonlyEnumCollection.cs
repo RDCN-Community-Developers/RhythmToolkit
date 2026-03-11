@@ -1,7 +1,5 @@
 using RhythmBase.RhythmDoctor.Components;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace RhythmBase.Global.Components;
@@ -36,14 +34,12 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 		mask = (byteWidth * 8 >= 64) ? ulong.MaxValue : ((1ul << (byteWidth * 8)) - 1ul);
 	}
 	/// <summary>
-	/// Initializes a new instance of the ReadOnlyEnumCollection class containing the specified enumeration values.
+	/// Initializes a new instance of the <see cref="ReadOnlyEnumCollection{TEnum}"/> class from a set of <typeparamref name="TEnum"/>.
 	/// </summary>
-	/// <remarks>This constructor creates a read-only collection of enumeration values. The collection is optimized
-	/// for storage and lookup of enum values. All values provided must be within the valid range of the underlying enum
-	/// type.</remarks>
-	/// <param name="values">An array of enumeration values of type TEnum to include in the collection.</param>
-	/// <exception cref="InvalidOperationException">Thrown when an enumeration value exceeds the maximum supported range for the collection.</exception>
-	/// <exception cref="ArgumentOutOfRangeException">Thrown when an enumeration value is outside the valid range for the collection.</exception>
+	/// <remarks>The enumerable is iterated twice to compute the required capacity and to populate the internal bitset.</remarks>
+	/// <param name="values">The sequence of enum values to include in the collection.</param>
+	/// <exception cref="InvalidOperationException">Thrown when the maximum enum value cannot be represented in the collection.</exception>
+	/// <exception cref="ArgumentOutOfRangeException">Thrown when a provided enum value falls outside the computed bounds.</exception>
 	public ReadOnlyEnumCollection(params TEnum[] values)
 	{
 		ulong enumMax = 0;
@@ -75,6 +71,13 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 			_bits[div] |= (1ul << rem);
 		}
 	}
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ReadOnlyEnumCollection{TEnum}"/> class from an <see cref="IEnumerable{T}"/> source.
+	/// </summary>
+	/// <remarks>The enumerable is iterated twice to compute the required capacity and to populate the internal bitset.</remarks>
+	/// <param name="values">The sequence of enum values to include in the collection.</param>
+	/// <exception cref="InvalidOperationException">Thrown when the maximum enum value cannot be represented in the collection.</exception>
+	/// <exception cref="ArgumentOutOfRangeException">Thrown when a provided enum value falls outside the computed bounds.</exception>
 	public ReadOnlyEnumCollection(IEnumerable<TEnum> values) : this(values.ToArray())
 	{
 		ulong enumMax = 0;
@@ -106,6 +109,13 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 			_bits[div] |= (1ul << rem);
 		}
 	}
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ReadOnlyEnumCollection{TEnum}"/> class from a <see cref="ReadOnlySpan{T}"/> source.
+	/// </summary>
+	/// <remarks>The enumerable is iterated twice to compute the required capacity and to populate the internal bitset.</remarks>
+	/// <param name="values">The sequence of enum values to include in the collection.</param>
+	/// <exception cref="InvalidOperationException">Thrown when the maximum enum value cannot be represented in the collection.</exception>
+	/// <exception cref="ArgumentOutOfRangeException">Thrown when a provided enum value falls outside the computed bounds.</exception>
 	public ReadOnlyEnumCollection(ReadOnlySpan<TEnum> values) : this(values.ToArray())
 	{
 		ulong enumMax = 0;
@@ -162,7 +172,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// <summary>
 	/// Gets the number of elements contained in the collection.
 	/// </summary>
-	public int Count
+	public readonly int Count
 	{
 		get
 		{
@@ -182,7 +192,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// <summary>
 	/// Gets a value indicating whether the collection contains no elements.
 	/// </summary>
-	public bool IsEmpty
+	public readonly bool IsEmpty
 	{
 		get
 		{
@@ -191,27 +201,26 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 			return true;
 		}
 	}
-	private ulong ToUL(TEnum value) => Unsafe.As<TEnum, ulong>(ref value) & mask;
+	private readonly ulong ToUL(TEnum value) => Unsafe.As<TEnum, ulong>(ref value) & mask;
 	private static TEnum ToEnum(ulong value) => Unsafe.As<ulong, TEnum>(ref value);
 	/// <summary>
 	/// Determines whether the specified enumeration value is present in the set.
 	/// </summary>
 	/// <param name="type">The enumeration value to locate within the set.</param>
 	/// <returns>true if the set contains the specified enumeration value; otherwise, false.</returns>
-	public bool Contains(TEnum type)
+	public readonly bool Contains(TEnum type)
 	{
 		ulong v = ToUL(type);
 		int div = (int)(v / bw);
 		int rem = (int)(v % bw);
-		if (div < 0 || div >= _bits.Length) return false;
-		return (_bits[div] & (1ul << rem)) != 0;
+		return div >= 0 && div < _bits.Length && (_bits[div] & (1ul << rem)) != 0;
 	}
 	/// <summary>
 	/// Determines whether the collection contains any of the specified enumeration values.
 	/// </summary>
 	/// <param name="types">An array of enumeration values to check for presence in the collection. Can be empty.</param>
 	/// <returns>true if at least one of the specified enumeration values is present in the collection; otherwise, false.</returns>
-	public bool ContainsAny(params TEnum[] types)
+	public readonly bool ContainsAny(params TEnum[] types)
 	{
 		foreach (TEnum type in types)
 			if (Contains(type)) return true;
@@ -222,7 +231,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// </summary>
 	/// <param name="types">A parameter array of enumeration values to check for presence in the collection. Cannot be null.</param>
 	/// <returns>true if at least one of the specified enumeration values is present in the collection; otherwise, false.</returns>
-	public bool ContainsAny(params IEnumerable<TEnum> types)
+	public readonly bool ContainsAny(params IEnumerable<TEnum> types)
 	{
 		foreach (TEnum type in types)
 			if (Contains(type)) return true;
@@ -234,7 +243,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// <param name="types">A parameter array of enumeration value collections to check for presence in the collection. Each enumerable may
 	/// contain one or more values to test.</param>
 	/// <returns>true if at least one of the specified enumeration values is present in the collection; otherwise, false.</returns>
-	public bool ContainsAny(ReadOnlyEnumCollection<TEnum> types)
+	public readonly bool ContainsAny(ReadOnlyEnumCollection<TEnum> types)
 	{
 		for (int i = 0; i < Math.Min(_bits.Length, types._bits.Length); i++)
 			if ((_bits[i] & types._bits[i]) != 0)
@@ -246,7 +255,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// </summary>
 	/// <param name="types">An array of enumeration values to check for presence in the collection. Cannot be null.</param>
 	/// <returns>true if the collection contains every value specified in types; otherwise, false.</returns>
-	public bool ContainsAll(params TEnum[] types)
+	public readonly bool ContainsAll(params TEnum[] types)
 	{
 		foreach (TEnum type in types)
 			if (!Contains(type)) return false;
@@ -259,7 +268,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// returns false as soon as a value is not found, without checking remaining values.</remarks>
 	/// <param name="types">A parameter array of enumeration value collections to check for containment. Each collection must not be null.</param>
 	/// <returns>true if every enumeration value in all provided collections is contained; otherwise, false.</returns>
-	public bool ContainsAll(params IEnumerable<TEnum> types)
+	public readonly bool ContainsAll(params IEnumerable<TEnum> types)
 	{
 		foreach (TEnum type in types)
 			if (!Contains(type)) return false;
@@ -272,7 +281,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// returns false as soon as a missing value is found, which may improve performance for large sets.</remarks>
 	/// <param name="types">A parameter array of enumeration value collections to check for containment. Each collection must not be null.</param>
 	/// <returns>true if every enumeration value in all provided collections is contained; otherwise, false.</returns>
-	public bool ContainsAll(ReadOnlyEnumCollection<TEnum> types)
+	public readonly bool ContainsAll(ReadOnlyEnumCollection<TEnum> types)
 	{
 		for (int i = 0; i < Math.Min(_bits.Length, types._bits.Length); i++)
 		{
@@ -289,7 +298,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// in the result.</param>
 	/// <returns>A read-only collection containing the intersection of elements from this collection and <paramref name="other"/>.
 	/// The result will be empty if there are no common elements.</returns>
-	public ReadOnlyEnumCollection<TEnum> Intersect(ReadOnlyEnumCollection<TEnum> other)
+	public readonly ReadOnlyEnumCollection<TEnum> Intersect(ReadOnlyEnumCollection<TEnum> other)
 	{
 		int size = Math.Min(_bits.Length, other._bits.Length);
 		ReadOnlyEnumCollection<TEnum> result = new(size);
@@ -304,7 +313,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// </summary>
 	/// <param name="other">The collection whose elements will be excluded from the result. Cannot be null.</param>
 	/// <returns>A read-only collection containing the elements that are in this collection but not in <paramref name="other"/>.</returns>
-	public ReadOnlyEnumCollection<TEnum> Except(ReadOnlyEnumCollection<TEnum> other)
+	public readonly ReadOnlyEnumCollection<TEnum> Except(ReadOnlyEnumCollection<TEnum> other)
 	{
 		int size = Math.Min(_bits.Length, other._bits.Length);
 		ReadOnlyEnumCollection<TEnum> result = new(_bits.Length);
@@ -321,7 +330,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// included in the result.</param>
 	/// <returns>A read-only collection containing elements that are present in either this collection or the specified collection,
 	/// but not in both.</returns>
-	public ReadOnlyEnumCollection<TEnum> SymmetricExcept(ReadOnlyEnumCollection<TEnum> other)
+	public readonly ReadOnlyEnumCollection<TEnum> SymmetricExcept(ReadOnlyEnumCollection<TEnum> other)
 	{
 		int size = Math.Max(_bits.Length, other._bits.Length);
 		ReadOnlyEnumCollection<TEnum> result = new(size);
@@ -339,7 +348,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// <param name="other">The collection whose elements are combined with the elements of the current collection to form the union. Cannot be
 	/// null.</param>
 	/// <returns>A new <see cref="ReadOnlyEnumCollection{TEnum}"/> containing all unique elements from both collections.</returns>
-	public ReadOnlyEnumCollection<TEnum> Union(ReadOnlyEnumCollection<TEnum> other)
+	public readonly ReadOnlyEnumCollection<TEnum> Union(ReadOnlyEnumCollection<TEnum> other)
 	{
 		int size = Math.Max(_bits.Length, other._bits.Length);
 		ReadOnlyEnumCollection<TEnum> result = new(size);
@@ -357,7 +366,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 	/// <remarks>Enumeration reflects the current state of the collection at the time the enumerator is created.
 	/// Modifying the collection during enumeration may result in undefined behavior.</remarks>
 	/// <returns>An enumerator that can be used to iterate through the collection of <typeparamref name="TEnum"/> values.</returns>
-	public IEnumerator<TEnum> GetEnumerator()
+	public readonly IEnumerator<TEnum> GetEnumerator()
 	{
 		for (int div = 0; div < _bits.Length; div++)
 		{
@@ -371,7 +380,7 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 			}
 		}
 	}
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+	readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 	private static int TrailingZeroCount(ulong v)
 	{

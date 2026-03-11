@@ -77,7 +77,7 @@ namespace RhythmBase.Adofai.Components
 				ADLevel level = [.. new Tile().Repeat(10)];
 				level.Settings = new()
 				{
-					Version = GlobalSettings.DefaultVersionAdofai,
+					Version = Global.Constants.Constants.DefaultVersionAdofai,
 				};
 				return level;
 			}

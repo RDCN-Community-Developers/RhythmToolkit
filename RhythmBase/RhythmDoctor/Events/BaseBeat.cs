@@ -1,7 +1,7 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents an abstract base class for beat actions in a rhythm-based application.
+/// Represents an abstract base class for beat actions.
 /// </summary>
 [RDJsonObjectHasSerializer]
 public abstract record class BaseBeat : BaseRowAction

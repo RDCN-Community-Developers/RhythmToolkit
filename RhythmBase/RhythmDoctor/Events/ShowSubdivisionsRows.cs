@@ -1,7 +1,10 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
-///<inheritdoc/>
+/// <summary>
+/// THIS EVENT IS DEPRECATED.
+/// </summary>
 [RDJsonObjectSerializable]
+[Obsolete("This event is deprecated and may be removed in future versions.", true)]
 public record class ShowSubdivisionsRows : BaseEvent
 {
 	///<inheritdoc/>
@@ -12,7 +15,7 @@ public record class ShowSubdivisionsRows : BaseEvent
 	/// <summary>
 	/// Gets or sets the number of subdivisions to display.
 	/// </summary>
-	public int Subdivisions { get; set; } = 1;
+	public int Subdivisions { get; set; }
 
 	/// <summary>
 	/// Gets or sets the arc angle for the subdivision rows.

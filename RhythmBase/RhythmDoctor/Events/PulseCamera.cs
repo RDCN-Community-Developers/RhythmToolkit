@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -13,6 +13,9 @@ public record class PulseCamera : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the strength of the pulse.
 	/// </summary>
+	/// <remarks>
+	/// Can only be 1, 2 or 3.
+	/// </remarks>
 	public int Strength { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets the count of pulses.

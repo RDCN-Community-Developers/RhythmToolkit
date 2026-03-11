@@ -1,5 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Extensions;
+using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Events;
 

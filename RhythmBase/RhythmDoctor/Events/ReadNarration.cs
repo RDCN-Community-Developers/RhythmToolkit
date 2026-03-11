@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.RichText;
+using RhythmBase.Global.Components.RichText;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -13,8 +13,7 @@ public record class ReadNarration : BaseEvent
 	/// <summary>
 	/// Gets or sets the text of the narration.
 	/// </summary>
-	[RDJsonConverter(typeof(RichTextConverter<RDRichStringStyle>))]
-	public RDLine<RDRichStringStyle> Text { get; set; } = "";
+	public string Text { get; set; } = "";
 	/// <summary>
 	/// Gets or sets the category of the narration.
 	/// </summary>

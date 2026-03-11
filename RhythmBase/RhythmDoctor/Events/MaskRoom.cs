@@ -4,7 +4,7 @@ using RhythmBase.RhythmDoctor.Converters;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents a MaskRoom event in the RhythmBase system.
+/// Represents a room mask event.
 /// </summary>
 [RDJsonObjectSerializable]
 public record class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent

@@ -1,7 +1,6 @@
-﻿using RhythmBase.Global.Extensions;
+using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.Conditions;
-using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.Global.Extensions.EnumConverter;
@@ -109,7 +108,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			conditional.Tag = tag;
 			return conditional;
 		}
-		private static CustomCondition ReadCustom(ref Utf8JsonReader reader, JsonSerializerOptions options)
+		private static CustomCondition ReadCustom(ref Utf8JsonReader reader, JsonSerializerOptions _)
 		{
 			CustomCondition condition = new();
 			while (reader.Read())
@@ -126,7 +125,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			return condition;
 		}
-		private static LanguageCondition ReadLanguage(ref Utf8JsonReader reader, JsonSerializerOptions options)
+		private static LanguageCondition ReadLanguage(ref Utf8JsonReader reader, JsonSerializerOptions _)
 		{
 			LanguageCondition condition = new();
 			while (reader.Read())
@@ -143,7 +142,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			return condition;
 		}
-		private static LastHitCondition ReadLastHit(ref Utf8JsonReader reader, JsonSerializerOptions options)
+		private static LastHitCondition ReadLastHit(ref Utf8JsonReader reader, JsonSerializerOptions _)
 		{
 			LastHitCondition condition = new();
 			while (reader.Read())
@@ -162,7 +161,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			return condition;
 		}
-		private static PlayerModeCondition ReadPlayerMode(ref Utf8JsonReader reader, JsonSerializerOptions options)
+		private static PlayerModeCondition ReadPlayerMode(ref Utf8JsonReader reader, JsonSerializerOptions _)
 		{
 			PlayerModeCondition condition = new();
 			while (reader.Read())
@@ -179,7 +178,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			return condition;
 		}
-		private static TimesExecutedCondition ReadTimesExecuted(ref Utf8JsonReader reader, JsonSerializerOptions options)
+		private static TimesExecutedCondition ReadTimesExecuted(ref Utf8JsonReader reader, JsonSerializerOptions _)
 		{
 			TimesExecutedCondition condition = new();
 			while (reader.Read())
@@ -196,7 +195,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			return condition;
 		}
-		private static NarrationCondition ReadNarration(ref Utf8JsonReader reader, JsonSerializerOptions options)
+		private static NarrationCondition ReadNarration(ref Utf8JsonReader reader, JsonSerializerOptions _)
 		{
 			NarrationCondition condition = new();
 			while (reader.Read())
@@ -213,7 +212,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 			}
 			return condition;
 		}
-		private static AccessibilityCondition ReadAccessibility(ref Utf8JsonReader reader, JsonSerializerOptions options)
+		private static AccessibilityCondition ReadAccessibility(ref Utf8JsonReader reader, JsonSerializerOptions _)
 		{
 			AccessibilityCondition condition = new();
 			while (reader.Read())
@@ -224,7 +223,7 @@ namespace RhythmBase.RhythmDoctor.Converters
 				{
 					ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 					reader.Read();
-					if (propertyName.SequenceEqual("effectType"u8) && TryParse(reader.ValueSpan, out AccessibilityCondition.EffectType effectType))
+					if (propertyName.SequenceEqual("effectType"u8) && TryParse(reader.ValueSpan, out EffectType effectType))
 						condition.TargetEffectType = effectType;
 				}
 			}

@@ -1,8 +1,8 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents a base action for a row event.
+/// Represents a base class for a row event.
 /// </summary>
 [RDJsonObjectHasSerializer]
 public abstract record class BaseRowAction : BaseEvent

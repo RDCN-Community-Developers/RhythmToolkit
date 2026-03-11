@@ -1,171 +1,171 @@
-﻿using static RhythmBase.RhythmDoctor.Components.RDLang.RDLangParser.syntaxErrorMessages;
-namespace RhythmBase.RhythmDoctor.Components.RDLang
+using static RhythmBase.RhythmDoctor.Components.RDLang.RDLangParser.SyntaxErrorMessages;
+namespace RhythmBase.RhythmDoctor.Components.RDLang;
+
+partial class RDLangParser
 {
-	partial class RDLangParser
-	{
-		internal static class syntaxErrorMessages {
+	internal static class SyntaxErrorMessages {
 
-			public const string RD0000 = "Empty";
-			public const string RD0001 = "Expect to be a variable or a function.";
-			public const string RD0002 = "An unexpected ending.";
-			public const string RD0003 = "Expect to be an operator.";
-			public const string RD0004 = "Expect to be an expression.";
-			public const string RD0005 = "Expect to be an expression or a left parenthesis.";
-			public const string RD0006 = "Expect to be an operator or a right parenthesis.";
-			public const string RD0007 = "Expect to be an integer index value.";
-			public const string RD0008 = "Expect to be an identifier.";
-			public const string RD0009 = "Expect to be a comma or a right parenthesis.";
-			public const string RD0010 = "Expect to be an expression or a parenthesis.";
-			public const string RD0011 = "Expect to be a right bracket.";		
-			public const string RD0012 = "Expect to be a left bracket or a dot.";		
-		}
+		public const string RD0000 = "Empty";
+		public const string RD0001 = "Expect to be a variable or a function.";
+		public const string RD0002 = "An unexpected ending.";
+		public const string RD0003 = "Expect to be an operator.";
+		public const string RD0004 = "Expect to be an expression.";
+		public const string RD0005 = "Expect to be an expression or a left parenthesis.";
+		public const string RD0006 = "Expect to be an operator or a right parenthesis.";
+		public const string RD0007 = "Expect to be an integer index value.";
+		public const string RD0008 = "Expect to be an identifier.";
+		public const string RD0009 = "Expect to be a comma or a right parenthesis.";
+		public const string RD000A = "Expect to be an expression or a parenthesis.";
+		public const string RD000B = "Expect to be a right bracket.";		
+		public const string RD000C = "Expect to be a left bracket or a dot.";		
+	}
 
-		/*
+	/*
 Sentence ->
-	| Identifier OperatorIncreasement
-	| Identifier OperatorDecreasement
-	| Identifier OperatorAssignment Expression
-	| Function
+| Identifier OperatorIncreasement
+| Identifier OperatorDecreasement
+| Identifier OperatorAssignment Expression
+| Function
 
 Identifier ->
-	| Variable
-	| StringOrIdentifier Dot Identifier
-	| StringOrIdentifier LeftBracket Integer RightBracket Dot Identifier
+| Variable
+| StringOrIdentifier Dot Identifier
+| StringOrIdentifier LeftBracket Integer RightBracket Dot Identifier
 
 Variable ->
-	| VariableInteger
-	| VariableFloat
-	| VariableBoolean
-	| StringOrIdentifier
-	| StringOrIdentifier LeftBracket Integer RightBracket
+| VariableInteger
+| VariableFloat
+| VariableBoolean
+| StringOrIdentifier
+| StringOrIdentifier LeftBracket Integer RightBracket
 
 Expression ->
-	| Number
-	| Function
+| Number
+| Function
     | LeftParenthesis Expression RightParenthesis
-	| Expression Operator Expression
-	| OperatorAdd Expression
-	| OperatorSubtract Expression
+| Expression Operator Expression
+| OperatorAdd Expression
+| OperatorSubtract Expression
 
 Number ->
-	| Integer
-	| Float
-	| Identifier
-	| True
-	| False
+| Integer
+| Float
+| Identifier
+| True
+| False
 
 Operator ->
-	| OperatorAdd
-	| OperatorSubtract
-	| OperatorMultipy
-	| OperatorDivide
-	| OperatorAssignment
-	| OperatorGreaterThan
-	| OperatorGreaterThanOrEqual
-	| OperatorLessThan
-	| OperatorLessThanOrEqual
-	| OperatorAnd
-	| OperatorOr
-	| OperatorNot
+| OperatorAdd
+| OperatorSubtract
+| OperatorMultipy
+| OperatorDivide
+| OperatorAssignment
+| OperatorGreaterThan
+| OperatorGreaterThanOrEqual
+| OperatorLessThan
+| OperatorLessThanOrEqual
+| OperatorAnd
+| OperatorOr
+| OperatorNot
 
 Args ->
-	| String
-	| Expression
-	| Args Comma Args
+| String
+| Expression
+| Args Comma Args
 
 Function ->
-	| Identifier LeftParenthesis RightParenthesis
-	| Identifier LeftParenthesis Args RightParenthesis
-		 */
-		private static readonly List<TokenType> actionIndexes =
-			[
-			TokenType.Comma,
-			TokenType.Dot,
-			TokenType.False,
-			TokenType.Float,
-			TokenType.Integer,
-			TokenType.LeftBracket,
-			TokenType.LeftParenthesis,
-			TokenType.OperatorAdd,
-			TokenType.OperatorAnd,
-			TokenType.OperatorAssignment,
-			TokenType.OperatorDecreasement,
-			TokenType.OperatorDivide,
-			TokenType.OperatorGreaterThan,
-			TokenType.OperatorGreaterThanOrEqual,
-			TokenType.OperatorIncreasement,
-			TokenType.OperatorLessThan,
-			TokenType.OperatorLessThanOrEqual,
-			TokenType.OperatorMultipy,
-			TokenType.OperatorNot,
-			TokenType.OperatorOr,
-			TokenType.OperatorSubtract,
-			TokenType.RightBracket,
-			TokenType.RightParenthesis,
-			TokenType.String,
-			TokenType.StringOrIdentifier,
-			TokenType.True,
-			TokenType.VariableBoolean,
-			TokenType.VariableFloat,
-			TokenType.VariableInteger,
-		];
-		private static readonly PatternGroup[] patterns = [
-			new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.OperatorIncreasement),},
-			new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.OperatorDecreasement),},
-			new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.OperatorAssignment), new PatternGroup(GroupType.Expression),},
-			new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Function),},
+| Identifier LeftParenthesis RightParenthesis
+| Identifier LeftParenthesis Args RightParenthesis
+	 */
+	private static readonly List<TokenType> actionIndexes =
+		[
+		TokenType.Comma,
+		TokenType.Dot,
+		TokenType.False,
+		TokenType.Float,
+		TokenType.Integer,
+		TokenType.LeftBracket,
+		TokenType.LeftParenthesis,
+		TokenType.OperatorAdd,
+		TokenType.OperatorAnd,
+		TokenType.OperatorAssignment,
+		TokenType.OperatorDecreasement,
+		TokenType.OperatorDivide,
+		TokenType.OperatorGreaterThan,
+		TokenType.OperatorGreaterThanOrEqual,
+		TokenType.OperatorIncreasement,
+		TokenType.OperatorLessThan,
+		TokenType.OperatorLessThanOrEqual,
+		TokenType.OperatorMultipy,
+		TokenType.OperatorNot,
+		TokenType.OperatorOr,
+		TokenType.OperatorSubtract,
+		TokenType.RightBracket,
+		TokenType.RightParenthesis,
+		TokenType.String,
+		TokenType.StringOrIdentifier,
+		TokenType.True,
+		TokenType.VariableBoolean,
+		TokenType.VariableFloat,
+		TokenType.VariableInteger,
+	];
+	private static readonly PatternGroup[] patterns = [
+		new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.OperatorIncreasement),},
+		new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.OperatorDecreasement),},
+		new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.OperatorAssignment), new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Function),},
 
-			new PatternGroup(GroupType.Identifier){new PatternGroup(GroupType.Variable),},
-			new PatternGroup(GroupType.Identifier){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.Dot), new PatternGroup(GroupType.Identifier) },
-			new PatternGroup(GroupType.Identifier){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.LeftBracket), new PatternValue(TokenType.Integer), new PatternValue(TokenType.RightBracket),},
+		new PatternGroup(GroupType.Identifier){new PatternGroup(GroupType.Variable),},
+		new PatternGroup(GroupType.Identifier){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.Dot), new PatternGroup(GroupType.Identifier) },
+		new PatternGroup(GroupType.Identifier){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.LeftBracket), new PatternValue(TokenType.Integer), new PatternValue(TokenType.RightBracket),},
 
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableInteger),},
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableFloat),},
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableBoolean),},
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.StringOrIdentifier),},
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.LeftBracket), new PatternValue(TokenType.Integer), new PatternValue(TokenType.RightBracket),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableInteger),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableFloat),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableBoolean),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.StringOrIdentifier),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.LeftBracket), new PatternValue(TokenType.Integer), new PatternValue(TokenType.RightBracket),},
 
-			new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Number),},
-			new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Function),},
-			new PatternGroup(GroupType.Expression){new PatternValue(TokenType.LeftParenthesis), new PatternGroup(GroupType.Expression), new PatternValue(TokenType.RightParenthesis),},
-			new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Expression), new PatternGroup(GroupType.Operator), new PatternGroup(GroupType.Expression),},
-			new PatternGroup(GroupType.Expression){new PatternValue(TokenType.OperatorAdd), new PatternGroup(GroupType.Expression),},
-			new PatternGroup(GroupType.Expression){new PatternValue(TokenType.OperatorSubtract), new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Number),},
+		new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Function),},
+		new PatternGroup(GroupType.Expression){new PatternValue(TokenType.LeftParenthesis), new PatternGroup(GroupType.Expression), new PatternValue(TokenType.RightParenthesis),},
+		new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Expression), new PatternGroup(GroupType.Operator), new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Expression){new PatternValue(TokenType.OperatorAdd), new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Expression){new PatternValue(TokenType.OperatorSubtract), new PatternGroup(GroupType.Expression),},
 
-			new PatternGroup(GroupType.Number){new PatternValue(TokenType.Integer),},
-			new PatternGroup(GroupType.Number){new PatternValue(TokenType.Float),},
-			new PatternGroup(GroupType.Number){new PatternGroup(GroupType.Identifier),},
-			new PatternGroup(GroupType.Number){new PatternValue(TokenType.True),},
-			new PatternGroup(GroupType.Number){new PatternValue(TokenType.False),},
+		new PatternGroup(GroupType.Number){new PatternValue(TokenType.Integer),},
+		new PatternGroup(GroupType.Number){new PatternValue(TokenType.Float),},
+		new PatternGroup(GroupType.Number){new PatternGroup(GroupType.Identifier),},
+		new PatternGroup(GroupType.Number){new PatternValue(TokenType.True),},
+		new PatternGroup(GroupType.Number){new PatternValue(TokenType.False),},
 
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAdd),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorSubtract),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorMultipy),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorDivide),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAssignment),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorGreaterThan),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorGreaterThanOrEqual),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorLessThan),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorLessThanOrEqual),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAnd),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorOr),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorNot),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAdd),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorSubtract),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorMultipy),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorDivide),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAssignment),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorGreaterThan),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorGreaterThanOrEqual),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorLessThan),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorLessThanOrEqual),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAnd),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorOr),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorNot),},
 
-			new PatternGroup(GroupType.Args){new PatternValue(TokenType.String),},
-			new PatternGroup(GroupType.Args){new PatternGroup(GroupType.Expression),},
-			new PatternGroup(GroupType.Args){new PatternGroup(GroupType.Args), new PatternValue(TokenType.Comma), new PatternGroup(GroupType.Args),},
+		new PatternGroup(GroupType.Args){new PatternValue(TokenType.String),},
+		new PatternGroup(GroupType.Args){new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Args){new PatternGroup(GroupType.Args), new PatternValue(TokenType.Comma), new PatternGroup(GroupType.Args),},
 
-			new PatternGroup(GroupType.Function){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.LeftParenthesis), new PatternValue(TokenType.RightParenthesis),},
-			new PatternGroup(GroupType.Function){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.LeftParenthesis), new PatternGroup(GroupType.Args), new PatternValue(TokenType.RightParenthesis),},
-					];
-		private static readonly Action[,] actions = new Action[,]
-				{
+		new PatternGroup(GroupType.Function){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.LeftParenthesis), new PatternValue(TokenType.RightParenthesis),},
+		new PatternGroup(GroupType.Function){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.LeftParenthesis), new PatternGroup(GroupType.Args), new PatternValue(TokenType.RightParenthesis),},
+				];
+	private static readonly Action[,] actions = new Action[,]
+			{
 {RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,"s5",RD0001,"s8","s7","s6",RD0001},
 {RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,new()},
 {RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,"s12",RD0003,RD0003,"s11","s10",RD0003,RD0003,RD0003,"s9",RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003},
 {RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,"r3"},
 {"r4",RD0002,RD0002,RD0002,RD0002,RD0002,"r4","r4","r4","r4","r4","r4","r4","r4","r4","r4","r4","r4","r4","r4","r4",RD0002,"r4",RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,"r4"},
-{"r10","s13",RD0012,RD0012,RD0012,"s14","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10",RD0012,"r10",RD0012,RD0012,RD0012,RD0012,RD0012,RD0012,"r10"},
+{"r10","s13",RD000C,RD000C,RD000C,"s14","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10","r10",RD000C,"r10",RD000C,RD000C,RD000C,RD000C,RD000C,RD000C,"r10"},
 {"r7",RD0002,RD0002,RD0002,RD0002,RD0002,"r7","r7","r7","r7","r7","r7","r7","r7","r7","r7","r7","r7","r7","r7","r7",RD0002,"r7",RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,"r7"},
 {"r8","","","","","","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","","r8","","","","","","","r8"},
 {"r9","","","","","","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","r9","","r9","","","","","","","r9"},
@@ -216,9 +216,9 @@ Function ->
 {"s49/r37","","","","","","","","","","","","","","","","","","","","","","r37","","","","","","",""},
 {"","","","","","","","","","","","","","","","","","","","","","","","","s5","","s8","s7","s6",""},
 {"r6","","","","","","r6","r6","r6","r6","r6","r6","r6","r6","r6","r6","r6","r6","r6","r6","r6","","r6","","","","","","","r6"},
-				};
-		private static readonly Action[,] goTos = new Action[,]
-		{
+			};
+	private static readonly Action[,] goTos = new Action[,]
+	{
 {1,2,4,"","","","",3},
 {"","","","","","","",""},
 {"","","","","","","",""},
@@ -275,85 +275,85 @@ Function ->
 {"","","","","","","",""},
 {"",55,4,"","","","",""},
 {"","","","","","","",""},
-		};
+	};
 
-		private static readonly List<TokenType> actionIndexes2 =
-			[
-			TokenType.Comma,
-			TokenType.Dot,
-			TokenType.False,
-			TokenType.Float,
-			TokenType.Integer,
-			TokenType.LeftBracket,
-			TokenType.LeftParenthesis,
-			TokenType.OperatorAdd,
-			TokenType.OperatorAnd,
-			TokenType.OperatorAssignment,
-			TokenType.OperatorDivide,
-			TokenType.OperatorGreaterThan,
-			TokenType.OperatorGreaterThanOrEqual,
-			TokenType.OperatorLessThan,
-			TokenType.OperatorLessThanOrEqual,
-			TokenType.OperatorMultipy,
-			TokenType.OperatorNot,
-			TokenType.OperatorOr,
-			TokenType.OperatorSubtract,
-			TokenType.RightBracket,
-			TokenType.RightParenthesis,
-			TokenType.String,
-			TokenType.StringOrIdentifier,
-			TokenType.True,
-			TokenType.VariableBoolean,
-			TokenType.VariableFloat,
-			TokenType.VariableInteger,
-		];
-		private static readonly PatternGroup[] patterns2 = [
-			new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Expression),},
+	private static readonly List<TokenType> actionIndexes2 =
+		[
+		TokenType.Comma,
+		TokenType.Dot,
+		TokenType.False,
+		TokenType.Float,
+		TokenType.Integer,
+		TokenType.LeftBracket,
+		TokenType.LeftParenthesis,
+		TokenType.OperatorAdd,
+		TokenType.OperatorAnd,
+		TokenType.OperatorAssignment,
+		TokenType.OperatorDivide,
+		TokenType.OperatorGreaterThan,
+		TokenType.OperatorGreaterThanOrEqual,
+		TokenType.OperatorLessThan,
+		TokenType.OperatorLessThanOrEqual,
+		TokenType.OperatorMultipy,
+		TokenType.OperatorNot,
+		TokenType.OperatorOr,
+		TokenType.OperatorSubtract,
+		TokenType.RightBracket,
+		TokenType.RightParenthesis,
+		TokenType.String,
+		TokenType.StringOrIdentifier,
+		TokenType.True,
+		TokenType.VariableBoolean,
+		TokenType.VariableFloat,
+		TokenType.VariableInteger,
+	];
+	private static readonly PatternGroup[] patterns2 = [
+		new PatternGroup(GroupType.Sentence){new PatternGroup(GroupType.Expression),},
 
-			new PatternGroup(GroupType.Identifier){new PatternGroup(GroupType.Variable),},
-			new PatternGroup(GroupType.Identifier){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.Dot), new PatternGroup(GroupType.Identifier) },
-			new PatternGroup(GroupType.Identifier){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.LeftBracket), new PatternValue(TokenType.Integer), new PatternValue(TokenType.RightBracket),},
+		new PatternGroup(GroupType.Identifier){new PatternGroup(GroupType.Variable),},
+		new PatternGroup(GroupType.Identifier){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.Dot), new PatternGroup(GroupType.Identifier) },
+		new PatternGroup(GroupType.Identifier){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.LeftBracket), new PatternValue(TokenType.Integer), new PatternValue(TokenType.RightBracket),},
 
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableInteger),},
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableFloat),},
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableBoolean),},
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.StringOrIdentifier),},
-			new PatternGroup(GroupType.Variable){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.LeftBracket), new PatternValue(TokenType.Integer), new PatternValue(TokenType.RightBracket),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableInteger),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableFloat),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.VariableBoolean),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.StringOrIdentifier),},
+		new PatternGroup(GroupType.Variable){new PatternValue(TokenType.StringOrIdentifier), new PatternValue(TokenType.LeftBracket), new PatternValue(TokenType.Integer), new PatternValue(TokenType.RightBracket),},
 
-			new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Number),},
-			new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Function),},
-			new PatternGroup(GroupType.Expression){new PatternValue(TokenType.LeftParenthesis), new PatternGroup(GroupType.Expression), new PatternValue(TokenType.RightParenthesis),},
-			new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Expression), new PatternGroup(GroupType.Operator), new PatternGroup(GroupType.Expression),},
-			new PatternGroup(GroupType.Expression){new PatternValue(TokenType.OperatorAdd), new PatternGroup(GroupType.Expression),},
-			new PatternGroup(GroupType.Expression){new PatternValue(TokenType.OperatorSubtract), new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Number),},
+		new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Function),},
+		new PatternGroup(GroupType.Expression){new PatternValue(TokenType.LeftParenthesis), new PatternGroup(GroupType.Expression), new PatternValue(TokenType.RightParenthesis),},
+		new PatternGroup(GroupType.Expression){new PatternGroup(GroupType.Expression), new PatternGroup(GroupType.Operator), new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Expression){new PatternValue(TokenType.OperatorAdd), new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Expression){new PatternValue(TokenType.OperatorSubtract), new PatternGroup(GroupType.Expression),},
 
-			new PatternGroup(GroupType.Number){new PatternValue(TokenType.Integer),},
-			new PatternGroup(GroupType.Number){new PatternValue(TokenType.Float),},
-			new PatternGroup(GroupType.Number){new PatternGroup(GroupType.Identifier),},
-			new PatternGroup(GroupType.Number){new PatternValue(TokenType.True),},
-			new PatternGroup(GroupType.Number){new PatternValue(TokenType.False),},
+		new PatternGroup(GroupType.Number){new PatternValue(TokenType.Integer),},
+		new PatternGroup(GroupType.Number){new PatternValue(TokenType.Float),},
+		new PatternGroup(GroupType.Number){new PatternGroup(GroupType.Identifier),},
+		new PatternGroup(GroupType.Number){new PatternValue(TokenType.True),},
+		new PatternGroup(GroupType.Number){new PatternValue(TokenType.False),},
 
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAdd),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorSubtract),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorMultipy),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorDivide),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAssignment),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorGreaterThan),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorGreaterThanOrEqual),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorLessThan),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorLessThanOrEqual),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAnd),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorOr),},
-			new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorNot),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAdd),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorSubtract),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorMultipy),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorDivide),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAssignment),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorGreaterThan),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorGreaterThanOrEqual),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorLessThan),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorLessThanOrEqual),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorAnd),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorOr),},
+		new PatternGroup(GroupType.Operator){new PatternValue(TokenType.OperatorNot),},
 
-			new PatternGroup(GroupType.Args){new PatternValue(TokenType.String),},
-			new PatternGroup(GroupType.Args){new PatternGroup(GroupType.Expression),},
-			new PatternGroup(GroupType.Args){new PatternGroup(GroupType.Args), new PatternValue(TokenType.Comma), new PatternGroup(GroupType.Args),},
+		new PatternGroup(GroupType.Args){new PatternValue(TokenType.String),},
+		new PatternGroup(GroupType.Args){new PatternGroup(GroupType.Expression),},
+		new PatternGroup(GroupType.Args){new PatternGroup(GroupType.Args), new PatternValue(TokenType.Comma), new PatternGroup(GroupType.Args),},
 
-			new PatternGroup(GroupType.Function){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.LeftParenthesis), new PatternValue(TokenType.RightParenthesis),},
-			new PatternGroup(GroupType.Function){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.LeftParenthesis), new PatternGroup(GroupType.Args), new PatternValue(TokenType.RightParenthesis),},
-					];
-		private static readonly Action[,] actions2 = new Action[,] {
+		new PatternGroup(GroupType.Function){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.LeftParenthesis), new PatternValue(TokenType.RightParenthesis),},
+		new PatternGroup(GroupType.Function){new PatternGroup(GroupType.Identifier), new PatternValue(TokenType.LeftParenthesis), new PatternGroup(GroupType.Args), new PatternValue(TokenType.RightParenthesis),},
+				];
+	private static readonly Action[,] actions2 = new Action[,] {
 {RD0001,RD0001,"s12","s9","s8",RD0001,"s5","s6",RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,RD0001,"s7",RD0001,RD0001,RD0001,"s14","s11","s17","s16","s15",RD0000},
 {RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,new()},
 { RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,"s19","s28","s23","s22","s24","s25","s26","s27","s21","s30","s29","s20",RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,RD0003,"r0"},
@@ -397,17 +397,17 @@ Function ->
 { "s46",RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,"s45",RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009},
 { "r32",RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,"r32",RD0009,RD0009,RD0009,RD0009,RD0009,RD0009,RD0009},
 { "r33",RD0006,RD0006,RD0006,RD0006,RD0006,RD0006,"s19","s28","s23","s22","s24","s25","s26","s27","s21","s30","s29","s20",RD0006,"r33",RD0006,RD0006,RD0006,RD0006,RD0006,RD0006,RD0006},
-{ "r2",RD0010,RD0010,RD0010,RD0010,RD0010,"r2","r2","r2","r2","r2","r2","r2","r2","r2","r2","r2","r2","r2",RD0010,"r2",RD0010,RD0010,RD0010,RD0010,RD0010,RD0010,"r2"},
-{ RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,"s47",RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011,RD0011},
+{ "r2",RD000A,RD000A,RD000A,RD000A,RD000A,"r2","r2","r2","r2","r2","r2","r2","r2","r2","r2","r2","r2","r2",RD000A,"r2",RD000A,RD000A,RD000A,RD000A,RD000A,RD000A,"r2"},
+{ RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,"s47",RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B,RD000B},
 { "r36",RD0006,RD0006,RD0006,RD0006,RD0006,RD0006,"r36","r36","r36","r36","r36","r36","r36","r36","r36","r36","r36","r36",RD0006,"r36",RD0006,RD0006,RD0006,RD0006,RD0006,RD0006,"r36"},
 { RD0004,RD0004,"s12","s9","s8",RD0004,"s5","s6",RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,"s7",RD0004,RD0004,"s41","s14","s11","s17","s16","s15",RD0004},
 { "r8","s49",RD0002,RD0002,RD0002,RD0002,"r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8","r8",RD0002,"r8",RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,"r8"},
 { "s46/r34",RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,"r34",RD0004,RD0004,RD0004,RD0004,RD0004,RD0004,RD0004},
 { RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,RD0008,"s14",RD0008,"s17","s16","s15",RD0008},
 { "r3",RD0002,RD0002,RD0002,RD0002,RD0002,"r3","r3","r3","r3","r3","r3","r3","r3","r3","r3","r3","r3","r3",RD0002,"r3",RD0002,RD0002,RD0002,RD0002,RD0002,RD0002,"r3"},
-		};
-		private static readonly Action[,] goTos2 = new Action[,]
-		{
+	};
+	private static readonly Action[,] goTos2 = new Action[,]
+	{
 {1,10,13,2,3,"","",4},
 {"","","","","","","",""},
 {"","","","","",18,"",""},
@@ -459,24 +459,23 @@ Function ->
 {"","","","","","","",""},
 {"",50,13,"","","","",""},
 {"","","","","","","",""},
-		};
+	};
 
-		private static readonly List<GroupType> goToIndexes =
-			[
-			GroupType.Sentence,
-			GroupType.Identifier,
-			GroupType.Variable,
-			GroupType.Expression,
-			GroupType.Number,
-			GroupType.Operator,
-			GroupType.Args,
-			GroupType.Function,
-		];
-		private static readonly List<HashSet<TokenType>> priority = [
-			[TokenType.OperatorAssignment],
-			[TokenType.OperatorGreaterThan, TokenType.OperatorGreaterThanOrEqual, TokenType.OperatorLessThan, TokenType.OperatorLessThanOrEqual],
-			[TokenType.OperatorAdd, TokenType.OperatorSubtract],
-			[TokenType.OperatorMultipy, TokenType.OperatorDivide],
-		];
-	}
+	private static readonly List<GroupType> goToIndexes =
+		[
+		GroupType.Sentence,
+		GroupType.Identifier,
+		GroupType.Variable,
+		GroupType.Expression,
+		GroupType.Number,
+		GroupType.Operator,
+		GroupType.Args,
+		GroupType.Function,
+	];
+	private static readonly List<HashSet<TokenType>> priority = [
+		[TokenType.OperatorAssignment],
+		[TokenType.OperatorGreaterThan, TokenType.OperatorGreaterThanOrEqual, TokenType.OperatorLessThan, TokenType.OperatorLessThanOrEqual],
+		[TokenType.OperatorAdd, TokenType.OperatorSubtract],
+		[TokenType.OperatorMultipy, TokenType.OperatorDivide],
+	];
 }

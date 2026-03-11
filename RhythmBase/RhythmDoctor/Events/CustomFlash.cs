@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -28,19 +28,31 @@ public record class CustomFlash : BaseEvent, IEaseEvent, IRoomEvent, IColorEvent
 	public float Duration { get; set; }
 	/// <summary>
 	/// Gets or sets the start opacity of the flash.
+	/// <remark>
+	/// Must be a value between 0 and 100, inclusive, if specified. 0 and 100 are considered as fully transparent and fully opaque, respectively.
+	/// </remark>
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(StartOpacity)} is not null")]
 	public int? StartOpacity { get; set; }
 	/// <summary>
 	/// Gets or sets the end opacity of the flash.
+	/// <remark>
+	/// Must be a value between 0 and 100, inclusive, if specified. 0 and 100 are considered as fully transparent and fully opaque, respectively.
+	/// </remark>
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(EndOpacity)} is not null")]
 	public int? EndOpacity { get; set; }
 	/// <summary>
-	/// Gets or sets a value indicating whether the background is affected.
+	/// Gets or sets a value indicating the event affect background or foreground. If true, the flash will affect the background instead of the foreground.
 	/// </summary>
 	public bool Background { get; set; } = false;
+	/// <summary>
+	/// Gets or sets the reduced strength value, which is used to determine the intensity of the flash effect.
+	/// </summary>
+	/// <remarks> The value must be a non-negative integer if specified. 
+	/// This property is optional, used to avoid the flash effect being too strong.
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(ReducedStrength)} is not null")]
 	public int? ReducedStrength { get; set; }
 	/// <inheritdoc />

@@ -16,6 +16,9 @@ public record class AddOneshotBeat : BaseBeat
 	public OneshotPulseShapeType PulseType { get; set; }
 	/// <summary>
 	/// Gets or sets the number of subdivisions.
+	/// <remark>
+	/// Must be non-negative value. Active only when PulseType is Square or Triangle. 0 is considered as no subdivision.
+	/// </remark>
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(Subdivisions)} > 0 &&(
@@ -39,16 +42,28 @@ public record class AddOneshotBeat : BaseBeat
 	public float SubdivisionTickOverride { get; set; }
 	/// <summary>
 	/// Gets or sets the tick value.
+	/// <remark>
+	/// Must be non-negative value.
+	/// </remark>
 	/// </summary>
 	public float Tick { get; set; } = 1f;
 	/// <summary>
 	/// Gets or sets the number of loops.
+	/// <remark>
+	/// Must be non-negative value. Active only when Loop is greater than 0. 0 is considered as no loop (Play once).  
+	/// </remark>
 	/// </summary>
 	[RDJsonAlias("loops")]
 	[RDJsonCondition($"$&.{nameof(Loop)} > 0")]
 	public uint Loop { get; set; }
 	/// <summary>
 	/// Gets or sets the interval value.
+	/// <remark>
+	/// Must be non-negative value.
+	/// Active only when Interval is greater than 0
+	/// (0 is considered as no interval (Play continuously)
+	/// and Skipshot is false, Hold is false, FreezeBurnMode is not Wave, or Loop is greater than 0.
+	/// </remark>
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(Interval)} > 0 &&(
@@ -83,17 +98,19 @@ public record class AddOneshotBeat : BaseBeat
 	public OneshotType FreezeBurnMode { get; set; }
 	/// <summary>
 	/// Gets or sets the delay value.
+	/// <remark>
+	/// Must be non-negative value. Active only when FreezeBurnMode is Freezeshot. 0 is considered as default delay (0.5s).
+	/// </remark>
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} == RhythmBase.RhythmDoctor.Events.{nameof(OneshotType)}.{nameof(OneshotType.Freezeshot)}")]
-	public float Delay
-	{
-		get;
-		set => field = FreezeBurnMode != OneshotType.Freezeshot
-			? 0f : value <= 0f
-				? 0.5f : value;
-	} = 0f;
+	public float Delay { get; set; } = 0f;
+	/// <summary>
+	/// Gets or sets the audio resource associated with this object.
+	/// </summary>
+	/// <remarks>The value may be null, indicating that no audio is currently assigned. Ensure that the audio
+	/// resource is properly initialized before attempting playback or processing operations.</remarks>
 	[RDJsonCondition($"$&.{nameof(Sound)} != null")]
-	public RDAudio? Sound {  get; set; }
+	public RDAudio? Sound { get; set; }
 	/// <inheritdoc/>
 	public override EventType Type => EventType.AddOneshotBeat;
 	/// <inheritdoc/>

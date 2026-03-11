@@ -1,6 +1,5 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
-using RhythmBase.RhythmDoctor.Extensions;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <inheritdoc />
@@ -17,12 +16,20 @@ public record class SetRowXs : BaseBeat
 	/// <summary>
 	/// Gets or sets the synco beat.
 	/// </summary>
+	/// <remarks>
+	/// Must be an integer between -1 and 5, inclusive. Set to -1 to disable syncopation.
+	/// </remarks>
 	public int SyncoBeat { get; set; } = -1;
 	/// <summary>
 	/// Gets or sets the synco swing.
 	/// </summary>
+	/// <remarks>
+	/// Must be a value between 0 and 1, inclusive.
+	/// This property is only applicable when the <see cref="SyncoBeat"/> is set to a value greater than or equal to 0.
+	/// A value of 0 means no swing, while a value of 1 means maximum swing.
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
-	public float SyncoSwing { get; set; } = 0;
+	public float SyncoSwing { get; set; }
 	/// <summary>
 	/// Gets or sets the syncopation beat's cue style.
 	/// </summary>
@@ -41,11 +48,20 @@ public record class SetRowXs : BaseBeat
 	/// <summary>
 	/// Gets or sets the synco volume.
 	/// </summary>
+	/// <remarks>
+	/// Must be a value between 0 and 200, inclusive.
+	/// This property is only applicable when the <see cref="SyncoBeat"/> is set to a value greater than or equal to 0.
+	/// The percentage of the original volume. 
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
-	public int SyncoVolume { get; set; } = 70;
+	public int SyncoVolume { get; set; }
 	/// <summary>
 	/// Gets or sets the pitch adjustment value for synchronization operations.
 	/// </summary>
+	/// <remarks>
+	/// Must be a value between 0 and 200, inclusive.
+	/// The percentage of the original pitch.
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0")]
 	public int SyncoPitch { get; set; } = 100;	
 	/// <inheritdoc />

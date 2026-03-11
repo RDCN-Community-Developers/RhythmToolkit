@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
 
@@ -23,6 +23,10 @@ public record class MoveRow : BaseRowAnimation, IEaseEvent
 	/// <summary>
 	/// Gets or sets the row position.
 	/// </summary>
+	/// <remarks>
+	/// Percentage of the screen width and height. (0,0) is the bottom-left corner, (100,100) is the top-right corner.
+	/// Leave it null to keep the original position.
+	/// </remarks>
 	[Tween]
 	[RDJsonAlias("rowPosition")]
 	[RDJsonCondition($"$&.{nameof(EnableCustomPosition)} is true && $&.{nameof(Position)} is not null")]
@@ -30,18 +34,30 @@ public record class MoveRow : BaseRowAnimation, IEaseEvent
 	/// <summary>
 	/// Gets or sets the scale.
 	/// </summary>
+	/// <remarks>
+	/// Percentage of the original size. (100,100) is the original size.
+	/// Leave it null to keep the original size.
+	/// </remarks>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Scale)} is not null")]
 	public RDSizeE? Scale { get; set; }
 	/// <summary>
 	/// Gets or sets the angle.
 	/// </summary>
+	/// <remarks>
+	/// Degree. (0) is the original angle.
+	/// Leave it null to keep the original angle.
+	/// </remarks>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Angle)} is not null")]
 	public RDExpression? Angle { get; set; }
 	/// <summary>
 	/// Gets or sets the pivot.
 	/// </summary>
+	/// <remarks>
+	/// Percentage of the original size. (0,0) is the bottom-left corner, (100,100) is the top-right corner.
+	/// Leave it null to keep the original pivot.
+	/// </remarks>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)} &&" +
 		$"$&.{nameof(Pivot)} is not null")]

@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Events;
 
 namespace RhythmBase.RhythmDoctor.Components
 {
@@ -21,7 +21,6 @@ namespace RhythmBase.RhythmDoctor.Components
 			if (_items.Contains(row))
 				return;
 			row.Parent = parent;
-			row.calculator = parent.Calculator;
 			foreach (BaseRowAction? i in row)
 				parent.Add(i);
 			foreach(BaseRowAction? e in _unhandledRowEvents.Where(i=>i.Index == Count))
@@ -42,7 +41,6 @@ namespace RhythmBase.RhythmDoctor.Components
 			foreach (BaseRowAction i in rowsToRemove)
 				parent.Remove(i);
 			row.Parent = null;
-			row.calculator = null;
 			return _items.Remove(row);
 		}
 		/// <summary>  

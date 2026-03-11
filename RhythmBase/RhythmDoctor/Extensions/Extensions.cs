@@ -16,58 +16,39 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		internal static T LastOrDefault<T>(this IEnumerable<T> e, T defaultValue) => e.LastOrDefault(defaultValue);
 		internal static T LastOrDefault<T>(this IEnumerable<T> e, Func<T, bool> predicate, T defaultValue) => e.LastOrDefault(predicate, defaultValue);
 #endif
-		private static (float start, float end) GetRange(OrderedEventCollection e, Index index)
-		{
-			if (e.calculator is BeatCalculator c)
-			{
-				(int bar, _) = e.Length;
-				float start = index.IsFromEnd
-					? c.BarBeatToBeatOnly(bar - index.Value, 1f)
-					: c.BarBeatToBeatOnly(index.Value, 1f);
-				float end = index.IsFromEnd
-					? c.BarBeatToBeatOnly(bar - index.Value + 1, 1f)
-					: c.BarBeatToBeatOnly(index.Value + 1, 1f);
-				return (start, end);
-			}
-			return (1, 1);
-
-		}
-		private static (float start, float end) GetRange(OrderedEventCollection e, Range range)
-		{
-			if (e.calculator is BeatCalculator c)
-			{
-				(int bar, _) = e.Length;
-				float start = range.Start.IsFromEnd
-					? c.BarBeatToBeatOnly(bar - range.Start.Value, 1f)
-					: c.BarBeatToBeatOnly(range.Start.Value, 1f);
-				float end = range.End.IsFromEnd
-					? c.BarBeatToBeatOnly(bar - range.End.Value + 1, 1f)
-					: c.BarBeatToBeatOnly(range.End.Value + 1, 1f);
-				return (start, end);
-			}
-			return (1, 1);
-		}
 		extension(Condition e)
 		{
+			/// <summary>
+			/// Gets or sets a value indicating whether the game is in two-player mode.
+			/// </summary>
 			public bool? TwoPlayerMode
 			{
 				get => e['p'];
 				set => e['p'] = value;
 			}
+			/// <summary>
+			/// Gets or sets a value indicating whether the flash effect is enabled.
+			/// </summary>
 			public bool? EnableFlashEffect
 			{
 				get => e['f'];
 				set => e['f'] = value;
 			}
+			/// <summary>
+			/// Gets or sets a value indicating whether the narration is enabled.
+			/// </summary>
 			public bool? EnableNarration
 			{
-				get => e['f'];
-				set => e['f'] = value;
+				get => e['n'];
+				set => e['n'] = value;
 			}
+			/// <summary>
+			/// Gets or sets a value indicating whether the event should run only once.
+			/// </summary>
 			public bool? RunOnlyOnce
 			{
-				get => e['f'];
-				set => e['f'] = value;
+				get => e['o'];
+				set => e['o'] = value;
 			}
 		}
 		/// <summary>
@@ -97,7 +78,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <summary>
 		/// Make strings follow the Lower Camel Case.
 		/// </summary>
-		/// <returns>The result.</returns>
 		public static string ToLowerCamelCase(this string e)
 		{
 			char[] S = [.. e];
@@ -203,10 +183,9 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		{
 			if (string.IsNullOrEmpty(name))
 				return [];
-			if (strict)
-				return ((IEnumerable<TEvent>)e).Where(i => i.Tag == name).GroupBy(i => i.Tag);
-			else
-				return ((IEnumerable<TEvent>)e).Where(i => i.Tag?.Contains(name) ?? false).GroupBy(i => i.Tag);
+			return strict
+				? ((IEnumerable<TEvent>)e).Where(i => i.Tag == name).GroupBy(i => i.Tag)
+				: ((IEnumerable<TEvent>)e).Where(i => i.Tag?.Contains(name) ?? false).GroupBy(i => i.Tag);
 		}
 		/// <summary>
 		/// Get all classic beat events and their variants.

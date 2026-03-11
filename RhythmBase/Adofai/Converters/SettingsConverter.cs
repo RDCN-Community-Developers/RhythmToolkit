@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 using RhythmBase.Adofai.Events;
 using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
@@ -10,7 +10,7 @@ namespace RhythmBase.Adofai.Converters
 {
 	internal class SettingsConverter : JsonConverter<Settings>
 	{
-		private static RDPointsConverter pointsConverter = new();
+		private static readonly RDPointsConverter pointsConverter = new();
 		public override Settings? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			if (reader.TokenType != JsonTokenType.StartObject)

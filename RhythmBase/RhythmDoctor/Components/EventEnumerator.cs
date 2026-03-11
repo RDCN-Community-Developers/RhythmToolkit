@@ -3,92 +3,84 @@ using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Collections;
 
-namespace RhythmBase.RhythmDoctor.Components
+namespace RhythmBase.RhythmDoctor.Components;
+
+internal class EventEnumerator { }
+internal class EventEnumerator<TEvent>(OrderedEventCollection collection, ReadOnlyEnumCollection<EventType> types, RDRange range) : EventEnumerator, IEventEnumerable<TEvent>, IEnumerator<TEvent> where TEvent : IBaseEvent
 {
-	internal class EventEnumerator { }
-	internal class EventEnumerator<TEvent> : EventEnumerator, IEventEnumerable<TEvent>, IEnumerator<TEvent> where TEvent : IBaseEvent
+	protected readonly IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> beats = collection.eventsBeatOrder.GetEnumerator();
+	protected IEnumerator<IBaseEvent>? events;
+	protected readonly OrderedEventCollection collection = collection;
+	private ReadOnlyEnumCollection<EventType> types = types;
+	private RDRange range = range;
+	public EventEnumerator(OrderedEventCollection collection) : this(collection, RDRange.Infinity) { }
+	public EventEnumerator(OrderedEventCollection collection, RDRange range) : this(collection, EventTypeUtils.ToEnums(typeof(TEvent)), range) { }
+
+	public TEvent Current => (TEvent)(events?.Current ?? throw new InvalidOperationException());
+	object IEnumerator.Current => Current;
+	public bool MoveNext()
 	{
-		protected readonly IEnumerator<KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>> beats;
-		protected IEnumerator<IBaseEvent>? events;
-		protected readonly OrderedEventCollection collection;
-		private ReadOnlyEnumCollection<EventType> types;
-		private RDRange range;
-		public EventEnumerator(OrderedEventCollection collection) : this(collection, RDRange.Infinity) { }
-		public EventEnumerator(OrderedEventCollection collection, RDRange range) : this(collection, EventTypeUtils.ToEnums(typeof(TEvent)), range) { }
-		public EventEnumerator(OrderedEventCollection collection, ReadOnlyEnumCollection<EventType> types, RDRange range)
+		bool result;
+		while (result = (events?.MoveNext() ?? false))
+			if (types.Contains(events!.Current.Type))
+				return true;
+		if (!result)
 		{
-			//collection._modifierInstances[this] = [];
-			this.collection = collection;
-			beats = collection.eventsBeatOrder.GetEnumerator();
-			this.types = types;
-			this.range = range;
-		}
-		public TEvent Current => (TEvent)(events?.Current ?? throw new InvalidOperationException());
-		object IEnumerator.Current => Current;
-		public bool MoveNext()
-		{
-			bool result;
-			while (result = (events?.MoveNext() ?? false))
-				if (types.Contains(events!.Current.Type))
-					return true;
-			if (!result)
+			while (beats.MoveNext())
 			{
-				while (beats.MoveNext())
+				if (range.Start is not null && !(beats.Current.Key > range.Start) || !beats.Current.Value.ContainsTypes(types))
 				{
-					if (range.Start is not null && !(beats.Current.Key > range.Start) || !beats.Current.Value.ContainsTypes(types))
-					{
-						events = beats.Current.Value.GetEnumerator();
-						continue;
-					}
-					if (!beats.Current.Value.ContainsTypes(types))
-					{
-						continue;
-					}
-					if (range.End is not null && range.End <= beats.Current.Key)
-						return false;
 					events = beats.Current.Value.GetEnumerator();
-					while (events.MoveNext())
-					{
-						if (types.Contains(events.Current.Type))
-							return true;
-					}
+					continue;
+				}
+				if (!beats.Current.Value.ContainsTypes(types))
+				{
+					continue;
+				}
+				if (range.End is not null && range.End <= beats.Current.Key)
+					return false;
+				events = beats.Current.Value.GetEnumerator();
+				while (events.MoveNext())
+				{
+					if (types.Contains(events.Current.Type))
+						return true;
 				}
 			}
-			return result;
 		}
-		public void Dispose()
-		{
-		}
-		public void Reset() => throw new NotSupportedException();
-		public IEventEnumerable<TEvent2> OfEvent<TEvent2>() where TEvent2 : IBaseEvent
-		{
-			ReadOnlyEnumCollection<EventType> types = this.types.Intersect(EventTypeUtils.ToEnums(typeof(TEvent2)));
-			this.types = types;
-			return this as EventEnumerator<TEvent2> ?? new(collection, types, range);
-		}
-		public IEventEnumerable<IBaseEvent> OfEvents(ReadOnlyEnumCollection<EventType> types)
-		{
-			this.types = types;
-			return this as EventEnumerator<IBaseEvent> ?? new(collection, types, range);
-		}
-		public EventEnumerator<TEvent> InRange(RDRange range)
-		{
-			this.range = this.range.Intersect(range);
-			return this;
-		}
-		public IEnumerable<TEvent> AtBeat(RDBeat beat)
-		{
-			if (!range.Contains(beat))
-				yield break;
-			if (!collection.eventsBeatOrder.TryGetValue(beat, out var events))
-				yield break;
-			if (!events.ContainsTypes(types))
-				yield break;
-			foreach (var ev in events)
-				if (types.Contains(ev.Type))
-					yield return (TEvent)ev;
-		}
-		public IEnumerator<TEvent> GetEnumerator() => this;
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		return result;
 	}
+	public void Dispose()
+	{
+	}
+	public void Reset() => throw new NotSupportedException();
+	public IEventEnumerable<TEvent2> OfEvent<TEvent2>() where TEvent2 : IBaseEvent
+	{
+		ReadOnlyEnumCollection<EventType> types = this.types.Intersect(EventTypeUtils.ToEnums(typeof(TEvent2)));
+		this.types = types;
+		return this as EventEnumerator<TEvent2> ?? new(collection, types, range);
+	}
+	public IEventEnumerable<IBaseEvent> OfEvents(ReadOnlyEnumCollection<EventType> types)
+	{
+		this.types = types;
+		return this as EventEnumerator<IBaseEvent> ?? new(collection, types, range);
+	}
+	public EventEnumerator<TEvent> InRange(RDRange range)
+	{
+		this.range = this.range.Intersect(range);
+		return this;
+	}
+	public IEnumerable<TEvent> AtBeat(RDBeat beat)
+	{
+		if (!range.Contains(beat))
+			yield break;
+		if (!collection.eventsBeatOrder.TryGetValue(beat, out var events))
+			yield break;
+		if (!events.ContainsTypes(types))
+			yield break;
+		foreach (var ev in events)
+			if (types.Contains(ev.Type))
+				yield return (TEvent)ev;
+	}
+	public IEnumerator<TEvent> GetEnumerator() => this;
+	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

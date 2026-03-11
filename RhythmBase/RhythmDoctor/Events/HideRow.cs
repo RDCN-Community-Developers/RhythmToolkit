@@ -1,7 +1,7 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents an event to hide a row with specific transitions and visibility options.
+/// Represents an event to hide or show a row.
 /// </summary>
 [RDJsonObjectSerializable]
 public record class HideRow : BaseRowAnimation
@@ -18,7 +18,6 @@ public record class HideRow : BaseRowAnimation
 	/// Gets the type of the event.
 	/// </summary>
 	public override EventType Type => EventType.HideRow;
-
 	/// <summary>
 	/// Gets the tab category of the event.
 	/// </summary>

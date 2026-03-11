@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Components.Conditions;
+namespace RhythmBase.RhythmDoctor.Components.Conditions;
 
 /// <summary>
 /// Represents a condition based on the last hit in a rhythm game.
@@ -43,7 +43,7 @@ public class LastHitCondition : BaseConditional
 		/// </summary>
 		VeryLate = 5,
 		/// <summary>
-		/// The hit was either slightly early or slightly late.
+		/// The hit was either early or late.
 		/// </summary>
 		AnyEarlyOrLate = 7,
 		/// <summary>

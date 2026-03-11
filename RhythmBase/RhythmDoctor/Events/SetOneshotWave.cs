@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>  
 /// Represents an event to set a one-shot wave.  
@@ -13,11 +13,11 @@ public record class SetOneshotWave : BaseBeat
 	/// <summary>  
 	/// Gets or sets the height of the wave.  
 	/// </summary>  
-	public int Height { get; set; } = 100;
+	public int Height { get; set; }
 	/// <summary>  
 	/// Gets or sets the width of the wave.  
 	/// </summary>  
-	public int Width { get; set; } = 100;
+	public int Width { get; set; }
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetOneshotWave;
 }

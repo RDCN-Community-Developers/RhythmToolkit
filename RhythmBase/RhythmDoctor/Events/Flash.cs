@@ -1,9 +1,9 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents a Flash event in the rhythm base.
+/// Represents a Flash event.
 /// </summary>
 [RDJsonObjectSerializable]
 public record class Flash : BaseEvent

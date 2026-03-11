@@ -1,22 +1,21 @@
-﻿namespace RhythmBase.Global.Exceptions
+namespace RhythmBase.Global.Exceptions;
+
+/// <summary>
+/// Represents errors that occur during expression evaluation in the RhythmBase application.
+/// </summary>
+public class ExpressionException : RhythmBaseException
 {
 	/// <summary>
-	/// Represents errors that occur during expression evaluation in the RhythmBase application.
+	/// Initializes a new instance of the <see cref="ExpressionException"/> class.
 	/// </summary>
-	public class ExpressionException : RhythmBaseException
+	public ExpressionException()
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ExpressionException"/> class.
-		/// </summary>
-		public ExpressionException()
-		{
-		}
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ExpressionException"/> class with a specified error message.
-		/// </summary>
-		/// <param name="message">The message that describes the error.</param>
-		public ExpressionException(string message) : base(message)
-		{
-		}
+	}
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ExpressionException"/> class with a specified error message.
+	/// </summary>
+	/// <param name="message">The message that describes the error.</param>
+	public ExpressionException(string message) : base(message)
+	{
 	}
 }

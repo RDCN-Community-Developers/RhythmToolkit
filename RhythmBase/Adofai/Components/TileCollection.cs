@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Events;
+using RhythmBase.Adofai.Events;
 using System.Collections;
 namespace RhythmBase.Adofai.Components
 {
@@ -86,8 +86,7 @@ namespace RhythmBase.Adofai.Components
 					Start = item;
 				item.Previous = End.Previous;
 				item.Next = End;
-				if (item.Previous != null)
-					item.Previous.Next = item;
+				item.Previous?.Next = item;
 				End.Previous = item;
 			}
 			else

@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -17,7 +17,10 @@ public record class Stutter : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the length of the stutter event.
 	/// </summary>
-	public float Length { get; set; } = 1f;
+	/// <remarks>
+	/// Must be a value greater than 0 to avoid potential issues with non-positive values.
+	/// </remarks>
+	public float Length { get; set; }
 	/// <summary>
 	/// Gets or sets the action of the stutter event.
 	/// </summary>
@@ -25,7 +28,10 @@ public record class Stutter : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the number of loops for the stutter event.
 	/// </summary>
-	public int Loops { get; set; } = 1;
+	/// <remarks>
+	/// Must be a value greater than 0 to avoid potential issues with non-positive values.
+	/// </remarks>
+	public int Loops { get; set; }
 	///<inheritdoc/>
 	public override EventType Type => EventType.Stutter;
 	///<inheritdoc/>

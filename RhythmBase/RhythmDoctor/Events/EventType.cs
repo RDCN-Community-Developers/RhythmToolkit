@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
 /// Rhythm Doctor event types.
@@ -337,6 +337,4 @@ public enum EventType
 	/// Resize the game window.  
 	/// </summary>  
 	WindowResize,
-#if DEBUG
-#endif
 }

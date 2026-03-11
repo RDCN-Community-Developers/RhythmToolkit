@@ -1,103 +1,122 @@
 using RhythmBase.RhythmDoctor.Converters;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
-namespace RhythmBase.RhythmDoctor.Components
+namespace RhythmBase.RhythmDoctor.Components;
+
+/// <summary>
+/// Represents a unique order of rooms identified by their IDs.
+/// </summary>
+[JsonConverter(typeof(RoomOrderConverter))]
+public readonly struct RoomOrder
 {
+	private readonly byte _id;
+
 	/// <summary>
-	/// Represents a unique order of rooms identified by their IDs.
+	/// Initializes a new instance of the <see cref="RoomOrder"/> struct with the specified room IDs.
 	/// </summary>
-	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRoomOrder))]
-	[JsonConverter(typeof(RoomOrderConverter))]
-	public struct RoomOrder
+	/// <param name="tgt1">The ID of the first room.</param>
+	/// <param name="tgt2">The ID of the second room.</param>
+	/// <param name="tgt3">The ID of the third room.</param>
+	/// <param name="tgt4">The ID of the fourth room.</param>
+	/// <exception cref="ArgumentException">Thrown when room IDs are not unique.</exception>
+	public RoomOrder(int tgt1, int tgt2, int tgt3, int tgt4)
 	{
-		private byte _id;
+		if (tgt1 == tgt2 || tgt1 == tgt3 || tgt1 == tgt4 ||
+			tgt2 == tgt3 || tgt2 == tgt4 ||
+			tgt3 == tgt4)
+			throw new ArgumentException("Room IDs must be unique.");
+		_id = (byte)(tgt1 * 6
+			+ (tgt2 > tgt3 ? 2 : 0) + (tgt2 > tgt4 ? 2 : 0)
+			+ (tgt3 > tgt4 ? 1 : 0));
+	}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RoomOrder"/> struct with the specified room IDs.
-		/// </summary>
-		/// <param name="tgt1">The ID of the first room.</param>
-		/// <param name="tgt2">The ID of the second room.</param>
-		/// <param name="tgt3">The ID of the third room.</param>
-		/// <param name="tgt4">The ID of the fourth room.</param>
-		/// <exception cref="ArgumentException">Thrown when room IDs are not unique.</exception>
-		public RoomOrder(int tgt1, int tgt2, int tgt3, int tgt4)
+	/// <summary>
+	/// Gets the order of room IDs as an array of bytes.
+	/// </summary>
+	public readonly byte[] Order
+	{
+		get
 		{
-			if (tgt1 == tgt2 || tgt1 == tgt3 || tgt1 == tgt4 ||
-				tgt2 == tgt3 || tgt2 == tgt4 ||
-				tgt3 == tgt4)
-				throw new ArgumentException("Room IDs must be unique.");
-			_id = (byte)(tgt1 * 6
-				+ (tgt2 > tgt3 ? 2 : 0) + (tgt2 > tgt4 ? 2 : 0)
-				+ (tgt3 > tgt4 ? 1 : 0));
+			(byte id1, byte rm1) = byte.DivRem(_id, 6);
+			(byte id2, byte rm2) = byte.DivRem(rm1, 2);
+			List<byte> l = [0, 1, 2, 3];
+			byte o1 = l[id1];
+			l.RemoveAt(id1);
+			byte o2 = l[id2];
+			l.RemoveAt(id2);
+			byte o3 = l[rm2];
+			l.RemoveAt(rm2);
+			return [o1, o2, o3, l[0]];
 		}
+	}
 
-		/// <summary>
-		/// Gets the order of room IDs as an array of bytes.
-		/// </summary>
-		public readonly byte[] Order
+	/// <summary>
+	/// Gets the room ID at the specified index in the order.
+	/// </summary>
+	/// <param name="index">The index of the room ID to retrieve (0 to 3).</param>
+	/// <returns>The room ID at the specified index.</returns>
+	/// <exception cref="ArgumentOutOfRangeException">Thrown when the index is out of range.</exception>
+	public readonly byte this[int index]
+	{
+		get
 		{
-			get
-			{
-				(byte id1, byte rm1) = byte.DivRem(_id, 6);
-				(byte id2, byte rm2) = byte.DivRem(rm1, 2);
-				List<byte> l = [0, 1, 2, 3];
-				byte o1 = l[id1];
-				l.RemoveAt(id1);
-				byte o2 = l[id2];
-				l.RemoveAt(id2);
-				byte o3 = l[rm2];
-				l.RemoveAt(rm2);
-				return [o1, o2, o3, l[0]];
-			}
+			return index < 0 || index > 3
+				? throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 3.")
+				: Order[index];
 		}
+	}
 
-		/// <summary>
-		/// Gets the room ID at the specified index in the order.
-		/// </summary>
-		/// <param name="index">The index of the room ID to retrieve (0 to 3).</param>
-		/// <returns>The room ID at the specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the index is out of range.</exception>
-		public readonly byte this[int index]
-		{
-			get
-			{
-				if (index < 0 || index > 3)
-					throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 3.");
-				return Order[index];
-			}
-		}
+	/// <summary>
+	/// Returns a string representation of the room order.
+	/// </summary>
+	/// <returns>A string representing the room order.</returns>
+	public readonly override string ToString()
+	{
+		return $"RoomOrder: {string.Join(", ", Order)}";
+	}
 
-		/// <summary>
-		/// Returns a string representation of the room order.
-		/// </summary>
-		/// <returns>A string representing the room order.</returns>
-		public readonly override string ToString()
-		{
-			return $"RoomOrder: {string.Join(", ", Order)}";
-		}
+	/// <summary>
+	/// Implicitly converts a <see cref="RoomOrder"/> to a byte array.
+	/// </summary>
+	/// <param name="order">The <see cref="RoomOrder"/> to convert.</param>
+	public static implicit operator int[](RoomOrder order) => [.. order.Order.Cast<byte>()];
 
-		/// <summary>
-		/// Implicitly converts a <see cref="RoomOrder"/> to a byte array.
-		/// </summary>
-		/// <param name="order">The <see cref="RoomOrder"/> to convert.</param>
-		public static implicit operator int[](RoomOrder order) => [.. order.Order.Cast<byte>()];
-
-		/// <summary>
-		/// Implicitly converts a byte array to a <see cref="RoomOrder"/>.
-		/// </summary>
-		/// <param name="order">The byte array to convert.</param>
-		/// <returns>A <see cref="RoomOrder"/> instance.</returns>
-		/// <exception cref="ArgumentException">Thrown when the byte array length is not 4.</exception>
-		public static implicit operator RoomOrder(int[] order)
-		{
-			if (order.Length != 4)
-				throw new ArgumentException("Order must be an array of 4 bytes.");
-			return new RoomOrder(order[0], order[1], order[2], order[3]);
-		}
-		public IEnumerator<byte> GetEnumerator()
-		{
-			return (IEnumerator<byte>)Order.GetEnumerator();
-		}
+	/// <summary>
+	/// Implicitly converts a byte array to a <see cref="RoomOrder"/>.
+	/// </summary>
+	/// <param name="order">The byte array to convert.</param>
+	/// <returns>A <see cref="RoomOrder"/> instance.</returns>
+	/// <exception cref="ArgumentException">Thrown when the byte array length is not 4.</exception>
+	public static implicit operator RoomOrder(int[] order)
+	{
+		return order.Length != 4
+			? throw new ArgumentException("Order must be an array of 4 bytes.")
+			: new RoomOrder(order[0], order[1], order[2], order[3]);
+	}
+	/// <summary>
+	/// Implicitly converts a tuple containing four room identifiers to a RoomOrder instance.
+	/// </summary>
+	/// <remarks>This implicit conversion enables concise and readable creation of RoomOrder objects from tuples,
+	/// allowing developers to assign a tuple of four bytes directly where a RoomOrder is expected.</remarks>
+	/// <param name="order">A tuple of four byte values, each representing a room identifier to be included in the RoomOrder.</param>
+	public static implicit operator RoomOrder((byte room0, byte room1, byte room2, byte room3) order)
+	{
+		return new RoomOrder(order.room0, order.room1, order.room2, order.room3);
+	}
+	/// <summary>
+	/// Deconstructs the current instance into four separate byte values, each representing the state of a room.
+	/// </summary>
+	/// <remarks>Use this method to unpack the room states into individual variables for easier access or further
+	/// processing. This is particularly useful when working with deconstruction syntax in C#.</remarks>
+	/// <param name="room0">When this method returns, contains the byte value representing the state of room 0.</param>
+	/// <param name="room1">When this method returns, contains the byte value representing the state of room 1.</param>
+	/// <param name="room2">When this method returns, contains the byte value representing the state of room 2.</param>
+	/// <param name="room3">When this method returns, contains the byte value representing the state of room 3.</param>
+	public void Deconstruct(out byte room0, out byte room1, out byte room2, out byte room3)
+	{
+		room0 = this[0];
+		room1 = this[1];
+		room2 = this[2];
+		room3 = this[3];
 	}
 }

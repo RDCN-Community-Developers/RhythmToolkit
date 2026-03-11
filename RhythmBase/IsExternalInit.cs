@@ -1,43 +1,83 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 #if NETSTANDARD2_0
 #pragma warning disable IDE0130
 namespace System
 {
-	internal readonly struct Index : IEquatable<Index>
+	internal static class ExceptionExtensions
 	{
-		public Index(int value, bool fromEnd = false)
+		extension(ArgumentNullException)
 		{
-			Value = value;
-			IsFromEnd = fromEnd;
+			public static void ThrowIfNull(object? value, string paramName)
+			{
+				if (value is null)
+					throw new ArgumentNullException(paramName);
+			}
 		}
+		extension(ArgumentOutOfRangeException)
+		{
+			public static void ThrowIfOutOfRange(int value, int minValue, int maxValue, string paramName)
+			{
+				if (value < minValue || value > maxValue)
+					throw new ArgumentOutOfRangeException(paramName, $"Value must be between {minValue} and {maxValue}.");
+			}
+			public static void ThrowIfNegative(int value, string paramName)
+			{
+				if (value < 0)
+					throw new ArgumentOutOfRangeException(paramName, "Value must be non-negative.");
+			}
+			public static void ThrowIfZeroOrNegative(int value, string paramName)
+			{
+				if (value <= 0)
+					throw new ArgumentOutOfRangeException(paramName, "Value must be greater than zero.");
+			}
+			public static void ThrowIfNullOrEmpty(string? value, string paramName)
+			{
+				if (string.IsNullOrEmpty(value))
+					throw new ArgumentOutOfRangeException(paramName, "Value cannot be null or empty.");
+			}
+			public static void ThrowIfNullOrWhiteSpace(string? value, string paramName)
+			{
+				if (string.IsNullOrWhiteSpace(value))
+					throw new ArgumentOutOfRangeException(paramName, "Value cannot be null or whitespace.");
+			}
+			public static void ThrowIfNotInRange(int value, int[] validValues, string paramName)
+			{
+				if (Array.IndexOf(validValues, value) < 0)
+					throw new ArgumentOutOfRangeException(paramName, $"Value must be one of the following: {string.Join(", ", validValues)}.");
+			}
+			public static void ThrowIfNotInRange<T>(T value, T[] validValues, string paramName) where T : IEquatable<T>
+			{
+				if (Array.IndexOf(validValues, value) < 0)
+					throw new ArgumentOutOfRangeException(paramName, $"Value must be one of the following: {string.Join(", ", validValues)}.");
+			}
+			public static void ThrowIfNotInRange<T>(T value, IEnumerable<T> validValues, string paramName) where T : IEquatable<T>
+			{
+				if (!validValues.Contains(value))
+					throw new ArgumentOutOfRangeException(paramName, $"Value must be one of the following: {string.Join(", ", validValues)}.");
+			}
+		}
+	}
+	internal readonly struct Index(int value, bool fromEnd = false) : IEquatable<Index>
+	{
 		public static Index End { get; } = new Index(0, false);
 		public static Index Start { get; } = new Index(0, true);
-		public bool IsFromEnd { get; }
-		public int Value { get; }
-		public static Index FromEnd(int value) => new Index(value, true);
-		public static Index FromStart(int value) => new Index(value, false);
+		public bool IsFromEnd { get; } = fromEnd;
+		public int Value { get; } = value;
+		public static Index FromEnd(int value) => new(value, true);
+		public static Index FromStart(int value) => new(value, false);
 		public bool Equals(Index other) => Value == other.Value && IsFromEnd == other.IsFromEnd;
 		public override bool Equals([NotNullWhen(true)] object? value) => value is Index other && Equals(other);
 		public override int GetHashCode() => Value.GetHashCode() ^ IsFromEnd.GetHashCode();
 		public int GetOffset(int length) => IsFromEnd ? length - Value : Value;
 		public override string ToString() => IsFromEnd ? "^" + Value.ToString() : Value.ToString();
-		public static implicit operator Index(int value) => new Index(value);
+		public static implicit operator Index(int value) => new(value);
 	}
-	internal readonly struct Range : IEquatable<Range>
+	internal readonly struct Range(Index start, Index end) : IEquatable<Range>
 	{
-		public Range(Index start, Index end)
-		{
-			Start = start;
-			End = end;
-		}
 		public static Range All { get; }
-		public Index End { get; }
-		public Index Start { get; }
+		public Index End { get; } = end;
+		public Index Start { get; } = start;
 		public static Range EndAt(Index end) => new(new Index(0, false), end);
 		public static Range StartAt(Index start) => new(start, new Index(0, true));
 		public override bool Equals([NotNullWhen(true)] object? value) => value is Range other && Equals(other);
@@ -47,9 +87,9 @@ namespace System
 		{
 			int startOffset = Start.GetOffset(length);
 			int endOffset = End.GetOffset(length);
-			if (startOffset > endOffset)
-				throw new ArgumentOutOfRangeException(nameof(length), "Start index must be less than or equal to end index.");
-			return (startOffset, endOffset - startOffset);
+			return startOffset > endOffset
+				? throw new ArgumentOutOfRangeException(nameof(length), "Start index must be less than or equal to end index.")
+				: ((int Offset, int Length))(startOffset, endOffset - startOffset);
 		}
 		public override string ToString() => $"[{Start}..{End}]";
 	}
@@ -89,10 +129,9 @@ namespace System
 			{
 				string[] result = new string[count];
 				int startIndex = 0;
-				int endIndex = 0;
 				for (int i = 0; i < count - 1; i++)
 				{
-					endIndex = e.IndexOf(separator, startIndex);
+					int endIndex = e.IndexOf(separator, startIndex);
 					if (endIndex == -1)
 					{
 						Array.Resize(ref result, i + 1);
@@ -124,13 +163,9 @@ namespace System
 namespace System.Diagnostics.CodeAnalysis
 {
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, Inherited = false)]
-	internal class NotNullWhenAttribute : Attribute
+	internal class NotNullWhenAttribute(bool returnValue) : Attribute
 	{
-		public NotNullWhenAttribute(bool returnValue)
-		{
-			ReturnValue = returnValue;
-		}
-		public bool ReturnValue { get; }
+		public bool ReturnValue { get; } = returnValue;
 	}
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, Inherited = false)]
 	internal sealed class NotNullAttribute : Attribute
@@ -165,10 +200,9 @@ namespace System.Diagnostics.CodeAnalysis
 	}
 	[AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
 	internal
-			sealed class MaybeNullWhenAttribute : Attribute
+			sealed class MaybeNullWhenAttribute(bool returnValue) : Attribute
 	{
-		public MaybeNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
-		public bool ReturnValue { get; }
+		public bool ReturnValue { get; } = returnValue;
 	}
 }
 namespace System.Runtime.CompilerServices
@@ -176,15 +210,10 @@ namespace System.Runtime.CompilerServices
 	internal static class IsExternalInit
 	{
 	}
-	internal sealed class CollectionBuilderAttribute : Attribute
+	internal sealed class CollectionBuilderAttribute(Type builderType, string methodName) : Attribute
 	{
-		public CollectionBuilderAttribute(Type builderType, string methodName)
-		{
-			BuilderType = builderType;
-			MethodName = methodName;
-		}
-		public Type BuilderType { get; }
-		public string MethodName { get; }
+		public Type BuilderType { get; } = builderType;
+		public string MethodName { get; } = methodName;
 	}
 }
 namespace System.Text
@@ -202,39 +231,40 @@ namespace System.IO
 		{
 			public static string GetFullPath(string path, string basePath)
 			{
-				if (System.IO.Path.IsPathRooted(path))
-					return path;
-				return System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(basePath) ?? "", path));
+				return System.IO.Path.IsPathRooted(path)
+					? path
+					: System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(basePath) ?? "", path));
 			}
 		}
 	}
 }
 namespace System.Collections.Generic
 {
-internal static class StackExtensions
-{
-	public static bool TryPeek<T>(this Stack<T> stack, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out T result)
+	internal static class StackExtensions
 	{
-		if (stack.Count > 0)
+		public static bool TryPeek<T>(this Stack<T> stack, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out T result)
 		{
-			result = stack.Peek();
-			return true;
+			if (stack.Count > 0)
+			{
+				result = stack.Peek();
+				return true;
+			}
+
+			result = default;
+			return false;
 		}
 
-		result = default(T);
-		return false;
-	}
-
-	public static bool TryPop<T>(this Stack<T> stack, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out T result)
-	{
-		if (stack.Count > 0)
+		public static bool TryPop<T>(this Stack<T> stack, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out T result)
 		{
-			result = stack.Pop();
-			return true;
-		}
+			if (stack.Count > 0)
+			{
+				result = stack.Pop();
+				return true;
+			}
 
-		result = default(T);
-		return false;
+			result = default;
+			return false;
+		}
 	}
-}}
+}
 #endif

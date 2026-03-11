@@ -1,12 +1,8 @@
-﻿using RhythmBase.RhythmDoctor.Converters;
-using System.Text.Json.Serialization;
-
 namespace RhythmBase.RhythmDoctor.Components
 {
 	/// <summary>
 	/// Represents a bookmark in the rhythm base.
 	/// </summary>
-	[JsonConverter(typeof(BookmarkConverter))]
 	public class Bookmark
 	{
 		/// <summary>

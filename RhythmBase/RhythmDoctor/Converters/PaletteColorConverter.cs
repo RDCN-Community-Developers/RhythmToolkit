@@ -2,29 +2,29 @@ using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RhythmBase.RhythmDoctor.Converters
-{
-	internal class PaletteColorConverter : JsonConverter<PaletteColor>
-	{
-		public override PaletteColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-		{
-			ReadOnlySpan<byte> t = reader.ValueSpan;
-			if (t.Length == 0) return default;
-			return (t is [0x70, 0x61, 0x6c, ..])
-				? new(int.Parse(t[3..]))
-				: new(RDColor.FromRgba(t));
-		}
+namespace RhythmBase.RhythmDoctor.Converters;
 
-		public override void Write(Utf8JsonWriter writer, PaletteColor value, JsonSerializerOptions options)
+internal class PaletteColorConverter : JsonConverter<PaletteColor>
+{
+	public override PaletteColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		ReadOnlySpan<byte> t = reader.ValueSpan;
+		return t.Length == 0
+			? default
+			: (t is [0x70, 0x61, 0x6c, ..])
+			? new(int.Parse(t[3..]))
+			: new(RDColor.FromRgba(t));
+	}
+
+	public override void Write(Utf8JsonWriter writer, PaletteColor value, JsonSerializerOptions options)
+	{
+		if (value.EnablePanel)
 		{
-			if (value.EnablePanel)
-			{
-				writer.WriteStringValue($"pal{value.PaletteIndex}");
-			}
-			else
-			{
-				writer.WriteStringValue(value.Value.ToString("RRGGBB"));
-			}
+			writer.WriteStringValue($"pal{value.PaletteIndex}");
+		}
+		else
+		{
+			writer.WriteStringValue(value.Value.ToString("RRGGBB"));
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
 /// Represents an action to set the visibility of a decoration.
@@ -14,7 +14,7 @@ public record class SetVisible : BaseDecorationAction
 	/// <summary>
 	/// Gets or sets a value indicating whether the decoration is visible.
 	/// </summary>
-	public bool Visible { get; set; } = true;
+	public bool Visible { get; set; }
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" {Visible}";
 }

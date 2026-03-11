@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -12,10 +12,7 @@ public record class SetClapSounds : BaseEvent, IAudioFileEvent
 	/// Gets or sets the clap sound for player 1.
 	/// </summary>
 	[RDJsonCondition("$&.P1Sound is not null")]
-	public RDAudio? P1Sound { get; set; } = new RDAudio()
-	{
-		Filename = "ClapHit",
-	};
+	public RDAudio? P1Sound { get; set; }
 	/// <summary>
 	/// Gets or sets the clap sound for player 2.
 	/// </summary>

@@ -1,9 +1,7 @@
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Components.Linq;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace RhythmBase.RhythmDoctor.Extensions
 {
@@ -31,10 +29,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 						.LastOrDefault(i => i.Active && e.IsBehind(i));
 					if (x is null || 0 > x.SyncoBeat)
 						return 0f;
-					else if (x.SyncoSwing == 0f)
-						return 0.5f;
-					else
-						return x.SyncoSwing;
+					else return x.SyncoSwing == 0f ? 0.5f : x.SyncoSwing;
 				}
 			}
 			/// <summary>
@@ -340,7 +335,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			/// <summary>
 			/// Creates a new <see cref="T:RhythmBase.RhythmDoctor.Events.AdvanceText" /> subordinate to <see cref="T:RhythmBase.RhythmDoctor.Events.FloatingText" /> at the specified beat. The new event created will be attempted to be added to the <see cref="T:RhythmBase.RhythmDoctor.Events.FloatingText" />'s source level.
 			/// </summary>
-			/// <param name="e">RDLevel</param>
 			/// <param name="beat">Specified beat.</param>
 			public AdvanceText CreateChild(RDBeat beat)
 			{
@@ -517,14 +511,13 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <exception cref="InvalidRDBeatException"></exception>
 		public static RDBeat DurationOffset(this RDBeat beat, float duration)
 		{
-			SetBeatsPerMinute? setBpm = beat.BaseLevel?.InRange(beat, null).OfEvent<SetBeatsPerMinute>().FirstOrDefault();
-			(int bbar, _) = beat;
-			(int sbar, _) = setBpm.Beat;
-			RDBeat DurationOffset =
-				bbar == sbar
-				? beat + duration
-				: beat + TimeSpan.FromMinutes(duration / beat.Bpm);
-			return DurationOffset;
+			beat.IfNullThrowException();
+			RDBeat off = beat + duration;
+			if(off.Bpm == beat.Bpm)
+				return off;
+			TimeSpan offt = TimeSpan.FromMinutes(duration / beat.Bpm);
+			off = beat + offt;
+			return off;
 		}
 		/// <summary>
 		/// Determine if <paramref name="item1" /> is after <paramref name="item2" />
@@ -533,7 +526,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <item>If <paramref name="item1" /> is after <paramref name="item2" />, <see langword="true" /></item>
 		/// <item>Else, <see langword="false" /></item>
 		/// </list></returns>
-		public static bool IsBehind(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) => item1.Beat > item2.Beat || (Math.Abs(item1.Beat.BeatOnly - item2.Beat.BeatOnly) < GlobalSettings.Tolerance && e.eventsBeatOrder[item1.Beat].CompareTo(item2, item1));
+		public static bool IsBehind(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) => item1.Beat > item2.Beat || (Math.Abs(item1.Beat.BeatOnly - item2.Beat.BeatOnly) < Global.Constants.Constants.Tolerance && e.eventsBeatOrder[item1.Beat].CompareTo(item2, item1));
 		/// <summary>
 		/// Check if another event is after itself, including events of the same beat but executed after itself.
 		/// </summary>
@@ -545,24 +538,11 @@ namespace RhythmBase.RhythmDoctor.Extensions
 		/// <item>If <paramref name="item1" /> is in front of <paramref name="item2" />, <see langword="true" /></item>
 		/// <item>Else, <see langword="false" /></item>
 		/// </list></returns>
-		public static bool IsInFrontOf(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) => item1.Beat < item2.Beat || (Math.Abs(item1.Beat.BeatOnly - item2.Beat.BeatOnly) < GlobalSettings.Tolerance && e.eventsBeatOrder[item1.Beat].CompareTo(item1, item2));
+		public static bool IsInFrontOf(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) => item1.Beat < item2.Beat || (Math.Abs(item1.Beat.BeatOnly - item2.Beat.BeatOnly) < Global.Constants.Constants.Tolerance && e.eventsBeatOrder[item1.Beat].CompareTo(item1, item2));
 		/// <summary>
 		/// Check if another event is in front of itself, including events of the same beat but executed before itself.
 		/// </summary>
 		public static bool IsInFrontOf(this IBaseEvent e, IBaseEvent item) => e.Beat.BaseLevel?.IsInFrontOf(e, item) ?? throw new InvalidRDBeatException();
-		///// <summary>
-		///// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
-		///// </summary>
-		///// <param name="spriteSize">Sprite size. </param>
-		///// <param name="e">RDLevel</param>
-		///// <param name="target">Specified position. </param>
-		//public static void MovePositionMaintainVisual(this Move e, RDSizeE spriteSize, RDPoint target)
-		//{
-		//	if (e is not { Position: not null, Pivot: not null, Angle.IsNumeric: true })
-		//		return;
-		//	e.Position = new RDPointE?(target);
-		//	e.Pivot = new RDPoint?((e.VisualPosition(spriteSize) - new RDSize(target)).Rotate(e.Angle.Value.NumericValue));
-		//}
 		/// <summary>
 		/// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
 		/// </summary>
@@ -573,20 +553,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			e.Position = (RDPoint)target;
 			e.Pivot = (e.VisualPosition() - target).Rotate(e.Angle ?? 0);
 		}
-		///// <summary>
-		///// The visual position of the lower left corner of the image.
-		///// </summary>
-		//public static RDPoint VisualPosition(this Move e, RDSize spriteSize)
-		//{
-		//	RDPoint visualPosition = default;
-		//	if (e is not { Position: not null, Pivot: not null, Angle.IsNumeric: true, Scale: not null })
-		//		return visualPosition;
-		//	RDPoint previousPosition = e.Position.Value;
-		//	float? x = e.Pivot?.X * (e.Scale?.Width) * spriteSize.Width / 100f;
-		//	RDPoint previousPivot = new(x, e.Pivot?.Y * (e.Scale?.Height) * spriteSize.Height / 100f);
-		//	visualPosition = previousPosition + new RDSize(previousPivot.Rotate(e.Angle.Value.NumericValue));
-		//	return visualPosition;
-		//}
 		/// <summary>
 		/// The visual position of the lower left corner of the image.
 		/// </summary>

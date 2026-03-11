@@ -1,414 +1,382 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RhythmBase.RhythmDoctor.Converters
-{
-	internal sealed class LevelConverter : JsonConverter<RDLevel>
-	{
-		private static readonly SettingsConverter settingsConverter = new();
-		private static readonly RowConverter rowConverter = new();
-		private static readonly DecorationConverter decorationConverter = new();
-		private static readonly BaseEventConverter baseEventConverter = new();
-		private static readonly BookmarkConverter bookmarkConverter = new();
-		private static readonly ConditionalConverter conditionalConverter = new();
-		internal LevelReadSettings ReadSettings { get; set; } = new();
-		internal LevelWriteSettings WriteSettings { get; set; } = new();
-		internal string? DirectoryName { get; set; }
-		public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-		{
-			baseEventConverter.WithReadSettings(ReadSettings);
-			RDLevel level = [];
-			ReadSettings.FileReferences.Clear();
-			if (reader.TokenType != JsonTokenType.StartObject)
-				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
-			reader.Read();
-			while (true)
-			{
+namespace RhythmBase.RhythmDoctor.Converters;
 
-				if (reader.TokenType == JsonTokenType.EndObject)
-					break;
-				if (reader.TokenType != JsonTokenType.PropertyName)
-				{
-					throw new JsonException($"Expected PropertyName token, but got {reader.TokenType}.");
-				}
-				if (reader.ValueSpan.SequenceEqual("settings"u8))
-				{
-					reader.Read();
-					if (reader.TokenType != JsonTokenType.StartObject)
-						throw new JsonException($"Expected StartObject token for 'settings', but got {reader.TokenType}.");
-					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
-					if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-						foreach (FileReference file in level.Settings.GetAllFileReferences())
-							if (!file.IsEmpty && file.IsExist(DirectoryName!))
-								ReadSettings.FileReferences.Add(file);
-					if (level.Settings.Version < GlobalSettings.MinimumSupportedVersionRhythmDoctor)
+internal sealed class LevelConverter : JsonConverter<RDLevel>
+{
+	private static readonly SettingsConverter settingsConverter = new();
+	private static readonly RowConverter rowConverter = new();
+	private static readonly DecorationConverter decorationConverter = new();
+	private static readonly BaseEventConverter baseEventConverter = new();
+	private static readonly BookmarkConverter bookmarkConverter = new();
+	private static readonly ConditionalConverter conditionalConverter = new();
+	internal LevelReadSettings ReadSettings { get; set; } = new();
+	internal LevelWriteSettings WriteSettings { get; set; } = new();
+	internal string? DirectoryName { get; set; }
+	public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		baseEventConverter.WithReadSettings(ReadSettings);
+		RDLevel level = [];
+		ReadSettings.FileReferences.Clear();
+		if (reader.TokenType != JsonTokenType.StartObject)
+			throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
+		reader.Read();
+		while (true)
+		{
+
+			if (reader.TokenType == JsonTokenType.EndObject)
+				break;
+			if (reader.TokenType != JsonTokenType.PropertyName)
+			{
+				throw new JsonException($"Expected PropertyName token, but got {reader.TokenType}.");
+			}
+			if (reader.ValueSpan.SequenceEqual("settings"u8))
+			{
+				reader.Read();
+				if (reader.TokenType != JsonTokenType.StartObject)
+					throw new JsonException($"Expected StartObject token for 'settings', but got {reader.TokenType}.");
+				level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
+				if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+					foreach (FileReference file in level.Settings.GetAllFileReferences())
+						if (!file.IsEmpty && file.IsExist(DirectoryName!))
+							ReadSettings.FileReferences.Add(file);
+				if (level.Settings.Version < Global.Constants.Constants.MinimumSupportedVersionRhythmDoctor)
 #if DEBUG
-						Console.WriteLine($"Current version {level.Settings.Version} is too low.");
+					Console.WriteLine($"Current version {level.Settings.Version} is too low.");
 #else
-						throw new VersionTooLowException(GlobalSettings.MinimumSupportedVersionRhythmDoctor);
+					throw new VersionTooLowException(GlobalSettings.MinimumSupportedVersionRhythmDoctor);
 #endif
-				}
-				else if (reader.ValueSpan.SequenceEqual("rows"u8))
+			}
+			else if (reader.ValueSpan.SequenceEqual("rows"u8))
+			{
+				reader.Read();
+				if (reader.TokenType != JsonTokenType.StartArray)
+					throw new JsonException($"Expected StartArray token for 'rows', but got {reader.TokenType}.");
+				while (reader.Read())
 				{
-					reader.Read();
-					if (reader.TokenType != JsonTokenType.StartArray)
-						throw new JsonException($"Expected StartArray token for 'rows', but got {reader.TokenType}.");
-					while (reader.Read())
+					if (reader.TokenType == JsonTokenType.EndArray)
+						break;
+					Row? e = rowConverter.Read(ref reader, typeof(Row), options);
+					if (e != null)
 					{
-						if (reader.TokenType == JsonTokenType.EndArray)
-							break;
-						Row? e = rowConverter.Read(ref reader, typeof(Row), options);
-						if (e != null)
-						{
-							level.Rows.Add(e);
-							string assPath = DirectoryName + e.Character.CustomCharacter;
-							if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-								foreach (FileReference file in e.Character.GetAllPossibleFileReferences())
-									if (!file.IsEmpty && file.IsExist(DirectoryName!))
-										ReadSettings.FileReferences.Add(file);
-									else if (file.IsExist(assPath))
-										ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
-						}
+						level.Rows.Add(e);
+						string assPath = DirectoryName + e.Character.CustomCharacter;
+						if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+							foreach (FileReference file in e.Character.GetAllPossibleFileReferences())
+								if (!file.IsEmpty && file.IsExist(DirectoryName!))
+									ReadSettings.FileReferences.Add(file);
+								else if (file.IsExist(assPath))
+									ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
 					}
-					reader.Read();
 				}
-				else if (reader.ValueSpan.SequenceEqual("decorations"u8))
+				reader.Read();
+			}
+			else if (reader.ValueSpan.SequenceEqual("decorations"u8))
+			{
+				reader.Read();
+				if (reader.TokenType != JsonTokenType.StartArray)
+					throw new JsonException($"Expected StartArray token for 'decorations', but got {reader.TokenType}.");
+				while (reader.Read())
 				{
-					reader.Read();
-					if (reader.TokenType != JsonTokenType.StartArray)
-						throw new JsonException($"Expected StartArray token for 'decorations', but got {reader.TokenType}.");
-					while (reader.Read())
+					if (reader.TokenType == JsonTokenType.EndArray)
+						break;
+					Decoration? e = decorationConverter.Read(ref reader, typeof(Decoration), options);
+					if (e != null)
 					{
-						if (reader.TokenType == JsonTokenType.EndArray)
-							break;
-						Decoration? e = decorationConverter.Read(ref reader, typeof(Decoration), options);
-						if (e != null)
-						{
-							level.Decorations.Add(e);
-							string assPath = DirectoryName + e.Character.CustomCharacter;
-							if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-								foreach (FileReference file in e.Character.GetAllPossibleFileReferences())
-									if (!file.IsEmpty && file.IsExist(DirectoryName!))
-										ReadSettings.FileReferences.Add(file);
-									else if (file.IsExist(assPath))
-										ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
-						}
+						level.Decorations.Add(e);
+						string assPath = DirectoryName + e.Character.CustomCharacter;
+						if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+							foreach (FileReference file in e.Character.GetAllPossibleFileReferences())
+								if (!file.IsEmpty && file.IsExist(DirectoryName!))
+									ReadSettings.FileReferences.Add(file);
+								else if (file.IsExist(assPath))
+									ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
 					}
-					reader.Read();
 				}
-				else if (reader.ValueSpan.SequenceEqual("events"u8))
+				reader.Read();
+			}
+			else if (reader.ValueSpan.SequenceEqual("events"u8))
+			{
+				reader.Read();
+				if (reader.TokenType != JsonTokenType.StartArray)
+					throw new JsonException($"Expected StartArray token for 'events', but got {reader.TokenType}.");
+				Dictionary<int, FloatingText> floatingTexts = [];
+				List<AdvanceText> advanceTexts = [];
+				Dictionary<int, List<IBaseEvent>> maybeGeneratedEvents = [];
+				List<TagAction> maybeMacroEvents = [];
+				string[]? types = [];
+				JsonElement[]? data = [];
+				Comment? maybeDataComment = null;
+				List<JsonDocument> maybeIllegalAt = [];
+				reader.Read();
+				while (true)
 				{
-					reader.Read();
-					if (reader.TokenType != JsonTokenType.StartArray)
-						throw new JsonException($"Expected StartArray token for 'events', but got {reader.TokenType}.");
-					Dictionary<int, FloatingText> floatingTexts = [];
-					List<AdvanceText> advanceTexts = [];
-					Dictionary<int, List<IBaseEvent>> maybeGeneratedEvents = [];
-					List<TagAction> maybeMacroEvents = [];
-					string[]? types = [];
-					JsonElement[]? data = [];
-					Comment? maybeDataComment = null;
-					List<JsonDocument> maybeIllegalAt = [];
-					reader.Read();
-					while (true)
-					{
-						if (reader.TokenType == JsonTokenType.EndArray)
-							break;
-						IBaseEvent? e = null;
+					if (reader.TokenType == JsonTokenType.EndArray)
+						break;
+					IBaseEvent? e = null;
 #if DEBUG
+					e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
+#else
+					Utf8JsonReader checkPoint = reader;
+					try
+					{
 						e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
-#else
-						Utf8JsonReader checkPoint = reader;
-						try
-						{
-							e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
-						}
-						catch (JsonException)
-						{
-							level.Dispose();
-							throw;
-						}
-						catch (Exception ex)
-						{
-							JsonElement element = JsonElement.ParseValue(ref checkPoint);
-							ReadSettings.HandleUnreadableEvent(element, ex.Message);
-							continue;
-						}
+					}
+					catch (JsonException)
+					{
+						level.Dispose();
+						throw;
+					}
+					catch (Exception ex)
+					{
+						JsonElement element = JsonElement.ParseValue(ref checkPoint);
+						ReadSettings.HandleUnreadableEvent(element, ex.Message);
+						continue;
+					}
 #endif
-						if (e == null)
-							continue;
-						if (ReadSettings.EnableMacroEvent)
+					if (e == null)
+						continue;
+					if (ReadSettings.EnableMacroEvent)
+					{
+						if (e is Comment c && MacroEvent.TryGetTypeData(c, out types, out data))
 						{
-							if (e is Comment c && MacroEvent.TryGetTypeData(c, out types, out data))
-							{
-								maybeDataComment ??= c;
-								continue;
-							}
-							else if (e is TagAction ta && MacroEvent.TryMatch(ta))
-							{
-								maybeMacroEvents.Add(ta);
-							}
-							else if (e is TagAction ta1 && MacroEvent.MatchTag(ta1.ActionTag, out int type, out _, out _)
-								|| MacroEvent.MatchTag(e.Tag, out type, out _, out _))
-							{
-								if (maybeGeneratedEvents.TryGetValue(type, out List<IBaseEvent>? list))
-									list.Add(e);
-								else
-									maybeGeneratedEvents[type] = [e];
-							}
+							maybeDataComment ??= c;
+							continue;
+						}
+						else if (e is TagAction ta && MacroEvent.TryMatch(ta))
+						{
+							maybeMacroEvents.Add(ta);
+						}
+						else if (e is TagAction ta1 && MacroEvent.MatchTag(ta1.ActionTag, out int type, out _, out _)
+							|| MacroEvent.MatchTag(e.Tag, out type, out _, out _))
+						{
+							if (maybeGeneratedEvents.TryGetValue(type, out List<IBaseEvent>? list))
+								list.Add(e);
 							else
-								level.Add(e);
+								maybeGeneratedEvents[type] = [e];
 						}
 						else
 							level.Add(e);
-						if (e is FloatingText ft)
-						{
-							floatingTexts[ft["id"].GetInt32()] = ft;
-							ft._extraData.Remove("id");
-						}
-						else if (e is AdvanceText at)
-							advanceTexts.Add(at);
-						if (e is IFileEvent fe)
-						{
-							if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-								foreach (FileReference file in fe.Files)
-									if (!file.IsEmpty && file.IsExist(DirectoryName!))
-										ReadSettings.FileReferences.Add(file);
-						}
 					}
-					reader.Read();
-					if (ReadSettings.EnableMacroEvent && maybeDataComment != null && types != null && data != null)
+					else
+						level.Add(e);
+					if (e is FloatingText ft)
 					{
-						HashSet<int> matchedIds = [];
-						foreach (TagAction? mm in maybeMacroEvents)
-						{
-							if (MacroEvent.TryParse(mm, types, out MacroEvent? result))
-							{
-								matchedIds.Add(result!.DataId);
-								if (result.DataId >= data.Length)
-									ReadSettings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(mm, options), $"DataId {result.DataId} is out of range.");
-								result._data = data[result.DataId];
-								result.Flush();
-								level.Add(result);
-							}
-						}
-						foreach (KeyValuePair<int, List<IBaseEvent>> mms in maybeGeneratedEvents)
-						{
-							if (!matchedIds.Contains(mms.Key))
-								foreach (IBaseEvent? e in mms.Value)
-									level.Add(e);
-						}
+						floatingTexts[ft["id"].GetInt32()] = ft;
+						ft._extraData.Remove("id");
 					}
-					foreach (AdvanceText? at in advanceTexts)
+					else if (e is AdvanceText at)
+						advanceTexts.Add(at);
+					if (e is IFileEvent fe)
 					{
-						int targetId = at["id"].GetInt32();
-						if (floatingTexts.TryGetValue(targetId, out FloatingText? ft))
-						{
-							at.Parent = ft;
-							ft.Children.Add(at);
-							at._extraData.Remove("id");
-						}
-						else
-						{
-							ReadSettings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(at, options), $"AdvanceText references non-existent FloatingText id {targetId}.");
-						}
+						if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+							foreach (FileReference file in fe.Files)
+								if (!file.IsEmpty && file.IsExist(DirectoryName!))
+									ReadSettings.FileReferences.Add(file);
 					}
 				}
-				else if (reader.ValueSpan.SequenceEqual("bookmarks"u8))
+				reader.Read();
+				if (ReadSettings.EnableMacroEvent && maybeDataComment != null && types != null && data != null)
 				{
-					reader.Read();
-					if (reader.TokenType != JsonTokenType.StartArray)
-						throw new JsonException($"Expected StartArray token for 'bookmarks', but got {reader.TokenType}.");
-					reader.Read();
-					while (true)
+					HashSet<int> matchedIds = [];
+					foreach (TagAction? mm in maybeMacroEvents)
 					{
-						if (reader.TokenType == JsonTokenType.EndArray)
-							break;
-						Bookmark? e = bookmarkConverter.Read(ref reader, typeof(Bookmark), options);
-						if (e != null)
-							level.Bookmarks.Add(e);
-						reader.Read();
-					}
-					reader.Read();
-				}
-				else if (reader.ValueSpan.SequenceEqual("colorPalette"u8))
-				{
-					reader.Read();
-					if (reader.TokenType != JsonTokenType.StartArray)
-						throw new JsonException($"Expected StartArray token for 'colorPalette', but got {reader.TokenType}.");
-					int colorIndex = 0;
-					while (reader.Read())
-					{
-						if (reader.TokenType == JsonTokenType.EndArray)
+						if (MacroEvent.TryParse(mm, types, out MacroEvent? result))
 						{
-							break;
+							matchedIds.Add(result!.DataId);
+							if (result.DataId >= data.Length)
+								ReadSettings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(mm, options), $"DataId {result.DataId} is out of range.");
+							result._data = data[result.DataId];
+							result.Flush();
+							level.Add(result);
 						}
-						string? e = reader.GetString();
-						RDColor color = e is null ? default : RDColor.FromRgba(e);
-						level.ColorPalette[colorIndex] = color;
-						colorIndex++;
 					}
-					reader.Read();
-				}
-				else if (reader.ValueSpan.SequenceEqual("conditionals"u8))
-				{
-					reader.Read();
-					if (reader.TokenType != JsonTokenType.StartArray)
-						throw new JsonException($"Expected StartArray token for 'conditionals', but got {reader.TokenType}.");
-					reader.Read();
-					while (true)
+					foreach (KeyValuePair<int, List<IBaseEvent>> mms in maybeGeneratedEvents)
 					{
-						if (reader.TokenType == JsonTokenType.EndArray)
-							break;
-						BaseConditional? e = conditionalConverter.Read(ref reader, typeof(BaseConditional), options);
-						if (e != null)
-							level.Conditionals.Add(e);
+						if (!matchedIds.Contains(mms.Key))
+							foreach (IBaseEvent? e in mms.Value)
+								level.Add(e);
 					}
-					reader.Read();
 				}
-				else
+				foreach (AdvanceText? at in advanceTexts)
 				{
-					reader.Skip();
-				}
-			}
-			return level;
-		}
-		public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
-		{
-			baseEventConverter.WithWriteSettings(WriteSettings);
-			using MemoryStream stream = new();
-			WriteSettings.FileReferences.Clear();
-			JsonSerializerOptions localOptions = new(options)
-			{
-				WriteIndented = false,
-			};
-			byte[] bytes = GetIndentByte(writer, options.IndentCharacter, 2);
-			ReadOnlySpan<byte> sl;
-			writer.WriteStartObject();
-			writer.WritePropertyName("settings");
-			settingsConverter.Write(writer, value.Settings, options);
-			if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-				foreach (FileReference fr in value.Settings.GetAllFileReferences())
-					if (!fr.IsEmpty && fr.IsExist(DirectoryName!))
-						WriteSettings.FileReferences.Add(fr);
-
-			writer.WritePropertyName("rows");
-			writer.WriteStartArray();
-			using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false, Encoder = options.Encoder });
-			foreach (Row row in value.Rows)
-			{
-				stream.SetLength(0);
-				if (options.WriteIndented)
-					stream.Write(bytes, 0, bytes.Length);
-				rowConverter.Write(noIndentWriter, row, localOptions);
-				noIndentWriter.Flush();
-				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-				writer.WriteRawValue(sl);
-				noIndentWriter.Reset();
-				string assPath = DirectoryName + row.Character.CustomCharacter;
-				if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-					foreach (FileReference file in row.Character.GetAllPossibleFileReferences())
-						if (!file.IsEmpty && file.IsExist(DirectoryName!))
-							ReadSettings.FileReferences.Add(file);
-						else if (file.IsExist(assPath))
-							ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
-			}
-			writer.WriteEndArray();
-			writer.WritePropertyName("decorations");
-			writer.WriteStartArray();
-			foreach (Decoration decoration in value.Decorations)
-			{
-				stream.SetLength(0);
-				if (options.WriteIndented)
-					stream.Write(bytes, 0, bytes.Length);
-				decorationConverter.Write(noIndentWriter, decoration, localOptions);
-				noIndentWriter.Flush();
-				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-				writer.WriteRawValue(sl);
-				noIndentWriter.Reset();
-				string assPath = DirectoryName + decoration.Character.CustomCharacter;
-				if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
-					foreach (FileReference file in decoration.Character.GetAllPossibleFileReferences())
-						if (!file.IsEmpty && file.IsExist(DirectoryName!))
-							ReadSettings.FileReferences.Add(file);
-						else if (file.IsExist(assPath))
-							ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
-			}
-			writer.WriteEndArray();
-			writer.WritePropertyName("events");
-			writer.WriteStartArray();
-			if (WriteSettings.EnableMacroEvent)
-			{
-				JsonSerializerOptions dataOptions = new()
-				{
-					WriteIndented = false,
-				};
-				List<MacroEvent> macros = [];
-				List<IBaseEvent> normalEvents = [];
-				List<string> data = [];
-				int id = 0;
-				foreach (IBaseEvent e in value)
-				{
-					if (e is MacroEvent macro)
+					int targetId = at["id"].GetInt32();
+					if (floatingTexts.TryGetValue(targetId, out FloatingText? ft))
 					{
-						macro.Flush();
-						string rawData = JsonSerializer.Serialize(macro._data, dataOptions);
-						if (!data.Contains(rawData))
-						{
-							data.Add(rawData);
-							macro.DataId = id;
-							id++;
-							macros.Add(macro);
-							foreach (IBaseEvent e2 in macro.GenerateTaggedEvents(
-								$"{Utils.Utils.RhythmBaseMacroEventHeader}{EventTypeUtils.MacroTypes.IndexOf(macro.GetType()):X8}{macro.DataId:X8}"
-							))
-							{
-								if (e2 is MacroEvent)
-									throw new ConvertingException($"{nameof(MacroEvent)} cannot contain another {nameof(MacroEvent)}.");
-								if (e2 is SetCrotchetsPerBar)
-									throw new RhythmBaseException($"{nameof(SetCrotchetsPerBar)} events are not allowed within a {nameof(MacroEvent)}.");
-								normalEvents.Add(e2);
-							}
-						}
-						normalEvents.Add(macro.GenerateTagAction());
+						at.Parent = ft;
+						ft.Children.Add(at);
+						at._extraData.Remove("id");
 					}
 					else
 					{
-						stream.SetLength(0);
-						if (options.WriteIndented)
-							stream.Write(bytes, 0, bytes.Length);
-						baseEventConverter.Write(noIndentWriter, e, localOptions);
-						noIndentWriter.Flush();
-						sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-						writer.WriteRawValue(sl);
-						noIndentWriter.Reset();
+						ReadSettings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(at, options), $"AdvanceText references non-existent FloatingText id {targetId}.");
 					}
-					if (WriteSettings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
-						foreach (FileReference file in fe.Files)
-							if (!file.IsEmpty && file.IsExist(DirectoryName!))
-								WriteSettings.FileReferences.Add(file);
 				}
-				StringBuilder sb = new() { };
-				sb.AppendLine(Utils.Utils.RhythmBaseMacroEventDataHeader);
-				sb.AppendLine("# Generated by RhythmBase #");
-				for (int i = 0; i < EventTypeUtils.MacroTypes.Count; i++)
+			}
+			else if (reader.ValueSpan.SequenceEqual("bookmarks"u8))
+			{
+				reader.Read();
+				if (reader.TokenType != JsonTokenType.StartArray)
+					throw new JsonException($"Expected StartArray token for 'bookmarks', but got {reader.TokenType}.");
+				reader.Read();
+				while (true)
 				{
-					Type t = EventTypeUtils.MacroTypes[i];
-					sb.AppendLine($"@{t.FullName}");
+					if (reader.TokenType == JsonTokenType.EndArray)
+						break;
+					Bookmark? e = bookmarkConverter.Read(ref reader, typeof(Bookmark), options);
+					if (e != null)
+						level.Bookmarks.Add(e);
+					reader.Read();
 				}
-				for (int i = 0; i < data.Count; i++)
+				reader.Read();
+			}
+			else if (reader.ValueSpan.SequenceEqual("colorPalette"u8))
+			{
+				reader.Read();
+				if (reader.TokenType != JsonTokenType.StartArray)
+					throw new JsonException($"Expected StartArray token for 'colorPalette', but got {reader.TokenType}.");
+				int colorIndex = 0;
+				while (reader.Read())
 				{
-					if (i > 0)
-						sb.AppendLine();
-					sb.AppendLine(data[i]);
+					if (reader.TokenType == JsonTokenType.EndArray)
+					{
+						break;
+					}
+					string? e = reader.GetString();
+					RDColor color = e is null ? default : RDColor.FromRgba(e);
+					level.ColorPalette[colorIndex] = color;
+					colorIndex++;
 				}
-				sb.Replace("\r\n", "\n");
-				normalEvents.Add(new Comment() { Y = -1, Text = sb.ToString() });
-				foreach (IBaseEvent e in normalEvents)
+				reader.Read();
+			}
+			else if (reader.ValueSpan.SequenceEqual("conditionals"u8))
+			{
+				reader.Read();
+				if (reader.TokenType != JsonTokenType.StartArray)
+					throw new JsonException($"Expected StartArray token for 'conditionals', but got {reader.TokenType}.");
+				reader.Read();
+				while (true)
+				{
+					if (reader.TokenType == JsonTokenType.EndArray)
+						break;
+					BaseConditional? e = conditionalConverter.Read(ref reader, typeof(BaseConditional), options);
+					if (e != null)
+						level.Conditionals.Add(e);
+				}
+				reader.Read();
+			}
+			else
+			{
+				reader.Skip();
+			}
+		}
+		return level;
+	}
+	public override void Write(Utf8JsonWriter writer, RDLevel value, JsonSerializerOptions options)
+	{
+		baseEventConverter.WithWriteSettings(WriteSettings);
+		using MemoryStream stream = new();
+		WriteSettings.FileReferences.Clear();
+		JsonSerializerOptions localOptions = new(options)
+		{
+			WriteIndented = false,
+		};
+		byte[] bytes = GetIndentByte(writer, options.IndentCharacter, 2);
+		ReadOnlySpan<byte> sl;
+		writer.WriteStartObject();
+		writer.WritePropertyName("settings");
+		settingsConverter.Write(writer, value.Settings, options);
+		if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+			foreach (FileReference fr in value.Settings.GetAllFileReferences())
+				if (!fr.IsEmpty && fr.IsExist(DirectoryName!))
+					WriteSettings.FileReferences.Add(fr);
+
+		writer.WritePropertyName("rows");
+		writer.WriteStartArray();
+		using Utf8JsonWriter noIndentWriter = new(stream, new JsonWriterOptions { Indented = false, Encoder = options.Encoder });
+		foreach (Row row in value.Rows)
+		{
+			stream.SetLength(0);
+			if (options.WriteIndented)
+				stream.Write(bytes, 0, bytes.Length);
+			rowConverter.Write(noIndentWriter, row, localOptions);
+			noIndentWriter.Flush();
+			sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+			writer.WriteRawValue(sl);
+			noIndentWriter.Reset();
+			string assPath = DirectoryName + row.Character.CustomCharacter;
+			if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+				foreach (FileReference file in row.Character.GetAllPossibleFileReferences())
+					if (!file.IsEmpty && file.IsExist(DirectoryName!))
+						ReadSettings.FileReferences.Add(file);
+					else if (file.IsExist(assPath))
+						ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
+		}
+		writer.WriteEndArray();
+		writer.WritePropertyName("decorations");
+		writer.WriteStartArray();
+		foreach (Decoration decoration in value.Decorations)
+		{
+			stream.SetLength(0);
+			if (options.WriteIndented)
+				stream.Write(bytes, 0, bytes.Length);
+			decorationConverter.Write(noIndentWriter, decoration, localOptions);
+			noIndentWriter.Flush();
+			sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+			writer.WriteRawValue(sl);
+			noIndentWriter.Reset();
+			string assPath = DirectoryName + decoration.Character.CustomCharacter;
+			if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
+				foreach (FileReference file in decoration.Character.GetAllPossibleFileReferences())
+					if (!file.IsEmpty && file.IsExist(DirectoryName!))
+						ReadSettings.FileReferences.Add(file);
+					else if (file.IsExist(assPath))
+						ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
+		}
+		writer.WriteEndArray();
+		writer.WritePropertyName("events");
+		writer.WriteStartArray();
+		if (WriteSettings.EnableMacroEvent)
+		{
+			JsonSerializerOptions dataOptions = new()
+			{
+				WriteIndented = false,
+			};
+			List<MacroEvent> macros = [];
+			List<IBaseEvent> normalEvents = [];
+			List<string> data = [];
+			int id = 0;
+			foreach (IBaseEvent e in value)
+			{
+				if (e is MacroEvent macro)
+				{
+					macro.Flush();
+					string rawData = JsonSerializer.Serialize(macro._data, dataOptions);
+					if (!data.Contains(rawData))
+					{
+						data.Add(rawData);
+						macro.DataId = id;
+						id++;
+						macros.Add(macro);
+						foreach (IBaseEvent e2 in macro.GenerateTaggedEvents(
+							$"{Utils.Utils.RhythmBaseMacroEventHeader}{EventTypeUtils.MacroTypes.IndexOf(macro.GetType()):X8}{macro.DataId:X8}"
+						))
+						{
+							if (e2 is MacroEvent)
+								throw new ConvertingException($"{nameof(MacroEvent)} cannot contain another {nameof(MacroEvent)}.");
+							if (e2 is SetCrotchetsPerBar)
+								throw new RhythmBaseException($"{nameof(SetCrotchetsPerBar)} events are not allowed within a {nameof(MacroEvent)}.");
+							normalEvents.Add(e2);
+						}
+					}
+					normalEvents.Add(macro.GenerateTagAction());
+				}
+				else
 				{
 					stream.SetLength(0);
 					if (options.WriteIndented)
@@ -419,67 +387,98 @@ namespace RhythmBase.RhythmDoctor.Converters
 					writer.WriteRawValue(sl);
 					noIndentWriter.Reset();
 				}
+				if (WriteSettings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
+					foreach (FileReference file in fe.Files)
+						if (!file.IsEmpty && file.IsExist(DirectoryName!))
+							WriteSettings.FileReferences.Add(file);
 			}
-			else
+			StringBuilder sb = new() { };
+			sb.AppendLine(Utils.Utils.RhythmBaseMacroEventDataHeader);
+			sb.AppendLine("# Generated by RhythmBase #");
+			for (int i = 0; i < EventTypeUtils.MacroTypes.Count; i++)
 			{
-				foreach (IBaseEvent e in value)
-				{
-					if (e is MacroEvent macro)
-						throw new ConvertingException("MacroEvent found, but EnableMacroEvent is false in LevelReadOrWriteSettings.");
-					else
-					{
-						stream.SetLength(0);
-						if (options.WriteIndented)
-							stream.Write(bytes, 0, bytes.Length);
-						baseEventConverter.Write(noIndentWriter, e, localOptions);
-						noIndentWriter.Flush();
-						sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-						writer.WriteRawValue(sl);
-						noIndentWriter.Reset();
-					}
-					if (WriteSettings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
-						foreach (FileReference file in fe.Files)
-							if (!file.IsEmpty && file.IsExist(DirectoryName!))
-								WriteSettings.FileReferences.Add(file);
-				}
+				Type t = EventTypeUtils.MacroTypes[i];
+				sb.AppendLine($"@{t.FullName}");
 			}
-			writer.WriteEndArray();
-			writer.WritePropertyName("bookmarks");
-			writer.WriteStartArray();
-			foreach (Bookmark bookmark in value.Bookmarks)
+			for (int i = 0; i < data.Count; i++)
+			{
+				if (i > 0)
+					sb.AppendLine();
+				sb.AppendLine(data[i]);
+			}
+			sb.Replace("\r\n", "\n");
+			normalEvents.Add(new Comment() { Y = -1, Text = sb.ToString() });
+			foreach (IBaseEvent e in normalEvents)
 			{
 				stream.SetLength(0);
 				if (options.WriteIndented)
 					stream.Write(bytes, 0, bytes.Length);
-				bookmarkConverter.Write(noIndentWriter, bookmark, localOptions);
+				baseEventConverter.Write(noIndentWriter, e, localOptions);
 				noIndentWriter.Flush();
 				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 				writer.WriteRawValue(sl);
 				noIndentWriter.Reset();
 			}
-			writer.WriteEndArray();
-			writer.WritePropertyName("colorPalette");
-			writer.WriteStartArray();
-			foreach (RDColor color in value.ColorPalette)
-				writer.WriteStringValue(color.ToString("RRGGBBAA"));
-			writer.WriteEndArray();
-			writer.WritePropertyName("conditionals");
-			writer.WriteStartArray();
-			foreach (BaseConditional conditional in value.Conditionals)
-			{
-				stream.SetLength(0);
-				if (options.WriteIndented)
-					stream.Write(bytes, 0, bytes.Length);
-				conditionalConverter.Write(noIndentWriter, conditional, localOptions);
-				noIndentWriter.Flush();
-				sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-				writer.WriteRawValue(sl);
-				noIndentWriter.Reset();
-			}
-			writer.WriteEndArray();
-			writer.WriteEndObject();
 		}
-
-		private static byte[] GetIndentByte(Utf8JsonWriter writer, char indentChar, int indentSize) => Encoding.UTF8.GetBytes(Environment.NewLine + new string(indentChar, writer.CurrentDepth * 2));
+		else
+		{
+			foreach (IBaseEvent e in value)
+			{
+				if (e is MacroEvent macro)
+					throw new ConvertingException("MacroEvent found, but EnableMacroEvent is false in LevelReadOrWriteSettings.");
+				else
+				{
+					stream.SetLength(0);
+					if (options.WriteIndented)
+						stream.Write(bytes, 0, bytes.Length);
+					baseEventConverter.Write(noIndentWriter, e, localOptions);
+					noIndentWriter.Flush();
+					sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+					writer.WriteRawValue(sl);
+					noIndentWriter.Reset();
+				}
+				if (WriteSettings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
+					foreach (FileReference file in fe.Files)
+						if (!file.IsEmpty && file.IsExist(DirectoryName!))
+							WriteSettings.FileReferences.Add(file);
+			}
+		}
+		writer.WriteEndArray();
+		writer.WritePropertyName("bookmarks");
+		writer.WriteStartArray();
+		foreach (Bookmark bookmark in value.Bookmarks)
+		{
+			stream.SetLength(0);
+			if (options.WriteIndented)
+				stream.Write(bytes, 0, bytes.Length);
+			bookmarkConverter.Write(noIndentWriter, bookmark, localOptions);
+			noIndentWriter.Flush();
+			sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+			writer.WriteRawValue(sl);
+			noIndentWriter.Reset();
+		}
+		writer.WriteEndArray();
+		writer.WritePropertyName("colorPalette");
+		writer.WriteStartArray();
+		foreach (RDColor color in value.ColorPalette)
+			writer.WriteStringValue(color.ToString("RRGGBBAA"));
+		writer.WriteEndArray();
+		writer.WritePropertyName("conditionals");
+		writer.WriteStartArray();
+		foreach (BaseConditional conditional in value.Conditionals)
+		{
+			stream.SetLength(0);
+			if (options.WriteIndented)
+				stream.Write(bytes, 0, bytes.Length);
+			conditionalConverter.Write(noIndentWriter, conditional, localOptions);
+			noIndentWriter.Flush();
+			sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
+			writer.WriteRawValue(sl);
+			noIndentWriter.Reset();
+		}
+		writer.WriteEndArray();
+		writer.WriteEndObject();
 	}
+
+	private static byte[] GetIndentByte(Utf8JsonWriter writer, char indentChar, int indentSize) => Encoding.UTF8.GetBytes(Environment.NewLine + new string(indentChar, writer.CurrentDepth * indentSize));
 }

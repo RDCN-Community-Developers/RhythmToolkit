@@ -1,14 +1,10 @@
-using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Components.Vector;
 
 /// <summary>
 /// A size whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="float" />
 /// </summary>
-[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDSizeN))]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public struct RDSizeN(float width, float height) : IRDVector<RDSizeN, RDSizeN, float>
 {
@@ -104,10 +100,17 @@ public struct RDSizeN(float width, float height) : IRDVector<RDSizeN, RDSizeN, f
 	/// <returns>A new <see cref="RDPointN"/> instance.</returns>
 	public static explicit operator RDPointN(RDSizeN size) => new(size.Width, size.Height);
 	private readonly string GetDebuggerDisplay() => ToString();
-	public IEnumerator<float> GetEnumerator()
-	{
-		yield return Width;
-		yield return Height;
-		yield break;
-	}
+	/// <summary>
+	/// Implicitly converts a tuple containing two <see cref="float"/>.
+	/// </summary>
+	/// <remarks>This conversion enables concise and readable initialization of <see cref="RDSizeN"/> instances from tuples,
+	/// allowing for more flexible assignment and construction patterns.</remarks>
+	/// <param name="tuple">A tuple whose elements represent the x and y coordinates as <see cref="float"/>.</param>
+	public static implicit operator RDSizeN((float width, float height) tuple) => new(tuple.width, tuple.height);
+	/// <summary>
+	/// Deconstructs the current instance into its Width and Height component values.
+	/// </summary>
+	/// <param name="width">When this method returns, contains the value of the Width component of the current instance.</param>
+	/// <param name="height">When this method returns, contains the value of the Height component of the current instance.</param>
+	public readonly void Deconstruct(out float width, out float height) { width = Width; height = Height; }
 }

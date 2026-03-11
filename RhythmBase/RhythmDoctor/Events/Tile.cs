@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -16,18 +16,30 @@ public record class Tile : BaseDecorationAction, IEaseEvent
 	/// <summary>
 	/// Gets or sets the position of the tile.
 	/// </summary>
+	/// <remarks>
+	/// Percentage of the screen width and height. (0,0) is the bottom-left corner, (100,100) is the top-right corner.
+	/// Leave it null to keep the original position.
+	/// </remarks>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Position)} is not null")]
 	public RDPoint? Position { get; set; }
 	/// <summary>
 	/// Gets or sets the tiling of the tile.
 	/// </summary>
+	/// <remarks>
+	/// The number of times the tile is repeated in the horizontal and vertical directions. (1,1) is the original tiling.
+	/// Leave it null to keep the original tiling.
+	/// </remarks>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Tiling)} is not null")]
 	public RDPoint? Tiling { get; set; }
 	/// <summary>
 	/// Gets or sets the speed of the tile.
 	/// </summary>
+	/// <remarks>
+	/// Tile size per second. (0,0) means the tile is fixed. Positive values mean the tile moves in the original direction, while negative values mean the tile moves in the opposite direction.
+	/// Leave it null to keep the original speed.
+	/// </remarks>
 	[Tween]
 	[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
 	public RDPoint? Speed { get; set; }
@@ -35,14 +47,17 @@ public record class Tile : BaseDecorationAction, IEaseEvent
 	/// Gets or sets the type of tiling.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Speed)} is not null")]
-	public TilingType TilingType { get; set; } = TilingType.Scroll;
+	public TilingType TilingType { get; set; }
 	/// <summary>
 	/// Gets or sets the interval for the tiling.
 	/// </summary>
+	/// <remarks>
+	/// The beat interval for the tiling. It is only used when <see cref="TilingType"/> is <see cref="TilingType.Pulse"/>. The default value is 1.
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(TilingType)} is RhythmBase.RhythmDoctor.Events.{nameof(TilingType)}.{nameof(Tile.TilingType.Pulse)}")]
-	public float Interval { get; set; } = 0.01f;
+	public float Interval { get; set; }
 	///<inheritdoc/>
-	public EaseType Ease { get; set; } = EaseType.Linear;
+	public EaseType Ease { get; set; }
 	///<inheritdoc/>
-	public float Duration { get; set; } = 0f;
+	public float Duration { get; set; }
 }

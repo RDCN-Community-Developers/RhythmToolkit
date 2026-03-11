@@ -1,15 +1,11 @@
-using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Extensions;
-using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 namespace RhythmBase.Global.Components.Vector;
 
 /// <summary>
 /// A point whose horizontal and vertical coordinates are <strong>nullable</strong> <see langword="float" />
 /// </summary>
-[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDPoint))]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public struct RDPoint(float? x, float? y) : IRDVector<RDPoint, RDSize, float?>, IRDVector<RDPoint, RDSizeI, float?>
 {
@@ -169,10 +165,17 @@ public struct RDPoint(float? x, float? y) : IRDVector<RDPoint, RDSize, float?>, 
 	/// <returns>A new <see cref="RDSize"/> with the same coordinates as the input <see cref="RDPoint"/>.</returns>
 	public static explicit operator RDSize(RDPoint p) => new(p.X, p.Y);
 	private readonly string GetDebuggerDisplay() => ToString();
-	public IEnumerator<float?> GetEnumerator()
-	{
-		yield return X;
-		yield return Y;
-		yield break;
-	}
+	/// <summary>
+	/// Implicitly converts a tuple containing two <see cref="float"/>?.
+	/// </summary>
+	/// <remarks>This conversion enables concise and readable initialization of <see cref="RDPoint"/> instances from tuples,
+	/// allowing for more flexible assignment and construction patterns.</remarks>
+	/// <param name="tuple">A tuple whose elements represent the x and y coordinates as <see cref="float"/>?. Either element may be null.</param>
+	public static implicit operator RDPoint((float? x, float? y) tuple) => new(tuple.x, tuple.y);
+	/// <summary>
+	/// Deconstructs the current instance into its X and Y component values.
+	/// </summary>
+	/// <param name="x">When this method returns, contains the value of the X component of the current instance.</param>
+	/// <param name="y">When this method returns, contains the value of the Y component of the current instance.</param>
+	public readonly void Deconstruct(out float? x, out float? y) { x = X; y = Y; }
 }

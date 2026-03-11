@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -12,13 +12,11 @@ public record class ShowRooms : BaseEvent, IEaseEvent, IRoomEvent
 	/// <summary>  
 	/// Gets or sets the height configuration for the room.  
 	/// </summary>  
-	//[JsonIgnore]
 	[RDJsonAlias("heights")]
 	public RoomHeight Height { get; set; } = new RoomHeight();
 	/// <summary>  
 	/// Gets or sets the room configuration associated with the height.  
 	/// </summary>  
-	//[JsonIgnore]
 	public RDRoom Rooms { get; set; } = new RDRoom([0]);
 	/// <summary>  
 	/// Gets or sets the ease type for the event.  

@@ -8,6 +8,9 @@ namespace RhythmBase.RhythmDoctor.Events;
 [RDJsonObjectSerializable]
 public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
 {
+	/// <summary>
+	/// Initializes a new instance of the TintRows class with the row index set to an initial value.
+	/// </summary>
 	public TintRows()
 	{
 		_row = -1;
@@ -19,7 +22,7 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	public PaletteColorWithAlpha TintColor { get; set; } = RDColor.White;
 	///<inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
-	public EaseType Ease { get; set; } = EaseType.Linear;
+	public EaseType Ease { get; set; }
 	/// <summary>
 	/// Gets or sets the border style.
 	/// </summary>
@@ -59,7 +62,7 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	public bool? IsTint { get; set; }
 	///<inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Duration)} != 0f")]
-	public float Duration { get; set; } = 0f;
+	public float Duration { get; set; }
 	/// <summary>
 	/// Gets or sets the row effect.
 	/// </summary>
@@ -69,8 +72,17 @@ public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomE
 	public override EventType Type => EventType.TintRows;
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Actions;
+	/// <summary>
+	/// Gets or sets the heart type associated with the entity.
+	/// </summary>
+	/// <remarks>
+	/// Leave it null to keep the original heart type.
+	/// </remarks>
 	[RDJsonCondition($"$&.{nameof(Heart)} is not null")]
 	public HeartType? Heart { get; set; }
+	/// <summary>
+	/// Gets or sets a value indicating whether the heart transition effect is enabled.
+	/// </summary>
 	public bool HeartTransition { get; set; }
 	/// <inheritdoc/>
 	[RDJsonCondition($"$&.{nameof(Index)} == -1")]

@@ -12,7 +12,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 	public static class Utils
 	{
 		private static readonly BaseEventConverter evc = new();
-		private static JsonSerializerOptions options;
+		private static readonly JsonSerializerOptions options;
 		static Utils()
 		{
 			options = new()

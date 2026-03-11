@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.RhythmDoctor.Events;
+namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
 /// Represents an event that plays an expression.
@@ -9,7 +9,7 @@ public record class PlayExpression : BaseRowAnimation
 	/// <summary>
 	/// Gets or sets the expression to be played.
 	/// </summary>
-	public string Expression { get; set; } = Utils.Utils.DefaultExpressions[0];
+	public string Expression { get; set; } = string.Empty;
 	/// <summary>
 	/// Gets or sets a value indicating whether to replace the current expression.
 	/// </summary>
@@ -18,7 +18,7 @@ public record class PlayExpression : BaseRowAnimation
 	/// Gets or sets the target string used for replacement operations.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(Replace)}")]
-	public string Target { get; set; } = Utils.Utils.DefaultExpressions[0];
+	public string Target { get; set; } = string.Empty;
 	///<inheritdoc/>
 	public override EventType Type => EventType.PlayExpression;
 	///<inheritdoc/>

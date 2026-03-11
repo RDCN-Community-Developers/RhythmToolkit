@@ -1,11 +1,10 @@
-﻿using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
-/// Represents an event that changes the configuration of player rows, including player assignments, player mode, and
-/// CPU markers.
+/// Represents an event that changes the CPU type of rows.
 /// </summary>
 [RDJsonObjectSerializable]
 public record class ChangePlayersRows : BaseEvent

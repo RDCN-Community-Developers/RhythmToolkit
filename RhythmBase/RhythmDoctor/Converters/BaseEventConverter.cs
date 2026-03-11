@@ -1,130 +1,128 @@
-﻿using RhythmBase.Global.Extensions;
+using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.RhythmDoctor.Utils.EventTypeUtils;
 
-namespace RhythmBase.RhythmDoctor.Converters
+namespace RhythmBase.RhythmDoctor.Converters;
+
+internal class BaseEventConverter : JsonConverter<IBaseEvent>
 {
-	internal class BaseEventConverter : JsonConverter<IBaseEvent>
+	private LevelReadSettings _rs = new();
+	private LevelWriteSettings _ws = new();
+	public BaseEventConverter WithReadSettings(LevelReadSettings settings)
 	{
-		private LevelReadSettings? _rs;
-		private LevelWriteSettings? _ws;
-		public BaseEventConverter WithReadSettings(LevelReadSettings settings)
-		{
-			_rs = settings;
-			return this;
-		}
-		public BaseEventConverter WithWriteSettings(LevelWriteSettings settings)
-		{
-			_ws = settings;
-			return this;
-		}
-		private delegate void PropertyAction(ref Utf8JsonReader reader);
-		public override bool CanConvert(Type typeToConvert)
-		{
-			return Type.IsAssignableFrom(typeToConvert);
-		}
-		public override IBaseEvent? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-		{
-			if (reader.TokenType != JsonTokenType.StartObject)
-				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
+		_rs = settings;
+		return this;
+	}
+	public BaseEventConverter WithWriteSettings(LevelWriteSettings settings)
+	{
+		_ws = settings;
+		return this;
+	}
+	private delegate void PropertyAction(ref Utf8JsonReader reader);
+	public override bool CanConvert(Type typeToConvert)
+	{
+		return Type.IsAssignableFrom(typeToConvert);
+	}
+	public override IBaseEvent? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		if (reader.TokenType != JsonTokenType.StartObject)
+			throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
 
-			ReadOnlySpan<byte> type = default;
+		ReadOnlySpan<byte> type = default;
 
-			Utf8JsonReader checkpoint = reader;
-			while (reader.Read())
+		Utf8JsonReader checkpoint = reader;
+		while (reader.Read())
+		{
+			if (reader.TokenType == JsonTokenType.EndObject)
+				break;
+			if (reader.TokenType == JsonTokenType.PropertyName)
 			{
-				if (reader.TokenType == JsonTokenType.EndObject)
-					break;
-				if (reader.TokenType == JsonTokenType.PropertyName)
+				if (reader.ValueSpan.SequenceEqual("type"u8))
 				{
-					if (reader.ValueSpan.SequenceEqual("type"u8))
-					{
-						reader.Read();
-						type = reader.ValueSpan;
-						break;
-					}
-					else
-					{
-						reader.Skip();
-					}
+					reader.Read();
+					type = reader.ValueSpan;
+					break;
+				}
+				else
+				{
+					reader.Skip();
 				}
 			}
-			reader = checkpoint; IBaseEvent e;
-			if (!EnumConverter.TryParse(type, out EventType typeEnum))
-				e = ReadForwardEvent(ref reader) ?? new ForwardEvent() { ActualType = type.ToString() ?? "" };
-			else
-				e = converters[typeEnum].WithReadSettings(_rs).ReadProperties(ref reader, options);
-			if (reader.TokenType != JsonTokenType.EndObject)
-				throw new JsonException($"Expected EndObject token, but got {reader.TokenType}.");
-			reader.Read();
-			return e;
 		}
-		public override void Write(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options)
+		reader = checkpoint; IBaseEvent e;
+		if (!EnumConverter.TryParse(type, out EventType typeEnum))
+			e = ReadForwardEvent(ref reader) ?? new ForwardEvent() { ActualType = type.ToString() ?? "" };
+		else
+			e = converters[typeEnum].WithReadSettings(_rs).ReadProperties(ref reader, options);
+		if (reader.TokenType != JsonTokenType.EndObject)
+			throw new JsonException($"Expected EndObject token, but got {reader.TokenType}.");
+		reader.Read();
+		return e;
+	}
+	public override void Write(Utf8JsonWriter writer, IBaseEvent value, JsonSerializerOptions options)
+	{
+		if (value is IForwardEvent ce)
 		{
-			if (value is IForwardEvent ce)
-			{
-				WriteForwardEvent(writer, ce);
-				return;
-			}
-			else if (value is MacroEvent)
-			{
-				throw new NotSupportedException("Group should be handled in GroupConverter. It will be fixed in the next version.");
-			}
-			else
-			{
-				converters[value.Type].WithWriteSettings(_ws).WriteProperties(writer, value, options);
-			}
+			WriteForwardEvent(writer, ce);
+			return;
 		}
-		public static IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader)
+		else if (value is MacroEvent)
 		{
-			using JsonDocument doc = JsonDocument.ParseValue(ref reader);
-			JsonElement root = doc.RootElement;
-
-			// 判断属性
-			bool hasRow = false, hasTarget = false;
-			foreach (JsonProperty prop in root.EnumerateObject())
-			{
-				if (prop.NameEquals("row"))
-					hasRow = true;
-				else if (prop.NameEquals("target"))
-					hasTarget = true;
-			}
-			if (hasRow) return new ForwardRowEvent(doc);
-			else if (hasTarget) return new ForwardDecorationEvent(doc);
-			else return new ForwardEvent(doc);
+			throw new NotSupportedException("Group should be handled in GroupConverter. It will be fixed in the next version.");
 		}
-
-		public static void WriteForwardEvent(Utf8JsonWriter writer, IForwardEvent value)
+		else
 		{
-			(int bar, float beat) = value.Beat;
-			writer.WriteStartObject();
-			if (!string.IsNullOrEmpty(value.ActualType))
-				writer.WriteString("type", value.ActualType);
-			writer.WriteNumber("bar", bar);
-			writer.WriteNumber("beat", beat);
-			if (value is ForwardRowEvent rowEvent)
-				writer.WriteNumber("row", rowEvent.Index);
-			else if (value is ForwardDecorationEvent decorationEvent)
-				writer.WriteString("target", decorationEvent.Target);
-			if (!string.IsNullOrEmpty(value.Tag))
-				writer.WriteString("tag", value.Tag);
-			if (value.RunTag)
-				writer.WriteBoolean("runTag", value.RunTag);
-			if (!value.Active)
-				writer.WriteBoolean("active", value.Active);
-			if (value.Condition.HasValue)
-				writer.WriteString("if", value.Condition.Serialize());
-			if (value.Y != 0)
-				writer.WriteNumber("y", value.Y);
-
-			foreach (KeyValuePair<string,JsonElement> kv in ((BaseEvent)value)._extraData)
-			{
-				writer.WritePropertyName(kv.Key);
-				kv.Value.WriteTo(writer);
-			}
-			writer.WriteEndObject();
+			converters[value.Type].WithWriteSettings(_ws).WriteProperties(writer, value, options);
 		}
+	}
+	public static IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader)
+	{
+		using JsonDocument doc = JsonDocument.ParseValue(ref reader);
+		JsonElement root = doc.RootElement;
+
+		// 判断属性
+		bool hasRow = false, hasTarget = false;
+		foreach (JsonProperty prop in root.EnumerateObject())
+		{
+			if (prop.NameEquals("row"))
+				hasRow = true;
+			else if (prop.NameEquals("target"))
+				hasTarget = true;
+		}
+		if (hasRow) return new ForwardRowEvent(doc);
+		else return hasTarget ? new ForwardDecorationEvent(doc) : new ForwardEvent(doc);
+	}
+
+	public static void WriteForwardEvent(Utf8JsonWriter writer, IForwardEvent value)
+	{
+		(int bar, float beat) = value.Beat;
+		writer.WriteStartObject();
+		if (!string.IsNullOrEmpty(value.ActualType))
+			writer.WriteString("type", value.ActualType);
+		writer.WriteNumber("bar", bar);
+		writer.WriteNumber("beat", beat);
+		if (value is ForwardRowEvent rowEvent)
+			writer.WriteNumber("row", rowEvent.Index);
+		else if (value is ForwardDecorationEvent decorationEvent)
+			writer.WriteString("target", decorationEvent.Target);
+		if (!string.IsNullOrEmpty(value.Tag))
+			writer.WriteString("tag", value.Tag);
+		if (value.RunTag)
+			writer.WriteBoolean("runTag", value.RunTag);
+		if (!value.Active)
+			writer.WriteBoolean("active", value.Active);
+		if (value.Condition.HasValue)
+			writer.WriteString("if", value.Condition.Serialize());
+		if (value.Y != 0)
+			writer.WriteNumber("y", value.Y);
+
+		foreach (KeyValuePair<string,JsonElement> kv in ((BaseEvent)value)._extraData)
+		{
+			writer.WritePropertyName(kv.Key);
+			kv.Value.WriteTo(writer);
+		}
+		writer.WriteEndObject();
 	}
 }

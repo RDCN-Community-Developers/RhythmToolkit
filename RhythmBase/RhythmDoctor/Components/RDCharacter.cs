@@ -1,7 +1,3 @@
-using RhythmBase.RhythmDoctor.Converters;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-
 namespace RhythmBase.RhythmDoctor.Components;
 
 /// <summary>
@@ -12,7 +8,6 @@ public readonly struct RDCharacter : IEquatable<RDCharacter>
 	/// <summary>
 	/// Whether  in-game character or customized character(sprite).
 	/// </summary>
-	[MemberNotNull(nameof(Character))]
 	public bool IsCustom => Character is RDCharacters.Custom;
 	/// <summary>
 	/// In-game character.
@@ -91,5 +86,10 @@ public readonly struct RDCharacter : IEquatable<RDCharacter>
 			return hash;
 		}
 #endif
+	}
+	/// <inheritdoc/>
+	public override bool Equals(object? obj)
+	{
+		return obj is RDCharacter e && Equals(e);
 	}
 }

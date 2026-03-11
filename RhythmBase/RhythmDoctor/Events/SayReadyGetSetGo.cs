@@ -1,4 +1,4 @@
-﻿
+
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -20,6 +20,9 @@ public record class SayReadyGetSetGo : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the tick value.
 	/// </summary>
+	/// <remarks>
+	/// If the phrase is splitable, the tick value determines how many ticks the phrase will be split into.
+	/// </remarks>
 	public float Tick
 	{
 		get => Splitable ? field : 1;
@@ -28,6 +31,10 @@ public record class SayReadyGetSetGo : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the volume.
 	/// </summary>
+	/// <remarks>
+	/// The percentage of the original volume.
+	/// Must be a value between 0 and 200, inclusive.
+	/// </remarks>
 	public int Volume { get; set; } = 100;
 	/// <summary>
 	/// Gets the event type.

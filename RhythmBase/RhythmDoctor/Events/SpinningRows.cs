@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -27,6 +27,9 @@ public record class SpinningRows : BaseRowAnimation, IEaseEvent
 	/// <summary>
 	/// Rotation angle in degrees used by rotation-related actions.
 	/// </summary>
+	/// <remarks>
+	/// Degree. (0) is the original angle.
+	/// </remarks>
 	[RDJsonCondition($"""
 			$&.{nameof(Action)}
 			is RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}

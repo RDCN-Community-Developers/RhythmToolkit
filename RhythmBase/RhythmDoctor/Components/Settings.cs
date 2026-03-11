@@ -13,7 +13,7 @@ public class Settings
 	/// The version number of the level.  
 	/// The minimum level version number supported by this library is 55.  
 	/// </summary>  
-	public int Version { get; set; } = GlobalSettings.DefaultVersionRhythmDoctor;
+	public int Version { get; set; } = Global.Constants.Constants.DefaultVersionRhythmDoctor;
 	/// <summary>  
 	/// Song artist.  
 	/// </summary>  
@@ -123,6 +123,13 @@ public class Settings
 	/// Mods enabled for the level.  
 	/// </summary>  
 	public List<string> Mods { get; set; } = [];
+	/// <summary>
+	/// Gets or sets the JSON element associated with the specified property name.
+	/// </summary>
+	/// <remarks>If the value being set is undefined, the property will be removed from the collection. Otherwise,
+	/// the property will be updated with the new value.</remarks>
+	/// <param name="propertyName">The name of the property to get or set. This must be a valid string identifier for the JSON element.</param>
+	/// <returns>The JSON element associated with the specified property name. Returns default if the property does not exist.</returns>
 	public JsonElement this[string propertyName]
 	{
 		get => _extraData.TryGetValue(propertyName, out JsonElement value) ? value : default;

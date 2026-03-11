@@ -1,14 +1,10 @@
-using RhythmBase.RhythmDoctor.Components;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Components.Vector
 {
 	/// <summary>
 	/// A size whose horizontal and vertical coordinates are <strong>non-nullable</strong> <see langword="integer" />
 	/// </summary>
-	[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildRDSizeNI))]
 	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public struct RDSizeNI(int width, int height) : IRDVector<RDSizeNI, RDSizeNI, int>
 	{
@@ -139,11 +135,18 @@ namespace RhythmBase.Global.Components.Vector
 		/// <returns>An <see cref="RDPointNI"/> with the same width and height as the input.</returns>
 		public static explicit operator RDPointNI(RDSizeNI size) => new(size.Width, size.Height);
 		private readonly string GetDebuggerDisplay() => ToString();
-		public IEnumerator<int> GetEnumerator()
-		{
-			yield return Width;
-			yield return Height;
-			yield break;
-		}
+		/// <summary>
+		/// Implicitly converts a tuple containing two <see cref="int"/>.
+		/// </summary>
+		/// <remarks>This conversion enables concise and readable initialization of <see cref="RDSizeNI"/> instances from tuples,
+		/// allowing for more flexible assignment and construction patterns.</remarks>
+		/// <param name="tuple">A tuple whose elements represent the x and y coordinates as <see cref="int"/>.</param>
+		public static implicit operator RDSizeNI((int width, int height) tuple) => new(tuple.width, tuple.height);
+		/// <summary>
+		/// Deconstructs the current instance into its Width and Height component values.
+		/// </summary>
+		/// <param name="width">When this method returns, contains the value of the Width component of the current instance.</param>
+		/// <param name="height">When this method returns, contains the value of the Height component of the current instance.</param>
+		public readonly void Deconstruct(out int width, out int height) { width = Width; height = Height; }
 	}
 }

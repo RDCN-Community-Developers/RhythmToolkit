@@ -1,4 +1,4 @@
-﻿
+
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
@@ -14,7 +14,7 @@ public record class PlayAnimation : BaseDecorationAction
 	/// <summary>
 	/// Gets or sets the expression for the animation.
 	/// </summary>
-	public string Expression { get; set; } = "neutral";
+	public string Expression { get; set; } = string.Empty;
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" Expression:{Expression}";
 }

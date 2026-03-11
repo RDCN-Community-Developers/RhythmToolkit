@@ -8,7 +8,6 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// <summary>  
 /// Represents a base class for grouping events in Rhythm Doctor.  
 /// </summary>  
-[RDJsonObjectNotSerializable]
 public abstract partial record class MacroEvent : BaseEvent, IAudioFileEvent, IImageFileEvent
 {
 	///<inheritdoc/>
@@ -137,7 +136,7 @@ public abstract partial record class MacroEvent : BaseEvent, IAudioFileEvent, II
 			result = null;
 			return false;
 		}
-		Type? type = EventTypeUtils.MacroTypes.FirstOrDefault(i => i.FullName == types[typeIndex])
+		Type type = EventTypeUtils.MacroTypes.FirstOrDefault(i => i.FullName == types[typeIndex])
 					 ?? throw new IllegalEventTypeException(types[typeIndex], "This value does not exist in the EventType enumeration.");
 		MacroEvent group = (MacroEvent)Activator.CreateInstance(type)!;
 		group.DataId = id;
