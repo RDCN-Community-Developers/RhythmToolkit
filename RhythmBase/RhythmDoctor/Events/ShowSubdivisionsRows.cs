@@ -4,7 +4,6 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// THIS EVENT IS DEPRECATED.
 /// </summary>
 [RDJsonObjectSerializable]
-[Obsolete("This event is deprecated and may be removed in future versions.", true)]
 public record class ShowSubdivisionsRows : BaseEvent
 {
 	///<inheritdoc/>

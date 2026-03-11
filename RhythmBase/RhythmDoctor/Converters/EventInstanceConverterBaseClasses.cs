@@ -1,6 +1,8 @@
 using RhythmBase.Global.Extensions;
+using RhythmBase.RhythmDoctor.Constants;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
+using static RhythmBase.RhythmDoctor.Constants.Constants;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
@@ -149,28 +151,17 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 		if (value.Enable && value.Preset
 			is VfxPreset.Bloom)
 			writer.WriteNumber("threshold"u8, value.Threshold);
-		if (value.Enable &&
-			(SetVFXPreset.EaseVfxs.Contains(value.Preset)
-			|| value.Preset is VfxPreset.Diamonds))
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableIntensity))
 			writer.WriteNumber("intensity"u8, value.Intensity);
-		if (value.Enable && value.Preset
-			is VfxPreset.Bloom
-			or VfxPreset.Diamonds
-			or VfxPreset.Tutorial
-			or VfxPreset.Embers)
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableColor))
 		{ writer.WriteString("color"u8, value.Color.Serialize()); }
-		if (value.Enable && value.Preset
-			is VfxPreset.TileN
-			or VfxPreset.CustomScreenScroll)
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableAbsoluteXY))
 		{ writer.WritePropertyName("amount"u8); JsonSerializer.Serialize(writer, value.Amount, options); }
-		if (value.Enable && value.Preset
-			is VfxPreset.WavyRows)
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableSpeed))
 			writer.WriteNumber("speedPerc"u8, value.SpeedPercentage);
-		if (value.Enable &&
-			SetVFXPreset.EaseVfxs.Contains(value.Preset))
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableEase))
 			writer.WriteString("ease"u8, value.Ease.ToEnumString());
-		if (value.Enable &&
-			SetVFXPreset.EaseVfxs.Contains(value.Preset))
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableEase))
 			writer.WriteNumber("duration"u8, value.Duration);
 	}
 }

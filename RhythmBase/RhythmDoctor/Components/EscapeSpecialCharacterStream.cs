@@ -251,7 +251,7 @@ internal class EscapeSpecialCharacterStream(Stream inner) : Stream
 			}
 			else
 			{
-				int read = await _inner.ReadAsync(_mbuffer, cancellationToken).ConfigureAwait(false);
+				int read = _inner.Read(_mbuffer.Span);
 				if (read == 0) break;
 				b = _buffer[0];
 			}
@@ -280,7 +280,7 @@ internal class EscapeSpecialCharacterStream(Stream inner) : Stream
 			}
 			else if (_inQuotes && IsCR(b))
 			{
-				int read = await _inner.ReadAsync(_mbuffer, cancellationToken).ConfigureAwait(false);
+				int read = _inner.Read(_mbuffer.Span);
 				if (read == 0)
 				{
 					if (written + 2 > span.Length)
