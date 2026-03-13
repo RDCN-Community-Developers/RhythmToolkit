@@ -49,7 +49,7 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
 #if DEBUG
 					Console.WriteLine($"Current version {level.Settings.Version} is too low.");
 #else
-					throw new VersionTooLowException(GlobalSettings.MinimumSupportedVersionRhythmDoctor);
+					throw new VersionTooLowException(Global.Constants.Constants.MinimumSupportedVersionRhythmDoctor);
 #endif
 			}
 			else if (reader.ValueSpan.SequenceEqual("rows"u8))
