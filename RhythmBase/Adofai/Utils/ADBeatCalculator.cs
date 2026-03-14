@@ -35,7 +35,7 @@ namespace RhythmBase.Adofai.Utils
 				float angle = t.Angle;
 				float temp = 0;
 
-				bool hairPin = Math.Abs(angle - lastAngle) - 180f < Tolerance;
+				bool hairPin = Math.Abs(angle - lastAngle).ToleranceSequals(180f);
 				if (t.ContainsType(EventType.Twirl))
 					s._flip = !s._flip;
 				if (t.ContainsType(EventType.MultiPlanet))
@@ -50,7 +50,7 @@ namespace RhythmBase.Adofai.Utils
 				}
 				else
 				{
-					if (float.Abs(angle - lastAngle) - 180f is > -Tolerance and < Tolerance)
+					if (float.Abs(angle - lastAngle).ToleranceSequals(180f))
 					{
 						// hearpin
 
