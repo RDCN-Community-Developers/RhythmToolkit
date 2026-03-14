@@ -6,6 +6,15 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Components;
 
+public class RDEventArgs : EventArgs
+{
+	public IBaseEvent Event { get; }
+	public RDEventArgs(IBaseEvent e)
+	{
+		Event = e;
+	}
+}
+
 /// <summary>
 /// Rhythm Doctor level.
 /// </summary>
@@ -14,6 +23,8 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	private bool isZip = false;
 	private bool isExtracted = false;
 	private RDColor[] colorPalette = new RDColor[21];
+	public event Action<RDLevel, RDEventArgs>? OnEventAdded;
+	public event Action<RDLevel, RDEventArgs>? OnEventRemoved;
 	internal List<FloatingText> _floatingTexts = [];
 	/// <summary>
 	/// Variables.
@@ -611,6 +622,8 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 			success &= base.Add(item);
 		if (item is FloatingText floatingText)
 			_floatingTexts.Add(floatingText);
+		if(success)
+			OnEventAdded?.Invoke(this, new RDEventArgs(item));
 		return success;
 	}
 	/// <summary>
@@ -636,38 +649,40 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	/// <returns>True if the event was successfully removed; otherwise, false.</returns>
 	public bool Remove(IBaseEvent item, BeatChangeStrategy strategy = BeatChangeStrategy.Default)
 	{
-		bool Remove;
+		bool success;
 		BaseEvent bs = item as BaseEvent ?? throw new RhythmBaseException("Inner exception that shouldn't happen");
 		if (item is BaseDecorationAction decoAction)
 		{
 			RemoveInternal(decoAction);
 			bs._beat = bs._beat.WithoutLink();
-			Remove = true;
+			success = true;
 		}
 		else if (item is BaseRowAction rowAction)
 		{
 			RemoveInternal(rowAction);
 			bs._beat = bs._beat.WithoutLink();
-			Remove = true;
+			success = true;
 		}
 		else if (Contains(item))
 		{
 			if (item.Type == EventType.SetCrotchetsPerBar)
-				Remove = RemoveSetCrotchetsPerBarInternal((SetCrotchetsPerBar)item, strategy);
+				success = RemoveSetCrotchetsPerBarInternal((SetCrotchetsPerBar)item, strategy);
 			else if (EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
-				Remove = RemoveBaseBeatsPerMinuteInternal((BaseBeatsPerMinute)item);
+				success = RemoveBaseBeatsPerMinuteInternal((BaseBeatsPerMinute)item);
 			else
 			{
 				bool result = base.Remove(item);
 				bs._beat = bs._beat.WithoutLink();
-				Remove = result;
+				success = result;
 			}
 		}
 		else
-			Remove = false;
+			success = false;
 		if (item is FloatingText floatingText)
 			_floatingTexts.Remove(floatingText);
-		return Remove;
+		if(success)
+			OnEventRemoved?.Invoke(this, new RDEventArgs(item));)
+		return success;
 	}
 	internal bool AddInternal(BaseDecorationAction item)
 	{
