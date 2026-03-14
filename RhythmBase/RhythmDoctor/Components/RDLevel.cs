@@ -11,6 +11,15 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// </summary>
 public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 {
+	private bool isZip = false;
+	private bool isExtracted = false;
+	private RDColor[] colorPalette = new RDColor[21];
+	internal List<FloatingText> _floatingTexts = [];
+	/// <summary>
+	/// Variables.
+	/// </summary>
+	[JsonIgnore]
+	public readonly RDVariables Variables;
 	/// <inheritdoc/>
 	public override int Count => base.Count;
 	/// <summary>
@@ -746,13 +755,4 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	}
 	/// <inheritdoc/>
 	public override string ToString() => $"\"{Settings.Song}\" Count = {Count}";
-	private bool isZip = false;
-	private bool isExtracted = false;
-	private RDColor[] colorPalette = new RDColor[21];
-	internal List<FloatingText> _floatingTexts = [];
-	/// <summary>
-	/// Variables.
-	/// </summary>
-	[JsonIgnore]
-	public readonly RDVariables Variables;
 }
