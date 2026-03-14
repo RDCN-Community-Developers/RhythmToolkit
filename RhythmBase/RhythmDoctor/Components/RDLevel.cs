@@ -622,7 +622,7 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 			success &= base.Add(item);
 		if (item is FloatingText floatingText)
 			_floatingTexts.Add(floatingText);
-		if(success)
+		if (success)
 			OnEventAdded?.Invoke(this, new RDEventArgs(item));
 		return success;
 	}
@@ -665,10 +665,10 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 		}
 		else if (Contains(item))
 		{
-			if (item.Type == EventType.SetCrotchetsPerBar)
-				success = RemoveSetCrotchetsPerBarInternal((SetCrotchetsPerBar)item, strategy);
-			else if (EventTypeUtils.ToEnums<BaseBeatsPerMinute>().Contains(item.Type))
-				success = RemoveBaseBeatsPerMinuteInternal((BaseBeatsPerMinute)item);
+			if (item is SetCrotchetsPerBar cpb)
+				success = RemoveSetCrotchetsPerBarInternal(cpb, strategy);
+			else if (item is BaseBeatsPerMinute bpm)
+				success = RemoveBaseBeatsPerMinuteInternal(bpm);
 			else
 			{
 				bool result = base.Remove(item);
@@ -680,8 +680,8 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 			success = false;
 		if (item is FloatingText floatingText)
 			_floatingTexts.Remove(floatingText);
-		if(success)
-			OnEventRemoved?.Invoke(this, new RDEventArgs(item));)
+		if (success)
+			OnEventRemoved?.Invoke(this, new RDEventArgs(item));
 		return success;
 	}
 	internal bool AddInternal(BaseDecorationAction item)
