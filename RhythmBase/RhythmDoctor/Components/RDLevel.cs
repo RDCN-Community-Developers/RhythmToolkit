@@ -6,15 +6,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Components;
 
-public class RDEventArgs : EventArgs
-{
-	public IBaseEvent Event { get; }
-	public RDEventArgs(IBaseEvent e)
-	{
-		Event = e;
-	}
-}
-
 /// <summary>
 /// Rhythm Doctor level.
 /// </summary>
@@ -23,8 +14,18 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	private bool isZip = false;
 	private bool isExtracted = false;
 	private RDColor[] colorPalette = new RDColor[21];
-	public event Action<RDLevel, RDEventArgs>? OnEventAdded;
-	public event Action<RDLevel, RDEventArgs>? OnEventRemoved;
+	/// <summary>
+	/// Occurs when a new event is added to the level.
+	/// </summary>
+	/// <remarks>Subscribe to this event to receive notifications whenever an event is added. The event handler
+	/// receives the current level and event arguments containing additional information about the event.</remarks>
+	public event RDEventHandler? OnEventAdded;
+	/// <summary>
+	/// Occurs when an event is removed from the level, providing the associated level and event arguments to subscribers.
+	/// </summary>
+	/// <remarks>Subscribe to this event to perform custom actions when an event is removed from the level. The
+	/// event handler receives the level instance and event arguments that provide context about the removal.</remarks>
+	public event RDEventHandler? OnEventRemoved;
 	internal List<FloatingText> _floatingTexts = [];
 	/// <summary>
 	/// Variables.
@@ -727,7 +728,11 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 		bool extra = Calculator.AddCpbAt(cache, (byte)strategy, out CpbCache fix);
 		base.Add(item);
 		if (extra)
-			base.Add(new SetCrotchetsPerBar() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 });
+		{
+			SetCrotchetsPerBar cpb = new() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 };
+			base.Add(cpb);
+			OnEventAdded?.Invoke(this, new(cpb) { IsAutoPopulated = true, });
+		}
 		return true;
 	}
 	private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, BeatChangeStrategy strategy)
@@ -743,7 +748,11 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 		bool extra = Calculator.RemoveCpbAt(cache, (byte)strategy, out CpbCache fix);
 		base.Remove(item);
 		if (extra)
-			base.Add(new SetCrotchetsPerBar() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 });
+		{
+			SetCrotchetsPerBar cpb = new() { _beat = new RDBeat(Calculator, fix.BeatOnly), _crotchetsPerBar = fix.Cpb - 1 };
+			base.Add(cpb);
+			OnEventRemoved?.Invoke(this, new(cpb) { IsAutoPopulated = true, });
+		}
 		return true;
 	}
 	private bool AddBaseBeatsPerMinuteInternal(BaseBeatsPerMinute item)
