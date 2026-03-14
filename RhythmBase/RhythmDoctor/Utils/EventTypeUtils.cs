@@ -132,11 +132,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 				.ToList()
 				.AsReadOnly();
 		/// <summary>  
-		/// A dictionary that records the correspondence of <see cref="T:RhythmBase.Events.EventType" /> to event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" />.  
-		/// </summary>  
-		//private static readonly ReadOnlyDictionary<EventType, Type> Enum_EventType = new(((EventType[])Enum.GetValues(typeof(EventType))).ToDictionary((i) => i, (i) => i.ToType()));
-
-		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseRowAction" />.  
 		/// </summary>  
 		public static readonly ReadOnlyEnumCollection<EventType> RowTypes = ToEnums<BaseRowAction>();

@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event that repeats specific actions in the level.  
@@ -22,12 +22,12 @@
 		/// <summary>  
 		/// Gets or sets the interval between repetitions.  
 		/// </summary>  
-		[RDJsonCondition($"$&.{nameof(RepeatType)} == RhythmBase.Adofai.Events.{nameof(Events.RepeatType)}.{nameof(Events.RepeatType.Beat)}")]
+		[RDJsonCondition($"$&.{nameof(RepeatType)} == RhythmBase.Adofai.Events.{nameof(Events.RepeatType)}.{nameof(RepeatType.Beat)}")]
 		public float Interval { get; set; } = 1f;
 		/// <summary>  
 		/// Gets or sets a value indicating whether the event should execute on the current floor.  
 		/// </summary>  
-		[RDJsonCondition($"$&.{nameof(RepeatType)} == RhythmBase.Adofai.Events.{nameof(Events.RepeatType)}.{nameof(Events.RepeatType.Floor)}")]
+		[RDJsonCondition($"$&.{nameof(RepeatType)} == RhythmBase.Adofai.Events.{nameof(Events.RepeatType)}.{nameof(RepeatType.Floor)}")]
 		public bool ExecuteOnCurrentFloor { get; set; } = false;
 		/// <summary>  
 		/// Gets or sets the tag associated with the event.  

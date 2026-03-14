@@ -186,6 +186,12 @@ namespace RhythmBase.Adofai.Components
 			)}>{(
 				this.Any() ? $"[{Count}]" : string.Empty
 			)}";
+		/// <summary>
+		/// Defines an implicit conversion from a float representing an angle to a Tile instance.
+		/// </summary>
+		/// <remarks>This conversion enables float values to be used directly in contexts where a Tile is expected.
+		/// The special value 999 is interpreted as a request for a default Tile instance.</remarks>
+		/// <param name="angle">The angle in degrees to convert to a Tile. If the value is 999, a default Tile is created.</param>
 		public static implicit operator Tile(float angle)
 		{
 			return angle == 999 ? new(true) : new(angle);

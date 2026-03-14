@@ -45,7 +45,7 @@ public struct FileReference : IEqualityComparer<FileReference>, IEquatable<FileR
 	/// <returns>
 	/// <c>true</c> if the resolved file path exists on disk; otherwise, <c>false</c>.
 	/// </returns>
-	public readonly bool IsExist(string parentFile) => System.IO.File.Exists(System.IO.Path.GetFullPath(Path, parentFile));
+	public readonly bool IsExist(string parentFile) => File.Exists(System.IO.Path.GetFullPath(Path, parentFile));
 
 	/// <summary>
 	/// Gets a value indicating whether this file reference has no path.

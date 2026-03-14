@@ -805,10 +805,10 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 				namespace RhythmBase.RhythmDoctor.Utils;
 				partial class EventTypeUtils
 				{
-					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase> _c;
-					private static System.Collections.ObjectModel.ReadOnlyCollection<Type> _et;
-					private static System.Collections.ObjectModel.ReadOnlyDictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.Events.EventType>> _ete;
-					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, System.Type> _eet;
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase>? _c;
+					private static System.Collections.ObjectModel.ReadOnlyCollection<Type>? _et;
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.Events.EventType>>? _ete;
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, System.Type>? _eet;
 					internal static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase> converters => _c ??= new(new Dictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase>()
 					{
 				""");

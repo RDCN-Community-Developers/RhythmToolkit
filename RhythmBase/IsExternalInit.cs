@@ -16,21 +16,6 @@ namespace System
 		}
 		extension(ArgumentOutOfRangeException)
 		{
-			public static void ThrowIfOutOfRange(int value, int minValue, int maxValue, string paramName)
-			{
-				if (value < minValue || value > maxValue)
-					throw new ArgumentOutOfRangeException(paramName, $"Value must be between {minValue} and {maxValue}.");
-			}
-			public static void ThrowIfNegative(int value, string paramName)
-			{
-				if (value < 0)
-					throw new ArgumentOutOfRangeException(paramName, "Value must be non-negative.");
-			}
-			public static void ThrowIfZeroOrNegative(int value, string paramName)
-			{
-				if (value <= 0)
-					throw new ArgumentOutOfRangeException(paramName, "Value must be greater than zero.");
-			}
 			public static void ThrowIfNullOrEmpty(string? value, string paramName)
 			{
 				if (string.IsNullOrEmpty(value))
@@ -40,21 +25,6 @@ namespace System
 			{
 				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentOutOfRangeException(paramName, "Value cannot be null or whitespace.");
-			}
-			public static void ThrowIfNotInRange(int value, int[] validValues, string paramName)
-			{
-				if (Array.IndexOf(validValues, value) < 0)
-					throw new ArgumentOutOfRangeException(paramName, $"Value must be one of the following: {string.Join(", ", validValues)}.");
-			}
-			public static void ThrowIfNotInRange<T>(T value, T[] validValues, string paramName) where T : IEquatable<T>
-			{
-				if (Array.IndexOf(validValues, value) < 0)
-					throw new ArgumentOutOfRangeException(paramName, $"Value must be one of the following: {string.Join(", ", validValues)}.");
-			}
-			public static void ThrowIfNotInRange<T>(T value, IEnumerable<T> validValues, string paramName) where T : IEquatable<T>
-			{
-				if (!validValues.Contains(value))
-					throw new ArgumentOutOfRangeException(paramName, $"Value must be one of the following: {string.Join(", ", validValues)}.");
 			}
 		}
 	}
@@ -99,7 +69,7 @@ namespace System
 		{
 			public static int Parse(ReadOnlySpan<byte> value)
 			{
-				string str = System.Text.Encoding.UTF8.GetString(value.ToArray());
+				string str = Text.Encoding.UTF8.GetString(value.ToArray());
 				return int.Parse(str);
 			}
 		}
@@ -110,7 +80,7 @@ namespace System
 		{
 			public static float Parse(ReadOnlySpan<byte> value)
 			{
-				string str = System.Text.Encoding.UTF8.GetString(value.ToArray());
+				string str = Text.Encoding.UTF8.GetString(value.ToArray());
 				return float.Parse(str);
 			}
 			public static float Floor(float value) => (float)Math.Floor(value);
@@ -231,9 +201,9 @@ namespace System.IO
 		{
 			public static string GetFullPath(string path, string basePath)
 			{
-				return System.IO.Path.IsPathRooted(path)
+				return Path.IsPathRooted(path)
 					? path
-					: System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(basePath) ?? "", path));
+					: Path.GetFullPath(Path.Combine(Path.GetDirectoryName(basePath) ?? "", path));
 			}
 		}
 	}

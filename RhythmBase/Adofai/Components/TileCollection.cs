@@ -14,7 +14,7 @@ namespace RhythmBase.Adofai.Components
 		{
 			tileOrder = [];
 			IsReadOnly = false;
-			End = new Tile();
+			End = [];
 			Start = End;
 		}
 		/// <summary>
@@ -79,7 +79,6 @@ namespace RhythmBase.Adofai.Components
 
 			if (index < 0 || index > tileOrder.Count)
 				throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
-
 			if (index == tileOrder.Count)
 			{
 				if (tileOrder.Count == 0)

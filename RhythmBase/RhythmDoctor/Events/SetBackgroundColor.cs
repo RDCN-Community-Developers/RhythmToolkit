@@ -43,9 +43,9 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Recommended to be a value greater than or equals to 0.01 to avoid potential issues with extremely small values.
 	/// </remarks>
 	[RDJsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)} &&
 		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.TilingType)}.{nameof(Events.TilingType.Pulse)}
+		$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.TilingType)}.{nameof(TilingType.Pulse)}
 		""")]
 	public float Interval
 	{
@@ -60,7 +60,7 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the duration of the event.
 	/// </summary>
 	[RDJsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)} &&
 		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.ContentMode)}.{nameof(ContentMode.Tiled)}
 		""")]
 	public float Duration { get; set; } = 0f;
@@ -68,14 +68,14 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the frames per second for the event.
 	/// </summary>
 	[RDJsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)} &&
 		$&.{nameof(Images)}.Count > 1
 		""")]
 	public float Fps { get; set; } = 30f;
 	/// <summary>
 	/// Gets or sets the list of images for the background.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)}")]
+	[RDJsonCondition($"$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)}")]
 	[RDJsonAlias("image")]
 	public List<FileReference> Images { get; set; } = [];
 	/// <summary>
@@ -83,7 +83,7 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)} &&
 		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.ContentMode)}.{nameof(ContentMode.Tiled)} &&
 		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
 		""")]
@@ -102,7 +102,7 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)} &&
 		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.ContentMode)}.{nameof(ContentMode.Tiled)} &&
 		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
 		""")]
@@ -120,7 +120,7 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the speed of the background scrolling when the content mode is set to tiled.
 	/// </summary>
 	[RDJsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)} &&
 		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.ContentMode)}.{nameof(ContentMode.Tiled)} &&
 		($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
 		""")]
@@ -129,7 +129,7 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the tiling type for the background.
 	/// </summary>
 	[RDJsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(Events.BackgroundType.Image)} &&
+		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.BackgroundType)}.{nameof(BackgroundType.Image)} &&
 		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(Events.ContentMode)}.{nameof(ContentMode.Tiled)}
 		""")]
 	public TilingType TilingType { get; set; } = TilingType.Scroll;

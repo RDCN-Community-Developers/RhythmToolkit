@@ -53,11 +53,11 @@ namespace RhythmBase.Adofai.Converters
 				{
 					reader.Read();
 					level.Settings = settingsConverter.Read(ref reader, typeof(Settings), options) ?? new();
-					if (level.Settings.Version < Global.Constants.Constants.MinimumSupportedVersionAdofai)
+					if (level.Settings.Version < MinimumSupportedVersionAdofai)
 #if DEBUG
 						Console.WriteLine($"Current version {level.Settings.Version} is too low.");
 #else
-						throw new VersionTooLowException(Global.Constants.Constants.MinimumSupportedVersionAdofai);
+						throw new VersionTooLowException(MinimumSupportedVersionAdofai);
 #endif
 				}
 				else if (reader.ValueSpan.SequenceEqual("actions"u8))

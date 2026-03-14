@@ -123,15 +123,6 @@ namespace RhythmBase.Adofai.Utils
 		/// <summary>
 		/// Creates and configures a <see cref="JsonSerializerOptions"/> instance for serializing and deserializing JSON data.
 		/// </summary>
-		/// <remarks>The returned <see cref="JsonSerializerOptions"/> instance includes a <see cref="LevelConverter"/>
-		/// configured with the provided <paramref name="filepath"/> and <paramref name="settings"/>. The <see
-		/// cref="JsonSerializerOptions.WriteIndented"/> property is set based on the <see
-		/// cref="LevelReadOrWriteSettings.Indented"/> value.</remarks>
-		/// <param name="filepath">The file path associated with the JSON data. This value is used by the <see cref="LevelConverter"/> to customize
-		/// serialization behavior.</param>
-		/// <param name="settings">Optional settings that determine how the JSON data is read or written. If <c>null</c>, default settings are used.</param>
-		/// <returns>A configured <see cref="JsonSerializerOptions"/> instance with the specified settings and a custom <see
-		/// cref="LevelConverter"/> added to the converters collection.</returns>
 		public static JsonSerializerOptions GetJsonSerializerOptions(string? filepath = null, LevelReadSettings? settings = null)
 		{
 			settings ??= new();
@@ -147,15 +138,6 @@ namespace RhythmBase.Adofai.Utils
 		/// <summary>
 		/// Creates and configures a <see cref="JsonSerializerOptions"/> instance for serializing and deserializing JSON data.
 		/// </summary>
-		/// <remarks>The returned <see cref="JsonSerializerOptions"/> instance includes a <see cref="LevelConverter"/>
-		/// configured with the provided <paramref name="filepath"/> and <paramref name="settings"/>. The <see
-		/// cref="JsonSerializerOptions.WriteIndented"/> property is set based on the <see
-		/// cref="LevelReadOrWriteSettings.Indented"/> value.</remarks>
-		/// <param name="filepath">The file path associated with the JSON data. This value is used by the <see cref="LevelConverter"/> to customize
-		/// serialization behavior.</param>
-		/// <param name="settings">Optional settings that determine how the JSON data is read or written. If <c>null</c>, default settings are used.</param>
-		/// <returns>A configured <see cref="JsonSerializerOptions"/> instance with the specified settings and a custom <see
-		/// cref="LevelConverter"/> added to the converters collection.</returns>
 		public static JsonSerializerOptions GetJsonSerializerOptions(string? filepath = null, LevelWriteSettings? settings = null)
 		{
 			settings ??= new();
@@ -178,12 +160,12 @@ namespace RhythmBase.Adofai.Utils
 		/// <summary>
 		/// A dictionary that records the correspondence of EventType to event types inheriting from ADBaseEvent.
 		/// </summary>
-		public static readonly ReadOnlyDictionary<Type, EventType[]> ADETypesToEnum = new(ADETypes.ToDictionary((Type i) => i, (Type i) => (from j in ADETypes
+		public static readonly ReadOnlyDictionary<Type, EventType[]> ADETypesToEnum = new(ADETypes.ToDictionary(i => i, i => (from j in ADETypes
 																																			where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
-																																			select j).Select((Type j) => ADConvertToEnum(j)).ToArray()));
+																																			select j).Select(j => ADConvertToEnum(j)).ToArray()));
 		/// <summary>
 		/// A dictionary that records the correspondence of event types inheriting from ADBaseEvent to EventType.
 		/// </summary>
-		public static readonly ReadOnlyDictionary<EventType, Type> ADEnumToEType = new(((EventType[])Enum.GetValues(typeof(EventType))).ToDictionary((EventType i) => i, ConvertToType));
+		public static readonly ReadOnlyDictionary<EventType, Type> ADEnumToEType = new(((EventType[])Enum.GetValues(typeof(EventType))).ToDictionary(i => i, ConvertToType));
 	}
 }

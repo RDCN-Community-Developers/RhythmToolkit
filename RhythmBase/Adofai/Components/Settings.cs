@@ -11,7 +11,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// Gets or sets the version of the level.
 		/// </summary>
-		public int Version { get; set; } = Global.Constants.Constants.DefaultVersionAdofai;
+		public int Version { get; set; } = DefaultVersionAdofai;
 		/// <summary>
 		/// Gets or sets the name of the artist of the song.
 		/// </summary>

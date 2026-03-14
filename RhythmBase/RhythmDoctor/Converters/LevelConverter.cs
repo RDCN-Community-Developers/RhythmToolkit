@@ -45,11 +45,11 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
 					foreach (FileReference file in level.Settings.GetAllFileReferences())
 						if (!file.IsEmpty && file.IsExist(DirectoryName!))
 							ReadSettings.FileReferences.Add(file);
-				if (level.Settings.Version < Global.Constants.Constants.MinimumSupportedVersionRhythmDoctor)
+				if (level.Settings.Version < MinimumSupportedVersionRhythmDoctor)
 #if DEBUG
 					Console.WriteLine($"Current version {level.Settings.Version} is too low.");
 #else
-					throw new VersionTooLowException(Global.Constants.Constants.MinimumSupportedVersionRhythmDoctor);
+					throw new VersionTooLowException(MinimumSupportedVersionRhythmDoctor);
 #endif
 			}
 			else if (reader.ValueSpan.SequenceEqual("rows"u8))

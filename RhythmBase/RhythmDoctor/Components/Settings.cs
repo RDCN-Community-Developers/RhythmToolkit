@@ -13,7 +13,7 @@ public class Settings
 	/// The version number of the level.  
 	/// The minimum level version number supported by this library is 55.  
 	/// </summary>  
-	public int Version { get; set; } = Global.Constants.Constants.DefaultVersionRhythmDoctor;
+	public int Version { get; set; } = DefaultVersionRhythmDoctor;
 	/// <summary>  
 	/// Song artist.  
 	/// </summary>  

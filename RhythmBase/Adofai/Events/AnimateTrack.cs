@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 
 namespace RhythmBase.Adofai.Events
 {
@@ -22,12 +22,12 @@ namespace RhythmBase.Adofai.Events
 		/// <summary>  
 		/// Gets or sets the number of beats ahead for the animation.  
 		/// </summary>  
-		[RDJsonCondition($"$&.{nameof(TrackAnimation)} is not RhythmBase.Adofai.Components.{nameof(Components.TrackAnimationType)}.{nameof(Components.TrackAnimationType.None)}")]
+		[RDJsonCondition($"$&.{nameof(TrackAnimation)} is not RhythmBase.Adofai.Components.{nameof(TrackAnimationType)}.{nameof(TrackAnimationType.None)}")]
 		public float BeatsAhead { get; set; } = 3;
 		/// <summary>  
 		/// Gets or sets the number of beats behind for the animation.  
 		/// </summary>  
-		[RDJsonCondition($"$&.{nameof(TrackDisappearAnimation)} is not RhythmBase.Adofai.Components.{nameof(Components.TrackDisappearAnimationType)}.{nameof(Components.TrackDisappearAnimationType.None)}")]
+		[RDJsonCondition($"$&.{nameof(TrackDisappearAnimation)} is not RhythmBase.Adofai.Components.{nameof(TrackDisappearAnimationType)}.{nameof(TrackDisappearAnimationType.None)}")]
 		public float BeatsBehind { get; set; }
 	}
 }

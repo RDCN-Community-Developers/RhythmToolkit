@@ -39,6 +39,9 @@ namespace RhythmBase.Adofai.Components
 			{
 			}
 		}
+		/// <summary>
+		/// Gets the collection of planets associated with the current context.
+		/// </summary>
 		public readonly Planets Planets
 		{
 			get
@@ -245,7 +248,7 @@ namespace RhythmBase.Adofai.Components
 		/// <inheritdoc/>
 		public override readonly string ToString() => $"[{BeatOnly}]";
 		/// <inheritdoc/>
-		public override readonly bool Equals(object? obj) => obj is ADBeat && Equals((ADBeat)obj);
+		public override readonly bool Equals(object? obj) => obj is ADBeat beat && Equals(beat);
 		/// <inheritdoc/>
 		public readonly bool Equals([NotNull] ADBeat other) => this == other;
 		/// <inheritdoc/>

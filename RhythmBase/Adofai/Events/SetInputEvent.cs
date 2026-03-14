@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.Adofai.Events;
+namespace RhythmBase.Adofai.Events;
 
 /// <summary>
 /// Represents an event to set input configurations in the Adofai event system.
@@ -21,7 +21,7 @@ public class SetInputEvent : BaseTaggedTileEvent, IBeginningEvent
 	/// <summary>
 	/// Gets or sets a value indicating whether input should be ignored.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(State)} is RhythmBase.Adofai.Events.{nameof(Events.KeyState)}.{nameof(Events.KeyState.Down)}")]
+	[RDJsonCondition($"$&.{nameof(State)} is RhythmBase.Adofai.Events.{nameof(KeyState)}.{nameof(KeyState.Down)}")]
 	public bool IgnoreInput { get; set; } = false;
 
 	/// <summary>

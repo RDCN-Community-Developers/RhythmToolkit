@@ -393,8 +393,6 @@ internal class RedBlackTree<TKey, TValue> : ICollection<KeyValuePair<TKey, TValu
 
 	public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
 	{
-		ArgumentNullException.ThrowIfNull(array, nameof(array));
-		ArgumentOutOfRangeException.ThrowIfNegative(arrayIndex, nameof(arrayIndex));
 		if (array.Length - arrayIndex < _count)
 			throw new ArgumentException("目标数组空间不足。");
 
