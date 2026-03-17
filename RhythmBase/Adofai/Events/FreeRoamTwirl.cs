@@ -1,10 +1,11 @@
-﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents the Free Roam Twirl event in the ADOFAI editor.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class FreeRoamTwirl : BaseTileEvent
 	{
 		/// <inheritdoc/>

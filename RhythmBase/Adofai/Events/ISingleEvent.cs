@@ -1,6 +1,6 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
-	internal interface ISingleEvent
+	public interface ISingleEvent
 	{
 	}
 }

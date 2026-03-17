@@ -1,9 +1,10 @@
-﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events;
 /// <summary>  
 /// Represents an event to add a decoration to a tile in the game.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 {
 	/// <inheritdoc/>

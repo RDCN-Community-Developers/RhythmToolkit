@@ -1,9 +1,10 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event that sets the rotation of a planet in the level.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class SetPlanetRotation : BaseTileEvent, ISingleEvent
 	{
 		/// <inheritdoc/>

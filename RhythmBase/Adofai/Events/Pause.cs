@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents a pause event in the ADOFAI level.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class Pause : BaseTileEvent, ISingleEvent
 	{
 		/// <inheritdoc/>  

@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
 	/// Represents a base class for tagged tile actions in the Adofai event system.
 	/// </summary>
+	[RDJsonObjectSerializable]
 	public abstract class BaseTaggedTileEvent : BaseTileEvent
 	{
 		/// <inheritdoc/>

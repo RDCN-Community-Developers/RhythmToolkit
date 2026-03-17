@@ -1,10 +1,11 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to recolor a track in the Adofai level.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class RecolorTrack : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>

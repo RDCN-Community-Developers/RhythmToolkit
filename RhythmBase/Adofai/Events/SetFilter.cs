@@ -1,9 +1,10 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents an event that sets a filter effect in the Adofai level.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class SetFilter : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 {
 	/// <inheritdoc/>

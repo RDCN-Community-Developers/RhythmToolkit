@@ -1,10 +1,11 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents an event to add an object in the game.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class AddObject : BaseTileEvent, IBeginningEvent
 {
 	/// <inheritdoc/>

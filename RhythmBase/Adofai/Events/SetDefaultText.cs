@@ -1,10 +1,11 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents an event to set default text properties in the Adofai editor.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class SetDefaultText : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 {
 	/// <inheritdoc/>

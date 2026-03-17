@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events;
+namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents an event to set the hitsound in the ADOFAI level.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class SetHitsound : BaseTileEvent, ISingleEvent
 {
 	/// <inheritdoc/>

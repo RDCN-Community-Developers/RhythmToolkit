@@ -1,10 +1,11 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to move the camera in the Adofai game.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class MoveCamera : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>

@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
 	/// Represents an event that enables or disables auto-playing tiles in the game.
 	/// </summary>
+	[RDJsonObjectSerializable]
 	public class AutoPlayTiles : BaseTileEvent, ISingleEvent
 	{
 		/// <inheritdoc/>

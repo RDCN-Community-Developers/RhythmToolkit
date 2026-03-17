@@ -1,10 +1,11 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>
 /// Represents the Free Roam event in the ADOFAI editor.
 /// </summary>
+[RDJsonObjectSerializable]
 public class FreeRoam : BaseTileEvent, IEaseEvent, ISingleEvent
 {
 	/// <inheritdoc/>

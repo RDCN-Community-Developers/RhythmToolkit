@@ -1,9 +1,10 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to set the speed in the Adofai level.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class SetSpeed : BaseTaggedTileEvent
 	{
 		/// <inheritdoc/>

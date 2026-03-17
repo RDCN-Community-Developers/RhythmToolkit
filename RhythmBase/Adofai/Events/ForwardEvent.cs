@@ -1,10 +1,11 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents a custom event in the ADOFAI game.  
 	/// </summary>  
+	[RDJsonObjectHasSerializer]
 	public class ForwardEvent : BaseEvent, IForwardEvent
 	{
 		/// <inheritdoc/>

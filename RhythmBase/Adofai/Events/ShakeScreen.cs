@@ -1,9 +1,10 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents a screen shake event in the Adofai event system.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class ShakeScreen : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>

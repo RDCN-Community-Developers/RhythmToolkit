@@ -1,9 +1,10 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents a flash event in the Adofai event system.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class Flash : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 {
 	/// <inheritdoc/>

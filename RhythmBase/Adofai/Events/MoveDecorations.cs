@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events
@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event to move decorations in the Adofai editor.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class MoveDecorations : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent, IImageFileEvent
 	{
 		/// <inheritdoc/>

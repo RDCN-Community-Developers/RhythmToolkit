@@ -1,10 +1,11 @@
-﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents a custom background event in the Adofai event system.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class CustomBackground : BaseTaggedTileEvent, IImageFileEvent
 	{
 		/// <inheritdoc/>

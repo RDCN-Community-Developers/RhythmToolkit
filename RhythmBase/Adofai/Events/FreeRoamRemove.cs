@@ -1,10 +1,11 @@
-﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event that removes free roam mode in the level.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class FreeRoamRemove : BaseTileEvent
 	{
 		/// <inheritdoc/>

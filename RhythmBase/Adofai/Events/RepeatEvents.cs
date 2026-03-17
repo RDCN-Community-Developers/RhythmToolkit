@@ -3,6 +3,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event that repeats specific actions in the level.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class RepeatEvents : BaseTileEvent
 	{
 		/// <inheritdoc/>

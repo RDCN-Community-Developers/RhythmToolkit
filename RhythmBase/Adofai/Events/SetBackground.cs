@@ -1,4 +1,4 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events
@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event to set the background properties in the Adofai event system.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class SetBackground : BaseTaggedTileEvent, IBeginningEvent, IImageFileEvent
 	{
 		/// <summary>  

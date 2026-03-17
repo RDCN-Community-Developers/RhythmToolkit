@@ -1,9 +1,10 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents an event to scale planets in the Adofai level.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class ScalePlanets : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 {
 	/// <inheritdoc/>

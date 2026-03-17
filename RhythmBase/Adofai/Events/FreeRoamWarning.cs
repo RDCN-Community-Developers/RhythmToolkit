@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events;
 
@@ -10,6 +10,7 @@ namespace RhythmBase.Adofai.Events;
 /// at a particular position relative to the tile. It inherits common event behavior from
 /// <see cref="BaseTileEvent"/> and its <see cref="Type"/> identifies it as <see cref="EventType.FreeRoamWarning"/>.
 /// </remarks>
+[RDJsonObjectSerializable]
 public class FreeRoamWarning : BaseTileEvent
 {
 	/// <summary>

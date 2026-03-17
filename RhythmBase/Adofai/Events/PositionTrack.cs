@@ -1,10 +1,11 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event that adjusts the position, rotation, scale, and opacity of a track in the level.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class PositionTrack : BaseTileEvent
 	{
 		/// <inheritdoc/>  

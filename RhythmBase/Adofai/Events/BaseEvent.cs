@@ -5,6 +5,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>
 	/// Represents the base class for all ADOFAI events.
 	/// </summary>
+	[RDJsonObjectSerializable]
 	public abstract class BaseEvent : IBaseEvent
 	{
 		/// <inheritdoc/>

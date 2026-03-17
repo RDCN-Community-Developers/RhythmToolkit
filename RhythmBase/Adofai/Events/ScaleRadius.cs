@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
 	/// Represents the ScaleRadius event in the ADOFAI editor.
 	/// </summary>
+	[RDJsonObjectSerializable]
 	public class ScaleRadius : BaseTileEvent, ISingleEvent
 	{
 		/// <inheritdoc/>

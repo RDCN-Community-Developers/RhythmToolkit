@@ -1,10 +1,11 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>
 /// Represents an event to set particle effects in the Adofai event system.
 /// </summary>
+[RDJsonObjectSerializable]
 public class SetParticle : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 {
 	/// <summary>

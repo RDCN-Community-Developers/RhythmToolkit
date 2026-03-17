@@ -1,9 +1,10 @@
-﻿using RhythmBase.Global.Components.Vector;
+using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events;
 /// <summary>
 /// Represents an event that adds a particle effect to the level.
 /// </summary>
+[RDJsonObjectSerializable]
 public class AddParticle : BaseEvent, IBeginningEvent, IImageFileEvent
 {
 	/// <inheritdoc/>

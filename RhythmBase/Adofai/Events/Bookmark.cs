@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
 	/// Represents a bookmark event in the ADOFAI game.
 	/// </summary>
+	[RDJsonObjectSerializable]
 	public class Bookmark : BaseTileEvent, IBeginningEvent,	ISingleEvent
 	{
 		/// <inheritdoc/>s

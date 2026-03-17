@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event to set the frame rate in the Adofai editor.  
@@ -6,6 +6,7 @@
 	/// <remarks>  
 	/// This event allows enabling or disabling frame rate control and specifies the desired frame rate value.  
 	/// </remarks>  
+	[RDJsonObjectSerializable]
 	public class SetFrameRate : BaseTaggedTileEvent, IBeginningEvent
 	{
 		/// <summary>  

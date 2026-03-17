@@ -1,10 +1,11 @@
-﻿using RhythmBase.Global.Components.Easing;
+using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
 namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents a screen tile action in the Adofai event system.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class ScreenTile : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>

@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event that hides specific elements in the level.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class Hide : BaseTileEvent, ISingleEvent
 	{
 		/// <inheritdoc/>  

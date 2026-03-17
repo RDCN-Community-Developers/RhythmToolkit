@@ -1,10 +1,11 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents the ColorTrack event in ADOFAI.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class ColorTrack : BaseTileEvent, ISingleEvent, IImageFileEvent
 {
 	/// <inheritdoc/>

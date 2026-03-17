@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an editor comment event in ADOFAI.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class EditorComment : BaseTileEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>

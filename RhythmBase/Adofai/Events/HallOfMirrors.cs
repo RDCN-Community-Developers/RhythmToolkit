@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents the Hall of Mirrors event in the Adofai event system.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class HallOfMirrors : BaseTaggedTileEvent, IBeginningEvent
 	{
 		/// <inheritdoc/>

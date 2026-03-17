@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>
 	/// Represents a checkpoint event in the ADOFAI game.
 	/// </summary>
+	[RDJsonObjectSerializable]
 	public class Checkpoint : BaseTileEvent, ISingleEvent
 	{
 		/// <inheritdoc/>

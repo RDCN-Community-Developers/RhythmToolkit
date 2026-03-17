@@ -1,10 +1,11 @@
-﻿using RhythmBase.Adofai.Components;
+using RhythmBase.Adofai.Components;
 using RhythmBase.Global.Components.Easing;
 namespace RhythmBase.Adofai.Events;
 
 /// <summary>
 /// Represents an event to set object properties in the Adofai editor.
 /// </summary>
+[RDJsonObjectSerializable]
 public class SetObject : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 {
 	/// <inheritdoc/>

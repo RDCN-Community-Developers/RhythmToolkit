@@ -5,6 +5,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents an event to animate a track in the game.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class AnimateTrack : BaseTileEvent, ISingleEvent
 	{
 		/// <inheritdoc/>

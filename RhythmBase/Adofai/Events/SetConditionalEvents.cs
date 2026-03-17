@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events
 {
 	/// <summary>  
 	/// Represents an event that sets conditional tags for various gameplay scenarios in ADOFAI.  
 	/// </summary>  
+	[RDJsonObjectSerializable]
 	public class SetConditionalEvents : BaseTileEvent, ISingleEvent
 	{		/// <inheritdoc/>
 		public override EventType Type => EventType.SetConditionalEvents;		/// <summary>  

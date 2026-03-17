@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.Adofai.Events;
+namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents an event that emits particles in the level.  
@@ -6,6 +6,7 @@
 /// <remarks>  
 /// This event is used to trigger particle effects during gameplay.  
 /// </remarks>  
+[RDJsonObjectSerializable]
 public class EmitParticle : BaseTaggedTileEvent, IBeginningEvent
 {
 	/// <summary>  

@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events;
+namespace RhythmBase.Adofai.Events;
 
 /// <summary>  
 /// Represents an event that sets text in the Adofai level.  
 /// </summary>  
+[RDJsonObjectSerializable]
 public class SetText : BaseTaggedTileEvent, IBeginningEvent
 {	/// <inheritdoc/>
 	public override EventType Type => EventType.SetText;

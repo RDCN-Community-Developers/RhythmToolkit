@@ -1,8 +1,9 @@
-﻿namespace RhythmBase.Adofai.Events;
+namespace RhythmBase.Adofai.Events;
 
 /// <summary>
 /// Represents an event that enables multi-planet mode in the level.
 /// </summary>
+[RDJsonObjectSerializable]
 public class MultiPlanet : BaseTileEvent, ISingleEvent
 {
 	/// <inheritdoc/>

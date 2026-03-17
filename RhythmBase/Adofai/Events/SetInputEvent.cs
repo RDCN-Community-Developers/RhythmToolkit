@@ -3,6 +3,7 @@ namespace RhythmBase.Adofai.Events;
 /// <summary>
 /// Represents an event to set input configurations in the Adofai event system.
 /// </summary>
+[RDJsonObjectSerializable]
 public class SetInputEvent : BaseTaggedTileEvent, IBeginningEvent
 {
 	/// <inheritdoc/>
