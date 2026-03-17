@@ -1,20 +1,19 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
-namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events;
+
+/// <summary>
+/// Represents a forward event in the Adofai system, used to preserve unknown or user-defined event data during serialization and deserialization.
+/// </summary>
+public interface IForwardEvent : IBaseEvent
 {
 	/// <summary>
-	/// Represents a forward event in the Adofai system, used to preserve unknown or user-defined event data during serialization and deserialization.
+	/// Gets the actual type name of the forward event.
 	/// </summary>
-	public interface IForwardEvent : IBaseEvent
-	{
-		/// <summary>
-		/// Gets the actual type name of the forward event.
-		/// </summary>
-		string ActureType { get; }
+	string ActureType { get; }
 
-		/// <summary>
-		/// Gets or sets the raw event data as a <see cref="System.Text.Json.JsonElement"/>.
-		/// </summary>
-		JsonElement Data { get; set; }
-	}
+	/// <summary>
+	/// Gets or sets the raw event data as a <see cref="System.Text.Json.JsonElement"/>.
+	/// </summary>
+	JsonElement Data { get; set; }
 }

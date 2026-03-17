@@ -1,8 +1,9 @@
 using RhythmBase.Global.Components;
 using RhythmBase.Global.Extensions;
 using RhythmBase.Global.Settings;
+using RhythmBase.RhythmDoctor;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Diagnostics;
@@ -256,7 +257,7 @@ namespace RhythmBase.Test
 			RDLevel level = RDLevel.Default;
 			level.Add(new RhythmBase.Test.Tutorial.MyEvent());
 			Console.WriteLine(level.OfEvent<MacroEvent>().Count());
-			RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.Events.EventType> eventTypes = EventTypeUtils.CustomTypes;
+			RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.EventType> eventTypes = EventTypeUtils.CustomTypes;
 		}
 	}
 }

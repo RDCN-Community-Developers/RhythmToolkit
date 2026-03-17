@@ -51,8 +51,8 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// Gets or sets the tile size of the decoration.  
 	/// </summary>  
 	[RDJsonCondition($"""
-		$&.{nameof(BlendMode)} is RhythmBase.Adofai.Events.{nameof(BlendModes)}.{nameof(BlendModes.None)} &&
-		$&.{nameof(MaskingType)} is not RhythmBase.Adofai.Events.{nameof(Events.MaskingType)}.{nameof(MaskingType.Mask)}
+		$&.{nameof(BlendMode)} is RhythmBase.Adofai.{nameof(Adofai.BlendMode)}.{nameof(BlendMode.None)} &&
+		$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)}
 		""")]
 	public RDSizeN Tile { get; set; } = new(1, 1);
 	/// <summary>  
@@ -62,13 +62,13 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// <summary>  
 	/// Gets or sets the opacity of the decoration.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.Events.{nameof(Events.MaskingType)}.{nameof(MaskingType.Mask)}")]
+	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)}")]
 	public float Opacity { get; set; } = 100f;
 	/// <summary>  
 	/// Gets or sets the depth of the decoration.  
 	/// </summary>  
 	[RDJsonCondition($"""
-		$&.{nameof(MaskingType)} is not RhythmBase.Adofai.Events.{nameof(Events.MaskingType)}.{nameof(MaskingType.Mask)} &&
+		$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)} &&
 		!$&.{nameof(SyncFloorDepth)}
 		""")]
 	public int Depth { get; set; } = -1;
@@ -79,7 +79,7 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// <summary>  
 	/// Gets or sets the parallax effect of the decoration.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(RelativeTo)} is not RhythmBase.Adofai.Events.{nameof(DecorationRelativeTo)}.{nameof(DecorationRelativeTo.Camera)}")]
+	[RDJsonCondition($"$&.{nameof(RelativeTo)} is not RhythmBase.Adofai.{nameof(DecorationRelativeTo)}.{nameof(DecorationRelativeTo.Camera)}")]
 	public RDSizeN Parallax { get; set; } = new(0, 0);
 	/// <summary>  
 	/// Gets or sets the parallax offset of the decoration.  
@@ -92,13 +92,13 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// <summary>  
 	/// Gets or sets a value indicating whether image smoothing is applied.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.Events.{nameof(Events.MaskingType)}.{nameof(MaskingType.Mask)}")]
+	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)}")]
 	public bool ImageSmoothing { get; set; } = true;
 	/// <summary>  
 	/// Gets or sets the blend mode of the decoration.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.Events.{nameof(Events.MaskingType)}.{nameof(MaskingType.Mask)}")]
-	public BlendModes BlendMode { get; set; } = BlendModes.None;
+	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)}")]
+	public BlendMode BlendMode { get; set; } = BlendMode.None;
 	/// <summary>  
 	/// Gets or sets the masking type of the decoration.  
 	/// </summary>  
@@ -122,7 +122,7 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// <summary>  
 	/// Gets or sets the type of hitbox for the decoration.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.Events.{nameof(Events.MaskingType)}.{nameof(MaskingType.Mask)}")]
+	[RDJsonCondition($"$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)}")]
 	public HitboxTypes Hitbox { get; set; } = HitboxTypes.None;
 	/// <summary>
 	/// Gets or sets the type of trigger for the hitbox.
@@ -139,7 +139,7 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// <summary>
 	/// Gets or sets the target for hitbox detection.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Hitbox)} is not RhythmBase.Adofai.Events.{nameof(HitboxTypes)}.{nameof(HitboxTypes.None)}")]
+	[RDJsonCondition($"$&.{nameof(Hitbox)} is not RhythmBase.Adofai.{nameof(HitboxTypes)}.{nameof(HitboxTypes.None)}")]
 	public HitboxDetectTarget HitboxDetectTarget { get; set; } = HitboxDetectTarget.Planet;
 	/// <summary>
 	/// Gets or sets the target planet for hitbox detection.
@@ -169,59 +169,6 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// Gets or sets the components associated with the decoration.  
 	/// </summary>  
 	public string Components { get; set; } = string.Empty;
-    IEnumerable<FileReference> IImageFileEvent.ImageFiles => [DecorationImage, MaskingTarget];
+	IEnumerable<FileReference> IImageFileEvent.ImageFiles => [DecorationImage, MaskingTarget];
 	IEnumerable<FileReference> IFileEvent.Files => [DecorationImage, MaskingTarget];
-}
-/// <summary>
-/// Specifies how a decoration's hitbox trigger should behave when activated.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum HitboxTriggerType
-{
-	/// <summary>
-	/// The hitbox triggers a single time and then stops until reactivated.
-	/// </summary>
-	Once,
-	/// <summary>
-	/// The hitbox triggers each time a distinct touch or contact occurs.
-	/// </summary>
-	PerTouch,
-	/// <summary>
-	/// The hitbox triggers repeatedly at the configured repeat interval while active.
-	/// </summary>
-	Repeat,
-}
-/// <summary>
-/// Defines what kinds of objects the hitbox detection system should consider as valid targets.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum HitboxDetectTarget
-{
-	/// <summary>
-	/// The hitbox detects collisions with planets.
-	/// </summary>
-	Planet,
-	/// <summary>
-	/// The hitbox detects collisions with decorations.
-	/// </summary>
-	Decoration,
-}
-/// <summary>
-/// Specifies which planets are considered by the hitbox when the detect target is a planet.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum HitboxTargetPlanet
-{
-	/// <summary>
-	/// The hitbox can target any planet (no restriction).
-	/// </summary>
-	Any,
-	/// <summary>
-	/// The hitbox targets the central planet.
-	/// </summary>
-	Center,
-	/// <summary>
-	/// The hitbox targets orbiting planets.
-	/// </summary>
-	Orbiting,
 }

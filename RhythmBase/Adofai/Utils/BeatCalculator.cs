@@ -5,9 +5,9 @@ namespace RhythmBase.Adofai.Utils
 	/// <summary>
 	/// Beat Calculator.
 	/// </summary>
-	public class ADBeatCalculator
+	public class BeatCalculator
 	{
-		internal ADBeatCalculator(ADLevel level)
+		internal BeatCalculator(ADLevel level)
 		{
 			Collection = level;
 			Refresh();
@@ -23,7 +23,6 @@ namespace RhythmBase.Adofai.Utils
 		}
 		public float TickOf(Tile tile)
 		{
-			bool flip;
 			float ticks = 0;
 			_cacheTile ??= Collection.Start;
 			Status s = _cacheTile._status;
@@ -50,7 +49,7 @@ namespace RhythmBase.Adofai.Utils
 				}
 				else
 				{
-					if (float.Abs(angle - lastAngle).ToleranceSequals(180f))
+					if (float.Abs(angle - lastAngle) == 180f)
 					{
 						// hearpin
 

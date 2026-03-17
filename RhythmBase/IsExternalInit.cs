@@ -87,6 +87,8 @@ namespace System
 			public static float Ceiling(float value) => (float)Math.Ceiling(value);
 			public static float Abs(float value) => Math.Abs(value);
 			public static float Round(float value) => (float)Math.Round(value);
+			public static float Pi => (float)Math.PI;
+			public static float Ieee754Remainder(float dividend, float divisor) => (float)Math.IEEERemainder(dividend, divisor);
 		}
 	}
 	internal static class StringExtensions

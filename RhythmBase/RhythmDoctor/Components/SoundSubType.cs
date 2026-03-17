@@ -8,7 +8,7 @@ public class SoundSubType : RDAudio
 	/// <summary>
 	/// Gets or sets the sound effect name.
 	/// </summary>
-	public Events.SoundType GroupSubtype { get; set; }
+	public RhythmDoctor.SoundType GroupSubtype { get; set; }
 	/// <summary>
 	/// Gets or sets a value indicating whether this <see cref="SoundSubType"/> is used.
 	/// </summary>

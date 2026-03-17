@@ -1,16 +1,15 @@
-namespace RhythmBase.Adofai.Events
+namespace RhythmBase.Adofai.Events;
+
+/// <summary>
+/// Represents the ScaleMargin event, which adjusts the margin scaling in the level.
+/// </summary>
+[RDJsonObjectSerializable]
+public class ScaleMargin : BaseTileEvent, ISingleEvent
 {
+	/// <inheritdoc/>
+	public override EventType Type => EventType.ScaleMargin;
 	/// <summary>
-	/// Represents the ScaleMargin event, which adjusts the margin scaling in the level.
+	/// Gets or sets the scale value for the margin adjustment.
 	/// </summary>
-	[RDJsonObjectSerializable]
-	public class ScaleMargin : BaseTileEvent, ISingleEvent
-	{
-		/// <inheritdoc/>
-		public override EventType Type => EventType.ScaleMargin;
-		/// <summary>
-		/// Gets or sets the scale value for the margin adjustment.
-		/// </summary>
-		public float Scale { get; set; } = 100f;
-	}
+	public float Scale { get; set; } = 100f;
 }

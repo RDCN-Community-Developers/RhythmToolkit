@@ -44,7 +44,7 @@ namespace RhythmBase.Adofai.Components
 		/// <summary>
 		/// The calculator that comes with the level.
 		/// </summary>
-		public ADBeatCalculator Calculator { get; }
+		public BeatCalculator Calculator { get; }
 		/// <summary>  
 		/// Initializes a new instance of the <see cref="ADLevel"/> class.  
 		/// </summary>  
@@ -52,7 +52,7 @@ namespace RhythmBase.Adofai.Components
 		{
 			Settings = new Settings();
 			Decorations = [];
-			Calculator = new ADBeatCalculator(this);
+			Calculator = new BeatCalculator(this);
 			End.Parent = this;
 		}
 		/// <summary>  
@@ -63,7 +63,7 @@ namespace RhythmBase.Adofai.Components
 		{
 			Settings = new Settings();
 			Decorations = [];
-			Calculator = new ADBeatCalculator(this);
+			Calculator = new BeatCalculator(this);
 			End.Parent = this;
 			this.InsertRange(0, items);
 		}

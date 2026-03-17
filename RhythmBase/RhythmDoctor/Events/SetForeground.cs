@@ -21,7 +21,7 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// <summary>  
 	/// Gets or sets the tiling type for the event.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
+	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
 	public TilingType TilingType { get; set; } = TilingType.Scroll;
 	/// <summary>  
 	/// Gets or sets the color for the foreground.  
@@ -36,14 +36,14 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// <summary>  
 	/// Gets or sets the frames per second for the foreground animation.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
+	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
 	public float Fps { get; set; } = 30f;
 	/// <summary>
 	/// Gets or sets the horizontal scroll value.
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"""
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
 		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
 		""")]
 	public float? ScrollX
@@ -61,7 +61,7 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"""
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
 		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
 		""")]
 	public float? ScrollY
@@ -79,20 +79,20 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// </summary>
 	[Tween]
 	[RDJsonCondition($"""
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}
 		""")]
 	public RDPoint Speed { get; set; } = new(0, 0);
 	/// <summary>  
 	/// Gets or sets the duration of the event.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
+	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
 	public float Duration { get; set; } = 0;
 	/// <summary>  
 	/// Gets or sets the interval between frames.  
 	/// </summary>  
 	[RDJsonCondition($"""
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.Events.{nameof(TilingType)}.{nameof(SetForeground.TilingType.Pulse)}
+		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+		$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.{nameof(TilingType)}.{nameof(SetForeground.TilingType.Pulse)}
 		""")]
 	public float Interval
 	{
@@ -102,12 +102,12 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// <summary>  
 	/// Gets or sets the easing type for the event.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
+	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	/// <summary>  
 	/// Gets the type of the event.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.Events.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
+	[RDJsonCondition($"$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}")]
 	public override EventType Type => EventType.SetForeground;
 
 	/// <summary>  

@@ -1,4 +1,3 @@
-using RhythmBase.RhythmDoctor.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

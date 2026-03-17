@@ -17,23 +17,23 @@ public record class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
 	/// </summary>  
 	[RDJsonCondition($"""
 		$&.{nameof(Preset)}
-		is RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.Intimate)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.InsomniacDay)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.CrossesStraight)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.CubesFalling)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.Rooftop)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.Sky)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.CoffeeShop)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.Garden)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.TrainDay)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.DesertDay)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.HospitalWard)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.ColeWardNight)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.Skyline)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.FloatingHeart)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.FloatingHeartBroken)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.Stadium)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(Theme)}.{nameof(Theme.AthleteWard)}
+		is RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Intimate)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.InsomniacDay)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CrossesStraight)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CubesFalling)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Rooftop)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Sky)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CoffeeShop)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Garden)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.TrainDay)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.DesertDay)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.HospitalWard)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.ColeWardNight)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Skyline)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.FloatingHeart)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.FloatingHeartBroken)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Stadium)}
+		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.AthleteWard)}
 		""")]
 	public byte Variant { get; set; }
 	/// <summary>

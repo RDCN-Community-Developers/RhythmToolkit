@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.Adofai.Utils
+namespace RhythmBase.Adofai.Utils
 {
 	/// <summary>
 	/// Provides utility methods for working with event types.

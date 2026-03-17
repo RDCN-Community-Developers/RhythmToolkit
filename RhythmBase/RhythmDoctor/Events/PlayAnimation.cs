@@ -1,4 +1,3 @@
-
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>

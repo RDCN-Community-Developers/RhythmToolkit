@@ -48,36 +48,5 @@ public class SetFilterAdvanced : BaseTaggedTileEvent, IEaseEvent, IBeginningEven
 	/// <summary>
 	/// Gets or sets the properties of the filter as a JSON object.
 	/// </summary>
-	public IFilter FilterProperties { get; set; } = default!;
-}
-/// <summary>
-/// Represents the target type for the filter effect.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum TargetType
-{
-	/// <summary>
-	/// The target is the camera.
-	/// </summary>
-	Camera,
-	/// <summary>
-	/// The target is the decoration.
-	/// </summary>
-	Decoration,
-}
-/// <summary>
-/// Represents the plane where the filter is applied.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum Plane
-{
-	/// <summary>
-	/// The background plane.
-	/// </summary>
-	Background,
-
-	/// <summary>
-	/// The foreground plane.
-	/// </summary>
-	Foreground,
+	public IFilter FilterProperties { get; set; }
 }

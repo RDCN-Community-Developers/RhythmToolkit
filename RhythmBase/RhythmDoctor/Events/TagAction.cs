@@ -1,4 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Converters;
 
 namespace RhythmBase.RhythmDoctor.Events;
 

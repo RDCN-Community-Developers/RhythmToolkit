@@ -14,7 +14,7 @@ public record class MoveRow : BaseRowAnimation, IEaseEvent
 	/// Gets or sets a value indicating whether a custom position is used.
 	/// </summary>
 	[RDJsonAlias("customPosition")]
-	[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)}")]
+	[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)}")]
 	public bool EnableCustomPosition { get; set; } = true;
 	/// <summary>
 	/// Gets or sets the target of the move row event.
@@ -59,7 +59,7 @@ public record class MoveRow : BaseRowAnimation, IEaseEvent
 	/// Leave it null to keep the original pivot.
 	/// </remarks>
 	[Tween]
-	[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)} &&" +
+	[RDJsonCondition($"$&.{nameof(Target)} is RhythmBase.RhythmDoctor.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)} &&" +
 		$"$&.{nameof(Pivot)} is not null")]
 	public float? Pivot { get; set; }
 	///<inheritdoc/>
@@ -73,7 +73,7 @@ public record class MoveRow : BaseRowAnimation, IEaseEvent
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(AccelerationDuration)} is not null &&
-		($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
+		($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
 		""")]
 	public float? AccelerationDuration { get; set; }
 	/// <summary>
@@ -82,7 +82,7 @@ public record class MoveRow : BaseRowAnimation, IEaseEvent
 	/// </summary>
 	[RDJsonCondition($"""
 		$&.{nameof(AccelerationDuration)} is not null &&
-		($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.Events.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
+		($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
 		""")]
 	public float? DecelerationDuration { get; set; }
 	///<inheritdoc/>

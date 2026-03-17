@@ -21,12 +21,12 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// <summary>  
 	/// Gets or sets the color of the planet.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(PlanetColorType)} is RhythmBase.Adofai.Events.{nameof(Events.PlanetColorType)}.{nameof(PlanetColorType.Custom)}")]
+	[RDJsonCondition($"$&.{nameof(PlanetColorType)} is RhythmBase.Adofai.{nameof(Adofai.PlanetColorType)}.{nameof(PlanetColorType.Custom)}")]
 	public RDColor PlanetColor { get; set; } = RDColor.Red;
 	/// <summary>  
 	/// Gets or sets the tail color of the planet.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(PlanetColorType)} is RhythmBase.Adofai.Events.{nameof(Events.PlanetColorType)}.{nameof(PlanetColorType.Custom)}")]
+	[RDJsonCondition($"$&.{nameof(PlanetColorType)} is RhythmBase.Adofai.{nameof(Adofai.PlanetColorType)}.{nameof(PlanetColorType.Custom)}")]
 	public RDColor PlanetTailColor { get; set; } = RDColor.Red;
 	/// <summary>  
 	/// Gets or sets the type of the track.  
@@ -35,7 +35,7 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// <summary>  
 	/// Gets or sets the angle of the track.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(TrackType)} is not RhythmBase.Adofai.Events.{nameof(Events.TrackType)}.{nameof(TrackType.Midspin)}")]
+	[RDJsonCondition($"$&.{nameof(TrackType)} is not RhythmBase.Adofai.{nameof(Adofai.TrackType)}.{nameof(TrackType.Midspin)}")]
 	public float TrackAngle { get; set; }
 	/// <summary>  
 	/// Gets or sets the type of the track's color.  
@@ -76,17 +76,17 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// <summary>  
 	/// Gets or sets a value indicating whether the track has a red swirl.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(TrackIcon)} is RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.Swirl)}")]
+	[RDJsonCondition($"$&.{nameof(TrackIcon)} is RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Swirl)}")]
 	public bool TrackRedSwirl { get; set; } = false;
 	/// <summary>  
 	/// Gets or sets a value indicating whether the track has a gray set speed icon.  
 	/// </summary>  
 	[RDJsonCondition($"""
 		$&.{nameof(TrackIcon)}
-		is RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.Snail)}
-		or RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleSnail)}
-		or RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.Rabbit)}
-		or RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleRabbit)}
+		is RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Snail)}
+		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleSnail)}
+		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Rabbit)}
+		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleRabbit)}
 		""")]
 	public bool TrackGraySetSpeedIcon { get; set; } = false;
 	/// <summary>  
@@ -94,10 +94,10 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// </summary>  
 	[RDJsonCondition($"""
 		$&.{nameof(TrackIcon)}
-		is RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.Snail)}
-		or RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleSnail)}
-		or RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.Rabbit)}
-		or RhythmBase.Adofai.Events.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleRabbit)}
+		is RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Snail)}
+		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleSnail)}
+		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Rabbit)}
+		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleRabbit)}
 		""")]
 	public float TrackSetSpeedIconBpm { get; set; } = 100f;
 	/// <summary>  
@@ -161,133 +161,4 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// Gets or sets the tag associated with the object.  
 	/// </summary>  
 	public string Tag { get; set; } = string.Empty;
-}
-/// <summary>
-/// Specifies the coordinate space or reference frame used to interpret an object's position and pivot offsets.
-/// </summary>
-/// <remarks>
-/// Use this enum to indicate whether object coordinates are evaluated relative to a tile, the global level
-/// coordinate system, a specific planet, the camera, or the last used object position. This affects how
-/// Position, PivotOffset and related properties are applied when the object is placed or rendered.
-/// </remarks>
-[RDJsonEnumSerializable]
-public enum ObjectRelativeTo
-{
-	/// <summary>
-	/// Position is relative to the current tile. The object's coordinates are interpreted in the local tile space.
-	/// </summary>
-	Tile,
-	/// <summary>
-	/// Position is in global (level) coordinates. The object's coordinates are independent of individual tiles.
-	/// </summary>
-	Global,
-	/// <summary>
-	/// Position is relative to the red planet. Coordinates are interpreted in the red planet's local space.
-	/// </summary>
-	RedPlanet,
-	/// <summary>
-	/// Position is relative to the blue planet. Coordinates are interpreted in the blue planet's local space.
-	/// </summary>
-	BluePlanet,
-	/// <summary>
-	/// Position is relative to the green planet. Coordinates are interpreted in the green planet's local space.
-	/// </summary>
-	GreenPlanet,
-	/// <summary>
-	/// Position is relative to the camera. Use this to place objects in camera space (camera-local coordinates).
-	/// </summary>
-	Camera,
-	/// <summary>
-	/// Position is relative to the camera's aspect or viewport space. Useful for screen-aligned placements that depend on aspect ratio.
-	/// </summary>
-	CameraAspect,
-	/// <summary>
-	/// Position uses the last known position used by a previously placed object (e.g. for repeated placements).
-	/// </summary>
-	LastPosition,
-}
-
-/// <summary>  
-/// Represents the types of objects that can be added.  
-/// </summary>  
-[RDJsonEnumSerializable]
-public enum ObjectType
-{
-	/// <summary>  
-	/// Represents a floor object.  
-	/// </summary>  
-	Floor,
-	/// <summary>  
-	/// Represents a planet object.  
-	/// </summary>  
-	Planet
-}
-/// <summary>  
-/// Represents the types of planet colors.  
-/// </summary>  
-[RDJsonEnumSerializable]
-public enum PlanetColorType
-{
-	/// <summary>  
-	/// Default red color.  
-	/// </summary>  
-	DefaultRed,
-	/// <summary>  
-	/// Custom planet color type.  
-	/// </summary>  
-	planetColorType,
-	/// <summary>  
-	/// Gold color.  
-	/// </summary>  
-	Gold,
-	/// <summary>  
-	/// Overseer color.  
-	/// </summary>  
-	Overseer,
-	/// <summary>  
-	/// Custom color.  
-	/// </summary>  
-	Custom
-}
-/// <summary>  
-/// Represents the types of tracks.  
-/// </summary>  
-[RDJsonEnumSerializable]
-public enum TrackType
-{
-	/// <summary>  
-	/// Normal track type.  
-	/// </summary>  
-	Normal,
-	/// <summary>  
-	/// Midspin track type.  
-	/// </summary>  
-	Midspin
-}
-/// <summary>
-/// Specifies the type of icon used to represent a track element in the application.
-/// </summary>
-/// <remarks>The <see cref="TrackIconType"/> enumeration provides various icon types that can be used to visually
-/// represent different track elements. Each value corresponds to a specific icon style, such as a swirl, snail, or
-/// rabbit, which can be used to convey different meanings or statuses within the application's user
-/// interface.</remarks>
-[RDJsonEnumSerializable]
-public enum TrackIconType
-{
-#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
-	None,
-	Swirl,
-	Snail,
-	DoubleSnail,
-	Rabbit,
-	DoubleRabbit,
-	Checkpoint,
-	HoldArrowShort,
-	HoldArrowLong,
-	HoldReleaseShort,
-	HoldReleaseLong,
-	MultiPlanetTwo,
-	MultiPlanetThreeMore,
-	Portal,
-#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 }

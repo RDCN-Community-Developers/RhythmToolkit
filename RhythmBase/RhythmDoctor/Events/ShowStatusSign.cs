@@ -1,4 +1,4 @@
-﻿using RhythmBase.Global.Components.RichText;
+using RhythmBase.Global.Components.RichText;
 
 namespace RhythmBase.RhythmDoctor.Events;
 

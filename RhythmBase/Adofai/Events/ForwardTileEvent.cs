@@ -4,7 +4,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents a custom tile event in the ADOFAI game.  
 	/// </summary>  
-	[RDJsonObjectHasSerializer]
+	[RDJsonObjectNotSerializable]
 	public class ForwardTileEvent : BaseTileEvent, IForwardEvent
 	{
 		/// <inheritdoc/>

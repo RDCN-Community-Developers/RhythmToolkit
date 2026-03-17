@@ -75,7 +75,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		/// <param name="calculator">The beat calculator.</param>
 		/// <param name="beat">The beat value.</param>
-		public ADBeat(ADBeatCalculator? calculator, float beat)
+		public ADBeat(BeatCalculator? calculator, float beat)
 		{
 			this = default;
 			_calculator = calculator;
@@ -88,7 +88,7 @@ namespace RhythmBase.Adofai.Components
 		/// <param name="calculator">The beat calculator.</param>
 		/// <param name="timeSpan">The time span value.</param>
 		/// <exception cref="OverflowException">Thrown when the time span is less than zero.</exception>
-		public ADBeat(ADBeatCalculator? calculator, TimeSpan timeSpan)
+		public ADBeat(BeatCalculator? calculator, TimeSpan timeSpan)
 		{
 			this = default;
 			if (timeSpan < TimeSpan.Zero)
@@ -104,7 +104,7 @@ namespace RhythmBase.Adofai.Components
 		/// </summary>
 		/// <param name="calculator">Specified calculator.</param>
 		/// <returns>The first beat tied to the level.</returns>
-		public static ADBeat Default(ADBeatCalculator calculator)
+		public static ADBeat Default(BeatCalculator calculator)
 		{
 			ADBeat @default = new(calculator, 1f);
 			return @default;
@@ -263,7 +263,7 @@ namespace RhythmBase.Adofai.Components
 #else
 		public override readonly int GetHashCode() => HashCode.Combine(BeatOnly, _baseLevel);
 #endif
-		internal ADBeatCalculator? _calculator;
+		internal BeatCalculator? _calculator;
 		private bool _isBeatLoaded;
 		private bool _isTimeSpanLoaded;
 		private bool _isBpmLoaded;

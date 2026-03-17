@@ -21,7 +21,7 @@ public record class SpinningRows : BaseRowAnimation, IEaseEvent
 	/// <summary>
 	/// Target row index to connect to when <see cref="Action"/> is <see cref="SpiningAction.Connect"/>.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Action)} is RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Connect)}")]
+	[RDJsonCondition($"$&.{nameof(Action)} is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Connect)}")]
 	public int ToRow { get; set; }
 
 	/// <summary>
@@ -32,10 +32,10 @@ public record class SpinningRows : BaseRowAnimation, IEaseEvent
 	/// </remarks>
 	[RDJsonCondition($"""
 			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
+			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
 			""")]
 	public float Angle { get; set; }
 
@@ -45,7 +45,7 @@ public record class SpinningRows : BaseRowAnimation, IEaseEvent
 	[RDJsonCondition($"""
 			$&.{nameof(Amplitude)} is not null &&
 			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
+			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
 			""")]
 	public float? Amplitude { get; set; }
 
@@ -55,35 +55,35 @@ public record class SpinningRows : BaseRowAnimation, IEaseEvent
 	[RDJsonCondition($"""
 			$&.{nameof(Amplitude)} is not null &&
 			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
+			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
 			""")]
 	public float? Frequency { get; set; }
 
 	/// <summary>
 	/// When true, additional visual effects are applied during merge operations.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(Action)} is RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}")]
+	[RDJsonCondition($"$&.{nameof(Action)} is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}")]
 	public bool DoEffects { get; set; }
 
 	///<inheritdoc/>
 	[RDJsonCondition($"""
 			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
+			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
 			""")]
 	public EaseType Ease { get; set; }
 
 	///<inheritdoc/>
 	[RDJsonCondition($"""
 			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
-			or RhythmBase.RhythmDoctor.Events.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
+			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
+			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
 			""")]
 	public float Duration { get; set; }
 	///<inheritdoc/>

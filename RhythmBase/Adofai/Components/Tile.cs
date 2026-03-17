@@ -138,6 +138,12 @@ namespace RhythmBase.Adofai.Components
 			//}
 			return tile;
 		}
+		public T? EventOf<T>() where T : ISingleEvent
+		{
+			//if(ContainsType(Utils.EventTypeUtils.<T>()))
+			//	return OfType<T>().SingleOrDefault();
+			throw new NotImplementedException();
+		}
 		/// <inheritdoc />
 		public override bool Add(BaseTileEvent item)
 		{

@@ -28,7 +28,7 @@ public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 	/// </remarks>
 	[RDJsonAlias("tab")]
 	[RDJsonConverter(typeof(TabsConverter))]
-	[RDJsonCondition($"""$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.Events.{nameof(Events.Tab)}.{nameof(Tab.Windows)}""")]
+	[RDJsonCondition($"""$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.{nameof(RhythmDoctor.Tab)}.{nameof(Tab.Windows)}""")]
 	public Tab CustomTab
 	{
 		get;

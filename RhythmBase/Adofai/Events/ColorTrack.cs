@@ -42,7 +42,7 @@ public class ColorTrack : BaseTileEvent, ISingleEvent, IImageFileEvent
 	/// <summary>  
 	/// Gets or sets the texture of the track.  
 	/// </summary>  
-	[RDJsonCondition($"$&.{nameof(TrackStyle)} is RhythmBase.Adofai.Components.{nameof(Components.TrackStyle)}.{nameof(TrackStyle.Standard)}")]
+	[RDJsonCondition($"$&.{nameof(TrackStyle)} is RhythmBase.Adofai.{nameof(Adofai.TrackStyle)}.{nameof(TrackStyle.Standard)}")]
 	public FileReference TrackTexture { get; set; } = string.Empty;
 	/// <summary>  
 	/// Gets or sets the scale of the track texture.  

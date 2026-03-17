@@ -23,8 +23,8 @@ public record class AddOneshotBeat : BaseBeat
 	[RDJsonCondition($"""
 		$&.{nameof(Subdivisions)} > 0 &&(
 		$&.{nameof(PulseType)}
-		is RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Square)}
-		or RhythmBase.RhythmDoctor.Events.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Triangle)}
+		is RhythmBase.RhythmDoctor.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Square)}
+		or RhythmBase.RhythmDoctor.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Triangle)}
 		)
 		""")]
 	public byte Subdivisions { get; set; } = 1;
@@ -69,7 +69,7 @@ public record class AddOneshotBeat : BaseBeat
 		$&.{nameof(Interval)} > 0 &&(
 		$&.{nameof(Skipshot)} ||
 		$&.{nameof(Hold)} ||
-		$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotType)}.{nameof(OneshotType.Wave)} ||
+		$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.{nameof(OneshotType)}.{nameof(OneshotType.Wave)} ||
 		$&.{nameof(Loop)} > 0)
 		""")]
 	public float Interval { get; set; } = 2;
@@ -94,7 +94,7 @@ public record class AddOneshotBeat : BaseBeat
 	/// <summary>
 	/// Gets or sets the freeze burn mode.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.Events.{nameof(OneshotType)}.{nameof(OneshotType.Wave)}")]
+	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.{nameof(OneshotType)}.{nameof(OneshotType.Wave)}")]
 	public OneshotType FreezeBurnMode { get; set; }
 	/// <summary>
 	/// Gets or sets the delay value.
@@ -102,7 +102,7 @@ public record class AddOneshotBeat : BaseBeat
 	/// Must be non-negative value. Active only when FreezeBurnMode is Freezeshot. 0 is considered as default delay (0.5s).
 	/// </remark>
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} == RhythmBase.RhythmDoctor.Events.{nameof(OneshotType)}.{nameof(OneshotType.Freezeshot)}")]
+	[RDJsonCondition($"$&.{nameof(FreezeBurnMode)} == RhythmBase.RhythmDoctor.{nameof(OneshotType)}.{nameof(OneshotType.Freezeshot)}")]
 	public float Delay { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the audio resource associated with this object.

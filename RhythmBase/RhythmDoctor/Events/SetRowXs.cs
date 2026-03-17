@@ -38,12 +38,12 @@ public record class SetRowXs : BaseBeat
 	/// <summary>
 	/// Gets or sets a value indicating whether to play the modifier sound.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0 && $&.{nameof(SyncoStyle)} is RhythmBase.RhythmDoctor.Events.{nameof(SetRowXsSyncoStyle)}.{nameof(SetRowXsSyncoStyle.Chirp)}")]
+	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0 && $&.{nameof(SyncoStyle)} is RhythmBase.RhythmDoctor.{nameof(SetRowXsSyncoStyle)}.{nameof(SetRowXsSyncoStyle.Chirp)}")]
 	public bool SyncoPlayModifierSound { get; set; } = true;
 	/// <summary>
 	/// Gets or sets a value indicating whether the sound for turning off the SyncoPlay modifier is enabled.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0 && $&.{nameof(SyncoStyle)} is RhythmBase.RhythmDoctor.Events.{nameof(SetRowXsSyncoStyle)}.{nameof(SetRowXsSyncoStyle.Chirp)}")]
+	[RDJsonCondition($"$&.{nameof(SyncoBeat)} >= 0 && $&.{nameof(SyncoStyle)} is RhythmBase.RhythmDoctor.{nameof(SetRowXsSyncoStyle)}.{nameof(SetRowXsSyncoStyle.Chirp)}")]
 	public bool SyncoPlayModifierOffSound { get; set; } = true;
 	/// <summary>
 	/// Gets or sets the synco volume.

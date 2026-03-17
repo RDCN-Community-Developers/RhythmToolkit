@@ -68,7 +68,7 @@ namespace RhythmBase.Adofai.Utils
 		/// <typeparam name="T">The type to convert, which must inherit from BaseEvent.</typeparam>
 		/// <returns>An array of corresponding EventType enumerations.</returns>
 		/// <exception cref="IllegalEventTypeException">Thrown when no matching EventType is found.</exception>
-		public static EventType[] ConvertToADEnums<T>() where T : RhythmBase.RhythmDoctor.Events.BaseEvent
+		public static EventType[] ConvertToADEnums<T>() where T : RhythmBase.Adofai.Events.BaseEvent
 		{
 			EventType[] ConvertToADEnums;
 			try

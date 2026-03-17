@@ -1,5 +1,3 @@
-using RhythmBase.RhythmDoctor.Events;
-
 namespace RhythmBase.RhythmDoctor.Components;
 
 /// <summary>

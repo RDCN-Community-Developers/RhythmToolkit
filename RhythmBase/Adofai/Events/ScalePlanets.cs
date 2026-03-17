@@ -26,27 +26,4 @@ public class ScalePlanets : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// Gets or sets the easing type for the scaling transition.  
 	/// </summary>  
 	public EaseType Ease { get; set; }
-	/// <summary>  
-	/// Represents the target planets that can be scaled.  
-	/// </summary>  
-	[RDJsonEnumSerializable]
-	public enum TargetPlanets
-	{
-		/// <summary>  
-		/// The fire planet.  
-		/// </summary>  
-		FirePlanet,
-		/// <summary>  
-		/// The ice planet.  
-		/// </summary>  
-		IcePlanet,
-		/// <summary>  
-		/// The green planet.  
-		/// </summary>  
-		GreenPlanet,
-		/// <summary>  
-		/// All planets.  
-		/// </summary>  
-		All
-	}
 }

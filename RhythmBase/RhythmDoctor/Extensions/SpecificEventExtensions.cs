@@ -124,7 +124,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 			/// </summary>
 			public RDHit Hit => new(e, e.Beat, e.Hold);
 			/// <summary>
-			/// Get the sequence of <see cref="T:RhythmBase.RhythmDoctor.Events.PulseFreeTimeBeat" /> belonging to this <see cref="T:RhythmBase.RhythmDoctor.Events.AddFreeTimeBeat" />, return all of the <see cref="T:RhythmBase.Events.PulseFreeTimeBeat" /> from the time the pulse was created to the time it was removed or hit.
+			/// Get the sequence of <see cref="T:RhythmBase.RhythmDoctor.PulseFreeTimeBeat" /> belonging to this <see cref="T:RhythmBase.RhythmDoctor.AddFreeTimeBeat" />, return all of the <see cref="T:RhythmBase.Events.PulseFreeTimeBeat" /> from the time the pulse was created to the time it was removed or hit.
 			/// </summary>
 			public PulseFreeTimeBeat[] Pulses
 			{
@@ -333,7 +333,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				}
 			}
 			/// <summary>
-			/// Creates a new <see cref="T:RhythmBase.RhythmDoctor.Events.AdvanceText" /> subordinate to <see cref="T:RhythmBase.RhythmDoctor.Events.FloatingText" /> at the specified beat. The new event created will be attempted to be added to the <see cref="T:RhythmBase.RhythmDoctor.Events.FloatingText" />'s source level.
+			/// Creates a new <see cref="T:RhythmBase.RhythmDoctor.AdvanceText" /> subordinate to <see cref="T:RhythmBase.RhythmDoctor.FloatingText" /> at the specified beat. The new event created will be attempted to be added to the <see cref="T:RhythmBase.RhythmDoctor.FloatingText" />'s source level.
 			/// </summary>
 			/// <param name="beat">Specified beat.</param>
 			public AdvanceText CreateChild(RDBeat beat)

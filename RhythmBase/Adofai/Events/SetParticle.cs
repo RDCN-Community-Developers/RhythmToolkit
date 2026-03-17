@@ -25,30 +25,9 @@ public class SetParticle : BaseTaggedTileEvent, IEaseEvent, IBeginningEvent
 	/// Gets or sets the target mode for the particle effect.
 	/// </summary>
 	[RDJsonCondition($"$&.{nameof(TargetMode)} is not null")]
-	public TargetMode? TargetMode { get; set; } = Events.TargetMode.Start;
+	public TargetMode? TargetMode { get; set; } = Adofai. TargetMode.Start;
 	/// <summary>
 	/// Gets or sets the easing type for the particle effect.
 	/// </summary>
 	public EaseType Ease { get; set; }
-}
-/// <summary>
-/// Specifies the target mode for the particle effect.
-/// </summary>
-[RDJsonEnumSerializable]
-public enum TargetMode
-{
-	/// <summary>
-	/// Starts the particle effect.
-	/// </summary>
-	Start,
-
-	/// <summary>
-	/// Stops the particle effect.
-	/// </summary>
-	Stop,
-
-	/// <summary>
-	/// Clears the particle effect.
-	/// </summary>
-	Clear,
 }

@@ -13,18 +13,3 @@ public class MultiPlanet : BaseTileEvent, ISingleEvent
 	/// </summary>
 	public Planets Planets { get; set; } = Planets.TwoPlanets;
 }
-/// <summary>  
-/// Represents the number of planets associated with the multi-planet event.  
-/// </summary>  
-[RDJsonEnumSerializable]
-public enum Planets
-{
-	/// <summary>  
-	/// Two planets are active in the event.  
-	/// </summary>  
-	TwoPlanets,
-	/// <summary>  
-	/// Three planets are active in the event.  
-	/// </summary>  
-	ThreePlanets,
-}

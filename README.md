@@ -193,7 +193,7 @@ Here are concrete code examples:
 using RhythmBase.Global.Components.Vector;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.
 
 LevelReadOrWriteSettings settings = new()
 {
@@ -225,7 +225,7 @@ clr.AddReference('RhythmBase')
 from RhythmBase.Global.Components.Vector import *
 from RhythmBase.Global.Settings import *
 from RhythmBase.RhythmDoctor.Components import *
-from RhythmBase.RhythmDoctor.Events import *
+from RhythmBase.RhythmDoctor.import *
 
 settings = LevelReadOrWriteSettings()
 settings.UnreadableEventsHandling = UnreadableEventHandling.Store

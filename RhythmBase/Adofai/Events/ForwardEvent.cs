@@ -5,7 +5,7 @@ namespace RhythmBase.Adofai.Events
 	/// <summary>  
 	/// Represents a custom event in the ADOFAI game.  
 	/// </summary>  
-	[RDJsonObjectHasSerializer]
+	[RDJsonObjectNotSerializable]
 	public class ForwardEvent : BaseEvent, IForwardEvent
 	{
 		/// <inheritdoc/>

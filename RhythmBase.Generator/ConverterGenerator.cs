@@ -351,6 +351,7 @@ public class ConverterGenerator : IIncrementalGenerator
 
 	private static void GenerateEventConverterForRDLevel(IncrementalGeneratorInitializationContext context)
 	{
+		string ns = "RhythmBase.RhythmDoctor.Events";
 		var classes = context.SyntaxProvider.CreateSyntaxProvider(
 			predicate: (s, e) =>
 			{
@@ -365,7 +366,7 @@ public class ConverterGenerator : IIncrementalGenerator
 				//InterfaceDeclarationSyntax? interfaceDeclaration = ctx.Node as InterfaceDeclarationSyntax;
 				INamedTypeSymbol classDeclarationSymbol = ctx.SemanticModel.GetDeclaredSymbol(typeDeclaration) ?? throw new NotImplementedException();
 				bool isTargetEvent =
-					(classDeclarationSymbol.ContainingNamespace.ToDisplayString().Contains("RhythmBase.RhythmDoctor.Events")) &&
+					(classDeclarationSymbol.ContainingNamespace.ToDisplayString().Contains(ns)) &&
 					classDeclarationSymbol.AllInterfaces.Any(i => i.ToDisplayString().Contains("IBaseEvent"));
 				PropertyDeclarationSyntax[] propertyDeclarations = [.. typeDeclaration.ChildNodes().OfType<PropertyDeclarationSyntax>()];
 				if (!isTargetEvent)
@@ -805,16 +806,16 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 				namespace RhythmBase.RhythmDoctor.Utils;
 				partial class EventTypeUtils
 				{
-					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase>? _c;
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase>? _c;
 					private static System.Collections.ObjectModel.ReadOnlyCollection<Type>? _et;
-					private static System.Collections.ObjectModel.ReadOnlyDictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.Events.EventType>>? _ete;
-					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, System.Type>? _eet;
-					internal static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase> converters => _c ??= new(new Dictionary<RhythmBase.RhythmDoctor.Events.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase>()
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.EventType>>? _ete;
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.EventType, System.Type>? _eet;
+					internal static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase> converters => _c ??= new(new Dictionary<RhythmBase.RhythmDoctor.EventType, RhythmBase.RhythmDoctor.Converters.EventInstanceConverterBase>()
 					{
 				""");
 			foreach (ClassInfo info in validClassSymbols)
 			{
-				sb.AppendLine($"		[RhythmBase.RhythmDoctor.Events.EventType.{ToShorter(info.Name)}] ={new string(' ', maxLength - info.Name.Length)} new RhythmBase.RhythmDoctor.Converters.EventInstanceConverter{ToShorter(info.Name)}(),");
+				sb.AppendLine($"		[RhythmBase.RhythmDoctor.EventType.{ToShorter(info.Name)}] ={new string(' ', maxLength - info.Name.Length)} new RhythmBase.RhythmDoctor.Converters.EventInstanceConverter{ToShorter(info.Name)}(),");
 			}
 			sb.AppendLine("""
 					});
@@ -829,7 +830,7 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 			}
 			sb.AppendLine("""
 					});
-					private static System.Collections.ObjectModel.ReadOnlyDictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.Events.EventType>> _eventType_Enums => _ete ??= new(new Dictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.Events.EventType>>()
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.EventType>> _eventType_Enums => _ete ??= new(new Dictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.EventType>>()
 					{
 				""");
 			string indent = new(' ', maxLength + 13);
@@ -838,18 +839,18 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 				if (typeLink[classInfo.Type].Count == 0)
 					continue;
 				sb.AppendLine($$"""
-							[typeof({{classInfo.Name}})] ={{new string(' ', maxLength - classInfo.Name.Length)}} new RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.Events.EventType>(2, // {{typeLink[classInfo.Type].Count}}
-							{{indent}}{{string.Join($",\n		{indent}", typeLink[classInfo.Type].OrderBy(i => i.Name).Select(i => $"RhythmBase.RhythmDoctor.Events.EventType.{ToShorter(i.Name)}"))}}),
+							[typeof({{classInfo.Name}})] ={{new string(' ', maxLength - classInfo.Name.Length)}} new RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.EventType>(2, // {{typeLink[classInfo.Type].Count}}
+							{{indent}}{{string.Join($",\n		{indent}", typeLink[classInfo.Type].OrderBy(i => i.Name).Select(i => $"RhythmBase.RhythmDoctor.EventType.{ToShorter(i.Name)}"))}}),
 					""");
 			}
 			sb.AppendLine("""
 					});
-					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.Events.EventType, System.Type> _eventEnum_Type => _eet ??= new(new Dictionary<RhythmBase.RhythmDoctor.Events.EventType, System.Type>()
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.RhythmDoctor.EventType, System.Type> _eventEnum_Type => _eet ??= new(new Dictionary<RhythmBase.RhythmDoctor.EventType, System.Type>()
 					{
 				""");
 			foreach (ClassInfo info in validClassSymbols)
 			{
-				sb.AppendLine($"		[RhythmBase.RhythmDoctor.Events.EventType.{ToShorter(info.Name)}] ={new string(' ', maxLength - info.Name.Length)} typeof({info.Name}),");
+				sb.AppendLine($"		[RhythmBase.RhythmDoctor.EventType.{ToShorter(info.Name)}] ={new string(' ', maxLength - info.Name.Length)} typeof({info.Name}),");
 			}
 			sb.AppendLine("""
 					});
@@ -867,115 +868,516 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 
 	private static void GenerateEventConverterForADLevel(IncrementalGeneratorInitializationContext context)
 	{
-		HashSet<string> names = [];
-		IncrementalValueProvider<ImmutableArray<(INamedTypeSymbol? symbol, INamedTypeSymbol? baseType)>> eventClasses = context.SyntaxProvider.CreateSyntaxProvider(
-			predicate: (s, _) => s is ClassDeclarationSyntax,
-			transform: (ctx, _) =>
+		var classes = context.SyntaxProvider.CreateSyntaxProvider(
+			predicate: (s, e) =>
 			{
-				ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)ctx.Node;
-				INamedTypeSymbol? symbol = ctx.SemanticModel.GetDeclaredSymbol(classDeclaration);
-				if (symbol is INamedTypeSymbol namedTypeSymbol &&
-					namedTypeSymbol.AllInterfaces.Any(i => i.Name == "IBaseEvent") &&
-				(namedTypeSymbol.ContainingNamespace?.ToDisplayString() == "RhythmBase.Adofai.Events") &&
-					!namedTypeSymbol.IsAbstract)
+				return
+				(s is TypeDeclarationSyntax typeDeclaration &&
+				(typeDeclaration is ClassDeclarationSyntax or RecordDeclarationSyntax or InterfaceDeclarationSyntax) &&
+				typeDeclaration.BaseList is not null);
+			},
+			transform: (ctx, e) =>
+			{
+				TypeDeclarationSyntax? typeDeclaration = ctx.Node as TypeDeclarationSyntax;
+				//InterfaceDeclarationSyntax? interfaceDeclaration = ctx.Node as InterfaceDeclarationSyntax;
+				INamedTypeSymbol classDeclarationSymbol = ctx.SemanticModel.GetDeclaredSymbol(typeDeclaration) ?? throw new NotImplementedException();
+				bool isTargetEvent =
+					(classDeclarationSymbol.ContainingNamespace.ToDisplayString().Contains("RhythmBase.Adofai.Events")) &&
+					classDeclarationSymbol.AllInterfaces.Any(i => i.ToDisplayString().Contains("IBaseEvent"));
+				PropertyDeclarationSyntax[] propertyDeclarations = [.. typeDeclaration.ChildNodes().OfType<PropertyDeclarationSyntax>()];
+				if (!isTargetEvent)
+					return (ClassInfo?)null;
+				PropertyInfo[] props = [.. propertyDeclarations
+					.Where(i =>
+					{
+						IPropertySymbol propSymbol = ctx.SemanticModel.GetDeclaredSymbol(i) ?? throw new NotImplementedException();
+						bool isEnum = propSymbol.Type.TypeKind == TypeKind.Enum;
+						bool hasAlias = HasAttribute(i.AttributeLists, JsonAliasAttrName);
+						bool isPublic = propSymbol.DeclaredAccessibility == Accessibility.Public;
+						bool isIgnored = HasAttribute(i.AttributeLists, JsonIgnoreAttrName);
+						return
+							!propSymbol.IsStatic && !isIgnored &&
+							(isPublic || hasAlias); })
+					.Select(i =>
+					{
+						IPropertySymbol propSymbol = ctx.SemanticModel.GetDeclaredSymbol(i) ?? throw new NotImplementedException();
+						PropertyInfo prop = new();
+						var aliasAttr = GetAttribute(i.AttributeLists, JsonAliasAttrName);
+						var conditionAttr = GetAttribute(i.AttributeLists, JsonConditionAttrName);
+						var converterAttr = GetAttribute(i.AttributeLists, JsonConverterAttrName);
+						var timeAttr = GetAttribute(i.AttributeLists, JsonTimeAttrName);
+						var specialIdAttr = GetAttribute(i.AttributeLists, JsonSpecialIDAttrName);
+						if(aliasAttr is AttributeSyntax aliasAttrNotNull)
+						{
+							var arg = aliasAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
+							if (arg?.Expression is LiteralExpressionSyntax les && les.IsKind(SyntaxKind.StringLiteralExpression))
+							{
+								prop.Alias = les.Token.ValueText;
+							}
+						}
+						if(conditionAttr is AttributeSyntax conditionAttrNotNull)
+						{
+							var arg = conditionAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
+							if (arg?.Expression is ExpressionSyntax les)
+							{
+								Optional<object?> constant = ctx.SemanticModel.GetConstantValue(les);
+								if(constant.HasValue && constant.Value is string str)
+									prop.Condition = str;
+							}
+						}
+						if(converterAttr is AttributeSyntax converterAttrNotNull)
+						{
+							var arg = converterAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
+							if (arg?.Expression is TypeOfExpressionSyntax toes)
+							{
+								prop.Converter = ctx.SemanticModel.GetSymbolInfo(toes.Type).Symbol?.ToDisplayString();
+							}
+						}
+						if(timeAttr is AttributeSyntax timeAttrNotNull)
+						{
+							var arg = timeAttrNotNull.ArgumentList?.Arguments.FirstOrDefault();
+							// Enum value
+							if (arg?.Expression is MemberAccessExpressionSyntax maes)
+							{
+								prop.TimeType = (int?)(ctx.SemanticModel.GetConstantValue(maes).Value);
+							}
+						}
+						prop.Symbol = propSymbol;
+						return prop;
+					})];
+				//bool serializerIgnore = HasAttribute(classDeclarationSymbol, JsonObjectNotSerializableAttrName);
+				bool needSerializer = HasAttribute(classDeclarationSymbol, JsonObjectSerializableAttrName);
+				bool hasSerializer = HasAttribute(classDeclarationSymbol, JsonObjectHasSerializerAttrName);
+				ClassInfo classInfo = new()
 				{
-					INamedTypeSymbol? baseType = namedTypeSymbol.BaseType;
-					if (names.Add(symbol.Name))
-						return (symbol, baseType);
-				}
+					Type = classDeclarationSymbol,
+					Name = classDeclarationSymbol.ToDisplayString(),
+					BaseTypeName = classDeclarationSymbol.BaseType?.ToDisplayString() ?? "object",
+					//SerializerIgnore = serializerIgnore,
+					NeedSerializer = needSerializer,
+					HasSerializer = hasSerializer,
+					Properties = props,
+				};
+				return classInfo;
+			}
+			).Collect();
 
-
-#pragma warning disable CS8619 // 值中的引用类型的为 Null 性与目标类型不匹配。
-				return (null, null);
-
-
-#pragma warning restore CS8619 // 值中的引用类型的为 Null 性与目标类型不匹配。
-			})
-			.Where(i => i.symbol is not null)
-			.Collect();
-
-		context.RegisterSourceOutput(eventClasses, (ctx, symbols) =>
+		context.RegisterSourceOutput(classes, (ctx, classSymbols) =>
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("// <auto-generated/>");
-			sb.AppendLine("#nullable enable");
-			sb.AppendLine();
-			sb.AppendLine("using System;");
-			sb.AppendLine("using RhythmBase.Global.Extensions;");
-			sb.AppendLine("using RhythmBase.Global.Components;");
-			sb.AppendLine("using RhythmBase.Global.Components.Vector;");
-			sb.AppendLine("using RhythmBase.Global.Components.Easing;");
-			sb.AppendLine("using RhythmBase.Global.Components.RichText;");
-			sb.AppendLine("using RhythmBase.Adofai.Events;");
-			sb.AppendLine("using RhythmBase.Adofai.Components;");
-			sb.AppendLine("using System.Text.Json;");
-			sb.AppendLine("using static RhythmBase.Global.Extensions.EnumConverter;");
-			sb.AppendLine();
-			sb.AppendLine("namespace RhythmBase.Adofai.Converters;");
-			sb.AppendLine();
+			StringBuilder sb = new();
+			StringBuilder sb2 = new();
+			sb.AppendLine("""
+// <auto-generated/>
+#nullable enable
 
-			foreach ((INamedTypeSymbol? symbol, INamedTypeSymbol? baseType) in symbols
-				.Where(i => !i.symbol.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == JsonObjectNotSerializableAttrName))
-				.OrderBy(i => i.symbol.Name))
+using System;
+using RhythmBase.Global.Extensions;
+using RhythmBase.Adofai.Components;
+using System.Text.Json;
+using static RhythmBase.Global.Extensions.EnumConverter;
+
+namespace RhythmBase.Adofai.Converters;
+""");
+			foreach (ClassInfo? classInfo in classSymbols.OrderBy(i => i?.Name))
 			{
-				if (symbol is null)
-					continue;
-				INamedTypeSymbol e = symbol;
-				List<IPropertySymbol> properties = e.GetMembers()
-					.OfType<IPropertySymbol>()
-					.Where(p =>
-						p.DeclaredAccessibility.HasFlag(Accessibility.Public) && p.SetMethod != null ||
-						p.GetAttributes().Any(i => i.AttributeClass?.ToDisplayString() == JsonNotIgnoreAttrName))
-					.ToList();
-
-				sb.AppendLine($"internal class EventInstanceConverter{e.Name} : EventInstanceConverter{baseType?.Name}<{e.ToDisplayString()}>");
-				sb.AppendLine("{");
-				// Read
-				sb.AppendLine($"	protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref {e.ToDisplayString()} value, JsonSerializerOptions options)");
-				sb.AppendLine("	{");
-				if (properties.Count > 0)
+				if (classInfo is not ClassInfo ci) continue;
+				if (!ci.NeedSerializer) continue;
+				if (ci.Type.IsAbstract) continue;
+				sb.AppendLine($$"""
+internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConverter{{ToShorter(ci.BaseTypeName)}}<{{ci.Name}}>
+{
+	protected override bool Read(ref Utf8JsonReader reader, ReadOnlySpan<byte> propertyName, ref {{ci.Name}} value, JsonSerializerOptions options)
+	{
+""");
+				if (ci.Properties.Length > 0)
 				{
-					sb.AppendLine("		if(base.Read(ref reader, propertyName, ref value, options))");
-					sb.AppendLine("			return true;");
-					AppendEventReadBody(sb, properties, e);
+					sb.AppendLine($$"""
+		if(base.Read(ref reader, propertyName, ref value, options))
+			return true;
+""");
+					bool isFirst = true;
+					int enumIndex = 0;
+					foreach (var pi in ci.Properties)
+					{
+						// ReadOnly properties are skipped
+						if (pi.Symbol.SetMethod is null) continue;
+						string propName = pi.Alias ?? ToLowerCamelCase(pi.Symbol.Name);
+						bool newlineNeeded = false;
+						// Custom converter
+						if (!string.IsNullOrEmpty(pi.Converter))
+						{
+							if (pi.Symbol.Type.NullableAnnotation == NullableAnnotation.Annotated)
+							{
+								sb.AppendLine($$"""
+		{{(isFirst ? "" : "else ")}}if (propertyName.SequenceEqual("{{propName}}"u8)){ if (reader.TokenType is not JsonTokenType.Null)
+""");
+								newlineNeeded = true;
+							}
+							else
+								sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{propName}\"u8))");
+							sb.AppendLine($"			value.{pi.Symbol.Name} = new {pi.Converter}().Read(ref reader, typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), options);");
+							if (newlineNeeded)
+								sb.AppendLine("		}");
+						}
+						else
+						{
+							// Nullable
+							var typeNotNull = pi.Symbol.Type;
+							if (pi.Symbol.NullableAnnotation == NullableAnnotation.Annotated)
+							{
+								typeNotNull = WithoutNullable(pi.Symbol.Type);
+								sb.AppendLine($$"""		{{(isFirst ? "" : "else ")}}if (propertyName.SequenceEqual("{{propName}}"u8)){ if(reader.TokenType is not JsonTokenType.Null)""");
+								newlineNeeded = true;
+							}
+							else
+								sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{propName}\"u8))");
+
+							// Enum
+							if (typeNotNull.TypeKind == TypeKind.Enum)
+							{
+								sb.AppendLine($$"""
+			if(reader.TokenType is JsonTokenType.String && TryParse(reader.ValueSpan, out {{typeNotNull.ToDisplayString()}} enumValue{{enumIndex}}))
+				value.{{pi.Symbol.Name}} = enumValue{{enumIndex}};
+			else if(reader.TokenType is JsonTokenType.Number && reader.TryGetInt32(out int intValue{{enumIndex}}))
+				value.{{pi.Symbol.Name}} = ({{typeNotNull.ToDisplayString()}})intValue{{enumIndex}};
+			else
+				value.{{pi.Symbol.Name}} = default;
+""");
+								enumIndex++;
+							}
+							else if (pi.TimeType is int t)
+							{
+								sb.AppendLine($"			value.{pi.Symbol.Name} = {t switch
+								{
+									0 => "TimeSpan.FromSeconds(reader.GetDouble())",
+									1 => "TimeSpan.FromMilliseconds(reader.GetDouble())",
+									_ => throw new NotImplementedException(),
+								}};");
+							}
+							else
+							{
+								// Other types
+								switch (typeNotNull.SpecialType)
+								{
+									case
+										SpecialType.System_Byte or
+										SpecialType.System_SByte or
+										SpecialType.System_Char or
+										SpecialType.System_Decimal or
+										SpecialType.System_Double or
+										SpecialType.System_Single or
+										SpecialType.System_Int16 or
+										SpecialType.System_Int32 or
+										SpecialType.System_Int64 or
+										SpecialType.System_UInt16 or
+										SpecialType.System_UInt32 or
+										SpecialType.System_UInt64:
+										string typePostfix = typeNotNull.SpecialType.ToString().Replace("System_", "");
+										sb.AppendLine($"			value.{pi.Symbol.Name} = reader.Get{typePostfix}();");
+										break;
+									case SpecialType.System_Boolean:
+										sb.AppendLine($"""
+			if (reader.TokenType is JsonTokenType.True or JsonTokenType.False)
+				value.{pi.Symbol.Name} = reader.GetBoolean();
+			else if (reader.TokenType is JsonTokenType.String)
+				value.{pi.Symbol.Name} = "Enabled" == reader.GetString();
+			else
+				value.{pi.Symbol.Name} = false;
+""");
+										break;
+									case SpecialType.System_String:
+										sb.AppendLine($"			value.{pi.Symbol.Name} = reader.GetString() ?? \"\";");
+										break;
+									default:
+										if (typeNotNull.TypeKind == TypeKind.Struct)
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{typeNotNull.ToDisplayString()}>(ref reader, options);");
+										else if (IsConcreteEnumerable(pi.Symbol.Type))
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{typeNotNull.ToDisplayString()}>(ref reader, options) ?? [];");
+										else
+											sb.AppendLine($"			value.{pi.Symbol.Name} = JsonSerializer.Deserialize<{typeNotNull.ToDisplayString()}>(ref reader, options) ?? new();");
+										break;
+								}
+							}
+							if (newlineNeeded)
+								sb.AppendLine("		}");
+						}
+						isFirst = false;
+					}
+					sb.AppendLine($$"""
+		else return false;
+		return true;
+""");
 				}
 				else
 				{
 					sb.AppendLine("		return base.Read(ref reader, propertyName, ref value, options);");
 				}
-				sb.AppendLine("	}");
+				sb.AppendLine($$"""
+	}
+	protected override void Write(Utf8JsonWriter writer, ref {{ci.Name}} value, JsonSerializerOptions options)
+	{
+		base.Write(writer, ref value, options);
+""");
+				if (ci.Properties.Length > 0)
+				{
+					foreach (var pi in ci.Properties)
+					{
+						if (pi.Symbol.GetMethod is null || (pi.Symbol.SetMethod is null && pi.Alias is null)) continue;
+						string propName = pi.Alias ?? ToLowerCamelCase(pi.Symbol.Name);
+						bool multiline = false;
+						// Custom converter
+						if (!string.IsNullOrEmpty(pi.Converter))
+						{
+							sb2.AppendLine($"		writer.WritePropertyName(\"{propName}\"u8);");
+							if (pi.Symbol.NullableAnnotation == NullableAnnotation.Annotated)
+							{
+								sb2.AppendLine($"""
+		if (value.{pi.Symbol.Name} is {WithoutNullable(pi.Symbol.Type).ToDisplayString()} t)
+			new {pi.Converter}().Write(writer, t, options);
+		else
+			writer.WriteNullValue();
+""");
+							}
+							else
+							{
+								sb2.AppendLine($"		new {pi.Converter}().Write(writer, value.{pi.Symbol.Name}, options);");
+							}
+							multiline = true;
+						}
+						else
+						{
+							var typeNotNull = pi.Symbol.Type;
+							bool isNullable = false;
+							if (pi.Symbol.NullableAnnotation == NullableAnnotation.Annotated)
+							{
+								typeNotNull = WithoutNullable(pi.Symbol.Type);
+								isNullable = true;
+								sb2.Append($"""
+		if (value.{pi.Symbol.Name} is null)
+			writer.WriteNull("{propName}"u8);
+		else
+	
+""");
+							}
 
-				// Write
-				sb.AppendLine($"	protected override void Write(Utf8JsonWriter writer, ref {e.Name} value, JsonSerializerOptions options)");
-				sb.AppendLine("	{");
-				sb.AppendLine("		base.Write(writer, ref value, options);");
-				AppendEventWriteBody(sb, properties, e);
-				sb.AppendLine("	}");
-				sb.AppendLine("}");
+							if (typeNotNull.TypeKind == TypeKind.Enum)
+								sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{pi.Symbol.Name}{(isNullable ? "?" : "")}.ToEnumString());");
+							else if (pi.TimeType is int t)
+							{
+								sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, {(t switch
+								{
+									0 => "value." + pi.Symbol.Name + ".TotalMilliseconds",
+									1 => "value." + pi.Symbol.Name + ".TotalSeconds",
+									_ => throw new NotImplementedException(),
+								})});");
+							}
+							else
+							{
+								switch (typeNotNull.SpecialType)
+								{
+									case SpecialType.System_Boolean:
+										sb2.AppendLine($"		writer.WriteBoolean(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)}{(isNullable ? ".Value" : "")});");
+										break;
+									case SpecialType.System_String:
+										sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)});");
+										break;
+									case SpecialType.System_Byte or
+										SpecialType.System_Int16 or
+										SpecialType.System_Int32 or
+										SpecialType.System_Int64 or
+										SpecialType.System_UInt16 or
+										SpecialType.System_UInt32 or
+										SpecialType.System_UInt64 or
+										SpecialType.System_Single or
+										SpecialType.System_Double or
+										SpecialType.System_Decimal:
+										sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)}{(isNullable ? ".Value" : "")});");
+										break;
+									default:
+										sb2.AppendLine($$"""		{ writer.WritePropertyName("{{propName}}"u8);	JsonSerializer.Serialize(writer, value.{{pi.Symbol.Name}}, options); }""");
+										break;
+								}
+							}
+						}
+						// Condition
+						if (string.IsNullOrEmpty(pi.Condition))
+							sb.Append(sb2);
+						else
+						{
+							string condition = pi.Condition!
+									.Replace("$&", "value")
+									.Replace("$r", "_rs")
+									.Replace("$w", "_ws");
+							string[] lines = [.. sb2.ToString()
+																		.Split(['\n'], StringSplitOptions.RemoveEmptyEntries)
+																		.Where(i=>!string.IsNullOrWhiteSpace(i))
+																		.Select(i => "\t" + i)];
+							if (multiline)
+							{
+								sb.AppendLine($$"""
+		if ({{condition}})
+		{
+{{string.Concat(lines)}}
+		}
+""");
+							}
+							else
+							{
+								sb.AppendLine($$"""
+		if ({{condition}})
+			{{string.Concat(lines).Trim()}}
+""");
+							}
+						}
+						sb2.Clear();
+					}
+				}
+				else
+				{
+
+				}
+				sb.AppendLine($$"""
+	}
+}
+""");
 			}
 			ctx.AddSource("EventInstanceConvertersADLevel.g.cs", sb.ToString());
 
 			// EventTypeUtils
-			sb.Clear();
-			sb.AppendLine("// <auto-generated/>");
-			sb.AppendLine("#nullable enable");
-			sb.AppendLine();
-			sb.AppendLine("using System;");
-			sb.AppendLine();
-			sb.AppendLine("namespace RhythmBase.Adofai.Utils;");
-			sb.AppendLine();
-			sb.AppendLine("partial class EventTypeUtils");
-			sb.AppendLine("{");
-			sb.AppendLine("	internal static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.Adofai.Events.EventType, RhythmBase.Adofai.Converters.EventInstanceConverterBase> converters = new(new Dictionary<RhythmBase.Adofai.Events.EventType, RhythmBase.Adofai.Converters.EventInstanceConverterBase>()");
-			sb.AppendLine("	{");
-			foreach ((INamedTypeSymbol? symbol, INamedTypeSymbol? _) in symbols
-				.Where(i => !(i.symbol.Name.StartsWith("Forward") && i.symbol.Name.EndsWith("Event")))
-				.OrderBy(i => i.symbol.Name))
+			var validClassSymbols = classSymbols
+				.Where(i =>
+				{
+					if (i is not ClassInfo ci) return false;
+					if (ci.Type.IsAbstract) return false;
+					if (ci.Type.IsGenericType) return false;
+					if (!(ci.NeedSerializer || ci.HasSerializer)) return false;
+					return true;
+				})
+				.Cast<ClassInfo>()
+				.OrderBy(i => i.Name);
+			int maxLength = validClassSymbols
+				.Select(i => i.Name.Length)
+				.Max();
+			IOrderedEnumerable<ClassInfo> validClassSymbolsWithAbstract = classSymbols
+				.Where(i =>
+				{
+					if (i is not ClassInfo ci) return false;
+					if (ci.Type.IsGenericType) return false;
+					return true;
+				})
+				.Cast<ClassInfo>()
+				.OrderBy(i => i.Name);
+			Dictionary<ISymbol, HashSet<ClassInfo>> typeLink = validClassSymbolsWithAbstract
+			 .Select(i => i.Type)
+			 .ToDictionary(
+				 i => i as ISymbol,
+				 i =>
+				 {
+					 HashSet<ClassInfo> result = [..validClassSymbolsWithAbstract.Where(
+						j => InheritsOrImplements(j.Type,i))];
+					 return result;
+				 }, SymbolEqualityComparer.Default);
+
+			static bool InheritsOrImplements(INamedTypeSymbol type, INamedTypeSymbol target)
 			{
-				sb.AppendLine($"			[RhythmBase.Adofai.Events.EventType.{symbol.Name}] = new RhythmBase.Adofai.Converters.EventInstanceConverter{symbol.Name}(),");
+				static IEnumerable<INamedTypeSymbol> GetBaseTypes(INamedTypeSymbol type)
+				{
+					for (var current = type.BaseType;
+					current != null && current.SpecialType != SpecialType.System_Object;
+					current = current.BaseType)
+					{
+						yield return current;
+					}
+				}
+				if (SymbolEqualityComparer.Default.Equals(type, target))
+					return true;
+
+				return target.TypeKind is TypeKind.Interface
+				? type.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, target))
+				: GetBaseTypes(type).Any(i => SymbolEqualityComparer.Default.Equals(i, target));
 			}
-			sb.AppendLine("	});");
-			sb.AppendLine("}");
+			foreach (var pair in typeLink)
+			{
+				List<ClassInfo> abstracts = [];
+				int abstractCount;
+				do
+				{
+					abstractCount = abstracts.Count;
+					foreach (ClassInfo abs in abstracts)
+					{
+						if (typeLink.TryGetValue(abs.Type, out var result))
+							pair.Value.UnionWith(result);
+					}
+					abstracts = [.. pair.Value.Where(i => i.Type.IsAbstract)];
+				}
+				while (abstractCount < abstracts.Count);
+				pair.Value.RemoveWhere(abstracts.Contains);
+			}
+
+			sb.Clear();
+			sb.AppendLine("""
+				// <auto-generated/>
+				#nullable enable
+				using System;
+				namespace RhythmBase.Adofai.Utils;
+				partial class EventTypeUtils
+				{
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.Adofai.EventType, RhythmBase.Adofai.Converters.EventInstanceConverterBase>? _c;
+					private static System.Collections.ObjectModel.ReadOnlyCollection<Type>? _et;
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.Adofai.EventType>>? _ete;
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.Adofai.EventType, System.Type>? _eet;
+					internal static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.Adofai.EventType, RhythmBase.Adofai.Converters.EventInstanceConverterBase> converters => _c ??= new(new Dictionary<RhythmBase.Adofai.EventType, RhythmBase.Adofai.Converters.EventInstanceConverterBase>()
+					{
+				""");
+			foreach (ClassInfo info in validClassSymbols)
+			{
+				sb.AppendLine($"		[RhythmBase.Adofai.EventType.{ToShorter(info.Name)}] ={new string(' ', maxLength - info.Name.Length)} new RhythmBase.Adofai.Converters.EventInstanceConverter{ToShorter(info.Name)}(),");
+			}
+			sb.AppendLine("""
+					});
+					private static System.Collections.ObjectModel.ReadOnlyCollection<Type> _eventTypes => _et ??= new(new Type[]
+					{
+				""");
+			foreach (ClassInfo classInfo in validClassSymbolsWithAbstract)
+			{
+				sb.AppendLine($$"""
+							typeof({{classInfo.Name}}),
+					""");
+			}
+			sb.AppendLine("""
+					});
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.Adofai.EventType>> _eventType_Enums => _ete ??= new(new Dictionary<System.Type, RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.Adofai.EventType>>()
+					{
+				""");
+			string indent = new(' ', maxLength + 13);
+			foreach (ClassInfo classInfo in validClassSymbolsWithAbstract)
+			{
+				if (typeLink[classInfo.Type].Count == 0)
+					continue;
+				sb.AppendLine($$"""
+							[typeof({{classInfo.Name}})] ={{new string(' ', maxLength - classInfo.Name.Length)}} new RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.Adofai.EventType>(2, // {{typeLink[classInfo.Type].Count}}
+							{{indent}}{{string.Join($",\n		{indent}", typeLink[classInfo.Type].OrderBy(i => i.Name).Select(i => $"RhythmBase.Adofai.EventType.{ToShorter(i.Name)}"))}}),
+					""");
+			}
+			sb.AppendLine("""
+					});
+					private static System.Collections.ObjectModel.ReadOnlyDictionary<RhythmBase.Adofai.EventType, System.Type> _eventEnum_Type => _eet ??= new(new Dictionary<RhythmBase.Adofai.EventType, System.Type>()
+					{
+				""");
+			foreach (ClassInfo info in validClassSymbols)
+			{
+				sb.AppendLine($"		[RhythmBase.Adofai.EventType.{ToShorter(info.Name)}] ={new string(' ', maxLength - info.Name.Length)} typeof({info.Name}),");
+			}
+			sb.AppendLine("""
+					});
+				}
+				""");
+			foreach (var classInfo in validClassSymbolsWithAbstract)
+			{
+				var ci = classInfo;
+				//if(classInfo is not ClassInfo ci) continue;
+				sb.AppendLine($"// {ci.Type.Name}");
+			}
 			ctx.AddSource("EventTypeUtilsADLevel.g.cs", sb.ToString());
 		});
 	}

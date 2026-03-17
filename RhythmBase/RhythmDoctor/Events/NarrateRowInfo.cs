@@ -1,4 +1,3 @@
-
 using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -29,7 +28,7 @@ public record class NarrateRowInfo : BaseRowAction
 	/// <summary>
 	/// Gets or sets the custom pattern for the narration.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(NarrateSkipBeat)} is RhythmBase.RhythmDoctor.Events.{nameof(NarrateSkipBeat)}.{nameof(NarrateSkipBeat.Custom)}")]
+	[RDJsonCondition($"$&.{nameof(NarrateSkipBeat)} is RhythmBase.RhythmDoctor.{nameof(NarrateSkipBeat)}.{nameof(NarrateSkipBeat.Custom)}")]
 	[RDJsonAlias("customPattern")]
 	public PatternCollection Pattern { get; set; } = "------";
 	/// <summary>

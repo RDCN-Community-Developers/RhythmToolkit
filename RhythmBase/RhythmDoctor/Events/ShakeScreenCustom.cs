@@ -40,7 +40,7 @@ public record class ShakeScreenCustom : BaseEvent, IRoomEvent, IDurationEvent
 	/// Gets or sets the frequency of the shake effect.
 	/// Only used when <see cref="ShakeType"/> is not <see cref="ShakeType.Normal"/>.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(ShakeType)} is not RhythmBase.RhythmDoctor.Events.{nameof(ShakeType)}.{nameof(ShakeType.Normal)}")]
+	[RDJsonCondition($"$&.{nameof(ShakeType)} is not RhythmBase.RhythmDoctor.{nameof(ShakeType)}.{nameof(ShakeType.Normal)}")]
 	public float Frequency { get; set; }
 
 	/// <summary>
@@ -49,8 +49,8 @@ public record class ShakeScreenCustom : BaseEvent, IRoomEvent, IDurationEvent
 	/// </summary>
 	[RDJsonCondition($"""
     $&.{nameof(ShakeType)} is 
-    RhythmBase.RhythmDoctor.Events.{nameof(ShakeType)}.{nameof(ShakeType.Smooth)} or
-    RhythmBase.RhythmDoctor.Events.{nameof(ShakeType)}.{nameof(ShakeType.Rotate)}
+    RhythmBase.RhythmDoctor.{nameof(ShakeType)}.{nameof(ShakeType.Smooth)} or
+    RhythmBase.RhythmDoctor.{nameof(ShakeType)}.{nameof(ShakeType.Rotate)}
     """)]
 	public bool FadeOut { get; set; } = false;
 }

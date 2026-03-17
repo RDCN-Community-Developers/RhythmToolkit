@@ -12,7 +12,7 @@ public record class SetCountingSound : BaseRowAction
 	/// <summary>
 	/// Gets or sets the voice source for the counting sound.
 	/// </summary>
-	[RDJsonCondition($"$&.{nameof(VoiceSource)} != RhythmBase.RhythmDoctor.Events.{nameof(CountingSoundVoiceSource)}.{nameof(CountingSoundVoiceSource.Custom)}")]
+	[RDJsonCondition($"$&.{nameof(VoiceSource)} != RhythmBase.RhythmDoctor.{nameof(CountingSoundVoiceSource)}.{nameof(CountingSoundVoiceSource.Custom)}")]
 	public CountingSoundVoiceSource VoiceSource { get; set; } = CountingSoundVoiceSource.JyiCount;
 	/// <summary>
 	/// Gets or sets a value indicating whether this <see cref="SetCountingSound"/> is enabled.
@@ -24,7 +24,7 @@ public record class SetCountingSound : BaseRowAction
 	/// <remarks>
 	/// Only effective when the counting sound is enabled and the parent row is a oneshot row.
 	/// </remarks>
-	[RDJsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(Parent)}?.{nameof(Row.RowType)} is RhythmBase.RhythmDoctor.Events.{nameof(RowType)}.{nameof(RowType.Oneshot)}")]
+	[RDJsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(Parent)}?.{nameof(Row.RowType)} is RhythmBase.RhythmDoctor.{nameof(RowType)}.{nameof(RowType.Oneshot)}")]
 	public float SubdivOffset { get; set; } = 0.5f;
 	/// <summary>
 	/// Gets or sets the volume of the counting sound.
@@ -38,7 +38,7 @@ public record class SetCountingSound : BaseRowAction
 	/// Gets or sets the list of sounds for the counting sound.
 	/// </summary>
 	[RDJsonConverter(typeof(CountingSoundCollectionConverter))]
-	[RDJsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(VoiceSource)} == RhythmBase.RhythmDoctor.Events.{nameof(CountingSoundVoiceSource)}.{nameof(CountingSoundVoiceSource.Custom)}")]
+	[RDJsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(VoiceSource)} == RhythmBase.RhythmDoctor.{nameof(CountingSoundVoiceSource)}.{nameof(CountingSoundVoiceSource.Custom)}")]
 	public RDAudio[] Sounds { get; set; } = [
 		new RDAudio(){Filename = "Jyi - ChineseCount1" },
 		new RDAudio(){Filename = "Jyi - ChineseCount2" },
