@@ -28,13 +28,7 @@ jobs:
           VER=$(grep -oP '<Version>\K[^<]+' RhythmBase/RhythmBase.csproj)
           SUFFIX="${{ github.event.inputs.version_suffix || github.event.client_payload.version_suffix }}"
           VER="${VER}${SUFFIX}"
-          dotnet build RhythmBase/RhythmBase.csproj -c Release \
-            -o ./pkg \
-            /p:Version="$VER"
-
-      - name: Push to NuGet.org
-        run: |
-          dotnet nuget push ./pkg/*.nupkg \
-            --source https://api.nuget.org/v3/index.json \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
-            --skip-duplicate
+          dotnet build RhythmBase/RhythmBase.csproj -c Release -f netstandard2.0
+          dotnet build RhythmBase/RhythmBase.csproj -c Release -f net8.0
+          dotnet pack RhythmBase/RhythmBase.csproj -c Release -o ./pkg -p:version="$VER"
+          dotnet nuget push ./pkg/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
