@@ -286,6 +286,8 @@ namespace RhythmBase.RhythmDoctor.Utils
 				}
 				if (a.BeatOnly != bpm.BeatOnly)
 					_bpmCache = [.. _bpmCache.Take(index), bpm, .. _bpmCache.Skip(index)];
+				else if (index < 0)
+					_bpmCache = [bpm, .. _bpmCache];
 				else
 					_bpmCache[index] = bpm;
 				return;
