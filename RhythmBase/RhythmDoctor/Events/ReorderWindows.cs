@@ -15,8 +15,8 @@ public record class ReorderWindows : BaseWindowEvent
 	/// <summary>
 	/// Gets or sets the order of rooms used to rearrange windows.
 	/// </summary>
-	[RDJsonConverter(typeof(RoomOrderConverter))]
-	public RoomOrder Order { get; set; } = new();
+	[RDJsonConverter(typeof(OrderConverter))]
+	public Order Order { get; set; } = new();
 	///<inheritdoc/>
 	public override EventType Type => EventType.ReorderWindows;
 }

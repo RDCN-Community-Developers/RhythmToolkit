@@ -644,6 +644,12 @@ namespace RhythmBase.RhythmDoctor.Extensions
 				? GetOpenTag(name, after)
 				: GetCloseTag(name) + GetOpenTag(name, after);
 		}
+		/// <summary>
+		/// Converts the specified RDRoomIndex enumeration value to its corresponding byte representation.
+		/// </summary>
+		/// <param name="e">The RDRoomIndex enumeration value to convert.</param>
+		/// <returns>A byte representing the value of the specified RDRoomIndex enumeration.</returns>
+		public static byte ToIndex(this RDRoomIndex e) => new RDSingleRoom(e).Value;
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 		public enum Wavetype
 		{

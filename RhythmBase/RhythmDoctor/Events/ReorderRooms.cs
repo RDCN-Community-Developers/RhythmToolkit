@@ -19,7 +19,7 @@ public record class ReorderRooms : BaseEvent
 	/// <summary>
 	/// Gets or sets the order of the rooms.
 	/// </summary>
-	public RoomOrder Order { get; set; } = new();
+	public Order Order { get; set; } = new();
 	///<inheritdoc/>
 	public override EventType Type { get; }
 	///<inheritdoc/>

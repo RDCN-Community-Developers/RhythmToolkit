@@ -19,7 +19,8 @@ public record class DecorationTimeline
 	public VectorTweenCurve<RDPointN> Position { get; internal set; }
 
 	/// <summary>
-	/// Gets or sets the pivot curve of the decoration over time.
+	/// Gets or sets the 
+	/// curve of the decoration over time.
 	/// </summary>
 	public VectorTweenCurve<RDPointN> Pivot { get; internal set; }
 
