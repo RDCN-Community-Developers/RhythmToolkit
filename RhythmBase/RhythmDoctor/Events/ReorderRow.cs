@@ -12,7 +12,7 @@ public record class ReorderRow : BaseRowAction
 	/// <inheritdoc/>  
 	public override EventType Type => EventType.ReorderRow;
 	/// <inheritdoc/>  
-	public override Tab Tab => Tab.Rows;
+	public override Tab Tab => Tab.Actions;
 	/// <summary>  
 	/// Gets or sets the new room to which the row will be moved.  
 	/// </summary>  
