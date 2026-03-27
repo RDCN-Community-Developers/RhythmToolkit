@@ -6,6 +6,66 @@ namespace RhythmBase.RhythmDoctor.Extensions
 {
     partial class Extensions
     {
+        extension<TEvent>(IEventEnumerable<TEvent> source) where TEvent : IBaseEvent
+        {
+
+            /// <summary>
+            /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> within the specified beat range.
+            /// </summary>
+            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
+            /// <param name="start">The start beat of the range (inclusive).</param>
+            /// <param name="end">The end beat of the range (inclusive).</param>
+            /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> within the specified range.</returns>
+            /// <exception cref="NotSupportedException">Thrown if the provided <see cref="IEventEnumerable{TEvent}"/> is not supported.</exception>
+            public IEventEnumerable<TEvent> InRange(RDBeat? start, RDBeat? end)
+            {
+                if (source is EventEnumerator<TEvent> casted)
+                    return casted.InRange(new(start, end));
+                return source is OrderedEventCollection ordered
+                    ? (IEventEnumerable<TEvent>)(ordered.GetEnumerator() as EventEnumerator<TEvent> ?? new EventEnumerator<TEvent>(ordered)).InRange(new(start, end))
+                    : throw new NotSupportedException("The provided IEventEnumerable is not supported.");
+            }
+
+            /// <summary>
+            /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> within the specified <see cref="RDRange"/>.
+            /// </summary>
+            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
+            /// <param name="range">The beat range to filter for.</param>
+            /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> within the specified range.</returns>
+            /// <exception cref="NotSupportedException">Thrown if the provided <see cref="IEventEnumerable{TEvent}"/> is not supported.</exception>
+            public IEventEnumerable<TEvent> InRange(RDRange range)
+            {
+                if (source is EventEnumerator<TEvent> casted)
+                    return casted.InRange(range);
+                return source is OrderedEventCollection ordered
+                    ? (IEventEnumerable<TEvent>)(ordered.GetEnumerator() as EventEnumerator<TEvent> ?? new EventEnumerator<TEvent>(ordered)).InRange(range)
+                    : throw new NotSupportedException("The provided IEventEnumerable is not supported.");
+            }
+            /// <summary>
+            /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> at the specified beat.
+            /// </summary>
+            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
+            /// <param name="beat">The beat to filter for.</param>
+            /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> at the specified beat.</returns>
+            /// <exception cref="NotImplementedException">Always thrown as this method is not implemented.</exception>
+            public IEnumerable<TEvent> AtBeat(RDBeat beat)
+            {
+                if (source is EventEnumerator<TEvent> casted)
+                    return casted.AtBeat(beat);
+                if (source is OrderedEventCollection ordered)
+                {
+                    var collection = ordered.eventsBeatOrder.TryGetValue(beat, out TypedEventCollection<IBaseEvent>? b) ? b : [];
+                    var types = Utils.EventTypeUtils.ToEnums(typeof(TEvent));
+                    return collection.ContainsTypes(types) ?
+                        collection.Where(i => types.Contains(i.Type)).OfType<TEvent>() :
+                        [];
+                }
+                throw new NotSupportedException("The provided IEventEnumerable is not supported.");
+            }
+        }
+    }
+    partial class Extensions
+    {
         extension(IEventEnumerable<IBaseEvent> source)
         {
             /// <summary>
@@ -22,6 +82,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
                     ? (ordered.GetEnumerator() as EventEnumerator<IBaseEvent> ?? new EventEnumerator<IBaseEvent>(ordered)).OfEvent<TEvent>()
                     : throw new NotSupportedException("The provided IEventEnumerable is not supported.");
             }
+
             /// <summary>
             /// Filters the event enumerable to only include events of the specified event types.
             /// </summary>
@@ -36,6 +97,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
                     ? (ordered.GetEnumerator() as EventEnumerator<IBaseEvent> ?? new EventEnumerator<IBaseEvent>(ordered)).OfEvents(types)
                     : throw new NotSupportedException("The provided IEventEnumerable is not supported.");
             }
+
 
             /// <summary>
             /// Filters the event enumerable to only include events within the specified beat range.
@@ -67,60 +129,7 @@ namespace RhythmBase.RhythmDoctor.Extensions
                     ? (IEventEnumerable<IBaseEvent>)(ordered.GetEnumerator() as EventEnumerator<IBaseEvent> ?? new EventEnumerator<IBaseEvent>(ordered)).InRange(range)
                     : throw new NotSupportedException("The provided IEventEnumerable is not supported.");
             }
-            /// <summary>
-            /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> within the specified beat range.
-            /// </summary>
-            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
-            /// <param name="start">The start beat of the range (inclusive).</param>
-            /// <param name="end">The end beat of the range (inclusive).</param>
-            /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> within the specified range.</returns>
-            /// <exception cref="NotSupportedException">Thrown if the provided <see cref="IEventEnumerable{TEvent}"/> is not supported.</exception>
-            public IEventEnumerable<TEvent> InRange<TEvent>(RDBeat? start, RDBeat? end) where TEvent : IBaseEvent
-            {
-                if (source is EventEnumerator<TEvent> casted)
-                    return casted.InRange(new(start, end));
-                return source is OrderedEventCollection ordered
-                    ? (IEventEnumerable<TEvent>)(ordered.GetEnumerator() as EventEnumerator<TEvent> ?? new EventEnumerator<TEvent>(ordered)).InRange(new(start, end))
-                    : throw new NotSupportedException("The provided IEventEnumerable is not supported.");
-            }
 
-            /// <summary>
-            /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> within the specified <see cref="RDRange"/>.
-            /// </summary>
-            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
-            /// <param name="range">The beat range to filter for.</param>
-            /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> within the specified range.</returns>
-            /// <exception cref="NotSupportedException">Thrown if the provided <see cref="IEventEnumerable{TEvent}"/> is not supported.</exception>
-            public IEventEnumerable<TEvent> InRange<TEvent>(RDRange range) where TEvent : IBaseEvent
-            {
-                if (source is EventEnumerator<TEvent> casted)
-                    return casted.InRange(range);
-                return source is OrderedEventCollection ordered
-                    ? (IEventEnumerable<TEvent>)(ordered.GetEnumerator() as EventEnumerator<TEvent> ?? new EventEnumerator<TEvent>(ordered)).InRange(range)
-                    : throw new NotSupportedException("The provided IEventEnumerable is not supported.");
-            }
-
-            /// <summary>
-            /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> at the specified beat.
-            /// </summary>
-            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
-            /// <param name="beat">The beat to filter for.</param>
-            /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> at the specified beat.</returns>
-            /// <exception cref="NotImplementedException">Always thrown as this method is not implemented.</exception>
-            public IEnumerable<TEvent> AtBeat<TEvent>(RDBeat beat) where TEvent : IBaseEvent
-            {
-                if (source is EventEnumerator<TEvent> casted)
-                    return casted.AtBeat(beat);
-                if (source is OrderedEventCollection ordered)
-                {
-                    var collection = ordered.eventsBeatOrder.TryGetValue(beat, out TypedEventCollection<IBaseEvent>? b) ? b : [];
-                    var types = Utils.EventTypeUtils.ToEnums(typeof(TEvent));
-                    return collection.ContainsTypes(types) ?
-                        collection.Where(i => types.Contains(i.Type)).OfType<TEvent>() :
-                        [];
-                }
-                throw new NotSupportedException("The provided IEventEnumerable is not supported.");
-            }
         }
     }
 }

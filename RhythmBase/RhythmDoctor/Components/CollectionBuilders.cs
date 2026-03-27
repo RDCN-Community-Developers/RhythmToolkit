@@ -23,4 +23,9 @@ public static class CollectionBuilders
 		ReadOnlyEnumCollection<TEnum> collection = new(values);
 		return collection;
 	}
+	public static Order BuildOrder(ReadOnlySpan<int> indices)
+	{
+		Order order = new(indices.ToArray());
+		return order;
+    }
 }

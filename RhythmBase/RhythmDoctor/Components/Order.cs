@@ -1,5 +1,7 @@
 using RhythmBase.RhythmDoctor.Converters;
+using System.Collections;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Components;
@@ -7,9 +9,10 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// <summary>
 /// Represents a unique order of rooms identified by their IDs.
 /// </summary>
+[CollectionBuilder(typeof(CollectionBuilders), nameof(CollectionBuilders.BuildOrder))]
 [JsonConverter(typeof(OrderConverter))]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public readonly struct Order
+public readonly struct Order : IEnumerable<int>
 {
     private readonly int _id;
     private readonly int _length;
@@ -86,7 +89,18 @@ public readonly struct Order
         }
         return order;
     }
+    public readonly IEnumerator<int> GetEnumerator()
+    {
+        int[] order = Indices;
+        for (int i = 0; i < _length; i++)
+            yield return order[i];
+        yield break;
+    }
 
+    readonly IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
     private string GetDebuggerDisplay()
     {
         return ToString();
