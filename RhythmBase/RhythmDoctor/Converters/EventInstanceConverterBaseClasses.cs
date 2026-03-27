@@ -1,4 +1,6 @@
+using RhythmBase.Global.Components.Vector;
 using RhythmBase.Global.Extensions;
+using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Constants;
 using RhythmBase.RhythmDoctor.Events;
 using System.Text.Json;
@@ -111,7 +113,7 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 		{
 			if (reader.TokenType is not JsonTokenType.Null)
 			{
-				var p = value.Amount;
+				var p = value.Amount ?? new();
 				p.X = reader.GetSingle();
 				value.Amount = p;
 			}
@@ -120,7 +122,7 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 		{
 			if (reader.TokenType is not JsonTokenType.Null)
 			{
-				var p = value.Amount;
+				var p = value.Amount ?? new();
 				p.Y = reader.GetSingle();
 				value.Amount = p;
 			}
@@ -148,17 +150,16 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 		writer.WriteString("preset"u8, value.Preset.ToEnumString());
 		if (value.Preset is not VfxPreset.DisableAll)
 			writer.WriteBoolean("enable"u8, value.Enable);
-		if (value.Enable && value.Preset
-			is VfxPreset.Bloom)
-			writer.WriteNumber("threshold"u8, value.Threshold);
-		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableIntensity))
-			writer.WriteNumber("intensity"u8, value.Intensity);
-		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableColor))
-		{ writer.WriteString("color"u8, value.Color.Serialize()); }
-		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableAbsoluteXY))
-		{ writer.WritePropertyName("amount"u8); JsonSerializer.Serialize(writer, value.Amount, options); }
-		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableSpeed))
-			writer.WriteNumber("speedPerc"u8, value.SpeedPercentage);
+		if (value.Enable && value.Preset is VfxPreset.Bloom && value.Threshold is float valueNotNull0)
+			writer.WriteNumber("threshold"u8, valueNotNull0);
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableIntensity) && value.Intensity is float valueNotNull1)
+			writer.WriteNumber("intensity"u8, valueNotNull1);
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableColor) && value.Color is PaletteColor valueNotNull2)
+		{ writer.WriteString("color"u8, valueNotNull2.Serialize()); }
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableAbsoluteXY) && value.Amount is RDPoint valueNotNull3)
+		{ writer.WritePropertyName("amount"u8); JsonSerializer.Serialize(writer, valueNotNull3, options); }
+		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableSpeed) && value.SpeedPercentage is float valueNotNull4)
+			writer.WriteNumber("speedPerc"u8, valueNotNull4);
 		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableEase))
 			writer.WriteString("ease"u8, value.Ease.ToEnumString());
 		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableEase))

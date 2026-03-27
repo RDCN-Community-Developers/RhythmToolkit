@@ -24,26 +24,26 @@ public record class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEven
 	/// Gets or sets the threshold value for the VFX.
 	/// </summary>
 	[Tween]
-	public float Threshold { get; set; }
+	public float? Threshold { get; set; }
 	/// <summary>
 	/// Gets or sets the intensity of the VFX.
 	/// </summary>
 	[Tween]
-	public float Intensity { get; set; }
+	public float? Intensity { get; set; }
 	/// <summary>
 	/// Gets or sets the color of the VFX.
 	/// </summary>
 	[Tween]
-	public PaletteColor Color { get; set; } = RDColor.White;
+	public PaletteColor? Color { get; set; } = RDColor.White;
 	/// <summary>
 	/// Gets or sets the amount by which the screen is scrolled or tiled when the effect is active.
 	/// </summary>
-	public RDPoint Amount { get; set; } = new(1, 1);
+	public RDPoint? Amount { get; set; } = new(1, 1);
 	/// <summary>
 	/// Gets or sets the speed percentage for the effect.
 	/// </summary>
 	[Tween]
-	public float SpeedPercentage { get; set; } = 100f;
+	public float? SpeedPercentage { get; set; } = 100f;
 	///<inheritdoc/>
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	///<inheritdoc/>
