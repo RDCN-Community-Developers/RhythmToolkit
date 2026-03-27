@@ -275,10 +275,52 @@ public struct RDBeat : IComparable<RDBeat>, IEquatable<RDBeat>
 		return result;
 	}
 	/// <summary>
-	/// 校验这个实例是否缺少在转换单位时必需的参数并抛出异常
+	/// Links the current beat to the specified <see cref="BeatCalculator"/>, enabling it to be used for beat calculations.
 	/// </summary>
-	/// <exception cref="InvalidRDBeatException"></exception>
-	[MemberNotNull(nameof(_calculator))]
+	/// <remarks>If the current beat is already linked to a <see cref="BeatCalculator"/>, providing a different
+	/// calculator will result in an exception. This method does not modify the original instance if it is already linked
+	/// to the specified calculator.</remarks>
+	/// <param name="calculator">The <see cref="BeatCalculator"/> instance to associate with this beat. This parameter cannot be null.</param>
+	/// <returns>The current <see cref="RDBeat"/> instance with the linked <see cref="BeatCalculator"/>.</returns>
+	/// <exception cref="RhythmBaseException">Thrown if the beat is already linked to a different <see cref="BeatCalculator"/>.</exception>
+	public readonly RDBeat WithLink(BeatCalculator calculator)
+	{
+		RDBeat result = this;
+		if (result._calculator == null)
+			result._calculator = calculator;
+		else if (!ReferenceEquals(result._calculator, calculator))
+			throw new RhythmBaseException("The beat is already linked to another level.");
+		return result;
+    }
+	/// <summary>
+	/// Returns a new RDBeat instance with the specified calculator assigned if the current instance does not already have
+	/// a calculator.
+	/// </summary>
+	/// <remarks>Use this method to ensure that an RDBeat instance has an associated calculator without overwriting
+	/// an existing one.</remarks>
+	/// <param name="calculator">The BeatCalculator to assign if the current instance's calculator is null.</param>
+	/// <returns>An RDBeat instance with the calculator set to the specified value if it was previously null; otherwise, the current
+	/// instance.</returns>
+	public readonly RDBeat WithLinkIfNull(BeatCalculator calculator)
+	{
+		RDBeat result = this;
+		if (result._calculator == null)
+			result._calculator = calculator;
+		return result;
+    }
+	/// <summary>
+	/// Creates a new RDBeat instance that is linked to the specified RDLevel.
+	/// </summary>
+	/// <param name="level">The RDLevel to which the new RDBeat instance will be linked. Cannot be null.</param>
+	/// <returns>A new RDBeat instance associated with the provided RDLevel.</returns>
+    public readonly RDBeat WithLink(RDLevel level) => WithLink(level.Calculator);
+	/// <summary>
+	/// Returns a new RDBeat instance that is linked to the specified level's calculator if it is not already linked.
+	/// </summary>
+	/// <param name="level">The RDLevel whose calculator will be used to link the RDBeat instance. This parameter must not be null.</param>
+	/// <returns>A new RDBeat instance linked to the calculator of the specified level.</returns>
+	public readonly RDBeat WithLinkIfNull(RDLevel level) => WithLinkIfNull(level.Calculator);
+    [MemberNotNull(nameof(_calculator))]
 	internal readonly void IfNullThrowException()
 	{
 		if (IsEmpty)

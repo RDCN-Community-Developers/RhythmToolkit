@@ -1,5 +1,6 @@
-using RhythmBase.RhythmDoctor.Components;
-namespace RhythmBase.Global.Components;
+using RhythmBase.RhythmDoctor.Utils;
+
+namespace RhythmBase.RhythmDoctor.Components;
 
 /// <summary>
 /// Beat range.
@@ -134,11 +135,20 @@ public struct RDRange
 			newEnd = other.End;
 		return new RDRange(newStart, newEnd);
 	}
-	/// <summary>
-	/// Gets a range that represents an infinite range with no upper or lower bounds.
-	/// </summary>
-	/// <remarks>This property can be used to represent a range that is unbounded in both directions.</remarks>
-	public static RDRange Infinity => new(null, null);
+    /// <summary>
+    /// Gets the start and end beats for the current range, using the specified level's default values if not explicitly
+    /// set.
+    /// </summary>
+    /// <param name="level">The level from which to retrieve the default start beat and length if the current range does not specify them.</param>
+    /// <returns>A tuple containing the start and end beats. The start beat is set to the current range's start value if defined;
+    /// otherwise, it defaults to the level's default beat. The end beat is set to the current range's end value if
+    /// defined; otherwise, it defaults to the level's length.</returns>
+    public readonly (RDBeat Start, RDBeat End) GetStartAndEnd(RDLevel level) => (Start?.WithLinkIfNull(level) ?? level.DefaultBeat, End?.WithLinkIfNull(level) ?? level.Length);
+    /// <summary>
+    /// Gets a range that represents an infinite range with no upper or lower bounds.
+    /// </summary>
+    /// <remarks>This property can be used to represent a range that is unbounded in both directions.</remarks>
+    public static RDRange Infinity => new(null, null);
 	/// <summary>
 	/// Gets an empty range with no defined start or end values.
 	/// </summary>
