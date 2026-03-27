@@ -8,20 +8,28 @@ namespace RhythmBase.RhythmDoctor.Events;
 [RDJsonObjectSerializable]
 public record class ReorderRooms : BaseEvent
 {
-	/// <summary>
-	/// Initializes a new instance of the <see cref="ReorderRooms"/> class.
-	/// </summary>
-	public ReorderRooms()
-	{
-		Type = EventType.ReorderRooms;
-		Tab = Tab.Rooms;
-	}
-	/// <summary>
-	/// Gets or sets the order of the rooms.
-	/// </summary>
-	public Order Order { get; set; } = new();
-	///<inheritdoc/>
-	public override EventType Type { get; }
-	///<inheritdoc/>
-	public override Tab Tab { get; }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReorderRooms"/> class.
+    /// </summary>
+    public ReorderRooms()
+    {
+        Type = EventType.ReorderRooms;
+        Tab = Tab.Rooms;
+    }
+    /// <summary>
+    /// Gets or sets the order of the rooms.
+    /// </summary>
+    public Order Order
+    {
+        get; set
+        {
+            if (value.Length != 4)
+                throw new ArgumentException("The order must contain exactly 4 elements.", nameof(value));
+            field = value;
+        }
+    } = new();
+    ///<inheritdoc/>
+    public override EventType Type { get; }
+    ///<inheritdoc/>
+    public override Tab Tab { get; }
 }

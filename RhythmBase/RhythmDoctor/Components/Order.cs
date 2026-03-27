@@ -30,7 +30,7 @@ public readonly struct Order : IEnumerable<int>
     /// <summary>
     /// The number of rooms in the order.
     /// </summary>
-    public int Count => _length;
+    public int Length => _length;
 
     /// <summary>
     /// Gets the order of room IDs as an array of numbers.
