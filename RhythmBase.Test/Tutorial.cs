@@ -125,11 +125,15 @@ namespace RhythmBase.Test
             // Create a beat not associated with a level
             RDBeat beat1 = new(11);
             RDBeat beat2 = new(2, 3);
-            RDBeat beat3 = new(TimeSpan.FromSeconds(11.45));
+            RDBeat beat3 = (2, 3);
+            RDBeat beat4 = new(TimeSpan.FromSeconds(11.45));
 
             Console.WriteLine(beat1); // [10,?,?]
             Console.WriteLine(beat2); // [?,(2, 3),?]
-            Console.WriteLine(beat3); // [?,?,00:00:11.4500000]
+            Console.WriteLine(beat3); // [?,(2, 3),?]
+            Console.WriteLine(beat4); // [?,?,00:00:11.4500000]
+
+            (int bar, float beat) = beat2;
         }
         [TestMethod]
         public void CreateBeatWithBinding()
@@ -151,6 +155,10 @@ namespace RhythmBase.Test
 
             Console.WriteLine(beat1.FromSameLevel(beat2));       // False
             Console.WriteLine(beat1.FromSameLevelOrNull(beat2)); // True
+
+            RDBeat beat3 = beat2.WithLink(_rdlevel.Calculator);
+
+            (int bar, float beat) = beat3; // (1, 1)
         }
         [TestMethod]
         public void ConvertTimeUnit()
