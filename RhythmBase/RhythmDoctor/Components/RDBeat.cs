@@ -500,7 +500,12 @@ public struct RDBeat : IComparable<RDBeat>, IEquatable<RDBeat>
 	public static bool operator ==(RDBeat a, RDBeat b) => CompareInternal(a, b) == 0;
 	///  <inheritdoc/>
 	public static bool operator !=(RDBeat a, RDBeat b) => CompareInternal(a, b) != 0;
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+    /// <summary>
+    /// Allows implicit conversion from a tuple of (int, float) representing bar and beat to an RDBeat instance.
+    /// </summary>
+    /// <param name="value"></param>
+    public static implicit operator RDBeat((int, float) value) => new(value.Item1, value.Item2);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private static int CompareInternal(int bar1, float beat1, int bar2, float beat2)
 	{
 		int barComparison = bar1.CompareTo(bar2);
