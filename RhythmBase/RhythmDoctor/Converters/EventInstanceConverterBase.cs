@@ -32,7 +32,6 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 		float beat = 1;
 		while (reader.Read())
 		{
-			string s = Encoding.UTF8.GetString([.. reader.ValueSpan]);
 			if (reader.TokenType == JsonTokenType.EndObject)
 			{
 				value.Beat = new(bar, beat);

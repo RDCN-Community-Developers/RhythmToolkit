@@ -34,7 +34,7 @@
       <NoWarn>1701;1702;IL2080;IL2075;IL3050;IL2026</NoWarn>
     </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="9.0.10" />
+    <PackageReference Include="System.Text.Json" Version="10.0.5" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../README.md">
