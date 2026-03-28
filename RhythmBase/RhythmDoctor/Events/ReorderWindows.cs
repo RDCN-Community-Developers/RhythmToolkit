@@ -9,14 +9,14 @@ namespace RhythmBase.RhythmDoctor.Events;
 [RDJsonObjectSerializable]
 public record class ReorderWindows : BaseWindowEvent
 {
-	/// <inheritdoc/>
-	public override int Y => 0;
+    /// <inheritdoc/>
+    public override int Y => 0;
 
-	/// <summary>
-	/// Gets or sets the order of rooms used to rearrange windows.
-	/// </summary>
-	[RDJsonConverter(typeof(OrderConverter))]
-	public Order Order { get; set; } = new();
-	///<inheritdoc/>
-	public override EventType Type => EventType.ReorderWindows;
+    /// <summary>
+    /// Gets or sets the order of rooms used to rearrange windows.
+    /// </summary>
+    [RDJsonConverter(typeof(OrderConverter))]
+    public Order Order { get; set; } = [0, 1, 2, 3];
+    ///<inheritdoc/>
+    public override EventType Type => EventType.ReorderWindows;
 }

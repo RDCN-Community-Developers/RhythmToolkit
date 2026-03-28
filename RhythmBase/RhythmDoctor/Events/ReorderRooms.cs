@@ -27,7 +27,7 @@ public record class ReorderRooms : BaseEvent
                 throw new ArgumentException("The order must contain exactly 4 elements.", nameof(value));
             field = value;
         }
-    } = new();
+    } = [0, 1, 2, 3];
     ///<inheritdoc/>
     public override EventType Type { get; }
     ///<inheritdoc/>
