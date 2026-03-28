@@ -92,7 +92,7 @@ public abstract class OrderedEventCollection : ICollection<IBaseEvent>, IEventEn
 		if (Contains(item))
 		{
 			bool result = eventsBeatOrder[item.Beat].Remove(item);
-			if (eventsBeatOrder[item.Beat].Count > 0)
+			if (eventsBeatOrder[item.Beat].Count == 0)
 				eventsBeatOrder.Remove(item.Beat);
 			Remove = result;
 		}

@@ -72,6 +72,15 @@ namespace System
 				string str = Text.Encoding.UTF8.GetString(value.ToArray());
 				return int.Parse(str);
 			}
+			public static int Abs(int value) => Math.Abs(value);
+			public static int Max(int val1, int val2) => Math.Max(val1, val2);
+			public static int Min(int val1, int val2) => Math.Min(val1, val2);
+            public static (int div, int rem) DivRem(int value, int divisor)
+			{
+				int div = value / divisor;
+				int rem = value % divisor;
+				return (div, rem);
+			}
 		}
 	}
 	internal static class FloatExtensions
