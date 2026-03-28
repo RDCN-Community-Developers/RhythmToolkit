@@ -41,15 +41,15 @@ internal class RowConverter : JsonConverter<Row>
 			else if (propertyName.SequenceEqual("rowToMimic"u8))
 				result.RowToMimic = reader.GetSByte();
 			else if (propertyName.SequenceEqual("pulseSound"u8))
-				result.PulseSound = reader.GetString() ?? "";
+				result.Sound.Filename = reader.GetString() ?? "";
 			else if (propertyName.SequenceEqual("pulseSoundVolume"u8))
-				result.PulseSoundVolume = reader.GetInt32();
+				result.Sound.Volume = reader.GetInt32();
 			else if (propertyName.SequenceEqual("pulseSoundPitch"u8))
-				result.PulseSoundPitch = reader.GetInt32();
+				result.Sound.Pitch = reader.GetInt32();
 			else if (propertyName.SequenceEqual("pulseSoundPan"u8))
-				result.PulseSoundPan = reader.GetInt32();
+				result.Sound.Pan = reader.GetInt32();
 			else if (propertyName.SequenceEqual("pulseSoundOffset"u8))
-				result.PulseSoundOffset = TimeSpan.FromMilliseconds(reader.GetDouble());
+				result.Sound.Offset = TimeSpan.FromMilliseconds(reader.GetDouble());
 		}
 		return result;
 	}
@@ -80,19 +80,19 @@ internal class RowConverter : JsonConverter<Row>
 		if (value.RowToMimic >= 0)
 			writer.WriteNumber("rowToMimic"u8, value.RowToMimic);
 
-		writer.WriteString("pulseSound"u8, value.PulseSound ?? "");
+		writer.WriteString("pulseSound"u8, value.Sound.Filename);
 
-		if (value.PulseSoundVolume != 100)
-			writer.WriteNumber("pulseSoundVolume"u8, value.PulseSoundVolume);
+		if (value.Sound.Volume != 100)
+			writer.WriteNumber("pulseSoundVolume"u8, value.Sound.Volume);
 
-		if (value.PulseSoundPitch != 100)
-			writer.WriteNumber("pulseSoundPitch"u8, value.PulseSoundPitch);
+		if (value.Sound.Pitch != 100)
+			writer.WriteNumber("pulseSoundPitch"u8, value.Sound.Pitch);
 
-		if (value.PulseSoundPan != 0)
-			writer.WriteNumber("pulseSoundPan"u8, value.PulseSoundPan);
+		if (value.Sound.Pan != 0)
+			writer.WriteNumber("pulseSoundPan"u8, value.Sound.Pan);
 
-		if (value.PulseSoundOffset != TimeSpan.Zero)
-			writer.WriteNumber("pulseSoundOffset"u8, (int)value.PulseSoundOffset.TotalMilliseconds);
+		if (value.Sound.Offset != TimeSpan.Zero)
+			writer.WriteNumber("pulseSoundOffset"u8, (int)value.Sound.Offset.TotalMilliseconds);
 
 		writer.WriteEndObject();
 	}

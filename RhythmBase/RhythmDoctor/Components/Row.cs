@@ -58,46 +58,6 @@ public class Row : OrderedEventCollection<BaseRowAction>
 	/// </summary>
 	public sbyte RowToMimic { get; set; } = -1;
 	/// <summary>
-	/// Gets or sets the name of the pulse sound.
-	/// </summary>
-	public string PulseSound
-	{
-		get => Sound.Filename;
-		set => Sound.Filename = value;
-	}
-	/// <summary>
-	/// Gets or sets the volume of the pulse sound.
-	/// </summary>
-	public int PulseSoundVolume
-	{
-		get => Sound.Volume;
-		set => Sound.Volume = value;
-	}
-	/// <summary>
-	/// Gets or sets the pitch of the pulse sound.
-	/// </summary>
-	public int PulseSoundPitch
-	{
-		get => Sound.Pitch;
-		set => Sound.Pitch = value;
-	}
-	/// <summary>
-	/// Gets or sets the pan of the pulse sound.
-	/// </summary>
-	public int PulseSoundPan
-	{
-		get => Sound.Pan;
-		set => Sound.Pan = value;
-	}
-	/// <summary>
-	/// Gets or sets the offset of the pulse sound.
-	/// </summary>
-	public TimeSpan PulseSoundOffset
-	{
-		get => Sound.Offset;
-		set => Sound.Offset = value;
-	}
-	/// <summary>
 	/// Initializes a new instance of the <see cref="Row"/> class.
 	/// </summary>
 	public Row() { }
