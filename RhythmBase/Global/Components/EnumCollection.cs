@@ -1,5 +1,6 @@
 using RhythmBase.RhythmDoctor.Components;
 using System.Collections;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace RhythmBase.Global.Components;
@@ -327,15 +328,11 @@ public struct EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, E
 	{
 		return new ReadOnlyEnumCollection<TEnum>(this);
 	}
-	/// <summary>
-	/// Returns an enumerator that iterates through the set of values contained in the collection.
-	/// </summary>
-	/// <remarks>The order of enumeration corresponds to the underlying bit representation and may not reflect the
-	/// natural order of <typeparamref name="TEnum"/> values. The enumerator provides a snapshot of the collection at the
-	/// time of enumeration; subsequent modifications to the collection do not affect the enumerator.</remarks>
-	/// <returns>An enumerator that can be used to iterate through the values of type <typeparamref name="TEnum"/> present in the
-	/// collection.</returns>
-	public readonly IEnumerator<TEnum> GetEnumerator()
+    /// <summary>
+    /// Returns an enumerator that iterates through the set of values contained in the collection.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public readonly IEnumerator<TEnum> GetEnumerator()
 	{
 		for (int div = 0; div < _bits.Length; div++)
 		{
@@ -348,8 +345,9 @@ public struct EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, E
 				block &= (block - 1);
 			}
 		}
-	}
-	readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	private static int TrailingZeroCount(ulong v)
 	{
 #if NET8_0_OR_GREATER

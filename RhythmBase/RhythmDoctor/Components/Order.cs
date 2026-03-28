@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using System.ComponentModel;
 
 namespace RhythmBase.RhythmDoctor.Components;
 
@@ -89,6 +90,10 @@ public readonly struct Order : IEnumerable<int>
         }
         return order;
     }
+    /// <summary>
+    /// Returns an enumerator that iterates through the collection of indices as integers.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public readonly IEnumerator<int> GetEnumerator()
     {
         int[] order = Indices;
@@ -96,7 +101,7 @@ public readonly struct Order : IEnumerable<int>
             yield return order[i];
         yield break;
     }
-
+    [EditorBrowsable(EditorBrowsableState.Never)]
     readonly IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();

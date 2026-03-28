@@ -1,4 +1,5 @@
 using System.Collections;
+using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 namespace RhythmBase.RhythmDoctor.Components;
@@ -159,14 +160,12 @@ public struct RDRoom :
 #endif
 	/// <inheritdoc/>
 	public readonly bool Equals(RDRoom other) => this == other;
-	/// <summary>
-	/// Returns an enumerator that iterates through the collection of bytes with indices from 0 to 4 for which the
-	/// corresponding value is set to <see langword="true"/>.
-	/// </summary>
-	/// <remarks>Use this method to enumerate only the bytes in the collection that are marked as active or valid.
-	/// The enumerator can be used in a foreach loop to access these byte values.</remarks>
-	/// <returns>An enumerator that provides access to the byte values at indices where the condition is satisfied.</returns>
-	public readonly IEnumerator<byte> GetEnumerator()
+    /// <summary>
+    /// Returns an enumerator that iterates through the collection of bytes with indices from 0 to 4 for which the
+    /// corresponding value is set to <see langword="true"/>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public readonly IEnumerator<byte> GetEnumerator()
 	{
 		for (int i = 0; i < 5; i++)
 			if (this[(byte)i])
@@ -174,7 +173,8 @@ public struct RDRoom :
 		yield break;
 	}
 
-	readonly IEnumerator IEnumerable.GetEnumerator()
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    readonly IEnumerator IEnumerable.GetEnumerator()
 	{
 		return GetEnumerator();
 	}
