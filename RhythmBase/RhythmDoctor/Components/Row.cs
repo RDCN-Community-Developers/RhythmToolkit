@@ -57,6 +57,26 @@ public class Row : OrderedEventCollection<BaseRowAction>
 	/// Gets or sets the row to mimic.
 	/// </summary>
 	public sbyte RowToMimic { get; set; } = -1;
+    /// <summary>
+    /// The Index of the row within its room, starting from 0. Returns -1 if the row is not part of a room or if the parent level is null.
+    /// </summary>
+    public int Y
+	{
+		get
+		{
+			int y = 0;
+            for (int i = 0; i < Parent?.Rows.Count; i++)
+			{
+				if(Parent.Rows[i].Room == Room)
+				{
+					 if (Parent.Rows[i] == this)
+						return y;
+					y++;
+				}
+			}
+			return -1;
+		}
+	}
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Row"/> class.
 	/// </summary>
