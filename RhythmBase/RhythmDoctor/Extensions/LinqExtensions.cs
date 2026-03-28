@@ -12,7 +12,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
             /// <summary>
             /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> within the specified beat range.
             /// </summary>
-            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
             /// <param name="start">The start beat of the range (inclusive).</param>
             /// <param name="end">The end beat of the range (inclusive).</param>
             /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> within the specified range.</returns>
@@ -29,7 +28,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
             /// <summary>
             /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> within the specified <see cref="RDRange"/>.
             /// </summary>
-            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
             /// <param name="range">The beat range to filter for.</param>
             /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> within the specified range.</returns>
             /// <exception cref="NotSupportedException">Thrown if the provided <see cref="IEventEnumerable{TEvent}"/> is not supported.</exception>
@@ -44,7 +42,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
             /// <summary>
             /// Filters the event enumerable to only include events of type <typeparamref name="TEvent"/> at the specified beat.
             /// </summary>
-            /// <typeparam name="TEvent">The type of event to filter for.</typeparam>
             /// <param name="beat">The beat to filter for.</param>
             /// <returns>An <see cref="IEventEnumerable{TEvent}"/> containing only events of type <typeparamref name="TEvent"/> at the specified beat.</returns>
             /// <exception cref="NotImplementedException">Always thrown as this method is not implemented.</exception>
