@@ -1,3 +1,4 @@
+using RhythmBase.Global.Components.RichText;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
@@ -659,6 +660,22 @@ namespace RhythmBase.RhythmDoctor.Extensions
                 return new JsonException(message);
             }
         }
+#if NETSTANDARD
+        extension<TStyle>(RDLine<TStyle>) where TStyle: IRDRichStringStyle<TStyle>, new()
+        {
+            /// <summary>
+            /// Deserializes a string into an <see cref="RDLine{RDPhraseStyle}"/>.
+            /// </summary>
+            /// <param name="text">The string to deserialize.</param>
+            /// <returns>A new <see cref="RDLine{RDPhraseStyle}"/> containing the deserialized content.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when the input text is null.</exception>
+            /// <exception cref="FormatException">Thrown when the input text has an invalid format.</exception>
+            public static RDLine<TStyle> Deserialize(string text)
+            {
+                return RDLine<TStyle>.Empty.Deserialize(text);
+            }
+        }
+#endif
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
         public enum Wavetype
         {

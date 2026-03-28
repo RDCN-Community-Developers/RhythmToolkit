@@ -3,7 +3,7 @@ using RhythmBase.Global.Extensions;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.
+using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Diagnostics;

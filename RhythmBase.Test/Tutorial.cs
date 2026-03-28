@@ -5,7 +5,7 @@ using RhythmBase.Global.Components.Vector;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.RDLang;
-using RhythmBase.RhythmDoctor.
+using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Utils;
 using System.Text.Json;
@@ -98,7 +98,6 @@ namespace RhythmBase.Test
 
 			_rdlevel.SaveToFile(@"your\outLevel.rdlevel", settings);
 		}
-#if NETCOREAPP
 		[TestMethod]
 		public void FindEventsInLevel()
 		{
@@ -108,7 +107,6 @@ namespace RhythmBase.Test
 				.InRange(new(3, 1), new(5, 1))// From Bar 3 to 5
 				.Where(i => 0 <= i.Y && i.Y < 3);  // In event rows 0 to 2
 		}
-#endif
 		[TestMethod]
 		public void FindEventsInDecoration()
 		{
@@ -239,11 +237,7 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void RichTextUsage()
 		{
-#if NETFRAMEWORK
-			RDLine<RDRichStringStyle> line = RDLine<RDRichStringStyle>.Empty.Deserialize("Hel<color=#00FF00>lo");
-#elif NETCOREAPP
 			RDLine<RDRichStringStyle> line = RDLine<RDRichStringStyle>.Deserialize("Hel<color=#00FF00>lo");
-#endif
 
 			Console.WriteLine(line.ToString()); // Hello
 			Console.WriteLine(line.Serialize()); // Hel<color=lime>lo</color>
@@ -265,11 +259,7 @@ namespace RhythmBase.Test
 		[TestMethod]
 		public void RichTextModify()
 		{
-#if NETFRAMEWORK
-			RDLine<RDRichStringStyle> line = RDLine<RDRichStringStyle>.Empty.Deserialize("Hel<color=#00FF00>lo Rhythm</color> Doctor!");
-#elif NETCOREAPP
 			RDLine<RDRichStringStyle> line = RDLine<RDRichStringStyle>.Deserialize("Hel<color=#00FF00>lo Rhythm</color> Doctor!");
-#endif
 
 #if NETCOREAPP
 			Console.WriteLine(line[6..].ToString()); // Rhythm Doctor!
@@ -292,11 +282,7 @@ namespace RhythmBase.Test
 				{
 					Character = "Paige",
 					Expression = "neutral",
-#if NETFRAMEWORK
-					Content = RDLine<RDDialoguePhraseStyle>.Empty.Deserialize("Hel<color=#00FF00>lo [2]<shake>Rhythm</color> Doctor</shake>!"),
-#elif NETCOREAPP
 					Content = RDLine<RDDialoguePhraseStyle>.Deserialize("Hel<color=#00FF00>lo [2]<shake>Rhythm</color> Doctor</shake>!"),
-#endif
 				},
 				new RDDialogueBlock()
 				{
