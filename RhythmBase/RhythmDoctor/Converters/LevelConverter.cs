@@ -309,13 +309,13 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
 			sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 			writer.WriteRawValue(sl);
 			noIndentWriter.Reset();
-			string assPath = DirectoryName + row.Character.CustomCharacter;
+            string assPath = Path.Combine(DirectoryName ?? "", row.Character.CustomCharacter ?? "");
 			if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 				foreach (FileReference file in row.Character.GetAllPossibleFileReferences())
 					if (!file.IsEmpty && file.IsExist(DirectoryName!))
-						ReadSettings.FileReferences.Add(file);
+                        WriteSettings.FileReferences.Add(file);
 					else if (file.IsExist(assPath))
-						ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
+                        WriteSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
 		}
 		writer.WriteEndArray();
 		writer.WritePropertyName("decorations");
@@ -330,13 +330,13 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
 			sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
 			writer.WriteRawValue(sl);
 			noIndentWriter.Reset();
-			string assPath = DirectoryName + decoration.Character.CustomCharacter;
+            string assPath = Path.Combine(DirectoryName ?? "", decoration.Character.CustomCharacter ?? "");
 			if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName))
 				foreach (FileReference file in decoration.Character.GetAllPossibleFileReferences())
 					if (!file.IsEmpty && file.IsExist(DirectoryName!))
-						ReadSettings.FileReferences.Add(file);
+                        WriteSettings.FileReferences.Add(file);
 					else if (file.IsExist(assPath))
-						ReadSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
+                        WriteSettings.FileReferences.Add(DirectoryName + Path.DirectorySeparatorChar + file);
 		}
 		writer.WriteEndArray();
 		writer.WritePropertyName("events");
