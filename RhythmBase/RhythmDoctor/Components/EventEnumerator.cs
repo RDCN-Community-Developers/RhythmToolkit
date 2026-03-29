@@ -18,38 +18,38 @@ internal class EventEnumerator<TEvent>(OrderedEventCollection collection, ReadOn
 
 	public TEvent Current => (TEvent)(events?.Current ?? throw new InvalidOperationException());
 	object IEnumerator.Current => Current;
-	public bool MoveNext()
-	{
-		bool result;
-		while (result = (events?.MoveNext() ?? false))
-			if (types.Contains(events!.Current.Type))
-				return true;
-		if (!result)
-		{
-			while (beats.MoveNext())
-			{
-				if (range.Start is not null && !(beats.Current.Key > range.Start) || !beats.Current.Value.ContainsTypes(types))
-				{
-					events = beats.Current.Value.GetEnumerator();
-					continue;
-				}
-				if (!beats.Current.Value.ContainsTypes(types))
-				{
-					continue;
-				}
-				if (range.End is not null && range.End <= beats.Current.Key)
-					return false;
-				events = beats.Current.Value.GetEnumerator();
-				while (events.MoveNext())
-				{
-					if (types.Contains(events.Current.Type))
-						return true;
-				}
-			}
-		}
-		return result;
-	}
-	public void Dispose()
+    public bool MoveNext()
+    {
+        if (events != null)
+        {
+            while (events.MoveNext())
+            {
+                if (types.Contains(events.Current.Type))
+                    return true;
+            }
+            events = null;
+        }
+        while (beats.MoveNext())
+        {
+            var currentKey = beats.Current.Key;
+
+            if (range.Start.HasValue && currentKey < range.Start.Value)
+                continue;
+            if (range.End.HasValue && currentKey >= range.End.Value)
+                return false;
+            if (!beats.Current.Value.ContainsTypes(types))
+                continue;
+            events = beats.Current.Value.GetEnumerator();
+            while (events.MoveNext())
+            {
+                if (types.Contains(events.Current.Type))
+                    return true;
+            }
+            events = null;
+        }
+        return false;
+    }
+    public void Dispose()
 	{
 	}
 	public void Reset() => throw new NotSupportedException();
