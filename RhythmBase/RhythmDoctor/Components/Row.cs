@@ -41,7 +41,10 @@ public class Row : OrderedEventCollection<BaseRowAction>
 	/// <summary>
 	/// Gets or sets the length of the row.
 	/// </summary>
-	public new int Length { get; set; } = 7;
+	/// <remarks>
+	/// It only affects the visual length of the row and does not affect the actual timing or behavior of the events within the row.
+	/// </remarks>
+	public int Length { get; set; } = 7;
 	/// <summary>
 	/// Gets or sets a value indicating whether the beats are muted.
 	/// </summary>
@@ -57,15 +60,15 @@ public class Row : OrderedEventCollection<BaseRowAction>
 	/// Gets or sets the row to mimic.
 	/// </summary>
 	public sbyte RowToMimic { get; set; } = -1;
-    /// <summary>
-    /// The Index of the row within its room, starting from 0. Returns -1 if the row is not part of a room or if the parent level is null.
-    /// </summary>
-    public int Y
+	/// <summary>
+	/// The Index of the row within its room, starting from 0. Returns -1 if the row is not part of a room or if the parent level is null.
+	/// </summary>
+	public int Y
 	{
 		get
 		{
 			int y = 0;
-            for (int i = 0; i < Parent?.Rows.Count; i++)
+			for (int i = 0; i < Parent?.Rows.Count; i++)
 			{
 				if(Parent.Rows[i].Room == Room)
 				{

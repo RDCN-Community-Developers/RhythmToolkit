@@ -65,7 +65,8 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	/// <summary>
 	/// Gets or sets the position of the text.
 	/// </summary>
-	public RDPoint TextPosition { get; set; } = new(50f, 50f);
+	[RDJsonAlias("textPosition")]
+	public RDPoint Position { get; set; } = new(50f, 50f);
 	/// <summary>
 	/// Gets or sets the anchor style of the text.
 	/// </summary>

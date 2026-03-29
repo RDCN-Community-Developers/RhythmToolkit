@@ -136,7 +136,7 @@ public struct RDRange
     /// <returns>A tuple containing the start and end beats. The start beat is set to the current range's start value if defined;
     /// otherwise, it defaults to the level's default beat. The end beat is set to the current range's end value if
     /// defined; otherwise, it defaults to the level's length.</returns>
-    public readonly (RDBeat Start, RDBeat End) GetStartAndEnd(RDLevel level) => (Start?.WithLinkIfNull(level) ?? level.DefaultBeat, End?.WithLinkIfNull(level) ?? level.Length);
+    public readonly (RDBeat Start, RDBeat End) GetStartAndEnd(RDLevel level) => (Start?.WithLinkIfNull(level) ?? level.DefaultBeat, End?.WithLinkIfNull(level) ?? level.Duration);
     /// <summary>
     /// Gets a range that represents an infinite range with no upper or lower bounds.
     /// </summary>

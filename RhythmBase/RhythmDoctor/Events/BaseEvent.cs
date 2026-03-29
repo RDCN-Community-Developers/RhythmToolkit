@@ -54,7 +54,16 @@ public abstract record class BaseEvent : IBaseEvent
 		}
 	}
 	internal Dictionary<string, JsonElement> _extraData = [];
-	///<inheritdoc/>
+	/// <summary>
+	/// Creates a new instance of the specified event type, copying the current event's properties and assigning a new beat
+	/// instance without links.
+	/// </summary>
+	/// <remarks>If the current event is already of the specified type, this method returns a copy of that instance
+	/// with the beat replaced. Use this method to create variations of events while preserving their core
+	/// properties.</remarks>
+	/// <typeparam name="TEvent">The type of event to create. Must inherit from BaseEvent and have a parameterless constructor.</typeparam>
+	/// <returns>A new instance of the specified event type with properties cloned from the current event and a new beat instance
+	/// without links.</returns>
 	public virtual TEvent CloneAs<TEvent>() where TEvent : BaseEvent, new()
 	{
 		if (this is TEvent t)
@@ -68,7 +77,7 @@ public abstract record class BaseEvent : IBaseEvent
 			Tag = Tag,
 			RunTag = RunTag,
 			Condition = Condition,
-			Active = Active
+			Active = Active,
 		};
 		temp.Condition = Condition.Clone();
 		return temp;

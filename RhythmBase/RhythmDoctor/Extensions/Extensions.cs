@@ -596,22 +596,6 @@ namespace RhythmBase.RhythmDoctor.Extensions
             }
             return e.Beat.CompareTo(obj.Beat);
         }
-        /// <summary>
-        /// Shallow copy.
-        /// </summary>
-        public static TEvent MemberwiseClone<TEvent>(this TEvent e) where TEvent : IBaseEvent, new() => (TEvent)e.MClone();
-        internal static object MClone(this object e)
-        {
-            if (e == null)
-                throw new NullReferenceException();
-            Type type = e.GetType();
-            object copy = Activator.CreateInstance(type)!;
-            PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (PropertyInfo p in properties)
-                if (p.CanWrite)
-                    p.SetValue(copy, p.GetValue(e));
-            return copy;
-        }
         /// <inheritdoc/>
         internal static string GetCloseTag(string name) => $"</{name}>";
         /// <inheritdoc/>

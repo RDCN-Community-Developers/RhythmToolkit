@@ -58,7 +58,7 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 	/// <summary>
 	/// Level bookmark collection.
 	/// </summary>
-	public List<Bookmark> Bookmarks { get; }
+	public OrderedCollection<RDBeat, Bookmark> Bookmarks { get; }
 	/// <summary>
 	/// Level colorPalette collection.
 	/// </summary>
@@ -96,7 +96,7 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 		Calculator = new BeatCalculator(this);
 		Settings = new Settings();
 		Conditionals = [];
-		Bookmarks = [];
+		Bookmarks = new(i => i.Beat);
 		ColorPalette = new RDColor[21];
 		Rows = new(this);
 		Decorations = new(this);
@@ -197,7 +197,7 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 		switch (settings.ZipFileProcessMethod)
 		{
 			case ZipFileProcessMethod.AllFiles:
-				DirectoryInfo tempDirectory = new(Path.Combine(GlobalSettings.CachePath, "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
+				DirectoryInfo tempDirectory = GlobalSettings.GetTempDirectory();
 				tempDirectory.Create();
 				try
 				{

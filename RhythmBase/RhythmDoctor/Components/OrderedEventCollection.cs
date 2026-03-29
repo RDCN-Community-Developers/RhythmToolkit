@@ -16,15 +16,16 @@ public abstract class OrderedEventCollection : ICollection<IBaseEvent>, IEventEn
 	/// Gets a value indicating whether the collection is read-only.
 	/// </summary>
 	public bool IsReadOnly { get; }
-	/// <summary>
-	/// Returns the beat of the last event.
-	/// </summary>
-	/// <returns>The beat of the last event.</returns>
-	public RDBeat Length => eventsBeatOrder.LastOrDefault().Key;
-	/// <summary>
-	/// Initializes a new instance of the <see cref="OrderedEventCollection"/> class.
-	/// </summary>
-	public OrderedEventCollection()
+    /// <summary>
+    /// Returns the beat of the last event.
+    /// </summary>
+    /// <returns>The beat of the last event.</returns>
+    public RDBeat Duration => eventsBeatOrder.LastOrDefault().Key;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OrderedEventCollection"/> class.
+    /// </summary>
+    public OrderedEventCollection()
 	{
 		eventsBeatOrder = [];
 		IsReadOnly = false;
