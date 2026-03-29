@@ -501,7 +501,10 @@ namespace RhythmBase.RhythmDoctor.Extensions
         /// <summary>
         /// Getting controlled events.
         /// </summary>
-        public static IEnumerable<IGrouping<string, IBaseEvent>> ControllingEvents(this TagAction e) => e.Beat.BaseLevel?.GetTaggedEvents(e.ActionTag, e.Action.HasFlag(ActionTagAction.All)) ?? [];
+        public static IEnumerable<IGrouping<string, IBaseEvent>> ControllingEvents(this TagAction e) => e.Beat.BaseLevel?.GetTaggedEvents(e.ActionTag, e.Action
+            is ActionTagAction.RunAll
+            or ActionTagAction.EnableAll
+            or ActionTagAction.DisableAll) ?? [];
         /// <summary>
         /// Get the end beat of the duration.
         /// </summary>
