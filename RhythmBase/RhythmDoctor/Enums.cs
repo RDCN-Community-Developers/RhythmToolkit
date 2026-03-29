@@ -1611,8 +1611,10 @@ public enum VfxPreset
 	Pixelate,
 	Scanlines,
 	VHSRewind,
+    EyesBig,
+    EyesSmall,
 
-	WavyRows,
+    WavyRows,
 	Tile2,
 	Tile3,
 	Tile4,
@@ -1846,29 +1848,37 @@ public enum Tab
 /// <summary>
 /// Defines the possible actions for a tag.
 /// </summary>
-[Flags]
+[RDJsonEnumSerializable]
 public enum ActionTagAction
 {
-	/// <summary>
-	/// Represents the run action.
-	/// </summary>
-	Run = 2,
-	/// <summary>
-	/// Matches the tags which contains the specified tag.
-	/// </summary>
-	/// <remarks>
-	/// Otherwise, the tag matching will only match tags that are exactly the same as the specified tag.
-	/// This option allows for more flexible matching by including any tags that contain the specified tag as a substring.
-	/// </remarks>
-	All = 1,
-	/// <summary>
-	/// Represents the enable action.
-	/// </summary>
-	Enable = 6,
-	/// <summary>
-	/// Represents the disable action.
-	/// </summary>
-	Disable = 4
+    /// <summary>
+    /// Run events that match the specified tag.
+    /// </summary>
+    Run,
+    /// <summary>
+    /// Run events that its tag contains the specified tag.
+    /// </summary>
+    RunAll,
+    /// <summary>
+    /// Enables events that match the specified tag.
+    /// </summary>
+    Enable,
+    /// <summary>
+    /// Disables events that match the specified tag.
+    /// </summary>
+    Disable,
+    /// <summary>
+    /// Enables events that its tag contains the specified tag.
+    /// </summary>
+    EnableAll,
+    /// <summary>
+    /// Disables events that its tag contains the specified tag.
+    /// </summary>
+    DisableAll,
+    /// <summary>
+    /// Randomly choose an event from all the events that match the specified tag and run it.
+    /// </summary>
+    RunRandom,
 }
 /// <summary>
 /// Specifies the direction of the text explosion.

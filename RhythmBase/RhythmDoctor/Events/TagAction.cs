@@ -12,7 +12,7 @@ public record class TagAction : BaseEvent
 	/// Gets or sets the action associated with the tag.
 	/// </summary>
 	[RDJsonAlias("Action")]
-	[RDJsonConverter(typeof(TagActionTypeConverter))]
+	//[RDJsonConverter(typeof(TagActionTypeConverter))]
 	public ActionTagAction Action { get; set; } = ActionTagAction.Run;
 	/// <summary>
 	/// Gets or sets the action tag.
