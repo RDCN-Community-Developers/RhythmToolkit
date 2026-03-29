@@ -3,7 +3,7 @@ namespace RhythmBase.RhythmDoctor.Components
 	/// <summary>
 	/// Represents a bookmark in the rhythm base.
 	/// </summary>
-	public class Bookmark
+	public record struct Bookmark
 	{
 		/// <summary>
 		/// Gets or sets the beat where the bookmark is located.
@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// Returns a string that represents the current bookmark.
 		/// </summary>
 		/// <returns>A string that represents the current bookmark.</returns>
-		public override string ToString() => $"{Beat}, {Color}";
+		public override readonly string ToString() => $"{Beat}, {Color}";
 		/// <summary>
 		/// Specifies the colors available for bookmarks.
 		/// </summary>

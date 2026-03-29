@@ -1,4 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System;
 
 #if NETSTANDARD2_0
 #pragma warning disable IDE0130
@@ -26,7 +29,13 @@ namespace System
 				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentOutOfRangeException(paramName, "Value cannot be null or whitespace.");
 			}
-		}
+			public static void ThrowIfLessThan<T>(T value, T other, [CallerArgumentExpression(nameof(value))] string? paramName = null) where T : IComparable<T>
+			{
+				if (value.CompareTo(other) < 0)
+					throw new ArgumentOutOfRangeException(paramName, $"Value must be greater than or equal to {other}.");
+            }
+
+        }
 	}
 	internal readonly struct Index(int value, bool fromEnd = false) : IEquatable<Index>
 	{
@@ -185,6 +194,16 @@ namespace System.Diagnostics.CodeAnalysis
 	{
 		public bool ReturnValue { get; } = returnValue;
 	}
+    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
+    internal sealed class CallerArgumentExpressionAttribute : Attribute
+    {
+        public string ParameterName { get; }
+
+        public CallerArgumentExpressionAttribute(string parameterName)
+        {
+            ParameterName = parameterName;
+        }
+    }
 }
 namespace System.Runtime.CompilerServices
 {

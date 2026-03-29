@@ -6,9 +6,9 @@ namespace RhythmBase.RhythmDoctor.Converters;
 
 internal class BookmarkConverter() : JsonConverter<Bookmark>
 {
-	public override void Write(Utf8JsonWriter writer, Bookmark? value, JsonSerializerOptions serializer)
+	public override void Write(Utf8JsonWriter writer, Bookmark value, JsonSerializerOptions serializer)
 	{
-		(int bar, float beat) = value?.Beat ?? throw new ConvertingException("Cannot write the bookmark.");
+		(int bar, float beat) = value.Beat;
 		writer.WriteStartObject();
 		writer.WriteNumber("bar", bar);
 		writer.WriteNumber("beat", beat);

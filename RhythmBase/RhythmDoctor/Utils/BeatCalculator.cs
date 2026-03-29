@@ -69,7 +69,7 @@ namespace RhythmBase.RhythmDoctor.Utils
             if (_cpbCache.Length == 0)
             {
                 // 如果 cpb 的值不是默认值 (8), 需要迁移后续事件
-                if ((strategy & 0b01) != 0) MoveEvents(8, cpb, null, Collection.eventsBeatOrder, moveTrival);
+                if ((strategy & 0b01) != 0) MoveEvents(8, cpb, null, moveTrival);
                 _cpbCache = [cpb]; // 唯一的 cpb
                 return false;
             }
@@ -81,7 +81,7 @@ namespace RhythmBase.RhythmDoctor.Utils
             else a = _cpbCache[index];
             if (index >= _cpbCache.Length - 1) // cpb 被添加到最后
             {
-                if ((strategy & 0b01) != 0) MoveEvents(a.Cpb, cpb, null, Collection.eventsBeatOrder, moveTrival);
+                if ((strategy & 0b01) != 0) MoveEvents(a.Cpb, cpb, null, moveTrival);
                 _cpbCache = [.. _cpbCache, cpb];
                 return false;
             }
@@ -128,7 +128,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                     int dbeatPerBar = cpb.Cpb - a.Cpb; // 每小节节拍数的变化量
                     int barCount = b.Bar - cpb.Bar; // 需要迁移的事件跨越的小节数
                     int dbeat = dbeatPerBar * barCount; // 需要迁移的节拍数
-                    MoveEvents(a.Cpb, cpb, b, Collection.eventsBeatOrder, moveTrival);
+                    MoveEvents(a.Cpb, cpb, b, moveTrival);
                     if (needInsert)
                         _cpbCache = [.. _cpbCache.Take(index + 1), cpb, .. _cpbCache.Skip(index + 1).Select(c => c with { BeatOnly = c.BeatOnly + dbeat })];
                     else
@@ -152,7 +152,7 @@ namespace RhythmBase.RhythmDoctor.Utils
             else a = _cpbCache[index - 1];
             if (index == _cpbCache.Length - 1)
             {
-                if ((strategy & 0b01) != 0) MoveEvents(cpb.Cpb, cpb with { Cpb = a.Cpb}, null, Collection.eventsBeatOrder, moveTrival);
+                if ((strategy & 0b01) != 0) MoveEvents(cpb.Cpb, cpb with { Cpb = a.Cpb }, null, moveTrival);
                 _cpbCache = [.. _cpbCache.Take(_cpbCache.Length - 1)];
                 return false;
             }
@@ -172,7 +172,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                     int barDiff = (int)((b.BeatOnly - cpb.BeatOnly) / a.Cpb);
                     if (diff == 0)
                     {
-                        
+
                         _cpbCache = [.. _cpbCache.Take(index), .. _cpbCache.Skip(index + 1).Select(c => c with { Bar = c.Bar - (b.Bar - a.Bar) + barDiff })];
                         return false;
                     }
@@ -193,24 +193,25 @@ namespace RhythmBase.RhythmDoctor.Utils
                     int dbeatPerBar = a.Cpb - cpb.Cpb;
                     int barCount = b.Bar - cpb.Bar;
                     int dbeat = dbeatPerBar * barCount;
-                    MoveEvents(cpb.Cpb, cpb with { Cpb = a.Cpb }, b, Collection.eventsBeatOrder, moveTrival);
+                    MoveEvents(cpb.Cpb, cpb with { Cpb = a.Cpb }, b, moveTrival);
                     _cpbCache = [.. _cpbCache.Take(index), .. _cpbCache.Skip(index + 1).Select(c => c with { BeatOnly = c.BeatOnly + dbeat })];
                     return false;
                 }
             }
         }
 
-        private static void MoveEvents(int previousCpb,
+        private void MoveEvents(int previousCpb,
                                 CpbCache target,
                                 CpbCache? nextCpbBeat,
-                                RedBlackTree<RDBeat, TypedEventCollection<IBaseEvent>> allEvents,
                                 bool moveTrival)
         {
+            RedBlackTree<RDBeat, TypedEventCollection<IBaseEvent>> allEvents = Collection.eventsBeatOrder;
+            OrderedCollection<RDBeat, Bookmark> allBookmarks = Collection.Bookmarks;
             int diffBeatPerBar = target.Cpb - previousCpb; // 每小节节拍数的变化量
             float st =
                 moveTrival && nextCpbBeat is CpbCache nextCpbNotNull1
                 ? nextCpbNotNull1.BeatOnly
-                : target.BeatOnly + int.Min(previousCpb, target.Cpb); // 需要迁移的事件的起始位置
+                : target.BeatOnly + int.Min(previousCpb, target.Cpb); // 需要迁移的组件的起始位置
             KeyValuePair<RDBeat, TypedEventCollection<IBaseEvent>>[] nodes = [.. allEvents.Where(e => e.Key.BeatOnly >= st)];
             foreach (var node in nodes)
             {
@@ -227,7 +228,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                     BaseEvent _e = (e as BaseEvent)!;
                     _e._beat = newBeat;
                 }
-                if (offset < 0 && // 只有 cpb 减少时才会出现事件重叠的情况
+                if (offset < 0 && // 只有 cpb 减少时才会出现事件重叠的情况，且是向前重叠，和遍历方向一致
                     allEvents.ContainsKey(newBeat)) // 如果目标位置有事件就合并
                 {
                     TypedEventCollection<IBaseEvent> existing = allEvents[newBeat];
@@ -236,6 +237,19 @@ namespace RhythmBase.RhythmDoctor.Utils
                 }
                 else
                     allEvents.Insert(newBeat, node.Value);
+            }
+            Bookmark[] bookmarks = [.. allBookmarks.Where(b => b.Beat.BeatOnly >= st)];
+            foreach (Bookmark bookmark in bookmarks)
+            {
+                (int bar, _) = bookmark.Beat;
+                int offset = (
+                    (nextCpbBeat is CpbCache nextCpbNotNull2 && bar > nextCpbNotNull2.Bar)
+                    ? (nextCpbNotNull2.Bar - target.Bar)
+                    : (bar - target.Bar)
+                    ) * diffBeatPerBar; // 这个小节需要迁移的节拍数
+                allBookmarks.Remove(bookmark);
+                RDBeat newBeat = bookmark.Beat + offset;
+                allBookmarks.Add(bookmark with { Beat = newBeat });
             }
         }
         internal void AddBpmAt(BpmCache bpm)
