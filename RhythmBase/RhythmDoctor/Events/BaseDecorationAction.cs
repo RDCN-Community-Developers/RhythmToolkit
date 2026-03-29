@@ -12,7 +12,7 @@ public abstract record class BaseDecorationAction : BaseEvent, IBaseEvent
 	/// </summary>
 	public Decoration? Parent => _parent;
 	///<inheritdoc/>
-	public override int Y { get => base.Y; set => base.Y = value; }
+	public override int Y { get => Parent?.Y ?? base.Y; set => base.Y = value; }
 	/// <inheritdoc/>
 	public override Tab Tab => Tab.Decorations;
 	/// <summary>
