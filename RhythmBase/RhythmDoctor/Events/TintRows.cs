@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event that tints rows with specified colors and effects.
 /// </summary>
 [RDJsonObjectSerializable]
-public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent
+public record class TintRows : BaseRowAnimation, IEaseEvent, IColorEvent, IRoomEvent, ITintEvent
 {
 	/// <summary>
 	/// Initializes a new instance of the TintRows class with the row index set to an initial value.
