@@ -22,9 +22,10 @@ public record class TextExplosion : BaseEvent, IRoomEvent, IColorEvent
 	/// Gets or sets the speed value.
 	/// </summary>
 	/// <remarks>
-	/// Must be a value greater than 1. A higher value means a faster explosion.
+	/// Must be a value between 1 and 1000.
 	/// </remarks>
-	public float Speed { get; set => field = value > 1f ? value : 1f; }
+	[RDJsonCondition($"$&.{nameof(Speed)} != 100f")]
+    public float Speed { get; set; } = 100f;
 	/// <summary>
 	/// Gets or sets the direction of the text explosion.
 	/// </summary>
