@@ -25,7 +25,7 @@ public static partial class Constants
 	/// <summary>
 	/// The default Rhythm Doctor version used when no explicit target version is specified.
 	/// </summary>
-	public const int DefaultVersionRhythmDoctor = 66;
+	public const int DefaultVersionRhythmDoctor = 67;
 
 	/// <summary>
 	/// Represents the tolerance level used for floating-point comparisons.
