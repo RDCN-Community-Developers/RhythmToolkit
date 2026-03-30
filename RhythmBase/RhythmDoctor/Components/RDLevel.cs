@@ -408,12 +408,30 @@ public class RDLevel : OrderedEventCollection<IBaseEvent>, IDisposable
 		settings.OnAfterReading();
 		return level ?? [];
 	}
-	/// <summary>
-	/// Saves the current level to the specified stream in JSON format.
-	/// </summary>
-	/// <param name="stream">The stream to which the level will be saved.</param>
-	/// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
-	public void SaveToStream(Stream stream, LevelWriteSettings? settings = null)
+    /// <summary>
+    /// Deserializes a JSON document into an instance of the RDLevel class using the specified settings.
+    /// </summary>
+    /// <remarks>This method invokes the OnBeforeReading and OnAfterReading callbacks from the provided settings to
+    /// allow for custom pre- and post-processing during deserialization.</remarks>
+    /// <param name="jsonDocument">The JSON document to deserialize. This parameter cannot be null.</param>
+    /// <param name="settings">Optional settings that control the deserialization process. If not specified, default settings are used.</param>
+    /// <returns>An instance of RDLevel representing the deserialized data. Returns an empty array if deserialization fails.</returns>
+    public static RDLevel FromJsonDocument(JsonDocument jsonDocument, LevelReadSettings? settings = null)
+	{
+		settings ??= new();
+		JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
+		RDLevel? level;
+		settings.OnBeforeReading();
+		level = JsonSerializer.Deserialize<RDLevel>(jsonDocument, options);
+		settings.OnAfterReading();
+		return level ?? [];
+    }
+    /// <summary>
+    /// Saves the current level to the specified stream in JSON format.
+    /// </summary>
+    /// <param name="stream">The stream to which the level will be saved.</param>
+    /// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+    public void SaveToStream(Stream stream, LevelWriteSettings? settings = null)
 	{
 		settings ??= new();
 		JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
