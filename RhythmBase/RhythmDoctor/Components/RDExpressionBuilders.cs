@@ -571,6 +571,13 @@ namespace RhythmBase.RhythmDoctor.Components
 		/// complex mathematical expressions involving floating-point values.</remarks>
 		public class RDFloatExpressionBuilder()
 		{
+			/// <summary>
+			/// Gets the numeric expression at the specified zero-based index.
+			/// </summary>
+			/// <remarks>Use this indexer to access numeric expressions by their position in the collection. Ensure that
+			/// the index is within the valid range to prevent errors.</remarks>
+			/// <param name="index">The zero-based index of the numeric expression to retrieve.</param>
+			/// <returns>A new instance of <see cref="RDNumericExpression"/> representing the numeric expression at the specified index.</returns>
 			public RDNumericExpression this[int index] => new(new FloatVariable(index));
 		}
 		internal INumericOp _v;
@@ -643,10 +650,10 @@ namespace RhythmBase.RhythmDoctor.Components
         public static RDBooleanExpression operator <=(RDNumericExpression left, RDNumericExpression right) => new(new BinaryBooleanOp(left._v, right._v, BinaryOperator.LessThanOrEqual));
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => throw new NotSupportedException();
+        public override readonly bool Equals(object? obj) => throw new NotSupportedException();
         /// <inheritdoc />
 		[EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => throw new NotSupportedException();
+        public override readonly int GetHashCode() => throw new NotSupportedException();
         /// <inheritdoc />
         public readonly string Serialize() => _v.Serialize();
 	}
@@ -681,6 +688,11 @@ namespace RhythmBase.RhythmDoctor.Components
         /// <inheritdoc />
 		public readonly string Serialize() => _v.Serialize();
 	}
+	/// <summary>
+	/// Represents an expression that performs an operation without returning a value.
+	/// </summary>
+	/// <remarks>Use this struct to encapsulate operations that do not produce a result. It is typically used in
+	/// scenarios where a void operation is required within an expression tree or similar construct.</remarks>
 	public struct RDVoidExpression : IRDExpression
 	{
 		internal IOp _v;
@@ -688,19 +700,23 @@ namespace RhythmBase.RhythmDoctor.Components
         /// <inheritdoc />
 		public readonly string Serialize() => _v.Serialize();
 	}
-	/// <summary>
-	/// Provides static methods and properties for constructing numeric, boolean, and function-based expressions used in
-	/// the Rhythm Doctor expression system.
-	/// </summary>
-	/// <remarks>The RDExpressionBuilder class offers a set of factory methods and predefined expressions to
-	/// simplify the creation of complex logical and arithmetic expressions. It includes builders for numeric and boolean
-	/// expressions, as well as commonly used constant expressions. Methods are provided to construct function calls and
-	/// conditional expressions, enabling dynamic expression composition. This class is intended for scenarios where
-	/// expressions need to be generated or manipulated programmatically, such as in scripting or rule-based
-	/// systems.</remarks>
-	public static class RDExpressionBuilder
+    /// <summary>
+    /// Provides static methods and properties for constructing numeric, boolean, and function-based expressions used in
+    /// the Rhythm Doctor expression system.
+    /// </summary>
+    /// <remarks>The RDExpressionBuilder class offers a set of factory methods and predefined expressions to
+    /// simplify the creation of complex logical and arithmetic expressions. It includes builders for numeric and boolean
+    /// expressions, as well as commonly used constant expressions. Methods are provided to construct function calls and
+    /// conditional expressions, enabling dynamic expression composition. This class is intended for scenarios where
+    /// expressions need to be generated or manipulated programmatically, such as in scripting or rule-based
+    /// systems.<br/>
+	/// Write this at the top of the file to enable static access to the RDExpressionBuilder members without needing to qualify them with the class name:
+    /// <code>
+    /// using static RhythmBase.RhythmDoctor.Components.RDExpressionBuilder;
+    /// </code>
+    /// </remarks>
+    public static class RDExpressionBuilder
 	{
-
 #pragma warning disable IDE1006 // 命名样式
         /// <summary>
         /// Gets a new instance of the RDFloatExpressionBuilder for constructing numeric expressions.

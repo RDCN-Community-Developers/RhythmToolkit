@@ -32,6 +32,13 @@ namespace RhythmBase.Global.Components
         public int Count => _count;
         ///<inheritdoc/>
         public bool IsReadOnly => false;
+        /// <summary>
+        /// Initializes a new instance of the OrderedCollection class using the specified key selector function.
+        /// </summary>
+        /// <remarks>The collection is initialized with a default capacity and contains no
+        /// entries.</remarks>
+        /// <param name="selector">A function that extracts the key from each value in the collection. This parameter cannot be null.</param>
+        /// <exception cref="ArgumentNullException">Thrown if selector is null.</exception>
         public OrderedCollection(Func<TValue, TKey> selector)
         {
             _selector = selector ?? throw new ArgumentNullException(nameof(selector));
@@ -39,6 +46,15 @@ namespace RhythmBase.Global.Components
             _count = 0;
             _sequence = 0;
         }
+        /// <summary>
+        /// Initializes a new instance of the OrderedCollection class with a specified key selector function and initial
+        /// capacity.
+        /// </summary>
+        /// <remarks>If the specified capacity is less than or equal to zero, the collection uses a
+        /// default capacity.</remarks>
+        /// <param name="selector">A function that extracts the key from each value in the collection. This parameter cannot be null.</param>
+        /// <param name="capacity">The initial number of elements that the collection can contain. Must be a non-negative integer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the selector parameter is null.</exception>
         public OrderedCollection(Func<TValue, TKey> selector, int capacity)
         {
             _selector = selector ?? throw new ArgumentNullException(nameof(selector));

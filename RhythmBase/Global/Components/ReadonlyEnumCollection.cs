@@ -361,10 +361,10 @@ public struct ReadOnlyEnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : s
 		}
 		return result;
     }
-    [EditorBrowsable(EditorBrowsableState.Never)]
     /// <summary>
     /// Returns an enumerator that iterates through the set of values contained in the collection.
     /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public readonly IEnumerator<TEnum> GetEnumerator()
 	{
 		for (int div = 0; div < _bits.Length; div++)
