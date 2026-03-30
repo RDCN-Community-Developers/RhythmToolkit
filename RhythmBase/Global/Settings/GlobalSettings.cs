@@ -14,7 +14,17 @@ public static class GlobalSettings
     /// </summary>
     /// <remarks>Customize this value to avoid naming conflicts with other applications that may use similar
     /// directory naming conventions.</remarks>
-    public static string CacheDirectoryPrefix { get; set; } = "RhythmBaseTemp_Zip_";
+    public static string CacheDirectoryPrefix
+    {
+        get; set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("CacheDirectoryPrefix cannot be null, empty, or whitespace.", nameof(value));
+            if (Path.GetInvalidFileNameChars().Any(value.Contains))
+                throw new ArgumentException("CacheDirectoryPrefix cannot contain invalid path characters.", nameof(value));
+            field = value;
+        }
+    } = "RhythmBaseTemp_Zip_";
     /// <summary>
     /// Gets or sets the path to the directory used for caching temporary files.
     /// </summary>
