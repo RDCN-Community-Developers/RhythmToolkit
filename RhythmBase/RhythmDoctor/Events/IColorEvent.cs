@@ -1,5 +1,5 @@
 namespace RhythmBase.RhythmDoctor.Events;
 
-internal interface IColorEvent
+internal interface IColorEvent : IBaseEvent
 {
 }

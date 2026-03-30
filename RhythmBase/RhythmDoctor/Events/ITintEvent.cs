@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
-    internal interface ITintEvent
+    internal interface ITintEvent : IColorEvent
     {
         Border? Border { get; set; }
         PaletteColorWithAlpha BorderColor { get; set; }

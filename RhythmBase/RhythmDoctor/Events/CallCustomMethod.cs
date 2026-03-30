@@ -5,7 +5,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event that calls a custom method.
 /// </summary>
 [RDJsonObjectSerializable]
-public partial record class CallCustomMethod : BaseEvent, IRoomEvent
+public partial record class CallCustomMethod : BaseEvent
 {
 	/// <summary>
 	/// Gets or sets the name of the method to be called.
@@ -21,9 +21,6 @@ public partial record class CallCustomMethod : BaseEvent, IRoomEvent
 	public int SortOffset { get; set; }
 	/// <inheritdoc/>
 	public override EventType Type => EventType.CallCustomMethod;
-	/// <inheritdoc/>
-	[RDJsonIgnore]
-	public RDRoom Rooms { get; set; } = RDRoom.Default;
 	/// <inheritdoc/>
 	public override Tab Tab => Tab.Actions;
 	/// <inheritdoc/>
