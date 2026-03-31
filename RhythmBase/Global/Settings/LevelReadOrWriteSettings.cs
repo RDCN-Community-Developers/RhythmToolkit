@@ -24,6 +24,7 @@ public enum ZipFileProcessMethod
 /// </summary>
 public class LevelReadSettings
 {
+	private readonly Dictionary<string, object> CustomData =[];
 	/// <summary>
 	/// Event triggered before reading.
 	/// </summary>
@@ -32,6 +33,18 @@ public class LevelReadSettings
 	/// Event triggered after reading.
 	/// </summary>
 	public event EventHandler? AfterReading;
+	/// <summary>
+	/// Gets or sets the value associated with the specified key in the custom data dictionary.
+	/// </summary>
+	/// <remarks>If the key does not exist in the dictionary, the getter returns null. The setter will overwrite any
+	/// existing value associated with the key.</remarks>
+	/// <param name="key">The key used to access the value in the custom data dictionary. Must not be null.</param>
+	/// <returns>The value associated with the specified key if it exists; otherwise, null.</returns>
+	public object? this[string key]
+	{
+		get => CustomData.TryGetValue(key, out var value) ? value : null;
+		set => CustomData[key] = value!;
+    }
 	/// <summary>
 	/// Initialize.
 	/// </summary>
@@ -73,7 +86,7 @@ public class LevelReadSettings
 	/// </summary>
 	/// <returns></returns>
 	public List<(JsonElement item, string reason)> UnreadableEvents { get; set; } = [];
-	internal bool HandleInactiveEvent(IEvent item)
+    internal bool HandleInactiveEvent(IEvent item)
 	{
 		switch (InactiveEventsHandling)
 		{
@@ -115,18 +128,31 @@ public class LevelReadSettings
 /// </summary>
 public class LevelWriteSettings
 {
-	/// <summary>
-	/// Event triggered before writing.
-	/// </summary>
-	public event EventHandler? BeforeWriting;
+    private readonly Dictionary<string, object> CustomData = [];
+    /// <summary>
+    /// Event triggered before writing.
+    /// </summary>
+    public event EventHandler? BeforeWriting;
 	/// <summary>
 	/// Event triggered after writing.
 	/// </summary>
 	public event EventHandler? AfterWriting;
-	/// <summary>
-	/// Initialize.
-	/// </summary>
-	public LevelWriteSettings()
+    /// <summary>
+    /// Gets or sets the value associated with the specified key in the custom data dictionary.
+    /// </summary>
+    /// <remarks>If the key does not exist in the dictionary, the getter returns null. The setter will overwrite any
+    /// existing value associated with the key.</remarks>
+    /// <param name="key">The key used to access the value in the custom data dictionary. Must not be null.</param>
+    /// <returns>The value associated with the specified key if it exists; otherwise, null.</returns>
+    public object? this[string key]
+    {
+        get => CustomData.TryGetValue(key, out var value) ? value : null;
+        set => CustomData[key] = value!;
+    }
+    /// <summary>
+    /// Initialize.
+    /// </summary>
+    public LevelWriteSettings()
 	{
 	}
 	/// <summary>
