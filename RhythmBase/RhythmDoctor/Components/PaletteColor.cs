@@ -18,7 +18,7 @@ public struct PaletteColor
 	{
 		readonly get
 		{
-			RDColor Color = EnablePanel ? _color : default;
+			RDColor Color = EnablePanel ? default : _color;
 			return Color;
 		}
 		set
