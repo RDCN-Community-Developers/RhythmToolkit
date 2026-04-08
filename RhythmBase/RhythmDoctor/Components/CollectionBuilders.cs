@@ -28,4 +28,13 @@ public static class CollectionBuilders
 		Order order = new(indices.ToArray());
 		return order;
     }
+	public static PlayerTypeGroup BuildPlayerTypeGroup(ReadOnlySpan<PlayerType> playerTypes)
+	{
+		PlayerTypeGroup group = default;
+		for (int i = 0; i < 16 && i < playerTypes.Length; i++)
+		{
+			group[i] = playerTypes[i];
+		}
+		return group;
+    }
 }

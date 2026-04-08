@@ -14,13 +14,13 @@ public record class ChangePlayersRows : BaseEvent
 	/// </summary>
 	public ChangePlayersRows()
 	{
-		CpuMarkers[0] = RDCharacters.Otto;
+		Array.Fill(CpuMarkers, RDCharacters.Otto);
 	}
 	/// <summary>
 	/// Gets or sets the list of players.
 	/// </summary>
 	[RDJsonConverter(typeof(PlayerTypeGroupConverter))]
-	public PlayerTypeGroup Players { get; set; } = new PlayerTypeGroup() { [0] = PlayerType.P1 };
+	public PlayerTypeGroup Players { get; set; } = PlayerTypeGroup.P1;
 	/// <summary>
 	/// Gets or sets the player mode.
 	/// </summary>
