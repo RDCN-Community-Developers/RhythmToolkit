@@ -505,105 +505,141 @@ namespace RhythmBase.RhythmDoctor.Extensions
             is ActionTagAction.RunAll
             or ActionTagAction.EnableAll
             or ActionTagAction.DisableAll) ?? [];
-        /// <summary>
-        /// Get the end beat of the duration.
-        /// </summary>
-        /// <param name="beat"></param>
-        /// <param name="duration"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidRDBeatException"></exception>
-        public static RDBeat DurationOffset(this RDBeat beat, float duration)
+        extension(RDBeat beat)
         {
-            beat.IfNullThrowException();
-            RDBeat off = beat + duration;
-            if (off.Bpm == beat.Bpm)
+            /// <summary>
+            /// Get the end beat of the duration.
+            /// </summary>
+            /// <param name="duration"></param>
+            /// <returns></returns>
+            /// <exception cref="InvalidRDBeatException"></exception>
+            public RDBeat DurationOffset(float duration)
+            {
+                beat.IfNullThrowException();
+                RDBeat off = beat + duration;
+                if (off.Bpm == beat.Bpm)
+                    return off;
+                TimeSpan offt = TimeSpan.FromMinutes(duration / beat.Bpm);
+                off = beat + offt;
                 return off;
-            TimeSpan offt = TimeSpan.FromMinutes(duration / beat.Bpm);
-            off = beat + offt;
-            return off;
+            }
         }
-        /// <summary>
-        /// Determine if <paramref name="item1" /> is after <paramref name="item2" />
-        /// </summary>
-        /// <returns><list type="table">
-        /// <item>If <paramref name="item1" /> is after <paramref name="item2" />, <see langword="true" /></item>
-        /// <item>Else, <see langword="false" /></item>
-        /// </list></returns>
-        public static bool IsBehind(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) =>
-            item1.Beat > item2.Beat ||
-            (item1.Beat.BeatOnly == item2.Beat.BeatOnly && e.eventsBeatOrder[item1.Beat].CompareTo(item2, item1));
-        /// <summary>
-        /// Check if another event is after itself, including events of the same beat but executed after itself.
-        /// </summary>
-        public static bool IsBehind(this IBaseEvent e, IBaseEvent item) => e.Beat.BaseLevel?.IsBehind(e, item) ?? throw new InvalidRDBeatException();
-        /// <summary>
-        /// Determine if <paramref name="item1" /> is in front of <paramref name="item2" />
-        /// </summary>
-        /// <returns><list type="table">
-        /// <item>If <paramref name="item1" /> is in front of <paramref name="item2" />, <see langword="true" /></item>
-        /// <item>Else, <see langword="false" /></item>
-        /// </list></returns>
-        public static bool IsInFrontOf(this OrderedEventCollection e, IBaseEvent item1, IBaseEvent item2) =>
-            item1.Beat < item2.Beat ||
-            ((item1.Beat.BeatOnly == item2.Beat.BeatOnly) && e.eventsBeatOrder[item1.Beat].CompareTo(item1, item2));
-        /// <summary>
-        /// Check if another event is in front of itself, including events of the same beat but executed before itself.
-        /// </summary>
-        public static bool IsInFrontOf(this IBaseEvent e, IBaseEvent item) => e.Beat.BaseLevel?.IsInFrontOf(e, item) ?? throw new InvalidRDBeatException();
-        /// <summary>
-        /// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
-        /// </summary>
-        /// <param name="e">RDLevel</param>
-        /// <param name="target">Specified position. </param>
-        public static void MovePositionMaintainVisual(this MoveRoom e, RDSize target)
+
+        extension(OrderedEventCollection e)
         {
-            e.Position = (RDPoint)target;
-            e.Pivot = (e.VisualPosition() - target).Rotate(e.Angle ?? 0);
+            /// <summary>
+            /// Determine if <paramref name="item1" /> is after <paramref name="item2" />
+            /// </summary>
+            /// <returns><list type="table">
+            /// <item>If <paramref name="item1" /> is after <paramref name="item2" />, <see langword="true" /></item>
+            /// <item>Else, <see langword="false" /></item>
+            /// </list></returns>
+            public bool IsBehind(IBaseEvent item1, IBaseEvent item2) =>
+                item1.Beat > item2.Beat ||
+                (item1.Beat.BeatOnly == item2.Beat.BeatOnly && e.eventsBeatOrder[item1.Beat].CompareTo(item2, item1));
+            /// <summary>
+            /// Determine if <paramref name="item1" /> is in front of <paramref name="item2" />
+            /// </summary>
+            /// <returns><list type="table">
+            /// <item>If <paramref name="item1" /> is in front of <paramref name="item2" />, <see langword="true" /></item>
+            /// <item>Else, <see langword="false" /></item>
+            /// </list></returns>
+            public bool IsInFrontOf(IBaseEvent item1, IBaseEvent item2) =>
+                item1.Beat < item2.Beat ||
+                ((item1.Beat.BeatOnly == item2.Beat.BeatOnly) && e.eventsBeatOrder[item1.Beat].CompareTo(item1, item2));
         }
-        /// <summary>
-        /// The visual position of the lower left corner of the image.
-        /// </summary>
-        public static RDPoint VisualPosition(this MoveRoom e)
+
+        extension(IBaseEvent e)
         {
-            RDPoint visualPosition = default;
-            if (e is not { Position: not null, Pivot: not null, Angle: not null })
+            /// <summary>
+            /// Check if another event is after itself, including events of the same beat but executed after itself.
+            /// </summary>
+            public bool IsBehind(IBaseEvent item) => e.Beat.BaseLevel?.IsBehind(e, item) ?? throw new InvalidRDBeatException();
+
+            /// <summary>
+            /// Check if another event is in front of itself, including events of the same beat but executed before itself.
+            /// </summary>
+            public bool IsInFrontOf(IBaseEvent item) => e.Beat.BaseLevel?.IsInFrontOf(e, item) ?? throw new InvalidRDBeatException();
+        }
+
+        extension(MoveRoom e)
+        {
+            /// <summary>
+            /// Specifies the position of the image. This method changes both the pivot and the angle to keep the image visually in its original position.
+            /// </summary>
+            /// <param name="target">Specified position. </param>
+            public void MovePositionMaintainVisual(RDSize target)
+            {
+                e.Position = (RDPoint)target;
+                e.Pivot = (e.VisualPosition() - target).Rotate(e.Angle ?? 0);
+            }
+            /// <summary>
+            /// The visual position of the lower left corner of the image.
+            /// </summary>
+            public RDPoint VisualPosition()
+            {
+                RDPoint visualPosition = default;
+                if (e is not { Position: not null, Pivot: not null, Angle: not null })
+                    return visualPosition;
+                RDPoint previousPosition = e.Position.Value;
+                RDPoint previousPivot = new((e.Pivot?.X) * (e.Scale?.Width), (e.Pivot?.Y) * (e.Scale?.Height));
+                visualPosition = previousPosition + new RDSize(previousPivot.Rotate(e.Angle ?? 0));
                 return visualPosition;
-            RDPoint previousPosition = e.Position.Value;
-            RDPoint previousPivot = new((e.Pivot?.X) * (e.Scale?.Width), (e.Pivot?.Y) * (e.Scale?.Height));
-            visualPosition = previousPosition + new RDSize(previousPivot.Rotate(e.Angle ?? 0));
-            return visualPosition;
+            }
+            /// <summary>
+            /// Creates a rotated rectangle for the MoveRoom event.
+            /// </summary>
+            /// <returns>A rotated rectangle representing the room's position, scale, pivot, and angle.</returns>
+            public RDRotatedRectE RotatedRect() => new(e.Position, e.Scale, e.Pivot, e.Angle);
         }
-        /// <summary>
-        /// Creates a rotated rectangle for the MoveCamera event.
-        /// </summary>
-        /// <param name="e">The MoveCamera event.</param>
-        /// <returns>A rotated rectangle representing the camera's position, zoom, and angle.</returns>
-        public static RDRotatedRectE RotatedRect(this MoveCamera e) => new(e.CameraPosition, new(e.Zoom, e.Zoom), null, e.Angle);
-        /// <summary>
-        /// Creates a rotated rectangle for the MoveRow event.
-        /// </summary>
-        /// <param name="e">The MoveRow event.</param>
-        /// <returns>A rotated rectangle representing the row's position, scale, pivot, and angle.</returns>
-        public static RDRotatedRectE RotatedRect(this MoveRow e) => new(e.Position, e.Scale, new(e.Pivot, e.Pivot), e.Angle);
-        /// <summary>
-        /// Creates a rotated rectangle for the MoveRoom event.
-        /// </summary>
-        /// <param name="e">The MoveRoom event.</param>
-        /// <returns>A rotated rectangle representing the room's position, scale, pivot, and angle.</returns>
-        public static RDRotatedRectE RotatedRect(this MoveRoom e) => new(e.Position, e.Scale, e.Pivot, e.Angle);
-        /// <summary>
-        /// Creates a rotated rectangle for the Move event.
-        /// </summary>
-        /// <param name="e">The Move event.</param>
-        /// <returns>A rotated rectangle representing the position, scale, pivot, and angle.</returns>
-        public static RDRotatedRectE RotatedRect(this Move e) => new(e.Position, e.Scale, e.Pivot, e.Angle);
-        private static SayReadyGetSetGo SplitCopy(this SayReadyGetSetGo e, float extraBeat, SayReadyGetSetGoWord word)
+
+        extension(MoveCamera e)
         {
-            SayReadyGetSetGo temp = e with { };
-            temp.Beat += extraBeat;
-            temp.PhraseToSay = word;
-            temp.Volume = e.Volume;
-            return temp;
+            /// <summary>
+            /// Creates a rotated rectangle for the MoveCamera event.
+            /// </summary>
+            /// <returns>A rotated rectangle representing the camera's position, zoom, and angle.</returns>
+            public RDRotatedRectE RotatedRect() => new(e.CameraPosition, new(e.Zoom, e.Zoom), null, e.Angle);
+        }
+
+        extension(MoveRow e)
+        {
+            /// <summary>
+            /// Creates a rotated rectangle for the MoveRow event.
+            /// </summary>
+            /// <returns>A rotated rectangle representing the row's position, scale, pivot, and angle.</returns>
+            public RDRotatedRectE RotatedRect() => new(e.Position, e.Scale, new(e.Pivot, e.Pivot), e.Angle);
+        }
+
+        extension(Move e)
+        {
+            /// <summary>
+            /// Creates a rotated rectangle for the Move event.
+            /// </summary>
+            /// <returns>A rotated rectangle representing the position, scale, pivot, and angle.</returns>
+            public RDRotatedRectE RotatedRect() => new(e.Position, e.Scale, e.Pivot, e.Angle);
+        }
+
+        extension(SayReadyGetSetGo e)
+        {
+            private SayReadyGetSetGo SplitCopy(float extraBeat, SayReadyGetSetGoWord word)
+            {
+                SayReadyGetSetGo temp = e with { };
+                temp.Beat += extraBeat;
+                temp.PhraseToSay = word;
+                temp.Volume = e.Volume;
+                return temp;
+            }
+        }
+        extension(TagAction e)
+        {
+            /// <summary>
+            /// Gets the events controlled by this <see cref="TagAction"/> event, grouped by their action tags.
+            /// </summary>
+            public IEnumerable<IGrouping<string, IBaseEvent>> ControllingEvents => e.Beat.BaseLevel?.GetTaggedEvents(e.ActionTag, e.Action
+                is ActionTagAction.RunAll
+                or ActionTagAction.EnableAll
+                or ActionTagAction.DisableAll) ?? [];
         }
     }
 }
