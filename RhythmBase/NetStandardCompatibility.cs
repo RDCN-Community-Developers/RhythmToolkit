@@ -244,6 +244,13 @@ namespace System.Runtime.CompilerServices
             }
 
         }
+        [Intrinsic]
+        public static extern void InitializeArray(Array array, RuntimeFieldHandle fldHandle);
+
+        [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Field, Inherited = false)]
+        internal sealed class IntrinsicAttribute : Attribute
+        {
+        }
     }
     internal sealed class CollectionBuilderAttribute(Type builderType, string methodName) : Attribute
     {
