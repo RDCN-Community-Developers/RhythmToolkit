@@ -1,8 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RhythmBase.Global.Converters;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(Tab))]
 internal class TabsConverter : JsonConverter<Tab>
 {
 	public override Tab Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

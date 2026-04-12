@@ -1,4 +1,4 @@
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
@@ -24,10 +24,28 @@ public class ConverterGenerator : IIncrementalGenerator
 	private const string JsonTimeAttrName = "RhythmBase.Global.Converters.RDJsonTimeAttribute";
 	private const string JsonConverterAttrName = "RhythmBase.Global.Converters.RDJsonConverterAttribute";
 	private const string JsonSpecialIDAttrName = "RhythmBase.Global.Converters.RDJsonSpecialIDAttribute";
+	private const string JsonConverterForAttrName = "RhythmBase.Global.Converters.RDJsonConverterForAttribute";
+
+	private static readonly DiagnosticDescriptor InvalidConverterRegistrationRule = new(
+		"RDBG001",
+		"Invalid converter registration",
+		"Converter '{0}' has invalid RDJsonConverterFor registration: {1}",
+		"RhythmBase.Generator",
+		DiagnosticSeverity.Error,
+		isEnabledByDefault: true);
+
+	private static readonly DiagnosticDescriptor DuplicateConverterRegistrationRule = new(
+		"RDBG002",
+		"Duplicate converter registration",
+		"Target type '{0}' is registered by multiple converters: {1}",
+		"RhythmBase.Generator",
+		DiagnosticSeverity.Error,
+		isEnabledByDefault: true);
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
 		GenerateAttribute(context);
+		GenerateConverterRegistry(context);
 		GenerateEnumConverter(context);
 		GenerateEventConverterForRDLevel(context);
 		GenerateEventConverterForADLevel(context);
@@ -58,6 +76,11 @@ public class ConverterGenerator : IIncrementalGenerator
 				internal sealed class RDJsonTimeAttribute(RDJsonTimeType type) : Attribute { }
 				internal sealed class RDJsonConverterAttribute(Type converterType) : Attribute { }
 				internal sealed class RDJsonSpecialIDAttribute(string id) : Attribute { }
+				[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+				internal sealed class RDJsonConverterForAttribute(Type targetType) : Attribute
+				{
+					public Type TargetType { get; } = targetType;
+				}
 				internal enum RDJsonTimeType
 				{
 					Milliseconds,
@@ -72,6 +95,157 @@ public class ConverterGenerator : IIncrementalGenerator
 
 
 	#endregion
+
+	private readonly struct ConverterRegistryScanResult(
+		INamedTypeSymbol? ConverterType,
+		ImmutableArray<ITypeSymbol> TargetTypes,
+		Location? Location,
+		string? Error)
+	{
+		public INamedTypeSymbol? ConverterType { get; } = ConverterType;
+		public ImmutableArray<ITypeSymbol> TargetTypes { get; } = TargetTypes;
+		public Location? Location { get; } = Location;
+		public string? Error { get; } = Error;
+	}
+
+	private static void GenerateConverterRegistry(IncrementalGeneratorInitializationContext context)
+	{
+		var scans = context.SyntaxProvider.CreateSyntaxProvider(
+			predicate: static (node, _) =>
+				node is ClassDeclarationSyntax cds && cds.AttributeLists.Count > 0,
+			transform: (ctx, _) =>
+			{
+				if (ctx.Node is not ClassDeclarationSyntax classDeclaration)
+					return default(ConverterRegistryScanResult);
+
+				if (ctx.SemanticModel.GetDeclaredSymbol(classDeclaration) is not INamedTypeSymbol symbol)
+					return default(ConverterRegistryScanResult);
+
+				if (!HasAttribute(symbol, JsonConverterForAttrName))
+					return default(ConverterRegistryScanResult);
+
+				Location? location = symbol.Locations.FirstOrDefault();
+				string converterName = symbol.ToDisplayString();
+
+				if (!IsJsonConverterType(symbol))
+					return new(symbol, [], location, "must inherit System.Text.Json.Serialization.JsonConverter or JsonConverter<T>");
+
+				if (symbol.IsAbstract)
+					return new(symbol, [], location, "abstract converter cannot be registered");
+
+				if (!HasAccessibleParameterlessCtor(symbol))
+					return new(symbol, [], location, "converter must have an accessible parameterless constructor");
+
+				HashSet<ITypeSymbol> targets = new(SymbolEqualityComparer.Default);
+				foreach (var attr in symbol.GetAttributes().Where(i => IsAttribute(i, JsonConverterForAttrName)))
+				{
+					if (attr.ConstructorArguments.Length == 0)
+						continue;
+
+					TypedConstant arg0 = attr.ConstructorArguments[0];
+					if (arg0.Kind == TypedConstantKind.Type && arg0.Value is ITypeSymbol targetType)
+						targets.Add(targetType);
+				}
+
+				if (targets.Count == 0)
+					return new(symbol, [], location, "at least one valid target type is required");
+
+				return new(symbol, [.. targets], location, null);
+			}).Collect();
+
+		context.RegisterSourceOutput(scans, (spc, results) =>
+		{
+			List<(ITypeSymbol TargetType, INamedTypeSymbol ConverterType, Location? Location)> registrations = [];
+
+			foreach (var result in results)
+			{
+				if (result.ConverterType is null)
+					continue;
+
+				if (result.Error is string err)
+				{
+					spc.ReportDiagnostic(Diagnostic.Create(
+						InvalidConverterRegistrationRule,
+						result.Location,
+						result.ConverterType.ToDisplayString(),
+						err));
+					continue;
+				}
+
+				foreach (var targetType in result.TargetTypes)
+					registrations.Add((targetType, result.ConverterType, result.Location));
+			}
+
+			foreach (var group in registrations.GroupBy(i => i.TargetType, SymbolEqualityComparer.Default))
+			{
+				if (group.Count() <= 1)
+					continue;
+
+				string converterList = string.Join(", ", group.Select(i => i.ConverterType.ToDisplayString()).Distinct().OrderBy(i => i));
+				foreach (var item in group)
+				{
+					spc.ReportDiagnostic(Diagnostic.Create(
+						DuplicateConverterRegistrationRule,
+						item.Location,
+						group.Key.ToDisplayString(),
+						converterList));
+				}
+			}
+
+			var validRegistrations = registrations
+				.GroupBy(i => i.TargetType, SymbolEqualityComparer.Default)
+				.Where(i => i.Count() == 1)
+				.Select(i => i.First())
+				.OrderBy(i => i.TargetType.ToDisplayString())
+				.ToArray();
+
+			StringBuilder sb = new();
+			sb.AppendLine("// <auto-generated/>");
+			sb.AppendLine("#nullable enable");
+			sb.AppendLine();
+			sb.AppendLine("using System;");
+			sb.AppendLine("using System.Collections.Generic;");
+			sb.AppendLine("using System.Text.Json.Serialization;");
+			sb.AppendLine();
+			sb.AppendLine("namespace RhythmBase.Global.Converters;");
+			sb.AppendLine();
+			sb.AppendLine("internal static class GeneratedEntityConverterHub");
+			sb.AppendLine("{");
+			sb.AppendLine("\tprivate static readonly object _gate = new();");
+			sb.AppendLine("\tprivate static readonly Dictionary<Type, JsonConverter> _registered = new()");
+			sb.AppendLine("\t{");
+			foreach (var reg in validRegistrations)
+			{
+				sb.AppendLine($"\t\t[typeof({reg.TargetType.ToDisplayString()})] = new {reg.ConverterType.ToDisplayString()}(),");
+			}
+			sb.AppendLine("\t};");
+			sb.AppendLine();
+			sb.AppendLine("\tinternal static JsonConverter Get(Type targetType, Type converterType)");
+			sb.AppendLine("\t{");
+			sb.AppendLine("\t\tif (_registered.TryGetValue(targetType, out JsonConverter? converter))");
+			sb.AppendLine("\t	{");
+			sb.AppendLine("\t\t\tif (!converterType.IsAssignableFrom(converter.GetType()))");
+			sb.AppendLine("\t\t\t\tthrow new InvalidOperationException($\"Registered converter '{converter.GetType()}' does not match expected '{converterType}' for target '{targetType}'.\");");
+			sb.AppendLine("\t\t\treturn converter;");
+			sb.AppendLine("\t\t}");
+			sb.AppendLine();
+			sb.AppendLine("\t\tlock (_gate)");
+			sb.AppendLine("\t\t{");
+			sb.AppendLine("\t\t\tif (_registered.TryGetValue(targetType, out converter))");
+			sb.AppendLine("\t\t\t\treturn converter;");
+			sb.AppendLine();
+			sb.AppendLine("\t\t\tif (Activator.CreateInstance(converterType) is not JsonConverter created)");
+			sb.AppendLine("\t\t\t\tthrow new InvalidOperationException($\"Unable to instantiate converter '{converterType}'.\");");
+			sb.AppendLine();
+			sb.AppendLine("\t\t\t_registered[targetType] = created;");
+			sb.AppendLine("\t\t\treturn created;");
+			sb.AppendLine("\t\t}");
+			sb.AppendLine("\t}");
+			sb.AppendLine("}");
+
+			spc.AddSource("GeneratedEntityConverterHub.g.cs", sb.ToString());
+		});
+	}
 
 	private static bool HasAttribute(SyntaxList<AttributeListSyntax> list, string attributeFullName)
 	{
@@ -102,6 +276,38 @@ public class ConverterGenerator : IIncrementalGenerator
 				name == attributeShortNameWithoutPostfix ||
 				name == attributeFullNameWithoutPostfix;
 		});
+	}
+
+	private static bool IsAttribute(AttributeData attribute, string attributeFullName)
+	{
+		string attributeFullNameWithoutPostfix = attributeFullName.Remove(attributeFullName.Length - "Attribute".Length);
+		string attributeShortName = attributeFullName.Split('.').Last();
+		string attributeShortNameWithoutPostfix = attributeShortName.Remove(attributeShortName.Length - "Attribute".Length);
+		string name = attribute.AttributeClass?.ToDisplayString() ?? string.Empty;
+		return
+			name == attributeShortName ||
+			name == attributeFullName ||
+			name == attributeShortNameWithoutPostfix ||
+			name == attributeFullNameWithoutPostfix;
+	}
+
+	private static bool IsJsonConverterType(INamedTypeSymbol symbol)
+	{
+		for (INamedTypeSymbol? current = symbol; current is not null; current = current.BaseType)
+		{
+			string baseName = current.ConstructedFrom?.ToDisplayString() ?? current.ToDisplayString();
+			if (baseName == "System.Text.Json.Serialization.JsonConverter" ||
+				baseName.StartsWith("System.Text.Json.Serialization.JsonConverter<", StringComparison.Ordinal))
+				return true;
+		}
+		return false;
+	}
+
+	private static bool HasAccessibleParameterlessCtor(INamedTypeSymbol symbol)
+	{
+		return symbol.InstanceConstructors.Any(i =>
+			i.Parameters.Length == 0 &&
+			i.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal or Accessibility.ProtectedOrInternal);
 	}
 
 
@@ -499,7 +705,7 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 							}
 							else
 								sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{propName}\"u8))");
-							sb.AppendLine($"			value.{pi.Symbol.Name} = new {pi.Converter}().Read(ref reader, typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), options);");
+							sb.AppendLine($"			value.{pi.Symbol.Name} = (({pi.Converter})global::RhythmBase.Global.Converters.GeneratedEntityConverterHub.Get(typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), typeof({pi.Converter}))).Read(ref reader, typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), options);");
 							if (newlineNeeded)
 								sb.AppendLine("		}");
 						}
@@ -617,14 +823,14 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 							{
 								sb2.AppendLine($"""
 		if (value.{pi.Symbol.Name} is {WithoutNullable(pi.Symbol.Type).ToDisplayString()} t)
-			new {pi.Converter}().Write(writer, t, options);
+			(({pi.Converter})global::RhythmBase.Global.Converters.GeneratedEntityConverterHub.Get(typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), typeof({pi.Converter}))).Write(writer, t, options);
 		else
 			writer.WriteNullValue();
 """);
 							}
 							else
 							{
-								sb2.AppendLine($"		new {pi.Converter}().Write(writer, value.{pi.Symbol.Name}, options);");
+								sb2.AppendLine($"		(({pi.Converter})global::RhythmBase.Global.Converters.GeneratedEntityConverterHub.Get(typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), typeof({pi.Converter}))).Write(writer, value.{pi.Symbol.Name}, options);");
 							}
 							multiline = true;
 						}
@@ -1015,7 +1221,7 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 							}
 							else
 								sb.AppendLine($"		{(isFirst ? "" : "else ")}if (propertyName.SequenceEqual(\"{propName}\"u8))");
-							sb.AppendLine($"			value.{pi.Symbol.Name} = new {pi.Converter}().Read(ref reader, typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), options);");
+							sb.AppendLine($"			value.{pi.Symbol.Name} = (({pi.Converter})global::RhythmBase.Global.Converters.GeneratedEntityConverterHub.Get(typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), typeof({pi.Converter}))).Read(ref reader, typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), options);");
 							if (newlineNeeded)
 								sb.AppendLine("		}");
 						}
@@ -1133,14 +1339,14 @@ internal class EventInstanceConverter{{ToShorter(ci.Name)}} : EventInstanceConve
 							{
 								sb2.AppendLine($"""
 		if (value.{pi.Symbol.Name} is {WithoutNullable(pi.Symbol.Type).ToDisplayString()} t)
-			new {pi.Converter}().Write(writer, t, options);
+			(({pi.Converter})global::RhythmBase.Global.Converters.GeneratedEntityConverterHub.Get(typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), typeof({pi.Converter}))).Write(writer, t, options);
 		else
 			writer.WriteNullValue();
 """);
 							}
 							else
 							{
-								sb2.AppendLine($"		new {pi.Converter}().Write(writer, value.{pi.Symbol.Name}, options);");
+								sb2.AppendLine($"		(({pi.Converter})global::RhythmBase.Global.Converters.GeneratedEntityConverterHub.Get(typeof({WithoutNullable(pi.Symbol.Type).ToDisplayString()}), typeof({pi.Converter}))).Write(writer, value.{pi.Symbol.Name}, options);");
 							}
 							multiline = true;
 						}
