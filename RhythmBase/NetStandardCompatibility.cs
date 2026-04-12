@@ -221,6 +221,30 @@ namespace System.Runtime.CompilerServices
     internal static class IsExternalInit
     {
     }
+    internal static class RuntimeHelpers
+    {
+        extension<T>(T[] array)
+        {
+            public T[] GetSubArray(Range range)
+            {
+                if (array == null)
+                    throw new ArgumentNullException(nameof(array));
+
+                var (offset, length) = range.GetOffsetAndLength(array.Length);
+
+                if (length == 0)
+                    return [];
+
+                if (offset == 0 && length == array.Length)
+                    return array;
+
+                var dest = new T[length];
+                Array.Copy(array, offset, dest, 0, length);
+                return dest;
+            }
+
+        }
+    }
     internal sealed class CollectionBuilderAttribute(Type builderType, string methodName) : Attribute
     {
         public Type BuilderType { get; } = builderType;

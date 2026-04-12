@@ -153,7 +153,7 @@ namespace RhythmBase.RhythmDoctor.Utils
             if (index == _cpbCache.Length - 1)
             {
                 if ((strategy & 0b01) != 0) MoveEvents(cpb.Cpb, cpb with { Cpb = a.Cpb }, null, moveTrival);
-                _cpbCache = [.. _cpbCache.Take(_cpbCache.Length - 1)];
+                _cpbCache = [.. _cpbCache[..(_cpbCache.Length - 1)]];
                 return false;
             }
             else
@@ -163,7 +163,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                 int lencb = (int)(b.BeatOnly - cpb.BeatOnly);
                 if (a.Cpb == cpb.Cpb)
                 {
-                    _cpbCache = [.. _cpbCache.Take(index), .. _cpbCache.Skip(index + 1)];
+                    _cpbCache = [.. _cpbCache[..index], .. _cpbCache[(index + 1)..]];
                     return false;
                 }
                 if ((strategy & 0b01) == 0)
@@ -173,7 +173,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                     if (diff == 0)
                     {
 
-                        _cpbCache = [.. _cpbCache.Take(index), .. _cpbCache.Skip(index + 1).Select(c => c with { Bar = c.Bar - (b.Bar - a.Bar) + barDiff })];
+                        _cpbCache = [.. _cpbCache[..index], .. _cpbCache[(index + 1)..].Select(c => c with { Bar = c.Bar - (b.Bar - a.Bar) + barDiff })];
                         return false;
                     }
                     else
@@ -184,7 +184,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                             diff
                             );
                         barDiff += 1;
-                        _cpbCache = [.. _cpbCache.Take(index), fix, .. _cpbCache.Skip(index + 1).Select(c => c with { Bar = c.Bar - (b.Bar - a.Bar) + barDiff })];
+                        _cpbCache = [.. _cpbCache[..index], fix, .. _cpbCache[(index + 1)..].Select(c => c with { Bar = c.Bar - (b.Bar - a.Bar) + barDiff })];
                         return true;
                     }
                 }
@@ -194,7 +194,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                     int barCount = b.Bar - cpb.Bar;
                     int dbeat = dbeatPerBar * barCount;
                     MoveEvents(cpb.Cpb, cpb with { Cpb = a.Cpb }, b, moveTrival);
-                    _cpbCache = [.. _cpbCache.Take(index), .. _cpbCache.Skip(index + 1).Select(c => c with { BeatOnly = c.BeatOnly + dbeat })];
+                    _cpbCache = [.. _cpbCache[..index], .. _cpbCache[(index + 1)..].Select(c => c with { BeatOnly = c.BeatOnly + dbeat })];
                     return false;
                 }
             }
@@ -282,7 +282,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                     _bpmCache[i] = ti;
                 }
                 if (a.BeatOnly != bpm.BeatOnly)
-                    _bpmCache = [.. _bpmCache.Take(index), bpm, .. _bpmCache.Skip(index)];
+                    _bpmCache = [.. _bpmCache[..(index + 1)], bpm, .. _bpmCache[(index + 1)..]];
                 else if (index < 0)
                     _bpmCache = [bpm, .. _bpmCache];
                 else
@@ -301,7 +301,7 @@ namespace RhythmBase.RhythmDoctor.Utils
             else a = _bpmCache[index - 1];
             if (index == _bpmCache.Length - 1)
             {
-                _bpmCache = [.. _bpmCache.Take(_bpmCache.Length - 1)];
+                _bpmCache = [.. _bpmCache[..(_bpmCache.Length - 1)]];
                 return;
             }
             else
@@ -314,7 +314,7 @@ namespace RhythmBase.RhythmDoctor.Utils
                     ti.TimeSpan += diff;
                     _bpmCache[i] = ti;
                 }
-                _bpmCache = [.. _bpmCache.Take(index), .. _bpmCache.Skip(index + 1)];
+                _bpmCache = [.. _bpmCache[..index], .. _bpmCache[(index + 1)..]];
                 return;
             }
         }
