@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Vision Rainbow</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Vision_Rainbow")]
+[RDJsonObjectSerializable]
 public struct VisionRainbow : IFilter
 {
+	public FilterType Type => FilterType.VisionRainbow;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>

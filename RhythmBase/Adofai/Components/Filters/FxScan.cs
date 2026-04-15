@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX Scan</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_Scan")]
+[RDJsonObjectSerializable]
 public struct FxScan : IFilter
 {
+	public FilterType Type => FilterType.FxScan;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>

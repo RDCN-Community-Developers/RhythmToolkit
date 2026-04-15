@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Colors DarkColor</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Colors_DarkColor")]
+[RDJsonObjectSerializable]
 public struct ColorsDarkColor : IFilter
 {
+	public FilterType Type => FilterType.ColorsDarkColor;
 	/// <summary>
 	/// Gets or sets the value of the <b>Alpha</b>.
 	/// </summary>

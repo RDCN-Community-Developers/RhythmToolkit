@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Fly Vision</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Fly_Vision")]
+[RDJsonObjectSerializable]
 public struct FlyVision : IFilter
 {
+	public FilterType Type => FilterType.FlyVision;
 	/// <summary>
 	/// Gets or sets the value of the <b>Zoom</b>.
 	/// </summary>

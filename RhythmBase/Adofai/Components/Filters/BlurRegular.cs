@@ -5,8 +5,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blur Regular</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blur_Regular")]
+[RDJsonObjectSerializable]
 public struct BlurRegular : IFilter
 {
+	public FilterType Type => FilterType.BlurRegular;
 	/// <summary>
 	/// Gets or sets the value of the <b>Level</b>.
 	/// </summary>

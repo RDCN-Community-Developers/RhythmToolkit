@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Color BrightContrastSaturation</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Color_BrightContrastSaturation")]
+[RDJsonObjectSerializable]
 public struct ColorBrightContrastSaturation : IFilter
 {
+	public FilterType Type => FilterType.ColorBrightContrastSaturation;
 	/// <summary>
 	/// Gets or sets the value of the <b>Brightness</b>.
 	/// </summary>

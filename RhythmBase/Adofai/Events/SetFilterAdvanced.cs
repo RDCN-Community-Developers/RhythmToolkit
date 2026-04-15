@@ -12,11 +12,6 @@ public class SetFilterAdvanced : BaseTaggedTileEvent, IEaseEvent, IBeginningEven
 #pragma warning disable CS8618
 	/// <inheritdoc/>
 	public override EventType Type => EventType.SetFilterAdvanced;
-
-	/// <summary>
-	/// Gets or sets the name of the filter to apply.
-	/// </summary>
-	public string Filter { get; set; } = "CameraFilterPack_AAA_SuperComputer";
 	/// <summary>
 	/// Gets or sets a value indicating whether the filter is enabled.
 	/// </summary>
@@ -48,5 +43,5 @@ public class SetFilterAdvanced : BaseTaggedTileEvent, IEaseEvent, IBeginningEven
 	/// <summary>
 	/// Gets or sets the properties of the filter as a JSON object.
 	/// </summary>
-	public IFilter FilterProperties { get; set; }
+	public IFilter FilterProperties { get; set; } = new AaaSuperComputer();
 }

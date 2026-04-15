@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[global::RhythmBase.Global.Converters.RDJsonConverterFor(typeof(RDExpression))]
 internal class ExpressionConverter : JsonConverter<RDExpression>
 {
 	public override void Write(Utf8JsonWriter writer, RDExpression value, JsonSerializerOptions serializer)

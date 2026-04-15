@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV Artefact</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_Artefact")]
+[RDJsonObjectSerializable]
 public struct TvArtefact : IFilter
 {
+	public FilterType Type => FilterType.TvArtefact;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>

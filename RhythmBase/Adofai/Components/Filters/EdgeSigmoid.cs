@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Edge Sigmoid</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Edge_Sigmoid")]
+[RDJsonObjectSerializable]
 public struct EdgeSigmoid : IFilter
 {
+	public FilterType Type => FilterType.EdgeSigmoid;
 	/// <summary>
 	/// Gets or sets the value of the <b>Gain</b>.
 	/// </summary>

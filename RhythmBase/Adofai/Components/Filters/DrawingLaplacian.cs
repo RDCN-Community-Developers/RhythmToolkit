@@ -3,6 +3,8 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing Laplacian</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_Laplacian")]
+[RDJsonObjectSerializable]
 public struct DrawingLaplacian : IFilter
 {
+	public FilterType Type => FilterType.DrawingLaplacian;
 }

@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Color Chromatic Aberration</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Color_Chromatic_Aberration")]
+[RDJsonObjectSerializable]
 public struct ColorChromaticAberration : IFilter
 {
+	public FilterType Type => FilterType.ColorChromaticAberration;
 	/// <summary>
 	/// Gets or sets the value of the <b>Offset</b>.
 	/// </summary>

@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX Grid</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_Grid")]
+[RDJsonObjectSerializable]
 public struct FxGrid : IFilter
 {
+	public FilterType Type => FilterType.FxGrid;
 	/// <summary>
 	/// Gets or sets the value of the <b>Distortion</b>.
 	/// </summary>

@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Glow Glow Color</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Glow_Glow_Color")]
+[RDJsonObjectSerializable]
 public struct GlowGlowColor : IFilter
 {
+	public FilterType Type => FilterType.GlowGlowColor;
 	/// <summary>
 	/// Gets or sets the value of the <b>Amount</b>.
 	/// </summary>

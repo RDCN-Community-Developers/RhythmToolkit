@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>EXTRA Rotation</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_EXTRA_Rotation")]
+[RDJsonObjectSerializable]
 public struct ExtraRotation : IFilter
 {
+	public FilterType Type => FilterType.ExtraRotation;
 	/// <summary>
 	/// Gets or sets the value of the <b>PositionX</b>.
 	/// </summary>

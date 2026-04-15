@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blend2Camera Subtract</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blend2Camera_Subtract")]
+[RDJsonObjectSerializable]
 public struct BlendToCameraSubtract : IFilter
 {
+	public FilterType Type => FilterType.BlendToCameraSubtract;
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>

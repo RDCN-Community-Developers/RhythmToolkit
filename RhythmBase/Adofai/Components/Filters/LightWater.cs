@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Light Water</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Light_Water")]
+[RDJsonObjectSerializable]
 public struct LightWater : IFilter
 {
+	public FilterType Type => FilterType.LightWater;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>

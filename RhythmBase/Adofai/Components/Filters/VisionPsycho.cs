@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Vision Psycho</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Vision_Psycho")]
+[RDJsonObjectSerializable]
 public struct VisionPsycho : IFilter
 {
+	public FilterType Type => FilterType.VisionPsycho;
 	/// <summary>
 	/// Gets or sets the value of the <b>HoleSize</b>.
 	/// </summary>

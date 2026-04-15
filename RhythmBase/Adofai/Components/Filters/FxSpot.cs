@@ -5,8 +5,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX Spot</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_Spot")]
+[RDJsonObjectSerializable]
 public struct FxSpot : IFilter
 {
+	public FilterType Type => FilterType.FxSpot;
 	/// <summary>
 	/// Gets or sets the value of the <b>center</b>.
 	/// </summary>

@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(PlayerTypeGroup))]
 internal class PlayerTypeGroupConverter : JsonConverter<PlayerTypeGroup>
 {
 	public override PlayerTypeGroup Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

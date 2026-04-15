@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Distortion Twist</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Distortion_Twist")]
+[RDJsonObjectSerializable]
 public struct DistortionTwist : IFilter
 {
+	public FilterType Type => FilterType.DistortionTwist;
 	/// <summary>
 	/// Gets or sets the value of the <b>CenterX</b>.
 	/// </summary>

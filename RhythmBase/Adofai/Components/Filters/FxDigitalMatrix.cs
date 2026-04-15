@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX DigitalMatrix</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_DigitalMatrix")]
+[RDJsonObjectSerializable]
 public struct FxDigitalMatrix : IFilter
 {
+	public FilterType Type => FilterType.FxDigitalMatrix;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>

@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Distortion Heat</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Distortion_Heat")]
+[RDJsonObjectSerializable]
 public struct DistortionHeat : IFilter
 {
+	public FilterType Type => FilterType.DistortionHeat;
 	/// <summary>
 	/// Gets or sets the value of the <b>Distortion</b>.
 	/// </summary>

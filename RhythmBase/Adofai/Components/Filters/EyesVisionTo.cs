@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>EyesVision 2</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_EyesVision_2")]
+[RDJsonObjectSerializable]
 public struct EyesVisionTo : IFilter
 {
+	public FilterType Type => FilterType.EyesVisionTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>_EyeWave</b>.
 	/// </summary>

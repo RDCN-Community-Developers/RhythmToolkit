@@ -7,6 +7,7 @@ using static System.Text.EncodingExtensions;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(Settings))]
 internal class SettingsConverter : JsonConverter<Settings>
 {
 	public override Settings? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

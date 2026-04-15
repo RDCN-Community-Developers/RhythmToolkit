@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Vision Warp2</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Vision_Warp2")]
+[RDJsonObjectSerializable]
 public struct VisionWarpTo : IFilter
 {
+	public FilterType Type => FilterType.VisionWarpTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

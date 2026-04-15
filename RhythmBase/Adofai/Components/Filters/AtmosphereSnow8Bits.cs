@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Atmosphere Snow 8bits</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Atmosphere_Snow_8bits")]
+[RDJsonObjectSerializable]
 public struct AtmosphereSnow8Bits : IFilter
 {
+	public FilterType Type => FilterType.AtmosphereSnow8Bits;
 	/// <summary>
 	/// Gets or sets the value of the <b>Threshold</b>.
 	/// </summary>

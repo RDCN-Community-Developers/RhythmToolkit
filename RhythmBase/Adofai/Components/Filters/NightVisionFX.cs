@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>NightVisionFX</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_NightVisionFX")]
+[RDJsonObjectSerializable]
 public struct NightVisionFX : IFilter
 {
+	public FilterType Type => FilterType.NightVisionFX;
 	/// <summary>
 	/// Gets or sets the value of the <b>Greenness</b>.
 	/// </summary>

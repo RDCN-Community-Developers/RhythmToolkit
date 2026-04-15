@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Special Bubble</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Special_Bubble")]
+[RDJsonObjectSerializable]
 public struct SpecialBubble : IFilter
 {
+	public FilterType Type => FilterType.SpecialBubble;
 	/// <summary>
 	/// Gets or sets the value of the <b>X</b>.
 	/// </summary>

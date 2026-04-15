@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV ARCADE Fast</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_ARCADE_Fast")]
+[RDJsonObjectSerializable]
 public struct TvArcadeFast : IFilter
 {
+	public FilterType Type => FilterType.TvArcadeFast;
 	/// <summary>
 	/// Gets or sets the value of the <b>Interferance_Size</b>.
 	/// </summary>

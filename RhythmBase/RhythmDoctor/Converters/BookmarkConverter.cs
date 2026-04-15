@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(Bookmark))]
 internal class BookmarkConverter() : JsonConverter<Bookmark>
 {
 	public override void Write(Utf8JsonWriter writer, Bookmark value, JsonSerializerOptions serializer)

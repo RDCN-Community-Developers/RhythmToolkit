@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Colors NewPosterize</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Colors_NewPosterize")]
+[RDJsonObjectSerializable]
 public struct ColorsNewPosterize : IFilter
 {
+	public FilterType Type => FilterType.ColorsNewPosterize;
 	/// <summary>
 	/// Gets or sets the value of the <b>Gamma</b>.
 	/// </summary>

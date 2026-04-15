@@ -17,7 +17,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static EventType ToEnum(Type type)
 		{
 			EventType ConvertToEnum;
-			if (_eventType_Enums == null)
+			if (_type2enums == null)
 			{
 				string name = type.Name;
 				if (!Enum.TryParse(name, out EventType result))
@@ -30,7 +30,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			{
 				try
 				{
-					ConvertToEnum = _eventType_Enums[type].Single();
+					ConvertToEnum = _type2enums[type].Single();
 				}
 				catch (Exception)
 				{
@@ -57,7 +57,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 				return new(EventType.MacroEvent);
 			if(typeof(IBaseEvent) == type)
 				type = typeof(BaseEvent);
-			return _eventType_Enums.TryGetValue(type, out var value) ? value : throw new IllegalEventTypeException(type);
+			return _type2enums.TryGetValue(type, out var value) ? value : throw new IllegalEventTypeException(type);
 		}
 		/// <summary>  
 		/// Converts a generic event type to an array of corresponding EventType enumerations.  
@@ -92,7 +92,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static Type ToType(this EventType type)
 		{
 			Type ConvertToType;
-			if (_eventEnum_Type == null)
+			if (_enum2type == null)
 			{
 				return Type.GetType($"{typeof(IBaseEvent).Namespace}.{type}") ?? throw new RhythmBaseException(
 						$"Illegal Type: {type}.");
@@ -101,7 +101,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 			{
 				try
 				{
-					ConvertToType = _eventEnum_Type[type];
+					ConvertToType = _enum2type[type];
 				}
 				catch
 				{

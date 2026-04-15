@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blur Tilt Shift</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blur_Tilt_Shift")]
+[RDJsonObjectSerializable]
 public struct BlurTiltShift : IFilter
 {
+	public FilterType Type => FilterType.BlurTiltShift;
 	/// <summary>
 	/// Gets or sets the value of the <b>Amount</b>.
 	/// </summary>

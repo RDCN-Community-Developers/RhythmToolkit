@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX Psycho</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_Psycho")]
+[RDJsonObjectSerializable]
 public struct FxPsycho : IFilter
 {
+	public FilterType Type => FilterType.FxPsycho;
 	/// <summary>
 	/// Gets or sets the value of the <b>Distortion</b>.
 	/// </summary>

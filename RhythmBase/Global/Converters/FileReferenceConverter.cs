@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.Global.Converters;
 
+[RDJsonConverterFor(typeof(FileReference))]
 internal class FileReferenceConverter : JsonConverter<FileReference>
 {
 	public override FileReference Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

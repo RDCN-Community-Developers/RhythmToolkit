@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blend2Camera Blend</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blend2Camera_Blend")]
+[RDJsonObjectSerializable]
 public struct BlendToCameraBlend : IFilter
 {
+	public FilterType Type => FilterType.BlendToCameraBlend;
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>

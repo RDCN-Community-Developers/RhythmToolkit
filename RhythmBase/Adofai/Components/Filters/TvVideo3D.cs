@@ -3,6 +3,8 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV Video3D</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_Video3D")]
+[RDJsonObjectSerializable]
 public struct TvVideo3D : IFilter
 {
+	public FilterType Type => FilterType.TvVideo3D;
 }

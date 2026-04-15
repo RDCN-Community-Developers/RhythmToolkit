@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX DarkMatter</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_DarkMatter")]
+[RDJsonObjectSerializable]
 public struct FxDarkMatter : IFilter
 {
+	public FilterType Type => FilterType.FxDarkMatter;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>

@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX ZebraColor</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_ZebraColor")]
+[RDJsonObjectSerializable]
 public struct FxZebraColor : IFilter
 {
+	public FilterType Type => FilterType.FxZebraColor;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

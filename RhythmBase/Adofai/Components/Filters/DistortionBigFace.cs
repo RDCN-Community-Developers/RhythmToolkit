@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Distortion BigFace</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Distortion_BigFace")]
+[RDJsonObjectSerializable]
 public struct DistortionBigFace : IFilter
 {
+	public FilterType Type => FilterType.DistortionBigFace;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Size</b>.
 	/// </summary>

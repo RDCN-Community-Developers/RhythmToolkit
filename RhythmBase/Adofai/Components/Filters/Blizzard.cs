@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blizzard</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blizzard")]
+[RDJsonObjectSerializable]
 public struct Blizzard : IFilter
 {
+	public FilterType Type => FilterType.Blizzard;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Speed</b>.
 	/// </summary>

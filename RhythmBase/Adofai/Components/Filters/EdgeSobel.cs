@@ -3,6 +3,8 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Edge Sobel</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Edge_Sobel")]
+[RDJsonObjectSerializable]
 public struct EdgeSobel : IFilter
 {
+	public FilterType Type => FilterType.EdgeSobel;
 }

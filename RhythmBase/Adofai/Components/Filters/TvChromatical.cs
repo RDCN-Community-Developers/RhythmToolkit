@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV Chromatical</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_Chromatical")]
+[RDJsonObjectSerializable]
 public struct TvChromatical : IFilter
 {
+	public FilterType Type => FilterType.TvChromatical;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>

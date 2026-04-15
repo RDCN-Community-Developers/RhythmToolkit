@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Glitch Mozaic</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Glitch_Mozaic")]
+[RDJsonObjectSerializable]
 public struct GlitchMozaic : IFilter
 {
+	public FilterType Type => FilterType.GlitchMozaic;
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.
 	/// </summary>

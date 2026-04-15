@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(SoundSubTypeCollection))]
 internal class SoundSubTypeCollectionConverter : JsonConverter<SoundSubTypeCollection>
 {
 	public override SoundSubTypeCollection? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

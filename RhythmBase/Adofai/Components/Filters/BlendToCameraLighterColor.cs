@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blend2Camera LighterColor</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blend2Camera_LighterColor")]
+[RDJsonObjectSerializable]
 public struct BlendToCameraLighterColor : IFilter
 {
+	public FilterType Type => FilterType.BlendToCameraLighterColor;
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>

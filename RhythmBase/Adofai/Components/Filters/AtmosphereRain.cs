@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Atmosphere Rain</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Atmosphere_Rain")]
+[RDJsonObjectSerializable]
 public struct AtmosphereRain : IFilter
 {
+	public FilterType Type => FilterType.AtmosphereRain;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>

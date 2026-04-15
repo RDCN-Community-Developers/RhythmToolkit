@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Alien Vision</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Alien_Vision")]
+[RDJsonObjectSerializable]
 public struct AlienVision : IFilter
 {
+	public FilterType Type => FilterType.AlienVision;
 	/// <summary>
 	/// Gets or sets the value of the <b>Therma_Variation</b>.
 	/// </summary>

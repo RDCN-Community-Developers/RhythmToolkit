@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Pixel Pixelisation</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Pixel_Pixelisation")]
+[RDJsonObjectSerializable]
 public struct PixelPixelisation : IFilter
 {
+	public FilterType Type => FilterType.PixelPixelisation;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Pixelisation</b>.
 	/// </summary>

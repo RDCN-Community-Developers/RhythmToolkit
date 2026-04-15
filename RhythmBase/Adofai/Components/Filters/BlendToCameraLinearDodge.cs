@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blend2Camera LinearDodge</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blend2Camera_LinearDodge")]
+[RDJsonObjectSerializable]
 public struct BlendToCameraLinearDodge : IFilter
 {
+	public FilterType Type => FilterType.BlendToCameraLinearDodge;
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>

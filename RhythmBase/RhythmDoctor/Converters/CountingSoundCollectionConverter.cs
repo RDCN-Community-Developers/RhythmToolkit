@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(RDAudio[]))]
 internal class CountingSoundCollectionConverter : JsonConverter<RDAudio[]>
 {
 	private static readonly AudioConverter audioConverter = new();

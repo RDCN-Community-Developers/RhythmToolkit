@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Oculus NightVision2</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Oculus_NightVision2")]
+[RDJsonObjectSerializable]
 public struct OculusNightVisionTo : IFilter
 {
+	public FilterType Type => FilterType.OculusNightVisionTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>FadeFX</b>.
 	/// </summary>

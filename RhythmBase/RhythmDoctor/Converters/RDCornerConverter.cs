@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[global::RhythmBase.Global.Converters.RDJsonConverterFor(typeof(Corner))]
 internal class RDCornerConverter : JsonConverter<Corner>
 {
     public override Corner Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

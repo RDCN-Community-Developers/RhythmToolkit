@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing Lines</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_Lines")]
+[RDJsonObjectSerializable]
 public struct DrawingLines : IFilter
 {
+	public FilterType Type => FilterType.DrawingLines;
 	/// <summary>
 	/// Gets or sets the value of the <b>Number</b>.
 	/// </summary>

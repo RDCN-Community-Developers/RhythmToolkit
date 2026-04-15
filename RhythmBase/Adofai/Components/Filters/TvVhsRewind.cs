@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV VHS Rewind</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_VHS_Rewind")]
+[RDJsonObjectSerializable]
 public struct TvVhsRewind : IFilter
 {
+	public FilterType Type => FilterType.TvVhsRewind;
 	/// <summary>
 	/// Gets or sets the value of the <b>Cryptage</b>.
 	/// </summary>

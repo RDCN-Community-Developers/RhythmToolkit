@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV Horror</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_Horror")]
+[RDJsonObjectSerializable]
 public struct TvHorror : IFilter
 {
+	public FilterType Type => FilterType.TvHorror;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>

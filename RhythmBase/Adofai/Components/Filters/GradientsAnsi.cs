@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Gradients Ansi</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Gradients_Ansi")]
+[RDJsonObjectSerializable]
 public struct GradientsAnsi : IFilter
 {
+	public FilterType Type => FilterType.GradientsAnsi;
 	/// <summary>
 	/// Gets or sets the value of the <b>Switch</b>.
 	/// </summary>

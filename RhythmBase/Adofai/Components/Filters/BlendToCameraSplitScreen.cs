@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blend2Camera SplitScreen</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blend2Camera_SplitScreen")]
+[RDJsonObjectSerializable]
 public struct BlendToCameraSplitScreen : IFilter
 {
+	public FilterType Type => FilterType.BlendToCameraSplitScreen;
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>

@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(RDAudio))]
 internal class AudioConverter : JsonConverter<RDAudio>
 {
 	public override RDAudio? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

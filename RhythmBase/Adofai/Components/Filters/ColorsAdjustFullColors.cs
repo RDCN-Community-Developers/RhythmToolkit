@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Colors Adjust FullColors</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Colors_Adjust_FullColors")]
+[RDJsonObjectSerializable]
 public struct ColorsAdjustFullColors : IFilter
 {
+	public FilterType Type => FilterType.ColorsAdjustFullColors;
 	/// <summary>
 	/// Gets or sets the value of the <b>Red_R</b>.
 	/// </summary>

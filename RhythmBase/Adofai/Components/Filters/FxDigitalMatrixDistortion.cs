@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX DigitalMatrixDistortion</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_DigitalMatrixDistortion")]
+[RDJsonObjectSerializable]
 public struct FxDigitalMatrixDistortion : IFilter
 {
+	public FilterType Type => FilterType.FxDigitalMatrixDistortion;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>

@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Film Grain</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Film_Grain")]
+[RDJsonObjectSerializable]
 public struct FilmGrain : IFilter
 {
+	public FilterType Type => FilterType.FilmGrain;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

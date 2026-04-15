@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing BluePrint</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_BluePrint")]
+[RDJsonObjectSerializable]
 public struct DrawingBluePrint : IFilter
 {
+	public FilterType Type => FilterType.DrawingBluePrint;
 	/// <summary>
 	/// Gets or sets the value of the <b>Pencil_Color</b>.
 	/// </summary>

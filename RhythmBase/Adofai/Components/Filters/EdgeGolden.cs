@@ -3,6 +3,8 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Edge Golden</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Edge_Golden")]
+[RDJsonObjectSerializable]
 public struct EdgeGolden : IFilter
 {
+	public FilterType Type => FilterType.EdgeGolden;
 }

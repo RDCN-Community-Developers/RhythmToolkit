@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Vision Plasma</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Vision_Plasma")]
+[RDJsonObjectSerializable]
 public struct VisionPlasma : IFilter
 {
+	public FilterType Type => FilterType.VisionPlasma;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

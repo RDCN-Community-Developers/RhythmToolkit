@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.Global.Converters;
 
+[RDJsonConverterFor(typeof(RDColor))]
 internal class ColorConverter : JsonConverter<RDColor>
 {
 	public override RDColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

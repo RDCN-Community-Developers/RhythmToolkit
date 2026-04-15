@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV Old</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_Old")]
+[RDJsonObjectSerializable]
 public struct TvOld : IFilter
 {
+	public FilterType Type => FilterType.TvOld;
 	/// <summary>
 	/// Gets or sets the value of the <b>Distortion</b>.
 	/// </summary>

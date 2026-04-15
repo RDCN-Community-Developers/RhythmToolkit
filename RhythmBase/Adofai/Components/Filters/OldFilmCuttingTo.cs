@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>OldFilm Cutting2</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_OldFilm_Cutting2")]
+[RDJsonObjectSerializable]
 public struct OldFilmCuttingTo : IFilter
 {
+	public FilterType Type => FilterType.OldFilmCuttingTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>

@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[global::RhythmBase.Global.Converters.RDJsonConverterFor(typeof(Row))]
 internal class RowConverter : JsonConverter<Row>
 {
 	public override Row? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

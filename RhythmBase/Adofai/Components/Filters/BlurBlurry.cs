@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blur Blurry</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blur_Blurry")]
+[RDJsonObjectSerializable]
 public struct BlurBlurry : IFilter
 {
+	public FilterType Type => FilterType.BlurBlurry;
 	/// <summary>
 	/// Gets or sets the value of the <b>Amount</b>.
 	/// </summary>

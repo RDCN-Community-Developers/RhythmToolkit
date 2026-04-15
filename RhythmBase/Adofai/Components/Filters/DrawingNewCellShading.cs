@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing NewCellShading</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_NewCellShading")]
+[RDJsonObjectSerializable]
 public struct DrawingNewCellShading : IFilter
 {
+	public FilterType Type => FilterType.DrawingNewCellShading;
 	/// <summary>
 	/// Gets or sets the value of the <b>Threshold</b>.
 	/// </summary>

@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(Decoration))]
 internal class DecorationConverter : JsonConverter<Decoration>
 {
 	public override Decoration? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

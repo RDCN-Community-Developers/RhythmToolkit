@@ -5,8 +5,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>AAA SuperHexagon</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_AAA_SuperHexagon")]
+[RDJsonObjectSerializable]
 public struct AaaSuperHexagon : IFilter
 {
+	public FilterType Type => FilterType.AaaSuperHexagon;
 	/// <summary>
 	/// Gets or sets the value of the <b>_AlphaHexa</b>.
 	/// </summary>

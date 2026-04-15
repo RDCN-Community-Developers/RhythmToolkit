@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing Paper</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_Paper")]
+[RDJsonObjectSerializable]
 public struct DrawingPaper : IFilter
 {
+	public FilterType Type => FilterType.DrawingPaper;
 	/// <summary>
 	/// Gets or sets the value of the <b>Pencil_Color</b>.
 	/// </summary>

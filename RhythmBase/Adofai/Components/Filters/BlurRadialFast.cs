@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blur Radial Fast</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blur_Radial_Fast")]
+[RDJsonObjectSerializable]
 public struct BlurRadialFast : IFilter
 {
+	public FilterType Type => FilterType.BlurRadialFast;
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.
 	/// </summary>

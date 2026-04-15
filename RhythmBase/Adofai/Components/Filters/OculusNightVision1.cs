@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Oculus NightVision1</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Oculus_NightVision1")]
+[RDJsonObjectSerializable]
 public struct OculusNightVision1 : IFilter
 {
+	public FilterType Type => FilterType.OculusNightVision1;
 	/// <summary>
 	/// Gets or sets the value of the <b>Vignette</b>.
 	/// </summary>

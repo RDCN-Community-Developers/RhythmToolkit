@@ -5,8 +5,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blur DitherOffset</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blur_DitherOffset")]
+[RDJsonObjectSerializable]
 public struct BlurDitherOffset : IFilter
 {
+	public FilterType Type => FilterType.BlurDitherOffset;
 	/// <summary>
 	/// Gets or sets the value of the <b>Level</b>.
 	/// </summary>

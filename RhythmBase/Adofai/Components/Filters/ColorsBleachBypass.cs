@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Colors BleachBypass</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Colors_BleachBypass")]
+[RDJsonObjectSerializable]
 public struct ColorsBleachBypass : IFilter
 {
+	public FilterType Type => FilterType.ColorsBleachBypass;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

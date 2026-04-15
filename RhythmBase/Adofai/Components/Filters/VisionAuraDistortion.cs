@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Vision AuraDistortion</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Vision_AuraDistortion")]
+[RDJsonObjectSerializable]
 public struct VisionAuraDistortion : IFilter
 {
+	public FilterType Type => FilterType.VisionAuraDistortion;
 	/// <summary>
 	/// Gets or sets the value of the <b>Twist</b>.
 	/// </summary>

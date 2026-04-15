@@ -5,8 +5,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>AAA SuperComputer</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_AAA_SuperComputer")]
+[RDJsonObjectSerializable]
 public struct AaaSuperComputer : IFilter
 {
+	public FilterType Type => FilterType.AaaSuperComputer;
 	/// <summary>
 	/// Gets or sets the value of the <b>_AlphaHexa</b>.
 	/// </summary>

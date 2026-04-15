@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing Manga Flash</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_Manga_Flash")]
+[RDJsonObjectSerializable]
 public struct DrawingMangaFlash : IFilter
 {
+	public FilterType Type => FilterType.DrawingMangaFlash;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>

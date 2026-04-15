@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blend2Camera BlueScreen</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blend2Camera_BlueScreen")]
+[RDJsonObjectSerializable]
 public struct BlendToCameraBlueScreen : IFilter
 {
+	public FilterType Type => FilterType.BlendToCameraBlueScreen;
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.
 	/// </summary>

@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(RDDialogueExchange))]
 internal class DialogueExchangeConverter : JsonConverter<RDDialogueExchange>
 {
 	public override RDDialogueExchange? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

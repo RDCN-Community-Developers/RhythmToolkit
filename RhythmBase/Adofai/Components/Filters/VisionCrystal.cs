@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Vision Crystal</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Vision_Crystal")]
+[RDJsonObjectSerializable]
 public struct VisionCrystal : IFilter
 {
+	public FilterType Type => FilterType.VisionCrystal;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

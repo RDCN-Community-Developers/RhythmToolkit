@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(FloatingTextAnchorStyle))]
 internal class FloatingTextAnchorStylesConverter : JsonConverter<FloatingTextAnchorStyle>
 {
 	public override FloatingTextAnchorStyle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

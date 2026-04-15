@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Edge Edge filter</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Edge_Edge_filter")]
+[RDJsonObjectSerializable]
 public struct EdgeEdgeFilter : IFilter
 {
+	public FilterType Type => FilterType.EdgeEdgeFilter;
 	/// <summary>
 	/// Gets or sets the value of the <b>GreenAmplifier</b>.
 	/// </summary>

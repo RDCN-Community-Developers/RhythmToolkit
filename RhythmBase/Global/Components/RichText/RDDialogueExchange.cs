@@ -6,7 +6,7 @@ namespace RhythmBase.Global.Components.RichText;
 /// <summary>
 /// Represents a list of dialogue lines.
 /// </summary>
-[JsonConverter(typeof(DialogueListConverter))]
+[JsonConverter(typeof(RDDialogueBlock))]
 public class RDDialogueExchange : List<RDDialogueBlock>
 {
 	/// <summary>

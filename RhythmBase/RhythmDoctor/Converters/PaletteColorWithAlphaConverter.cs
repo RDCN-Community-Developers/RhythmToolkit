@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(PaletteColorWithAlpha))]
 internal class PaletteColorWithAlphaConverter : JsonConverter<PaletteColorWithAlpha>
 {
 	public override PaletteColorWithAlpha Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

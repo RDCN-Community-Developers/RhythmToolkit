@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV WideScreenCircle</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_WideScreenCircle")]
+[RDJsonObjectSerializable]
 public struct TvWideScreenCircle : IFilter
 {
+	public FilterType Type => FilterType.TvWideScreenCircle;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>

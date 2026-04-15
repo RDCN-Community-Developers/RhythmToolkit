@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing CellShading</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_CellShading")]
+[RDJsonObjectSerializable]
 public struct DrawingCellShading : IFilter
 {
+	public FilterType Type => FilterType.DrawingCellShading;
 	/// <summary>
 	/// Gets or sets the value of the <b>EdgeSize</b>.
 	/// </summary>

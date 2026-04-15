@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing Manga4</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_Manga4")]
+[RDJsonObjectSerializable]
 public struct DrawingManga4 : IFilter
 {
+	public FilterType Type => FilterType.DrawingManga4;
 	/// <summary>
 	/// Gets or sets the value of the <b>DotSize</b>.
 	/// </summary>

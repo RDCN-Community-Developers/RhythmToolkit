@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[global::RhythmBase.Global.Converters.RDJsonConverterFor(typeof(RDRoom))]
 internal class RoomConverter : JsonConverter<RDRoom>
 {
 	public override RDRoom Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -38,6 +39,7 @@ internal class RoomConverter : JsonConverter<RDRoom>
 		writer.WriteEndArray();
 	}
 }
+[global::RhythmBase.Global.Converters.RDJsonConverterFor(typeof(RDSingleRoom))]
 internal class SingleRoomConverter : JsonConverter<RDSingleRoom>
 {
 	public override RDSingleRoom Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

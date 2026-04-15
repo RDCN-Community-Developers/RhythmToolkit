@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Drawing Toon</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Drawing_Toon")]
+[RDJsonObjectSerializable]
 public struct DrawingToon : IFilter
 {
+	public FilterType Type => FilterType.DrawingToon;
 	/// <summary>
 	/// Gets or sets the value of the <b>Threshold</b>.
 	/// </summary>

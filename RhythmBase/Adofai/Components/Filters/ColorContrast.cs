@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Color Contrast</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Color_Contrast")]
+[RDJsonObjectSerializable]
 public struct ColorContrast : IFilter
 {
+	public FilterType Type => FilterType.ColorContrast;
 	/// <summary>
 	/// Gets or sets the value of the <b>Contrast</b>.
 	/// </summary>

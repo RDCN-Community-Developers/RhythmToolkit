@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV Tiles</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_Tiles")]
+[RDJsonObjectSerializable]
 public struct TvTiles : IFilter
 {
+	public FilterType Type => FilterType.TvTiles;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>

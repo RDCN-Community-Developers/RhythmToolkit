@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Vision Tunnel</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Vision_Tunnel")]
+[RDJsonObjectSerializable]
 public struct VisionTunnel : IFilter
 {
+	public FilterType Type => FilterType.VisionTunnel;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

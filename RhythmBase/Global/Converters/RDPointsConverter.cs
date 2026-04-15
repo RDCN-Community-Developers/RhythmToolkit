@@ -4,6 +4,16 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace RhythmBase.Global.Converters;
 
+[RDJsonConverterFor(typeof(RDPoint))]
+[RDJsonConverterFor(typeof(RDPointNI))]
+[RDJsonConverterFor(typeof(RDPointN))]
+[RDJsonConverterFor(typeof(RDPointI))]
+[RDJsonConverterFor(typeof(RDPointE))]
+[RDJsonConverterFor(typeof(RDSizeNI))]
+[RDJsonConverterFor(typeof(RDSizeN))]
+[RDJsonConverterFor(typeof(RDSizeI))]
+[RDJsonConverterFor(typeof(RDSize))]
+[RDJsonConverterFor(typeof(RDSizeE))]
 internal class RDPointsConverter : JsonConverter<IRDVector>
 {
 	public override void Write(Utf8JsonWriter writer, IRDVector? value, JsonSerializerOptions serializer)

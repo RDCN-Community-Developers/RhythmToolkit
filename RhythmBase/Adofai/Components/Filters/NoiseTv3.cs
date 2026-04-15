@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Noise TV 3</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Noise_TV_3")]
+[RDJsonObjectSerializable]
 public struct NoiseTv3 : IFilter
 {
+	public FilterType Type => FilterType.NoiseTv3;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>

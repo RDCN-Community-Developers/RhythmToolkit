@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Real VHS</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Real_VHS")]
+[RDJsonObjectSerializable]
 public struct RealVhs : IFilter
 {
+	public FilterType Type => FilterType.RealVhs;
 	/// <summary>
 	/// Gets or sets the value of the <b>TRACKING</b>.
 	/// </summary>

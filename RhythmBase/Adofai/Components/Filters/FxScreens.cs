@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX Screens</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_Screens")]
+[RDJsonObjectSerializable]
 public struct FxScreens : IFilter
 {
+	public FilterType Type => FilterType.FxScreens;
 	/// <summary>
 	/// Gets or sets the value of the <b>Tiles</b>.
 	/// </summary>

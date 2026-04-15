@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Distortion Half Sphere</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Distortion_Half_Sphere")]
+[RDJsonObjectSerializable]
 public struct DistortionHalfSphere : IFilter
 {
+	public FilterType Type => FilterType.DistortionHalfSphere;
 	/// <summary>
 	/// Gets or sets the value of the <b>SphereSize</b>.
 	/// </summary>

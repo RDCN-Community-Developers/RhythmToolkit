@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Colors HSV</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Colors_HSV")]
+[RDJsonObjectSerializable]
 public struct ColorsHsv : IFilter
 {
+	public FilterType Type => FilterType.ColorsHsv;
 	/// <summary>
 	/// Gets or sets the value of the <b>_HueShift</b>.
 	/// </summary>

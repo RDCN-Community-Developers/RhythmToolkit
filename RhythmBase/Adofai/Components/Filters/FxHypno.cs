@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX Hypno</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_Hypno")]
+[RDJsonObjectSerializable]
 public struct FxHypno : IFilter
 {
+	public FilterType Type => FilterType.FxHypno;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>

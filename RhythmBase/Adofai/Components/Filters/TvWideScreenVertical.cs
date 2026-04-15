@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV WideScreenVertical</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_WideScreenVertical")]
+[RDJsonObjectSerializable]
 public struct TvWideScreenVertical : IFilter
 {
+	public FilterType Type => FilterType.TvWideScreenVertical;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>

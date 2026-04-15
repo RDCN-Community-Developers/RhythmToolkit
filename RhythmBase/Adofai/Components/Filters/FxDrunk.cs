@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX Drunk</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_Drunk")]
+[RDJsonObjectSerializable]
 public struct FxDrunk : IFilter
 {
+	public FilterType Type => FilterType.FxDrunk;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

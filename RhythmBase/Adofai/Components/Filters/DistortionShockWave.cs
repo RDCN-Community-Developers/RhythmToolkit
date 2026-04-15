@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Distortion ShockWave</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Distortion_ShockWave")]
+[RDJsonObjectSerializable]
 public struct DistortionShockWave : IFilter
 {
+	public FilterType Type => FilterType.DistortionShockWave;
 	/// <summary>
 	/// Gets or sets the value of the <b>PosX</b>.
 	/// </summary>

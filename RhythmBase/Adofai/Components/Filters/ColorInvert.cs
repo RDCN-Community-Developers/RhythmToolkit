@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Color Invert</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Color_Invert")]
+[RDJsonObjectSerializable]
 public struct ColorInvert : IFilter
 {
+	public FilterType Type => FilterType.ColorInvert;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Fade</b>.
 	/// </summary>

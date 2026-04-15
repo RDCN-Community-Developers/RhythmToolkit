@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV PlanetMars</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_PlanetMars")]
+[RDJsonObjectSerializable]
 public struct TvPlanetMars : IFilter
 {
+	public FilterType Type => FilterType.TvPlanetMars;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.
 	/// </summary>

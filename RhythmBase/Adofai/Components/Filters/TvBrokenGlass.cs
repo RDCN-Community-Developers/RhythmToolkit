@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV BrokenGlass</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_BrokenGlass")]
+[RDJsonObjectSerializable]
 public struct TvBrokenGlass : IFilter
 {
+	public FilterType Type => FilterType.TvBrokenGlass;
 	/// <summary>
 	/// Gets or sets the value of the <b>Broken_Big</b>.
 	/// </summary>

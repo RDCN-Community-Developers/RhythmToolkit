@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Colors RgbClamp</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Colors_RgbClamp")]
+[RDJsonObjectSerializable]
 public struct ColorsRgbClamp : IFilter
 {
+	public FilterType Type => FilterType.ColorsRgbClamp;
 	/// <summary>
 	/// Gets or sets the value of the <b>Red_End</b>.
 	/// </summary>

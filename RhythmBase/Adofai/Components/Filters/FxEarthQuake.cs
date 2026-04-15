@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX EarthQuake</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_EarthQuake")]
+[RDJsonObjectSerializable]
 public struct FxEarthQuake : IFilter
 {
+	public FilterType Type => FilterType.FxEarthQuake;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
 	/// </summary>

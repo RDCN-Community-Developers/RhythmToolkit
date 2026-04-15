@@ -8,4 +8,7 @@ namespace RhythmBase.Adofai.Utils
 	public static partial class EventTypeUtils
 	{
 	}
+	public static partial class FilterTypeUtils
+	{
+	}
 }

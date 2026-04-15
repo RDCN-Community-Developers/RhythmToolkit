@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Distortion Aspiration</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Distortion_Aspiration")]
+[RDJsonObjectSerializable]
 public struct DistortionAspiration : IFilter
 {
+	public FilterType Type => FilterType.DistortionAspiration;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.
 	/// </summary>

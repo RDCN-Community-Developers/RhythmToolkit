@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Edge Neon</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Edge_Neon")]
+[RDJsonObjectSerializable]
 public struct EdgeNeon : IFilter
 {
+	public FilterType Type => FilterType.EdgeNeon;
 	/// <summary>
 	/// Gets or sets the value of the <b>EdgeWeight</b>.
 	/// </summary>

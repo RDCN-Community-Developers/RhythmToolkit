@@ -5,12 +5,13 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(RDCharacters[]))]
 internal class CpuTypeGroupConverter : JsonConverter<RDCharacters[]>
 {
 	public override RDCharacters[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
 		if(reader.TokenType != JsonTokenType.StartArray)
-			throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
+			throw new JsonException($"Expected StartArray token, but got {reader.TokenType}.");
 		reader.Read();
 		RDCharacters[] group = new RDCharacters[16];
 		for(int i = 0; i < 16; i++)

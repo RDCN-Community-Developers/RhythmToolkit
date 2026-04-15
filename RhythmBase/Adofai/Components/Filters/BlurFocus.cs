@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Blur Focus</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Blur_Focus")]
+[RDJsonObjectSerializable]
 public struct BlurFocus : IFilter
 {
+	public FilterType Type => FilterType.BlurFocus;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Size</b>.
 	/// </summary>

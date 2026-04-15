@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[global::RhythmBase.Global.Converters.RDJsonConverterFor(typeof(PatternCollection))]
 internal class PatternConverter : JsonConverter<PatternCollection>
 {
 	public override PatternCollection Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

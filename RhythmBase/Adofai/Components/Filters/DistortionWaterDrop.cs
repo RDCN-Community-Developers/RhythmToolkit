@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Distortion Water Drop</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Distortion_Water_Drop")]
+[RDJsonObjectSerializable]
 public struct DistortionWaterDrop : IFilter
 {
+	public FilterType Type => FilterType.DistortionWaterDrop;
 	/// <summary>
 	/// Gets or sets the value of the <b>WaveIntensity</b>.
 	/// </summary>

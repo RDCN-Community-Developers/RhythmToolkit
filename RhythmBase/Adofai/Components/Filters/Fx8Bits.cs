@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX 8bits</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_8bits")]
+[RDJsonObjectSerializable]
 public struct Fx8Bits : IFilter
 {
+	public FilterType Type => FilterType.Fx8Bits;
 	/// <summary>
 	/// Gets or sets the value of the <b>ResolutionX</b>.
 	/// </summary>

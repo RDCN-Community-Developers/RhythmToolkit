@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Color Sepia</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Color_Sepia")]
+[RDJsonObjectSerializable]
 public struct ColorSepia : IFilter
 {
+	public FilterType Type => FilterType.ColorSepia;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Fade</b>.
 	/// </summary>

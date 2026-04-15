@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>FX Glitch1</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_FX_Glitch1")]
+[RDJsonObjectSerializable]
 public struct FxGlitch1 : IFilter
 {
+	public FilterType Type => FilterType.FxGlitch1;
 	/// <summary>
 	/// Gets or sets the value of the <b>Glitch</b>.
 	/// </summary>

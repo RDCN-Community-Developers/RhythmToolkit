@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>TV Posterize</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_TV_Posterize")]
+[RDJsonObjectSerializable]
 public struct TvPosterize : IFilter
 {
+	public FilterType Type => FilterType.TvPosterize;
 	/// <summary>
 	/// Gets or sets the value of the <b>Posterize</b>.
 	/// </summary>

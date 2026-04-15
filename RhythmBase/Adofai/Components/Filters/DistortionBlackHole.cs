@@ -3,8 +3,10 @@ namespace RhythmBase.Adofai.Components.Filters;
 /// The filter of <b>Distortion BlackHole</b>.
 /// </summary>
 [RDJsonSpecialID("CameraFilterPack_Distortion_BlackHole")]
+[RDJsonObjectSerializable]
 public struct DistortionBlackHole : IFilter
 {
+	public FilterType Type => FilterType.DistortionBlackHole;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.
 	/// </summary>
