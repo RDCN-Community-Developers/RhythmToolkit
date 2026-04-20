@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DistortionTwistSquare : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DistortionTwistSquare;
 	/// <summary>
 	/// Gets or sets the value of the <b>CenterX</b>.

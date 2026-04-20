@@ -1,7 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 #if NETSTANDARD2_0
 #pragma warning disable IDE0130
@@ -229,24 +231,23 @@ namespace System.Runtime.CompilerServices
             {
                 if (array == null)
                     throw new ArgumentNullException(nameof(array));
-
                 var (offset, length) = range.GetOffsetAndLength(array.Length);
-
                 if (length == 0)
                     return [];
-
                 if (offset == 0 && length == array.Length)
                     return array;
-
                 var dest = new T[length];
                 Array.Copy(array, offset, dest, 0, length);
                 return dest;
             }
-
         }
         [Intrinsic]
-        public static extern void InitializeArray(Array array, RuntimeFieldHandle fldHandle);
-
+        public static void InitializeArray(Array array, RuntimeFieldHandle fldHandle)
+        {
+            typeof(object).Assembly.GetType("System.Runtime.CompilerServices.RuntimeHelpers")
+                ?.GetMethod("InitializeArray")
+                ?.Invoke(null, [array, fldHandle]);
+        }
         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Field, Inherited = false)]
         internal sealed class IntrinsicAttribute : Attribute
         {

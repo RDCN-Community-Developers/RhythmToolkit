@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct BlendToCameraColorBurn : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.BlendToCameraColorBurn;
 	/// <summary>
 	/// Gets or sets the value of the <b>BlendFX</b>.

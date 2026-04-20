@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct SharpenSharpen : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.SharpenSharpen;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.

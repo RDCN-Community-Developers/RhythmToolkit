@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct Fx8Bits : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.Fx8Bits;
 	/// <summary>
 	/// Gets or sets the value of the <b>ResolutionX</b>.

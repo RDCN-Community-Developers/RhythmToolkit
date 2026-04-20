@@ -7,5 +7,6 @@
 /// Implementations may define specific behaviors or additional properties and methods.</remarks>
 public interface IFilter
 {
-    public FilterType Type { get; }
+    ///<inheritdoc/>
+	public FilterType Type { get; }
 }

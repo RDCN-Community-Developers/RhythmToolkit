@@ -6,5 +6,6 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct Fx8BitsGb : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.Fx8BitsGb;
 }

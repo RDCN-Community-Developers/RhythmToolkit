@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorSepia : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorSepia;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Fade</b>.

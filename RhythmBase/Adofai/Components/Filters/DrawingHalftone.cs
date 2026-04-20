@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DrawingHalftone : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DrawingHalftone;
 	/// <summary>
 	/// Gets or sets the value of the <b>Threshold</b>.

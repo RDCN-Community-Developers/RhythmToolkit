@@ -1,6 +1,7 @@
 using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RhythmBase.RhythmDoctor.Extensions;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
@@ -9,25 +10,16 @@ internal class RoomHeightConverter : JsonConverter<RoomHeight>
 {
 	public override RoomHeight Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
-		if (reader.TokenType != JsonTokenType.StartArray)
-			throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
+		JsonException.ThrowIfNotMatch(reader, [JsonTokenType.StartArray]);
 		RoomHeight height = new();
 		for (int i = 0; i < 4; i++)
 		{
 			reader.Read();
-			if (reader.TokenType == JsonTokenType.Number)
-			{
-				height[i] = reader.GetInt32();
-			}
-			else
-			{
-				throw new JsonException($"Expected Number token, but got {reader.TokenType}.");
-			}
+			JsonException.ThrowIfNotMatch(reader, [JsonTokenType.Number]);
+			height[i] = reader.GetInt32();
 		}
 		reader.Read();
-		if (reader.TokenType != JsonTokenType.EndArray)
-			throw new JsonException($"Expected EndArray token, but got {reader.TokenType}.");
-		reader.Read();
+		JsonException.ThrowIfNotMatch(reader, [JsonTokenType.EndArray]);
 		return height;
 	}
 

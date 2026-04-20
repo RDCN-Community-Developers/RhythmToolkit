@@ -2,8 +2,10 @@ using RhythmBase.Global.Components.RichText;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Extensions
 {
@@ -638,14 +640,16 @@ namespace RhythmBase.RhythmDoctor.Extensions
         public static byte ToIndex(this RDRoomIndex e) => new RDSingleRoom(e).Value;
         extension(JsonException)
         {
-            public static JsonException Throw(Utf8JsonReader reader, string[] expectedTokenType)
+            internal static void ThrowIfNotMatch(Utf8JsonReader reader, JsonTokenType[] expectedTokenType)
             {
-                string message = $"Expected token type: {string.Join(", ", expectedTokenType)}. Actual token type: {reader.TokenType}, at byte position {reader.TokenStartIndex}.";
-                return new JsonException(message);
+                if (expectedTokenType.Contains(reader.TokenType))
+                    return;
+                string message = $"Expected token {string.Join(", ", expectedTokenType)} but got {reader.TokenType} {(Encoding.UTF8.GetString(reader.ValueSpan.ToArray()))}, at byte position {reader.TokenStartIndex}.";
+                throw new JsonException(message);
             }
         }
 #if NETSTANDARD
-        extension<TStyle>(RDLine<TStyle>) where TStyle: IRDRichStringStyle<TStyle>, new()
+        extension<TStyle>(RDLine<TStyle>) where TStyle : IRDRichStringStyle<TStyle>, new()
         {
             /// <summary>
             /// Deserializes a string into an <see cref="RDLine{RDPhraseStyle}"/>.

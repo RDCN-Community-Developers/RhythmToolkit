@@ -256,7 +256,6 @@ namespace RhythmBase.Test
 		{
 			RDLevel level = RDLevel.Default;
 			level.Add(new RhythmBase.Test.Tutorial.MyEvent());
-			Console.WriteLine(level.OfEvent<MacroEvent>().Count());
 			RhythmBase.Global.Components.ReadOnlyEnumCollection<RhythmBase.RhythmDoctor.EventType> eventTypes = EventTypeUtils.CustomTypes;
 		}
 	}

@@ -6,5 +6,6 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FxPlasma : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FxPlasma;
 }

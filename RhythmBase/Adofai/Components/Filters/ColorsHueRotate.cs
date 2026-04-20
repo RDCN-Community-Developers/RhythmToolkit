@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsHueRotate : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsHueRotate;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.

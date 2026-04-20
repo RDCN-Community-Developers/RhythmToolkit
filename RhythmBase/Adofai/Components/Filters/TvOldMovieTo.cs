@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvOldMovieTo : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvOldMovieTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>FramePerSecond</b>.

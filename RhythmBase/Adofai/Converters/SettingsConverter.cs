@@ -11,7 +11,7 @@ namespace RhythmBase.Adofai.Converters;
 [RDJsonConverterFor(typeof(Settings))]
 internal class SettingsConverter : JsonConverter<Settings>
 {
-    private static readonly RDPointsConverter pointsConverter = new();
+    private static readonly RDPointNIConverter pointsConverter = new();
     public override Settings? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject)
@@ -135,7 +135,7 @@ internal class SettingsConverter : JsonConverter<Settings>
             else if (propertyName.SequenceEqual("bgImageColor"u8) && RDColor.TryFromRgba(reader.ValueSpan, out RDColor bgImageColor))
                 settings.BgImageColor = bgImageColor;
             else if (propertyName.SequenceEqual("parallax"u8))
-                settings.Parallax = (RDPointNI)pointsConverter.Read(ref reader, typeof(RDPointNI), options);
+                settings.Parallax = pointsConverter.Read(ref reader, typeof(RDPointNI), options);
             else if (propertyName.SequenceEqual("bgDisplayMode"u8) && EnumConverter.TryParse(reader.ValueSpan, out BgDisplayMode bgDisplayMode))
                 settings.BgDisplayMode = bgDisplayMode;
             else if (propertyName.SequenceEqual("imageSmoothing"u8))
@@ -149,7 +149,7 @@ internal class SettingsConverter : JsonConverter<Settings>
             else if (propertyName.SequenceEqual("relativeTo"u8) && EnumConverter.TryParse(reader.ValueSpan, out CameraRelativeTo cameraRelativeTo))
                 settings.RelativeTo = cameraRelativeTo;
             else if (propertyName.SequenceEqual("position"u8))
-                settings.Position = (RDPointNI)pointsConverter.Read(ref reader, typeof(RDPointNI), options);
+                settings.Position = pointsConverter.Read(ref reader, typeof(RDPointNI), options);
             else if (propertyName.SequenceEqual("rotation"u8))
                 settings.Rotation = reader.GetInt32();
             else if (propertyName.SequenceEqual("zoom"u8))

@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct BlurTiltShift : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.BlurTiltShift;
 	/// <summary>
 	/// Gets or sets the value of the <b>Amount</b>.

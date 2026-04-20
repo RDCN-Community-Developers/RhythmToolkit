@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ExtraRotation : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ExtraRotation;
 	/// <summary>
 	/// Gets or sets the value of the <b>PositionX</b>.

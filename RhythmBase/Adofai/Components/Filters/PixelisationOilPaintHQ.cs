@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct PixelisationOilPaintHQ : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.PixelisationOilPaintHQ;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.

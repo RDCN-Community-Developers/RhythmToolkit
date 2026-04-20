@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct BlurFocus : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.BlurFocus;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Size</b>.

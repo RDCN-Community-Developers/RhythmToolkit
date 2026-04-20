@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct BlurRadial : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.BlurRadial;
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.

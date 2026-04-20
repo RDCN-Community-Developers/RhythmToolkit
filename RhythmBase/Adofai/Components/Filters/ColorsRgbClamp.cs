@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsRgbClamp : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsRgbClamp;
 	/// <summary>
 	/// Gets or sets the value of the <b>Red_End</b>.

@@ -1,0 +1,141 @@
+﻿using RhythmBase.RhythmDoctor.Events;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+using System.Text.Json;
+
+namespace RhythmBase.Global.Components
+{
+    internal interface ILevel<TLevel> : IDisposable where TLevel : ILevel<TLevel>
+    {
+        public int Count { get; }
+        /// <summary>
+        /// The resolved file path for reading. Points to the extracted temporary file if the source is an archive; otherwise identical to <see cref="Filepath"/>.
+        /// </summary>
+        string ResolvedPath { get; }
+        /// <summary>
+        /// The original file path as provided (e.g., archive path or direct file path).
+        /// </summary>
+        string? Filepath { get; }
+        /// <summary>
+        /// The directory containing the resolved file. Points to the temporary extraction directory if the source is an archive; otherwise the directory of <see cref="SourceFilePath"/>.
+        /// </summary>
+        string? ResolvedDirectory { get; }
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// Creates an <typeparamref name="TLevel"/> instance by reading data from the specified file.
+        /// </summary>
+        /// <remarks>This method supports both plain level files and compressed
+        /// archives. If the file is a compressed archive, it is extracted to a temporary
+        /// directory to locate the level file within the archive.</remarks>
+        /// <param name="filepath">The path to the file to read.</param>
+        /// <param name="settings">Optional settings that control how the level is read. If not provided, default settings are used.</param>
+        /// <returns>An <typeparamref name="TLevel"/> instance representing the data read from the file.</returns>
+        /// <exception cref="RhythmBaseException">Thrown if the file format is not supported, if no level file is found in the archive, or if an error occurs during
+        /// file extraction.</exception>
+        static abstract TLevel FromFile(string filepath, LevelReadSettings? settings = null);
+        /// <summary>
+        /// Asynchronously loads an <typeparamref name="TLevel"/> instance from a file.
+        /// </summary>
+        /// <remarks>If the file is a compressed archive, the method extracts its
+        /// contents to a temporary directory and searches for a file with the extension. If no such file is
+        /// found, an exception is thrown. The temporary directory is automatically cleaned up after the operation
+        /// completes.</remarks>
+        /// <param name="filepath">The path to the file to load.</param>
+        /// <param name="settings">Optional settings that control how the level is read. If <see langword="null"/>, default settings are used.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the loaded <typeparamref name="TLevel"/> instance. 
+        /// If the file contains no data or deserialization results in null, the task result will be an empty <typeparamref name="TLevel"/>
+        /// instance.</returns>
+        /// <exception cref="RhythmBaseException">Thrown if the file format is unsupported, if no file is found in a compressed archive, or if an
+        /// error occurs during extraction.</exception>
+        static abstract Task<TLevel> FromFileAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Deserializes an <typeparamref name="TLevel"/> object from the specified stream using the provided settings.
+        /// </summary>
+        /// <remarks>The method invokes the <see cref="LevelReadSettings.OnBeforeReading"/> and <see cref="LevelReadSettings.OnAfterReading"/> callbacks on the provided settings,
+        /// allowing for custom pre- and post-processing during deserialization.</remarks>
+        /// <param name="stream">The stream containing the serialized <typeparamref name="TLevel"/> data. The stream must be readable and positioned at the start of
+        /// the data.</param>
+        /// <param name="settings">Optional settings that control the deserialization process. If not specified, default settings are used.</param>
+        /// <returns>An <typeparamref name="TLevel"/> object representing the deserialized data. Returns an empty <typeparamref name="TLevel"/> instance if the stream contains
+        /// no data or deserialization results in null.</returns>
+        static abstract TLevel FromStream(Stream stream, LevelReadSettings? settings = null);
+        /// <summary>
+        /// Asynchronously reads a level from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the level data.</param>
+        /// <param name="settings">Optional settings for reading the level.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A <see cref="Task{TLevel}"/> representing the asynchronous operation, with an <typeparamref name="TLevel"/> instance loaded from the stream.</returns>
+        static abstract Task<TLevel> FromStreamAsync(Stream stream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default);
+#endif
+        /// <summary>
+        /// Saves the current level to a file in JSON format.
+        /// </summary>
+        /// <param name="filepath">The file path where the level will be saved.</param>
+        /// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+        void SaveToFile(string filepath, LevelWriteSettings? settings = null);
+        /// <summary>
+        /// Asynchronously saves the current level to a file in JSON format.
+        /// </summary>
+        /// <param name="filepath">The file path where the level will be saved.</param>
+        /// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        void SaveToFileAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Saves the current level to the specified stream in JSON format.
+        /// </summary>
+        /// <param name="stream">The stream to which the level will be saved.</param>
+        /// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+        void SaveToStream(Stream stream, LevelWriteSettings? settings = null);
+        /// <summary>
+        /// Asynchronously saves the current level to the specified stream in JSON format.
+        /// </summary>
+        /// <param name="stream">The stream to which the level will be saved.</param>
+        /// <param name="settings">Optional settings for writing the level. If null, default settings are used.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        void SaveToStreamAsync(Stream stream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Saves the current level data to a file in packed (ZIP) format at the specified path. (This method is not fully implemented yet.)
+        /// </summary>
+        /// <param name="filepath">The path of the file to create and write the packed level data to. Must not be null or empty.</param>
+        /// <param name="settings">Optional settings that control how the level data is written. If null, default settings are used.</param>
+        void SaveToZip(string filepath, LevelWriteSettings? settings = null);
+        /// <summary>
+        /// Asynchronously saves the current level and its associated assets to a ZIP archive at the specified file path.
+        /// </summary>
+        /// <remarks>The resulting ZIP archive will contain the main level data as a JSON file and any referenced
+        /// asset files. This method is asynchronous but returns void; exceptions will be thrown on the calling thread if the
+        /// operation fails.</remarks>
+        /// <param name="filepath">The full path to the ZIP file to create. If the file exists, it will be overwritten.</param>
+        /// <param name="settings">Optional settings that control how the level and its assets are serialized. If null, default settings are used.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the save operation.</param>
+        /// <exception cref="NotImplementedException">Thrown if the level's directory is not set.</exception>
+        void SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default);
+    }
+    internal interface IJsonLevel<TLevel> : ILevel<TLevel> where TLevel : ILevel<TLevel>
+    {
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// Deserializes a JSON document into an instance of the RDLevel class using the specified settings.
+        /// </summary>
+        /// <remarks>This method invokes the OnBeforeReading and OnAfterReading callbacks from the provided settings to
+        /// allow for custom pre- and post-processing during deserialization.</remarks>
+        /// <param name="jsonDocument">The JSON document to deserialize. This parameter cannot be null.</param>
+        /// <param name="settings">Optional settings that control the deserialization process. If not specified, default settings are used.</param>
+        /// <returns>An instance of RDLevel representing the deserialized data. Returns an empty array if deserialization fails.</returns>
+        static abstract TLevel FromJsonDocument(JsonDocument jsonDocument, LevelReadSettings? settings = null);
+        /// <summary>
+        /// Reads a level from a JSON string.
+        /// </summary>
+        /// <param name="json">The JSON string containing the level data.</param>
+        /// <param name="settings">Optional settings for reading the level.</param>
+        /// <returns>An <typeparamref name="TLevel"/> instance loaded from the JSON string.</returns>
+        static abstract TLevel FromJsonString(string json, LevelReadSettings? settings = null);
+#endif
+        JsonDocument ToJsonDocument(LevelWriteSettings? settings = null);
+        string ToJsonString(LevelWriteSettings? settings = null);
+    }
+}

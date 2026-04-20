@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct OldFilmCutting1 : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.OldFilmCutting1;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.

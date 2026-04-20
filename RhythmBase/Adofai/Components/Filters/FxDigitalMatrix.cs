@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FxDigitalMatrix : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FxDigitalMatrix;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.

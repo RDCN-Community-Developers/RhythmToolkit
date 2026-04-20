@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DrawingCurve : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DrawingCurve;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.

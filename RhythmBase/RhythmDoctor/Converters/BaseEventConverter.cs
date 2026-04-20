@@ -1,5 +1,6 @@
 using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.RhythmDoctor.Utils.EventTypeUtils;
@@ -27,9 +28,7 @@ internal class BaseEventConverter : JsonConverter<IBaseEvent>
 	}
 	public override IBaseEvent? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
-		if (reader.TokenType != JsonTokenType.StartObject)
-			throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
-
+		JsonException.ThrowIfNotMatch(reader, [JsonTokenType.StartObject]);
 		ReadOnlySpan<byte> type = default;
 
 		Utf8JsonReader checkpoint = reader;
@@ -56,8 +55,7 @@ internal class BaseEventConverter : JsonConverter<IBaseEvent>
 			e = ReadForwardEvent(ref reader) ?? new ForwardEvent() { ActualType = type.ToString() ?? "" };
 		else
 			e = converters[typeEnum].WithReadSettings(_rs).ReadProperties(ref reader, options);
-		if (reader.TokenType != JsonTokenType.EndObject)
-			throw new JsonException($"Expected EndObject token, but got {reader.TokenType}.");
+		JsonException.ThrowIfNotMatch(reader, [JsonTokenType.EndObject]);
 		reader.Read();
 		return e;
 	}
@@ -67,10 +65,6 @@ internal class BaseEventConverter : JsonConverter<IBaseEvent>
 		{
 			WriteForwardEvent(writer, ce);
 			return;
-		}
-		else if (value is MacroEvent)
-		{
-			throw new NotSupportedException("Group should be handled in GroupConverter. It will be fixed in the next version.");
 		}
 		else
 		{

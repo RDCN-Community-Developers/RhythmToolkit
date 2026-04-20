@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct EyesVision1 : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.EyesVision1;
 	/// <summary>
 	/// Gets or sets the value of the <b>_EyeWave</b>.

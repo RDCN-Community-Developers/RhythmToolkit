@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorGrayScale : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorGrayScale;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Fade</b>.

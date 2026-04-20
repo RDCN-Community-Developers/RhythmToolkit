@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct AtmosphereRain : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.AtmosphereRain;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.

@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorContrast : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorContrast;
 	/// <summary>
 	/// Gets or sets the value of the <b>Contrast</b>.

@@ -1,6 +1,7 @@
 using RhythmBase.Global.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
+using RhythmBase.RhythmDoctor.Extensions;
 using System.Text;
 using System.Text.Json;
 
@@ -37,11 +38,10 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 				value.Beat = new(bar, beat);
 				return value;
 			}
-			if (reader.TokenType != JsonTokenType.PropertyName)
-				throw new JsonException("Expected property name");
+			JsonException.ThrowIfNotMatch(reader, [JsonTokenType.PropertyName]);
 			ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 			if (propertyName.IsEmpty)
-				throw new JsonException("Property name cannot be null");
+				throw new JsonException("Property name cannot be null.");
 			reader.Read();
 			if (propertyName.SequenceEqual("bar"u8))
 				bar = reader.GetInt32();
@@ -59,7 +59,7 @@ internal abstract class EventInstanceConverterBaseEvent<TEvent> : EventInstanceC
 				//	))
 				//	Console.WriteLine($"The key {Encoding.UTF8.GetString([.. propertyName])} of {value.Type} not found.");
 #endif
-				value[
+                value[
 					Encoding.UTF8.GetString(propertyName)
 					] = JsonElement.ParseValue(ref reader);
 			}

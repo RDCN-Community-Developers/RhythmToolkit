@@ -6,5 +6,6 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsAdjustColorRGB : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsAdjustColorRGB;
 }

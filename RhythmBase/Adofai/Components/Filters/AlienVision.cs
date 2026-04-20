@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct AlienVision : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.AlienVision;
 	/// <summary>
 	/// Gets or sets the value of the <b>Therma_Variation</b>.

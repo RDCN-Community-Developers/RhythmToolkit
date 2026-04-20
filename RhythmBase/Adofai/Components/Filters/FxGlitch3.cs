@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FxGlitch3 : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FxGlitch3;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Glitch</b>.

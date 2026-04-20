@@ -8,6 +8,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct AaaSuperHexagon : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.AaaSuperHexagon;
 	/// <summary>
 	/// Gets or sets the value of the <b>_AlphaHexa</b>.

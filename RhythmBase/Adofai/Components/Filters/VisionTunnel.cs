@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct VisionTunnel : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.VisionTunnel;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.

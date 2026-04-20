@@ -8,6 +8,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FxSpot : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FxSpot;
 	/// <summary>
 	/// Gets or sets the value of the <b>center</b>.

@@ -9,129 +9,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 	public static partial class EventTypeUtils
 	{
 		/// <summary>  
-		/// Converts a type to its corresponding EventType enumeration.  
-		/// </summary>  
-		/// <param name="type">The type to convert.</param>  
-		/// <returns>The corresponding EventType enumeration.</returns>  
-		/// <exception cref="IllegalEventTypeException">Thrown when no matching EventType is found or multiple matching EventTypes are found.</exception>  
-		public static EventType ToEnum(Type type)
-		{
-			EventType ConvertToEnum;
-			if (_type2enums == null)
-			{
-				string name = type.Name;
-				if (!Enum.TryParse(name, out EventType result))
-				{
-					throw new IllegalEventTypeException(type, "Unable to find a matching EventType.");
-				}
-				ConvertToEnum = result;
-			}
-			else
-			{
-				try
-				{
-					ConvertToEnum = _type2enums[type].Single();
-				}
-				catch (Exception)
-				{
-					throw new IllegalEventTypeException(type, "Multiple matching EventTypes were found. Please check if the type is an abstract class type.", new ArgumentException("Multiple matching EventTypes were found. Please check if the type is an abstract class type.", nameof(type)));
-				}
-			}
-			return ConvertToEnum;
-		}
-		/// <summary>  
-		/// Converts a generic event type to its corresponding EventType enumeration.  
-		/// </summary>  
-		/// <typeparam name="TEvent">The generic event type to convert.</typeparam>  
-		/// <returns>The corresponding EventType enumeration.</returns>  
-		public static EventType ToEnum<TEvent>() where TEvent : IBaseEvent, new() => ToEnum(typeof(TEvent));
-		/// <summary>  
-		/// Converts a type to an array of corresponding EventType enumerations.  
-		/// </summary>  
-		/// <param name="type">The type to convert.</param>  
-		/// <returns>An array of corresponding EventType enumerations.</returns>  
-		/// <exception cref="IllegalEventTypeException">Thrown when an unexpected exception occurs.</exception>  
-		public static ReadOnlyEnumCollection<EventType> ToEnums(Type type)
-		{
-			if (typeof(MacroEvent).IsAssignableFrom(type))
-				return new(EventType.MacroEvent);
-			if(typeof(IBaseEvent) == type)
-				type = typeof(BaseEvent);
-			return _type2enums.TryGetValue(type, out var value) ? value : throw new IllegalEventTypeException(type);
-		}
-		/// <summary>  
-		/// Converts a generic event type to an array of corresponding EventType enumerations.  
-		/// </summary>  
-		/// <typeparam name="TEvent">The generic event type to convert.</typeparam>  
-		/// <returns>An array of corresponding EventType enumerations.</returns>
-		public static ReadOnlyEnumCollection<EventType> ToEnums<TEvent>() where TEvent : IBaseEvent => ToEnums(typeof(TEvent));
-		/// <summary>  
-		/// Converts a string representation of an event type to its corresponding Type.  
-		/// </summary>  
-		/// <param name="type">The string representation of the event type.</param>  
-		/// <returns>The corresponding Type.</returns>
-		public static Type ToType(string type)
-		{
-			Type ConvertToType;
-			if (Enum.TryParse(type, out EventType result))
-			{
-				ConvertToType = result.ToType();
-			}
-			else
-			{
-				ConvertToType = EventType.ForwardEvent.ToType();
-			}
-			return ConvertToType;
-		}
-		/// <summary>  
-		/// Converts an EventType enumeration to its corresponding Type.  
-		/// </summary>  
-		/// <param name="type">The EventType enumeration to convert.</param>  
-		/// <returns>The corresponding Type.</returns>  
-		/// <exception cref="IllegalEventTypeException">Thrown when the value does not exist in the EventType enumeration.</exception>
-		public static Type ToType(this EventType type)
-		{
-			Type ConvertToType;
-			if (_enum2type == null)
-			{
-				return Type.GetType($"{typeof(IBaseEvent).Namespace}.{type}") ?? throw new RhythmBaseException(
-						$"Illegal Type: {type}.");
-			}
-			else
-			{
-				try
-				{
-					ConvertToType = _enum2type[type];
-				}
-				catch
-				{
-					throw new IllegalEventTypeException(type.ToString(), "This value does not exist in the EventType enumeration.");
-				}
-			}
-			return ConvertToType;
-		}
-
-		//private static readonly ReadOnlyCollection<Type> EventTypes = (from i in typeof(IBaseEvent).Assembly.GetTypes().Where(i => i.Namespace == typeof(IBaseEvent).Namespace)
-		//																															 where typeof(IBaseEvent).IsAssignableFrom(i)
-		//																															 select i)
-		//		.ToList()
-		//		.AsReadOnly();
-		///// <summary>  
-		///// A dictionary that records the correspondence of event types inheriting from <see cref="T:RhythmBase.Events.IBaseEvent" /> to <see cref="T:RhythmBase.Events.EventType" />.  
-		///// </summary>  
-		//private static readonly ReadOnlyDictionary<Type, EventType[]> EventType_Enums = new(EventTypes.ToDictionary((i) => i, (i) => (from j in EventTypes
-		//																																																															where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
-		//																																																															select ToEnum(j))
-		//		.ToArray()));
-		internal static readonly ReadOnlyCollection<Type> MacroTypes = (from i in AppDomain.CurrentDomain.GetAssemblies().SelectMany(i => i.GetTypes())
-																																		where
-																																				typeof(MacroEvent).IsAssignableFrom(i) &&
-																																				i != typeof(MacroEvent) &&
-																																				i != typeof(MacroEvent<>)
-																																		select i)
-				.ToList()
-				.AsReadOnly();
-		/// <summary>  
 		/// Event types that inherit from <see cref="T:RhythmBase.Events.BaseRowAction" />.  
 		/// </summary>  
 		public static readonly ReadOnlyEnumCollection<EventType> RowTypes = ToEnums<BaseRowAction>();
@@ -145,8 +22,7 @@ namespace RhythmBase.RhythmDoctor.Utils
 		public static readonly ReadOnlyEnumCollection<EventType> CustomTypes = new(2,
 				EventType.ForwardEvent,
 				EventType.ForwardRowEvent,
-				EventType.ForwardDecorationEvent,
-				EventType.MacroEvent
+				EventType.ForwardDecorationEvent
 		);
 		/// <summary>  
 		/// Event types for gameplay.  

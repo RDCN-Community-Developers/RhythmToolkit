@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DistortionWaveHorizontal : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DistortionWaveHorizontal;
 	/// <summary>
 	/// Gets or sets the value of the <b>WaveIntensity</b>.

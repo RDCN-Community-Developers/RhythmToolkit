@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct VhsTracking : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.VhsTracking;
 	/// <summary>
 	/// Gets or sets the value of the <b>Tracking</b>.

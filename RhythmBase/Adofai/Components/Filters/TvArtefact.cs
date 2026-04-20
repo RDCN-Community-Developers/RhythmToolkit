@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvArtefact : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvArtefact;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.

@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct VisionPsycho : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.VisionPsycho;
 	/// <summary>
 	/// Gets or sets the value of the <b>HoleSize</b>.

@@ -8,6 +8,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct BlurRegular : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.BlurRegular;
 	/// <summary>
 	/// Gets or sets the value of the <b>Level</b>.

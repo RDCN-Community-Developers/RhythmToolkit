@@ -6,5 +6,6 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvVideo3D : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvVideo3D;
 }

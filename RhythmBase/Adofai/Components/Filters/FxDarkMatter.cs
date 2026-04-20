@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FxDarkMatter : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FxDarkMatter;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.

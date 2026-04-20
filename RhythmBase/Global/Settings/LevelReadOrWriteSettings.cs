@@ -109,11 +109,6 @@ public class LevelReadSettings
 				break;
 		}
 	}
-	/// <summary>  
-	/// Indicates whether group events are enabled.  
-	/// Defaults to <see langword="false" />.  
-	/// </summary>  
-	public bool EnableMacroEvent { get; set; } = false;
 	internal void OnBeforeReading()
 	{
 		BeforeReading?.Invoke(this, EventArgs.Empty);
@@ -223,11 +218,6 @@ public class LevelWriteSettings
 	/// Defaults to <see langword="true" />.
 	/// </summary>
 	public bool Indented { get; set; } = true;
-	/// <summary>  
-	/// Indicates whether group events are enabled.  
-	/// Defaults to <see langword="false" />.  
-	/// </summary>  
-	public bool EnableMacroEvent { get; set; } = false;
 	internal void OnBeforeWriting()
 	{
 		BeforeWriting?.Invoke(this, EventArgs.Empty);

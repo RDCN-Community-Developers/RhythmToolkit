@@ -103,10 +103,6 @@ public enum EventType
 	/// </summary>
 	InvertColors,
 	/// <summary>
-	/// A group of events, from user-defined event.
-	/// </summary>
-	MacroEvent,
-	/// <summary>
 	/// Mask the room.
 	/// </summary>
 	MaskRoom,

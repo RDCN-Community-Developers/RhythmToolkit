@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace RhythmBase.RhythmDoctor.Converters;
 
+[RDJsonConverterFor(typeof(RDLevel))]
 internal sealed class LevelConverter : JsonConverter<RDLevel>
 {
     private static readonly SettingsConverter settingsConverter = new();
@@ -20,6 +21,7 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
     internal string? DirectoryName { get; set; }
     public override RDLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        reader.Read();
         baseEventConverter.WithReadSettings(ReadSettings);
         RDLevel level = [];
         ReadSettings.FileReferences.Clear();
@@ -114,13 +116,23 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
                 Comment? maybeDataComment = null;
                 List<JsonDocument> maybeIllegalAt = [];
                 reader.Read();
+                int index = 0;
                 while (true)
                 {
                     if (reader.TokenType == JsonTokenType.EndArray)
                         break;
                     IBaseEvent? e = null;
 #if DEBUG
-                    e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
+                    try
+                    {
+                        e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
+                        index++;
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine($"Current index: {index}");
+                        throw;
+                    }
 #else
                     Utf8JsonReader checkPoint = reader;
                     try
@@ -141,33 +153,12 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
 #endif
                     if (e == null)
                         continue;
-                    if (ReadSettings.EnableMacroEvent)
-                    {
-                        if (e is Comment c && MacroEvent.TryGetTypeData(c, out types, out data))
-                        {
-                            maybeDataComment ??= c;
-                            continue;
-                        }
-                        else if (e is TagAction ta && MacroEvent.TryMatch(ta))
-                        {
-                            maybeMacroEvents.Add(ta);
-                        }
-                        else if (e is TagAction ta1 && MacroEvent.MatchTag(ta1.ActionTag, out int type, out _, out _)
-                            || MacroEvent.MatchTag(e.Tag, out type, out _, out _))
-                        {
-                            if (maybeGeneratedEvents.TryGetValue(type, out List<IBaseEvent>? list))
-                                list.Add(e);
-                            else
-                                maybeGeneratedEvents[type] = [e];
-                        }
-                        else
-                            level.Add(e);
-                    }
-                    else
                         level.Add(e);
                     if (e is FloatingText ft)
                     {
-                        floatingTexts[ft["id"].GetInt32()] = ft;
+                        JsonElement v1 = ft["id"];
+                        int v2 = v1.GetInt32();
+                        floatingTexts[v2] = ft;
                         ft._extraData.Remove("id");
                     }
                     else if (e is AdvanceText at)
@@ -181,28 +172,6 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
                     }
                 }
                 reader.Read();
-                if (ReadSettings.EnableMacroEvent && maybeDataComment != null && types != null && data != null)
-                {
-                    HashSet<int> matchedIds = [];
-                    foreach (TagAction? mm in maybeMacroEvents)
-                    {
-                        if (MacroEvent.TryParse(mm, types, out MacroEvent? result))
-                        {
-                            matchedIds.Add(result!.DataId);
-                            if (result.DataId >= data.Length)
-                                ReadSettings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(mm, options), $"DataId {result.DataId} is out of range.");
-                            result._data = data[result.DataId];
-                            result.Flush();
-                            level.Add(result);
-                        }
-                    }
-                    foreach (KeyValuePair<int, List<IBaseEvent>> mms in maybeGeneratedEvents)
-                    {
-                        if (!matchedIds.Contains(mms.Key))
-                            foreach (IBaseEvent? e in mms.Value)
-                                level.Add(e);
-                    }
-                }
                 foreach (AdvanceText? at in advanceTexts)
                 {
                     int targetId = at["id"].GetInt32();
@@ -214,7 +183,7 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
                     }
                     else
                     {
-                        ReadSettings.HandleUnreadableEvent(JsonSerializer.SerializeToElement(at, options), $"AdvanceText references non-existent FloatingText id {targetId}.");
+                        ReadSettings.HandleUnreadableEvent(JsonElement.Parse(at.ToJsonString()), $"AdvanceText references non-existent FloatingText id {targetId}.");
                     }
                 }
             }
@@ -340,92 +309,9 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
         writer.WriteEndArray();
         writer.WritePropertyName("events");
         writer.WriteStartArray();
-        if (WriteSettings.EnableMacroEvent)
-        {
-            JsonSerializerOptions dataOptions = new()
-            {
-                WriteIndented = false,
-            };
-            List<MacroEvent> macros = [];
-            List<IBaseEvent> normalEvents = [];
-            List<string> data = [];
-            int id = 0;
-            foreach (IBaseEvent e in value)
-            {
-                if (e is MacroEvent macro)
-                {
-                    macro.Flush();
-                    string rawData = JsonSerializer.Serialize(macro._data, dataOptions);
-                    if (!data.Contains(rawData))
-                    {
-                        data.Add(rawData);
-                        macro.DataId = id;
-                        id++;
-                        macros.Add(macro);
-                        foreach (IBaseEvent e2 in macro.GenerateTaggedEvents(
-                            $"{Utils.Utils.RhythmBaseMacroEventHeader}{EventTypeUtils.MacroTypes.IndexOf(macro.GetType()):X8}{macro.DataId:X8}"
-                        ))
-                        {
-                            if (e2 is MacroEvent)
-                                throw new ConvertingException($"{nameof(MacroEvent)} cannot contain another {nameof(MacroEvent)}.");
-                            if (e2 is SetCrotchetsPerBar)
-                                throw new RhythmBaseException($"{nameof(SetCrotchetsPerBar)} events are not allowed within a {nameof(MacroEvent)}.");
-                            normalEvents.Add(e2);
-                        }
-                    }
-                    normalEvents.Add(macro.GenerateTagAction());
-                }
-                else
-                {
-                    stream.SetLength(0);
-                    if (options.WriteIndented)
-                        stream.Write(bytes, 0, bytes.Length);
-                    baseEventConverter.Write(noIndentWriter, e, localOptions);
-                    noIndentWriter.Flush();
-                    sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-                    writer.WriteRawValue(sl);
-                    noIndentWriter.Reset();
-                }
-                if (WriteSettings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
-                    foreach (FileReference file in fe.Files)
-                        if (!file.IsEmpty && file.IsExist(DirectoryName!))
-                            WriteSettings.FileReferences.Add(file);
-            }
-            StringBuilder sb = new() { };
-            sb.AppendLine(Utils.Utils.RhythmBaseMacroEventDataHeader);
-            sb.AppendLine("# Generated by RhythmBase #");
-            for (int i = 0; i < EventTypeUtils.MacroTypes.Count; i++)
-            {
-                Type t = EventTypeUtils.MacroTypes[i];
-                sb.AppendLine($"@{t.FullName}");
-            }
-            for (int i = 0; i < data.Count; i++)
-            {
-                if (i > 0)
-                    sb.AppendLine();
-                sb.AppendLine(data[i]);
-            }
-            sb.Replace("\r\n", "\n");
-            normalEvents.Add(new Comment() { Y = -1, Text = sb.ToString() });
-            foreach (IBaseEvent e in normalEvents)
-            {
-                stream.SetLength(0);
-                if (options.WriteIndented)
-                    stream.Write(bytes, 0, bytes.Length);
-                baseEventConverter.Write(noIndentWriter, e, localOptions);
-                noIndentWriter.Flush();
-                sl = stream.GetBuffer().AsSpan(0, (int)stream.Position);
-                writer.WriteRawValue(sl);
-                noIndentWriter.Reset();
-            }
-        }
-        else
         {
             foreach (IBaseEvent e in value)
             {
-                if (e is MacroEvent macro)
-                    throw new ConvertingException("MacroEvent found, but EnableMacroEvent is false in LevelReadOrWriteSettings.");
-                else
                 {
                     stream.SetLength(0);
                     if (options.WriteIndented)

@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct LightWaterTo : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.LightWaterTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.

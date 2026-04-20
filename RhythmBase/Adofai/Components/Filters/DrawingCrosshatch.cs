@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DrawingCrosshatch : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DrawingCrosshatch;
 	/// <summary>
 	/// Gets or sets the value of the <b>Width</b>.

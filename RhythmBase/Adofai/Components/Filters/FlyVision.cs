@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FlyVision : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FlyVision;
 	/// <summary>
 	/// Gets or sets the value of the <b>Zoom</b>.

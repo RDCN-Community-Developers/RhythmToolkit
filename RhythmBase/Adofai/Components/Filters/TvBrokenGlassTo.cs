@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvBrokenGlassTo : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvBrokenGlassTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>Bullet_4</b>.

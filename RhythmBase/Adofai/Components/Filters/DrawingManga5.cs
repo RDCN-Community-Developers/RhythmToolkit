@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DrawingManga5 : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DrawingManga5;
 	/// <summary>
 	/// Gets or sets the value of the <b>DotSize</b>.

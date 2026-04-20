@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsBleachBypass : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsBleachBypass;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.

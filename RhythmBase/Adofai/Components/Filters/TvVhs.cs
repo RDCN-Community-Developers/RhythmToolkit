@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvVhs : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvVhs;
 	/// <summary>
 	/// Gets or sets the value of the <b>Cryptage</b>.

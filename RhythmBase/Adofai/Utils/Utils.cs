@@ -20,7 +20,6 @@ namespace RhythmBase.Adofai.Utils
 				Converters =
 				{
 					new LevelConverter(),
-					new RDPointsConverter(),
 					new TileReferenceConverter(),
 					new FileReferenceConverter(),
 				}
@@ -30,96 +29,6 @@ namespace RhythmBase.Adofai.Utils
 		/// Represents the angle used for mid-spin calculations.  
 		/// </summary>  
 		public const float MidSpinAngle = 999f;
-		/// <summary>
-		/// Converts a given type to an EventType enumeration.
-		/// </summary>
-		/// <param name="type">The type to convert.</param>
-		/// <returns>The corresponding EventType enumeration.</returns>
-		/// <exception cref="IllegalEventTypeException">Thrown when no matching EventType is found or multiple matching EventTypes are found.</exception>
-		public static EventType ADConvertToEnum(Type type)
-		{
-			if (ADETypesToEnum == null)
-			{
-				string name = type.Name;
-				return Enum.TryParse(name, out EventType result)
-					? result
-					: throw new IllegalEventTypeException(type, "Unable to find a matching EventType.");
-			}
-			EventType ADConvertToEnum;
-			try
-			{
-				ADConvertToEnum = ADETypesToEnum![type].Single();
-			}
-			catch
-			{
-				throw new IllegalEventTypeException(type, "Multiple matching EventTypes were found. Please check if the type is an abstract class type.", new ArgumentException("Multiple matching EventTypes were found. Please check if the type is an abstract class type.", nameof(type)));
-			}
-			return ADConvertToEnum;
-		}
-		/// <summary>
-		/// Converts a generic type to an EventType enumeration.
-		/// </summary>
-		/// <typeparam name="T">The type to convert, which must inherit from ADBaseEvent and have a parameterless constructor.</typeparam>
-		/// <returns>The corresponding EventType enumeration.</returns>
-		public static EventType ConvertToADEnum<T>() where T : BaseEvent, new() => ADConvertToEnum(typeof(T));
-		/// <summary>
-		/// Converts a generic type to an array of EventType enumerations.
-		/// </summary>
-		/// <typeparam name="T">The type to convert, which must inherit from BaseEvent.</typeparam>
-		/// <returns>An array of corresponding EventType enumerations.</returns>
-		/// <exception cref="IllegalEventTypeException">Thrown when no matching EventType is found.</exception>
-		public static EventType[] ConvertToADEnums<T>() where T : RhythmBase.Adofai.Events.BaseEvent
-		{
-			EventType[] ConvertToADEnums;
-			try
-			{
-				ConvertToADEnums = ADETypesToEnum[typeof(T)];
-			}
-			catch
-			{
-				throw new IllegalEventTypeException(typeof(T), "This exception is not expected. Please contact the developer to handle this exception.");
-			}
-			return ConvertToADEnums;
-		}
-		/// <summary>
-		/// Converts a string representation of an EventType to a Type.
-		/// </summary>
-		/// <param name="type">The string representation of the EventType.</param>
-		/// <returns>The corresponding Type.</returns>
-		public static Type ADConvertToType(string type)
-		{
-			bool flag = Enum.TryParse(type, out EventType result);
-			Type ADConvertToType;
-			if (flag)
-				ADConvertToType = ConvertToType(result);
-			else
-				ADConvertToType = ConvertToType(EventType.ForwardEvent);
-			return ADConvertToType;
-		}
-		/// <summary>
-		/// Converts an EventType enumeration to a Type.
-		/// </summary>
-		/// <param name="type">The EventType enumeration to convert.</param>
-		/// <returns>The corresponding Type.</returns>
-		/// <exception cref="RhythmBaseException">Thrown when the type is illegal.</exception>
-		/// <exception cref="IllegalEventTypeException">Thrown when the value does not exist in the EventType enumeration.</exception>
-		public static Type ConvertToType(this EventType type)
-		{
-			Type ConvertToType;
-			if (ADEnumToEType == null)
-				ConvertToType = Type.GetType($"{typeof(BaseEvent).Namespace}.{type}")
-					?? throw new RhythmBaseException($"Illegal Type: {type}.");
-			else
-				try
-				{
-					ConvertToType = ADEnumToEType[type];
-				}
-				catch
-				{
-					throw new IllegalEventTypeException(type.ToString(), "This value does not exist in the EventType enumeration.");
-				}
-			return ConvertToType;
-		}
 		/// <summary>
 		/// Creates and configures a <see cref="JsonSerializerOptions"/> instance for serializing and deserializing JSON data.
 		/// </summary>
@@ -154,18 +63,5 @@ namespace RhythmBase.Adofai.Utils
 			options.Converters.Add(levelConverter);
 			return options;
 		}
-		private static readonly ReadOnlyCollection<Type> ADETypes = (from i in typeof(BaseEvent).Assembly.GetTypes()
-																	 where typeof(BaseEvent).IsAssignableFrom(i)
-																	 select i).ToList().AsReadOnly();
-		/// <summary>
-		/// A dictionary that records the correspondence of EventType to event types inheriting from ADBaseEvent.
-		/// </summary>
-		public static readonly ReadOnlyDictionary<Type, EventType[]> ADETypesToEnum = new(ADETypes.ToDictionary(i => i, i => (from j in ADETypes
-																																			where (j == i || i.IsAssignableFrom(j)) && !j.IsAbstract
-																																			select j).Select(j => ADConvertToEnum(j)).ToArray()));
-		/// <summary>
-		/// A dictionary that records the correspondence of event types inheriting from ADBaseEvent to EventType.
-		/// </summary>
-		public static readonly ReadOnlyDictionary<EventType, Type> ADEnumToEType = new(((EventType[])Enum.GetValues(typeof(EventType))).ToDictionary(i => i, ConvertToType));
 	}
 }

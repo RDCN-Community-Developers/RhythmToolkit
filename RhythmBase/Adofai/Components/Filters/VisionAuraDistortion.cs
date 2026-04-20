@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct VisionAuraDistortion : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.VisionAuraDistortion;
 	/// <summary>
 	/// Gets or sets the value of the <b>Twist</b>.

@@ -202,8 +202,12 @@ namespace RhythmBase.Adofai.Components
 		{
 			return angle == 999 ? new(true) : new(angle);
 		}
+        /// <summary>
+        /// Defines an implicit conversion from a boolean representing a mid-spin state to a Tile instance.
+        /// </summary>
+        /// <param name="isMidSpin"></param>
 
-		public static implicit operator Tile(bool isMidSpin) => new(isMidSpin);
+        public static implicit operator Tile(bool isMidSpin) => new(isMidSpin);
 		/// <summary>
 		/// The internal storage for the angle of the tile.
 		/// </summary>

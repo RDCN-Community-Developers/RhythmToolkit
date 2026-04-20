@@ -6,5 +6,6 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct AntialiasingFxaa : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.AntialiasingFxaa;
 }

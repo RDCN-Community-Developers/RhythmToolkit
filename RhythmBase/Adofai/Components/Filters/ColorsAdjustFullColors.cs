@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsAdjustFullColors : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsAdjustFullColors;
 	/// <summary>
 	/// Gets or sets the value of the <b>Red_R</b>.

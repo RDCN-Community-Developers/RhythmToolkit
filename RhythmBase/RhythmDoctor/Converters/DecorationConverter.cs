@@ -27,7 +27,7 @@ internal class DecorationConverter : JsonConverter<Decoration>
 				else if (reader.ValueSpan.SequenceEqual("rooms"u8))
 				{
 					reader.Read();
-					decoration.Room = JsonSerializer.Deserialize<RDSingleRoom>(ref reader, options);
+					decoration.Room = ConverterHub.Read<RDSingleRoom>(ref reader, options);
 				}
 				else if (reader.ValueSpan.SequenceEqual("filename"u8))
 				{
@@ -75,7 +75,7 @@ internal class DecorationConverter : JsonConverter<Decoration>
 		writer.WriteString("id"u8, value.Id);
 		writer.WriteNumber("row"u8, value.Index);
 		writer.WritePropertyName("rooms"u8);
-		JsonSerializer.Serialize(writer, value.Room, options);
+		ConverterHub.Write(writer, value.Room, options);
 		if (!value.Character.IsCustom && value.Character.Character is RDCharacters rdc)
 			writer.WriteString("character", EnumConverter.ToEnumString(rdc));
 		else

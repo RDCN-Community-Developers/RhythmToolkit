@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct PixelPixelisation : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.PixelPixelisation;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Pixelisation</b>.

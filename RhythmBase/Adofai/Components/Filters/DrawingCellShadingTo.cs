@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DrawingCellShadingTo : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DrawingCellShadingTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>EdgeSize</b>.

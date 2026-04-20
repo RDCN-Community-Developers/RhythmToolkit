@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsAdjustPreFilters : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsAdjustPreFilters;
 	/// <summary>
 	/// Gets or sets the value of the <b>FadeFX</b>.

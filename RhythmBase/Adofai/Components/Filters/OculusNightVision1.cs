@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct OculusNightVision1 : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.OculusNightVision1;
 	/// <summary>
 	/// Gets or sets the value of the <b>Vignette</b>.

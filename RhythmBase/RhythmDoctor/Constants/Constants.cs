@@ -88,7 +88,13 @@ namespace RhythmBase.RhythmDoctor.Constants
 		/// supports intensity, color, easing, etc.). The values are intended to be tested with bitwise operations.
 		/// </remarks>
 		public static ReadOnlyDictionary<VfxPreset, VfxAttribute> VfxAttributes => _vfxAttributes;
-		private static readonly ReadOnlyDictionary<VfxPreset, VfxAttribute> _vfxAttributes = new(new Dictionary<VfxPreset, VfxAttribute>
+		/// <summary>
+		/// Represents the total number of rooms available.
+		/// </summary>
+
+		public const int RoomCount = 4;
+
+        private static readonly ReadOnlyDictionary<VfxPreset, VfxAttribute> _vfxAttributes = new(new Dictionary<VfxPreset, VfxAttribute>
 		{
 			[VfxPreset.Vignette] = VfxAttribute.MultiRooms,
 			[VfxPreset.VignetteFlicker] = VfxAttribute.MultiRooms,

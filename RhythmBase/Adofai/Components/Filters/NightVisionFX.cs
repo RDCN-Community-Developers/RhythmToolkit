@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct NightVisionFX : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.NightVisionFX;
 	/// <summary>
 	/// Gets or sets the value of the <b>Greenness</b>.

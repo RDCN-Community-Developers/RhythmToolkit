@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FxAscii : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FxAscii;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.

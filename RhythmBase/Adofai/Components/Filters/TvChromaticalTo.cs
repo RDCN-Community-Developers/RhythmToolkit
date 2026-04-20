@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvChromaticalTo : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvChromaticalTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>Aberration</b>.

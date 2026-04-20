@@ -16,7 +16,7 @@ public record class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
 	{
 		get => _extraData.TryGetValue("type", out JsonElement typeElement) && typeElement.ValueKind == JsonValueKind.String ?
 			typeElement.GetString() ?? "" : "";
-		set => _extraData["type"] = JsonSerializer.SerializeToElement(value);
+		set => _extraData["type"] = JsonElement.Parse(value);
 	}
 	/// <inheritdoc />
 	public override Tab Tab => Tab.Decorations;
@@ -33,9 +33,10 @@ public record class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
 	/// Initializes a new instance of the <see cref="ForwardDecorationEvent"/> class with the specified data.
 	/// </summary>
 	public ForwardDecorationEvent(JsonDocument data)
-	{
-		_extraData = data.Deserialize<Dictionary<string, JsonElement>>() ?? [];
-		Beat =
+    {
+        foreach (var kvp in data.RootElement.EnumerateObject())
+            _extraData[kvp.Name] = kvp.Value;
+        Beat =
 			_extraData.TryGetValue("bar", out JsonElement barElement) && barElement.ValueKind == JsonValueKind.Number ?
 			_extraData.TryGetValue("beat", out JsonElement beatElement) && beatElement.ValueKind == JsonValueKind.Number ?
 			new(barElement.GetInt32(), beatElement.GetSingle()) : new(barElement.GetInt32(), 1) : default;

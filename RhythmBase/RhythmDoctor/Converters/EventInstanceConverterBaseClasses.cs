@@ -88,7 +88,7 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 		if (base.Read(ref reader, propertyName, ref value, options))
 			return true;
 		if (propertyName.SequenceEqual("rooms"u8))
-			value.Rooms = JsonSerializer.Deserialize<Components.RDRoom>(ref reader, options);
+			value.Rooms = ConverterHub.Read<Components.RDRoom>(ref reader, options);
 		else if (propertyName.SequenceEqual("preset"u8))
 			if (reader.TokenType is JsonTokenType.String && EnumConverter.TryParse(reader.ValueSpan, out VfxPreset enumValue0))
 				value.Preset = enumValue0;
@@ -108,7 +108,7 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 		else if (propertyName.SequenceEqual("intensity"u8))
 			value.Intensity = reader.GetSingle();
 		else if (propertyName.SequenceEqual("color"u8))
-			value.Color = JsonSerializer.Deserialize<Components.PaletteColor>(ref reader, options);
+			value.Color = ConverterHub.Read<Components.PaletteColor>(ref reader, options);
 		else if (propertyName.SequenceEqual("floatX"u8))
 		{
 			if (reader.TokenType is not JsonTokenType.Null)
@@ -128,7 +128,7 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 			}
 		}
 		else if (propertyName.SequenceEqual("amount"u8))
-			value.Amount = JsonSerializer.Deserialize<Global.Components.Vector.RDPoint>(ref reader, options);
+			value.Amount = ConverterHub.Read<Global.Components.Vector.RDPoint>(ref reader, options);
 		else if (propertyName.SequenceEqual("speedPerc"u8))
 			value.SpeedPercentage = reader.GetSingle();
 		else if (propertyName.SequenceEqual("ease"u8))
@@ -146,7 +146,7 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 	protected override void Write(Utf8JsonWriter writer, ref SetVFXPreset value, JsonSerializerOptions options)
 	{
 		base.Write(writer, ref value, options);
-		{ writer.WritePropertyName("rooms"u8); JsonSerializer.Serialize(writer, value.Rooms, options); }
+		{ writer.WritePropertyName("rooms"u8); ConverterHub.Write(writer, value.Rooms, options); }
 		writer.WriteString("preset"u8, value.Preset.ToEnumString());
 		if (value.Preset is not VfxPreset.DisableAll)
 			writer.WriteBoolean("enable"u8, value.Enable);
@@ -157,7 +157,7 @@ internal class EventInstanceConverterSetVFXPreset : EventInstanceConverterBaseEv
 		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableColor) && value.Color is PaletteColor valueNotNull2)
 		{ writer.WriteString("color"u8, valueNotNull2.Serialize()); }
 		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableAbsoluteXY) && value.Amount is RDPoint valueNotNull3)
-		{ writer.WritePropertyName("amount"u8); JsonSerializer.Serialize(writer, valueNotNull3, options); }
+		{ writer.WritePropertyName("amount"u8); ConverterHub.Write(writer, valueNotNull3, options); }
 		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableSpeed) && value.SpeedPercentage is float valueNotNull4)
 			writer.WriteNumber("speedPerc"u8, valueNotNull4);
 		if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableEase))

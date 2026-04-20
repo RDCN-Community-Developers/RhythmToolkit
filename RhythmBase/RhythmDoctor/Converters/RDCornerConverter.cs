@@ -11,23 +11,22 @@ internal class RDCornerConverter : JsonConverter<Corner>
 {
     public override Corner Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType != JsonTokenType.StartArray)
-            JsonException.Throw(reader, ["StartArray", "Null"]);
+        JsonException.ThrowIfNotMatch(reader, [JsonTokenType.StartArray, JsonTokenType.Null]);
         reader.Read();
         Corner corner = new()
         {
-            LeftBottom = ReadOneCorner(ref reader),
-            RightBottom = ReadOneCorner(ref reader),
-            LeftTop = ReadOneCorner(ref reader),
-            RightTop = ReadOneCorner(ref reader)
+            LeftBottom = ReadOneCorner(ref reader, options),
+            RightBottom = ReadOneCorner(ref reader, options),
+            LeftTop = ReadOneCorner(ref reader, options),
+            RightTop = ReadOneCorner(ref reader, options)
         };
-
         if (reader.TokenType != JsonTokenType.EndArray)
-            JsonException.Throw(reader, ["EndArray"]);
+            JsonException.ThrowIfNotMatch(reader, [JsonTokenType.EndArray]);
         return corner;
     }
-    private static RDPoint? ReadOneCorner(ref Utf8JsonReader reader)
+    private static RDPoint? ReadOneCorner(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
+        JsonException.ThrowIfNotMatch(reader, [JsonTokenType.StartArray, JsonTokenType.Null]);
         if (reader.TokenType == JsonTokenType.Null)
         {
             reader.Read();
@@ -35,54 +34,25 @@ internal class RDCornerConverter : JsonConverter<Corner>
         }
         else if (reader.TokenType == JsonTokenType.StartArray)
         {
+            var value = ConverterHub.Read<RDPoint>(ref reader, options);
             reader.Read();
-            RDPoint p = new();
-            if (reader.TokenType == JsonTokenType.Null)
-                p.X = null;
-            else if (reader.TokenType == JsonTokenType.Number)
-                p.X = reader.GetSingle();
-            else
-                throw JsonException.Throw(reader, ["Number", "Null"]);
-            reader.Read();
-            if (reader.TokenType == JsonTokenType.Null)
-                p.Y = null;
-            else if (reader.TokenType == JsonTokenType.Number)
-                p.Y = reader.GetSingle();
-            else
-                throw JsonException.Throw(reader, ["Number", "Null"]);
-            reader.Read();
-            if (reader.TokenType != JsonTokenType.EndArray)
-                throw JsonException.Throw(reader, ["EndArray"]);
-            reader.Read();
-            return p;
+            return value;
         }
-        else
-            throw JsonException.Throw(reader, ["StartArray", "Null"]);
+        else { return null; }
     }
     public override void Write(Utf8JsonWriter writer, Corner value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        WriteOneCorner(writer, value.LeftBottom);
-        WriteOneCorner(writer, value.RightBottom);
-        WriteOneCorner(writer, value.LeftTop);
-        WriteOneCorner(writer, value.RightTop);
+        WriteOneCorner(writer, value.LeftBottom, options);
+        WriteOneCorner(writer, value.RightBottom, options);
+        WriteOneCorner(writer, value.LeftTop, options);
+        WriteOneCorner(writer, value.RightTop, options);
         writer.WriteEndArray();
     }
-    private static void WriteOneCorner(Utf8JsonWriter writer, RDPoint? point)
+    private static void WriteOneCorner(Utf8JsonWriter writer, RDPoint? point, JsonSerializerOptions options)
     {
         if (point is RDPoint p)
-        {
-            writer.WriteStartArray();
-            if (p.X is float px)
-                writer.WriteNumberValue(px);
-            else
-                writer.WriteNullValue();
-            if (p.Y is float py)
-                writer.WriteNumberValue(py);
-            else
-                writer.WriteNullValue();
-            writer.WriteEndArray();
-        }
+            ConverterHub.Write(writer, p, options);
         else
             writer.WriteNullValue();
     }

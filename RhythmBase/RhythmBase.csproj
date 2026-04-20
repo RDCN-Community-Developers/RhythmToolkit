@@ -16,7 +16,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <LangVersion>Preview</LangVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
         <PublishAot>true</PublishAot>

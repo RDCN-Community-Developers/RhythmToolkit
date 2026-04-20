@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct VisionDrost : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.VisionDrost;
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.

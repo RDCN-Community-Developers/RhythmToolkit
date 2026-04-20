@@ -17,7 +17,11 @@ namespace RhythmBase.Test
     [TestClass]
     public sealed class Tutorial
     {
-        private static RDLevel _rdlevel = RDLevel.Default;
+        static Tutorial()
+        {
+            _rdlevel = RDLevel.Default;
+        }
+        private static RDLevel _rdlevel;
         [TestMethod]
         public void CreateAnEmptyLevel()
         {
@@ -59,8 +63,6 @@ namespace RhythmBase.Test
                 // Handling of unreadable events
                 // Common when sprite events are not bound to sprite tracks, etc.
                 UnreadableEventsHandling = UnreadableEventHandling.Store,
-                // Enable macro event processing
-                EnableMacroEvent = true,
                 // Unzip all files in a zip level pack into the cache path below
                 // This is usually the faster option
                 ZipFileProcessMethod = ZipFileProcessMethod.AllFiles,
@@ -363,56 +365,6 @@ namespace RhythmBase.Test
             RDLang.TryRun("atLeastRank(A)", out result); // 1
             Console.WriteLine(result);
         }
-        [TestMethod]
-        public void MacroEvents()
-        {
-
-            LevelReadSettings readSettings = new()
-            {
-                EnableMacroEvent = true,
-                InactiveEventsHandling = InactiveEventsHandling.Retain,
-            };
-            LevelWriteSettings writeSettings = new()
-            {
-                EnableMacroEvent = true,
-                InactiveEventsHandling = InactiveEventsHandling.Retain,
-                Indented = true
-            };
-
-            using RDLevel level = RDLevel.Default;
-            level.Decorations.Add(new Decoration() { Room = RDRoomIndex.Room1 });
-            MoveCameraRectangle re1 = new MoveCameraRectangle() { Beat = new(4), Size = new RDSize(80, 80) };
-            MoveCameraRectangle re2 = new MoveCameraRectangle() { Beat = new(9), Y = 2, Size = new RDSize(20, 20) };
-            level.Add(re1);
-            level.Add(re2);
-            string levelJson = level.ToJsonString(settings: writeSettings);
-            Console.WriteLine(levelJson);
-            using RDLevel level2 = RDLevel.FromJsonString(levelJson, readSettings);
-
-            /* The following events will be generated:
-			 * {"bar":1,"beat":1,"type":"MoveCamera","rooms":[0],"cameraPosition":[10,10],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":1,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[50,50],"duration":0,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":1.001,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[10,10],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":2,"type":"MoveCamera","rooms":[0],"cameraPosition":[90,10],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":2,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[90,10],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":3,"type":"MoveCamera","rooms":[0],"cameraPosition":[90,90],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":3,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[90,90],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":4,"type":"MoveCamera","rooms":[0],"cameraPosition":[10,90],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":4,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[10,90],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000000"},
-			 * {"bar":1,"beat":1,"type":"MoveCamera","rooms":[0],"cameraPosition":[40,40],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":1,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[50,50],"duration":0,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":1.001,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[40,40],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":2,"type":"MoveCamera","rooms":[0],"cameraPosition":[60,40],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":2,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[60,40],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":3,"type":"MoveCamera","rooms":[0],"cameraPosition":[60,60],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":3,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[60,60],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":4,"type":"MoveCamera","rooms":[0],"cameraPosition":[40,60],"duration":1,"ease":"Linear","y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":4,"type":"MoveRow","customPosition":true,"target":"WholeRow","rowPosition":[40,60],"duration":1,"ease":"Linear","row":0,"y":-1,"tag":"$RhythmBase_GroupEvent$0000000000000001"},
-			 * {"bar":1,"beat":1,"type":"Comment","tab":"Song","show":false,"text":"$RhythmBase_GroupData$\r\n\/* Generated by RhythmBase /\r\n@MoveCameraRectangle\r\n@MoveCameraRectangle2\r\n@RhythmBase.RhythmDoctor.Group\r\n@RhythmBase.RhythmDoctor.Group`1\r\n{\"size\":[80.0,80.0],\"rowIndex\":0}\r\n{\"size\":[20.0,20.0],\"rowIndex\":0}\r\n","color":"F2E644","y":-1},
-			 * {"bar":1,"beat":4,"type":"TagAction","Tag":"$RhythmBase_GroupEvent$0000000000000000","y":0,"tag":"","Action":"Run"},
-			 * {"bar":2,"beat":1,"type":"TagAction","Tag":"$RhythmBase_GroupEvent$0000000000000001","y":2,"tag":"","Action":"Run"},
-			*/
-        }
         public void Example_01()
         {
 
@@ -498,32 +450,6 @@ namespace RhythmBase.Test
         {
             public RDSize Size { get; set; }
             public int RowIndex { get; set; }
-        }
-        public record class MoveCameraRectangle : MacroEvent<GroupData1>
-        {
-            public RDSize Size
-            {
-                get => Data.Size;
-                set => Data.Size = value;
-            }
-            public Row Row
-            {
-                get => Rows?[Data.RowIndex] ?? [];
-                set => Data.RowIndex = value.Index;
-            }
-            public MoveCameraRectangle() { }
-            public override IEnumerable<BaseEvent> GenerateEvents()
-            {
-                yield return new MoveCamera() { Beat = new(1), Rooms = new(0), CameraPosition = new(50 - Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
-                yield return new MoveCamera() { Beat = new(2), Rooms = new(0), CameraPosition = new(50 + Size.Width / 2, 50 - Size.Height / 2), Duration = 1 };
-                yield return new MoveCamera() { Beat = new(3), Rooms = new(0), CameraPosition = new(50 + Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
-                yield return new MoveCamera() { Beat = new(4), Rooms = new(0), CameraPosition = new(50 - Size.Width / 2, 50 + Size.Height / 2), Duration = 1 };
-                yield return SetParent(new MoveRow() { Beat = new(1), Position = new(50, 50), EnableCustomPosition = true, Duration = 0 }, Row);
-                yield return SetParent(new MoveRow() { Beat = new(1.001f), Position = new(50 - Size.Width / 2, 50 - Size.Height / 2), EnableCustomPosition = true, Duration = 1 }, Row);
-                yield return SetParent(new MoveRow() { Beat = new(2), Position = new(50 + Size.Width / 2, 50 - Size.Height / 2), EnableCustomPosition = true, Duration = 1 }, Row);
-                yield return SetParent(new MoveRow() { Beat = new(3), Position = new(50 + Size.Width / 2, 50 + Size.Height / 2), EnableCustomPosition = true, Duration = 1 }, Row);
-                yield return SetParent(new MoveRow() { Beat = new(4), Position = new(50 - Size.Width / 2, 50 + Size.Height / 2), EnableCustomPosition = true, Duration = 1 }, Row);
-            }
         }
     }
 }

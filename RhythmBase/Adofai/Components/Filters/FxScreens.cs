@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FxScreens : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FxScreens;
 	/// <summary>
 	/// Gets or sets the value of the <b>Tiles</b>.

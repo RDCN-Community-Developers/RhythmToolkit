@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvCompressionFX : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvCompressionFX;
 	/// <summary>
 	/// Gets or sets the value of the <b>Parasite</b>.

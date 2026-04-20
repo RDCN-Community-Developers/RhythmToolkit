@@ -2,6 +2,9 @@ using RhythmBase.Adofai.Components;
 
 namespace RhythmBase.Adofai.Events;
 
+/// <summary>
+/// Represents an event that changes the visual and animation properties of the track.
+/// </summary>
 [RDJsonObjectSerializable]
 public class ChangeTrack : BaseTileEvent
 {

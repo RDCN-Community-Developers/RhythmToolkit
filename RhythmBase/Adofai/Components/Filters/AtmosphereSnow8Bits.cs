@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct AtmosphereSnow8Bits : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.AtmosphereSnow8Bits;
 	/// <summary>
 	/// Gets or sets the value of the <b>Threshold</b>.

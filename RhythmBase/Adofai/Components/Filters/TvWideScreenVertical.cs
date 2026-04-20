@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvWideScreenVertical : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvWideScreenVertical;
 	/// <summary>
 	/// Gets or sets the value of the <b>Size</b>.

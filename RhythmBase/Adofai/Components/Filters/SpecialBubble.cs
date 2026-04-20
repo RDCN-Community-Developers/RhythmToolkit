@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct SpecialBubble : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.SpecialBubble;
 	/// <summary>
 	/// Gets or sets the value of the <b>X</b>.

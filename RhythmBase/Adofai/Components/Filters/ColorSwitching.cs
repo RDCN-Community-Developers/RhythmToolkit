@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorSwitching : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorSwitching;
 	/// <summary>
 	/// Gets or sets the value of the <b>Color</b>.

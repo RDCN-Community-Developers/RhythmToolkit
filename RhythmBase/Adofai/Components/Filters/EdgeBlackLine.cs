@@ -6,5 +6,6 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct EdgeBlackLine : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.EdgeBlackLine;
 }

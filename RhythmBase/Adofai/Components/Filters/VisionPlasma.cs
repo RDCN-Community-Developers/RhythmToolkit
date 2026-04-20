@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct VisionPlasma : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.VisionPlasma;
 	/// <summary>
 	/// Gets or sets the value of the <b>Value</b>.

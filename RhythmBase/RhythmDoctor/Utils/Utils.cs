@@ -28,7 +28,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 					new DialogueExchangeConverter(),
 					new PatternConverter(),
 					new TabsConverter(),
-					new RDPointsConverter(),
 					new RoomConverter(),
 					new SingleRoomConverter(),
 					new ExpressionConverter(),
@@ -99,8 +98,6 @@ namespace RhythmBase.RhythmDoctor.Utils
 		/// The default crotchets per bar.
 		/// </summary>
 		public const int DefaultCPB = 8;
-		internal const string RhythmBaseMacroEventDataHeader = "$RhythmBase_MacroData$";
-		internal const string RhythmBaseMacroEventHeader = "$RhythmBase_MacroEvent$";
 		/// <summary>
 		/// Gets a read-only collection of default expressions.
 		/// </summary>

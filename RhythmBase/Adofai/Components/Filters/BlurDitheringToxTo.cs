@@ -8,6 +8,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct BlurDitheringToxTo : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.BlurDitheringToxTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>Level</b>.

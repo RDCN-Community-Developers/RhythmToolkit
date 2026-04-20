@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct GlitchMozaic : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.GlitchMozaic;
 	/// <summary>
 	/// Gets or sets the value of the <b>Intensity</b>.

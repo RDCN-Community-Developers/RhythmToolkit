@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvHorror : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvHorror;
 	/// <summary>
 	/// Gets or sets the value of the <b>Fade</b>.

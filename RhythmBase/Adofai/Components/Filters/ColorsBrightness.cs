@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsBrightness : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsBrightness;
 	/// <summary>
 	/// Gets or sets the value of the <b>_Brightness</b>.

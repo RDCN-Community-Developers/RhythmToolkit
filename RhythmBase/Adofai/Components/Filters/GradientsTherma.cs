@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct GradientsTherma : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.GradientsTherma;
 	/// <summary>
 	/// Gets or sets the value of the <b>Switch</b>.

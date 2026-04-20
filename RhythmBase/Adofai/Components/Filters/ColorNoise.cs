@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorNoise : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorNoise;
 	/// <summary>
 	/// Gets or sets the value of the <b>Noise</b>.

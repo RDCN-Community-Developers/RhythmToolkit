@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct EdgeEdgeFilter : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.EdgeEdgeFilter;
 	/// <summary>
 	/// Gets or sets the value of the <b>GreenAmplifier</b>.

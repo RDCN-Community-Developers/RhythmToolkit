@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvArcadeTo : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvArcadeTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>Interferance_Size</b>.

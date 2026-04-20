@@ -1,5 +1,6 @@
 using RhythmBase.Adofai.Events;
 using RhythmBase.Global.Extensions;
+using RhythmBase.RhythmDoctor.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static RhythmBase.Adofai.Utils.EventTypeUtils;
@@ -9,8 +10,7 @@ namespace RhythmBase.Adofai.Converters
 	{
 		public override IBaseEvent? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			if (reader.TokenType != JsonTokenType.StartObject)
-				throw new JsonException($"Expected StartObject token, but got {reader.TokenType}.");
+			JsonException.ThrowIfNotMatch(reader,	[JsonTokenType.StartObject]);
 			ReadOnlySpan<byte> type = default;
 			Utf8JsonReader checkpoint = reader;
 			while (reader.Read())
@@ -36,8 +36,7 @@ namespace RhythmBase.Adofai.Converters
 				e = ReadForwardEvent(ref reader, typeToConvert, options) ?? new ForwardEvent() { ActureType = type.ToString() ?? "" };
 			else
 				e = converters[typeEnum].ReadProperties(ref reader, options);
-			if (reader.TokenType != JsonTokenType.EndObject)
-				throw new JsonException($"Expected EndObject token, but got {reader.TokenType}.");
+			JsonException.ThrowIfNotMatch(reader, [JsonTokenType.EndObject]);
 			reader.Read();
 			return e;
 		}

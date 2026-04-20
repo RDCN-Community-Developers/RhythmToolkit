@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DrawingLines : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DrawingLines;
 	/// <summary>
 	/// Gets or sets the value of the <b>Number</b>.

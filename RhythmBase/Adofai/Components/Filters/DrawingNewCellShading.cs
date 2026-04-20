@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DrawingNewCellShading : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DrawingNewCellShading;
 	/// <summary>
 	/// Gets or sets the value of the <b>Threshold</b>.

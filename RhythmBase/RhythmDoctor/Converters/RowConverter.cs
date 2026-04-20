@@ -1,4 +1,5 @@
 using RhythmBase.Global.Extensions;
+using RhythmBase.RhythmDoctor.Extensions;
 using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -15,8 +16,7 @@ internal class RowConverter : JsonConverter<Row>
 		{
 			if (reader.TokenType == JsonTokenType.EndObject)
 				break;
-			if (reader.TokenType != JsonTokenType.PropertyName)
-				throw new JsonException("Expected PropertyName token");
+			JsonException.ThrowIfNotMatch(reader, [JsonTokenType.PropertyName]);
 			ReadOnlySpan<byte> propertyName = reader.ValueSpan;
 			reader.Read();
 			if (propertyName.SequenceEqual("character"u8))
@@ -32,7 +32,7 @@ internal class RowConverter : JsonConverter<Row>
 			else if (propertyName.SequenceEqual("rowType"u8) && EnumConverter.TryParse(reader.ValueSpan, out RowType value1))
 				result.RowType = value1;
 			else if (propertyName.SequenceEqual("rooms"u8))
-				result.Room = JsonSerializer.Deserialize<RDSingleRoom>(ref reader, options);
+				result.Room = ConverterHub.Read<RDSingleRoom>(ref reader, options);
 			else if (propertyName.SequenceEqual("hideAtStart"u8))
 				result.HideAtStart = reader.GetBoolean();
 			else if (propertyName.SequenceEqual("player"u8) && EnumConverter.TryParse(reader.ValueSpan, out PlayerType value2))
@@ -70,7 +70,7 @@ internal class RowConverter : JsonConverter<Row>
 		writer.WriteNumber("row"u8, value.Index);
 
 		writer.WritePropertyName("rooms"u8);
-		JsonSerializer.Serialize(writer, value.Room, options);
+		ConverterHub.Write(writer, value.Room, options);
 
 		if (value.HideAtStart)
 			writer.WriteBoolean("hideAtStart"u8, value.HideAtStart);

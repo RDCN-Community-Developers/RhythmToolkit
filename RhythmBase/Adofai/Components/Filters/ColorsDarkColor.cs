@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsDarkColor : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsDarkColor;
 	/// <summary>
 	/// Gets or sets the value of the <b>Alpha</b>.

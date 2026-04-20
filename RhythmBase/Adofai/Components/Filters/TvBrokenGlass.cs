@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvBrokenGlass : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvBrokenGlass;
 	/// <summary>
 	/// Gets or sets the value of the <b>Broken_Big</b>.

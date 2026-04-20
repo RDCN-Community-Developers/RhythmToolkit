@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct ColorsHsv : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.ColorsHsv;
 	/// <summary>
 	/// Gets or sets the value of the <b>_HueShift</b>.

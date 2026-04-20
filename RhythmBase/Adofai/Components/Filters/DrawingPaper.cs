@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DrawingPaper : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DrawingPaper;
 	/// <summary>
 	/// Gets or sets the value of the <b>Pencil_Color</b>.

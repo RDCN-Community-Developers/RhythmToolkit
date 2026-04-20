@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FilmColorPerfection : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FilmColorPerfection;
 	/// <summary>
 	/// Gets or sets the value of the <b>Gamma</b>.

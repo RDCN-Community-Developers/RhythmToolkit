@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct BlurBloom : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.BlurBloom;
 	/// <summary>
 	/// Gets or sets the value of the <b>Amount</b>.

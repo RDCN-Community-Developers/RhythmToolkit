@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct DistortionDreamTo : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.DistortionDreamTo;
 	/// <summary>
 	/// Gets or sets the value of the <b>Distortion</b>.

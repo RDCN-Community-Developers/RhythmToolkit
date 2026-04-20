@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct TvPosterize : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.TvPosterize;
 	/// <summary>
 	/// Gets or sets the value of the <b>Posterize</b>.

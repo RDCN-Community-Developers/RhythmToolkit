@@ -6,6 +6,7 @@ namespace RhythmBase.Adofai.Components.Filters;
 [RDJsonObjectSerializable]
 public struct FxEarthQuake : IFilter
 {
+	///<inheritdoc/>
 	public FilterType Type => FilterType.FxEarthQuake;
 	/// <summary>
 	/// Gets or sets the value of the <b>Speed</b>.
