@@ -2,7 +2,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Text;
 
 // 这坨写得太史了
@@ -136,7 +135,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 		public IPropertySymbol Symbol;
 		public string? Condition;
 		public string? Converter;
-		public ISymbol? ConverterSymbol;
+		//public ISymbol? ConverterSymbol;
 		public int? TimeType;
 	}
 	private record struct ClassInfo
@@ -144,8 +143,8 @@ public partial class ConverterGenerator : IIncrementalGenerator
 		public string Name;
 		public INamedTypeSymbol Type;
 		public string BaseTypeName;
-		public string? SpecialID;
-		public string? Alias;
+		//public string? SpecialID;
+		//public string? Alias;
 		//public bool SerializerIgnore;
 		public bool NeedSerializer;
 		public bool HasSerializer;
@@ -158,7 +157,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 	private static void GenerateEventConverterForRDLevel(IncrementalGeneratorInitializationContext context)
 	{
 
-		GenerationConfig config = new GenerationConfig()
+		GenerationConfig config = new()
 		{
 			Id = "RD",
 			SourceNamespace = "RhythmBase.RhythmDoctor.Events",
@@ -175,7 +174,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 	}
 	private static void GenerateEventConverterForADLevel(IncrementalGeneratorInitializationContext context)
 	{
-		GenerationConfig config = new GenerationConfig()
+		GenerationConfig config = new()
 		{
 			Id = "AD",
 			SourceNamespace = "RhythmBase.Adofai.Events",
@@ -192,7 +191,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 	}
 	private static void GenerateFilterConverter(IncrementalGeneratorInitializationContext context)
 	{
-		GenerationConfig config = new GenerationConfig()
+		GenerationConfig config = new()
 		{
 			Id = "Filter",
 			SourceNamespace = "RhythmBase.Adofai.Components.Filters",

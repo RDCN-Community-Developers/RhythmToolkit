@@ -1,7 +1,3 @@
-using RhythmBase.Global.Components.RichText;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
 namespace RhythmBase.RhythmDoctor.Converters;
 
 //internal class DialogueListConverter : JsonConverter<RDDialogueExchange>

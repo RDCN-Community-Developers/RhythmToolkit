@@ -1,5 +1,3 @@
-using RhythmBase.Global.Components.RichText;
-
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>

@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Text;
 
 namespace RhythmBase.RhythmDoctor.Components
 {

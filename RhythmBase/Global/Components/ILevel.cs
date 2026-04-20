@@ -1,9 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Events;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace RhythmBase.Global.Components
 {
@@ -19,7 +14,7 @@ namespace RhythmBase.Global.Components
         /// </summary>
         string? Filepath { get; }
         /// <summary>
-        /// The directory containing the resolved file. Points to the temporary extraction directory if the source is an archive; otherwise the directory of <see cref="SourceFilePath"/>.
+        /// The directory containing the resolved file. Points to the temporary extraction directory if the source is an archive; otherwise the directory of <see cref="ResolvedPath"/>.
         /// </summary>
         string? ResolvedDirectory { get; }
 #if NET8_0_OR_GREATER

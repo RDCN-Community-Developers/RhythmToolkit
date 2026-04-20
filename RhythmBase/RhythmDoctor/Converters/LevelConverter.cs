@@ -113,7 +113,6 @@ internal sealed class LevelConverter : JsonConverter<RDLevel>
                 List<TagAction> maybeMacroEvents = [];
                 string[]? types = [];
                 JsonElement[]? data = [];
-                Comment? maybeDataComment = null;
                 List<JsonDocument> maybeIllegalAt = [];
                 reader.Read();
                 int index = 0;

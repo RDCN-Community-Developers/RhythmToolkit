@@ -1,7 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 
@@ -321,7 +318,6 @@ partial class RDLevel
         settings.FileReferences.Clear();
         bool loadAssets = settings.LoadAssets;
         settings.LoadAssets = true;
-        JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Filepath) ?? "", settings);
         DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
         if (!directory.Exists)
             directory.Create();
@@ -381,10 +377,12 @@ partial class RDLevel
         JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
         string json;
         settings.OnBeforeWriting();
-        MemoryStream stream = new MemoryStream();
-        SaveToStream(stream, settings);
-        stream.Seek(0, SeekOrigin.Begin);
-        json = Encoding.UTF8.GetString(stream.ToArray());
+        using (MemoryStream stream = new())
+        {
+            SaveToStream(stream, settings);
+            stream.Seek(0, SeekOrigin.Begin);
+            json = Encoding.UTF8.GetString(stream.ToArray());
+        }
         settings.OnAfterWriting();
         return json;
     }
@@ -400,11 +398,11 @@ partial class RDLevel
     public JsonDocument ToJsonDocument(LevelWriteSettings? settings = null)
     {
         settings ??= new();
-        JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
         string json;
         settings.OnBeforeWriting();
-        MemoryStream stream = new MemoryStream();
+        MemoryStream stream = new();
         SaveToStream(stream, settings);
+        stream.Seek(0, SeekOrigin.Begin);
         json = Encoding.UTF8.GetString(stream.ToArray());
         settings.OnAfterWriting();
         return JsonDocument.Parse(json);

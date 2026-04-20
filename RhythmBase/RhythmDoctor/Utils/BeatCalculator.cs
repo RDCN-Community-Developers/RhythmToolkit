@@ -1,6 +1,5 @@
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
-using RhythmBase.RhythmDoctor;
 using RhythmBase.RhythmDoctor.Extensions;
 
 namespace RhythmBase.RhythmDoctor.Utils

@@ -1,6 +1,4 @@
 ﻿using RhythmBase.RhythmDoctor.Components;
-using System;
-using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
@@ -41,6 +39,12 @@ partial class ADLevel
                 return ConverterHub.Read<ADLevel>(ref reader, options) ?? [];
             }
         }
+    }
+    private static void WriteToStream(Stream stream, ADLevel level, JsonSerializerOptions options)
+    {
+        Utf8JsonWriter writer = new(stream, new JsonWriterOptions { Indented = options.WriteIndented });
+        ConverterHub.Write(writer, level, options);
+        writer.Flush();
     }
     /// <inheritdoc/>
     public static ADLevel FromFile(string filepath, LevelReadSettings? settings = null)
@@ -217,8 +221,8 @@ partial class ADLevel
         JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
         ADLevel? level;
         settings.OnBeforeReading();
-        level = JsonSerializer.Deserialize<ADLevel>(json, options);
-        settings.OnBeforeReading();
+        level = Deserializer.Deserialize(new ReadOnlyMemoryDataSource(new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(json))), options);
+        settings.OnAfterReading();
         return level ?? [];
     }
     /// <inheritdoc/>
@@ -227,7 +231,7 @@ partial class ADLevel
         settings ??= new();
         JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
         settings.OnBeforeWriting();
-        JsonSerializer.Serialize(stream, this, options);
+        WriteToStream(stream, this, options);
         settings.OnAfterWriting();
     }
     /// <inheritdoc/>
@@ -236,7 +240,7 @@ partial class ADLevel
         settings ??= new();
         JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
         settings.OnBeforeWriting();
-        await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
+        await Task.Run(() => WriteToStream(stream, this, options), cancellationToken);
         settings.OnAfterWriting();
     }
     /// <inheritdoc/>
@@ -248,7 +252,7 @@ partial class ADLevel
         using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
         {
             stream.SetLength(0);
-            JsonSerializer.Serialize(stream, this, options);
+            WriteToStream(stream, this, options);
         }
         settings.OnAfterWriting();
     }
@@ -260,7 +264,7 @@ partial class ADLevel
         settings.OnBeforeWriting();
         using (FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write))
         {
-            await JsonSerializer.SerializeAsync(stream, this, options, cancellationToken);
+            await Task.Run(() => WriteToStream(stream, this, options), cancellationToken);
         }
         settings.OnAfterWriting();
     }
@@ -271,23 +275,67 @@ partial class ADLevel
         JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
         string json;
         settings.OnBeforeWriting();
-        json = JsonSerializer.Serialize(this, options);
+        using (MemoryStream stream = new())
+        {
+            WriteToStream(stream, this, options);
+            stream.Seek(0, SeekOrigin.Begin);
+            json = Encoding.UTF8.GetString(stream.ToArray());
+        }
+        settings.OnAfterWriting();
         return json;
     }
     /// <inheritdoc/>
     public static ADLevel FromJsonDocument(JsonDocument jsonDocument, LevelReadSettings? settings = null)
     {
-        throw new NotImplementedException();
+        settings ??= new();
+        JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(settings: settings);
+        ADLevel? level;
+        settings.OnBeforeReading();
+        level = Deserializer.Deserialize(new JsonDocumentDataSource(jsonDocument), options);
+        settings.OnAfterReading();
+        return level ?? [];
     }
     /// <inheritdoc/>
     public JsonDocument ToJsonDocument(LevelWriteSettings? settings = null)
     {
-        throw new NotImplementedException();
+        settings ??= new();
+        string json;
+        settings.OnBeforeWriting();
+        MemoryStream stream = new();
+        SaveToStream(stream, settings);
+        stream.Seek(0, SeekOrigin.Begin);
+        json = Encoding.UTF8.GetString(stream.ToArray());
+        settings.OnAfterWriting();
+        return JsonDocument.Parse(json);
     }
     /// <inheritdoc/>
     public void SaveToZip(string filepath, LevelWriteSettings? settings = null)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(this.ResolvedDirectory))
+            throw new NotImplementedException();
+        settings ??= new();
+        settings.FileReferences.Clear();
+        bool loadAssets = settings.LoadAssets;
+        settings.LoadAssets = true;
+        JsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Filepath) ?? "", settings);
+        DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
+        if (!directory.Exists)
+            directory.Create();
+        settings.OnBeforeWriting();
+        using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+        ZipArchive archive = new(stream, ZipArchiveMode.Create);
+        ZipArchiveEntry entry = archive.CreateEntry("main.adofai");
+        using (Stream rdlevelStream = entry.Open())
+        {
+            SaveToStream(rdlevelStream, settings);
+        }
+        foreach (var file in settings.FileReferences)
+        {
+            archive.CreateEntryFromFile(Path.Combine(ResolvedDirectory, file.Path), Path.GetFileName(file.Path));
+        }
+        archive.Dispose();
+        settings.OnAfterWriting();
+        settings.LoadAssets = loadAssets;
     }
     /// <inheritdoc/>
     public void SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)

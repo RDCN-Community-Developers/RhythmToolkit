@@ -1,14 +1,23 @@
-using System;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 #if NETSTANDARD2_0
 #pragma warning disable IDE0130
 namespace System
 {
+    internal static class EnumExtensions
+    {
+        extension(Enum)
+        {
+            public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result) where TEnum : struct, Enum
+            {
+                return Enum.TryParse(value, ignoreCase, out result);
+            }
+            public static TEnum[] GetValues<TEnum>() where TEnum : struct, Enum
+            {
+                return (TEnum[])Enum.GetValues(typeof(TEnum));
+            }
+        }
+    }
     internal static class ExceptionExtensions
     {
         extension(ArgumentNullException)

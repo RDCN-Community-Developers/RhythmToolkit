@@ -45,7 +45,7 @@ public struct EnumCollection<TEnum> : IEnumerable<TEnum> where TEnum : struct, E
 		ulong enumMax = 0;
 		int byteWidth = Unsafe.SizeOf<TEnum>();
 		ulong enumMask = (byteWidth * 8 >= 64) ? ulong.MaxValue : ((1ul << (byteWidth * 8)) - 1ul);
-		foreach (TEnum value in Enum.GetValues(typeof(TEnum)))
+		foreach (TEnum value in Enum.GetValues<TEnum>())
 		{
 			TEnum vt = value;
 			ulong v = Convert.ToUInt64(vt) & enumMask;
