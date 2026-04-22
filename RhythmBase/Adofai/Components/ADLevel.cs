@@ -7,7 +7,7 @@ namespace RhythmBase.Adofai.Components
 	/// <summary>
 	/// Adofal level.
 	/// </summary>
-	public partial class ADLevel : TileCollection, IJsonLevel<ADLevel>
+	public partial class ADLevel : TileCollection, IJsonLevel<ADLevel, BeatCalculator>
 	{
 		/// <summary>
 		/// Level settings.

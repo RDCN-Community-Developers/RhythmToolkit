@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// <summary>
 /// Rhythm Doctor level.
 /// </summary>
-public partial class RDLevel : OrderedEventCollection<IBaseEvent>, IJsonLevel<RDLevel>
+public partial class RDLevel : OrderedEventCollection<IBaseEvent>, IJsonLevel<RDLevel, BeatCalculator>
 {
     private bool isZip = false;
     private bool isExtracted = false;

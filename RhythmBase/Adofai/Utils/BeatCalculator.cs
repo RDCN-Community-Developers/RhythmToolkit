@@ -5,7 +5,7 @@ namespace RhythmBase.Adofai.Utils
 	/// <summary>
 	/// Beat Calculator.
 	/// </summary>
-	public class BeatCalculator
+	public class BeatCalculator : IBeatCalculator<BeatCalculator, ADLevel>
 	{
 		internal BeatCalculator(ADLevel level)
 		{

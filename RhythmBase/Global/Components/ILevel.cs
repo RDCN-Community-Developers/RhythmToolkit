@@ -2,7 +2,9 @@
 
 namespace RhythmBase.Global.Components
 {
-    internal interface ILevel<TLevel> : IDisposable where TLevel : ILevel<TLevel>
+    internal interface ILevel<TSelf, TCalculator> : IDisposable
+        where TSelf : ILevel<TSelf, TCalculator>
+        where TCalculator : IBeatCalculator<TCalculator, TSelf>
     {
         public int Count { get; }
         /// <summary>
@@ -17,21 +19,22 @@ namespace RhythmBase.Global.Components
         /// The directory containing the resolved file. Points to the temporary extraction directory if the source is an archive; otherwise the directory of <see cref="ResolvedPath"/>.
         /// </summary>
         string? ResolvedDirectory { get; }
+        TCalculator Calculator { get; }
 #if NET8_0_OR_GREATER
         /// <summary>
-        /// Creates an <typeparamref name="TLevel"/> instance by reading data from the specified file.
+        /// Creates an <typeparamref name="TSelf"/> instance by reading data from the specified file.
         /// </summary>
         /// <remarks>This method supports both plain level files and compressed
         /// archives. If the file is a compressed archive, it is extracted to a temporary
         /// directory to locate the level file within the archive.</remarks>
         /// <param name="filepath">The path to the file to read.</param>
         /// <param name="settings">Optional settings that control how the level is read. If not provided, default settings are used.</param>
-        /// <returns>An <typeparamref name="TLevel"/> instance representing the data read from the file.</returns>
+        /// <returns>An <typeparamref name="TSelf"/> instance representing the data read from the file.</returns>
         /// <exception cref="RhythmBaseException">Thrown if the file format is not supported, if no level file is found in the archive, or if an error occurs during
         /// file extraction.</exception>
-        static abstract TLevel FromFile(string filepath, LevelReadSettings? settings = null);
+        static abstract TSelf FromFile(string filepath, LevelReadSettings? settings = null);
         /// <summary>
-        /// Asynchronously loads an <typeparamref name="TLevel"/> instance from a file.
+        /// Asynchronously loads an <typeparamref name="TSelf"/> instance from a file.
         /// </summary>
         /// <remarks>If the file is a compressed archive, the method extracts its
         /// contents to a temporary directory and searches for a file with the extension. If no such file is
@@ -40,31 +43,31 @@ namespace RhythmBase.Global.Components
         /// <param name="filepath">The path to the file to load.</param>
         /// <param name="settings">Optional settings that control how the level is read. If <see langword="null"/>, default settings are used.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the loaded <typeparamref name="TLevel"/> instance. 
-        /// If the file contains no data or deserialization results in null, the task result will be an empty <typeparamref name="TLevel"/>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the loaded <typeparamref name="TSelf"/> instance. 
+        /// If the file contains no data or deserialization results in null, the task result will be an empty <typeparamref name="TSelf"/>
         /// instance.</returns>
         /// <exception cref="RhythmBaseException">Thrown if the file format is unsupported, if no file is found in a compressed archive, or if an
         /// error occurs during extraction.</exception>
-        static abstract Task<TLevel> FromFileAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default);
+        static abstract Task<TSelf> FromFileAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default);
         /// <summary>
-        /// Deserializes an <typeparamref name="TLevel"/> object from the specified stream using the provided settings.
+        /// Deserializes an <typeparamref name="TSelf"/> object from the specified stream using the provided settings.
         /// </summary>
         /// <remarks>The method invokes the <see cref="LevelReadSettings.OnBeforeReading"/> and <see cref="LevelReadSettings.OnAfterReading"/> callbacks on the provided settings,
         /// allowing for custom pre- and post-processing during deserialization.</remarks>
-        /// <param name="stream">The stream containing the serialized <typeparamref name="TLevel"/> data. The stream must be readable and positioned at the start of
+        /// <param name="stream">The stream containing the serialized <typeparamref name="TSelf"/> data. The stream must be readable and positioned at the start of
         /// the data.</param>
         /// <param name="settings">Optional settings that control the deserialization process. If not specified, default settings are used.</param>
-        /// <returns>An <typeparamref name="TLevel"/> object representing the deserialized data. Returns an empty <typeparamref name="TLevel"/> instance if the stream contains
+        /// <returns>An <typeparamref name="TSelf"/> object representing the deserialized data. Returns an empty <typeparamref name="TSelf"/> instance if the stream contains
         /// no data or deserialization results in null.</returns>
-        static abstract TLevel FromStream(Stream stream, LevelReadSettings? settings = null);
+        static abstract TSelf FromStream(Stream stream, LevelReadSettings? settings = null);
         /// <summary>
         /// Asynchronously reads a level from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the level data.</param>
         /// <param name="settings">Optional settings for reading the level.</param>
         /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-        /// <returns>A <see cref="Task{TLevel}"/> representing the asynchronous operation, with an <typeparamref name="TLevel"/> instance loaded from the stream.</returns>
-        static abstract Task<TLevel> FromStreamAsync(Stream stream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default);
+        /// <returns>A <see cref="Task{TLevel}"/> representing the asynchronous operation, with an <typeparamref name="TSelf"/> instance loaded from the stream.</returns>
+        static abstract Task<TSelf> FromStreamAsync(Stream stream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default);
 #endif
         /// <summary>
         /// Saves the current level to a file in JSON format.
@@ -110,7 +113,9 @@ namespace RhythmBase.Global.Components
         /// <exception cref="NotImplementedException">Thrown if the level's directory is not set.</exception>
         void SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default);
     }
-    internal interface IJsonLevel<TLevel> : ILevel<TLevel> where TLevel : ILevel<TLevel>
+    internal interface IJsonLevel<TLevel, TCalculator> : ILevel<TLevel, TCalculator>
+        where TLevel : ILevel<TLevel, TCalculator>
+        where TCalculator : IBeatCalculator<TCalculator, TLevel>
     {
 #if NET8_0_OR_GREATER
         /// <summary>

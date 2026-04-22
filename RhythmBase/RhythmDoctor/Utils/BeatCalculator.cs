@@ -52,7 +52,7 @@ namespace RhythmBase.RhythmDoctor.Utils
     /// <summary>
     /// Beat calculator that converts between absolute beats, bars, and time spans, while reacting to tempo and CPB changes.
     /// </summary>
-    public class BeatCalculator
+    public class BeatCalculator : IBeatCalculator<BeatCalculator, RDLevel>
     {
         internal readonly RDLevel Collection;
         private BpmCache[] _bpmCache = [];
