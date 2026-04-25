@@ -1,19 +1,16 @@
 ![logo](RhythmBase_banner.png)
 
-
 <p align="center">
   <a href="/LICENSE"><img src="https://img.shields.io/github/license/RDCN-Community-Developers/RhythmToolkit" alt="License"></a>
   <a href="https://www.nuget.org/packages/RhythmBase/"><img src="https://img.shields.io/nuget/v/RhythmBase?logo=nuget" alt="Nuget Download"></a>
   <img src="https://img.shields.io/nuget/dt/RhythmBase" alt="Downloads"/>
 </p>
 
-
 > If you find this project helpful, consider sponsoring via [爱发电 (Chinese mainland)](https://afdian.com/a/obugs) or [Ko-fi (Global)](https://ko-fi.com/obugs)!  
-
 
 # RhythmBase
 
-#### \[ English | [中文](./README_cn.md) \]
+#### \[ English | [中文](./README.zh-cn.md) \]
 
 This project primarily serves **Rhythm Doctor** and **A Dance of Fire and Ice** level developers, aiming to provide an engine-agnostic, high-performance, systematic, and intuitive level editing proxy development library for developers.  
 Thanks to the Rhythm Doctor fan community for their support of this project.  
@@ -73,46 +70,41 @@ RBInt ---> ADLE --> ADL
 RBV <-.-> RBVts
 ```
 
-### Core Features
+## Core Features
 
-#### Comprehensive Event System Support
+- **Comprehensive Event System Support** — Strongly-typed event models for Rhythm Doctor and Adofai, covering all official event types and Adofai's advanced filter system, with compatibility for future event models.
+- **Intelligent Event Processing** — Flexible LINQ queries, automatic relationship management, and built-in timeline generation tools.
+- **RichText & Dialogue Components** — Complete rich-text syntax parsing and code generation for dialogue and title events.
+- **Easing Function Library** — All in-game easing curves with support for custom interpolation and curve fitting.
+- **Cross-Platform** — Based on .NET Standard 2.0 / .NET 8.0, supporting Windows, Linux, and macOS.
+- **Multi-Language Interop** — Besides C#/F#/VB.NET, RhythmBase can be called from Python via [pythonnet](https://github.com/pythonnet/pythonnet).
 
-RhythmBase provides a strongly-typed event model for both Rhythm Doctor and A Dance of Fire and Ice, covering all official event types and Adofai's advanced filter system, also providing compatibility for potential new event models in the future. Through type checking and intelligent hints, it eliminates runtime errors at the source.
+## Quick Start
 
-#### Intelligent Event Processing
+```powershell
+dotnet add package RhythmBase
+```
 
-- **Event Discovery and Querying** - Flexible LINQ query support makes it easy to filter events by type or condition
-- **Automatic Relationship Management** - Event binding system automatically maintains parent-child relationships without manual tree structure handling
-- **Timeline Generation** - Built-in timeline management tools support advanced temporal sequences and control logic
+```cs
+using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Events;
 
-#### Rich Toolkit
+// Read a level
+using var level = RDLevel.FromFile("level.rdlevel");
 
-- **RichText Support** - Complete rich text syntax parsing and code generation for dialogue and title events
-- **Easing Function Library** - Contains all in-game easing curves with support for custom interpolation functions
-- **RDCode Integration** - Native support for Rhythm Doctor's code system, including syntax analysis and expression evaluation
-- **Macro Event System** - Generate complex event sequences through code while maintaining full compatibility with original levels
+// Add an event
+level.Add(new Comment() { Text = "hello", CustomTab = Tab.Windows, Y = 2 });
 
-### Read/Write Performance Comparison
+// Save
+level.SaveToFile("out.rdlevel");
+```
 
-This section compares the read/write performance using the level *The Power of Terry* (`the-powe-S7V1kg9RWYK.rdzip`).  
-Operating System: Windows 25H2 26200.7462  
-CPU: 12th Gen Intel® Core™ i7-12650H  
-Memory: 16GB  
+## Performance
 
-**Rhythm Doctor Level Editor**
-- 🟥v1.0.3/r42(r65)
-- Windows da9f047
-- Benchmarked using these methods:  
-  - `new RDLevelData()`, bare-bones deserialization of `rdlevel` JSON.  
-  - `EncodeData()`, full data construction plus JSON serialization.  
-
-**RhythmBase**  
-- 🟩.NET Standard 2.0 / 🟦.NET 8.0
-- ░v1.3.4 -> v1.3.9 -> v1.3.10▒
-- Benchmarked using these methods:  
-  - `RDLeve.FromFile`, reads and deserializes entire `rdzip` archives.
-  - `RDLevel.SaveToFile`, writes levels out to `rdlevel` files.  
-- Tested on 🟩.NET Framework 4.8.9221.0 / 🟦.NET 8.0.11  
+Using the level *The Power of Terry* (`the-powe-S7V1kg9RWYK.rdzip`) as a benchmark, RhythmBase achieves read/write speeds several times faster than the official level editor under .NET 8.0.  
+- :red_square: Game Editor
+- :green_square: .NET Standard 2.0 on .NET Framework 4.8
+- :blue_square: .NET 8.0 on .NET 8.0
 
 ```mermaid
 ---
@@ -141,7 +133,6 @@ xychart
     %% RDTK .NET 8.0 v1.3.10
     line [1365.457,1017.3662,753.053,615.3958,620.0609,617.4589,635.7308,612.3335,661.5626,605.837]
 ```
-
 ```mermaid
 ---
 config:
@@ -170,128 +161,11 @@ xychart
     line [419.8573,277.4102,195.8157,173.8777,109.3214,64.7145,80.4896,77.9989,85.8971,57.5985]
 ```
 
-### Platform and Language Interoperability
+## Documentation
 
-#### Cross-Platform Support
+- [Full Tutorial (Chinese)](docs/Tutorial.zh-cn.md)
+- [Full Tutorial (English)](docs/Tutorial.md)
 
-Thanks to .NET Standard 2.0 compatibility, RhythmBase runs seamlessly on multiple platforms:
+## About This Project
 
-- **Windows** - Via .NET Framework 4.6.1+ or .NET Core/8.0+
-- **Linux** - Via .NET Core/8.0+ (with Mono compatibility)
-- **macOS** - Via .NET Core/8.0+
-
-This means regardless of your operating system, you get a consistent development experience and API interface, avoiding common cross-platform incompatibility issues.
-
-#### Multi-Language Support
-
-Thanks to cross-language interoperability technologies in the .NET ecosystem, you can call RhythmBase from different programming languages:
-
-**C#, F#, VB.NET, C++/CLI** - Native support
-
-**Python** - Via the [pythonnet](https://github.com/pythonnet/pythonnet) library, you can use RhythmBase directly in Python, suitable for:
-- Writing automation scripts
-- Batch processing level files
-- Integrating with Python data analysis tools
-
-Here are concrete code examples:
-
-**C# Example** - Standard .NET development approach:
-
-```cs
-using RhythmBase.Global.Components.Vector;
-using RhythmBase.Global.Settings;
-using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.
-
-LevelReadOrWriteSettings settings = new()
-{
-	UnreadableEventsHandling = UnreadableEventHandling.Store,
-};
-RDLevel rdlevel = RDLevel.Default;
-
-foreach (Row row in rdlevel.Rows)
-{
-	MoveRow moveRow = new MoveRow()
-	{
-		Beat = new RDBeat(3),
-		Position = new RDPointE(10, 20),
-	};
-}
-
-rdlevel.SaveToFile("111.rdlevel");
-```
-
-**Python Example** - Using pythonnet to bridge .NET and Python ecosystems:
-
-```py
-# Assembly loading operations
-import pythonnet
-pythonnet.load('coreclr')
-import clr
-clr.AddReference('RhythmBase')
-
-from RhythmBase.Global.Components.Vector import *
-from RhythmBase.Global.Settings import *
-from RhythmBase.RhythmDoctor.Components import *
-from RhythmBase.RhythmDoctor.import *
-
-settings = LevelReadOrWriteSettings()
-settings.UnreadableEventsHandling = UnreadableEventHandling.Store
-rdlevel = RDLevel.Default
-
-for row in rdlevel.Rows:
-    move_row = MoveRow()
-    move_row.Beat = RDBeat(3)
-    move_row.Position = RDPointE(10,20)
-
-rdlevel.SaveToFile('111.rdlevel')
-```
-
-This flexibility enables RhythmBase to integrate into various toolchains and workflows, regardless of your preferred programming language or development environment.
-
-### Advanced Features
-
-#### Error Handling and Resilience
-
-RhythmBase provides flexible error handling mechanisms:
-- **Unreadable Event Mode** - When encountering unrecognized events, choose to store raw data rather than throwing exceptions
-- **Custom Error Handling** - Full control over how to handle various exceptional situations
-
-#### Type Safety and Compile-Time Checking
-
-Benefits of C#'s strong type system:
-- **Intellisense Support** - IDE automatically suggests all available event properties and methods
-- **Refactoring Support** - Automatically updates related code when modifying event structures
-- **Compile-Time Verification** - Eliminates runtime type errors
-
-#### Performance Optimization
-
-- **Zero-Copy Serialization** - Efficient binary format handling
-- **Incremental Processing** - Stream processing support for large level files
-
-#### Extensible Design
-
-- **Partial Classes and Extension Methods** - Easy to extend functionality without modifying core library
-- **Interface-Driven Design** - Interface-based event classification for custom processing logic
-- **Plugin Architecture Foundation** - Solid foundation for building toolsets and extensions
-
-#### Rich Data Structures and Algorithms
-
-- **Generic Vector System** - Support for multiple-precision point, size, and rectangle structures (floating-point, integer, expression, optional value)
-- **Curve Interpolation Engine** - Support for easing functions and custom curves for animation and numerical computation
-- **Timeline Management System** - Automatic generation and maintenance of level timelines supporting complex animation and event sequences
-- **Collections and Iterators** - Efficient collection implementations with LINQ query and lazy loading support
-
-#### Complete Text and Serialization Support
-
-- **RichText Engine** - Strongly-typed rich text structures supporting styles, events, and range operations
-- **JSON Serialization** - High-performance serialization based on System.Text.Json supporting complex nested structures
-
-
-## Project Direction and Positioning
-
-This project was originally named `RhythmToolkit`, with the goal of developing a few small tools for *Rhythm Doctor* to simplify level processing and related tasks.  
-As the project gradually matured, I found that most of the work was focused on reimplementing and optimizing the *Rhythm Doctor* level model. Its direction increasingly shifted toward becoming a foundational framework for other tools, while those original small utilities became relatively minor in comparison. Later, I also tried supporting the level model of *A Dance of Fire and Ice* (Adofai), so it was no longer exclusively for Rhythm Doctor (though Rhythm Doctor is still the primary focus).  
-In addition, due to certain compatibility issues with SkiaSharp, I plan to separate the image-processing part into an independent module. For these reasons, the project was renamed to `RhythmBase`, and the more tool-oriented content was migrated to other repositories.  
-Of course, you can still call it `RDTK` for short!  
-To reduce project dependencies and solve compatibility issues, I moved some feature wrappers that I consider highly practical into an unreleased project, `RhythmBase.Addition`. This part can also serve as reference examples for using `RhythmBase`.
+This project was originally named `RhythmToolkit`, with the goal of developing a few small tools for *Rhythm Doctor* to simplify level processing. As the project gradually matured, its direction increasingly shifted toward becoming a foundational framework for other tools, and support for *A Dance of Fire and Ice* (Adofai) was also added. For these reasons, the project was renamed to `RhythmBase`, and the more tool-oriented content was migrated to other repositories. Of course, you can still call it `RDTK` for short!
