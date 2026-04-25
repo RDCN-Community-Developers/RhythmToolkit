@@ -31,9 +31,48 @@ public partial class ConverterGenerator : IIncrementalGenerator
 	{
 		GenerateConverterRegistry(context);
 		GenerateEnumConverter(context);
-		GenerateEventConverterForRDLevel(context);
-		GenerateEventConverterForADLevel(context);
-		GenerateFilterConverter(context);
+		GenerationConfig[] configs = [
+			new()
+			{
+				Id = "RD",
+				SourceNamespace = "RhythmBase.RhythmDoctor.Events",
+				TargetConverterNamespace = "RhythmBase.RhythmDoctor.Converters",
+				TargetUtilsNamespace = "RhythmBase.RhythmDoctor.Utils",
+				TargetUtilsClassName = "EventTypeUtils",
+				BaseConverterClassName = "EventInstanceConverter",
+				BaseInterfaceFullName = "RhythmBase.RhythmDoctor.Events.IBaseEvent",
+				ClassTypeEnumFullname = "RhythmBase.RhythmDoctor.EventType",
+				ClassTypeEnumUnknownMemberName = "ForwardEvent",
+			},
+			new()
+			{
+				Id = "AD",
+				SourceNamespace = "RhythmBase.Adofai.Events",
+				TargetConverterNamespace = "RhythmBase.Adofai.Converters",
+				TargetUtilsNamespace = "RhythmBase.Adofai.Utils",
+				TargetUtilsClassName = "EventTypeUtils",
+				BaseConverterClassName = "EventInstanceConverter",
+				BaseInterfaceFullName = "RhythmBase.Adofai.Events.IBaseEvent",
+				ClassTypeEnumFullname = "RhythmBase.Adofai.EventType",
+				ClassTypeEnumUnknownMemberName = "ForwardEvent",
+			},
+			new()
+			{
+				Id = "Filter",
+				SourceNamespace = "RhythmBase.Adofai.Components.Filters",
+				TargetConverterNamespace = "RhythmBase.Adofai.Converters",
+				TargetUtilsNamespace = "RhythmBase.Adofai.Utils",
+				TargetUtilsClassName = "FilterTypeUtils",
+				BaseConverterClassName = "FilterInstanceConverter",
+				BaseInterfaceFullName = "RhythmBase.Adofai.Components.Filters.IFilter",
+				ClassTypeEnumFullname = "RhythmBase.Adofai.FilterType",
+				ClassTypeEnumUnknownMemberName = "Unknown",
+			},
+			];
+		foreach( var config in configs )
+		{
+            GenerateConverter(context, config);
+        }
 		GenerateFilterTypeUtilsForEnum(context);
 	}
 
@@ -48,8 +87,6 @@ public partial class ConverterGenerator : IIncrementalGenerator
 		public Location? Location { get; } = Location;
 		public string? Error { get; } = Error;
 	}
-
-
 
 	private static bool HasAttribute(SyntaxList<AttributeListSyntax> list, string attributeFullName)
 	{
@@ -115,17 +152,12 @@ public partial class ConverterGenerator : IIncrementalGenerator
 	}
 
 
-
-	#region Enum Converter 生成
-
 	private record struct FieldName(string Name, string FullName, string? Alias = null);
 	private struct EnumInfo
 	{
 		public FieldName Symbol;
 		public FieldName[] Fields;
 	}
-
-	#endregion
 
 	#region Event Converter 生成
 
@@ -153,57 +185,6 @@ public partial class ConverterGenerator : IIncrementalGenerator
 	private struct GenerateSettings()
 	{
 		public bool WithTypeEnum = false;
-	}
-	private static void GenerateEventConverterForRDLevel(IncrementalGeneratorInitializationContext context)
-	{
-
-		GenerationConfig config = new()
-		{
-			Id = "RD",
-			SourceNamespace = "RhythmBase.RhythmDoctor.Events",
-			TargetConverterNamespace = "RhythmBase.RhythmDoctor.Converters",
-			TargetUtilsNamespace = "RhythmBase.RhythmDoctor.Utils",
-			TargetUtilsClassName = "EventTypeUtils",
-			BaseConverterClassName = "EventInstanceConverter",
-			BaseInterfaceFullName = "RhythmBase.RhythmDoctor.Events.IBaseEvent",
-			ClassTypeEnumFullname = "RhythmBase.RhythmDoctor.EventType",
-			ClassTypeEnumUnknownMemberName = "ForwardEvent",
-        };
-
-		GenerateConverter(context, config);
-	}
-	private static void GenerateEventConverterForADLevel(IncrementalGeneratorInitializationContext context)
-	{
-		GenerationConfig config = new()
-		{
-			Id = "AD",
-			SourceNamespace = "RhythmBase.Adofai.Events",
-			TargetConverterNamespace = "RhythmBase.Adofai.Converters",
-			TargetUtilsNamespace = "RhythmBase.Adofai.Utils",
-			TargetUtilsClassName = "EventTypeUtils",
-			BaseConverterClassName = "EventInstanceConverter",
-			BaseInterfaceFullName = "RhythmBase.Adofai.Events.IBaseEvent",
-			ClassTypeEnumFullname = "RhythmBase.Adofai.EventType",
-            ClassTypeEnumUnknownMemberName = "ForwardEvent",
-        };
-
-		GenerateConverter(context, config);
-	}
-	private static void GenerateFilterConverter(IncrementalGeneratorInitializationContext context)
-	{
-		GenerationConfig config = new()
-		{
-			Id = "Filter",
-			SourceNamespace = "RhythmBase.Adofai.Components.Filters",
-			TargetConverterNamespace = "RhythmBase.Adofai.Converters",
-			TargetUtilsNamespace = "RhythmBase.Adofai.Utils",
-			TargetUtilsClassName = "FilterTypeUtils",
-			BaseConverterClassName = "FilterInstanceConverter",
-			BaseInterfaceFullName = "RhythmBase.Adofai.Components.Filters.IFilter",
-			ClassTypeEnumFullname = "RhythmBase.Adofai.FilterType",
-            ClassTypeEnumUnknownMemberName = "Unknown",
-        };
-		GenerateConverter(context, config);
 	}
 	private static AttributeSyntax? GetAttribute(SyntaxList<AttributeListSyntax> list, string attributeFullName)
 	{
