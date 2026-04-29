@@ -195,7 +195,6 @@ public partial class ConverterGenerator
 						public static class EnumConverter
 						{
 					""");
-
             foreach (EnumInfo e in enumSymbols.OrderBy(i => i.Symbol.FullName))
             {
                 string fullName = e.Symbol.FullName;
@@ -512,9 +511,9 @@ internal class {{config.BaseConverterClassName}}{{ToShorter(ci.Name)}} : {{confi
 """);
                     if (ci.Properties.Length > 0)
                     {
+                        int tempNotNullVarCount = 0;
                         foreach (var pi in ci.Properties)
                         {
-                            sb.AppendLine($"/* Property: {pi.Symbol.Name}|{pi.Alias} */");
                             if (pi.Symbol.GetMethod is null || (pi.Symbol.SetMethod is null && pi.Alias is null)) continue;
                             string propName = pi.Alias ?? ToLowerCamelCase(pi.Symbol.Name);
                             bool multiline = false;
@@ -525,11 +524,12 @@ internal class {{config.BaseConverterClassName}}{{ToShorter(ci.Name)}} : {{confi
                                 if (pi.Symbol.NullableAnnotation == NullableAnnotation.Annotated)
                                 {
                                     sb2.AppendLine($"""
-		if (value.{pi.Symbol.Name} is {WithoutNullable(pi.Symbol.Type).ToDisplayString()} t)
-			global::RhythmBase.Global.Converters.ConverterHub.Write<{WithoutNullable(pi.Symbol.Type).ToDisplayString()}>(writer, t, options);
+		if (value.{pi.Symbol.Name} is {WithoutNullable(pi.Symbol.Type).ToDisplayString()} valueNotNull{tempNotNullVarCount})
+			global::RhythmBase.Global.Converters.ConverterHub.Write<{WithoutNullable(pi.Symbol.Type).ToDisplayString()}>(writer, valueNotNull{tempNotNullVarCount}, options);
 		else
 			writer.WriteNullValue();
 """);
+                                    tempNotNullVarCount++;
                                 }
                                 else
                                 {
@@ -546,15 +546,12 @@ internal class {{config.BaseConverterClassName}}{{ToShorter(ci.Name)}} : {{confi
                                     typeNotNull = WithoutNullable(pi.Symbol.Type);
                                     isNullable = true;
                                     sb2.Append($"""
-		if (value.{pi.Symbol.Name} is null)
-			writer.WriteNull("{propName}"u8);
-		else
-	
+		if (value.{pi.Symbol.Name} is {WithoutNullable(pi.Symbol.Type).ToDisplayString()} valueNotNull{tempNotNullVarCount})
 """);
                                 }
 
                                 if (typeNotNull.TypeKind == TypeKind.Enum)
-                                    sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, value.{pi.Symbol.Name}{(isNullable ? "?" : "")}.ToEnumString());");
+                                    sb2.AppendLine($"		writer.WriteString(\"{propName}\"u8, {( isNullable ? $"valueNotNull{tempNotNullVarCount}" : $"value.{pi.Symbol.Name}")}.ToEnumString());");
                                 else if (pi.TimeType is int t)
                                 {
                                     sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, {(t switch
@@ -587,9 +584,17 @@ internal class {{config.BaseConverterClassName}}{{ToShorter(ci.Name)}} : {{confi
                                             sb2.AppendLine($"		writer.WriteNumber(\"{propName}\"u8, value.{LastPartOf(pi.Symbol.Name)}{(isNullable ? ".Value" : "")});");
                                             break;
                                         default:
-                                            sb2.AppendLine($$"""		{ writer.WritePropertyName("{{propName}}"u8);	global::RhythmBase.Global.Converters.ConverterHub.Write(writer, value.{{pi.Symbol.Name}}, options); }""");
+                                            sb2.AppendLine($$"""		{ writer.WritePropertyName("{{propName}}"u8);	global::RhythmBase.Global.Converters.ConverterHub.Write(writer, {{(isNullable ? $"valueNotNull{tempNotNullVarCount}" : $"value.{pi.Symbol.Name}")}}, options); }""");
                                             break;
                                     }
+                                }
+                                if (isNullable)
+                                {
+                                    sb2.AppendLine($"""
+        else
+            writer.WriteNull("{propName}"u8);
+""");
+                                    tempNotNullVarCount++;
                                 }
                             }
                             AppendWriteLinesWithCondition(sb, sb2, pi.Condition, multiline);

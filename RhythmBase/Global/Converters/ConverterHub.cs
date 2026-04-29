@@ -59,7 +59,13 @@ internal static partial class ConverterHub
         if (ConverterCache<T>.Converter is JsonConverter<T> converter)
             converter.Write(writer, value, options);
         else
-            //JsonSerializer.Serialize(writer, value, options);
-            writer.WriteNullValue();
+        //JsonSerializer.Serialize(writer, value, options);
+#if DEBUG
+        {
+            throw new NotImplementedException($"No converter found for type {typeof(T)}");
+        }
+#else
+        writer.WriteNullValue();
+#endif
     }
 }
