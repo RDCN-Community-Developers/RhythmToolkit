@@ -1,5 +1,10 @@
 #### \[ English | [中文](./VERSION.zh-cn.md) \]
 
+### 20260420 v1.3.11-alpha3
+- Fixed an issue where some configurations (such as encoder, indentation, etc.) did not take effect
+- Fixed an issue where nullable type properties could not find the corresponding serializer during serialization and defaulted to writing empty values
+- Added a unified serializer generator configuration interface
+
 ### 20260420 v1.3.11-alpha2
 - Refactored serializer generator
 - Removed MacroEvent event type
