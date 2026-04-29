@@ -42,7 +42,12 @@ partial class RDLevel
 
     private static void WriteToStream(Stream stream, RDLevel level, JsonSerializerOptions options)
     {
-        Utf8JsonWriter writer = new(stream, new JsonWriterOptions { Indented = options.WriteIndented });
+        Utf8JsonWriter writer = new(stream, new JsonWriterOptions {
+            Indented = options.WriteIndented,
+            Encoder = options.Encoder,
+            IndentCharacter = ' ',
+            IndentSize = options.IndentSize,
+        });
         ConverterHub.Write(writer, level, options);
         writer.Flush();
     }
