@@ -12,12 +12,7 @@ public class ForwardTileEvent : BaseTileEvent, IBaseEvent, IForwardEvent
 	/// <summary>  
 	/// Gets the actual type of the custom tile event from the event data.  
 	/// </summary>  
-	public string ActualType
-	{
-		get => _extraData.TryGetValue("eventType", out JsonElement typeElement) ? typeElement.ToString() ?? "UnknownType" : "UnknownType";
-		set => _extraData["eventType"] = JsonElement.Parse(value);
-	}
-
+	public string ActualType { get; init; } = string.Empty;
 	/// <summary>  
 	/// Gets or sets the data associated with the custom tile event.  
 	/// </summary>  

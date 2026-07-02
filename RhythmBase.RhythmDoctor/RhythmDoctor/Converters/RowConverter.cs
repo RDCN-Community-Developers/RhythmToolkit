@@ -50,25 +50,28 @@ internal class RowConverter : MetadataJsonConverter<Row>
 				value.Length = reader.GetInt32();
 			else
 			{
-				reader = checkpoint;
-				var fieldName = reader.GetString() ?? "";
-				if (fieldName == "row")
+				switch (options.Strictness)
 				{
-					reader.Read();
-					reader.Skip();
-					continue;
-				}
-				reader.Read();
-				JsonElement extraData = JsonElement.ParseValue(ref reader);
-				value[fieldName] = extraData;
+					case JsonStrictness.Strict:
+						throw new JsonException($"Unexpected property '{reader.GetString()}' in Row object.");
+					case JsonStrictness.Corrective:
+						reader = checkpoint;
+						var fieldName = reader.GetString() ?? "";
+						reader.Read();
+						JsonElement extraData = JsonElement.ParseValue(ref reader);
+						value[fieldName] = extraData;
 #if DEBUG
-				Console.WriteLine($"{options.Version}\t| Row\t| {fieldName} => ({value[fieldName].ValueKind}){value[fieldName]}");
+						Console.WriteLine($"{options.Version}\t| Row\t| {fieldName} => ({value[fieldName].ValueKind}){value[fieldName]}");
 #endif
+						break;
+					case JsonStrictness.Fallback:
+						reader.Skip();
+						break;
+				}
 			}
 		}
 		return value;
 	}
-
 	public override void Write(Utf8JsonWriter writer, Row value, MetadataJsonSerializerOptions options)
 	{
 		writer.WriteStartObject();

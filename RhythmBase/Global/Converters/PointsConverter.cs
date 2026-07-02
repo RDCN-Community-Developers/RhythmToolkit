@@ -7,7 +7,7 @@ namespace RhythmBase.Global.Converters;
 /// Abstract base class for JSON converters that handle <see cref="IVector"/> types as JSON arrays.
 /// </summary>
 /// <typeparam name="T">The vector type being converted.</typeparam>
-public abstract class RDPointsConverter<T> : JsonConverter<T> where T : struct, IVector
+public abstract class PointsConverter<T> : JsonConverter<T> where T : struct, IVector
 {
     /// <inheritdoc/>
     public override bool CanConvert(Type objectType) => typeof(IVector).IsAssignableFrom(objectType);

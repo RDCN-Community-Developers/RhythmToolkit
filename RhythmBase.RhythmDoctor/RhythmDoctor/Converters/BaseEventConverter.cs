@@ -188,8 +188,10 @@ internal class BaseEventConverter : BackwardCompatibleMetadataJsonConverter
 			}
 		}
 		reader = checkpoint; IBaseEvent e;
-		if (type is null || !Enum.TryParse(type, true, out EventType typeEnum))
-			e = ReadForwardEvent(ref reader) ?? throw new JsonException("Unknown event type and failed to parse.");
+		if(string.IsNullOrEmpty(type))
+			throw new JsonException("Event type is missing.");
+		if (!Enum.TryParse(type, true, out EventType typeEnum))
+			e = ReadForwardEvent(ref reader, type!) ?? throw new JsonException("Unknown event type and failed to parse.");
 		else
 			e = EventConverterMap.GetConverter(typeEnum).ReadProperties(ref reader, options);
 		JsonException.ThrowIfNotMatch(ref reader, JsonTokenType.EndObject);
@@ -210,7 +212,7 @@ internal class BaseEventConverter : BackwardCompatibleMetadataJsonConverter
 			EventConverterMap.GetConverter(value.Type).WriteProperties(writer, value, options);
 		}
 	}
-	public static Events.IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader)
+	public static Events.IForwardEvent? ReadForwardEvent(ref Utf8JsonReader reader, string type)
 	{
 		JsonDocument doc = JsonDocument.ParseValue(ref reader);
 		JsonElement root = doc.RootElement;
@@ -224,10 +226,10 @@ internal class BaseEventConverter : BackwardCompatibleMetadataJsonConverter
 			else if (prop.NameEquals("target"))
 				hasTarget = true;
 		}
-		return 
-			hasRow ? new ForwardRowEvent(doc) :
-			hasTarget ? new ForwardDecorationEvent(doc) :
-			new ForwardEvent(doc);
+		return
+			hasRow ? new ForwardRowEvent(doc) { ActualType = type } :
+			hasTarget ? new ForwardDecorationEvent(doc) { ActualType = type } :
+			new ForwardEvent(doc) { ActualType = type };
 	}
 
 	public static void WriteForwardEvent(Utf8JsonWriter writer, Events.IForwardEvent value)

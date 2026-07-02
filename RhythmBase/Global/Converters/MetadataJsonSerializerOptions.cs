@@ -95,8 +95,23 @@ public record class MetadataJsonSerializerOptions
 /// </summary>
 public enum JsonStrictness
 {
-	/// <summary>Strict mode: all JSON format rules are enforced.</summary>
+	/// <summary>
+	/// Strict mode: data must exactly match the model definition.
+	/// Any type mismatch, value out of range, or missing required field throws an exception.
+	/// </summary>
 	Strict,
-	/// <summary>Relaxed mode: allows trailing commas, comments, and other leniencies.</summary>
-	Relaxed,
+
+	/// <summary>
+	/// Corrective mode: attempts to coerce out-of-range or mismatched values into the valid range of the model.
+	/// For example, clamping numeric values to valid intervals, trimming strings to max length,
+	/// or mapping invalid enum values to the nearest valid member.
+	/// Falls back to <see cref="Fallback"/> behavior when correction is not possible.
+	/// </summary>
+	Corrective,
+
+	/// <summary>
+	/// Fallback mode: ignores mismatched data and uses the type's default value as the parsing result.
+	/// No exceptions are thrown; deserialization always succeeds.
+	/// </summary>
+	Fallback,
 }

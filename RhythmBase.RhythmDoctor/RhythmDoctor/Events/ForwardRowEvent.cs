@@ -13,7 +13,7 @@ public record class ForwardRowEvent : BaseRowAction, IForwardEvent
 	public override EventType Type => EventType.ForwardRowEvent;
 
 	///<inheritdoc/>
-	public string ActualType { get; private init; } = string.Empty;
+	public string ActualType { get; init; } = string.Empty;
 
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Rows;

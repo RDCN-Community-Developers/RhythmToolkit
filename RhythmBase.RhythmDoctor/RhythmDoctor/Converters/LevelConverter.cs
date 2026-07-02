@@ -318,9 +318,6 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 					(BaseConditional? e, int i) = conditionalConverterWithId.Read(ref reader, typeof(BaseConditional), options);
 					if (e != null)
 						level.Conditionals.InsertToPhysicalIndex(e, i);
-					//BaseConditional? e = conditionalConverter.Read(ref reader, typeof(BaseConditional), options);
-					//if (e != null)
-					//	level.Conditionals.Add(e);
 				}
 			}
 			else

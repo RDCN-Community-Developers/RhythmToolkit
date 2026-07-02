@@ -16,9 +16,8 @@ public record class ForwardEvent : BaseEvent, IForwardEvent
 
 	/// <inheritdoc/>
 	public override Tab Tab => Tab.Unknown;
-
 	///<inheritdoc/>
-	public string ActualType { get; private init; } = string.Empty;
+	public string ActualType { get; init; } = string.Empty;
 	/// <summary>
 	/// Gets the collection of additional data associated with the object.
 	/// </summary>

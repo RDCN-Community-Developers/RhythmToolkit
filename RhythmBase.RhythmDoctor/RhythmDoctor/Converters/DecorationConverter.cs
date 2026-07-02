@@ -40,20 +40,24 @@ internal class DecorationConverter : MetadataJsonConverter<Decoration>
 				value.Visible = reader.GetBoolean();
 			else
 			{
-				reader = checkpoint;
-				var fieldName = reader.GetString() ?? "";
-				if(fieldName == "row")
+				switch (options.Strictness)
 				{
-					reader.Read();
-					reader.Skip();
-					continue;
-				}
-				reader.Read();
-				JsonElement extraData = JsonElement.ParseValue(ref reader);
-				value[fieldName] = extraData;
+					case JsonStrictness.Strict:
+						throw new JsonException($"Unexpected property '{reader.GetString()}' in Decoration object.");
+					case JsonStrictness.Corrective:
+						reader = checkpoint;
+						var fieldName = reader.GetString() ?? "";
+						reader.Read();
+						JsonElement extraData = JsonElement.ParseValue(ref reader);
+						value[fieldName] = extraData;
 #if DEBUG
-				Console.WriteLine($"{options.Version}\t| Decoration\t| {fieldName} => ({value[fieldName].ValueKind}){value[fieldName]}");
+						Console.WriteLine($"{options.Version}\t| Decoration\t| {fieldName} => ({value[fieldName].ValueKind}){value[fieldName]}");
 #endif
+						break;
+					case JsonStrictness.Fallback:
+						reader.Skip();
+						break;
+				}
 			}
 		}
 		return value;

@@ -157,7 +157,7 @@ namespace RhythmBase.Test;
         [TestMethod]
         public void RangeUsage()
         {
-            IEnumerable<IBaseEvent> result = _rdlevel.InRange(new RhythmDoctor.Components.TickRange(_rdlevel.DefaultTick + 10, null));
+            IEnumerable<IBaseEvent> result = _rdlevel.InRange(new RhythmDoctor.Components.TickTimeRange(_rdlevel.DefaultTick + 10, null));
         }
         [TestMethod]
         public void ExpressionUsage()

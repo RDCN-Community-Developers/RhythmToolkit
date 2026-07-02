@@ -13,11 +13,7 @@ public class ForwardEvent : BaseEvent, IBaseEvent, IForwardEvent
 	/// <summary>  
 	/// Gets the actual type of the custom event from the event data.  
 	/// </summary>  
-	public string ActualType
-	{
-		get => _extraData.TryGetValue("eventType", out JsonElement typeElement) ? typeElement.ToString() ?? "UnknownType" : "UnknownType";
-		set => _extraData["eventType"] = JsonElement.Parse($"\"{value}\"");
-	}
+	public string ActualType { get; init; } = string.Empty;
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ForwardEvent"/> class.
 	/// </summary>
