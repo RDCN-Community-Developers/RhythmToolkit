@@ -235,24 +235,47 @@ partial class Level
 	/// <inheritdoc/>
 	public static async Task<Level> FromZipAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
 		string extension = Path.GetExtension(filepath);
 		if (extension is not ".zip" and not ".rlz")
 			throw new NotSupportedException($"File type '{extension}' is not supported.");
+		using FileStream stream = File.OpenRead(filepath);
+		Level level = await FromZipAsync(stream, settings, cancellationToken);
+		level.ResolvedPath = Path.GetFullPath(filepath);
+		level.Filepath = Path.GetFullPath(filepath);
+		return level;
+	}
+	/// <inheritdoc/>
+	public static Task<Level> FromZip(Stream zipStream, LevelReadSettings? settings = null)
+			=> FromZipAsync(zipStream, settings);
+	/// <inheritdoc/>
+	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	{
+		settings ??= new LevelReadSettings();
 		DirectoryInfo tempDirectory = new(Path.Combine(
 			GlobalSettings.CachePath, GlobalSettings.CacheDirectoryPrefix + Path.GetRandomFileName()));
 		tempDirectory.Create();
 		try
 		{
 #if NET8_0_OR_GREATER
-			using Stream stream = File.OpenRead(filepath);
-			ZipFile.ExtractToDirectory(stream, tempDirectory.FullName, overwriteFiles: true);
+			ZipFile.ExtractToDirectory(zipStream, tempDirectory.FullName, overwriteFiles: true);
 #else
-			ZipFile.ExtractToDirectory(filepath, tempDirectory.FullName);
+			using (ZipArchive archive = new(zipStream, ZipArchiveMode.Read))
+			{
+				foreach (ZipArchiveEntry entry in archive.Entries)
+				{
+					string entryPath = Path.Combine(tempDirectory.FullName, entry.FullName);
+					string? entryDir = Path.GetDirectoryName(entryPath);
+					if (!string.IsNullOrEmpty(entryDir))
+						Directory.CreateDirectory(entryDir);
+					if (!string.IsNullOrEmpty(entry.Name))
+						entry.ExtractToFile(entryPath, overwrite: true);
+				}
+			}
 #endif
 			Level level = await FromDirectoryAsync(tempDirectory.FullName, settings, cancellationToken);
-			level.ResolvedPath = Path.GetFullPath(filepath);
-			level.Filepath = Path.GetFullPath(filepath);
+			level.ResolvedDirectory = tempDirectory.FullName;
+			level.isZip = true;
+			level.isExtracted = true;
 			return level;
 		}
 		catch (Exception ex)
@@ -267,25 +290,39 @@ partial class Level
 	/// <inheritdoc/>
 	public async Task SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
 		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 		if (!directory.Exists)
 			directory.Create();
+		using FileStream stream = new(filepath, FileMode.Create, FileAccess.Write);
+		await SaveToZipAsync(stream, settings, cancellationToken);
+	}
+	/// <inheritdoc/>
+	public void SaveToZip(Stream zipStream, LevelWriteSettings? settings = null)
+			=> SaveToZipAsync(zipStream, settings).GetAwaiter().GetResult();
+	/// <inheritdoc/>
+	public async Task SaveToZipAsync(Stream zipStream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	{
+		settings ??= new LevelWriteSettings();
 		string tempDir = Path.Combine(
 			GlobalSettings.CachePath, GlobalSettings.CacheDirectoryPrefix + Path.GetRandomFileName());
 		await SaveToDirectoryAsync(tempDir, settings, cancellationToken);
-		using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
-		using ZipArchive archive = new(stream, ZipArchiveMode.Create);
-		foreach (string file in Directory.GetFiles(tempDir, "*", SearchOption.AllDirectories))
+		try
 		{
+			using ZipArchive archive = new(zipStream, ZipArchiveMode.Create, leaveOpen: true);
+			foreach (string file in Directory.GetFiles(tempDir, "*", SearchOption.AllDirectories))
+			{
 #if NET8_0_OR_GREATER
-			string entryName = Path.GetRelativePath(tempDir, file).Replace('\\', '/');
+				string entryName = Path.GetRelativePath(tempDir, file).Replace('\\', '/');
 #else
-			string entryName = file.Substring(tempDir.Length + 1).Replace('\\', '/');
+				string entryName = file.Substring(tempDir.Length + 1).Replace('\\', '/');
 #endif
-			archive.CreateEntryFromFile(file, entryName);
+				archive.CreateEntryFromFile(file, entryName);
+			}
 		}
-		Directory.Delete(tempDir, true);
+		finally
+		{
+			Directory.Delete(tempDir, true);
+		}
 	}
 	#endregion
 	#region dir

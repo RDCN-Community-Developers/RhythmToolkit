@@ -79,18 +79,7 @@ partial class Level
 	#endregion
 	#region zip
 	/// <inheritdoc/>
-	public static Level FromZip(string filepath, LevelReadSettings? settings = null)
-	{
-		string extension = Path.GetExtension(filepath);
-		if (extension is not ".rdzip" and not ".zip")
-		{
-			if (extension is ".rdlevel" or ".json")
-				throw new NotSupportedException($"File type '{extension}' is not supported. Use {nameof(FromFile)} instead.");
-			throw new NotSupportedException($"File type '{extension}' is not supported.");
-		}
-		return FromZipAsync(filepath, settings).GetAwaiter().GetResult();
-	}
-
+	public static Level FromZip(string filepath, LevelReadSettings? settings = null) => FromZipAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
 	public static async Task<Level> FromZipAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
 	{
@@ -157,12 +146,44 @@ partial class Level
 		return level;
 	}
 	/// <inheritdoc/>
+	public static Task<Level> FromZip(Stream zipStream, LevelReadSettings? settings = null)
+		=> FromZipAsync(zipStream, settings);
+	/// <inheritdoc/>
+	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	{
+		settings ??= new LevelReadSettings();
+		Level? level;
+		using ZipArchive archive = new(zipStream, ZipArchiveMode.Read);
+		ZipArchiveEntry entry = archive.GetEntry("main.rdlevel") ?? throw new FileNotFoundException("Cannot find the level file.");
+		using Stream stream = entry.Open();
+		level = await FromStreamAsync(stream, settings, cancellationToken);
+		level.isZip = true;
+		level.isExtracted = false;
+		return level;
+	}
+	/// <inheritdoc/>
 	public void SaveToZip(string filepath, LevelWriteSettings? settings = null)
 	{
 		SaveToZipAsync(filepath, settings).GetAwaiter().GetResult();
 	}
 	/// <inheritdoc/>
 	public async Task SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	{
+		if (string.IsNullOrEmpty(this.ResolvedDirectory))
+			throw new NotImplementedException();
+		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
+		if (!directory.Exists)
+			directory.Create();
+		using FileStream stream = new(filepath, FileMode.Create, FileAccess.Write);
+		await SaveToZipAsync(stream, settings, cancellationToken);
+	}
+	/// <inheritdoc/>
+	public void SaveToZip(Stream zipStream, LevelWriteSettings? settings = null)
+	{
+		SaveToZipAsync(zipStream, settings).GetAwaiter().GetResult();
+	}
+	/// <inheritdoc/>
+	public async Task SaveToZipAsync(Stream zipStream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
 		if (string.IsNullOrEmpty(this.ResolvedDirectory))
 			throw new NotImplementedException();
@@ -176,11 +197,7 @@ partial class Level
 		bool loadAssets = settings.LoadAssets;
 		settings.LoadAssets = true;
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings);
-		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
-		if (!directory.Exists)
-			directory.Create();
-		using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
-		ZipArchive archive = new(stream, ZipArchiveMode.Create);
+		using ZipArchive archive = new(zipStream, ZipArchiveMode.Create, leaveOpen: true);
 		ZipArchiveEntry entry = archive.CreateEntry("main.rdlevel");
 		using (Stream rdlevelStream = entry.Open())
 		{
@@ -189,9 +206,11 @@ partial class Level
 		settings.FileReferenceEncountered -= referenceDelegate;
 		foreach (var file in fileReferences)
 		{
-			archive.CreateEntryFromFile(Path.Combine(ResolvedDirectory, file.Path), Path.GetFileName(file.Path));
+			string fullPath = Path.Combine(ResolvedDirectory, file.Path);
+			if (!File.Exists(fullPath))
+				throw new FileNotFoundException($"Referenced file '{file.Path}' not found in the resolved directory.");
+			archive.CreateEntryFromFile(fullPath, Path.GetFileName(file.Path));
 		}
-		archive.Dispose();
 		settings.LoadAssets = loadAssets;
 	}
 	#endregion zip

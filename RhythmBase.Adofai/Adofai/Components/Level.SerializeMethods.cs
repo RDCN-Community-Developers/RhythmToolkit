@@ -17,10 +17,49 @@ partial class Level
 		throw new NotImplementedException();
 	}
 	/// <inheritdoc/>
+	public static Task<Level> FromZip(Stream zipStream, LevelReadSettings? settings = null)
+			=> FromZipAsync(zipStream, settings);
+	/// <inheritdoc/>
+	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	{
+		settings ??= new LevelReadSettings();
+		using ZipArchive archive = new(zipStream, ZipArchiveMode.Read);
+		ZipArchiveEntry? entry = null;
+		foreach (ZipArchiveEntry e in archive.Entries)
+		{
+			if (e.FullName.EndsWith(".adofai"))
+			{
+				entry = e;
+				break;
+			}
+		}
+		if (entry is null)
+			throw new FileNotFoundException("No Adofai file has been found.");
+		using Stream stream = entry.Open();
+		Level level = await FromStreamAsync(stream, settings, cancellationToken);
+		level.isZip = true;
+		level.isExtracted = false;
+		return level;
+	}
+	/// <inheritdoc/>
 	public void SaveToZip(string filepath, LevelWriteSettings? settings = null)
 			=> SaveToZipAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
 	public async Task SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	{
+		if (string.IsNullOrEmpty(this.ResolvedDirectory))
+			throw new NotImplementedException();
+		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
+		if (!directory.Exists)
+			directory.Create();
+		using FileStream stream = new(filepath, FileMode.Create, FileAccess.Write);
+		await SaveToZipAsync(stream, settings, cancellationToken);
+	}
+	/// <inheritdoc/>
+	public void SaveToZip(Stream zipStream, LevelWriteSettings? settings = null)
+			=> SaveToZipAsync(zipStream, settings).GetAwaiter().GetResult();
+	/// <inheritdoc/>
+	public async Task SaveToZipAsync(Stream zipStream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
 		if (string.IsNullOrEmpty(this.ResolvedDirectory))
 			throw new NotImplementedException();
@@ -31,17 +70,17 @@ partial class Level
 		bool loadAssets = settings.LoadAssets;
 		settings.LoadAssets = true;
 		MetadataJsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Filepath) ?? "", settings);
-		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
-		if (!directory.Exists)
-			directory.Create();
-		using Stream stream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
-		ZipArchive archive = new(stream, ZipArchiveMode.Create);
+		using ZipArchive archive = new(zipStream, ZipArchiveMode.Create, leaveOpen: true);
 		ZipArchiveEntry entry = archive.CreateEntry("main.adofai");
-		using (Stream rdlevelStream = entry.Open())
-			await SaveToStreamAsync(rdlevelStream, settings, cancellationToken);
+		using (Stream adofaiStream = entry.Open())
+			await SaveToStreamAsync(adofaiStream, settings, cancellationToken);
 		foreach (var file in files)
-			archive.CreateEntryFromFile(Path.Combine(ResolvedDirectory, file.Path), Path.GetFileName(file.Path));
-		archive.Dispose();
+		{
+			string fullPath = Path.Combine(ResolvedDirectory, file.Path);
+			if (!File.Exists(fullPath))
+				throw new FileNotFoundException($"Referenced file '{file.Path}' not found in the resolved directory.");
+			archive.CreateEntryFromFile(fullPath, Path.GetFileName(file.Path));
+		}
 		settings.FileReferenceEncountered -= AddFileReference;
 		settings.LoadAssets = loadAssets;
 	}

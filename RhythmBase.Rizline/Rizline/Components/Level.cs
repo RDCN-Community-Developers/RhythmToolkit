@@ -148,8 +148,8 @@ public enum Difficulty
 /// Core Rizline level representation with metadata, timing and content lists.
 /// </summary>
 public partial class Level :
-		IArchiveLevel<Level, IBaseEvent, EventType, TickTime>,
-		IMultiFileLevel<Level, IBaseEvent, EventType, TickTime>
+		IArchiveLevel<Level>,
+		IMultiFileLevel<Level>
 {
 	/// <summary>
 	/// Title of the song.
@@ -183,6 +183,8 @@ public partial class Level :
 	/// List of charts (difficulties) contained in this level.
 	/// </summary>
 	public List<Chart> Charts { get; } = [];
+	internal bool isZip;
+	internal bool isExtracted;
 	/// <summary>
 	/// Original file path of the level, if any. 
 	/// </summary>
@@ -208,7 +210,11 @@ public partial class Level :
 	/// </summary>
 	public void Dispose()
 	{
-		throw new NotImplementedException();
+		if (isZip && isExtracted && Directory.Exists(ResolvedDirectory))
+		{
+			Directory.Delete(ResolvedDirectory, true);
+		}
+		GC.SuppressFinalize(this);
 	}
 
 }

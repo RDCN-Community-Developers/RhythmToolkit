@@ -7,8 +7,8 @@ namespace RhythmBase.BeatBlock.Components;
 /// </summary>
 public partial class Level :
 		//OrderedEventCollection<IBaseEvent, EventType, BBBeat>,
-		IArchiveLevel<Level, IBaseEvent, EventType, TickTime>,
-		IMultiFileLevel<Level, IBaseEvent, EventType, TickTime>,
+		IArchiveLevel<Level>,
+		IMultiFileLevel<Level>,
 		IDisposable
 {
 	internal bool isZip;
@@ -62,9 +62,11 @@ public partial class Level :
 	{
 		if (disposing)
 		{
-			// Dispose managed resources here
+			if (isZip && isExtracted && Directory.Exists(ResolvedDirectory))
+			{
+				Directory.Delete(ResolvedDirectory, true);
+			}
 		}
-		// Dispose unmanaged resources here
 	}
 
 	/// <summary>

@@ -15,7 +15,7 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// </summary>  
 	public Room Rooms { get; set; } = new Room([0]);
 	/// <summary>  
-	/// Gets or sets the content mode for the event.  
+	/// Gets or sets the content mode for the event.
 	/// </summary>  
 	public ContentMode ContentMode { get; set; } = ContentMode.ScaleToFill;
 	/// <summary>  

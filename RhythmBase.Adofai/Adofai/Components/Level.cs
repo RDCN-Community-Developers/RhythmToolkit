@@ -10,9 +10,9 @@ namespace RhythmBase.Adofai.Components;
 /// </summary>
 public partial class Level :
     TileCollection,
-    IJsonLevel<Level, IBaseEvent, EventType, TickTime>,
-    ISingleFileLevel<Level, IBaseEvent, EventType, TickTime>,
-    IArchiveLevel<Level, IBaseEvent, EventType, TickTime>,
+    IJsonLevel<Level>,
+    ISingleFileLevel<Level>,
+    IArchiveLevel<Level>,
     IChart<TickTime>
 {
     /// <summary>
@@ -129,7 +129,7 @@ public partial class Level :
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (isZip)
+        if (isZip && isExtracted && Directory.Exists(ResolvedDirectory))
         {
             Directory.Delete(ResolvedDirectory, true);
         }

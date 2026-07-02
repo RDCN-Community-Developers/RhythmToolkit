@@ -11,9 +11,9 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// </summary>
 public partial class Level :
 	OrderedEventCollection<IBaseEvent>,
-	IJsonLevel<Level, IBaseEvent, EventType, TickTime>,
-	ISingleFileLevel<Level, IBaseEvent, EventType, TickTime>,
-	IArchiveLevel<Level, IBaseEvent, EventType, TickTime>,
+	IJsonLevel<Level>,
+	ISingleFileLevel<Level>,
+	IArchiveLevel<Level>,
 	IEventEnumerable<IBaseEvent>,
 	IChart<TickTime>
 {
