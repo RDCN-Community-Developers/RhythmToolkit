@@ -11,9 +11,16 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 public abstract record class BaseEvent : IBaseEvent
 {
+	/// <summary>
+	/// The base chart of the event. If the event is not associated with a chart, it returns null.
+	/// </summary>
 	[Browsable(false)]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public Level BaseChart => _tick.BaseChart;
+	public Level? BaseChart => _tick.BaseChart;
+	/// <summary>
+	/// Clones the current instance of <see cref="BaseEvent"/> and returns a new instance with the same values.
+	/// </summary>
+	/// <param name="source"></param>
 	public BaseEvent(BaseEvent source)
 	{
 		_tick = source._tick.WithoutLink();

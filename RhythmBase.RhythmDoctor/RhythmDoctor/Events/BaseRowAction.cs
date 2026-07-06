@@ -8,7 +8,13 @@ namespace RhythmBase.RhythmDoctor.Events;
 [JsonObjectHasSerializer(typeof(RDMemberConverter.BaseRowAction<>))]
 public abstract record class BaseRowAction : BaseEvent
 {
+	/// <summary>
+	/// The parent row of the event. If the event is not associated with a row, it returns null.
+	/// </summary>
 	public Row? Parent => TickTime.BaseChart is Level chart && Row >= 0 && Row < chart.Rows.Count ? chart.Rows[Row] : null;
+	/// <summary>
+	/// Clones the current instance of <see cref="BaseRowAction"/> and returns a new instance with the same values.
+	/// </summary>
 	public BaseRowAction(BaseRowAction source) : base(source)
 	{
 		Row = source.Row;
@@ -21,6 +27,9 @@ public abstract record class BaseRowAction : BaseEvent
 			tempAction.Row = Row;
 		return temp;
 	}
+	/// <summary>
+	/// The index of the row to which the event belongs. If the event is not associated with a row, it returns -1.
+	/// </summary>
 	public int Row { get; set
 		{
 			if (_tick.BaseChart is not null)

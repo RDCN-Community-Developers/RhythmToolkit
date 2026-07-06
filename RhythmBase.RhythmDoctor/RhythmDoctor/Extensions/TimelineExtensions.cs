@@ -87,7 +87,7 @@ namespace RhythmBase.RhythmDoctor.Extensions;
 				{
 					#region decorations
 					case Blend blend:
-						if (blend.Target is null) continue;
+						if (blend.Parent is null) continue;
 						(blends[blend.Parent.Index] ??= []).Add(new(blend.TickTime.Tick, blend.BlendType));
 						break;
 					case Move move:

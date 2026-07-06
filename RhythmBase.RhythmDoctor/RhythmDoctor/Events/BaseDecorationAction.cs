@@ -8,6 +8,9 @@ namespace RhythmBase.RhythmDoctor.Events;
 [JsonObjectHasSerializer(typeof(RDMemberConverter.BaseDecorationAction<>))]
 public abstract record class BaseDecorationAction : BaseEvent, IBaseEvent
 {
+	/// <summary>
+	/// Clones the current instance of <see cref="BaseDecorationAction"/> and returns a new instance with the same values.
+	/// </summary>
 	public BaseDecorationAction(BaseDecorationAction source) : base(source)
 	{
 		Target = source.Target;
@@ -26,6 +29,9 @@ public abstract record class BaseDecorationAction : BaseEvent, IBaseEvent
 			field = value;
 		}
 	}
+	/// <summary>
+	/// The parent decoration of the event. If the event is not associated with a decoration, it returns null.
+	/// </summary>
 	public Decoration? Parent => Target is null ? null : TickTime.BaseChart?.Decorations[Target];
 	///<inheritdoc/>
 	public override TEvent CloneAs<TEvent>()
