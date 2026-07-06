@@ -30,11 +30,15 @@ public abstract record class BaseRowAction : BaseEvent
 	/// <summary>
 	/// The index of the row to which the event belongs. If the event is not associated with a row, it returns -1.
 	/// </summary>
-	public int Row { get; set
+	public int Row
+	{
+		get => _row;
+		set
 		{
 			if (_tick.BaseChart is not null)
 				throw new InvalidOperationException($"The property {nameof(Row)} is readonly because it has been added to the chart.");
-			field = value;
+			_row = value;
 		}
 	}
+	internal int _row;
 }

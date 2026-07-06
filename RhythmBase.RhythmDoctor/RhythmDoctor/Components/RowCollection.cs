@@ -27,6 +27,26 @@ namespace RhythmBase.RhythmDoctor.Components;
 				row.Add(e);
 			_items.Add(row);
 		}
+		/// <inheritdoc/>
+		public override void Insert(int index, Row row)
+		{
+			if (index < 0 || index > _items.Count)
+				throw new ArgumentOutOfRangeException(nameof(index));
+			if (_items.Contains(row))
+				return;
+			row.Parent = parent;
+			_items.Insert(index, row);
+			foreach (BaseRowAction e in row)
+				e._row = index;
+			if (parent is not null)
+			{
+				foreach (BaseRowAction e in row)
+					parent.AddInternal(e);
+				for (int i = index + 1; i < _items.Count; i++)
+					foreach (BaseRowAction e in _items[i])
+						e._row = i;
+			}
+		}
 		/// <summary>
 		/// Removes a <see cref="Row"/> from the collection.
 		/// </summary>
@@ -37,11 +57,17 @@ namespace RhythmBase.RhythmDoctor.Components;
 		{
 			if (!_items.Contains(row))
 				return false;
+			int index = _items.IndexOf(row);
 			BaseRowAction[] rowsToRemove = [.. row];
 			foreach (BaseRowAction i in rowsToRemove)
 				parent.Remove(i);
 			row.Parent = null;
-			return _items.Remove(row);
+			bool result = _items.Remove(row);
+			if (result)
+				for (int i = index; i < _items.Count; i++)
+					foreach (BaseRowAction e in _items[i])
+						e._row = i;
+			return result;
 		}
 		/// <summary>  
 		/// Gets or sets the <see cref="Row"/> at the specified index.  
@@ -81,13 +107,19 @@ namespace RhythmBase.RhythmDoctor.Components;
 		/// Removes the <see cref="Row"/> at the specified index from the collection.  
 		/// </summary>  
 		/// <param name="index">The zero-based index of the <see cref="Row"/> to remove.</param>  
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the specified index is out of range.</exception>  
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of range.</exception>  
 		public void RemoveAt(int index)
 		{
 			if (index < 0 || index >= _items.Count)
 				throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
+			BaseRowAction[] events = [.. _items[index]];
+			foreach (BaseRowAction i in events)
+				parent.Remove(i);
 			_items[index].Parent = null;
 			_items.RemoveAt(index);
+			for (int i = index; i < _items.Count; i++)
+				foreach (BaseRowAction e in _items[i])
+					e._row = i;
 		}
 		/// <inheritdoc/>
 		public override IEnumerable<Row> ElementsOf(Room room) => _items.Where(item => room.Contains(item.Room));

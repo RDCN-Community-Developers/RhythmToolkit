@@ -25,6 +25,18 @@ public class DecorationCollection(Level parent) : LevelElementCollection<Decorat
 			parent.AddInternal(i);
 		_items.Add(decoration);
 	}
+	/// <inheritdoc/>
+	public override void Insert(int index, Decoration decoration)
+	{
+		if (index < 0 || index > _items.Count)
+			throw new ArgumentOutOfRangeException(nameof(index));
+		if (_items.Contains(decoration))
+			return;
+		decoration.Parent = parent;
+		foreach (BaseDecorationAction i in decoration)
+			parent.AddInternal(i);
+		_items.Insert(index, decoration);
+	}
 	/// <summary>
 	/// Removes the specified decoration from the collection.
 	/// </summary>

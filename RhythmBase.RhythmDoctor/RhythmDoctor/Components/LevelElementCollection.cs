@@ -32,6 +32,13 @@ public abstract class LevelElementCollection<T, TEvent>(Level parent, bool limit
 	public bool IsReadOnly { get; internal set; } = false;
 	/// <inheritdoc/>
 	public abstract void Add(T item);
+	/// <summary>
+	/// Inserts an element into the collection at the specified index.
+	/// </summary>
+	/// <param name="index">The zero-based index at which the element should be inserted.</param>
+	/// <param name="item">The element to insert.</param>
+	/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="index"/> is less than 0 or greater than <see cref="Count"/>.</exception>
+	public abstract void Insert(int index, T item);
 	/// <inheritdoc/>
 	public void Clear() => _items.Clear();
 	/// <inheritdoc/>
