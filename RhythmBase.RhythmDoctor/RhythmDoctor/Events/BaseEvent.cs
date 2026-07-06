@@ -1,5 +1,6 @@
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Utils;
+using System.ComponentModel;
 using System.Text.Json;
 
 namespace RhythmBase.RhythmDoctor.Events;
@@ -10,6 +11,21 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 public abstract record class BaseEvent : IBaseEvent
 {
+	[Browsable(false)]
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public Level BaseChart => _tick.BaseChart;
+	public BaseEvent(BaseEvent source)
+	{
+		_tick = source._tick.WithoutLink();
+		Y = source.Y;
+		Tag = source.Tag;
+		RunTag = source.RunTag;
+		Condition = source.Condition;
+		Active = source.Active;
+		_extraData = [];
+		foreach(var kvp in source._extraData)
+			_extraData[kvp.Key] = kvp.Value;
+	}
 	///<inheritdoc/>
 	public abstract EventType Type { get; }
 	///<inheritdoc/>
@@ -17,17 +33,17 @@ public abstract record class BaseEvent : IBaseEvent
 	///<inheritdoc/>
 	public virtual TickTime TickTime
 	{
-		get => _beat;
+		get => _tick;
 		set
 		{
-			if (!value.IsEmpty && _beat == value)
+			if (!value.IsEmpty && _tick == value)
 				return;
-			BeatCalculator? c = _beat.BaseChart?.Calculator;
-			_beat.BaseChart?.Remove(this);
-			_beat = c == null ?
+			BeatCalculator? c = _tick.BaseChart?.Calculator;
+			_tick.BaseChart?.Remove(this);
+			_tick = c == null ?
 				value.WithoutLink() :
 				new(c,value);
-			_beat.BaseChart?.Add(this);
+			_tick.BaseChart?.Add(this);
 		}
 	}
 	///<inheritdoc/>
@@ -67,7 +83,7 @@ public abstract record class BaseEvent : IBaseEvent
 	{
 		if (this is TEvent t)
 		{
-			return t with { _beat = TickTime.WithoutLink() };
+			return t with { _tick = TickTime.WithoutLink() };
 		}
 		TEvent temp = new()
 		{
@@ -82,5 +98,5 @@ public abstract record class BaseEvent : IBaseEvent
 	}
 	/// <inheritdoc/>
 	public override string ToString() => $"{TickTime} {Type}";
-	internal TickTime _beat = new(1f);
+	internal TickTime _tick = new(1f);
 }

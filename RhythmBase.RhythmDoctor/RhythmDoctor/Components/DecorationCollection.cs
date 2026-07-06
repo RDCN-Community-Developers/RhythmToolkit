@@ -39,7 +39,7 @@ public class DecorationCollection(Level parent) : LevelElementCollection<Decorat
 			return false;
 		BaseDecorationAction[] decosToRemove = [.. decoration];
 		foreach (BaseDecorationAction i in decosToRemove)
-			parent.Remove(i);
+			parent.RemoveDirectlyInternal(i);
 		decoration.Parent = null;
 		return _items.Remove(decoration);
 	}

@@ -202,19 +202,19 @@ public partial class Level :
 		// Set the default beat calculator
 		if (item is not BaseEvent be)
 			return false;
-		var originalCalculator = be._beat._calculator;
-		be._beat._calculator = Calculator;
+		var originalCalculator = be._tick._calculator;
+		be._tick._calculator = Calculator;
 		// Some events can only be at the beginning of a bar
-		(_, float beat) = be._beat;
+		(_, float beat) = be._tick;
 		if (item is IBarBeginningEvent e && beat != 1f)
 			throw new ArgumentException(
 				$"The event of type {item.GetType().Name} can only be placed at the beginning of a bar (beat 1), but its beat is {beat}.");
 		// Update the beat's associated level
-		be._beat.ResetCache();
-		if (item is Comment comment && string.IsNullOrEmpty(comment._decoId))
+		be._tick.ResetCache();
+		if (item is Comment comment && string.IsNullOrEmpty(comment.Target))
 			// Comment events may or may not be in the decoration section
 			success &= base.Add(item);
-		else if (item is TintRows tintRows && tintRows._row == -1)
+		else if (item is TintRows tintRows && tintRows.Row == -1)
 			success &= base.Add(item);
 		else if (item is BaseRowAction rowAction)
 			// Add to the corresponding row
@@ -234,8 +234,8 @@ public partial class Level :
 			_floatingTexts.Add(floatingText);
 		if (success)
 			OnEventAdded?.Invoke(this, new RDEventArgs(item));
-		if(!success)
-			be._beat._calculator = originalCalculator;
+		if (!success)
+			be._tick._calculator = originalCalculator;
 		return success;
 	}
 
@@ -269,13 +269,13 @@ public partial class Level :
 		if (item is BaseDecorationAction decoAction)
 		{
 			RemoveInternal(decoAction);
-			bs._beat = bs._beat.WithoutLink();
+			bs._tick = bs._tick.WithoutLink();
 			success = true;
 		}
 		else if (item is BaseRowAction rowAction)
 		{
 			RemoveInternal(rowAction);
-			bs._beat = bs._beat.WithoutLink();
+			bs._tick = bs._tick.WithoutLink();
 			success = true;
 		}
 		else if (Contains(item))
@@ -287,7 +287,7 @@ public partial class Level :
 			else
 			{
 				bool result = base.Remove(item);
-				bs._beat = bs._beat.WithoutLink();
+				bs._tick = bs._tick.WithoutLink();
 				success = result;
 			}
 		}
@@ -303,15 +303,12 @@ public partial class Level :
 
 	internal bool AddInternal(BaseDecorationAction item)
 	{
-		item._beat._calculator = Calculator;
+		item._tick._calculator = Calculator;
 		if (base.Contains(item)) return false;
-		Decoration? parent = item.Parent ?? Decorations[item._decoId];
+		Decoration? parent = item.Target is null ? null : Decorations[item.Target];
 		if (parent == null) Decorations._unhandledRowEvents.Add(item);
-		else
-		{
-			parent.Add(item);
-			item._parent = parent;
-		}
+		else if (!parent.Contains(item))
+			parent.AddDirectly(item);
 
 		base.Add(item);
 		return true;
@@ -319,15 +316,12 @@ public partial class Level :
 
 	internal bool AddInternal(BaseRowAction item)
 	{
-		item._beat._calculator = Calculator;
+		item._tick._calculator = Calculator;
 		if (base.Contains(item)) return false;
-		Row? parent = item.Parent ?? (item.Index >= 0 && item.Index < Rows.Count ? Rows[item.Index] : null);
+		Row? parent = item.Parent ?? (item.Row >= 0 && item.Row < Rows.Count ? Rows[item.Row] : null);
 		if (parent == null) Rows._unhandledRowEvents.Add(item);
-		else
-		{
-			parent.Add(item);
-			item._parent = parent;
-		}
+		else if (!parent.Contains(item))
+			parent.AddDirectly(item);
 
 		base.Add(item);
 		return true;
@@ -336,7 +330,7 @@ public partial class Level :
 	internal bool AddDirectlyInternal(IBaseEvent item)
 	{
 		BaseEvent e = item as BaseEvent ?? throw new InvalidOperationException("Inner exception that shouldn't happen");
-		e._beat._calculator = Calculator;
+		e._tick._calculator = Calculator;
 		if (base.Contains(e)) return false;
 		base.Add(e);
 		return true;
@@ -344,26 +338,20 @@ public partial class Level :
 
 	internal bool RemoveInternal(BaseDecorationAction item)
 	{
-		Decoration? parent = item.Parent ?? Decorations[item._decoId];
+		Decoration? parent = item.Target is null ? null : Decorations[item.Target];
 		if (parent == null) Decorations._unhandledRowEvents.Remove(item);
 		else
-		{
 			parent.Remove(item);
-			item._parent = parent;
-		}
 
 		return base.Remove(item);
 	}
 
 	internal bool RemoveInternal(BaseRowAction item)
 	{
-		Row? parent = item.Parent ?? ((item.Index >= 0 && item.Index < Rows.Count) ? Rows[item.Index] : null);
+		Row? parent = item.Parent ?? ((item.Row >= 0 && item.Row < Rows.Count) ? Rows[item.Row] : null);
 		if (parent == null) Rows._unhandledRowEvents.Remove(item);
 		else
-		{
 			parent.Remove(item);
-			item._parent = parent;
-		}
 
 		return base.Remove(item);
 	}
@@ -373,6 +361,7 @@ public partial class Level :
 		BaseEvent e = item as BaseEvent ?? throw new InvalidOperationException("Inner exception that shouldn't happen");
 		if (!base.Contains(e)) return false;
 		base.Remove(e);
+		e._tick = e._tick.WithoutLink();
 		return true;
 	}
 
@@ -380,13 +369,13 @@ public partial class Level :
 	{
 		if (Contains(item))
 			return false;
-		(int bar, _) = item._beat;
+		(int bar, _) = item._tick;
 		CpbCache cache = new(item.TickTime.Tick, bar, item.CrotchetsPerBar);
 		bool extra = Calculator.AddCpbAt(cache, (byte)strategy, out CpbCache fix);
 		base.Add(item);
 		if (extra)
 		{
-			SetCrotchetsPerBar cpb = new() { _beat = new TickTime(Calculator, fix.Tick), _crotchetsPerBar = fix.Cpb - 1 };
+			SetCrotchetsPerBar cpb = new() { _tick = new TickTime(Calculator, fix.Tick), _crotchetsPerBar = fix.Cpb - 1 };
 			base.Add(cpb);
 			OnEventAdded?.Invoke(this, new(cpb) { IsAutoPopulated = true, });
 		}
@@ -396,19 +385,19 @@ public partial class Level :
 
 	private bool RemoveSetCrotchetsPerBarInternal(SetCrotchetsPerBar item, BeatChangeStrategy strategy)
 	{
-		var node = EventsBeatOrder.FindNode(item._beat);
+		var node = EventsBeatOrder.FindNode(item._tick);
 		if (node is null) return false;
 		var col = node.Value;
 		if (!col.ContainsType(EventType.SetCrotchetsPerBar)) return false;
 		var lastcpb = col.OfType<SetCrotchetsPerBar>().Last();
 		if (lastcpb != item) return false;
-		(int bar, _) = item._beat;
+		(int bar, _) = item._tick;
 		CpbCache cache = new(item.TickTime.Tick, bar, item.CrotchetsPerBar);
 		bool extra = Calculator.RemoveCpbAt(cache, (byte)strategy, out CpbCache fix);
 		base.Remove(item);
 		if (extra)
 		{
-			SetCrotchetsPerBar cpb = new() { _beat = new TickTime(Calculator, fix.Tick), _crotchetsPerBar = fix.Cpb - 1 };
+			SetCrotchetsPerBar cpb = new() { _tick = new TickTime(Calculator, fix.Tick), _crotchetsPerBar = fix.Cpb - 1 };
 			base.Add(cpb);
 			OnEventRemoved?.Invoke(this, new(cpb) { IsAutoPopulated = true, });
 		}
@@ -427,7 +416,7 @@ public partial class Level :
 	{
 		Calculator.RemoveBpmAt(new BpmCache(item.TickTime.Tick, item.TickTime.TimeSpan, item.BeatsPerMinute));
 		bool result = base.Remove(item);
-		item._beat = item._beat.WithoutLink();
+		item._tick = item._tick.WithoutLink();
 		return result;
 	}
 

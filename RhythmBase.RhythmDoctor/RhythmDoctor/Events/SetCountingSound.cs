@@ -23,7 +23,8 @@ public record class SetCountingSound : BaseRowAction
 	/// <remarks>
 	/// Only effective when the counting sound is enabled and the parent row is a oneshot row.
 	/// </remarks>
-	[JsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(Parent)}?.{nameof(Row.RowType)} is RhythmBase.RhythmDoctor.{nameof(RowType)}.{nameof(RowType.Oneshot)}")]
+	// [JsonCondition($"$&.{nameof(Enabled)} && $&.{nameof(Parent)}?.{nameof(Components.Row.RowType)} is RhythmBase.RhythmDoctor.{nameof(RowType)}.{nameof(RowType.Oneshot)}")]
+	[JsonCondition($"$&.{nameof(Enabled)}")]
 	public float SubdivOffset { get; set; } = 0.5f;
 	/// <summary>
 	/// Gets or sets the volume of the counting sound.

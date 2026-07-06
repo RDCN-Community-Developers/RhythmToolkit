@@ -92,10 +92,10 @@ public class Row : OrderedEventCollection<BaseRowAction>, IEventEnumerable<BaseR
 	/// <param name="item">The row event to add.</param>
 	public override bool Add(BaseRowAction item)
 	{
-		if (item._parent == this)
+		if (item.Parent == this)
 			return false;
-		item._parent?.Remove(item);
-		item._parent = this;
+		item.Parent?.Remove(item);
+		item.Row = this.Index;
 		bool success = base.Add(item);
 		if (Parent is not null)
 			success &= Parent.AddDirectlyInternal(item);
@@ -110,6 +110,7 @@ public class Row : OrderedEventCollection<BaseRowAction>, IEventEnumerable<BaseR
 	{
 		return (Parent?.RemoveDirectlyInternal(item) ?? true) && base.Remove(item);
 	}
+	internal bool AddDirectly(BaseRowAction item) => base.Add(item);
 	/// <summary>
 	/// Gets or sets the extra data associated with the row using a key-value pair.
 	/// </summary>

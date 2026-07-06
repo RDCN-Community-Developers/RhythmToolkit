@@ -83,10 +83,9 @@ public class Decoration : OrderedEventCollection<BaseDecorationAction>, IEventEn
 	/// <param name="item">Decoration event.</param>
 	public override bool Add(BaseDecorationAction item)
 	{
-		if (item._parent == this)
+		if (item._tick.BaseChart is not null)
 			return false;
-		item._parent?.Remove(item);
-		item._parent = this;
+		item.Target = this.Id;
 		bool success = base.Add(item);
 		if (Parent is not null)
 			success &= Parent.AddDirectlyInternal(item);
@@ -99,8 +98,10 @@ public class Decoration : OrderedEventCollection<BaseDecorationAction>, IEventEn
 	/// <param name="item">A decoration event.</param>
 	public override bool Remove(BaseDecorationAction item)
 	{
-		return (Parent?.RemoveDirectlyInternal(item) ?? true) && base.Remove(item);
+		bool v = (Parent?.RemoveDirectlyInternal(item) ?? true) && base.Remove(item);
+		return v;
 	}
+	internal bool AddDirectly(BaseDecorationAction item) => base.Add(item);
 	/// <inheritdoc/>
 	public override string ToString() => string.Format("{0}, {1}, {2}, {3}",
 			[
@@ -119,7 +120,7 @@ public class Decoration : OrderedEventCollection<BaseDecorationAction>, IEventEn
 		get => _extraData.TryGetValue(key, out JsonElement value) ? value : default;
 		set
 		{
-			if(value.ValueKind is JsonValueKind.Undefined)
+			if (value.ValueKind is JsonValueKind.Undefined)
 				_extraData.Remove(key);
 			else
 				_extraData[key] = value;

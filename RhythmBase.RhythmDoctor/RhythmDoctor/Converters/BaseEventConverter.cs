@@ -241,7 +241,7 @@ internal class BaseEventConverter : BackwardCompatibleMetadataJsonConverter
 		writer.WriteNumber("bar", bar);
 		writer.WriteNumber("beat", beat);
 		if (value is ForwardRowEvent rowEvent)
-			writer.WriteNumber("row", rowEvent.Index);
+			writer.WriteNumber("row", rowEvent.Row);
 		else if (value is ForwardDecorationEvent decorationEvent)
 			writer.WriteString("target", decorationEvent.Target);
 		if (!string.IsNullOrEmpty(value.Tag))

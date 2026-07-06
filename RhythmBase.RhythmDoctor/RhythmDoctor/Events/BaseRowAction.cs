@@ -8,26 +8,24 @@ namespace RhythmBase.RhythmDoctor.Events;
 [JsonObjectHasSerializer(typeof(RDMemberConverter.BaseRowAction<>))]
 public abstract record class BaseRowAction : BaseEvent
 {
-	/// <summary>
-	/// Gets or sets the parent row event collection.
-	/// </summary>
-	public Row? Parent => _parent;
-	/// <summary>
-	/// Gets the room associated with this action.
-	/// </summary>
-	public SingleRoom Room => _parent?.Room ?? SingleRoom.Default;
-	/// <summary>
-	/// Gets the index of the row in the parent collection.
-	/// </summary>
-	public int Index => Parent?.Index ?? _row;
+	public Row? Parent => TickTime.BaseChart is Level chart && Row >= 0 && Row < chart.Rows.Count ? chart.Rows[Row] : null;
+	public BaseRowAction(BaseRowAction source) : base(source)
+	{
+		Row = source.Row;
+	}
 	///<inheritdoc/>
 	public override TEvent CloneAs<TEvent>()
 	{
 		TEvent temp = base.CloneAs<TEvent>();
 		if (temp is BaseRowAction tempAction)
-			tempAction._row = Parent?.Index ?? -1;
+			tempAction.Row = Row;
 		return temp;
 	}
-	internal Row? _parent;
-	internal int _row;
+	public int Row { get; set
+		{
+			if (_tick.BaseChart is not null)
+				throw new InvalidOperationException($"The property {nameof(Row)} is readonly because it has been added to the chart.");
+			field = value;
+		}
+	}
 }

@@ -1,4 +1,5 @@
 using RhythmBase.RhythmDoctor.Events;
+using System.ComponentModel;
 
 namespace RhythmBase.RhythmDoctor;
 /// <summary>
@@ -986,11 +987,15 @@ public enum PlayerType
 	/// Both.
 	/// </summary>
 	[JsonAlias("BOTH")]
+	[Browsable(false)]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	[Obsolete("This value is deprecated and only for backward compatibility. Use other values instead.")]
 	Both,
 	/// <summary>  
 	/// Automatically detect the player.  
 	/// </summary>  
+	[Browsable(false)]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	[Obsolete("This value is deprecated and only for backward compatibility. Use other values instead.")]
 	AutoDetect,
 }

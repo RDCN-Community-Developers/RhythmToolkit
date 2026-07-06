@@ -211,7 +211,7 @@ partial class BeatCalculator
 			foreach (IBaseEvent e in node.Value)
 			{
 				BaseEvent _e = (e as BaseEvent)!;
-				_e._beat = newBeat;
+				_e._tick = newBeat;
 			}
 			if (offset < 0 && // 只有 cpb 减少时才会出现事件重叠的情况，且是向前重叠，和遍历方向一致
 					allEvents.ContainsKey(newBeat)) // 如果目标位置有事件就合并

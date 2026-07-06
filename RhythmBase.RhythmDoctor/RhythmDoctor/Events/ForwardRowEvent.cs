@@ -47,7 +47,7 @@ public record class ForwardRowEvent : BaseRowAction, IForwardEvent
 		RunTag = (_extraData.TryGetValue("runTag", out JsonElement runTagElement) && runTagElement.ValueKind == JsonValueKind.True || runTagElement.ValueKind == JsonValueKind.False) && runTagElement.GetBoolean();
 		Condition = _extraData.TryGetValue("condition", out JsonElement conditionElement) && conditionElement.ValueKind == JsonValueKind.String ?
 				Condition.Deserialize(conditionElement.GetString() ?? "") : new();
-		_row = _extraData.TryGetValue("row", out JsonElement rowElement) && rowElement.ValueKind == JsonValueKind.Number ?
+		Row = _extraData.TryGetValue("row", out JsonElement rowElement) && rowElement.ValueKind == JsonValueKind.Number ?
 				rowElement.GetInt32() : -1;
 		_extraData.Remove("bar");
 		_extraData.Remove("beat");

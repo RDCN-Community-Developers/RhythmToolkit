@@ -23,7 +23,7 @@ namespace RhythmBase.RhythmDoctor.Components;
 			row.Parent = parent;
 			foreach (BaseRowAction? i in row)
 				parent.Add(i);
-			foreach(BaseRowAction? e in _unhandledRowEvents.Where(i=>i.Index == Count))
+			foreach(BaseRowAction? e in _unhandledRowEvents.Where(i=>i.Row == Count))
 				row.Add(e);
 			_items.Add(row);
 		}

@@ -33,7 +33,7 @@ public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 		set
 		{
 			_crotchetsPerBar = Math.Max(0, value - 1);
-			if (_beat._calculator != null)
+			if (_tick._calculator != null)
 			{
 				TickTime += 0f;
 			}

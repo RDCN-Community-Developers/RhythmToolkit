@@ -48,6 +48,8 @@ internal class RowConverter : MetadataJsonConverter<Row>
 				value.Sound.Offset = TimeSpan.FromMilliseconds(reader.GetDouble());
 			else if (reader.ValueTextEquals("length"u8) && reader.Read())
 				value.Length = reader.GetInt32();
+			else if (reader.ValueTextEquals("row"u8) && reader.Read())
+				reader.Skip();
 			else
 			{
 				switch (options.Strictness)

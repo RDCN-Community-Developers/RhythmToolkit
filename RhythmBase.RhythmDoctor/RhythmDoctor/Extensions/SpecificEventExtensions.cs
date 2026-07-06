@@ -181,7 +181,7 @@ public static partial class Extensions
 		/// </summary>
 		public AddOneshotBeat[] Splitted()
 		{
-			e._beat.IfNullThrowException();
+			e._tick.IfNullThrowException();
 			AddOneshotBeat[] l = new AddOneshotBeat[e.Loop + 1];
 			uint loops = e.Loop;
 			for (uint i = 0U; i <= loops; i += 1U)
@@ -189,7 +189,7 @@ public static partial class Extensions
 				AddOneshotBeat T = e with { };
 				T.Loop = 0U;
 				T.Interval = 0f;
-				T.TickTime = new TickTime(e._beat._calculator!, unchecked(e.TickTime.Tick + i * e.Interval));
+				T.TickTime = new TickTime(e._tick._calculator!, unchecked(e.TickTime.Tick + i * e.Interval));
 				l[i] = T;
 			}
 			return l;

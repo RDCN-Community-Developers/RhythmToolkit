@@ -38,6 +38,8 @@ internal class DecorationConverter : MetadataJsonConverter<Decoration>
 				value.Filter = result;
 			else if (reader.ValueTextEquals("visible"u8) && reader.Read())
 				value.Visible = reader.GetBoolean();
+			else if (reader.ValueTextEquals("row"u8) && reader.Read())
+				reader.Skip();
 			else
 			{
 				switch (options.Strictness)

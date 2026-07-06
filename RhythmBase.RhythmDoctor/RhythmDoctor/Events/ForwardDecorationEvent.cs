@@ -41,7 +41,7 @@ public record class ForwardDecorationEvent : BaseDecorationAction, IForwardEvent
 		RunTag = (_extraData.TryGetValue("runTag", out JsonElement runTagElement) && runTagElement.ValueKind == JsonValueKind.True || runTagElement.ValueKind == JsonValueKind.False) && runTagElement.GetBoolean();
 		Condition = _extraData.TryGetValue("condition", out JsonElement conditionElement) && conditionElement.ValueKind == JsonValueKind.String ?
 			Condition.Deserialize(conditionElement.GetString() ?? "") : new();
-		_decoId = _extraData.TryGetValue("target", out JsonElement targetElement) && targetElement.ValueKind == JsonValueKind.String ?
+		Target = _extraData.TryGetValue("target", out JsonElement targetElement) && targetElement.ValueKind == JsonValueKind.String ?
 			targetElement.GetString() ?? "" : "";
 		_extraData.Remove("bar");
 		_extraData.Remove("beat");

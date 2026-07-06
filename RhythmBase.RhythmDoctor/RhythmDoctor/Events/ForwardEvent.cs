@@ -46,7 +46,7 @@ public record class ForwardEvent : BaseEvent, IForwardEvent
 			else if (prop.NameEquals("y"u8)) Y = prop.Value.GetInt32();
 			else _extraData[prop.Name] = prop.Value;
 		}
-		this._beat = (_bar, _beat);
+		this._tick = (_bar, _beat);
 	}
 	/// <inheritdoc/>
 	public override string ToString() => $"{TickTime} *{ActualType}";

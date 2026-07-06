@@ -15,7 +15,7 @@ internal partial class RDMemberConverter
 			if (base.Read(ref reader, ref value, options))
 				return true;
 			if (reader.ValueTextEquals("row"u8) && reader.Read())
-				value._row = reader.GetInt32();
+				value.Row = reader.GetInt32();
 			else
 				return false;
 			return true;
@@ -23,7 +23,7 @@ internal partial class RDMemberConverter
 		protected override void Write(Utf8JsonWriter writer, ref TEvent value, MetadataJsonSerializerOptions options)
 		{
 			base.Write(writer, ref value, options);
-			writer.WriteNumber("row"u8, value.Parent?.Index ?? value._row);
+			writer.WriteNumber("row"u8, value.Parent?.Index ?? value.Row);
 		}
 	}
 	internal abstract class BaseBeat<TEvent> : BaseRowAction<TEvent> where TEvent : BaseBeat, new()
@@ -36,7 +36,7 @@ internal partial class RDMemberConverter
 			if (base.Read(ref reader, ref value, options))
 				return true;
 			if (reader.ValueTextEquals("target"u8) && reader.Read())
-				value._decoId = reader.GetString() ?? "";
+				value.Target = reader.GetString() ?? "";
 			else
 				return false;
 			return true;
@@ -45,7 +45,7 @@ internal partial class RDMemberConverter
 		{
 			base.Write(writer, ref value, options);
 			if (value is not Comment cmt || cmt.CustomTab == Tab.Decorations)
-				writer.WriteString("target"u8, value.Parent?.Id ?? value._decoId);
+				writer.WriteString("target"u8, value.Parent?.Id ?? value.Target);
 		}
 	}
 	internal abstract class BaseBeatsPerMinute<TEvent> : MemberConverter<TEvent> where TEvent : BaseBeatsPerMinute, new()

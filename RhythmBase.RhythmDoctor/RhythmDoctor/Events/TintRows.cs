@@ -13,7 +13,7 @@ public record class TintRows : BaseRowAction, IEaseEvent, IColorEvent, IRoomEven
 	/// </summary>
 	public TintRows()
 	{
-		_row = -1;
+		Row = -1;
 	}
 	/// <summary>
 	/// Gets or sets the tint color.
@@ -81,7 +81,7 @@ public record class TintRows : BaseRowAction, IEaseEvent, IColorEvent, IRoomEven
 	/// </summary>
 	public bool HeartTransition { get; set; }
 	/// <inheritdoc/>
-	[JsonCondition($"$&.{nameof(Index)} == -1")]
+	[JsonCondition($"$&.{nameof(Row)} == -1")]
 	public Room Rooms { get; set; } = new Room([0]);
 	/// <summary>
 	/// Gets a value indicating whether to tint all rows.

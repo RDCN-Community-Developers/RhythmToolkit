@@ -40,7 +40,7 @@ public abstract record class BaseBeatsPerMinute : BaseEvent
 										where i.TickTime > TickTime
 										select i)
 			{
-				((BaseEvent)item)._beat.ResetBPM();
+				((BaseEvent)item)._tick.ResetBPM();
 			}
 		}
 	}

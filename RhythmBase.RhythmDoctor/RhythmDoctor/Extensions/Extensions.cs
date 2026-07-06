@@ -626,7 +626,7 @@ public static partial class Extensions
 			return 0;
 		if (e.TickTime == obj.TickTime)
 		{
-			TypedEventCollection list = (e._beat.BaseChart?.EventsBeatOrder[e.TickTime]) ?? throw new InvalidOperationException("How?");
+			TypedEventCollection list = (e._tick.BaseChart?.EventsBeatOrder[e.TickTime]) ?? throw new InvalidOperationException("How?");
 			return list.CompareTo(e, obj) ? -1 : 1;
 		}
 		return e.TickTime.CompareTo(obj.TickTime);
