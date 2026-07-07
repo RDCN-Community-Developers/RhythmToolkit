@@ -4,7 +4,6 @@ using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Components.Timeline;
 using RhythmBase.RhythmDoctor.Components.TimeLine;
 using RhythmBase.RhythmDoctor.Events;
-using RhythmBase.RhythmDoctor.Extensions;
 
 namespace RhythmBase.RhythmDoctor.Extensions;
 

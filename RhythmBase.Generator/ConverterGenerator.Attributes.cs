@@ -23,8 +23,8 @@ partial class ConverterGenerator
 
 	// Type 类型
 	private const string IEventTypeName = "RhythmBase.Global.Events.IEvent";
-	private const string MemberConverterTypeName = "RhythmBase.Global.Converters.MemberConverter`1";
-	private const string MetadataJsonConverterTypeName = "RhythmBase.Global.Converters.MetadataJsonConverter`1";
+	private const string MemberConverterTypeName = "RhythmBase.Global.Serialization.MemberConverter`1";
+	private const string MetadataJsonConverterTypeName = "RhythmBase.Global.Serialization.MetadataJsonConverter`1";
 
 	//class SymbolResults
 	//{

@@ -1,3 +1,1 @@
-﻿using RhythmBase;
-
-[assembly: RhythmBase.JsonConverterId(nameof(RhythmBase.Global))]
+﻿[assembly: RhythmBase.JsonConverterId(nameof(RhythmBase.Global))]

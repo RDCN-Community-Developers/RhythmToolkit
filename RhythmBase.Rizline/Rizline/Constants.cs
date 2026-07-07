@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RhythmBase.Rizline
+﻿namespace RhythmBase.Rizline
 {
 	public static partial class Constants
 	{

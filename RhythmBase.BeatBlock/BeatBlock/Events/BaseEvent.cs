@@ -1,6 +1,4 @@
 ﻿using RhythmBase.BeatBlock.Components;
-using RhythmBase.BeatBlock.Events;
-using RhythmBase.Global.Components.Easing;
 using System.Text.Json;
 
 namespace RhythmBase.BeatBlock.Events;
@@ -8,7 +6,7 @@ namespace RhythmBase.BeatBlock.Events;
 /// <summary>
 /// Represents the base class for all BeatBlock events.
 /// </summary>
-[JsonObjectHasSerializer(typeof(Converters.MemberConverter<>))]
+[JsonObjectHasSerializer(typeof(Serialization.MemberConverter<>))]
 public abstract record class BaseEvent : IBaseEvent
 {
 	internal TickTime _beat = new(0f);

@@ -1,10 +1,10 @@
 ﻿using RhythmBase.Adofai;
 using RhythmBase.Adofai.Components.Filters;
-using RhythmBase.Adofai.Converters;
 using RhythmBase.Adofai.Events;
+using RhythmBase.Adofai.Serialization;
 
 [assembly: RhythmBase.JsonConverterId(nameof(RhythmBase.Adofai))]
-[assembly: RhythmBase.JsonConverterSourceType(typeof(IBaseEvent), typeof(EventType), typeof(RhythmBase.Adofai.Converters.MemberConverter<>), nameof(IBaseEvent.Type))]
+[assembly: RhythmBase.JsonConverterSourceType(typeof(IBaseEvent), typeof(EventType), typeof(RhythmBase.Adofai.Serialization.MemberConverter<>), nameof(IBaseEvent.Type))]
 [assembly: RhythmBase.JsonConverterSourceType(typeof(IFilter), typeof(AdvancedFilter), typeof(FilterMemberConverter<>), nameof(IFilter.Type))]
 [assembly: RhythmBase.JsonConverterLink(typeof(Color), typeof(ColorConverter.RgbaHex))]
 [assembly: RhythmBase.AdapterType(

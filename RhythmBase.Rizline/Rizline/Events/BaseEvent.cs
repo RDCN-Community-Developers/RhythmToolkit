@@ -5,7 +5,7 @@ namespace RhythmBase.Rizline.Events;
 /// <summary>
 /// Base class for all Rizline events, providing a type discriminator and tick-based timing.
 /// </summary>
-[JsonObjectHasSerializer(typeof(Converters.MemberConverter<>))]
+[JsonObjectHasSerializer(typeof(Serialization.MemberConverter<>))]
 public abstract record class BaseEvent : IBaseEvent
 {
     /// <summary>

@@ -1,5 +1,4 @@
-﻿using RhythmBase.BeatBlock.Converters;
-using RhythmBase.BeatBlock.Events;
+﻿using RhythmBase.BeatBlock.Events;
 
 namespace RhythmBase.BeatBlock.Components;
 

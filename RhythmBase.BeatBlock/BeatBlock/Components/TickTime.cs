@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace RhythmBase.BeatBlock.Components;
+﻿namespace RhythmBase.BeatBlock.Components;
 
 /// <summary>
 /// Represents a beat in the BeatBlock level format.

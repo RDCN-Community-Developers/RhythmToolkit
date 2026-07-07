@@ -3,7 +3,7 @@
 /// <summary>
 /// Common interface implemented by all note types. 
 /// </summary>
-[JsonObjectHasSerializer(typeof(RhythmBase.Rizline.Converters.MemberConverterBaseNote<>))]
+[JsonObjectHasSerializer(typeof(Serialization.MemberConverterBaseNote<>))]
 public abstract record class BaseNote : BaseEvent, IBaseEvent
 {
     /// <summary>

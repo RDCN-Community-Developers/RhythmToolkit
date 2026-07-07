@@ -3,7 +3,7 @@ using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RhythmBase.Global.Converters;
+namespace RhythmBase.Global.Serialization;
 
 [JsonConverterFor(typeof(PointE))]
 internal class PointEConverter : JsonConverter<PointE>

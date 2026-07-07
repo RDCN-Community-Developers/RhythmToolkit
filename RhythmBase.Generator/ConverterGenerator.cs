@@ -1530,7 +1530,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				/// <returns>A new <see cref="IEventEnumerable{TTarget}"/> with the narrowed filter.</returns>
 				public IEventEnumerable<TTarget> OfEvent<TTarget>() where TTarget : {{IBaseEvent}}
 				{
-					RhythmBase.Global.Components.ReadOnlyEnumCollection<{{EventType}}> types = this.types.Intersect(RhythmBase.{{registryId}}.Converters.EventTypeRegistry.ToEnums{{(registryGenerationInfos.Length > 1 ? typeEnumSymbol.Name : "")}}<TTarget>());
+					RhythmBase.Global.Components.ReadOnlyEnumCollection<{{EventType}}> types = this.types.Intersect(RhythmBase.{{registryId}}.Serialization.EventTypeRegistry.ToEnums{{(registryGenerationInfos.Length > 1 ? typeEnumSymbol.Name : "")}}<TTarget>());
 					this.types = types;
 					return new EventEnumerator<TTarget>(collection, types, range);
 				}
@@ -1712,7 +1712,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				public RhythmBase.Global.Components.RedBlackTree<{{TickTime}}, TypedEventCollection> EventsBeatOrder = [];
 				RhythmBase.Global.Components.RedBlackTree<{{TickTime}}, TypedEventCollection> IEventEnumerable<TEvent>.EventsBeatOrder => EventsBeatOrder;
 				/// <summary>Gets the collection of event types supported by this collection.</summary>
-				public RhythmBase.Global.Components.ReadOnlyEnumCollection<{{EventType}}> Types => RhythmBase.{{registryId}}.Converters.EventTypeRegistry.ToEnums{{(registryGenerationInfos.Length > 1 ? typeEnumSymbol.Name : "")}}<TEvent>();
+				public RhythmBase.Global.Components.ReadOnlyEnumCollection<{{EventType}}> Types => RhythmBase.{{registryId}}.Serialization.EventTypeRegistry.ToEnums{{(registryGenerationInfos.Length > 1 ? typeEnumSymbol.Name : "")}}<TEvent>();
 				{{TickTimeRange}} IEventEnumerable<TEvent>.Range => {{TickTimeRange}}.Infinity;
 			}
 
@@ -1756,7 +1756,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 			string src = $$"""
 			using System.Text.Json;
 
-			namespace RhythmBase.{{registryId}}.Converters;
+			namespace RhythmBase.{{registryId}}.Serialization;
 
 			/// <summary>
 			/// Provides entry point methods for deserializing and serializing level files
@@ -1767,7 +1767,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				private static readonly JsonReaderOptions _readerOptions = new();
 				[global::System.Diagnostics.DebuggerHidden]
 				[global::System.Diagnostics.StackTraceHidden]
-				private static void WrapAndThrow(JsonException ex, RhythmBase.Global.Converters.JsonSerialization.IJsonDataSource dataSource, long bytesConsumed)
+				private static void WrapAndThrow(JsonException ex, RhythmBase.Global.Serialization.IJsonDataSource dataSource, long bytesConsumed)
 				{
 					long originalPos = dataSource.MapToInputPosition(bytesConsumed);
 					if (originalPos >= 0)
@@ -1781,14 +1781,14 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				/// <param name="dataSource">The JSON data source to read from.</param>
 				/// <param name="options">The metadata-aware serializer options.</param>
 				/// <returns>The deserialized level instance, or a new empty instance if deserialization fails.</returns>
-				public static T DeserializeMainEntry<T>(RhythmBase.Global.Converters.JsonSerialization.IJsonDataSource dataSource, RhythmBase.Global.Converters.MetadataJsonSerializerOptions options)
+				public static T DeserializeMainEntry<T>(RhythmBase.Global.Serialization.IJsonDataSource dataSource, RhythmBase.Global.Serialization.MetadataJsonSerializerOptions options)
 						where T : new()
 				{
 					var seq = dataSource.GetSequence();
 					Utf8JsonReader reader = seq.IsSingleSegment
 						? new Utf8JsonReader(seq.First.Span, _readerOptions)
 						: new Utf8JsonReader(seq, _readerOptions);
-					return RhythmBase.{{registryId}}.Converters.TypeConverterRegistry.Read<T>(ref reader, options) ?? new();
+					return RhythmBase.{{registryId}}.Serialization.TypeConverterRegistry.Read<T>(ref reader, options) ?? new();
 				}
 				/// <summary>
 				/// Asynchronously deserializes a level from the specified data source.
@@ -1798,14 +1798,14 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				/// <param name="options">The metadata-aware serializer options.</param>
 				/// <param name="cancellationToken">A token to cancel the operation.</param>
 				/// <returns>The deserialized level instance, or a new empty instance if deserialization fails.</returns>
-				public static async Task<T> DeserializeMainEntryAsync<T>(RhythmBase.Global.Converters.JsonSerialization.IJsonDataSource dataSource, RhythmBase.Global.Converters.MetadataJsonSerializerOptions options, CancellationToken cancellationToken = default)
+				public static async Task<T> DeserializeMainEntryAsync<T>(RhythmBase.Global.Serialization.IJsonDataSource dataSource, RhythmBase.Global.Serialization.MetadataJsonSerializerOptions options, CancellationToken cancellationToken = default)
 						where T : new()
 				{
 					var seq = await dataSource.GetSequenceAsync(cancellationToken);
 					Utf8JsonReader reader = seq.IsSingleSegment
 						? new Utf8JsonReader(seq.First.Span, _readerOptions)
 						: new Utf8JsonReader(seq, _readerOptions);
-					return RhythmBase.{{registryId}}.Converters.TypeConverterRegistry.Read<T>(ref reader, options) ?? new();
+					return RhythmBase.{{registryId}}.Serialization.TypeConverterRegistry.Read<T>(ref reader, options) ?? new();
 				}
 				/// <summary>
 				/// Serializes a level to the specified stream.
@@ -1814,7 +1814,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				/// <param name="mainEntry">The level instance to serialize.</param>
 				/// <param name="stream">The output stream to write to.</param>
 				/// <param name="options">The metadata-aware serializer options.</param>
-				public static void SerializeMainEntry<T>(T mainEntry, Stream stream, RhythmBase.Global.Converters.MetadataJsonSerializerOptions options)
+				public static void SerializeMainEntry<T>(T mainEntry, Stream stream, RhythmBase.Global.Serialization.MetadataJsonSerializerOptions options)
 				{
 					using Utf8JsonWriter writer = new(stream, new()
 					{
@@ -1823,7 +1823,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 						IndentCharacter = options.JsonSerializerOptions.IndentCharacter,
 						IndentSize = options.JsonSerializerOptions.IndentSize,
 					});
-					RhythmBase.{{registryId}}.Converters.TypeConverterRegistry.Write(writer, mainEntry, options);
+					RhythmBase.{{registryId}}.Serialization.TypeConverterRegistry.Write(writer, mainEntry, options);
 					writer.Flush();
 				}
 			}
@@ -1843,7 +1843,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				return;
 			bool multiple = gens?.Length > 1;
 			StringBuilder sb = new();
-			sb.AppendLine($"namespace RhythmBase.{registryId}.Converters;");
+			sb.AppendLine($"namespace RhythmBase.{registryId}.Serialization;");
 			foreach (var info in gens ?? [])
 			{
 				string mtpName = multiple ? $"{info.RootClassType.Name}" : "";
@@ -1851,7 +1851,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				/// <summary>
 				/// A JSON converter for <see cref="{{info.RootClassType.ToDisplayString()}}"/> that uses metadata-aware serializer options.
 				/// </summary>
-				internal abstract class BackwardCompatible{{mtpName}}MetadataJsonConverter : RhythmBase.Global.Converters.MetadataJsonConverter<{{info.RootClassType.ToDisplayString()}}>
+				internal abstract class BackwardCompatible{{mtpName}}MetadataJsonConverter : RhythmBase.Global.Serialization.MetadataJsonConverter<{{info.RootClassType.ToDisplayString()}}>
 				{
 					protected class Upgrater
 					{

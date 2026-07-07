@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RhythmBase.Adofai;
+﻿namespace RhythmBase.Adofai;
 
 /// <summary>
 /// Provides constants and utility methods for A Dance of Fire and Ice level files.

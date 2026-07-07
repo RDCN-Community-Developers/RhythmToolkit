@@ -1,12 +1,10 @@
 using RhythmBase.Global.Components;
-using RhythmBase.Global.Extensions;
 using RhythmBase.Global.Settings;
 using RhythmBase.RhythmDoctor;
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Serialization;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Extensions;
-using RhythmBase.RhythmDoctor.Utils;
 using System.Diagnostics;
 using System.Text;
 
@@ -95,7 +93,7 @@ public sealed class Test
 				InactiveEventsHandling = InactiveEventsHandling.Ignore,
 				UnreadableEventsHandling = UnreadableEventHandling.Store,
 				ZipProcessingMode = ZipProcessingMode.AllEntries,
-				Strictness = Global.Converters.JsonStrictness.Fallback,
+				Strictness = Global.Serialization.JsonStrictness.Fallback,
 				LoadAssets = false,
 			};
 			settings.FileReferenceEncountered += (s, e) => 			{

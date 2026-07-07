@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RhythmBase.BeatBlock
+﻿namespace RhythmBase.BeatBlock
 {
 	/// <summary>
 	/// Contains constant values used by the BeatBlock level format.

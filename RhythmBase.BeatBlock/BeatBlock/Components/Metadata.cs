@@ -1,10 +1,4 @@
-﻿using RhythmBase.BeatBlock.Converters;
-using RhythmBase.BeatBlock.Events;
-using System.Collections;
-using System.Diagnostics.CodeAnalysis;
-using static RhythmBase.BeatBlock.Constants;
-
-namespace RhythmBase.BeatBlock.Components;
+﻿namespace RhythmBase.BeatBlock.Components;
 /// <summary>
 /// Represents the metadata of a BeatBlock level.
 /// </summary>

@@ -1,7 +1,4 @@
-﻿using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Events;
-
-namespace RhythmBase.RhythmDoctor.Linq;
+﻿namespace RhythmBase.RhythmDoctor.Linq;
 
 ///// <summary>
 ///// Represents a collection of events that can be enumerated.

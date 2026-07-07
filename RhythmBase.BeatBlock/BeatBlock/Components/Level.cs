@@ -1,6 +1,4 @@
-﻿using RhythmBase.BeatBlock.Events;
-
-namespace RhythmBase.BeatBlock.Components;
+﻿namespace RhythmBase.BeatBlock.Components;
 
 /// <summary>
 /// BeatBlock level.

@@ -6,7 +6,7 @@ namespace RhythmBase.Adofai.Events;
 /// <summary>
 /// Represents the base class for all ADOFAI events.
 /// </summary>
-[JsonObjectHasSerializer(typeof(Converters.MemberConverter<>))]
+[JsonObjectHasSerializer(typeof(Serialization.MemberConverter<>))]
 public abstract class BaseEvent : IBaseEvent
 {
 	/// <inheritdoc/>

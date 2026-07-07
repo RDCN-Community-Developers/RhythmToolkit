@@ -1,5 +1,4 @@
-﻿using RhythmBase.BeatBlock.Components;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace RhythmBase.BeatBlock.Events;
 
