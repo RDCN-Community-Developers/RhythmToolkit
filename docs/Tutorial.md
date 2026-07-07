@@ -53,12 +53,12 @@ Namespaces follow the pattern `RhythmBase.[GameType].[CategoryType]`.
   - `BeatBlock`: BeatBlock specific components.
   - `Rizline`: Rizline specific components.
 - **CategoryType**: Further classification of components.
-  - `Components`: Core data models.
-  - `Constants`: Predefined constants.
-  - `Converters`: Serializers.
+  - `Components`: Core data models (Color, Point, Range, EnumCollection, etc.).
   - `Events`: All event data models.
+  - `Serialization`: JSON serialization infrastructure (converter base classes, serializer options, data sources, enum conversion, etc.).
+  - `Settings`: Read/write configuration (GlobalSettings, LevelReadOrWriteSettings, etc.).
   - `Extensions`: Extension methods.
-  - `Utils`: Utility tools.
+  - `Exceptions`: Exception types.
 
 All game types share the public interfaces (`IEvent`, `ILevel`, `ITickTime`, etc.) and shared components (`Color`, geometry types, `EnumCollection`, etc.) under `RhythmBase.Global`. Each game type implements its own event model, level model, and serializers.
 
@@ -487,7 +487,7 @@ The source generator automatically produces `EnumConverterExtensions` for each g
 ```cs
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
-using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Serialization;
 
 Console.WriteLine(EventType.Tint.ToEnumString()); // "Tint"
 Console.WriteLine("Tint".TryParseEventType(out var t)); // true, t = EventType.Tint
@@ -757,7 +757,7 @@ Create a .NET class library project and reference the `RhythmBase` NuGet package
 </Project>
 ```
 
-> **`RootNamespace` should be set to `RhythmBase`** to ensure the source generator places generated code in the correct `RhythmBase.{GameType}.Converters` namespace.
+> **`RootNamespace` should be set to `RhythmBase`** to ensure the source generator places generated code in the correct `RhythmBase.{GameType}.Serialization` namespace.
 
 ## Step 2: Define the Event Type Enum
 
@@ -918,7 +918,7 @@ Create `AssemblyInfo.cs` in the project root, declaring the adapter's core type 
 [assembly: RhythmBase.JsonConverterSourceType(
     typeof(IBaseEvent),                                    // Event interface
     typeof(RhythmBase.MyGame.EventType),                   // Event enum
-    typeof(RhythmBase.MyGame.Converters.MemberConverter<>), // Converter base class (generic, only needs declaration)
+    typeof(RhythmBase.MyGame.Serialization.MemberConverter<>), // Converter base class (generic, only needs declaration)
     nameof(IBaseEvent.Type)                                // Enum property name
 )]
 
@@ -964,11 +964,10 @@ global using RhythmBase.Global.Events;
 global using RhythmBase.Global.Exceptions;
 global using RhythmBase.Global.Extensions;
 global using RhythmBase.Global.Settings;
-global using RhythmBase.Global.Converters.JsonSerialization;
-global using RhythmBase.Global.Utils;
-global using static RhythmBase.Global.Constants.Constants;
-global using static RhythmBase.Global.Converters.EnumConverterExtensions;
-global using static RhythmBase.MyGame.Converters.EnumConverterExtensions;
+global using RhythmBase.Global.Serialization;
+global using static RhythmBase.Global.Constants;
+global using static RhythmBase.Global.Serialization.EnumConverterExtensions;
+global using static RhythmBase.MyGame.Serialization.EnumConverterExtensions;
 ```
 
 ## Step 9: Implement Hand-Written Converters

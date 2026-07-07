@@ -53,12 +53,12 @@
   - `BeatBlock`：节奏方块专用组件。
   - `Rizline`：Rizline 专用组件。
 - **综合类型**：对各分支组件的进一步归类。
-  - `Components`：基本数据模型。
-  - `Constants`：预定义常量。
-  - `Converters`：序列化器。
+  - `Components`：基本数据模型（Color、Point、Range、EnumCollection 等）。
   - `Events`：所有事件的数据模型。
+  - `Serialization`：JSON 序列化基础设施（转换器基类、序列化选项、数据源、枚举转换等）。
+  - `Settings`：读写配置（GlobalSettings、LevelReadOrWriteSettings 等）。
   - `Extensions`：扩展方法。
-  - `Utils`：基础工具。
+  - `Exceptions`：异常类型。
 
 所有游戏类型共享 `RhythmBase.Global` 下的公共接口（`IEvent`、`ILevel`、`ITickTime` 等）和公共组件（`Color`、几何类型、`EnumCollection` 等）。每个游戏类型实现自己的事件模型、关卡模型和序列化器。
 
@@ -487,7 +487,7 @@ record MyComment: Comment
 ```cs
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Events;
-using RhythmBase.RhythmDoctor.Converters;
+using RhythmBase.RhythmDoctor.Serialization;
 
 Console.WriteLine(EventType.Tint.ToEnumString()); // "Tint"
 Console.WriteLine("Tint".TryParseEventType(out var t)); // true, t = EventType.Tint
@@ -757,7 +757,7 @@ vfxLevel.SaveToFile(@"result.rdlevel");
 </Project>
 ```
 
-> **`RootNamespace` 建议设为 `RhythmBase`**，以确保源生成器生成的代码能正确放入 `RhythmBase.{游戏类型}.Converters` 命名空间。
+> **`RootNamespace` 建议设为 `RhythmBase`**，以确保源生成器生成的代码能正确放入 `RhythmBase.{游戏类型}.Serialization` 命名空间。
 
 ## 步骤 2：定义事件类型枚举
 
@@ -918,7 +918,7 @@ public partial class Level :
 [assembly: RhythmBase.JsonConverterSourceType(
     typeof(IBaseEvent),                                    // 事件接口
     typeof(RhythmBase.MyGame.EventType),                   // 事件枚举
-    typeof(RhythmBase.MyGame.Converters.MemberConverter<>), // 转换器基类（泛型，仅需声明）
+    typeof(RhythmBase.MyGame.Serialization.MemberConverter<>), // 转换器基类（泛型，仅需声明）
     nameof(IBaseEvent.Type)                                // 枚举属性名
 )]
 
@@ -964,11 +964,10 @@ global using RhythmBase.Global.Events;
 global using RhythmBase.Global.Exceptions;
 global using RhythmBase.Global.Extensions;
 global using RhythmBase.Global.Settings;
-global using RhythmBase.Global.Converters.JsonSerialization;
-global using RhythmBase.Global.Utils;
-global using static RhythmBase.Global.Constants.Constants;
-global using static RhythmBase.Global.Converters.EnumConverterExtensions;
-global using static RhythmBase.MyGame.Converters.EnumConverterExtensions;
+global using RhythmBase.Global.Serialization;
+global using static RhythmBase.Global.Constants;
+global using static RhythmBase.Global.Serialization.EnumConverterExtensions;
+global using static RhythmBase.MyGame.Serialization.EnumConverterExtensions;
 ```
 
 ## 步骤 9：实现手写转换器
