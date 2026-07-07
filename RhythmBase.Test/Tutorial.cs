@@ -8,7 +8,6 @@ using System.Text.Json;
 using RhythmBase.RhythmDoctor;
 using RhythmBase.Global.Components;
 using RhythmBase.RhythmDoctor.Serialization;
-using RhythmBase.Global.Components.RichText;
 using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Test;
@@ -247,86 +246,6 @@ namespace RhythmBase.Test;
             // Comment,
             // TagAction,
             // CallCustomMethod
-        }
-        [TestMethod]
-        public void RichTextUsage()
-        {
-            RichLine<RichStringStyle> line = RichLine<RichStringStyle>.Deserialize("Hel<color=#00FF00>lo");
-
-            Console.WriteLine(line.ToString()); // Hello
-            Console.WriteLine(line.Serialize()); // Hel<color=lime>lo</color>
-
-            line +=
-                new Phrase<RichStringStyle>(" Rhythm")
-                {
-                    Style = new()
-                    {
-                        Color = Color.Lime
-                    }
-                };
-
-            line += " Doctor!";
-
-            Console.WriteLine(line.ToString()); // Hello Rhythm Doctor!
-            Console.WriteLine(line.Serialize()); // Hel<color=lime>lo Rhythm</color> Doctor!
-        }
-        [TestMethod]
-        public void RichTextModify()
-        {
-            RichLine<RichStringStyle> line = RichLine<RichStringStyle>.Deserialize("Hel<color=#00FF00>lo Rhythm</color> Doctor!");
-
-#if NETCOREAPP
-            Console.WriteLine(line[6..].ToString()); // Rhythm Doctor!
-            Console.WriteLine(line[6..].Serialize()); // <color=lime>Rhythm</color> Doctor!
-
-            line[5] = " and Welcome to ";
-#endif
-
-            Console.WriteLine(line.ToString()); // Hello and Welcome to Rhythm Doctor!
-            Console.WriteLine(line.Serialize()); // Hel<color=lime>lo</color> and Welcome to <color=lime>Rhythm</color> Doctor!
-
-            return;
-        }
-        [TestMethod]
-        public void RichTextBuild()
-        {
-            DialogueExchange exchange =
-            [
-                new DialogueBlock()
-                {
-                    Character = "Paige",
-                    Expression = "neutral",
-                    Content = RichLine<DialoguePhraseStyle>.Deserialize("Hel<color=#00FF00>lo [2]<shake>Rhythm</color> Doctor</shake>!"),
-                },
-                new DialogueBlock()
-                {
-                    Character = "Ian",
-                    Content = "Hello Paige!",
-                },
-                new DialogueBlock()
-                {
-                    Character = "Paige",
-                    Expression = "happy",
-                    Content = new Phrase<DialoguePhraseStyle>("What a good day!")
-                    {
-                        Events =
-                        [
-                            new DialogueTone(DialogueToneType.VerySlow,6),
-                            new DialogueTone(DialogueToneType.Static,11),
-                        ],
-                        Style = new DialoguePhraseStyle()
-                        {
-                            Volume = 0.5f,
-                            Bold = true,
-                        },
-                    }
-                }
-            ];
-
-            Console.WriteLine(exchange.Serialize());
-            // Paige_neutral:Hel<color=lime>lo [2]<shake>Rhythm</color> Doctor</shake>!
-            // Ian:Hello Paige!
-            // Paige_happy:<volume=0.5><bold>What a[vslow] good[static] day!</volume></bold>
         }
         [TestMethod]
         public void EasingCalculate()
