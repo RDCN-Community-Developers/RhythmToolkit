@@ -1,5 +1,3 @@
-using RhythmBase.Global.Components.RichText;
-
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
@@ -20,7 +18,7 @@ public record class ShowStatusSign : BaseEvent, IDurationEvent
 	/// <summary>
 	/// Gets or sets the text to display.
 	/// </summary>
-	public RichLine<RichStringStyle> Text { get; set; } = "";
+	public string Text { get; set; } = "";
 	///<inheritdoc/>
 	public float Duration { get; set; }
 	/// <summary>

@@ -1,4 +1,3 @@
-using RhythmBase.Global.Components.RichText;
 using RhythmBase.RhythmDoctor.Components;
 using System.Text.Json;
 using RhythmBase.Global.Serialization;
@@ -42,11 +41,7 @@ internal class SettingsConverter : MetadataJsonConverter<Settings>
 			else if (reader.ValueTextEquals("artist"u8) && reader.Read())
 				settings.Artist = reader.GetString() ?? "";
 			else if (reader.ValueTextEquals("song"u8) && reader.Read())
-				settings.Song = RichLine<RichStringStyle>
-#if NETSTANDARD
-						.Empty
-#endif
-						.Deserialize(reader.GetString() ?? "");
+				settings.Song = reader.GetString() ?? "";
 			else if (reader.ValueTextEquals("specialArtistType"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out SpecialArtistTypes value))
 				settings.SpecialArtistType = value;
 			else if (reader.ValueTextEquals("artistPermission"u8) && reader.Read())
@@ -54,11 +49,7 @@ internal class SettingsConverter : MetadataJsonConverter<Settings>
 			else if (reader.ValueTextEquals("artistLinks"u8) && reader.Read())
 				settings.ArtistLinks = reader.GetString() ?? "";
 			else if (reader.ValueTextEquals("author"u8) && reader.Read())
-				settings.Author = RichLine<RichStringStyle>
-#if NETSTANDARD
-						.Empty
-#endif
-						.Deserialize(reader.GetString() ?? "");
+				settings.Author =(reader.GetString() ?? "");
 			else if (reader.ValueTextEquals("difficulty"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out DifficultyLevel difficulty))
 				settings.Difficulty = difficulty;
 			else if (reader.ValueTextEquals("seizureWarning"u8) && reader.Read())
@@ -78,17 +69,9 @@ internal class SettingsConverter : MetadataJsonConverter<Settings>
 			else if (reader.ValueTextEquals("songLabelGrayscale"u8) && reader.Read())
 				settings.SongLabelGrayscale = reader.GetBoolean();
 			else if (reader.ValueTextEquals("description"u8) && reader.Read())
-				settings.Description = RichLine<RichStringStyle>
-#if NETSTANDARD
-						.Empty
-#endif
-						.Deserialize(reader.GetString() ?? "");
+				settings.Description = (reader.GetString() ?? "");
 			else if (reader.ValueTextEquals("tags"u8) && reader.Read())
-				settings.Tags = RichLine<RichStringStyle>
-#if NETSTANDARD
-						.Empty
-#endif
-						.Deserialize(reader.GetString() ?? "");
+				settings.Tags = (reader.GetString() ?? "");
 			else if (reader.ValueTextEquals("separate2PLevelFilename"u8) && reader.Read())
 				settings.Separate2PLevelFilename = reader.GetString() ?? "";
 			else if (reader.ValueTextEquals("canBePlayedOn"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out LevelPlayedMode playedMode))
@@ -180,11 +163,11 @@ internal class SettingsConverter : MetadataJsonConverter<Settings>
 
 		writer.WriteNumber("version"u8, value.Version);
 		writer.WriteString("artist"u8, value.Artist ?? "");
-		writer.WriteString("song"u8, value.Song.Serialize());
+		writer.WriteString("song"u8, value.Song);
 		writer.WriteString("specialArtistType"u8, value.SpecialArtistType.ToEnumString());
 		writer.WriteString("artistPermission"u8, value.ArtistPermission.Path ?? "");
 		writer.WriteString("artistLinks"u8, value.ArtistLinks ?? "");
-		writer.WriteString("author"u8, value.Author.Serialize());
+		writer.WriteString("author"u8, value.Author);
 		writer.WriteString("difficulty"u8, value.Difficulty.ToEnumString());
 		writer.WriteBoolean("seizureWarning"u8, value.SeizureWarning);
 		writer.WriteString("previewImage"u8, value.PreviewImage.Path ?? "");
@@ -194,8 +177,8 @@ internal class SettingsConverter : MetadataJsonConverter<Settings>
 		writer.WriteNumber("previewSongDuration"u8, (float)value.PreviewSongDuration.TotalSeconds);
 		writer.WriteNumber("songNameHue"u8, value.SongNameHueOrGrayscale);
 		writer.WriteBoolean("songLabelGrayscale"u8, value.SongLabelGrayscale);
-		writer.WriteString("description"u8, value.Description.Serialize());
-		writer.WriteString("tags"u8, value.Tags.Serialize());
+		writer.WriteString("description"u8, value.Description);
+		writer.WriteString("tags"u8, value.Tags);
 		writer.WriteString("separate2PLevelFilename"u8, value.Separate2PLevelFilename ?? "");
 		writer.WriteString("canBePlayedOn"u8, value.CanBePlayedOn.ToEnumString());
 		writer.WriteString("firstBeatBehavior"u8, value.FirstBeatBehavior.ToEnumString());

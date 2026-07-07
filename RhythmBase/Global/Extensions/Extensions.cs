@@ -55,39 +55,6 @@ public static class Extensions
 		//    throw new NotImplementedException();
 		//else
 		throw new NotSupportedException($"Unsupported event type enum: {typeof(TType)}");
-	}    /// <inheritdoc/>
-	internal static string GetCloseTag(string name) => $"</{name}>";
-	/// <inheritdoc/>
-	internal static string GetOpenTag(string name, string? arg = null) => arg is null ? $"<{name}>" : $"<{name}={arg}>";
-	/// <summary>
-	/// Tries to add a tag to the specified string based on the provided name and boolean values.
-	/// </summary>
-	/// <param name="tag">The string to which the tag will be added.</param>
-	/// <param name="name">The name of the tag.</param>
-	/// <param name="before">A boolean value indicating whether the tag is before.</param>
-	/// <param name="after">A boolean value indicating whether the tag is after.</param>
-	internal static void TryAddTag(ref string tag, string name, bool before, bool after)
-	{
-		if (before != after)
-			tag += after
-			? GetOpenTag(name)
-			: GetCloseTag(name);
-	}
-	/// <summary>
-	/// Tries to add a tag to the specified string based on the provided name and optional string values.
-	/// </summary>
-	/// <param name="tag">The string to which the tag will be added.</param>
-	/// <param name="name">The name of the tag.</param>
-	/// <param name="before">An optional string value indicating the tag before.</param>
-	/// <param name="after">An optional string value indicating the tag after.</param>
-	internal static void TryAddTag(ref string tag, string name, string? before, string? after)
-	{
-		if (before != after)
-			tag += after is null
-			? GetCloseTag(name)
-			: before is null
-			? GetOpenTag(name, after)
-			: GetCloseTag(name) + GetOpenTag(name, after);
 	}
 
 	extension(float? e)

@@ -1,4 +1,3 @@
-using RhythmBase.Global.Components.RichText;
 using RhythmBase.Global.Serialization;
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Serialization;
@@ -636,22 +635,6 @@ public static partial class Extensions
 	/// <param name="e">The RDRoomIndex enumeration value to convert.</param>
 	/// <returns>A byte representing the value of the specified RDRoomIndex enumeration.</returns>
 	public static byte ToIndex(this RoomIndex e) => new SingleRoom(e).Value;
-#if NETSTANDARD
-	extension<TStyle>(RichLine<TStyle>) where TStyle : IRichStringStyle<TStyle>, new()
-	{
-		/// <summary>
-		/// Deserializes a string into an <see cref="RichLine{RDPhraseStyle}"/>.
-		/// </summary>
-		/// <param name="text">The string to deserialize.</param>
-		/// <returns>A new <see cref="RichLine{RDPhraseStyle}"/> containing the deserialized content.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the input text is null.</exception>
-		/// <exception cref="FormatException">Thrown when the input text has an invalid format.</exception>
-		public static RichLine<TStyle> Deserialize(string text)
-		{
-			return RichLine<TStyle>.Empty.Deserialize(text);
-		}
-	}
-#endif
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 	public enum Wavetype
 	{

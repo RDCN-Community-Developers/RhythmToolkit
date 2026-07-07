@@ -1,11 +1,9 @@
-﻿using RhythmBase.Global.Components.RichText;
-using RhythmBase.Global.Serialization;
+﻿using RhythmBase.Global.Serialization;
 using RhythmBase.RhythmDoctor.Events;
 
 [assembly: RhythmBase.JsonConverterId(nameof(RhythmBase.RhythmDoctor))]
 [assembly: RhythmBase.JsonConverterSourceType(typeof(IBaseEvent), typeof(RhythmBase.RhythmDoctor.EventType), typeof(RhythmBase.RhythmDoctor.Serialization.MemberConverter<>), nameof(IBaseEvent.Type))]
 [assembly: RhythmBase.JsonConverterLink(typeof(Color), typeof(ColorConverter.RgbaHex))]
-[assembly: RhythmBase.JsonConverterLink(typeof(RichLine<RichStringStyle>), typeof(RichTextConverter<RichStringStyle>))]
 [assembly: RhythmBase.AdapterType(
 	typeof(RhythmBase.RhythmDoctor.Components.Level),
 	typeof(RhythmBase.RhythmDoctor.Utils.BeatCalculator),
