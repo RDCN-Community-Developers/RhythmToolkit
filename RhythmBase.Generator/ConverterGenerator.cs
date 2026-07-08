@@ -472,6 +472,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 			try
 			{
 				var (allasms, compilation) = allasmsAndCompilation;
+				var currentAsm = compilation.Assembly;
 				List<(ITypeSymbol, INamedTypeSymbol)> result = new();
 				var attrType = compilation.GetTypeByMetadataName(JsonConverterForAttrName);
 				static IEnumerable<INamedTypeSymbol> GetAllTypes(INamespaceSymbol namespaceSymbol)
@@ -502,7 +503,9 @@ public partial class ConverterGenerator : IIncrementalGenerator
 						if (SymbolEqualityComparer.Default.Equals(pair.Item2.AttributeClass, attrType))
 						{
 							var arg0 = pair.Item2.ConstructorArguments[0].Value as ITypeSymbol;
-							if (arg0 is INamedTypeSymbol namedType)
+							if (arg0 is INamedTypeSymbol namedType
+								&& (pair.i.DeclaredAccessibility == Accessibility.Public || SymbolEqualityComparer.Default.Equals(pair.i.ContainingAssembly, currentAsm))
+								&& (namedType.DeclaredAccessibility == Accessibility.Public || SymbolEqualityComparer.Default.Equals(namedType.ContainingAssembly, currentAsm)))
 								result.Add((arg0, pair.i));
 						}
 					}
@@ -523,6 +526,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 			try
 			{
 				(Compilation compilation, IAssemblySymbol[] assemblies) = compilationAndAsms;
+				var currentAsm = compilation.Assembly;
 				var attrType = compilation.GetTypeByMetadataName(JsonConverterLinkAttrName);
 				if (attrType == null) return default;
 				List<(ITypeSymbol, INamedTypeSymbol)> types = [];
@@ -533,7 +537,10 @@ public partial class ConverterGenerator : IIncrementalGenerator
 						var args = attr.ConstructorArguments;
 						var arg0 = args[0].Value as ITypeSymbol;
 						var arg1 = args[1].Value as INamedTypeSymbol;
-						types.Add((arg0, arg1));
+						if (arg1 is not null
+							&& (arg0 is null || arg0.DeclaredAccessibility == Accessibility.Public || SymbolEqualityComparer.Default.Equals(arg0.ContainingAssembly, currentAsm))
+							&& (arg1.DeclaredAccessibility == Accessibility.Public || SymbolEqualityComparer.Default.Equals(arg1.ContainingAssembly, currentAsm)))
+							types.Add((arg0, arg1));
 					}
 				}
 				return types.ToArray();
