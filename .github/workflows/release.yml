@@ -36,16 +36,34 @@ jobs:
           SUFFIX="${{ inputs.version_suffix }}"
           echo "version=${BASE_VER}${SUFFIX}" >> $GITHUB_OUTPUT
 
+      - name: Restore
+        run: dotnet restore RhythmBase/RhythmBase.csproj
+
+      - name: Build
+        run: dotnet build RhythmBase/RhythmBase.csproj -c Release --no-restore
+
       - name: Pack RhythmBase (core)
-        run: dotnet pack RhythmBase/RhythmBase.csproj -c Release -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
+        run: dotnet pack RhythmBase/RhythmBase.csproj -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
 
       - name: Add local NuGet source
         run: dotnet nuget add source ${{ github.workspace }}/pkg --name local-pkg
 
+      - name: Restore sub-packages
+        run: |
+          for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
+            dotnet restore "$PROJ/$PROJ.csproj"
+          done
+
+      - name: Build sub-packages
+        run: |
+          for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
+            dotnet build "$PROJ/$PROJ.csproj" -c Release --no-restore
+          done
+
       - name: Pack sub-packages
         run: |
           for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
-            dotnet pack "$PROJ/$PROJ.csproj" -c Release -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
+            dotnet pack "$PROJ/$PROJ.csproj" -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
           done
 
       - name: Test
@@ -55,3 +73,13 @@ jobs:
 
       - name: Push to NuGet
         run: dotnet nuget push ./pkg/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: v${{ steps.ver.outputs.version }}
+          files: ./pkg/*.nupkg
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
