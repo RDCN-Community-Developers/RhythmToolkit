@@ -37,6 +37,16 @@ jobs:
           SUFFIX="${{ inputs.version_suffix }}"
           echo "version=${BASE_VER}${SUFFIX}" >> $GITHUB_OUTPUT
 
+      - name: Check if version already exists
+        run: |
+          VER="${{ steps.ver.outputs.version }}"
+          EXISTING=$(curl -sfL "https://api.nuget.org/v3-flatcontainer/rhythmbase/index.json" | jq -r '.versions[]' | grep -xF "$VER" || true)
+          if [ -n "$EXISTING" ]; then
+            echo "::error::Version $VER already exists on NuGet. Aborting."
+            exit 1
+          fi
+          echo "Version $VER is available on NuGet."
+
       - name: Restore
         run: dotnet restore RhythmBase/RhythmBase.csproj
 
