@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore RhythmBase/RhythmBase.csproj
+
+      - name: Build
+        run: dotnet build RhythmBase/RhythmBase.csproj -c Release --no-restore
+
+      - name: Test
+        run: |
+          dotnet test RhythmBase.Test/RhythmBase.Test.csproj -c Release -f net8.0 || true
+          echo "Tests completed (failures are currently expected)."

@@ -7,10 +7,12 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.should.outputs.publish }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Check commit message
         id: msg
@@ -29,10 +31,13 @@ jobs:
             echo "publish=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Repository dispatch if needed
-        if: steps.should.outputs.publish == 'true'
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: publish
-          client-payload: '{"version_suffix": ""}'
+  build:
+    needs: check
+    if: needs.check.outputs.publish == 'true'
+    uses: ./.github/workflows/build.yml
+
+  release:
+    needs: build
+    uses: ./.github/workflows/release.yml
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

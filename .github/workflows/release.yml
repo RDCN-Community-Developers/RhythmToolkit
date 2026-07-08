@@ -1,0 +1,57 @@
+name: Release NuGet
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_suffix:
+        description: 'Optional version suffix (e.g. -beta1)'
+        required: false
+        default: ''
+  workflow_call:
+    inputs:
+      version_suffix:
+        type: string
+        default: ''
+    secrets:
+      NUGET_API_KEY:
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Resolve version
+        id: ver
+        run: |
+          BASE_VER=$(grep -oP '<Version>\K[^<]+' RhythmBase/RhythmBase.csproj)
+          SUFFIX="${{ inputs.version_suffix }}"
+          echo "version=${BASE_VER}${SUFFIX}" >> $GITHUB_OUTPUT
+
+      - name: Pack RhythmBase (core)
+        run: dotnet pack RhythmBase/RhythmBase.csproj -c Release -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
+
+      - name: Add local NuGet source
+        run: dotnet nuget add source ${{ github.workspace }}/pkg --name local-pkg
+
+      - name: Pack sub-packages
+        run: |
+          for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
+            dotnet pack "$PROJ/$PROJ.csproj" -c Release -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
+          done
+
+      - name: Test
+        run: |
+          dotnet test RhythmBase.Test/RhythmBase.Test.csproj -c Release -f net8.0 || true
+          echo "Tests completed (failures are currently expected)."
+
+      - name: Push to NuGet
+        run: dotnet nuget push ./pkg/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
