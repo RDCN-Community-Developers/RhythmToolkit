@@ -59,8 +59,10 @@ public abstract record class BaseEvent : IBaseEvent
 	public string Tag { get; set; } = "";
 	///<inheritdoc/>
 	public bool RunTag { get; set; } = false;
-	///<inheritdoc/>
-	public Condition Condition { get; set; } = new();
+	/// <summary>
+	/// Gets a reference to the condition associated with the event.
+	/// </summary>
+	public ref Condition Condition => ref _condition;
 	///<inheritdoc/>
 	public bool Active { get; set; } = true;
 	///<inheritdoc/>
@@ -98,12 +100,13 @@ public abstract record class BaseEvent : IBaseEvent
 			Y = Y,
 			Tag = Tag,
 			RunTag = RunTag,
-			Condition = Condition.Clone(),
 			Active = Active,
 		};
+		temp.Condition = Condition.Clone();
 		return temp;
 	}
 	/// <inheritdoc/>
 	public override string ToString() => $"{TickTime} {Type}";
 	internal TickTime _tick = new(1f);
+	internal Condition _condition = new();
 }

@@ -15,7 +15,7 @@ public interface IBaseEvent : IEvent<EventType, TickTime>
     /// <summary>
     /// Gets or sets the condition associated with the event.
     /// </summary>
-    Condition Condition { get; set; }
+     ref Condition Condition { get;  }
     /// <summary>
     /// Gets the tab associated with the event.
     /// </summary>
