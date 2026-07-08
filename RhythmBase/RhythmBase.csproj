@@ -28,7 +28,7 @@
 	<ItemGroup>
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />
 		<ProjectReference Include="../RhythmBase.Generator/RhythmBase.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<None Include="../RhythmBase.Generator/bin/Debug/netstandard2.0/RhythmBase.Generator.dll" Pack="True" Visible="False" PackagePath="analyzers/dotnet/cs/RhythmBase.Generator.dll" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="../RhythmBase.Generator/bin/$(Configuration)/netstandard2.0/RhythmBase.Generator.dll" Pack="True" Visible="False" PackagePath="analyzers/dotnet/cs/RhythmBase.Generator.dll" CopyToOutputDirectory="PreserveNewest" />
 		<None Include="../CONTRIBUTION.zh-cn.md" Pack="False" />
 		<None Include="../README.md;../README.zh-cn.md;../VERSION.md;../VERSION.zh-cn.md;../RhythmBase_logo_small.png;../RhythmBase_logo.png;../RhythmBase_logo_clean.png;../RhythmBase_banner.png;../RhythmBase_banner_clean.png;../LICENSE.txt;" Pack="True" PackagePath="/" />
 		<Compile Include="../DotnetCompatibility.cs"></Compile>
