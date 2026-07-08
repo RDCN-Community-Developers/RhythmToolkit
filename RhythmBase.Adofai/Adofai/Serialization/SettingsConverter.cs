@@ -240,16 +240,14 @@ internal class SettingsConverter : MetadataJsonConverter<Settings>
 		writer.WriteString("defaultBGShapeColor"u8, value.DefaultBGShapeColor.ToString("rrggbb"));
 		writer.WriteString("bgImage"u8, value.BgImage);
 		writer.WriteString("bgImageColor"u8, value.BgImageColor.ToString("rrggbb"));
-		writer.WritePropertyName("parallax"u8);
-		TypeConverterRegistry.Write(writer, value.Parallax, options);
+		TypeConverterRegistry.Write(writer,"parallax"u8, value.Parallax, options);
 		writer.WriteString("bgDisplayMode"u8, value.BgDisplayMode.ToEnumString());
 		writer.WriteBoolean("imageSmoothing"u8, value.ImageSmoothing);
 		writer.WriteBoolean("lockRot"u8, value.LockRot);
 		writer.WriteBoolean("loopBG"u8, value.LoopBG);
 		writer.WriteNumber("scalingRatio"u8, value.ScalingRatio);
 		writer.WriteString("relativeTo"u8, value.RelativeTo.ToEnumString());
-		writer.WritePropertyName("position"u8);
-		TypeConverterRegistry.Write(writer, value.Position, options);
+		TypeConverterRegistry.Write(writer,"position"u8, value.Position, options);
 		writer.WriteNumber("rotation"u8, value.Rotation);
 		writer.WriteNumber("zoom"u8, value.Zoom);
 		writer.WriteBoolean("pulseOnFloor"u8, value.PulseOnFloor);

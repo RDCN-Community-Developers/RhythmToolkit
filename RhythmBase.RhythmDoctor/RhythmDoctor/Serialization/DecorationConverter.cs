@@ -70,8 +70,7 @@ internal class DecorationConverter : MetadataJsonConverter<Decoration>
 		writer.WriteStartObject();
 		writer.WriteString("id"u8, value.Id);
 		writer.WriteNumber("row"u8, value.Index);
-		writer.WritePropertyName("rooms"u8);
-		TypeConverterRegistry.Write(writer, value.Room, options);
+		TypeConverterRegistry.Write(writer, "rooms"u8, value.Room, options);
 		if (!value.Character.IsCustom && value.Character.EnumName is GameCharacter rdc)
 			writer.WriteString("character", rdc.ToEnumString());
 		else

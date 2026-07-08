@@ -358,6 +358,11 @@ public partial class ConverterGenerator
 									writer.WriteNullValue();
 						#endif
 							}
+							public static void Write<T>(Utf8JsonWriter writer, ReadOnlySpan<byte> propertyName, T value, MetadataJsonSerializerOptions options)
+							{
+								writer.WritePropertyName(propertyName);
+								Write(writer, value, options);
+							}
 						}
 						""");
 		ctx.AddSource($"TypeConverterRegistry.{left}.g.cs", sb.ToString());

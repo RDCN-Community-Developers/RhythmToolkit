@@ -88,8 +88,7 @@ internal class RowConverter : MetadataJsonConverter<Row>
 		writer.WriteString("rowType"u8, value.RowType.ToEnumString());
 		writer.WriteNumber("row"u8, value.Index);
 
-		writer.WritePropertyName("rooms"u8);
-		TypeConverterRegistry.Write(writer, value.Room, options);
+		TypeConverterRegistry.Write(writer, "rooms"u8, value.Room, options);
 		if (value.HideAtStart)
 			writer.WriteBoolean("hideAtStart"u8, value.HideAtStart);
 		writer.WriteString("player"u8, value.Player.ToEnumString());

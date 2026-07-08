@@ -146,7 +146,7 @@ internal partial class RDMemberConverter
 		protected override void Write(Utf8JsonWriter writer, ref Events.SetVFXPreset value, MetadataJsonSerializerOptions options)
 		{
 			base.Write(writer, ref value, options);
-			{ writer.WritePropertyName("rooms"u8); TypeConverterRegistry.Write(writer, value.Rooms, options); }
+			{ TypeConverterRegistry.Write(writer, "rooms"u8, value.Rooms, options); }
 			writer.WriteString("preset"u8, value.Preset.ToEnumString());
 			if (value.Preset is not VfxPreset.DisableAll)
 				writer.WriteBoolean("enable"u8, value.Enable);
@@ -157,7 +157,7 @@ internal partial class RDMemberConverter
 			if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableColor) && value.Color is PaletteColor valueNotNull2)
 			{ writer.WriteString("color"u8, valueNotNull2.Serialize()); }
 			if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableAbsoluteXY) && value.Amount is Point valueNotNull3)
-			{ writer.WritePropertyName("amount"u8); TypeConverterRegistry.Write(writer, valueNotNull3, options); }
+			{ TypeConverterRegistry.Write(writer, "amount"u8, valueNotNull3, options); }
 			if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableSpeed) && value.SpeedPercentage is float valueNotNull4)
 				writer.WriteNumber("speedPerc"u8, valueNotNull4);
 			if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableEase))
