@@ -33,6 +33,7 @@ public struct Condition
 	}
 	private static void SetValue(ref ulong[]? conditions, int index, bool? value)
 	{
+		if(index < 0) throw new ArgumentOutOfRangeException(nameof(index));
 		int ulongIndex = index * 2 / ulongSize;
 		int bitIndex = index * 2 % ulongSize;
 		if (conditions == null)
