@@ -21,14 +21,14 @@ public struct FileReference : IEqualityComparer<FileReference>, IEquatable<FileR
 	/// </remarks>
 	public string Path { get; set; }
 
-    /// <summary>
-    /// Gets the file extension of the referenced path, including the leading period ('.').
-    /// </summary>
-    /// <value>
-    /// The extension of <see cref="Path"/> as returned by <see cref="Path.GetExtension(string)"/>.
-    /// If <see cref="Path"/> is null or has no extension, an empty string is returned.
-    /// </value>
-    public readonly string Extension => System.IO.Path.GetExtension(Path);
+	/// <summary>
+	/// Gets the file extension of the referenced path, including the leading period ('.').
+	/// </summary>
+	/// <value>
+	/// The extension of <see cref="Path"/> as returned by <see cref="Path.GetExtension(string)"/>.
+	/// If <see cref="Path"/> is null or has no extension, an empty string is returned.
+	/// </value>
+	public readonly string Extension => System.IO.Path.GetExtension(Path);
 	/// <summary>
 	/// Gets a static instance of the FileReference class that represents an empty file reference.
 	/// </summary>

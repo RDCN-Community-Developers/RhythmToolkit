@@ -2,6 +2,7 @@ using RhythmBase.RhythmDoctor.Events;
 using System.ComponentModel;
 
 namespace RhythmBase.RhythmDoctor;
+
 /// <summary>
 /// Rhythm Doctor event types.
 /// </summary>
@@ -176,9 +177,9 @@ public enum EventType
 	/// </summary>  
 	ReorderRow,
 	/// <summary>  
-	/// Reorder the sprites.  
+	/// Reorder the decoration.  
 	/// </summary>  
-	ReorderSprite,
+	ReorderDecoration,
 	/// <summary>
 	/// Reorder the windows.
 	/// </summary>
@@ -335,6 +336,14 @@ public enum EventType
 	/// Resize the game window.  
 	/// </summary>  
 	WindowResize,
+
+
+
+	AdvanceTextDecoration,
+	SetText,
+	TintText,
+	SetFont,
+	GoToLevel,
 }
 
 /// <summary>
@@ -2129,29 +2138,6 @@ public enum SoundType
 #pragma warning restore CS1591
 }
 /// <summary>
-/// Specifies the available font rendering styles for Rhythm Doctor text elements.
-/// </summary>
-[JsonEnumSerializable]
-public enum RDFontType
-{
-	/// <summary>
-	/// Uses the default project font, typically optimized for general UI text.
-	/// </summary>
-	Default,
-	/// <summary>
-	/// Renders text with pixel-perfect precision, ideal for retro aesthetics.
-	/// </summary>
-	Pixel,
-	/// <summary>
-	/// Utilizes vector-based rendering to keep text crisp at any scale.
-	/// </summary>
-	Vector,
-	/// <summary>
-	/// Applies a Flash-inspired font style for legacy content compatibility.
-	/// </summary>
-	Flash
-}
-/// <summary>
 /// Defines the types of visual layers used in the rendering process for organizing and displaying scene elements.
 /// </summary>
 [JsonEnumSerializable]
@@ -2448,4 +2434,17 @@ public enum EffectType
 	/// Indicates narration or spoken dialogue.
 	/// </summary>
 	Narration,
+}
+[JsonEnumSerializable]
+public enum DecorationType
+{
+	Text,
+	Sprite,
+}
+[JsonEnumSerializable]
+public enum GoToLevelAction
+{
+	LoadImmediately,
+	SetNext,
+	LoadNext
 }

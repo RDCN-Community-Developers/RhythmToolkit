@@ -1,4 +1,5 @@
 namespace RhythmBase.Adofai.Components.Filters;
+
 /// <summary>
 /// The filter of <b>Blur Bloom</b>.
 /// </summary>

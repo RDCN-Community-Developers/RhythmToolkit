@@ -8,15 +8,11 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents a event that displays floating text on the screen, which can be used for various purposes such as showing lyrics, dialogue, or other textual information during gameplay.
 /// </summary>
 [JsonObjectSerializable]
-public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent
+public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent, ITextEvent
 {
-	/// <summary>
-	/// Gets the type of the event.
-	/// </summary>
+	/// <inheritdoc/>
 	public override EventType Type => EventType.FloatingText;
-	/// <summary>
-	/// Gets the tab associated with the event.
-	/// </summary>
+	/// <inheritdoc/>
 	public override Tab Tab => Tab.Actions;
 	/// <summary>
 	/// Gets the list of child advance texts.
@@ -27,77 +23,45 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	/// Gets or sets the room associated with the event.
 	/// </summary>
 	public Room Rooms { get; set; } = new Room([0]);
-	/// <summary>
-	/// Gets or sets the fade out rate of the text.
-	/// <remark>
-	/// Must be a non-negative value.
-	/// </remark>
-	/// </summary>
+	/// <inheritdoc/>
 	[JsonAlias("fadeOutRate")]
 	public float Duration { get; set; }
-	/// <summary>
-	/// Gets or sets the color of the text.
-	/// </summary>
+	/// <inheritdoc/>
 	public PaletteColorWithAlpha Color { get; set; } = Global.Components.Color.White;
-	/// <summary>
-	/// Gets or sets the angle of the text.
-	/// <remark>
-	/// Unit is degree.
-	/// </remark>
-	/// </summary>
+	/// <inheritdoc/>
 	public float Angle { get; set; } = 0;
-	/// <summary>
-	/// Gets or sets the size of the text.
-	/// <remark>
-	/// Must be a non-negative value.
-	/// </remark>
-	/// </summary>
+	/// <inheritdoc/>
 	public int Size { get; set; } = 8;
-	/// <summary>
-	/// Gets or sets the outline color of the text.
-	/// </summary>
+	/// <inheritdoc/>
 	public PaletteColorWithAlpha OutlineColor { get; set; } = Global.Components.Color.Black;
 	/// <summary>
 	/// Gets the unique identifier for the entity.
 	/// </summary>
 	[JsonAlias("id")]
 	public int Id => _tick.BaseChart?._floatingTexts.IndexOf(this) ?? -1;
-	/// <summary>
-	/// Gets or sets the position of the text.
-	/// </summary>
 	[JsonAlias("textPosition")]
+	/// <inheritdoc/>
 	public Point Position { get; set; } = new(50f, 50f);
-	/// <summary>
-	/// Gets or sets the anchor style of the text.
-	/// </summary>
+	/// <inheritdoc/>
 	[JsonConverter(typeof(FloatingTextAnchorStylesConverter))]
 	public FloatingTextAnchorStyle Anchor { get; set; } = FloatingTextAnchorStyle.Center;
-	/// <summary>
-	/// Gets or sets a value indicating whether to narrate the text.
-	/// </summary>
+	/// <inheritdoc/>
 	[JsonCondition($"$&.{nameof(Narrate)}")]
 	public bool Narrate { get; set; } = true;
-	/// <summary>
-	/// Gets or sets the narration category of the text.
-	/// </summary>
+	/// <inheritdoc/>
 	[JsonCondition($"$&.{nameof(Narrate)}")]
 	public NarrationCategory NarrationCategory { get; set; } = NarrationCategory.Subtitles;
-	/// <summary>
-	/// Gets or sets the mode of the text.
-	/// </summary>
+	/// <inheritdoc/>
 	public FloatingTextFadeOutMode Mode { get; set; } = FloatingTextFadeOutMode.FadeOut;
-	/// <summary>
-	/// Gets or sets a value indicating whether to show child texts.
-	/// </summary>
+	/// <inheritdoc/>
 	public bool ShowChildren { get; set; } = true;
-	/// <summary>
-	/// Gets or sets the text content.
-	/// </summary>
+	/// <inheritdoc/>
 	public string Text { get; set; } = "等/呀/等/得/好/心/慌……";
-	/// <summary>
-	/// Gets or sets the font style to use for rendering text.
-	/// </summary>
-	public RDFontType Font { get; set; } = RDFontType.Default;
+	/// <inheritdoc/>
+	public FontName Font { get; set; } = FontName.Default;
+	public IEnumerable<FileReference> FontFiles => Font.IsCustom ? [Font.Value] : [];
+	public IEnumerable<FileReference> Files => FontFiles;
+
 	/// <summary>
 	/// Initializes a new instance of the <see cref="FloatingText"/> class.
 	/// </summary>

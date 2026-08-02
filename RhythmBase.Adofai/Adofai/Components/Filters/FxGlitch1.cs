@@ -1,4 +1,5 @@
 namespace RhythmBase.Adofai.Components.Filters;
+
 /// <summary>
 /// The filter of <b>FX Glitch1</b>.
 /// </summary>

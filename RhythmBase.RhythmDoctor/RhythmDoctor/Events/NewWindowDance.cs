@@ -63,85 +63,85 @@ public record class NewWindowDance : BaseWindowEvent, IEaseEvent
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Wrap)}
-			or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)}
-			&&
-		$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
-		""")]
+	$&.{nameof(Preset)}
+		is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Wrap)}
+		or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)}
+		&&
+	$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
+	""")]
 	public float Speed { get; set; } = 0;
 	/// <summary>
 	/// Gets or sets the amplitude.
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		(
-		$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)} || $&.{nameof(UseCircle)}) &&
-		$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
-		$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}
-		""")]
+	(
+	$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)} || $&.{nameof(UseCircle)}) &&
+	$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
+	$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}
+	""")]
 	public float? Amplitude { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the amplitude vector.
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		(
-		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)} && !$&.{nameof(UseCircle)} ||
-		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)}) &&
-		$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}
-		""")]
+	(
+	$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)} && !$&.{nameof(UseCircle)} ||
+	$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)}) &&
+	$&.{nameof(Preset)} is not RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Move)}
+	""")]
 	public Point AmplitudeVector { get; set; } = new(0f, 0f);
 	/// <summary>
 	/// Gets or sets the angle.
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(Preset)}
-		is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)}
-		or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)} ||
-		($&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Wrap)} &&
-		$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)})
-		""")]
+	$&.{nameof(Preset)}
+	is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)}
+	or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Ellipse)} ||
+	($&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Wrap)} &&
+	$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)})
+	""")]
 	public float? Angle { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the frequency.
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(Preset)}
-		is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)}
-		or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Wrap)}
-		or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
-		$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
-		""")]
+	$&.{nameof(Preset)}
+	is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)}
+	or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Wrap)}
+	or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
+	$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
+	""")]
 	public float Frequency { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the period.
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
-		$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
-		""")]
+	$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
+	$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
+	""")]
 	public float Period { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the ease type.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)} &&
-		$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
-		""")]
+	$&.{nameof(Preset)} is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)} &&
+	$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
+	""")]
 	public WindowDanceEaseType EaseType { get; set; } = WindowDanceEaseType.Repeat;
 	/// <summary>
 	/// Gets or sets the sub ease type.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(Preset)}
-			is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)}
-			or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
-		$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
-		""")]
+	$&.{nameof(Preset)}
+		is RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.Sway)}
+		or RhythmBase.RhythmDoctor.{nameof(WindowDancePreset)}.{nameof(WindowDancePreset.ShakePer)} &&
+	$&.{nameof(SamePresetBehavior)} is not RhythmBase.RhythmDoctor.{nameof(SamePresetBehavior)}.{nameof(SamePresetBehavior.Keep)}
+	""")]
 	[JsonAlias("subEase")]
 	public EaseType SubEaseType { get; set; } = Global.Components.Easing.EaseType.Linear;
 	///<inheritdoc/>

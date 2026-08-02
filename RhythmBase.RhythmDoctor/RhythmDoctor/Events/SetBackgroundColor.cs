@@ -18,9 +18,9 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the easing type for the event.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}
-		""")]
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}
+	""")]
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	/// <summary>
 	/// Gets or sets the content mode for the event.
@@ -43,10 +43,10 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Recommended to be a value greater than or equals to 0.01 to avoid potential issues with extremely small values.
 	/// </remarks>
 	[JsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.{nameof(TilingType)}.{nameof(TilingType.Pulse)}
-		""")]
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+	$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.{nameof(TilingType)}.{nameof(TilingType.Pulse)}
+	""")]
 	public float Interval
 	{
 		get => field > 0.01f ? field : 0.01f;
@@ -60,17 +60,17 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the duration of the event.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}
-		""")]
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}
+	""")]
 	public float Duration { get; set; } = 0f;
 	/// <summary>
 	/// Gets or sets the frames per second for the event.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
-		$&.{nameof(Images)}.Count > 1
-		""")]
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(Images)}.Count > 1
+	""")]
 	public float Fps { get; set; } = 30f;
 	/// <summary>
 	/// Gets or sets the list of images for the background.
@@ -83,10 +83,10 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
-		""")]
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+	!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+	""")]
 	public float? ScrollX
 	{
 		get => Speed.X;
@@ -102,10 +102,10 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
-		""")]
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+	!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+	""")]
 	public float? ScrollY
 	{
 		get => Speed.Y;
@@ -120,18 +120,18 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the speed of the background scrolling when the content mode is set to tiled.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase. RhythmDoctor.BackgroundType)}.{nameof(BackgroundType.Image)} &&
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
-		""")]
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase. RhythmDoctor.BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.ContentMode)}.{nameof(ContentMode.Tiled)} &&
+	($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+	""")]
 	public Point Speed { get; set; } = new(0, 0);
 	/// <summary>
 	/// Gets or sets the tiling type for the background.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.BackgroundType)}.{nameof(BackgroundType.Image)} &&
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.ContentMode)}.{nameof(ContentMode.Tiled)}
-		""")]
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.ContentMode)}.{nameof(ContentMode.Tiled)}
+	""")]
 	public TilingType TilingType { get; set; } = TilingType.Scroll;
 	/// <summary>
 	/// Gets the event type.

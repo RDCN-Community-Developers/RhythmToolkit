@@ -43,9 +43,9 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
-		""")]
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+	!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+	""")]
 	public float? ScrollX
 	{
 		get => Speed.X;
@@ -61,9 +61,9 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
-		""")]
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+	!($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
+	""")]
 	public float? ScrollY
 	{
 		get => Speed.Y;
@@ -79,8 +79,8 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// </summary>
 	[Tween]
 	[JsonCondition($"""
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}
-		""")]
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)}
+	""")]
 	public Point Speed { get; set; } = new(0, 0);
 	/// <summary>  
 	/// Gets or sets the duration of the event.  
@@ -91,9 +91,9 @@ public record class SetForeground : BaseEvent, IEaseEvent, IRoomEvent, IColorEve
 	/// Gets or sets the interval between frames.  
 	/// </summary>  
 	[JsonCondition($"""
-		$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
-		$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.{nameof(TilingType)}.{nameof(SetForeground.TilingType.Pulse)}
-		""")]
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(ContentMode)}.{nameof(ContentMode.Tiled)} &&
+	$&.{nameof(TilingType)} == RhythmBase.RhythmDoctor.{nameof(TilingType)}.{nameof(SetForeground.TilingType.Pulse)}
+	""")]
 	public float Interval
 	{
 		get => field;

@@ -92,4 +92,3 @@ public record class TintRows : BaseRowAction, IEaseEvent, IColorEvent, IRoomEven
 	public override string ToString() => base.ToString() +
 	                                     $" {Border}{(Border == RhythmBase.RhythmDoctor.Border.None ? "" : ":" + BorderColor.ToString())}";
 }
-

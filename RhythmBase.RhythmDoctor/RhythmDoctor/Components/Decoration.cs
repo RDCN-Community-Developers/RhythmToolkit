@@ -41,14 +41,28 @@ public class Decoration : OrderedEventCollection<BaseDecorationAction>, IEventEn
 	/// Room.
 	/// </summary>
 	public SingleRoom Room { get; set; }
+	public DecorationType Type { get; set; } = DecorationType.Sprite;
+	#region sprite
 	/// <summary>
 	/// The file reference used by the decoration.
 	/// </summary>
+	[JsonCondition($"$&.{nameof(Type)} is {nameof(DecorationType.Sprite)}")]
 	public Character Character { get; set; }
 	/// <summary>
 	/// Gets or sets a value indicating whether the preview mode is enabled.
 	/// </summary>
+	[JsonCondition($"$&.{nameof(Type)} is {nameof(DecorationType.Sprite)}")]
 	public bool Preview { get; set; } = false;
+	#endregion
+	#region text
+	[JsonCondition($"$&.{nameof(Type)} is {nameof(DecorationType.Text)}")]
+	[JsonAlias("decoName")]
+	public string Name { get; set; } = string.Empty;
+	[JsonCondition($"$&.{nameof(Type)} is {nameof(DecorationType.Text)}")]
+	public FontName Font { get; set; } = FontName.Default;
+	[JsonCondition($"$&.{nameof(Type)} is {nameof(DecorationType.Text)}")]
+	public LayerType Layer { get; set; } = LayerType.Foreground;
+	#endregion
 	/// <summary>
 	/// Decoration depth.
 	/// </summary>
@@ -56,6 +70,8 @@ public class Decoration : OrderedEventCollection<BaseDecorationAction>, IEventEn
 	/// <summary>
 	/// The filter used for this decoration.
 	/// </summary>
+	[JsonIgnore]
+	[Obsolete]
 	public Filter Filter { get; set; }
 	/// <summary>
 	/// The initial visibility of this decoration.

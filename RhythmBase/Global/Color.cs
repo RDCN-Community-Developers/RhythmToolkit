@@ -1,4 +1,5 @@
 namespace RhythmBase.Global.Components;
+
 partial struct Color
 {
 	/// <summary>

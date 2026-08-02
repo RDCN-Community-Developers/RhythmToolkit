@@ -998,15 +998,15 @@ public static class RDExpressionBuilder
 						_ => throw new InvalidOperationException($"Unsupported IUnaryOp type: {op.GetType()} with value {op}")
 					};
 					return $"""
-						{opStr}
-						│
-						{op2 switch
+					{opStr}
+					│
+					{op2 switch
 					{
 						UnaryBooleanOp boolOp => ToString(boolOp.Value),
 						UnaryNumericOp numOp => ToString(numOp.Value),
 						_ => throw new InvalidOperationException($"Unsupported IUnaryOp type: {op.GetType()} with value {op}")
 					}}
-						""";
+					""";
 				}
 				else if (op is IBinaryOp op3)
 				{
@@ -1050,16 +1050,16 @@ public static class RDExpressionBuilder
 					string[] strLsp = strL.Split('\n');
 					string[] strRsp = strR.Split('\n');
 					return $"""
-						{opStr}
-						{CombineLines(strLsp, strRsp)}
-						""";
+					{opStr}
+					{CombineLines(strLsp, strRsp)}
+					""";
 				}
 				else if (op is IFunctionOp funcOp)
 				{
 					return $"""
-						{funcOp.Name}()
-						{CombineLines([.. funcOp.Args.Select(arg => ToString(arg).Split('\n'))])}
-						""";
+					{funcOp.Name}()
+					{CombineLines([.. funcOp.Args.Select(arg => ToString(arg).Split('\n'))])}
+					""";
 				}
 				else
 				{

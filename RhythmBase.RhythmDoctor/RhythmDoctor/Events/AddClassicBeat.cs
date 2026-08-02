@@ -57,9 +57,9 @@ public record class AddClassicBeat : BaseBeat
 	/// </remark>
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(Hold)} != 0f &&
-		$&.{nameof(SetXs)} != RhythmBase.RhythmDoctor.{nameof(ClassicBeatPattern)}.{nameof(ClassicBeatPattern.NoChange)}
-		""")]
+	$&.{nameof(Hold)} != 0f &&
+	$&.{nameof(SetXs)} != RhythmBase.RhythmDoctor.{nameof(ClassicBeatPattern)}.{nameof(ClassicBeatPattern.NoChange)}
+	""")]
 	public ClassicBeatPattern SetXs { get; set; }
 	/// <inheritdoc/>
 	public override EventType Type => EventType.AddClassicBeat;

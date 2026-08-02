@@ -81,7 +81,7 @@ public static partial class Constants
 	/// <summary>
 	/// The default version number used when creating a new level.
 	/// </summary>
-	public const int DefaultVersion = 67;
+	public const int DefaultVersion = 68;
 	public static partial float DefaultBpm => 100f;
 	/// <summary>
 	/// The default number of crotchets per bar for a new level.

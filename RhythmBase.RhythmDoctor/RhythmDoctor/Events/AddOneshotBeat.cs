@@ -21,12 +21,12 @@ public record class AddOneshotBeat : BaseBeat
 	/// </remark>
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(Subdivisions)} > 0 &&(
-		$&.{nameof(PulseType)}
-		is RhythmBase.RhythmDoctor.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Square)}
-		or RhythmBase.RhythmDoctor.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Triangle)}
-		)
-		""")]
+	$&.{nameof(Subdivisions)} > 0 &&(
+	$&.{nameof(PulseType)}
+	is RhythmBase.RhythmDoctor.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Square)}
+	or RhythmBase.RhythmDoctor.{nameof(OneshotPulseShapeType)}.{nameof(OneshotPulseShapeType.Triangle)}
+	)
+	""")]
 	public byte Subdivisions { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets a value indicating whether the subdivision sound is enabled.
@@ -60,12 +60,12 @@ public record class AddOneshotBeat : BaseBeat
 	/// </remark>
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(Interval)} > 0 &&(
-		$&.{nameof(Skipshot)} ||
-		$&.{nameof(Hold)} ||
-		$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.{nameof(OneshotType)}.{nameof(OneshotType.Wave)} ||
-		$&.{nameof(Loop)} > 0)
-		""")]
+	$&.{nameof(Interval)} > 0 &&(
+	$&.{nameof(Skipshot)} ||
+	$&.{nameof(Hold)} ||
+	$&.{nameof(FreezeBurnMode)} is not RhythmBase.RhythmDoctor.{nameof(OneshotType)}.{nameof(OneshotType.Wave)} ||
+	$&.{nameof(Loop)} > 0)
+	""")]
 	public float Interval { get; set; } = 2;
 	/// <summary>
 	/// Gets or sets a value indicating whether to skip the shot.

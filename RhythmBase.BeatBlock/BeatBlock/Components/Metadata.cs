@@ -1,4 +1,5 @@
 ﻿namespace RhythmBase.BeatBlock.Components;
+
 /// <summary>
 /// Represents the metadata of a BeatBlock level.
 /// </summary>

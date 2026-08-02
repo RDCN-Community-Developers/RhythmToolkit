@@ -3,6 +3,7 @@ using RhythmBase.BeatBlock.Events;
 using System.Text.Json;
 
 namespace RhythmBase.BeatBlock.Serialization;
+
 internal abstract class EventInstanceConverterBase : Global.Serialization.MemberConverter<IBaseEvent> { }
 internal abstract class MemberConverter<TEvent> : EventInstanceConverterBase where TEvent : IBaseEvent, new()
 {

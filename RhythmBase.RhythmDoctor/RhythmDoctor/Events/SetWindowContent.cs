@@ -49,4 +49,3 @@ public record class SetWindowContent : BaseWindowEvent, IEaseEvent
 	///<inheritdoc/>
 	public float Duration { get; set; }
 }
-

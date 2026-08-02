@@ -11,7 +11,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// </summary>
 [JsonObjectSerializable]
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
+public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent, IAdvanceText
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.AdvanceText;
@@ -42,7 +42,7 @@ public record class AdvanceText : BaseEvent, IRoomEvent, IDurationEvent
 	/// </summary>
 	[JsonAlias("id")]
 	internal int Id => Parent?.Id ?? -1;
-	float IDurationEvent.Duration { get => Duration ?? -1; set => Duration = value; }
+	float IDurationEvent.Duration { get => Duration ?? this.FrontOrDefault<FloatingText>()?.Duration ?? -1; set => Duration = value; }
 	/// <inheritdoc/>
 	public override string ToString()
 	{

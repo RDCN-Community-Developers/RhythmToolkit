@@ -1,6 +1,5 @@
-﻿namespace RhythmBase.Rizline.Events
+﻿namespace RhythmBase.Rizline.Events;
+
+internal interface IForwardEvent : IBaseEvent, RhythmBase.Global.Events.IForwardEvent
 {
-	internal interface IForwardEvent : IBaseEvent, RhythmBase.Global.Events.IForwardEvent
-	{
-	}
 }

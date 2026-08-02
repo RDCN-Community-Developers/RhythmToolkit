@@ -1,6 +1,7 @@
 using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Events;
+
 /// <summary>  
 /// Represents an event to add a decoration to a tile in the game.  
 /// </summary>  
@@ -51,9 +52,9 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// Gets or sets the tile size of the decoration.  
 	/// </summary>  
 	[JsonCondition($"""
-		$&.{nameof(BlendMode)} is RhythmBase.Adofai.{nameof(Adofai.BlendMode)}.{nameof(BlendMode.None)} &&
-		$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)}
-		""")]
+	$&.{nameof(BlendMode)} is RhythmBase.Adofai.{nameof(Adofai.BlendMode)}.{nameof(BlendMode.None)} &&
+	$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)}
+	""")]
 	public SizeN Tile { get; set; } = new(1, 1);
 	/// <summary>  
 	/// Gets or sets the color of the decoration.  
@@ -68,9 +69,9 @@ public class AddDecoration : BaseTileEvent, IBeginningEvent, IImageFileEvent
 	/// Gets or sets the depth of the decoration.  
 	/// </summary>  
 	[JsonCondition($"""
-		$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)} &&
-		!$&.{nameof(SyncFloorDepth)}
-		""")]
+	$&.{nameof(MaskingType)} is not RhythmBase.Adofai.{nameof(Adofai.MaskingType)}.{nameof(MaskingType.Mask)} &&
+	!$&.{nameof(SyncFloorDepth)}
+	""")]
 	public int Depth { get; set; } = -1;
 	/// <summary>
 	/// Gets or sets a value indicating whether the floor depth synchronization is enabled.

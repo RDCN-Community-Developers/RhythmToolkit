@@ -104,7 +104,7 @@ namespace RhythmBase.RhythmDoctor.Extensions;
 						if (playAnimation.Parent is null) continue;
 						(animations[playAnimation.Parent.Index] ??= []).Add(new(playAnimation.TickTime.Tick, playAnimation.Expression));
 						break;
-					case ReorderSprite reorderSprite:
+					case ReorderDecoration reorderSprite:
 						if (reorderSprite.Parent is null) continue;
 						if(reorderSprite.Depth is not null)
 							(depths[reorderSprite.Parent.Index] ??= []).Add(new(reorderSprite.TickTime.Tick, reorderSprite.Depth.Value));

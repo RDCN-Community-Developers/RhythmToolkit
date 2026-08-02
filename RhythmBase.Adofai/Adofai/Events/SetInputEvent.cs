@@ -30,4 +30,3 @@ public class SetInputEvent : BaseTaggedTileEvent, IBeginningEvent
 	/// </summary>
 	public string TargetEventTag { get; set; } = string.Empty;
 }
-

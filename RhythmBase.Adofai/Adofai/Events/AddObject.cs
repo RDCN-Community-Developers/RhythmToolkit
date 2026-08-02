@@ -81,23 +81,23 @@ public class AddObject : BaseTileEvent, IBeginningEvent
 	/// Gets or sets a value indicating whether the track has a gray set speed icon.  
 	/// </summary>  
 	[JsonCondition($"""
-		$&.{nameof(TrackIcon)}
-		is RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Snail)}
-		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleSnail)}
-		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Rabbit)}
-		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleRabbit)}
-		""")]
+	$&.{nameof(TrackIcon)}
+	is RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Snail)}
+	or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleSnail)}
+	or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Rabbit)}
+	or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleRabbit)}
+	""")]
 	public bool TrackGraySetSpeedIcon { get; set; } = false;
 	/// <summary>  
 	/// Gets or sets the BPM value for the track's set speed icon.  
 	/// </summary>  
 	[JsonCondition($"""
-		$&.{nameof(TrackIcon)}
-		is RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Snail)}
-		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleSnail)}
-		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Rabbit)}
-		or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleRabbit)}
-		""")]
+	$&.{nameof(TrackIcon)}
+	is RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Snail)}
+	or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleSnail)}
+	or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.Rabbit)}
+	or RhythmBase.Adofai.{nameof(TrackIconType)}.{nameof(TrackIconType.DoubleRabbit)}
+	""")]
 	public float TrackSetSpeedIconBpm { get; set; } = 100f;
 	/// <summary>  
 	/// Gets or sets a value indicating whether the track glow is enabled.  

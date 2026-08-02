@@ -1,4 +1,5 @@
 namespace RhythmBase.Global;
+
 /// <summary>
 /// Provides a collection of constants used throughout the application for versioning and compatibility checks.
 /// </summary>

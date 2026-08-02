@@ -184,4 +184,3 @@ public class SoundCollection : IReadOnlyDictionary<SoundType, Audio?>
 		{ }
 	}
 }
-

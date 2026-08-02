@@ -178,6 +178,8 @@ internal class BaseEventConverter : BackwardCompatibleMetadataJsonConverter
 				{
 					reader.Read();
 					type = reader.GetString();
+					if (type == "ReorderSprite")
+						type = "ReorderDeoraion";
 					break;
 				}
 				else
@@ -187,7 +189,7 @@ internal class BaseEventConverter : BackwardCompatibleMetadataJsonConverter
 			}
 		}
 		reader = checkpoint; IBaseEvent e;
-		if(string.IsNullOrEmpty(type))
+		if (string.IsNullOrEmpty(type))
 			throw new JsonException("Event type is missing.");
 		if (!Enum.TryParse(type, true, out EventType typeEnum))
 			e = ReadForwardEvent(ref reader, type!) ?? throw new JsonException("Unknown event type and failed to parse.");

@@ -2,6 +2,7 @@ using RhythmBase.Adofai.Events;
 using System.Text.Json;
 
 namespace RhythmBase.Adofai.Serialization;
+
 internal abstract class EventMemberConverterBase: Global.Serialization.MemberConverter<IBaseEvent>{}
 internal abstract class MemberConverter<TEvent> : EventMemberConverterBase where TEvent : IBaseEvent, new()
 {

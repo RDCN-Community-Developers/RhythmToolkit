@@ -16,25 +16,25 @@ public record class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
 	/// Gets or sets the variant of the theme.  
 	/// </summary>  
 	[JsonCondition($"""
-		$&.{nameof(Preset)}
-		is RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Intimate)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.InsomniacDay)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CrossesStraight)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CubesFalling)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Rooftop)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Sky)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CoffeeShop)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Garden)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.TrainDay)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.DesertDay)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.HospitalWard)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.ColeWardNight)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Skyline)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.FloatingHeart)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.FloatingHeartBroken)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Stadium)}
-		or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.AthleteWard)}
-		""")]
+	$&.{nameof(Preset)}
+	is RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Intimate)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.InsomniacDay)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CrossesStraight)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CubesFalling)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Rooftop)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Sky)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.CoffeeShop)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Garden)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.TrainDay)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.DesertDay)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.HospitalWard)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.ColeWardNight)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Skyline)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.FloatingHeart)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.FloatingHeartBroken)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.Stadium)}
+	or RhythmBase.RhythmDoctor.{nameof(Theme)}.{nameof(Theme.AthleteWard)}
+	""")]
 	public byte Variant { get; set; }
 	/// <summary>
 	/// Gets or sets a value indicating whether the theme's horizontal position is enabled.
@@ -45,9 +45,9 @@ public record class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
 	/// Gets or sets the horizontal position offset (X) for themes that support positioning.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(EnablePosition)} &&
-		RhythmBase.RhythmDoctor.Events.{nameof(SetTheme)}.{nameof(ThemesHasPosition)}.{nameof(ReadOnlyEnumCollection<>.Contains)}($&.{nameof(Preset)})
-		""")]
+	$&.{nameof(EnablePosition)} &&
+	RhythmBase.RhythmDoctor.Events.{nameof(SetTheme)}.{nameof(ThemesHasPosition)}.{nameof(ReadOnlyEnumCollection<>.Contains)}($&.{nameof(Preset)})
+	""")]
 	public float PositionX { get; set; }
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetTheme;
@@ -67,16 +67,16 @@ public record class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
 	///<inheritdoc/>
 	[JsonAlias("positionEase")]
 	[JsonCondition($"""
-		$&.{nameof(EnablePosition)} &&
-		RhythmBase.RhythmDoctor.Events.{nameof(SetTheme)}.{nameof(ThemesHasPosition)}.{nameof(ReadOnlyEnumCollection<>.Contains)}($&.{nameof(Preset)})
-		""")]
+	$&.{nameof(EnablePosition)} &&
+	RhythmBase.RhythmDoctor.Events.{nameof(SetTheme)}.{nameof(ThemesHasPosition)}.{nameof(ReadOnlyEnumCollection<>.Contains)}($&.{nameof(Preset)})
+	""")]
 	public EaseType Ease { get; set; }
 	///<inheritdoc/>
 	[JsonAlias("positionDuration")]
 	[JsonCondition($"""
-		$&.{nameof(EnablePosition)} &&
-		RhythmBase.RhythmDoctor.Events.{nameof(SetTheme)}.{nameof(ThemesHasPosition)}.{nameof(ReadOnlyEnumCollection<>.Contains)}($&.{nameof(Preset)})
-		""")]
+	$&.{nameof(EnablePosition)} &&
+	RhythmBase.RhythmDoctor.Events.{nameof(SetTheme)}.{nameof(ThemesHasPosition)}.{nameof(ReadOnlyEnumCollection<>.Contains)}($&.{nameof(Preset)})
+	""")]
 	public float Duration { get; set; }
 	///<inheritdoc/>
 	public override string ToString() => base.ToString() + $" {Preset}";

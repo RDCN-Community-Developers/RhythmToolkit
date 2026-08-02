@@ -489,11 +489,11 @@ public static partial class Extensions
 		/// <summary>
 		/// Gets the depth of the decoration at the specified beat.
 		/// </summary>
-		public int DepthAt(TickTime beat) => e.InRange(null, beat).OfEvent<ReorderSprite>().LastOrDefault()?.Depth ?? e.Depth;
+		public int DepthAt(TickTime beat) => e.InRange(null, beat).OfEvent<ReorderDecoration>().LastOrDefault()?.Depth ?? e.Depth;
 		/// <summary>
 		/// Gets the room of the decoration at the specified beat.
 		/// </summary>
-		public RoomIndex RoomAt(TickTime beat) => e.InRange(null, beat).OfEvent<ReorderSprite>().LastOrDefault()?.NewRoom ?? e.Room.Room;
+		public RoomIndex RoomAt(TickTime beat) => e.InRange(null, beat).OfEvent<ReorderDecoration>().LastOrDefault()?.NewRoom ?? e.Room.Room;
 	}
 	/// <summary>
 	/// Getting controlled events.

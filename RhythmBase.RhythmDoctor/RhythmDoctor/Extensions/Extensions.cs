@@ -317,18 +317,18 @@ public static partial class Extensions
 		/// </summary>
 		/// <param name="beat">The beat to query.</param>
 		/// <returns>
-		/// The depth value at the specified beat, or the decoration's default depth if no <see cref="ReorderSprite"/> event is found.
+		/// The depth value at the specified beat, or the decoration's default depth if no <see cref="ReorderDecoration"/> event is found.
 		/// </returns>
-		public int DepthOf(TickTime beat) => e.InRange(new(), beat).OfEvent<ReorderSprite>().LastOrDefault()?.Depth ?? e.Depth;
+		public int DepthOf(TickTime beat) => e.InRange(new(), beat).OfEvent<ReorderDecoration>().LastOrDefault()?.Depth ?? e.Depth;
 
 		/// <summary>
 		/// Gets the room index of the decoration at the specified beat.
 		/// </summary>
 		/// <param name="beat">The beat to query.</param>
 		/// <returns>
-		/// The room index at the specified beat, or the decoration's default room if no <see cref="ReorderSprite"/> event is found.
+		/// The room index at the specified beat, or the decoration's default room if no <see cref="ReorderDecoration"/> event is found.
 		/// </returns>
-		public RoomIndex RoomOf(TickTime beat) => e.InRange(new(), beat).OfEvent<ReorderSprite>().LastOrDefault()?.NewRoom ?? e.Room.Room;
+		public RoomIndex RoomOf(TickTime beat) => e.InRange(new(), beat).OfEvent<ReorderDecoration>().LastOrDefault()?.NewRoom ?? e.Room.Room;
 	}
 
 	extension<TEvent>(TEvent e) where TEvent : class, IBaseEvent

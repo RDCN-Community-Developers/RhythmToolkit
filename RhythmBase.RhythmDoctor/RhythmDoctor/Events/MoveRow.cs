@@ -61,31 +61,31 @@ public record class MoveRow : BaseRowAction, IEaseEvent
 	public float? Pivot { get; set; }
 	///<inheritdoc/>
 	[JsonCondition($"""
-		$&.{nameof(EnableCustomPosition)}
-		""")]
+	$&.{nameof(EnableCustomPosition)}
+	""")]
 	public float Duration { get; set; } = 1;
 	/// <summary>
 	/// Gets or sets the acceleration duration for the move row event.
 	/// This value defines how long the acceleration phase lasts at the start of the movement.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(AccelerationDuration)} is not null &&
-		($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
-		""")]
+	$&.{nameof(AccelerationDuration)} is not null &&
+	($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
+	""")]
 	public float? AccelerationDuration { get; set; }
 	/// <summary>
 	/// Gets or sets the deceleration duration for the move row event.
 	/// This value defines how long the deceleration phase lasts at the end of the movement.
 	/// </summary>
 	[JsonCondition($"""
-		$&.{nameof(AccelerationDuration)} is not null &&
-		($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
-		""")]
+	$&.{nameof(AccelerationDuration)} is not null &&
+	($&.{nameof(EnableCustomPosition)} || $&.{nameof(Target)} is RhythmBase.RhythmDoctor.{nameof(MoveRowTarget)}.{nameof(MoveRowTarget.WholeRow)})
+	""")]
 	public float? DecelerationDuration { get; set; }
 	///<inheritdoc/>
 	[JsonCondition($"""
-		$&.{nameof(EnableCustomPosition)}
-		""")]
+	$&.{nameof(EnableCustomPosition)}
+	""")]
 	public EaseType Ease { get; set; } = EaseType.Linear;
 	///<inheritdoc/>
 	public override EventType Type => EventType.MoveRow;

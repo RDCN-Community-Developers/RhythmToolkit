@@ -31,32 +31,32 @@ public record class SpinningRows : BaseRowAction, IEaseEvent
 	/// Degree. (0) is the original angle.
 	/// </remarks>
 	[JsonCondition($"""
-			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
-			""")]
+		$&.{nameof(Action)}
+		is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
+		""")]
 	public float Angle { get; set; }
 
 	/// <summary>
 	/// Amplitude for wavy rotation effects.
 	/// </summary>
 	[JsonCondition($"""
-			$&.{nameof(Amplitude)} is not null &&
-			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
-			""")]
+		$&.{nameof(Amplitude)} is not null &&
+		$&.{nameof(Action)}
+		is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
+		""")]
 	public float? Amplitude { get; set; }
 
 	/// <summary>
 	/// Frequency for wavy rotation effects.
 	/// </summary>
 	[JsonCondition($"""
-			$&.{nameof(Amplitude)} is not null &&
-			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
-			""")]
+		$&.{nameof(Amplitude)} is not null &&
+		$&.{nameof(Action)}
+		is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
+		""")]
 	public float? Frequency { get; set; }
 
 	/// <summary>
@@ -67,24 +67,24 @@ public record class SpinningRows : BaseRowAction, IEaseEvent
 
 	///<inheritdoc/>
 	[JsonCondition($"""
-			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
-			""")]
+		$&.{nameof(Action)}
+		is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
+		""")]
 	public EaseType Ease { get; set; }
 
 	///<inheritdoc/>
 	[JsonCondition($"""
-			$&.{nameof(Action)}
-			is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
-			or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
-			""")]
+		$&.{nameof(Action)}
+		is RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Rotate)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.ConstantRotation)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Split)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.Merge)}
+		or RhythmBase.RhythmDoctor.{nameof(SpiningAction)}.{nameof(SpiningAction.WavyRotation)}
+		""")]
 	public float Duration { get; set; }
 	///<inheritdoc/>
 	public override EventType Type => EventType.SpinningRows;

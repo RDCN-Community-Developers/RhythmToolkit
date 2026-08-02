@@ -174,10 +174,10 @@ partial class Level
 					Angle = 10,
 					TickTime = new TickTime(_17_firstEaseTime - (/*level.properties.offset ??*/ 8)),
 					Text = """
-		 This boolean was added for backwards compatibility when this level was upgraded from format 17 to format 18.
-		 Version 18: use VFX distance (from ease sequence) for VFX angle calculation
-		 If the new behavior is wanted, simply delete the boolean and this comment.
-		 """
+	 This boolean was added for backwards compatibility when this level was upgraded from format 17 to format 18.
+	 Version 18: use VFX distance (from ease sequence) for VFX angle calculation
+	 If the new behavior is wanted, simply delete the boolean and this comment.
+	 """
 				});
 			}
 			return events;

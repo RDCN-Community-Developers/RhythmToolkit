@@ -40,6 +40,8 @@ internal class DecorationConverter : MetadataJsonConverter<Decoration>
 				value.Visible = reader.GetBoolean();
 			else if (reader.ValueTextEquals("row"u8) && reader.Read())
 				reader.Skip();
+			else if (reader.ValueTextEquals("type"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out DecorationType type))
+				value.Type = type;
 			else
 			{
 				switch (options.Strictness)
@@ -68,6 +70,7 @@ internal class DecorationConverter : MetadataJsonConverter<Decoration>
 	public override void Write(Utf8JsonWriter writer, Decoration value, MetadataJsonSerializerOptions options)
 	{
 		writer.WriteStartObject();
+		writer.WriteString("type", value.Type.ToEnumString());
 		writer.WriteString("id"u8, value.Id);
 		writer.WriteNumber("row"u8, value.Index);
 		TypeConverterRegistry.Write(writer, "rooms"u8, value.Room, options);

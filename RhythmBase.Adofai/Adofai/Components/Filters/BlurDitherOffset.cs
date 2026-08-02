@@ -1,6 +1,7 @@
 using RhythmBase.Global.Components.Vector;
 
 namespace RhythmBase.Adofai.Components.Filters;
+
 /// <summary>
 /// The filter of <b>Blur DitherOffset</b>.
 /// </summary>

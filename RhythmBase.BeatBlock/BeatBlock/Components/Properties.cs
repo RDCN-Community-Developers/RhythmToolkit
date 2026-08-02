@@ -1,6 +1,7 @@
 ﻿using static RhythmBase.BeatBlock.Constants;
 
 namespace RhythmBase.BeatBlock.Components;
+
 /// <summary>
 /// Represents the properties of a BeatBlock level.
 /// </summary>
