@@ -83,7 +83,7 @@ public static partial class Extensions
 		public BaseBeat[] Split(PatternCollection patterns, int syncoBeat = -1, float syncoSwing = 0)
 		{
 			List<BaseBeat> l = [];
-			byte i = (byte)(7 - e.Length);
+			sbyte i = (sbyte)(7 - e.Length);
 			AddFreeTimeBeat head = e.CloneAs<AddFreeTimeBeat>();
 			head.Pulse = i++;
 			head.Hold = e.Hold;
@@ -130,7 +130,7 @@ public static partial class Extensions
 				if (e.Parent == null)
 					return [];
 				List<PulseFreeTimeBeat> result = [];
-				byte pulse = e.Pulse;
+				sbyte pulse = e.Pulse;
 				foreach (PulseFreeTimeBeat item in e.Parent.OfEvent<PulseFreeTimeBeat>().Where(i => i.Active && e.IsInFrontOf(i)))
 				{
 					switch (item.Action)
@@ -140,11 +140,11 @@ public static partial class Extensions
 							result.Add(item);
 							break;
 						case PulseAction.Decrement:
-							pulse = (byte)((pulse > 0b1) ? (pulse - 0b1) : 0b1);
+							pulse = (sbyte)((pulse > 0b1) ? (pulse - 0b1) : 0b1);
 							result.Add(item);
 							break;
 						case PulseAction.Custom:
-							pulse = (byte)item.CustomPulse;
+							pulse = (sbyte)item.CustomPulse;
 							result.Add(item);
 							break;
 						case PulseAction.Remove:

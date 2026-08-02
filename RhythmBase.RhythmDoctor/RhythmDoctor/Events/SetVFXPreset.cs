@@ -40,6 +40,7 @@ public record class SetVFXPreset : BaseEvent, IEaseEvent, IRoomEvent, IColorEven
 	/// Gets or sets the amount by which the screen is scrolled or tiled when the effect is active.
 	/// </summary>
 	public Point? Amount { get; set; } = new(1, 1);
+	public Point? Position { get; set; } = new(0, 0);
 	/// <summary>
 	/// Gets or sets the speed percentage for the effect.
 	/// </summary>

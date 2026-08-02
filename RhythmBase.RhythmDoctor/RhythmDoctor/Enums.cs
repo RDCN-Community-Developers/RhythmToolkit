@@ -662,7 +662,11 @@ public enum FloatingTextFadeOutMode
 	/// <summary>
 	/// The text will hide abruptly.
 	/// </summary>
-	HideAbruptly = 1
+	HideAbruptly = 1,
+	/// <summary>
+	/// The text will never hide.
+	/// </summary>
+	Never = 2,
 }
 /// <summary>
 /// Specifies the anchor style of the text.

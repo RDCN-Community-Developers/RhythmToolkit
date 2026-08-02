@@ -59,8 +59,8 @@ public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColor
 	public string Text { get; set; } = "等/呀/等/得/好/心/慌……";
 	/// <inheritdoc/>
 	public FontName Font { get; set; } = FontName.Default;
-	public IEnumerable<FileReference> FontFiles => Font.IsCustom ? [Font.Value] : [];
-	public IEnumerable<FileReference> Files => FontFiles;
+	IEnumerable<FileReference> IFontFileEvent. FontFiles => Font.IsCustom ? [Font.Value] : [];
+	IEnumerable<FileReference> IFileEvent.Files => Font.IsCustom ? [Font.Value] : [];
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="FloatingText"/> class.

@@ -131,6 +131,8 @@ internal partial class RDMemberConverter
 			}
 			else if (reader.ValueTextEquals("amount"u8) && reader.Read())
 				value.Amount = TypeConverterRegistry.Read<Point>(ref reader, options);
+			else if (reader.ValueTextEquals("position"u8) && reader.Read())
+				value.Position = TypeConverterRegistry.Read<Point>(ref reader, options);
 			else if (reader.ValueTextEquals("speedPerc"u8) && reader.Read())
 				value.SpeedPercentage = reader.GetSingle();
 			else if (reader.ValueTextEquals("ease"u8) && reader.Read())

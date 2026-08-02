@@ -14,14 +14,23 @@ public record class DesktopColor : BaseWindowEvent, IEaseEvent, IColorEvent
 	/// <summary>
 	/// Optional start color for an eased transition.
 	/// </summary>
+	[JsonCondition($"$&.{nameof(IsCustom)}")]
 	public PaletteColor? StartColor { get; set; }
 
 	/// <summary>
 	/// Optional end (or sole) color for the desktop background.
 	/// </summary>
+	[JsonCondition($"$&.{nameof(IsCustom)}")]
 	public PaletteColor? EndColor { get; set; }
+	[JsonCondition($"!$&.{nameof(IsCustom)}")]
+	public float Brightness { get; set; } = 100f;
 	///<inheritdoc/>
 	public override EventType Type => EventType.DesktopColor;
+	/// <summary>
+	/// Indicates whether the desktop color is custom or not.
+	/// </summary>
+	[JsonAlias("custom")]
+	public bool IsCustom { get; set; }
 	///<inheritdoc/>
 	public EaseType Ease { get; set; }
 	///<inheritdoc/>

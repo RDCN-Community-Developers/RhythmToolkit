@@ -20,7 +20,7 @@ namespace RhythmBase.RhythmDoctor.Events
 		[JsonCondition($"$&.{nameof(Font)}.IsCustom")]
 		public float OutlineWidth { get; set; } = 0f;
 		public float WrappingWidth { get; set; } = 100f;
-		public IEnumerable<FileReference> FontFiles => Font.IsCustom ? [Font.Value] : [];
-		public IEnumerable<FileReference> Files => FontFiles;
+		IEnumerable<FileReference> IFontFileEvent.FontFiles => Font.IsCustom ? [Font.Value] : [];
+		IEnumerable<FileReference> IFileEvent.Files => Font.IsCustom ? [Font.Value] : [];
 	}
 }
