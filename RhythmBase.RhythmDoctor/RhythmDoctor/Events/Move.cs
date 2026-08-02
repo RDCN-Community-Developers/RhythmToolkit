@@ -28,7 +28,7 @@ public record class Move : BaseDecorationAction, IEaseEvent
 	/// Gets or sets the scale of the move event.
 	/// </summary>
 	/// <remarks>
-	/// Percentage of the original size. (100,100) is the original size.
+	/// Percentage of the original size. (1,1) is the original size.
 	/// Leave it null to keep the original size.
 	/// </remarks>
 	[Tween]

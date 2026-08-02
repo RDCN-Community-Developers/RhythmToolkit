@@ -12,20 +12,8 @@ public class AccessibilityCondition : BaseConditional
 	/// Gets or sets the effect type whose accessibility should be evaluated.
 	/// </summary>
 	public EffectType TargetEffectType { get; set; }
-}
-/// <summary>
-/// Defines the types of effects that impact accessibility.
-/// </summary>
-[JsonEnumSerializable]
-public enum EffectType
-{
-	/// <summary>
-	/// Indicates visually intensive or flashing effects.
-	/// </summary>
-	Flashy,
-
-	/// <summary>
-	/// Indicates narration or spoken dialogue.
-	/// </summary>
-	Narration,
+	public override string ToString()
+	{
+		return $"effect: {TargetEffectType}";
+	}
 }

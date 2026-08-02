@@ -11,4 +11,8 @@ public class PlayerModeCondition : BaseConditional
 	public bool TwoPlayerMode { get; set; }
 	///<inheritdoc/>
 	public override ConditionType Type => ConditionType.PlayerMode;
+	public override string ToString()
+	{
+		return $"twoPlayerMode: {TwoPlayerMode}";
+	}
 }

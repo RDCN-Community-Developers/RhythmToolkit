@@ -36,17 +36,17 @@ public record class TintRows : BaseRowAction, IEaseEvent, IColorEvent, IRoomEven
 	/// <summary>
 	/// Gets or sets a value indicating whether the hand border should pulse.
 	/// </summary>
-	[JsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.{nameof(Border)}.{nameof(RhythmBase.RhythmDoctor.Border.None)} && $&.{nameof(BorderPulse)}")]
-	public bool BorderPulse { get; set; }
+	[JsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.{nameof(Border)}.{nameof(RhythmBase.RhythmDoctor.Border.None)} && $&.{nameof(BorderPulse)} is not null")]
+	public bool? BorderPulse { get; set; }
 	/// <summary>
 	/// Gets or sets the minimum value for the border pulse effect.
 	/// </summary>
-	[JsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.{nameof(Border)}.{nameof(RhythmBase.RhythmDoctor.Border.None)} && $&.{nameof(BorderPulse)}")]
+	[JsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.{nameof(Border)}.{nameof(RhythmBase.RhythmDoctor.Border.None)} && $&.{nameof(BorderPulse)} == true")]
 	public float BorderPulseMin { get; set; }
 	/// <summary>
 	/// Gets or sets the maximum value for the border pulse effect.
 	/// </summary>
-	[JsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.{nameof(Border)}.{nameof(RhythmBase.RhythmDoctor.Border.None)} && $&.{nameof(BorderPulse)}")]
+	[JsonCondition($"$&.{nameof(Border)} is not null and not RhythmBase.RhythmDoctor.{nameof(Border)}.{nameof(RhythmBase.RhythmDoctor.Border.None)} && $&.{nameof(BorderPulse)} == true")]
 	public float BorderPulseMax { get; set; }
 	/// <summary>
 	/// Gets or sets the opacity level.

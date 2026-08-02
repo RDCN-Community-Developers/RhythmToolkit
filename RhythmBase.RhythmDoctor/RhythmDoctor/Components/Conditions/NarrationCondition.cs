@@ -12,4 +12,8 @@ public class NarrationCondition : BaseConditional
 	/// Gets or sets a value indicating whether narration is enabled when this condition is met.
 	/// </summary>
 	public bool NarrationEnabled { get; set; }
+	public override string ToString()
+	{
+		return $"narrationEnabled: {NarrationEnabled}";
+	}
 }

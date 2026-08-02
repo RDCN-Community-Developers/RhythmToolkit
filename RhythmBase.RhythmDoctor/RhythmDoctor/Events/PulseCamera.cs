@@ -16,7 +16,8 @@ public record class PulseCamera : BaseEvent, IRoomEvent
 	/// <remarks>
 	/// Can only be 1, 2 or 3.
 	/// </remarks>
-	public int Strength { get; set; } = 1;
+	[JsonDefaultSerializer]
+	public StrengthType Strength { get; set; } = StrengthType.Low;
 	/// <summary>
 	/// Gets or sets the count of pulses.
 	/// </summary>

@@ -6,7 +6,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event to set the room content mode.
 /// </summary>
 [JsonObjectSerializable]
-public record class SetRoomContentMode : BaseEvent
+public record class SetRoomContentMode : BaseEvent, ISingleRoomEvent
 {
 	/// <summary>
 	/// Gets or sets the mode of the room content.
@@ -21,5 +21,8 @@ public record class SetRoomContentMode : BaseEvent
 	/// Gets the room associated with the event.
 	/// </summary>
 	[JsonIgnore]
-	public Room Room => new SingleRoom(checked((byte)Y));
+	public SingleRoom Room
+	{
+		get => new SingleRoom(checked((byte)Y)); set => Y = value.Value;
+	}
 }

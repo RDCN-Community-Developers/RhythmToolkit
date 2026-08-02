@@ -47,6 +47,8 @@ internal partial class RDMemberConverter
 			base.Write(writer, ref value, options);
 			if (value is not Comment cmt || cmt.CustomTab == Tab.Decorations)
 				writer.WriteString("target"u8, value.Parent?.Id ?? value.Target);
+			else
+				writer.WriteNumber("y"u8, value.Y);
 		}
 	}
 	internal abstract class BaseBeatsPerMinute<TEvent> : MemberConverter<TEvent> where TEvent : BaseBeatsPerMinute, new()

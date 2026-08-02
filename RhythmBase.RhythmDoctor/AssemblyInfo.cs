@@ -1,5 +1,6 @@
 ﻿using RhythmBase.Global.Serialization;
 using RhythmBase.RhythmDoctor.Events;
+using System.Runtime.CompilerServices;
 
 [assembly: RhythmBase.JsonConverterId(nameof(RhythmBase.RhythmDoctor))]
 [assembly: RhythmBase.JsonConverterSourceType(typeof(IBaseEvent), typeof(RhythmBase.RhythmDoctor.EventType), typeof(RhythmBase.RhythmDoctor.Serialization.MemberConverter<>), nameof(IBaseEvent.Type))]
@@ -11,3 +12,4 @@ using RhythmBase.RhythmDoctor.Events;
 	typeof(RhythmBase.RhythmDoctor.EventType),
 	typeof(RhythmBase.RhythmDoctor.Events.IBaseEvent)
 )]
+[assembly: InternalsVisibleTo("FastTest")]

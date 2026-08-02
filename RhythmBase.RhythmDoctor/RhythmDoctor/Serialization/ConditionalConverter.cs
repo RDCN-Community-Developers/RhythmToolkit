@@ -135,7 +135,7 @@ internal class ConditionalConverter : MetadataJsonConverter<BaseConditional>
 		while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
 		{
 			JsonException.ThrowIfNotMatch(ref reader, JsonTokenType.PropertyName);
-			if (reader.ValueTextEquals("Language"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out LanguageCondition.Language languages))
+			if (reader.ValueTextEquals("Language"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out Language languages))
 				condition.TargetLanguage = languages;
 			else reader.Skip();
 		}
@@ -149,7 +149,7 @@ internal class ConditionalConverter : MetadataJsonConverter<BaseConditional>
 			JsonException.ThrowIfNotMatch(ref reader, JsonTokenType.PropertyName);
 			if (reader.ValueTextEquals("row"u8) && reader.Read())
 				condition.Row = reader.GetSByte();
-			else if (reader.ValueTextEquals("result"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out LastHitCondition.HitResult result))
+			else if (reader.ValueTextEquals("result"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out HitResult result))
 				condition.Result = result;
 			else reader.Skip();
 		}

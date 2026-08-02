@@ -961,6 +961,25 @@ public enum PlayerHand
 	p2
 }
 /// <summary>
+/// Player type of <see cref="Events.NarrateRowInfo"/>
+/// </summary>
+[JsonEnumSerializable]
+public enum NarrationPlayerType
+{
+	/// <summary>  
+	/// Automatically detect the player.  
+	/// </summary>  
+	AutoDetect,
+	/// <summary>
+	/// Player 1.
+	/// </summary>
+	P1,
+	/// <summary>
+	/// Player 2.
+	/// </summary>
+	P2,
+}
+/// <summary>
 /// Represents the type of player in the game.
 /// </summary>
 [JsonEnumSerializable]
@@ -983,21 +1002,6 @@ public enum PlayerType
 	/// </summary>
 	[JsonAlias("CPU")]
 	Cpu,
-	/// <summary>
-	/// Both.
-	/// </summary>
-	[JsonAlias("BOTH")]
-	[Browsable(false)]
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	[Obsolete("This value is deprecated and only for backward compatibility. Use other values instead.")]
-	Both,
-	/// <summary>  
-	/// Automatically detect the player.  
-	/// </summary>  
-	[Browsable(false)]
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	[Obsolete("This value is deprecated and only for backward compatibility. Use other values instead.")]
-	AutoDetect,
 }
 /// <summary>
 /// Defines the types of custom sounds.
@@ -2047,6 +2051,7 @@ public enum Filter
 public enum SoundType
 {
 #pragma warning disable CS1591
+	Skipshot,
 	ClapSoundP1Classic,
 	ClapSoundP2Classic,
 	ClapSoundP1Oneshot,
@@ -2058,48 +2063,69 @@ public enum SoundType
 	HeartExplosion,
 	HeartExplosion2,
 	HeartExplosion3,
+
+
+	ClapSoundHold,
+
 	ClapSoundHoldLongEnd,
 	ClapSoundHoldLongStart,
 	ClapSoundHoldShortEnd,
 	ClapSoundHoldShortStart,
+
+
+	PulseSoundHold,
+
 	PulseSoundHoldStart,
 	PulseSoundHoldShortEnd,
 	PulseSoundHoldEnd,
 	PulseSoundHoldStartAlt,
 	PulseSoundHoldShortEndAlt,
 	PulseSoundHoldEndAlt,
+
+
+	ClapSoundHoldP2,
+
 	ClapSoundCPUClassic,
 	ClapSoundCPUOneshot,
 	ClapSoundHoldLongEndP2,
 	ClapSoundHoldLongStartP2,
 	ClapSoundHoldShortEndP2,
 	ClapSoundHoldShortStartP2,
+
+
+	PulseSoundHoldP2,
+
 	PulseSoundHoldStartP2,
 	PulseSoundHoldShortEndP2,
 	PulseSoundHoldEndP2,
 	PulseSoundHoldStartAltP2,
 	PulseSoundHoldShortEndAltP2,
 	PulseSoundHoldEndAltP2,
+
+
+	FreezeshotSound,
+
 	FreezeshotSoundCueLow,
 	FreezeshotSoundCueHigh,
 	FreezeshotSoundRiser,
 	FreezeshotSoundCymbal,
+
+
+	BurnshotSound,
+
 	BurnshotSoundCueLow,
 	BurnshotSoundCueHigh,
 	BurnshotSoundRiser,
 	BurnshotSoundCymbal,
-	ClapSoundHold,
-	PulseSoundHold,
-	ClapSoundHoldP2,
-	PulseSoundHoldP2,
-	FreezeshotSound,
-	BurnshotSound,
-	Skipshot,
+
+
 	HoldshotSound,
+
 	HoldshotSoundCue,
 	HoldshotSoundClapStart,
 	HoldshotSoundClapLongEnd,
 	HoldshotSoundClapShortEnd,
+
 #pragma warning restore CS1591
 }
 /// <summary>
@@ -2326,4 +2352,100 @@ public enum GameCharacter
 	Treble,
 	Weightlifter,
 	Wren,
+}
+
+/// <summary>
+/// Represents the supported game languages.
+/// </summary>
+[JsonEnumSerializable]
+public enum Language
+{
+	/// <summary>
+	/// English language.
+	/// </summary>
+	English,
+	/// <summary>
+	/// Spanish language.
+	/// </summary>
+	Spanish,
+	/// <summary>
+	/// Portuguese language.
+	/// </summary>
+	Portuguese,
+	/// <summary>
+	/// Simplified Chinese language.
+	/// </summary>
+	ChineseSimplified,
+	/// <summary>
+	/// Traditional Chinese language.
+	/// </summary>
+	ChineseTraditional,
+	/// <summary>
+	/// Korean language.
+	/// </summary>
+	Korean,
+	/// <summary>
+	/// Polish language.
+	/// </summary>
+	Polish,
+	/// <summary>
+	/// Japanese language.
+	/// </summary>
+	Japanese,
+	/// <summary>
+	/// German language.
+	/// </summary>
+	German
+}
+/// <summary>
+/// Defines the possible results of a hit.
+/// </summary>
+[Flags]
+[JsonEnumSerializable]
+public enum HitResult
+{
+	/// <summary>
+	/// The hit was perfect.
+	/// </summary>
+	Perfect = 0,
+	/// <summary>
+	/// The hit was slightly early.
+	/// </summary>
+	SlightlyEarly = 2,
+	/// <summary>
+	/// The hit was slightly late.
+	/// </summary>
+	SlightlyLate = 3,
+	/// <summary>
+	/// The hit was very early.
+	/// </summary>
+	VeryEarly = 4,
+	/// <summary>
+	/// The hit was very late.
+	/// </summary>
+	VeryLate = 5,
+	/// <summary>
+	/// The hit was either early or late.
+	/// </summary>
+	AnyEarlyOrLate = 7,
+	/// <summary>
+	/// The hit was missed.
+	/// </summary>
+	Missed = 15
+}
+/// <summary>
+/// Defines the types of effects that impact accessibility.
+/// </summary>
+[JsonEnumSerializable]
+public enum EffectType
+{
+	/// <summary>
+	/// Indicates visually intensive or flashing effects.
+	/// </summary>
+	Flashy,
+
+	/// <summary>
+	/// Indicates narration or spoken dialogue.
+	/// </summary>
+	Narration,
 }

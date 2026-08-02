@@ -50,11 +50,11 @@ internal class BaseEventConverter : BackwardCompatibleMetadataJsonConverter
 			if (e is SetRowXs srx)
 				srx.SyncoPlayModifierOffSound = srx.SyncoPlayModifierSound;
 		});
-		Register<ChangePlayersRows>(24, static e =>
-		{
-			if (e is ChangePlayersRows cpr)
-				cpr.FlashOnBeat = false;
-		});
+		//Register<ChangePlayersRows>(24, static e =>
+		//{
+		//	if (e is ChangePlayersRows cpr)
+		//		cpr.FlashOnBeat = false;
+		//});
 		Register<NewWindowDance>(55, static e =>
 		{
 			if (e is not NewWindowDance nwd)

@@ -11,4 +11,8 @@ public class TimesExecutedCondition : BaseConditional
 	public int MaxTimes { get; set; }
 	///<inheritdoc/>
 	public override ConditionType Type => ConditionType.TimesExecuted;
+	public override string ToString()
+	{
+		return $"maxTimes: {MaxTimes}";
+	}
 }

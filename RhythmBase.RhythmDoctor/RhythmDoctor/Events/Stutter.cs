@@ -13,14 +13,35 @@ public record class Stutter : BaseEvent, IRoomEvent
 	/// <summary>
 	/// Gets or sets the source beat of the stutter event.
 	/// </summary>
-	public float SourceBeat { get; set; }
+	/// <remarks>
+	/// Must be a value greater than 0 to avoid potential issues with non-positive values.
+	/// </remarks>
+	public float SourceBeat
+	{
+		get;
+		set
+		{
+			if (value < 0)
+				value = 1;
+			field = value;
+		}
+	} = 1;
 	/// <summary>
 	/// Gets or sets the length of the stutter event.
 	/// </summary>
 	/// <remarks>
 	/// Must be a value greater than 0 to avoid potential issues with non-positive values.
 	/// </remarks>
-	public float Length { get; set; }
+	public float Length
+	{
+		get;
+		set
+		{
+			if (value < 0)
+				throw new ArgumentException($"Length must be greater than 0. Provided value: {value}");
+			field = value;
+		}
+	} = 1;
 	/// <summary>
 	/// Gets or sets the action of the stutter event.
 	/// </summary>
@@ -29,9 +50,18 @@ public record class Stutter : BaseEvent, IRoomEvent
 	/// Gets or sets the number of loops for the stutter event.
 	/// </summary>
 	/// <remarks>
-	/// Must be a value greater than 0 to avoid potential issues with non-positive values.
+	/// Must be a value greater than 1 to avoid potential issues with non-positive values.
 	/// </remarks>
-	public int Loops { get; set; }
+	public int Loops
+	{
+		get;
+		set
+		{
+			if (value < 0)
+				throw new ArgumentException($"SourceBeat must be greater than 0. Provided value: {value}");
+			field = value;
+		}
+	} = 1;
 	///<inheritdoc/>
 	public override EventType Type => EventType.Stutter;
 	///<inheritdoc/>

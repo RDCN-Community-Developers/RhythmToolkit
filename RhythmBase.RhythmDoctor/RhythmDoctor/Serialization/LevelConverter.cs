@@ -40,6 +40,7 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 	static LevelConverter()
 	{
 		// Legacy fields ignored by newer versions
+		UnhandledFieldRegistry.Ignore<ShowDialogue>("speed");
 		UnhandledFieldRegistry.Ignore<SetClapSounds>("p1Used");
 		UnhandledFieldRegistry.Ignore<SetClapSounds>("p2Used");
 		UnhandledFieldRegistry.Ignore<SetClapSounds>("cpuUsed");

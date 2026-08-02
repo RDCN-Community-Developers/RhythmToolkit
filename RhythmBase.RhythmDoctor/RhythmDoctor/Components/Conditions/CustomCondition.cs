@@ -11,4 +11,8 @@ public class CustomCondition : BaseConditional
 	public string Expression { get; set; } = "";
 	///<inheritdoc/>
 	public override ConditionType Type => ConditionType.Custom;
+	public override string ToString()
+	{
+		return $"exp: {Expression}";
+	}
 }

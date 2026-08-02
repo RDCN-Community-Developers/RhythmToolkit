@@ -38,7 +38,7 @@ public record class NarrateRowInfo : BaseRowAction
 	/// <summary>  
 	/// Gets or sets the custom player option for narrating row information.  
 	/// </summary>  
-	public PlayerType CustomPlayer { get; set; } = PlayerType.AutoDetect;
+	public NarrationPlayerType CustomPlayer { get; set; } = NarrationPlayerType.AutoDetect;
 	/// <summary>
 	/// Gets or sets the custom length of the row. The default value is 7.
 	/// </summary>

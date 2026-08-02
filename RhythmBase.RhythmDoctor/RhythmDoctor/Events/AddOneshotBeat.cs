@@ -35,12 +35,6 @@ public record class AddOneshotBeat : BaseBeat
 	[JsonCondition($"$&.{nameof(Subdivisions)} > 0")]
 	public bool SubdivisionSound { get; set; }
 	/// <summary>
-	/// 
-	/// </summary>
-	[JsonAlias("subdivTickOverride")]
-	[JsonCondition($"$&.{nameof(SubdivisionTickOverride)} > 0")]
-	public float SubdivisionTickOverride { get; set; }
-	/// <summary>
 	/// Gets or sets the tick value.
 	/// <remark>
 	/// Must be non-negative value.
@@ -109,6 +103,7 @@ public record class AddOneshotBeat : BaseBeat
 	/// </summary>
 	/// <remarks>The value may be null, indicating that no audio is currently assigned. Ensure that the audio
 	/// resource is properly initialized before attempting playback or processing operations.</remarks>
+	[JsonCondition($"$&.{nameof(Sound)} is not null")]
 	public Audio? Sound { get; set; }
 	/// <inheritdoc/>
 	public override EventType Type => EventType.AddOneshotBeat;

@@ -29,9 +29,4 @@ public record class ReorderSprite : BaseDecorationAction
 	/// Leave it null to keep the original depth.
 	/// </remarks>
 	public int? Depth { get; set; }
-	/// <summary>
-	/// Gets or sets the type of layer used for sorting or rendering purposes.
-	/// </summary>
-	[JsonAlias("sortingLayerName")]
-	public LayerType LayerType { get; set; } = LayerType.Default;
 }

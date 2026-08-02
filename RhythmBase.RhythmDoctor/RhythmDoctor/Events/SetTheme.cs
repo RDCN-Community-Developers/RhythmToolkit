@@ -58,7 +58,7 @@ public record class SetTheme : BaseEvent, IRoomEvent, IEaseEvent
 	/// <summary>
 	/// Gets or sets a value indicating whether to skip paint effects.
 	/// </summary>
-	public bool SkipPaintEffects { get; set; } = false;
+	public bool SkipPaintEffects { get; set; } = true;
 	/// <summary>
 	/// Gets or sets a value indicating whether the first row is positioned on the floor.
 	/// </summary>

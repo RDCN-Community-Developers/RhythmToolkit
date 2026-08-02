@@ -21,10 +21,6 @@ public record class ShowDialogue : BaseEvent, IRoomEvent
 	/// </summary>
 	public DialoguePortraitSide PortraitSide { get; set; } = DialoguePortraitSide.Left;
 	/// <summary>
-	/// Gets or sets the speed of the dialogue display.
-	/// </summary>
-	public float Speed { get; set; } = 1;
-	/// <summary>
 	/// Gets or sets a value indicating whether text sounds should be played.
 	/// </summary>
 	public bool PlayTextSounds { get; set; } = true;

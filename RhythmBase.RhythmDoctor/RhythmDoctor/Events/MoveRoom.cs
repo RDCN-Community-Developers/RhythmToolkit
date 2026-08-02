@@ -1,5 +1,6 @@
 using RhythmBase.Global.Components.Easing;
 using RhythmBase.Global.Components.Vector;
+using RhythmBase.RhythmDoctor.Components;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -7,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents an event to move a room with easing properties.
 /// </summary>
 [JsonObjectSerializable]
-public record class MoveRoom : BaseEvent, IEaseEvent
+public record class MoveRoom : BaseEvent, IEaseEvent, ISingleRoomEvent
 {
 	/// <summary>
 	/// Gets or sets the position of the room.
@@ -54,4 +55,9 @@ public record class MoveRoom : BaseEvent, IEaseEvent
 	public override EventType Type => EventType.MoveRoom;
 	///<inheritdoc/>
 	public override Tab Tab => Tab.Rooms;
+	///<inheritdoc/>
+	public SingleRoom Room
+	{
+		get => new SingleRoom(checked((byte)Y)); set => Y = value.Value;
+	}
 }

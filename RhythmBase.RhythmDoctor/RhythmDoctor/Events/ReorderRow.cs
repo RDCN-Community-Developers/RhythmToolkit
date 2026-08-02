@@ -22,7 +22,7 @@ public record class ReorderRow : BaseRowAction
 	/// Gets or sets the target layer for the row reorder.
 	/// </summary>
 	[JsonAlias("sortingLayerName")]
-	public LayerType Layer { get; set; } = LayerType.Default;
+	public LayerType? Layer { get; set; } = LayerType.Default;
 	/// <summary>
 	/// Gets or sets the order of the room.
 	/// </summary>

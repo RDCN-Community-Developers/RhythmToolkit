@@ -6,7 +6,7 @@ internal interface ITintEvent : IColorEvent
 {
     Border? Border { get; set; }
     PaletteColorWithAlpha BorderColor { get; set; }
-    bool BorderPulse { get; set; }
+    bool? BorderPulse { get; set; }
     float BorderPulseMin { get; set; }
     float BorderPulseMax { get; set; }
     int? Opacity { get; set; }

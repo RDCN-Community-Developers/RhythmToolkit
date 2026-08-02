@@ -7,7 +7,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents a room mask event.
 /// </summary>
 [JsonObjectSerializable]
-public record class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
+public record class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent, ISingleRoomEvent
 {
 	/// <summary>
 	/// Gets or sets the type of the mask.
@@ -57,7 +57,11 @@ public record class MaskRoom : BaseEvent, IColorEvent, IImageFileEvent
 	/// Gets the room associated with the event.
 	/// </summary>
 	[JsonIgnore]
-	public Room Room => new SingleRoom(checked((byte)Y));
+	public SingleRoom Room
+	{
+		get => new SingleRoom(checked((byte)Y));
+		set => Y = value.Value;
+	}
 	IEnumerable<FileReference> IImageFileEvent.ImageFiles => [.. Image];
 	IEnumerable<FileReference> IFileEvent.Files => [.. Image];
 }
