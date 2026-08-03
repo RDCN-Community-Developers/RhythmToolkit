@@ -194,7 +194,8 @@ internal class BaseEventConverter : BackwardCompatibleMetadataJsonConverter
 		if (!Enum.TryParse(type, true, out EventType typeEnum))
 			e = ReadForwardEvent(ref reader, type!) ?? throw new JsonException("Unknown event type and failed to parse.");
 		else
-			e = EventConverterMap.GetConverter(typeEnum).ReadProperties(ref reader, options);
+			{
+			e = EventConverterMap.GetConverter(typeEnum).ReadProperties(ref reader, options); }
 		JsonException.ThrowIfNotMatch(ref reader, JsonTokenType.EndObject);
 		if (options.UpgradeToLatest && options.Version < MaxVersion && TypeHasUpgrater.Contains(e.Type))
 			foreach (var upgrater in GetUpgraters(options.Version, e.Type))

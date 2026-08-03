@@ -55,8 +55,8 @@ public class Decoration : OrderedEventCollection<BaseDecorationAction>, IEventEn
 	public bool Preview { get; set; } = false;
 	#endregion
 	#region text
-	[JsonCondition($"$&.{nameof(Type)} is {nameof(DecorationType.Text)}")]
 	[JsonAlias("decoName")]
+	[JsonCondition($"$&.{nameof(Type)} is {nameof(DecorationType.Text)}")]
 	public string Name { get; set; } = string.Empty;
 	[JsonCondition($"$&.{nameof(Type)} is {nameof(DecorationType.Text)}")]
 	public FontName Font { get; set; } = FontName.Default;

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace RhythmBase.RhythmDoctor.Events
 {
+	[JsonObjectSerializable]
 	public record class SetFont : BaseDecorationAction, IFontFileEvent
 	{
 		public override EventType Type => EventType.SetFont;

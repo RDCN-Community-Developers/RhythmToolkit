@@ -2,6 +2,7 @@
 
 namespace RhythmBase.RhythmDoctor.Events;
 
+[JsonObjectSerializable]
 public record class AdvanceTextDecoration : BaseDecorationAction, IAdvanceText
 {
 	/// <inheritdoc/>

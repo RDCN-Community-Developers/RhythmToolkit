@@ -42,6 +42,12 @@ internal class DecorationConverter : MetadataJsonConverter<Decoration>
 				reader.Skip();
 			else if (reader.ValueTextEquals("type"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out DecorationType type))
 				value.Type = type;
+			else if (reader.ValueTextEquals("decoName"u8) && reader.Read())
+				value.Name = reader.GetString() ?? "";
+			else if (reader.ValueTextEquals("font"u8) && reader.Read())
+				value.Font = reader.GetString() ?? "";
+			else if (reader.ValueTextEquals("sortingLayer"u8) && reader.Read() && EnumConverter.TryParse(ref reader, out LayerType layer))
+				value.Layer = layer;
 			else
 			{
 				switch (options.Strictness)
@@ -74,11 +80,20 @@ internal class DecorationConverter : MetadataJsonConverter<Decoration>
 		writer.WriteString("id"u8, value.Id);
 		writer.WriteNumber("row"u8, value.Index);
 		TypeConverterRegistry.Write(writer, "rooms"u8, value.Room, options);
-		if (!value.Character.IsCustom && value.Character.EnumName is GameCharacter rdc)
-			writer.WriteString("character", rdc.ToEnumString());
+		if (value.Type is DecorationType.Text)
+		{
+			if (!value.Character.IsCustom && value.Character.EnumName is GameCharacter rdc)
+				writer.WriteString("character", rdc.ToEnumString());
+			else
+				writer.WriteString("filename", value.Character.StringName);
+			writer.WriteBoolean("preview"u8, value.Preview);
+		}
 		else
-			writer.WriteString("filename", value.Character.StringName);
-		writer.WriteBoolean("preview"u8, value.Preview);
+		{
+			writer.WriteString("decoName"u8, value.Name);
+			writer.WriteString("font"u8, value.Font.ToString());
+			writer.WriteString("sortingLayer"u8, value.Layer.ToEnumString());
+		}
 		writer.WriteNumber("depth"u8, value.Depth);
 		if (value.Filter is not Filter.NearestNeighbor)
 			writer.WriteString("filter"u8, value.Filter.ToEnumString());

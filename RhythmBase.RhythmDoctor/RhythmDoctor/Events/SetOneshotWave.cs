@@ -18,6 +18,7 @@ public record class SetOneshotWave : BaseBeat
 	/// Gets or sets the width of the wave.  
 	/// </summary>  
 	public int Width { get; set; }
+	public bool? Wobble { get; set; }
 	///<inheritdoc/>
 	public override EventType Type => EventType.SetOneshotWave;
 }
