@@ -71,4 +71,4 @@ jobs:
           done
 
       - name: Push snapshot to nuget.obugs.cn
-        run: dotnet nuget push ./pkg/*.nupkg --source https://nuget.obugs.cn/v3/index.json -k ${{ secrets.OBUGS_NUGET_API_KEY }} --skip-duplicate
+        run: dotnet nuget push ./pkg/*.nupkg -s https://nuget.obugs.cn/v3/index.json -k “${{ secrets.OBUGS_NUGET_API_KEY }}”
