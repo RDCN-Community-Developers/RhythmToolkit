@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents a event that displays floating text on the screen, which can be used for various purposes such as showing lyrics, dialogue, or other textual information during gameplay.
 /// </summary>
 [JsonObjectSerializable]
-public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent, ITextEvent
+public record class FloatingText : BaseEvent, IRoomEvent, IDurationEvent, IColorEvent, IFontFileEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.FloatingText;

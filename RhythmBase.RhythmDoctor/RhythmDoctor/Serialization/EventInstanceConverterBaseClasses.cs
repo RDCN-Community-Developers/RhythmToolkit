@@ -66,7 +66,7 @@ internal partial class RDMemberConverter
 		protected override void Write(Utf8JsonWriter writer, ref TEvent value, MetadataJsonSerializerOptions options)
 		{
 			base.Write(writer, ref value, options);
-			if(value is PlaySong v1)
+			if (value is PlaySong v1)
 				writer.WriteNumber("bpm"u8, value.BeatsPerMinute);
 			else if (value is SetBeatsPerMinute v2)
 				writer.WriteNumber("beatsPerMinute"u8, value.BeatsPerMinute);
@@ -92,12 +92,16 @@ internal partial class RDMemberConverter
 			if (reader.ValueTextEquals("rooms"u8) && reader.Read())
 				value.Rooms = TypeConverterRegistry.Read<Room>(ref reader, options);
 			else if (reader.ValueTextEquals("preset"u8) && reader.Read())
+			{
 				if (reader.TokenType is JsonTokenType.String && EnumConverter.TryParse(ref reader, out VfxPreset enumValue0))
 					value.Preset = enumValue0;
 				else if (reader.TokenType is JsonTokenType.Number && reader.TryGetInt32(out int intValue0))
 					value.Preset = (VfxPreset)intValue0;
 				else
 					value.Preset = default;
+				if (value.Preset is VfxPreset.HeatDistortion && options.Version < 68)
+					value.Position = (100, 100);
+			}
 			else if (reader.ValueTextEquals("enable"u8) && reader.Read())
 				if (reader.TokenType is JsonTokenType.True or JsonTokenType.False)
 					value.Enable = reader.GetBoolean();
@@ -131,6 +135,8 @@ internal partial class RDMemberConverter
 			}
 			else if (reader.ValueTextEquals("amount"u8) && reader.Read())
 				value.Amount = TypeConverterRegistry.Read<Point>(ref reader, options);
+			else if (reader.ValueTextEquals("xySpeed"u8) && reader.Read())
+				value.XYSpeed = TypeConverterRegistry.Read<Point>(ref reader, options);
 			else if (reader.ValueTextEquals("position"u8) && reader.Read())
 				value.Position = TypeConverterRegistry.Read<Point>(ref reader, options);
 			else if (reader.ValueTextEquals("speedPerc"u8) && reader.Read())
@@ -168,6 +174,10 @@ internal partial class RDMemberConverter
 				writer.WriteString("ease"u8, value.Ease.ToEnumString());
 			if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableEase))
 				writer.WriteNumber("duration"u8, value.Duration);
+			if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnablePosition) && value.Position is Point valueNotNull5)
+				TypeConverterRegistry.Write(writer, "position"u8, valueNotNull5, options);
+			if (value.Enable && VfxAttributes[value.Preset].HasFlag(VfxAttribute.EnableXY) && value.Amount is Point valueNotNull6)
+				TypeConverterRegistry.Write(writer, "xySpeed"u8, valueNotNull6, options);
 		}
 	}
 }

@@ -1,0 +1,74 @@
+name: Snapshot to nuget.obugs.cn
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_suffix:
+        description: 'Optional version suffix (e.g. -ci-test). Leave empty for auto timestamp.'
+        required: false
+        default: ''
+  workflow_call:
+    inputs:
+      version_suffix:
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Resolve snapshot version
+        id: ver
+        run: |
+          BASE_VER=$(grep -oP '<Version>\K[^<]+' RhythmBase/RhythmBase.csproj)
+          SUFFIX="${{ inputs.version_suffix }}"
+          if [ -z "$SUFFIX" ]; then
+            TIMESTAMP=$(date -u +%Y%m%d%H%M%S)
+            SUFFIX="-snapshot.${TIMESTAMP}"
+          fi
+          echo "version=${BASE_VER}${SUFFIX}" >> $GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore RhythmBase/RhythmBase.csproj
+
+      - name: Build
+        run: dotnet build RhythmBase/RhythmBase.csproj -c Release --no-restore
+
+      - name: Pack RhythmBase (core)
+        run: dotnet pack RhythmBase/RhythmBase.csproj -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
+
+      - name: Add local NuGet source
+        run: dotnet nuget add source ${{ github.workspace }}/pkg --name local-pkg
+
+      - name: Restore sub-packages
+        run: |
+          for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
+            dotnet restore "$PROJ/$PROJ.csproj"
+          done
+
+      - name: Build sub-packages
+        run: |
+          for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
+            dotnet build "$PROJ/$PROJ.csproj" -c Release --no-restore
+          done
+
+      - name: Pack sub-packages
+        run: |
+          for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
+            dotnet pack "$PROJ/$PROJ.csproj" -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
+          done
+
+      - name: Push snapshot to nuget.obugs.cn
+        run: dotnet nuget push ./pkg/*.nupkg --source https://nuget.obugs.cn/v3/index.json --api-key ${{ secrets.OBUGS_NUGET_API_KEY }} --skip-duplicate

@@ -8,7 +8,7 @@ namespace RhythmBase.RhythmDoctor.Events;
 /// Represents a event that displays floating text on the screen, which can be used for various purposes such as showing lyrics, dialogue, or other textual information during gameplay.
 /// </summary>
 [JsonObjectSerializable]
-public record class SetText : BaseDecorationAction, IRoomEvent, IDurationEvent, IColorEvent, ITextEvent, IFontFileEvent
+public record class SetText : BaseDecorationAction, IRoomEvent, IDurationEvent, IColorEvent, IFontFileEvent
 {
 	/// <inheritdoc/>
 	public override EventType Type => EventType.SetText;
@@ -29,14 +29,14 @@ public record class SetText : BaseDecorationAction, IRoomEvent, IDurationEvent, 
 	/// <inheritdoc/>
 	public PaletteColorWithAlpha Color { get; set; } = Global.Components.Color.White;
 	/// <inheritdoc/>
-	public float Angle { get; set; } = 0;
+	public float? Angle { get; set; }
 	/// <inheritdoc/>
 	public int Size { get; set; } = 8;
 	/// <inheritdoc/>
 	public PaletteColorWithAlpha OutlineColor { get; set; } = Global.Components.Color.Black;
 	[JsonAlias("textPosition")]
 	/// <inheritdoc/>
-	public Point Position { get; set; } = new(50f, 50f);
+	public Point? Position { get; set; }
 	/// <inheritdoc/>
 	[JsonConverter(typeof(FloatingTextAnchorStylesConverter))]
 	public FloatingTextAnchorStyle Anchor { get; set; } = FloatingTextAnchorStyle.Center;
@@ -47,7 +47,7 @@ public record class SetText : BaseDecorationAction, IRoomEvent, IDurationEvent, 
 	[JsonCondition($"$&.{nameof(Narrate)}")]
 	public NarrationCategory NarrationCategory { get; set; } = NarrationCategory.Subtitles;
 	/// <inheritdoc/>
-	public FloatingTextFadeOutMode Mode { get; set; } = FloatingTextFadeOutMode.FadeOut;
+	public SetTextFadeOutMode Mode { get; set; } = SetTextFadeOutMode.FadeOut;
 	/// <inheritdoc/>
 	public bool ShowChildren { get; set; } = true;
 	/// <inheritdoc/>

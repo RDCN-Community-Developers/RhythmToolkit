@@ -134,16 +134,6 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 			e.Sounds = soundCollectionConverter.Read(ref reader, typeof(SoundCollection), new JsonSerializerOptions()) ?? [];
 			return true;
 		});
-		UnhandledFieldRegistry.Register<SetVFXPreset>("xySpeed", (ref e, value) =>
-		{
-			if (value.ValueKind != JsonValueKind.Array)
-				return false;
-			float?[] xs = value.EnumerateArray().Select(x => x.ValueKind == JsonValueKind.Number && x.TryGetSingle(out float f) ? f : (float?)null).ToArray();
-			if (xs.Length != 2)
-				return false;
-			e.Amount = (xs[0], xs[1]);
-			return true;
-		});
 		UnhandledFieldRegistry.Ignore<PlaySound>("isCustom");
 		UnhandledFieldRegistry.Ignore<MaskRoom>("contentMode");
 	}

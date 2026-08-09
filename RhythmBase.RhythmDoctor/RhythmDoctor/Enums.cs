@@ -651,9 +651,22 @@ public enum NarrationCategory
 /// <summary>
 /// Specifies the mode of the text.
 /// </summary>
-[Flags]
 [JsonEnumSerializable]
 public enum FloatingTextFadeOutMode
+{
+	/// <summary>
+	/// The text will fade out gradually.
+	/// </summary>
+	FadeOut = 0,
+	/// <summary>
+	/// The text will hide abruptly.
+	/// </summary>
+	HideAbruptly = 1,
+}/// <summary>
+/// Specifies the mode of the text.
+/// </summary>
+[JsonEnumSerializable]
+public enum SetTextFadeOutMode
 {
 	/// <summary>
 	/// The text will fade out gradually.
@@ -944,7 +957,11 @@ public enum Pattern
 	/// <summary>  
 	/// Pattern Return.  
 	/// </summary>  
-	ReturnBanana
+	ReturnBanana,
+	/// <summary>
+	/// Pattern that disables the banana beat.
+	/// </summary>
+	StopBanana,
 }
 /// <summary>
 /// Represents the hands of a player.

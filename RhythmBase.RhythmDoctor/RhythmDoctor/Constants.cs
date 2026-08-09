@@ -22,6 +22,7 @@ public static partial class Constants
 		/// The preset is disabled or not available.
 		/// </summary>
 		Disabled = 1,
+
 		/// <summary>
 		/// The preset applies only to the top room.
 		/// </summary>
@@ -46,6 +47,7 @@ public static partial class Constants
 		/// The preset supports an intensity parameter.
 		/// </summary>
 		EnableIntensity = 0b001_000_0,
+
 		/// <summary>
 		/// The preset supports X/Y parameters.
 		/// </summary>
@@ -62,6 +64,7 @@ public static partial class Constants
 		/// The preset supports absolute X/Y coordinates.
 		/// </summary>
 		EnableAbsoluteXY = 0b110_000_0,
+
 		/// <summary>
 		/// The preset supports easing (smooth interpolation).
 		/// </summary>
@@ -156,7 +159,7 @@ public static partial class Constants
 		[VfxPreset.TileN] = MultiRoomsWithTop | EnableEase | EnableXY | EnablePosition,
 		[VfxPreset.CustomScreenScroll] = MultiRoomsWithTop | EnableEase | EnableAbsoluteXY,
 		[VfxPreset.ScreenWaves] = MultiRooms | EnableIntensity | EnablePosition | EnableEase,
-		[VfxPreset.HeatDistortion] = MultiRooms | EnableIntensity | EnableEase,
+		[VfxPreset.HeatDistortion] = MultiRooms | EnableIntensity | EnablePosition | EnableEase,
 		[VfxPreset.Pixelate] = MultiRooms | EnableXY | EnableEase,
 		[VfxPreset.Mosaic] = MultiRooms | EnableIntensity | EnableEase,
 		[VfxPreset.GlassShatter] = MultiRooms,
@@ -172,11 +175,11 @@ public static partial class Constants
 		[VfxPreset.OrangeBloom] = MultiRooms,
 		[VfxPreset.BlueBloom] = MultiRooms,
 		[VfxPreset.Funk] = MultiRooms,
-		[VfxPreset.Drawing] = MultiRooms | EnableIntensity | EnableEase,
+		[VfxPreset.Drawing] = MultiRooms | EnableIntensity | EnableEase | EnableSpeed | EnableColor ,
 		[VfxPreset.Dots] = MultiRooms | EnableIntensity | EnableEase,
 		[VfxPreset.EyesBig] = MultiRooms | EnableIntensity | EnableXY | EnableSpeed | EnableEase | EnableColor | EnablePosition,
 		[VfxPreset.EyesSmall] = MultiRooms | EnableIntensity | EnableXY | EnableSpeed | EnableEase | EnableColor | EnablePosition,
-		[VfxPreset.Tutorial] = MultiRooms | EnableIntensity | EnableEase,
+		[VfxPreset.Tutorial] = MultiRooms | EnableIntensity | EnableEase | EnableColor,
 		[VfxPreset.Tile2] = MultiRoomsWithTop | Disabled,
 		[VfxPreset.Tile3] = MultiRoomsWithTop | Disabled,
 		[VfxPreset.Tile4] = MultiRoomsWithTop | Disabled,
@@ -192,7 +195,7 @@ public static partial class Constants
 		[VfxPreset.RowPlain] = MultiRooms | Disabled,
 		[VfxPreset.Blackout] = MultiRooms | Disabled,
 		[VfxPreset.MiawMiaw] = MultiRooms | Disabled,
-		[VfxPreset.DisableAll] = MultiRooms | Disabled,
+		[VfxPreset.DisableAll] = MultiRoomsWithTop,
 	});
 
 	/// <summary>

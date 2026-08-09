@@ -30,7 +30,7 @@ public record class DesktopColor : BaseWindowEvent, IEaseEvent, IColorEvent
 	/// Indicates whether the desktop color is custom or not.
 	/// </summary>
 	[JsonAlias("custom")]
-	public bool IsCustom { get; set; }
+	public bool IsCustom { get; set; } = true;
 	///<inheritdoc/>
 	public EaseType Ease { get; set; }
 	///<inheritdoc/>

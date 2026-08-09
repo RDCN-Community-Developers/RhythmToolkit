@@ -100,6 +100,7 @@ public struct PatternCollection : IEnumerable<Pattern>
 				Pattern.Down => 'd',
 				Pattern.Banana => 'b',
 				Pattern.ReturnBanana => 'r',
+				Pattern.StopBanana => 's',
 				_ => throw new NotImplementedException(),
 			});
 		}
@@ -130,6 +131,7 @@ public struct PatternCollection : IEnumerable<Pattern>
 				'd' => Pattern.Down,
 				'b' => Pattern.Banana,
 				'r' => Pattern.ReturnBanana,
+				's' => Pattern.StopBanana,
 				_ => throw new NotImplementedException(),
 			};
 		}

@@ -43,3 +43,6 @@ jobs:
   release:
     needs: build
     uses: ./.github/workflows/release.yml
+
+  snapshot:
+    uses: ./.github/workflows/snapshot.yml
