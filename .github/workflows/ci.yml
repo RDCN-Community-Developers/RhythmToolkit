@@ -37,12 +37,14 @@ jobs:
 
   build:
     needs: check
-    if: needs.check.outputs.publish == 'true'
     uses: ./.github/workflows/build.yml
 
   release:
     needs: build
+    if: needs.check.outputs.publish == 'true'
     uses: ./.github/workflows/release.yml
 
   snapshot:
+    needs: build
+    if: needs.check.outputs.publish != 'true'
     uses: ./.github/workflows/snapshot.yml
