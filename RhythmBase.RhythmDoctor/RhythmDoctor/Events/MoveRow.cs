@@ -53,7 +53,7 @@ public record class MoveRow : BaseRowAction, IEaseEvent
 	/// Gets or sets the pivot.
 	/// </summary>
 	/// <remarks>
-	/// Percentage of the original size. (0,0) is the bottom-left corner, (100,100) is the top-right corner.
+	/// Percentage of the original size. (0,0) is the bottom-left corner, (1,1) is the top-right corner.
 	/// Leave it null to keep the original pivot.
 	/// </remarks>
 	[Tween]
