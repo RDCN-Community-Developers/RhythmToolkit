@@ -45,7 +45,7 @@ public struct PatternCollection : IEnumerable<Pattern>
 	/// <remarks>Each character in the input string is mapped to a specific pattern. The order of characters
 	/// determines the order of patterns in the collection.</remarks>
 	/// <param name="pts">A string where each character represents a pattern to include in the collection. Valid characters are '-', 'x',
-	/// 'u', 'd', 'b', and 'r'.</param>
+	/// 'u', 'd', 'b', 'r' and 's'.</param>
 	/// <exception cref="NotImplementedException">Thrown if the input string contains a character that does not correspond to a supported pattern.</exception>
 	public PatternCollection(string pts)
 	{
@@ -60,6 +60,7 @@ public struct PatternCollection : IEnumerable<Pattern>
 				'd' => Pattern.Down,
 				'b' => Pattern.Banana,
 				'r' => Pattern.ReturnBanana,
+				's' => Pattern.StopBanana,
 				_ => throw new NotImplementedException(),
 			};
 		}
@@ -84,8 +85,8 @@ public struct PatternCollection : IEnumerable<Pattern>
 	/// Converts a PatternCollection instance to its string representation using pattern-specific characters.
 	/// </summary>
 	/// <remarks>Each pattern in the collection is represented by a specific character in the resulting string.
-	/// The mapping is as follows: '-' for None, 'x' for X, 'u' for Up, 'd' for Down, 'b' for Banana, and 'r' for
-	/// Return.</remarks>
+	/// The mapping is as follows: '-' for None, 'x' for X, 'u' for Up, 'd' for Down, 'b' for Banana, 'r' for
+	/// Return, and 's' for stop.</remarks>
 	/// <param name="pc">The PatternCollection instance to convert to a string.</param>
 	public static implicit operator string(PatternCollection pc)
 	{
