@@ -44,7 +44,7 @@ public readonly struct Order : IEnumerable<int>
     /// <returns>The room ID at the specified index.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the index is out of range.</exception>
     public readonly byte this[int index] => index < 0 || index >= _length
-                ? throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 3.")
+                ? throw new ArgumentOutOfRangeException(nameof(index), $"Index must be between 0 and {_length - 1}.")
                 : (byte)Indices[index];
 
     /// <summary>

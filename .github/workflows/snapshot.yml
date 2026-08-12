@@ -1,10 +1,10 @@
-name: Snapshot to nuget.obugs.cn
+name: Snapshot NuGet
 
 on:
   workflow_dispatch:
     inputs:
       version_suffix:
-        description: 'Optional version suffix (e.g. -ci-test). Leave empty for auto timestamp.'
+        description: 'Optional version label (e.g. ci-test). A build timestamp is always appended.'
         required: false
         default: ''
   workflow_call:
@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   snapshot:
@@ -33,12 +34,12 @@ jobs:
         id: ver
         run: |
           BASE_VER=$(grep -oP '<Version>\K[^<]+' RhythmBase/RhythmBase.csproj)
-          SUFFIX="${{ inputs.version_suffix }}"
-          if [ -z "$SUFFIX" ]; then
-            TIMESTAMP=$(date -u +%Y%m%d%H%M%S)
-            SUFFIX="-snapshot.${TIMESTAMP}"
+          LABEL="${{ inputs.version_suffix }}"
+          TIMESTAMP=$(date -u +%Y%m%d%H%M%S)
+          if [ -z "$LABEL" ]; then
+            LABEL="snapshot"
           fi
-          echo "version=${BASE_VER}${SUFFIX}" >> $GITHUB_OUTPUT
+          echo "version=${BASE_VER}-${LABEL}.${TIMESTAMP}" >> $GITHUB_OUTPUT
 
       - name: Restore
         run: dotnet restore RhythmBase/RhythmBase.csproj
@@ -70,5 +71,11 @@ jobs:
             dotnet pack "$PROJ/$PROJ.csproj" -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
           done
 
-      - name: Push snapshot to nuget.obugs.cn
-        run: dotnet nuget push ./pkg/*.nupkg -s https://nuget.obugs.cn/v3/index.json -k ${{ secrets.OBUGS_NUGET_API_KEY }} --skip-duplicate
+      - name: NuGet login (OIDC)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push snapshot to NuGet
+        run: dotnet nuget push ./pkg/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
