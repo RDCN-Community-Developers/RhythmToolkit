@@ -189,7 +189,7 @@ public partial class Level :
 	/// <param name="item">The event to be added.</param>
 	public override bool Add(IBaseEvent item) => Add(item, BeatChangeStrategy.Default);
 
-	/// <summary>
+	/// <summary> 
 	/// Adds an event to the level, with an option to keep the event's position.
 	/// </summary>
 	/// <param name="item">The event to be added.</param>
