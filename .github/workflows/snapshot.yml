@@ -71,15 +71,6 @@ jobs:
             dotnet pack "$PROJ/$PROJ.csproj" -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
           done
 
-      - name: Check NuGet credentials
-        env:
-          NUGET_USER: ${{ secrets.NUGET_USER }}
-        run: |
-          if [ -z "$NUGET_USER" ]; then
-            echo "::error::NUGET_USER secret is not set. Add your NuGet.org username as a repository secret named NUGET_USER (same as used by the release workflow)."
-            exit 1
-          fi
-
       - name: NuGet login (OIDC)
         uses: NuGet/login@v1
         id: login
