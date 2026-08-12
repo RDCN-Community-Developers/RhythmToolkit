@@ -43,8 +43,10 @@ jobs:
     needs: build
     if: needs.check.outputs.publish == 'true'
     uses: ./.github/workflows/release.yml
+    secrets: inherit
 
   snapshot:
     needs: build
     if: needs.check.outputs.publish != 'true'
     uses: ./.github/workflows/snapshot.yml
+    secrets: inherit
