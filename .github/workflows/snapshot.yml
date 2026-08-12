@@ -14,7 +14,7 @@ on:
         default: ''
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -71,6 +71,15 @@ jobs:
             dotnet pack "$PROJ/$PROJ.csproj" -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
           done
 
+      - name: Check NuGet credentials
+        env:
+          NUGET_USER: ${{ secrets.NUGET_USER }}
+        run: |
+          if [ -z "$NUGET_USER" ]; then
+            echo "::error::NUGET_USER secret is not set. Add your NuGet.org username as a repository secret named NUGET_USER (same as used by the release workflow)."
+            exit 1
+          fi
+
       - name: NuGet login (OIDC)
         uses: NuGet/login@v1
         id: login
@@ -79,3 +88,17 @@ jobs:
 
       - name: Push snapshot to NuGet
         run: dotnet nuget push ./pkg/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
+
+      - name: Create GitHub Pre-release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: v${{ steps.ver.outputs.version }}
+          body: |
+            Snapshot build.
+
+            Version: `${{ steps.ver.outputs.version }}`
+          files: ./pkg/*.nupkg
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
