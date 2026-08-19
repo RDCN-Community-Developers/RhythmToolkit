@@ -26,7 +26,6 @@ partial class Level
 	{
 		settings ??= new LevelReadSettings();
 		string extension = Path.GetExtension(filepath);
-		Level? level;
 		if (extension is not ".rdlevel" and not ".json")
 		{
 			if (extension is ".rdzip" or ".zip")
@@ -34,7 +33,9 @@ partial class Level
 			throw new NotSupportedException($"File type '{extension}' is not supported.");
 		}
 		using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-		level = await FromStreamAsync(stream, settings, cancellationToken);
+		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
+		options.DirectoryName = new FileInfo(filepath).Directory?.FullName;
+		Level level = await FileMainEntryConverter.DeserializeMainEntryAsync<Level>(new StreamDataSource(stream), options, cancellationToken);
 		level.Filepath = level.ResolvedPath = Path.GetFullPath(filepath);
 		return level;
 	}
@@ -46,12 +47,13 @@ partial class Level
 	{
 		settings ??= new LevelWriteSettings();
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings);
+		options.DirectoryName = new FileInfo(filepath).Directory?.FullName;
 		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 		if (!directory.Exists)
 			directory.Create();
 		using FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write);
 		stream.SetLength(0);
-		await SaveToStreamAsync(stream, settings, cancellationToken);
+		await Task.Run(() => FileMainEntryConverter.SerializeMainEntry(this, stream, options), cancellationToken);
 	}
 	#endregion
 	#region stream
@@ -169,8 +171,7 @@ partial class Level
 	/// <inheritdoc/>
 	public async Task SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
-		if (string.IsNullOrEmpty(this.ResolvedDirectory))
-			throw new NotImplementedException();
+		settings ??= new LevelWriteSettings();
 		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 		if (!directory.Exists)
 			directory.Create();
@@ -185,9 +186,8 @@ partial class Level
 	/// <inheritdoc/>
 	public async Task SaveToZipAsync(Stream zipStream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
-		if (string.IsNullOrEmpty(this.ResolvedDirectory))
-			throw new NotImplementedException();
 		settings ??= new LevelWriteSettings();
+		DirectoryInfo directory = new(ResolveDirectory(settings));
 		HashSet<FileReference> fileReferences = [];
 		void referenceDelegate(object? level, FileReferenceArgs args)
 		{
@@ -197,22 +197,35 @@ partial class Level
 		bool loadAssets = settings.LoadAssets;
 		settings.LoadAssets = true;
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings);
+		options.DirectoryName = directory.FullName;
 		using ZipArchive archive = new(zipStream, ZipArchiveMode.Create, leaveOpen: true);
 		ZipArchiveEntry entry = archive.CreateEntry("main.rdlevel");
 		using (Stream rdlevelStream = entry.Open())
 		{
-			await Task.Run(() => SaveToStream(rdlevelStream, settings), cancellationToken);
+			await Task.Run(() => FileMainEntryConverter.SerializeMainEntry(this, rdlevelStream, options), cancellationToken);
 		}
 		settings.FileReferenceEncountered -= referenceDelegate;
 		foreach (var file in fileReferences)
 		{
-			string fullPath = Path.Combine(ResolvedDirectory, file.Path);
+			string fullPath = Path.Combine(directory.FullName, file.Path);
 			if (!File.Exists(fullPath))
 				throw new FileNotFoundException($"Referenced file '{file.Path}' not found in the resolved directory.");
 			archive.CreateEntryFromFile(fullPath, Path.GetFileName(file.Path));
 		}
 		settings.LoadAssets = loadAssets;
 	}
+	/// <summary>
+	/// Resolves the directory used to locate referenced asset files, giving precedence to
+	/// <paramref name="settings"/>.<see cref="LevelWriteSettings.ResolvedDirectory"/> over the level's
+	/// own <see cref="ResolvedDirectory"/>.
+	/// </summary>
+	private string ResolveDirectory(LevelWriteSettings settings) =>
+		!string.IsNullOrWhiteSpace(settings.ResolvedDirectory)
+		? settings.ResolvedDirectory
+		: !string.IsNullOrWhiteSpace(ResolvedDirectory)
+			? ResolvedDirectory
+			: throw new InvalidOperationException(
+				$"Cannot save to zip because the level has no resolved directory and no directory is specified in the {nameof(settings)}.{nameof(LevelWriteSettings.ResolvedDirectory)}.");
 	#endregion zip
 	#region json
 	/// <inheritdoc/>

@@ -144,6 +144,8 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 
 	public override Level? Read(ref Utf8JsonReader reader, Type typeToConvert, MetadataJsonSerializerOptions options)
 	{
+		ReadSettings = options.ReadSettings ?? ReadSettings;
+		DirectoryName = options.DirectoryName ?? DirectoryName;
 		reader.Read();
 		Level level = [];
 		JsonException.ThrowIfNotMatch(ref reader, JsonTokenType.StartObject);
@@ -320,6 +322,8 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 
 	public override void Write(Utf8JsonWriter writer, Level value, MetadataJsonSerializerOptions options)
 	{
+		WriteSettings = options.WriteSettings ?? WriteSettings;
+		DirectoryName = options.DirectoryName ?? DirectoryName;
 		using MemoryStream stream = new();
 		MetadataJsonSerializerOptions localOptions = new()
 		{
@@ -363,7 +367,7 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 					if (!file.IsEmpty && file.IsExist(DirectoryName!))
 						WriteSettings.OnFileReferenceEncountered(value, file);
 					else if (file.IsExist(assPath))
-						WriteSettings.OnFileReferenceEncountered(value, DirectoryName + Path.DirectorySeparatorChar + file);
+						WriteSettings.OnFileReferenceEncountered(value, Path.Combine(DirectoryName, file));
 		});
 		writer.WriteEndArray();
 		writer.WritePropertyName("events");

@@ -170,6 +170,11 @@ public class LevelWriteSettings : LevelReadOrWriteSettings
 	/// output size and complexity of the write operation.
 	/// </remarks>
 	public bool WriteAligned { get; set; }
+	/// <summary>
+	/// Gets or sets the directory used to locate referenced asset files when writing a ZIP archive.
+	/// Takes precedence over the level's own <see cref="ILevel.ResolvedDirectory"/> when specified.
+	/// </summary>
+	public string? ResolvedDirectory { get; set; }
 }
 /// <summary>
 /// Level import settings.

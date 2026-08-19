@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RhythmBase.Global.Settings;
 
 namespace RhythmBase.Global.Serialization;
 
@@ -36,6 +37,21 @@ public record class MetadataJsonSerializerOptions
 	/// Gets or sets whether to upgrade legacy fields during deserialization.
 	/// </summary>
 	public bool UpgradeToLatest { get; set; } = true;
+
+	/// <summary>
+	/// Gets or sets the directory used to resolve referenced asset files during read/write operations.
+	/// </summary>
+	public string? DirectoryName { get; set; }
+
+	/// <summary>
+	/// Gets or sets the level read settings associated with this serialization operation.
+	/// </summary>
+	public LevelReadSettings? ReadSettings { get; set; }
+
+	/// <summary>
+	/// Gets or sets the level write settings associated with this serialization operation.
+	/// </summary>
+	public LevelWriteSettings? WriteSettings { get; set; }
 
 	private readonly List<(Type matchType, string field, Func<object, JsonElement, bool> handler)> _userHandlers = new();
 

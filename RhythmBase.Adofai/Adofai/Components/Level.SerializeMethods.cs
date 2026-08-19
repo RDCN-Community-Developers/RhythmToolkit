@@ -47,8 +47,7 @@ partial class Level
 	/// <inheritdoc/>
 	public async Task SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
-		if (string.IsNullOrEmpty(this.ResolvedDirectory))
-			throw new NotImplementedException();
+		settings ??= new LevelWriteSettings();
 		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 		if (!directory.Exists)
 			directory.Create();
@@ -61,22 +60,26 @@ partial class Level
 	/// <inheritdoc/>
 	public async Task SaveToZipAsync(Stream zipStream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
-		if (string.IsNullOrEmpty(this.ResolvedDirectory))
-			throw new NotImplementedException();
 		settings ??= new LevelWriteSettings();
+		string directoryPath = !string.IsNullOrWhiteSpace(settings.ResolvedDirectory)
+			? settings.ResolvedDirectory
+			: !string.IsNullOrWhiteSpace(ResolvedDirectory) ? ResolvedDirectory : "";
+		if (string.IsNullOrWhiteSpace(directoryPath))
+			throw new InvalidOperationException($"Cannot save to zip because the level has no resolved directory and no directory is specified in the {nameof(settings)}.{nameof(LevelWriteSettings.ResolvedDirectory)}.");
+		DirectoryInfo directory = new(directoryPath);
 		HashSet<FileReference> files = new();
 		void AddFileReference(object? sender, FileReferenceArgs args) => files.Add(args.Reference);
 		settings.FileReferenceEncountered += AddFileReference;
 		bool loadAssets = settings.LoadAssets;
 		settings.LoadAssets = true;
-		MetadataJsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Filepath) ?? "", settings);
+		MetadataJsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(directory.FullName, settings);
 		using ZipArchive archive = new(zipStream, ZipArchiveMode.Create, leaveOpen: true);
 		ZipArchiveEntry entry = archive.CreateEntry("main.adofai");
 		using (Stream adofaiStream = entry.Open())
-			await SaveToStreamAsync(adofaiStream, settings, cancellationToken);
+			await Task.Run(() => FileMainEntryConverter.SerializeMainEntry(this, adofaiStream, options), cancellationToken);
 		foreach (var file in files)
 		{
-			string fullPath = Path.Combine(ResolvedDirectory, file.Path);
+			string fullPath = Path.Combine(directory.FullName, file.Path);
 			if (!File.Exists(fullPath))
 				throw new FileNotFoundException($"Referenced file '{file.Path}' not found in the resolved directory.");
 			archive.CreateEntryFromFile(fullPath, Path.GetFileName(file.Path));
@@ -100,7 +103,8 @@ partial class Level
 			if (extension != ".adofai")
 				throw new NotSupportedException("File not supported.");
 			using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-			level = FromStream(stream, settings);
+			MetadataJsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Path.GetFullPath(filepath)), settings);
+			level = FileMainEntryConverter.DeserializeMainEntry<Level>(new StreamDataSource(stream), options);
 			level.Filepath = level.ResolvedPath = Path.GetFullPath(filepath);
 			return level;
 		}
@@ -169,7 +173,7 @@ partial class Level
 	public async Task SaveToFileAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
 		settings ??= new LevelWriteSettings();
-		MetadataJsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(filepath, settings);
+		MetadataJsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(filepath), settings);
 		using FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write);
 		stream.SetLength(0);
 		await Task.Run(() => FileMainEntryConverter.SerializeMainEntry(this, stream, options), cancellationToken);

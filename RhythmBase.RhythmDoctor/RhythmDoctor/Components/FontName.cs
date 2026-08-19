@@ -38,7 +38,7 @@ public readonly struct FontName
 	private readonly FileReference? _fileReference;
 	[MemberNotNullWhen(true, nameof(_fileReference))]
 	public readonly bool IsCustom { get; }
-	public readonly string Value =>IsCustom ? _fileReference : _type.ToEnumString();
+	public readonly string Value => IsCustom ? _fileReference : _type.ToEnumString();
 	public FontName(string fontName)
 	{
 		if (EnumConverter.TryParse(fontName, out BuiltInFontType type))

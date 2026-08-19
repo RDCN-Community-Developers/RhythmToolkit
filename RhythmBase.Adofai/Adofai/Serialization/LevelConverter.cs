@@ -10,11 +10,14 @@ internal class LevelConverter : MetadataJsonConverter<Level>
 	private static readonly BaseEventConverter baseEventConverter = new();
 	private static readonly SettingsConverter settingsConverter = new();
 	internal string? Filepath { get; set; }
+	internal string? DirectoryName { get; set; }
 	internal LevelReadSettings ReadSettings { get; set; } = new LevelReadSettings();
 	internal LevelWriteSettings WriteSettings { get; set; } = new LevelWriteSettings();
 
 	public override Level? Read(ref Utf8JsonReader reader, Type typeToConvert, MetadataJsonSerializerOptions options)
 	{
+		ReadSettings = options.ReadSettings ?? ReadSettings;
+		DirectoryName = options.DirectoryName ?? DirectoryName;
 		Level level = [];
 		bool isTileLoad = false;
 		List<BaseTileEvent> tileEventsNotLoad = [];
@@ -69,6 +72,10 @@ internal class LevelConverter : MetadataJsonConverter<Level>
 					IBaseEvent? e = baseEventConverter.Read(ref reader, typeof(IBaseEvent), options);
 					if (e == null)
 						continue;
+					if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName) && e is IFileEvent fileEvent)
+						foreach (FileReference file in fileEvent.Files)
+							if (!file.IsEmpty && file.IsExist(DirectoryName!))
+								ReadSettings.OnFileReferenceEncountered(level, file);
 					if (e is BaseTileEvent tileE)
 					{
 						if (isTileLoad)
@@ -90,7 +97,13 @@ internal class LevelConverter : MetadataJsonConverter<Level>
 						break;
 					IBaseEvent? e = baseEventConverter.Read(ref reader, typeof(BaseEvent), options) as BaseEvent;
 					if (e != null)
+					{
 						level.Decorations.Add(e);
+						if (ReadSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName) && e is IFileEvent decoFileEvent)
+							foreach (FileReference file in decoFileEvent.Files)
+								if (!file.IsEmpty && file.IsExist(DirectoryName!))
+									ReadSettings.OnFileReferenceEncountered(level, file);
+					}
 				}
 				reader.Read();
 			}
@@ -106,6 +119,8 @@ internal class LevelConverter : MetadataJsonConverter<Level>
 
 	public override void Write(Utf8JsonWriter writer, Level value, MetadataJsonSerializerOptions options)
 	{
+		WriteSettings = options.WriteSettings ?? WriteSettings;
+		DirectoryName = options.DirectoryName ?? DirectoryName;
 		using NoIndentScope noIndentScope = new(options.JsonSerializerOptions.Encoder, options);
 		writer.WriteStartObject();
 		writer.WritePropertyName("angleData");
@@ -124,12 +139,24 @@ internal class LevelConverter : MetadataJsonConverter<Level>
 		writer.WritePropertyName("settings");
 		settingsConverter.Write(writer, value.Settings, options.JsonSerializerOptions);
 		writer.WriteStartArray("actions");
-		noIndentScope.WriteNoIndentArrayTo(options.WriteIndented, false, writer, value.SelectMany(i => i.Cast<IBaseEvent>()), baseEventConverter.Write);
+		noIndentScope.WriteNoIndentArrayTo(options.WriteIndented, false, writer, value.SelectMany(i => i.Cast<IBaseEvent>()), (writer, e, options) =>
+		{
+			baseEventConverter.Write(writer, e, options);
+			if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName) && e is IFileEvent fileEvent)
+				foreach (FileReference file in fileEvent.Files)
+					if (!file.IsEmpty && file.IsExist(DirectoryName!))
+						WriteSettings.OnFileReferenceEncountered(value, file);
+		});
 		writer.WriteEndArray();
 		writer.WriteStartArray("decorations");
-		//noIndentScope.WriteNoIndentArrayTo(options.WriteIndented, false, writer, value.Decorations, baseEventConverter.Write);
 		foreach (var deco in value.Decorations)
+		{
 			baseEventConverter.Write(writer, deco, options);
+			if (WriteSettings.LoadAssets && !string.IsNullOrEmpty(DirectoryName) && deco is IFileEvent decoFileEvent)
+				foreach (FileReference file in decoFileEvent.Files)
+					if (!file.IsEmpty && file.IsExist(DirectoryName!))
+						WriteSettings.OnFileReferenceEncountered(value, file);
+		}
 		writer.WriteEndArray();
 		writer.WriteEndObject();
 	}

@@ -18,12 +18,8 @@ public static class Utils
 	{
 		settings ??= new LevelReadSettings();
 		MetadataJsonSerializerOptions options = new() { JsonSerializerOptions = new() };
-		LevelConverter levelConverter = new()
-		{
-			ReadSettings = settings,
-			Filepath = filepath
-		};
-		//options.JsonSerializerOptions.Converters.Add(levelConverter);
+		options.ReadSettings = settings;
+		options.DirectoryName = filepath;
 		return options;
 	}
 	/// <summary>
@@ -34,12 +30,8 @@ public static class Utils
 		settings ??= new LevelWriteSettings();
 		MetadataJsonSerializerOptions options = new() { JsonSerializerOptions = new() };
 		options.JsonSerializerOptions.WriteIndented = settings.WriteIndented;
-		LevelConverter levelConverter = new()
-		{
-			WriteSettings = settings,
-			Filepath = filepath
-		};
-		//options.JsonSerializerOptions.Converters.Add(levelConverter);
+		options.WriteSettings = settings;
+		options.DirectoryName = filepath;
 		return options;
 	}
 }

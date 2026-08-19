@@ -22,6 +22,7 @@ public static class JsonSerializerOptionsUtils
           UpgradeToLatest = settings.UpgradeToLatest,
 				};
         options.CopyUserHandlersFrom(settings);
+        options.ReadSettings = settings;
         return options;
     }
     /// <summary>
@@ -35,6 +36,7 @@ public static class JsonSerializerOptionsUtils
         options.JsonSerializerOptions.WriteIndented = settings.WriteIndented;
         if (settings.EnableUnsafeRelaxedJsonEscaping)
             options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        options.WriteSettings = settings;
         return options;
     }
 }
