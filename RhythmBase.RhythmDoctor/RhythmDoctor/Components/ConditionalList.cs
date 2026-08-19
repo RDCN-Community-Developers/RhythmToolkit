@@ -9,7 +9,7 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// </summary>
 public class ConditionalList : ICollection<BaseConditional>, IList<BaseConditional>
 {
-	private readonly Level parent;
+	private readonly Chart parent;
 	private const int _defaultCapacity = 4;
 	private const int _ulongSize = sizeof(ulong) * 8;
 	private int _count;
@@ -22,7 +22,7 @@ public class ConditionalList : ICollection<BaseConditional>, IList<BaseCondition
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ConditionalList"/> class with default capacity.
 	/// </summary>
-	internal ConditionalList(Level level)
+	internal ConditionalList(Chart level)
 	{
 		_physical_index = new int[_defaultCapacity];
 		_logical_index = new int[_defaultCapacity];

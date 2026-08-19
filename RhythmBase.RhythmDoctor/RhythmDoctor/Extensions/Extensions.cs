@@ -53,7 +53,7 @@ public static partial class Extensions
 		/// </summary>
 		/// <param name="level">The level containing the color palette.</param>
 		/// <returns>The in-game color.</returns>
-		public Color ToColor(Level level) => e.EnablePanel ? level.ColorPalette[e.PaletteIndex] : e.Color.WithAlpha(255);
+		public Color ToColor(Chart level) => e.EnablePanel ? level.ColorPalette[e.PaletteIndex] : e.Color.WithAlpha(255);
 	}
 	extension(PaletteColorWithAlpha e)
 	{
@@ -62,7 +62,7 @@ public static partial class Extensions
 		/// </summary>
 		/// <param name="level">The level containing the color palette.</param>
 		/// <returns>The in-game color.</returns>
-		public Color ToColor(Level level) => e.EnablePanel ? level.ColorPalette[e.PaletteIndex] : e.Color;
+		public Color ToColor(Chart level) => e.EnablePanel ? level.ColorPalette[e.PaletteIndex] : e.Color;
 	}
 	extension(string e)
 	{
@@ -290,7 +290,7 @@ public static partial class Extensions
 		}
 	}
 
-	extension(Level e)
+	extension(Chart e)
 	{
 		/// <summary>
 		/// Get an instance of the beat associated with the level.

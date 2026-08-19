@@ -12,16 +12,16 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// This abstract class provides a base implementation for managing a collection of elements  
 /// that are either rows or decorations within a rhythm level.  
 /// </remarks>  
-/// <param name="parent">The parent <see cref="Level"/> instance associated with this collection.</param>  
+/// <param name="parent">The parent <see cref="Chart"/> instance associated with this collection.</param>  
 /// <param name="limited">A boolean value indicating whether the collection has a fixed size limit.</param>  
-public abstract class LevelElementCollection<T, TEvent>(Level parent, bool limited) : ICollection<T>
+public abstract class LevelElementCollection<T, TEvent>(Chart parent, bool limited) : ICollection<T>
 	where T : OrderedEventCollection<TEvent>, new()
 	where TEvent : IBaseEvent
 {
 	/// <summary>  
-	/// The parent <see cref="Level"/> instance associated with this collection.  
+	/// The parent <see cref="Chart"/> instance associated with this collection.  
 	/// </summary>  
-	private protected Level parent = parent;
+	private protected Chart parent = parent;
 	/// <summary>  
 	/// The internal list of items in the collection.  
 	/// </summary>  

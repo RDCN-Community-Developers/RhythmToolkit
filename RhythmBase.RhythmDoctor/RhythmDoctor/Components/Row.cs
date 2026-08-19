@@ -130,5 +130,5 @@ public class Row : OrderedEventCollection<BaseRowAction>, IEventEnumerable<BaseR
 	/// </summary>
 	public IReadOnlyDictionary<string, JsonElement> ExtraData => _extraData;
 	private readonly Dictionary<string, JsonElement> _extraData = [];
-	internal Level? Parent = null;
+	internal Chart? Parent = null;
 }

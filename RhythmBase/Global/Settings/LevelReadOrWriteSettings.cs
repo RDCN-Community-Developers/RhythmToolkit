@@ -175,6 +175,12 @@ public class LevelWriteSettings : LevelReadOrWriteSettings
 	/// Takes precedence over the level's own <see cref="ILevel.ResolvedDirectory"/> when specified.
 	/// </summary>
 	public string? ResolvedDirectory { get; set; }
+	/// <summary>
+	/// When <c>true</c>, the referenced assets of charts referenced via <c>GoToLevel</c> are also
+	/// included when the level is packed to a ZIP archive. The referenced charts themselves are always
+	/// serialized. When <c>false</c>, only the main chart's assets are packed.
+	/// </summary>
+	public bool PackReferencedCharts { get; set; }
 }
 /// <summary>
 /// Level import settings.
@@ -185,6 +191,11 @@ public class LevelReadSettings : LevelReadOrWriteSettings
 	/// Gets or sets the method used to process zip files.
 	/// </summary>
 	public ZipProcessingMode ZipProcessingMode { get; set; }
+	/// <summary>
+	/// When <c>true</c>, charts referenced via <c>GoToLevel</c> are loaded recursively into the
+	/// level's chart collection, resolving each referenced chart only once to avoid cycles and duplication.
+	/// </summary>
+	public bool LoadReferencedCharts { get; set; }
 	/// <summary>
 	/// Gets or sets the JSON deserialization strictness level.
 	/// </summary>

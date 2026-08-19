@@ -38,7 +38,7 @@ namespace RhythmBase.RhythmDoctor.Extensions;
 		/// <param name="level">The level to generate the timeline view for. This parameter cannot be <see langword="null"/>.</param>
 		/// <returns>A <see cref="LevelTimeline"/> object representing the timeline-based view of the level,  including all
 		/// decorations, rows, and their associated properties and animations.</returns>
-		public static LevelTimeline GetView(this Level level)
+		public static LevelTimeline GetView(this Chart level)
 		{
 			#region decorations
 			int decoCount = level.Decorations.Count;

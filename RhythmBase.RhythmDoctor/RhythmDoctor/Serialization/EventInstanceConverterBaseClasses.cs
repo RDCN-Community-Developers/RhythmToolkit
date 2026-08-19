@@ -180,4 +180,44 @@ internal partial class RDMemberConverter
 				TypeConverterRegistry.Write(writer, "xySpeed"u8, valueNotNull6, options);
 		}
 	}
+	internal class GoToLevel : MemberConverter<Events.GoToLevel>
+	{
+		protected override bool Read(ref Utf8JsonReader reader, ref Events.GoToLevel value, MetadataJsonSerializerOptions options)
+		{
+			if (base.Read(ref reader, ref value, options))
+				return true;
+			if (reader.ValueTextEquals("action"u8) && reader.Read())
+			{ if (global::RhythmBase.Global.Serialization.EnumConverter.TryParse(ref reader, out GoToLevelAction enumValue0)) value.Action = enumValue0; else return false; }
+			else if (reader.ValueTextEquals("rdlevel"u8) && reader.Read())
+				value.Chart = TypeConverterRegistry.Read<FileReference>(ref reader, options);
+			else if (reader.ValueTextEquals("dontUpdateRestart"u8) && reader.Read())
+				value.DontUpdateRestart = reader.GetBoolean();
+			else if (reader.ValueTextEquals("fadeOut"u8) && reader.Read())
+				value.FadeOut = reader.GetBoolean();
+			else if (reader.ValueTextEquals("keepMistakes"u8) && reader.Read())
+				value.KeepMistakes = reader.GetBoolean();
+			else if (reader.ValueTextEquals("skippable"u8) && reader.Read())
+				value.Skippable = reader.GetBoolean();
+			else if (reader.ValueTextEquals("startImmediately"u8) && reader.Read())
+				value.StartImmediately = reader.GetBoolean();
+			else return false;
+			return true;
+		}
+		protected override void Write(Utf8JsonWriter writer, ref Events.GoToLevel value, MetadataJsonSerializerOptions options)
+		{
+			base.Write(writer, ref value, options);
+			writer.WriteString("action"u8, value.Action.ToEnumUtf8String());
+			if (value.Action is not GoToLevelAction.LoadNext)
+				writer.WritePropertyName("rdlevel"u8); TypeConverterRegistry.Write(writer, value.Chart, options);
+			if (!value.Chart.IsEmpty)
+			{
+				writer.WriteBoolean("dontUpdateRestart"u8, value.DontUpdateRestart);
+				writer.WriteBoolean("fadeOut"u8, value.FadeOut);
+				writer.WriteBoolean("keepMistakes"u8, value.KeepMistakes);
+				writer.WriteBoolean("startImmediately"u8, value.StartImmediately);
+			}
+			if (value.Action is not GoToLevelAction.SetNext)
+				writer.WriteBoolean("skippable"u8, value.Skippable);
+		}
+	}
 }

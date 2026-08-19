@@ -156,5 +156,5 @@ public class Decoration : OrderedEventCollection<BaseDecorationAction>, IEventEn
 	public IReadOnlyDictionary<string, JsonElement> ExtraData => _extraData;
 	private readonly Dictionary<string, JsonElement> _extraData = [];
 	private string _id = "";
-	internal Level? Parent = null;
+	internal Chart? Parent = null;
 }

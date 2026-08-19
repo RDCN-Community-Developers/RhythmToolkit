@@ -8,8 +8,8 @@ using System.Text.Json;
 
 namespace RhythmBase.RhythmDoctor.Serialization;
 
-[JsonConverterFor(typeof(Level))]
-internal sealed class LevelConverter : MetadataJsonConverter<Level>
+[JsonConverterFor(typeof(Chart))]
+internal sealed class LevelConverter : MetadataJsonConverter<Chart>
 {
 	private static readonly SettingsConverter settingsConverter = new();
 	private static readonly RowConverter rowConverter = new();
@@ -142,12 +142,12 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 	internal LevelWriteSettings WriteSettings { get; set; } = new LevelWriteSettings();
 	internal string? DirectoryName { get; set; }
 
-	public override Level? Read(ref Utf8JsonReader reader, Type typeToConvert, MetadataJsonSerializerOptions options)
+	public override Chart? Read(ref Utf8JsonReader reader, Type typeToConvert, MetadataJsonSerializerOptions options)
 	{
 		ReadSettings = options.ReadSettings ?? ReadSettings;
 		DirectoryName = options.DirectoryName ?? DirectoryName;
 		reader.Read();
-		Level level = [];
+		Chart level = [];
 		JsonException.ThrowIfNotMatch(ref reader, JsonTokenType.StartObject);
 		while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
 		{
@@ -320,7 +320,7 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 		return level;
 	}
 
-	public override void Write(Utf8JsonWriter writer, Level value, MetadataJsonSerializerOptions options)
+	public override void Write(Utf8JsonWriter writer, Chart value, MetadataJsonSerializerOptions options)
 	{
 		WriteSettings = options.WriteSettings ?? WriteSettings;
 		DirectoryName = options.DirectoryName ?? DirectoryName;
@@ -375,7 +375,7 @@ internal sealed class LevelConverter : MetadataJsonConverter<Level>
 		noIndentScope.WriteNoIndentArrayTo(options.WriteIndented, false, writer, value, (writer, e, options) =>
 		{
 			baseEventConverter.Write(writer, e, options);
-			if (WriteSettings.LoadAssets && e is IFileEvent fe && !string.IsNullOrEmpty(DirectoryName))
+			if (WriteSettings.LoadAssets && e is IFileEvent fe && e is not GoToLevel && !string.IsNullOrEmpty(DirectoryName))
 				foreach (FileReference file in fe.Files)
 					if (!file.IsEmpty && file.IsExist(DirectoryName!))
 						WriteSettings.OnFileReferenceEncountered(value, file);

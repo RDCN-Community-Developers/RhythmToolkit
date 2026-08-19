@@ -9,7 +9,7 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// of new events as they occur.</remarks>
 /// <param name="level">The RDLevel instance to which the event is being added.</param>
 /// <param name="e">An RDEventArgs object that contains the data associated with the added event.</param>
-public delegate void RDEventHandler(Level level, RDEventArgs e);
+public delegate void RDEventHandler(Chart level, RDEventArgs e);
 
 /// <summary>
 /// Provides data for events related to Rhythm Doctor events in the system, encapsulating the associated event and metadata

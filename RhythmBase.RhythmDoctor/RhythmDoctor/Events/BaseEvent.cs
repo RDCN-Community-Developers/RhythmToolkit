@@ -16,7 +16,7 @@ public abstract record class BaseEvent : IBaseEvent
 	/// </summary>
 	[Browsable(false)]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public Level? BaseChart => _tick.BaseChart;
+	public Chart? BaseChart => _tick.BaseChart;
 	/// <summary>
 	/// Clones the current instance of <see cref="BaseEvent"/> and returns a new instance with the same values.
 	/// </summary>

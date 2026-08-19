@@ -8,8 +8,8 @@ namespace RhythmBase.RhythmDoctor.Components;
 	/// <remarks>
 	/// Initializes a new instance of the <see cref="RowCollection"/> class.
 	/// </remarks>
-	/// <param name="parent">The parent <see cref="Level"/> instance associated with this collection.</param>
-	public class RowCollection(Level parent) : LevelElementCollection<Row, BaseRowAction>(parent, true)
+	/// <param name="parent">The parent <see cref="Chart"/> instance associated with this collection.</param>
+	public class RowCollection(Chart parent) : LevelElementCollection<Row, BaseRowAction>(parent, true)
 	{
 		internal readonly List<BaseRowAction> _unhandledRowEvents = [];
 		/// <summary>
