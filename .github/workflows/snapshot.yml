@@ -50,8 +50,13 @@ jobs:
       - name: Pack RhythmBase (core)
         run: dotnet pack RhythmBase/RhythmBase.csproj -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
 
+      - name: Pack RhythmBase (base, for local source)
+        run: dotnet pack RhythmBase/RhythmBase.csproj -c Release --no-build -o ./local-pkg
+
       - name: Add local NuGet source
-        run: dotnet nuget add source ${{ github.workspace }}/pkg --name local-pkg
+        run: |
+          dotnet nuget remove source local || true
+          dotnet nuget add source ${{ github.workspace }}/local-pkg --name local
 
       - name: Restore sub-packages
         run: |
