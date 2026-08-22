@@ -14,11 +14,11 @@ partial class ConverterGenerator
 	private const string JsonTimeAttrName = "RhythmBase.JsonTimeAttribute";
 	private const string JsonConverterAttrName = "RhythmBase.JsonConverterAttribute";
 	private const string JsonConverterForAttrName = "RhythmBase.JsonConverterForAttribute";
-	private const string JsonConverterLinkAttrName = "RhythmBase.JsonConverterLinkAttribute";
+	private const string JsonConverterLinkAttrName = "RhythmBase.JsonConverterLinkAttribute`2";
 	private const string JsonConverterIdAttrName = "RhythmBase.JsonConverterIdAttribute";
-	private const string JsonConverterSourceTypeAttrName = "RhythmBase.JsonConverterSourceTypeAttribute";
+	private const string JsonConverterSourceTypeAttrName = "RhythmBase.JsonConverterSourceTypeAttribute`2";
 	private const string JsonFlattenAttrName = "RhythmBase.JsonFlattenAttribute";
-	private const string AdapterTypeAttrName = "RhythmBase.AdapterTypeAttribute";
+	private const string AdapterTypeAttrName = "RhythmBase.AdapterTypeAttribute`6";
 	private const string JsonEnumCastingAttrName = "RhythmBase.JsonEnumCastingAttribute";
 
 	// Type 类型

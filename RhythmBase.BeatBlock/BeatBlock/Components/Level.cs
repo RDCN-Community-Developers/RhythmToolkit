@@ -1,12 +1,14 @@
-﻿namespace RhythmBase.BeatBlock.Components;
+﻿using RhythmBase.Global.Components;
+
+namespace RhythmBase.BeatBlock.Components;
 
 /// <summary>
 /// BeatBlock level.
 /// </summary>
 public partial class Level :
 		//OrderedEventCollection<IBaseEvent, EventType, BBBeat>,
-		IArchiveLevel<Level>,
-		IMultiFileLevel<Level>,
+		ILevel<Level, Chart>,
+		IArchiveLevel<Level, Chart>,
 		IDisposable
 {
 	internal bool isZip;
@@ -33,6 +35,19 @@ public partial class Level :
 	/// Gets the collection of variants for the level.
 	/// </summary>
 	public ChartCollection Variants { get; }
+	/// <summary>
+	/// Gets the charts contained in this level, keyed by chart name.
+	/// </summary>
+	public ChartDictionary<Chart> Charts
+	{
+		get
+		{
+			ChartDictionary<Chart> dictionary = new();
+			foreach (Chart variant in Variants)
+				dictionary.Add(variant.Name, variant);
+			return dictionary;
+		}
+	}
 	/// <summary>
 	/// Gets the resolved path of the level file.
 	/// </summary>

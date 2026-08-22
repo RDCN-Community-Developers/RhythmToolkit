@@ -205,20 +205,21 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				List<Diagnostic> diagnostics = new();
 				foreach (var attr in assembly.GetAttributes())
 				{
-					if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, attrType))
+					if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass?.OriginalDefinition, attrType))
 					{
+						if (attr.AttributeClass?.TypeArguments is not { Length: 2 } typeArgs) continue;
 						var args = attr.ConstructorArguments;
-						if (args[0].Value is not INamedTypeSymbol type) return default;
-						if (args[1].Value is not INamedTypeSymbol enumType || enumType.TypeKind != TypeKind.Enum)
+						if (typeArgs[0] is not INamedTypeSymbol type) return default;
+						if (typeArgs[1] is not INamedTypeSymbol enumType || enumType.TypeKind != TypeKind.Enum)
 						{
-							diagnostics.Add(Diagnostic.Create(InvalidEnumTypeRule, type?.Locations.FirstOrDefault(), args[1].Value?.ToString() ?? "null"));
+							diagnostics.Add(Diagnostic.Create(InvalidEnumTypeRule, type?.Locations.FirstOrDefault(), typeArgs[1]?.ToString() ?? "null"));
 							continue;
 						}
-						if (args[2].Value is not INamedTypeSymbol converterBaseType)
+						if (args[0].Value is not INamedTypeSymbol converterBaseType)
 						{
 							continue;
 						}
-						if (args[3].Value is not string enumPropertyName) return default;
+						if (args[1].Value is not string enumPropertyName) return default;
 						types.Add(new()
 						{
 							RootType = type,
@@ -241,26 +242,29 @@ public partial class ConverterGenerator : IIncrementalGenerator
 			List<INamedTypeSymbol> types = [];
 			foreach (var attr in compilation.Assembly.GetAttributes())
 			{
-				if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, tickTimeAttr) && attr.ConstructorArguments.Length == 5)
+				if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass?.OriginalDefinition, tickTimeAttr) && attr.AttributeClass?.TypeArguments.Length == 6)
 				{
+					var typeArgs = attr.AttributeClass.TypeArguments;
 					(
 						INamedTypeSymbol? chartType,
+						INamedTypeSymbol? levelType,
 						INamedTypeSymbol? calculatorType,
 						INamedTypeSymbol? tickTimeType,
 						INamedTypeSymbol? typeEnumType,
 						INamedTypeSymbol? typeInterfaceType
 						) result
 						= (
-							attr.ConstructorArguments[0].Value as INamedTypeSymbol ?? null, // 实现 IChart<>
-							attr.ConstructorArguments[1].Value as INamedTypeSymbol ?? null, // 实现 ICalculator
-							attr.ConstructorArguments[2].Value as INamedTypeSymbol ?? null,  // 实现 ITickTime
-							attr.ConstructorArguments[3].Value as INamedTypeSymbol ?? null, // 枚举类型
-							attr.ConstructorArguments[4].Value as INamedTypeSymbol ?? null  // 类型接口类型
+							typeArgs[0] as INamedTypeSymbol ?? null, // 实现 IChart<>
+							typeArgs[1] as INamedTypeSymbol ?? null, // 实现 ILevel<>
+							typeArgs[2] as INamedTypeSymbol ?? null, // 实现 ICalculator
+							typeArgs[3] as INamedTypeSymbol ?? null,  // 实现 ITickTime
+							typeArgs[4] as INamedTypeSymbol ?? null, // 枚举类型
+							typeArgs[5] as INamedTypeSymbol ?? null  // 类型接口类型
 							);
 					return result;
 				}
 			}
-			return (null, null, null, null, null);
+			return (null, null, null, null, null, null);
 		});
 		IncrementalValueProvider<EventTypeRegistryGenerationInfo[]> EventTypeRegistryInfo = classEnumAttrPairInfo
 				.Select((input, ct) =>
@@ -532,11 +536,11 @@ public partial class ConverterGenerator : IIncrementalGenerator
 				List<(ITypeSymbol, INamedTypeSymbol)> types = [];
 				foreach (var attr in assemblies.SelectMany(i => i.GetAttributes()))
 				{
-					if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, attrType))
+					if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass?.OriginalDefinition, attrType))
 					{
-						var args = attr.ConstructorArguments;
-						var arg0 = args[0].Value as ITypeSymbol;
-						var arg1 = args[1].Value as INamedTypeSymbol;
+						if (attr.AttributeClass?.TypeArguments is not { Length: 2 } typeArgs) continue;
+						var arg0 = typeArgs[0] as ITypeSymbol;
+						var arg1 = typeArgs[1] as INamedTypeSymbol;
 						if (arg1 is not null
 							&& (arg0 is null || arg0.DeclaredAccessibility == Accessibility.Public || SymbolEqualityComparer.Default.Equals(arg0.ContainingAssembly, currentAsm))
 							&& (arg1.DeclaredAccessibility == Accessibility.Public || SymbolEqualityComparer.Default.Equals(arg1.ContainingAssembly, currentAsm)))
@@ -583,6 +587,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 	private void GenerateTickTimeType(IncrementalGeneratorInitializationContext context, IncrementalValueProvider<((
 		(string?, List<Diagnostic>) Left, (
 			INamedTypeSymbol? chartType,
+			INamedTypeSymbol? levelType,
 			INamedTypeSymbol? calculatorType,
 			INamedTypeSymbol? tickTimeType,
 			INamedTypeSymbol? typeEnumType,
@@ -600,6 +605,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 			if (
 				s.tickTimeType is not INamedTypeSymbol tickTimeSymbol ||
 				s.chartType is not INamedTypeSymbol chartSymbol ||
+				s.levelType is not INamedTypeSymbol levelSymbol ||
 				s.calculatorType is not INamedTypeSymbol calculatorSymbol ||
 				s.typeEnumType is not INamedTypeSymbol typeEnumSymbol ||
 				s.typeInterfaceType is not INamedTypeSymbol typeInterfaceSymbol
@@ -1741,11 +1747,55 @@ public partial class ConverterGenerator : IIncrementalGenerator
 			public static partial float DefaultBpm { get; }
 		}
 		""";
+			string srcChartFileNaming = $$"""
+		// <auto-generated/>
+		#nullable enable
+		namespace RhythmBase.{{registryId}};
+
+		/// <summary>
+		/// Defines how a chart name maps to its file name within a level. Each format defines this
+		/// naming rule; implement a concrete subclass with the game's convention, for example
+		/// <c>easy</c> ↔ <c>chart-easy.json</c>.
+		/// </summary>
+		internal abstract partial class ChartFileNaming
+		{
+			/// <summary>
+			/// Gets the file name used to store the chart with the given name.
+			/// </summary>
+			public abstract string GetFileName(string chartName);
+			/// <summary>
+			/// Tries to map a file name back to a chart name.
+			/// </summary>
+			/// <param name="fileName">The file name to inspect.</param>
+			/// <param name="chartName">The chart name if the file is a chart file; otherwise empty.</param>
+			/// <returns><c>true</c> if the file name belongs to a chart; otherwise, <c>false</c>.</returns>
+			public abstract bool TryGetChartName(string fileName, out string chartName);
+		}
+		""";
+		string srcParentLevel = $$"""
+	// <auto-generated/>
+	#nullable enable
+	namespace {{chartSymbol.ContainingNamespace.ToDisplayString()}};
+
+	/// <summary>
+	/// Specialized chart members with the adapter's concrete types.
+	/// </summary>
+	public partial class {{chartSymbol.Name}}
+	{
+		/// <summary>
+		/// Gets the level that owns this chart, or <c>null</c> if the chart is standalone.
+		/// </summary>
+		public {{levelSymbol.ToDisplayString()}}? ParentLevel => _parentLevel;
+		internal {{levelSymbol.ToDisplayString()}}? _parentLevel;
+	}
+	""";
 			context.AddSource($"{tickTimeSymbol.Name}.{registryId}.g.cs", srcTickTime);
 			context.AddSource($"{calculatorSymbol.Name}.{registryId}.g.cs", srcCalculator);
 			context.AddSource($"{TickRangeName}.{registryId}.g.cs", srcTickRange);
 			context.AddSource($"OtherFiles.{registryId}.g.cs", srcOtherFiles);
 			context.AddSource($"Constants.{registryId}.g.cs", srcConstants);
+			context.AddSource($"ChartFileNaming.{registryId}.g.cs", srcChartFileNaming);
+			context.AddSource($"ParentLevel.{registryId}.g.cs", srcParentLevel);
 
 		});
 	}

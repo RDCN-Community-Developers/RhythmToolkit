@@ -11,7 +11,7 @@ partial class Level
 {
 	private static readonly BaseEventConverter baseEventConverter = new();
 	private static readonly JsonReaderOptions _readerOptions = new();
-	private static class FileConverter
+	internal static class FileConverter
 	{
 		public static void DeserializeLevel(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, Chart variant, LevelReadSettings settings)
 		{
@@ -258,7 +258,7 @@ partial class Level
 					FileConverter.DeserializeLevel(new StreamDataSource(levelFsVariant), options, variant, settings);
 				}
 			}
-			string chartFile = Path.Combine(directoryPath, $"chart-{variant.Name}.json");
+			string chartFile = Path.Combine(directoryPath, ChartNaming.Instance.GetFileName(variant.Name));
 			if (options.Strictness == JsonStrictness.Strict || File.Exists(chartFile))
 			{
 				using FileStream chartFs = File.Open(chartFile, FileMode.Open, FileAccess.Read);
@@ -305,7 +305,7 @@ partial class Level
 				using FileStream levelFsVariant = File.Open(levelFile, FileMode.Create, FileAccess.Write);
 				FileConverter.WriteVariantLevelToStream(levelFsVariant, noIndentScope, variant, options);
 			}
-			string chartFile = Path.Combine(directoryPath, $"chart-{variant.Name}.json");
+			string chartFile = Path.Combine(directoryPath, ChartNaming.Instance.GetFileName(variant.Name));
 			using FileStream chartFs = File.Open(chartFile, FileMode.Create, FileAccess.Write);
 			FileConverter.WriteVariantChartsToStream(chartFs, noIndentScope, variant, options);
 		}

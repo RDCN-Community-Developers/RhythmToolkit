@@ -1,4 +1,7 @@
 ﻿using RhythmBase.BeatBlock.Events;
+using RhythmBase.Global.Components;
+using RhythmBase.Global.Serialization;
+using RhythmBase.Global.Settings;
 using System.Diagnostics.CodeAnalysis;
 using static RhythmBase.BeatBlock.Constants;
 
@@ -7,9 +10,15 @@ namespace RhythmBase.BeatBlock.Components;
 /// <summary>
 /// Represents a chart variant in a BeatBlock level.
 /// </summary>
-public class Chart :
+/// <remarks>
+/// A BeatBlock chart spans two documents: a <c>level</c> part (an object of shared events) and a
+/// <c>chart</c> part (an array of chart events). Reading and writing therefore operates on the pair of
+/// documents together via <see cref="FromLevelAndChart"/> / <see cref="SaveToLevelAndChart"/>, instead
+/// of the single-file interfaces used by formats where one chart is one file.
+/// </remarks>
+public partial class Chart :
 		OrderedEventCollection<IBaseEvent>,
-		IChart<TickTime>
+		IChart<Chart, TickTime>
 {
 	internal bool isDefault = false;
 	/// <summary>

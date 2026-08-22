@@ -12,14 +12,12 @@ namespace RhythmBase.RhythmDoctor.Components;
 /// only once, so cyclic references between charts share the same <see cref="Chart"/> instance.
 /// </summary>
 public partial class Level :
-	IJsonLevel<Level>,
-	ISingleFileLevel<Level>,
-	IMultiFileLevel<Level>,
-	IArchiveLevel<Level>,
+	ILevel<Level, Chart>,
+	IArchiveLevel<Level, Chart>,
 	IEventEnumerable<IBaseEvent>,
 	ILevel
 {
-	private readonly Dictionary<string, Chart> _charts;
+	private readonly ChartDictionary<Chart> _charts;
 	private readonly HashSet<Chart> _owned = [];
 	/// <summary>
 	/// Message used for transitional wrapper members that forward to <see cref="MainChart"/>.
@@ -44,7 +42,7 @@ public partial class Level :
 	public Level(Chart mainChart, IReadOnlyDictionary<string, Chart>? charts = null)
 	{
 		MainChart = mainChart ?? throw new ArgumentNullException(nameof(mainChart));
-		_charts = new Dictionary<string, Chart>(StringComparer.OrdinalIgnoreCase);
+		_charts = new ChartDictionary<Chart>();
 		RegisterChart(DefaultChartName, mainChart);
 		if (charts is not null)
 			foreach (var pair in charts)
@@ -52,9 +50,9 @@ public partial class Level :
 	}
 
 	/// <summary>
-	/// The file name used for the main chart entry.
+	/// The name of the main chart entry.
 	/// </summary>
-	public static string DefaultChartName => "main.rdlevel";
+	public static string DefaultChartName => "main";
 
 	/// <summary>
 	/// Gets the main chart of the level.
@@ -62,10 +60,10 @@ public partial class Level :
 	public Chart MainChart { get; }
 
 	/// <summary>
-	/// Gets the charts contained in this level, keyed by file name. The main chart is registered
-	/// under <see cref="DefaultChartName"/>.
+	/// Gets the charts contained in this level, keyed by chart name. The main chart is registered
+	/// under <see cref="DefaultChartName"/>. Keys and <see cref="IChart.Name"/> stay in sync.
 	/// </summary>
-	public IReadOnlyDictionary<string, Chart> Charts => _charts;
+	public ChartDictionary<Chart> Charts => _charts;
 
 	/// <inheritdoc/>
 	public string Filepath { get; internal set; } = string.Empty;
@@ -206,9 +204,10 @@ public partial class Level :
 
 	internal void RegisterChart(string name, Chart chart)
 	{
-		_charts[name] = chart;
+		_charts.Add(name, chart);
 		_owned.Add(chart);
+		chart._parentLevel = this;
 	}
 
-	internal bool TryGetChart(string name, out Chart? chart) => _charts.TryGetValue(name, out chart);
+	internal bool TryGetChart(string name, out Chart? chart) => _charts.TryGetChart(name, out chart);
 }

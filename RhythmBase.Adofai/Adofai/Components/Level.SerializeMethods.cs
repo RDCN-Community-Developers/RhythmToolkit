@@ -88,6 +88,20 @@ partial class Level
 		settings.LoadAssets = loadAssets;
 	}
 	#endregion
+	#region directory
+	/// <inheritdoc/>
+	public static Level FromDirectory(string directoryPath, LevelReadSettings? settings = null)
+		=> FromFile(Path.Combine(directoryPath, ChartNaming.Instance.GetFileName("main")), settings);
+	/// <inheritdoc/>
+	public static async Task<Level> FromDirectoryAsync(string directoryPath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+		=> await FromFileAsync(Path.Combine(directoryPath, ChartNaming.Instance.GetFileName("main")), settings, cancellationToken);
+	/// <inheritdoc/>
+	public void SaveToDirectory(string directoryPath, LevelWriteSettings? settings = null)
+		=> SaveToFile(Path.Combine(directoryPath, ChartNaming.Instance.GetFileName("main")), settings);
+	/// <inheritdoc/>
+	public Task SaveToDirectoryAsync(string directoryPath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+		=> SaveToFileAsync(Path.Combine(directoryPath, ChartNaming.Instance.GetFileName("main")), settings, cancellationToken);
+	#endregion
 	#region file
 	/// <inheritdoc/>
 	public static Level FromFile(string filepath, LevelReadSettings? settings = null)
@@ -106,6 +120,8 @@ partial class Level
 			MetadataJsonSerializerOptions options = Utils.Utils.GetJsonSerializerOptions(Path.GetDirectoryName(Path.GetFullPath(filepath)), settings);
 			level = FileMainEntryConverter.DeserializeMainEntry<Level>(new StreamDataSource(stream), options);
 			level.Filepath = level.ResolvedPath = Path.GetFullPath(filepath);
+			if (ChartNaming.Instance.TryGetChartName(Path.GetFileName(filepath), out string chartName))
+				level.Name = chartName;
 			return level;
 		}
 		switch (settings.ZipProcessingMode)

@@ -337,11 +337,15 @@ partial class Level
 		string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
 		foreach (string jsonFile in jsonFiles)
 		{
-			if (Path.GetFileNameWithoutExtension(jsonFile) != "chart") continue;
-			//if (!Path.GetFileName(jsonFile).StartsWith("chart")) continue;
-			//if (jsonFile == "metadata.json") continue;
+			if (!ChartNaming.Instance.TryGetChartName(Path.GetFileName(jsonFile), out string chartName))
+				continue;
 			using FileStream jsonFs = new(jsonFile, FileMode.Open, FileAccess.Read);
 			FileConverter.DeserializeChart(new StreamDataSource(jsonFs), options, level, settings);
+			if (level.Charts.Count > 0)
+			{
+				level.Charts[^1].Name = chartName;
+				level.Charts[^1]._parentLevel = level;
+			}
 		}
 		return level;
 	}
@@ -366,7 +370,7 @@ partial class Level
 		else
 			foreach (Chart chart in Charts)
 			{
-				using FileStream jsonFs = new(Path.Combine(directoryPath, $"chart_{chart.SongsName}.json"), FileMode.Create, FileAccess.Write);
+				using FileStream jsonFs = new(Path.Combine(directoryPath, ChartNaming.Instance.GetFileName(chart.Name)), FileMode.Create, FileAccess.Write);
 				FileConverter.WriteChartToStream(jsonFs, noIndentScope, chart, settings, options);
 			}
 	}

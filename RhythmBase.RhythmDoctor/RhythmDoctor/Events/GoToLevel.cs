@@ -11,7 +11,7 @@ public record class GoToLevel : BaseEvent, IChartFileEvent
 	public override Tab Tab => Tab.Actions;
 	public GoToLevelAction Action { get; set; }
 	public FileReference Chart { get; set; }
-	public RhythmDoctor.Components.Chart? ResolvedLevel { get; set; }
+	public RhythmDoctor.Components.Chart? ResolvedLevel { get; internal set; }
 	public bool Skippable { get; set; }
 	public bool FadeOut { get; set; }
 	public bool StartImmediately { get; set; }

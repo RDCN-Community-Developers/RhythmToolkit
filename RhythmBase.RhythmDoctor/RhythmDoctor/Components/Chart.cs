@@ -11,12 +11,18 @@ namespace RhythmBase.RhythmDoctor.Components;
 public partial class Chart :
 	OrderedEventCollection<IBaseEvent>,
 	IEventEnumerable<IBaseEvent>,
-	IChart<TickTime>,
+	IChart<Chart, TickTime>,
+	IJsonChart<Chart, TickTime>,
 	ILevel
 {
 	internal bool isZip = false;
 	internal bool isExtracted = false;
 	private Color[] colorPalette = new Color[PaletteColorCount];
+
+	/// <summary>
+	/// Gets or sets the name of the chart (e.g. the file name within a level).
+	/// </summary>
+	public string Name { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Occurs when a new event is added to the level.
@@ -431,12 +437,6 @@ public partial class Chart :
 	/// </summary>
 	public void Dispose()
 	{
-		if (isZip && isExtracted && Directory.Exists(ResolvedDirectory))
-		{
-			Directory.Delete(ResolvedDirectory, true);
-		}
-
-		GC.SuppressFinalize(this);
 	}
 
 	/// <inheritdoc/>

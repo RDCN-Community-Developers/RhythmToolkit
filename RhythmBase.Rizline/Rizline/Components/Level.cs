@@ -69,8 +69,12 @@ public class CameraMove
 /// Represents a single chart (difficulty) within a Rizline level, containing timing,
 /// guide lines, notes, and camera/canvas movement data.
 /// </summary>
-public class Chart : IChart<TickTime>
+public partial class Chart : IChart<Chart, TickTime>
 {
+	/// <summary>
+	/// Gets or sets the name of the chart (e.g. the file name within a level).
+	/// </summary>
+	public string Name { get; set; } = string.Empty;
 	/// <summary>
 	/// Level file version identifier.
 	/// </summary>
@@ -148,9 +152,26 @@ public enum Difficulty
 /// Core Rizline level representation with metadata, timing and content lists.
 /// </summary>
 public partial class Level :
-		IArchiveLevel<Level>,
-		IMultiFileLevel<Level>
+		ILevel<Level, Chart>,
+		IArchiveLevel<Level, Chart>
 {
+	/// <summary>
+	/// Charts of the level keyed by chart name, as required by <see cref="ILevel{TSelf, TChart}"/>.
+	/// </summary>
+	ChartDictionary<Chart> ILevel<Level, Chart>.Charts => ChartsDictionary;
+	/// <summary>
+	/// Gets the charts of the level keyed by chart name.
+	/// </summary>
+	public ChartDictionary<Chart> ChartsDictionary
+	{
+		get
+		{
+			ChartDictionary<Chart> dictionary = new();
+			foreach (Chart chart in Charts)
+				dictionary.Add(chart.Name, chart);
+			return dictionary;
+		}
+	}
 	/// <summary>
 	/// Title of the song.
 	/// </summary>

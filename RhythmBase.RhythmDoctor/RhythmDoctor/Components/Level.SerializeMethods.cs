@@ -21,14 +21,7 @@ partial class Level
 	public static async Task<Level> FromFileAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
 	{
 		settings ??= new LevelReadSettings();
-		string extension = Path.GetExtension(filepath);
-		if (extension is not ".rdlevel" and not ".json")
-		{
-			if (extension is ".rdzip" or ".zip")
-				throw new NotSupportedException($"File type '{extension}' is not supported. Use {nameof(FromZipAsync)} instead.");
-			throw new NotSupportedException($"File type '{extension}' is not supported.");
-		}
-		Chart main = await LoadChartFileAsync(filepath, settings, cancellationToken);
+		Chart main = await Chart.FromFileAsync(filepath, settings, cancellationToken);
 		Level level = new(main)
 		{
 			Filepath = main.Filepath,
@@ -51,7 +44,7 @@ partial class Level
 	public async Task SaveToFileAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
 	{
 		settings ??= new LevelWriteSettings();
-		await Task.Run(() => SerializeChartFile(MainChart, filepath, settings), cancellationToken);
+		await MainChart.SaveToFileAsync(filepath, settings, cancellationToken);
 		string directoryPath = Path.GetDirectoryName(Path.GetFullPath(filepath)) ?? "";
 		if (string.IsNullOrEmpty(directoryPath))
 			return;
@@ -59,7 +52,7 @@ partial class Level
 		{
 			if (pair.Key == DefaultChartName)
 				continue;
-			await Task.Run(() => SerializeChartFile(pair.Value, Path.Combine(directoryPath, pair.Key), settings), cancellationToken);
+			await pair.Value.SaveToFileAsync(Path.Combine(directoryPath, ChartNaming.Instance.GetFileName(pair.Value.Name)), settings, cancellationToken);
 		}
 	}
 	#endregion
@@ -76,17 +69,18 @@ partial class Level
 	public static async Task<Level> FromDirectoryAsync(string directoryPath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
 	{
 		settings ??= new LevelReadSettings();
-		string mainPath = Path.Combine(directoryPath, DefaultChartName);
+		string mainPath = Path.Combine(directoryPath, ChartNaming.Instance.GetFileName(DefaultChartName));
 		if (!File.Exists(mainPath))
 			throw new FileNotFoundException($"The main chart '{mainPath}' was not found.");
-		Chart main = await LoadChartFileAsync(mainPath, settings, cancellationToken);
+		Chart main = await Chart.FromFileAsync(mainPath, settings, cancellationToken);
 		Dictionary<string, Chart> extras = [];
 		foreach (string file in Directory.GetFiles(directoryPath, "*.rdlevel"))
 		{
-			if (Path.GetFileName(file) == DefaultChartName)
+			if (Path.GetFileName(file) == ChartNaming.Instance.GetFileName(DefaultChartName))
 				continue;
-			Chart extra = await LoadChartFileAsync(file, settings, cancellationToken);
-			extras[Path.GetFileName(file)] = extra;
+			Chart extra = await Chart.FromFileAsync(file, settings, cancellationToken);
+			if (ChartNaming.Instance.TryGetChartName(Path.GetFileName(file), out string chartName))
+				extras[chartName] = extra;
 		}
 		Level level = new(main, extras)
 		{
@@ -110,7 +104,7 @@ partial class Level
 		settings ??= new LevelWriteSettings();
 		Directory.CreateDirectory(directoryPath);
 		foreach (var pair in _charts)
-			await Task.Run(() => SerializeChartFile(pair.Value, Path.Combine(directoryPath, pair.Key), settings), cancellationToken);
+			await pair.Value.SaveToFileAsync(Path.Combine(directoryPath, ChartNaming.Instance.GetFileName(pair.Value.Name)), settings, cancellationToken);
 	}
 	#endregion
 	#region stream
@@ -123,11 +117,7 @@ partial class Level
 	/// Asynchronously loads a level from a chart stream.
 	/// </summary>
 	public static async Task<Level> FromStreamAsync(Stream rdlevelStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
-	{
-		settings ??= new LevelReadSettings();
-		Chart chart = await ParseChartStreamAsync(rdlevelStream, settings, cancellationToken);
-		return new Level(chart);
-	}
+		=> new(await Chart.FromStreamAsync(rdlevelStream, settings, cancellationToken));
 	/// <summary>
 	/// Saves the main chart of this level to the specified stream.
 	/// </summary>
@@ -137,12 +127,7 @@ partial class Level
 	/// Asynchronously saves the main chart of this level to the specified stream.
 	/// </summary>
 	public Task SaveToStreamAsync(Stream stream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
-	{
-		settings ??= new LevelWriteSettings();
-		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings);
-		FileMainEntryConverter.SerializeMainEntry(MainChart, stream, options);
-		return Task.CompletedTask;
-	}
+		=> MainChart.SaveToStreamAsync(stream, settings, cancellationToken);
 	#endregion
 	#region zip
 	/// <summary>
@@ -180,7 +165,7 @@ partial class Level
 					string? rdlevelPath = null;
 					foreach (FileInfo? file in tempDirectory.GetFiles())
 					{
-						if (file.Name == "main.rdlevel")
+						if (file.Name == ChartNaming.Instance.GetFileName(DefaultChartName))
 						{
 							rdlevelPath = file.FullName;
 							break;
@@ -188,17 +173,18 @@ partial class Level
 					}
 					if (rdlevelPath == null)
 						throw new FileNotFoundException("No RDLevel file has been found.");
-					main = await LoadChartFileAsync(rdlevelPath, settings, cancellationToken);
+					main = await Chart.FromFileAsync(rdlevelPath, settings, cancellationToken);
 					main.ResolvedPath = Path.GetFullPath(rdlevelPath);
 					main.Filepath = Path.GetFullPath(filepath);
 					main.isZip = true;
 					main.isExtracted = true;
 					foreach (FileInfo file in tempDirectory.GetFiles("*.rdlevel"))
 					{
-						if (file.Name == "main.rdlevel")
+						if (file.Name == ChartNaming.Instance.GetFileName(DefaultChartName))
 							continue;
-						Chart extra = await LoadChartFileAsync(file.FullName, settings, cancellationToken);
-						extras[file.Name] = extra;
+						Chart extra = await Chart.FromFileAsync(file.FullName, settings, cancellationToken);
+						if (ChartNaming.Instance.TryGetChartName(file.Name, out string chartName))
+							extras[chartName] = extra;
 					}
 				}
 				catch (Exception)
@@ -211,9 +197,9 @@ partial class Level
 				using (FileStream zipStream = new(filepath, FileMode.Open, FileAccess.Read))
 				{
 					using ZipArchive archive = new(zipStream, ZipArchiveMode.Read);
-					ZipArchiveEntry entry = archive.GetEntry("main.rdlevel") ?? throw new FileNotFoundException("Cannot find the level file.");
+					ZipArchiveEntry entry = archive.GetEntry(ChartNaming.Instance.GetFileName(DefaultChartName)) ?? throw new FileNotFoundException("Cannot find the level file.");
 					using Stream entryStream = entry.Open();
-					main = await ParseChartStreamAsync(entryStream, settings, cancellationToken);
+					main = await Chart.FromStreamAsync(entryStream, settings, cancellationToken);
 				}
 				main.Filepath = Path.GetFullPath(filepath);
 				main.isZip = true;
@@ -245,9 +231,9 @@ partial class Level
 		Chart main;
 		using (ZipArchive archive = new(zipStream, ZipArchiveMode.Read))
 		{
-			ZipArchiveEntry entry = archive.GetEntry("main.rdlevel") ?? throw new FileNotFoundException("Cannot find the level file.");
+			ZipArchiveEntry entry = archive.GetEntry(ChartNaming.Instance.GetFileName(DefaultChartName)) ?? throw new FileNotFoundException("Cannot find the level file.");
 			using Stream stream = entry.Open();
-			main = await ParseChartStreamAsync(stream, settings, cancellationToken);
+			main = await Chart.FromStreamAsync(stream, settings, cancellationToken);
 		}
 		main.isZip = true;
 		main.isExtracted = false;
@@ -287,7 +273,7 @@ partial class Level
 		using ZipArchive archive = new(zipStream, ZipArchiveMode.Create, leaveOpen: true);
 		foreach (var pair in _charts)
 		{
-			string name = pair.Key;
+			string name = ChartNaming.Instance.GetFileName(pair.Value.Name);
 			Chart chart = pair.Value;
 			bool packAssets = chart == MainChart || settings.PackReferencedCharts;
 			string directory = ResolveChartDirectory(chart, settings);
@@ -328,52 +314,22 @@ partial class Level
 	/// Loads a level from a JSON string.
 	/// </summary>
 	public static Level FromJsonString(string json, LevelReadSettings? settings = null)
-	{
-		settings ??= new LevelReadSettings();
-		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
-		Chart chart = FileMainEntryConverter.DeserializeMainEntry<Chart>(new ReadOnlyMemoryDataSource(new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(json))), options);
-		return new Level(chart);
-	}
+		=> new(Chart.FromJsonString(json, settings));
 	/// <summary>
 	/// Loads a level from a <see cref="JsonDocument"/>.
 	/// </summary>
 	public static Level FromJsonDocument(JsonDocument jsonDocument, LevelReadSettings? settings = null)
-	{
-		settings ??= new LevelReadSettings();
-		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
-		Chart chart = FileMainEntryConverter.DeserializeMainEntry<Chart>(new JsonDocumentDataSource(jsonDocument), options);
-		return new Level(chart);
-	}
+		=> new(Chart.FromJsonDocument(jsonDocument, settings));
 	/// <summary>
 	/// Serializes the main chart of this level to a JSON string.
 	/// </summary>
 	public string ToJsonString(LevelWriteSettings? settings = null)
-	{
-		settings ??= new LevelWriteSettings();
-		string json;
-		using (MemoryStream stream = new())
-		{
-			FileMainEntryConverter.SerializeMainEntry(MainChart, stream, JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings));
-			stream.Seek(0, SeekOrigin.Begin);
-			json = Encoding.UTF8.GetString(stream.ToArray());
-		}
-		return json;
-	}
+		=> MainChart.ToJsonString(settings);
 	/// <summary>
 	/// Serializes the main chart of this level to a <see cref="JsonDocument"/>.
 	/// </summary>
 	public JsonDocument ToJsonDocument(LevelWriteSettings? settings = null)
-	{
-		settings ??= new LevelWriteSettings();
-		string json;
-		using (MemoryStream stream = new())
-		{
-			FileMainEntryConverter.SerializeMainEntry(MainChart, stream, JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings));
-			stream.Seek(0, SeekOrigin.Begin);
-			json = Encoding.UTF8.GetString(stream.ToArray());
-		}
-		return JsonDocument.Parse(json);
-	}
+		=> MainChart.ToJsonDocument(settings);
 	#endregion
 	/// <summary>
 	/// Resolves the directory used to locate a chart's referenced assets, giving precedence to
@@ -400,7 +356,8 @@ partial class Level
 			{
 				if (goTo.Chart.IsEmpty)
 					continue;
-				string key = Path.GetFileName(goTo.Chart.Path);
+				if (!ChartNaming.Instance.TryGetChartName(Path.GetFileName(goTo.Chart.Path), out string key))
+					continue;
 				if (string.IsNullOrEmpty(key))
 					continue;
 				if (level.TryGetChart(key, out Chart? existing))
@@ -412,44 +369,11 @@ partial class Level
 				string fullPath = Path.GetFullPath(goTo.Chart.Path, baseDir);
 				if (!File.Exists(fullPath))
 					continue;
-				Chart refChart = LoadChartFileAsync(fullPath, settings, CancellationToken.None).GetAwaiter().GetResult();
+				Chart refChart = Chart.FromFile(fullPath, settings);
 				level.RegisterChart(key, refChart);
 				goTo.ResolvedLevel = refChart;
 				pending.Enqueue(refChart);
 			}
 		}
-	}
-	/// <summary>
-	/// Deserializes a single chart from the specified file and assigns its file paths.
-	/// </summary>
-	private static async Task<Chart> LoadChartFileAsync(string filepath, LevelReadSettings settings, CancellationToken cancellationToken)
-	{
-		using FileStream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-		Chart chart = await ParseChartStreamAsync(stream, settings, cancellationToken);
-		chart.Filepath = chart.ResolvedPath = Path.GetFullPath(filepath);
-		return chart;
-	}
-	/// <summary>
-	/// Deserializes a single chart from the specified stream.
-	/// </summary>
-	private static async Task<Chart> ParseChartStreamAsync(Stream stream, LevelReadSettings settings, CancellationToken cancellationToken)
-	{
-		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
-		options.DirectoryName = stream is FileStream fileStream ? Path.GetDirectoryName(fileStream.Name) : null;
-		return await FileMainEntryConverter.DeserializeMainEntryAsync<Chart>(new StreamDataSource(stream), options, cancellationToken);
-	}
-	/// <summary>
-	/// Serializes a single chart to the specified file.
-	/// </summary>
-	private static void SerializeChartFile(Chart chart, string filepath, LevelWriteSettings settings)
-	{
-		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings);
-		options.DirectoryName = new FileInfo(filepath).Directory?.FullName;
-		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
-		if (!directory.Exists)
-			directory.Create();
-		using FileStream stream = File.Open(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-		stream.SetLength(0);
-		FileMainEntryConverter.SerializeMainEntry(chart, stream, options);
 	}
 }

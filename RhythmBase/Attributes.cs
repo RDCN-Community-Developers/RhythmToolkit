@@ -91,43 +91,45 @@ public sealed class JsonConverterIdAttribute(string namespaceId) : Attribute { }
 /// <summary>
 /// Links a public type to a custom converter in the generated <c>TypeConverterRegistry</c>.
 /// </summary>
-/// <param name="objectType">The type to register.</param>
-/// <param name="converterType">The converter type for the specified object type.</param>
+/// <typeparam name="TObject">The type to register.</typeparam>
+/// <typeparam name="TConverter">The converter type for the specified object type. Must derive from
+/// <see cref="System.Text.Json.Serialization.JsonConverter"/>.</typeparam>
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-public sealed class JsonConverterLinkAttribute(Type objectType, Type converterType) : Attribute { }
+public sealed class JsonConverterLinkAttribute<TObject, TConverter> : Attribute
+	where TConverter : System.Text.Json.Serialization.JsonConverter
+{ }
 /// <summary>
-/// Declares the event type system for a game adapter, linking an event interface, an enum type,
+/// Declares the event type system for a game adapter, linking an event interface, its category enum,
 /// a converter base class, and the enum property name. Used by the source generator to produce
 /// <c>EventConverterMap</c>, <c>EventTypeRegistry</c>, and individual event converters.
 /// </summary>
-/// <param name="interfaceType">The event interface (e.g. <c>IBaseEvent</c>).</param>
-/// <param name="typeEnumType">The enum type representing event categories (e.g. <c>EventType</c>).</param>
+/// <typeparam name="TInterface">The event interface (e.g. <c>IBaseEvent</c>).</typeparam>
+/// <typeparam name="TEnum">The enum type representing event categories (e.g. <c>EventType</c>).</typeparam>
 /// <param name="converterBaseType">The open-generic converter base (e.g. <c>MemberConverter&lt;&gt;</c>).</param>
 /// <param name="typeEnumPropertyName">The property on the event interface that returns the enum value.</param>
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-public sealed class JsonConverterSourceTypeAttribute(
-		Type interfaceType,
-		Type typeEnumType,
-		Type converterBaseType,
-		string typeEnumPropertyName
-		) : Attribute
+public sealed class JsonConverterSourceTypeAttribute<TInterface, TEnum>(Type converterBaseType, string typeEnumPropertyName) : Attribute
+	where TInterface : class
+	where TEnum : struct, Enum
 { }
 /// <summary>
-/// TickTime generation attribute for a game adapter, specifying the chart type, calculator type, and tick time type.
+/// TickTime generation attribute for a game adapter, specifying the chart type, level type, calculator type,
+/// tick time type, event enum type, and event interface type.
 /// </summary>
-/// <param name="chartType">The chart type. Must implement <see cref="IChart{TBeat}"/>.</param>
-/// <param name="calculatorType">The calculator type.</param>
-/// <param name="tickTimeType">The tick time type. Must implement <see cref="ITickTime{TBeat}"/>.</param>
-/// <param name="typeEnumType">The enum type representing event categories (e.g. <c>EventType</c>).</param>
-/// <param name="typeInterfaceType">The event interface (e.g. <c>IBaseEvent</c>).</param>
+/// <typeparam name="TChart">The chart type. Must implement <see cref="IChart"/>.</typeparam>
+/// <typeparam name="TLevel">The level type. Must implement <see cref="ILevel"/>.</typeparam>
+/// <typeparam name="TCalculator">The calculator type.</typeparam>
+/// <typeparam name="TTickTime">The tick time type. Must implement <see cref="ITickTime{TBeat}"/>.</typeparam>
+/// <typeparam name="TEnum">The enum type representing event categories (e.g. <c>EventType</c>).</typeparam>
+/// <typeparam name="TEventInterface">The event interface (e.g. <c>IBaseEvent</c>).</typeparam>
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
-public sealed class AdapterTypeAttribute(
-	Type chartType,
-	Type calculatorType,
-	Type tickTimeType,
-	Type typeEnumType,
-	Type typeInterfaceType
-	) : Attribute
+public sealed class AdapterTypeAttribute<TChart, TLevel, TCalculator, TTickTime, TEnum, TEventInterface> : Attribute
+	where TChart : Global.Components.IChart
+	where TLevel : Global.Components.ILevel
+	where TCalculator : class
+	where TTickTime : struct, Global.Components.ITickTime<TTickTime>
+	where TEnum : struct, Enum
+	where TEventInterface : class
 { }
 /// <summary>
 /// Specifies that a given enum type should be serialized as a string in JSON in new package, with an option for PascalCase or camelCase.

@@ -29,6 +29,7 @@ public class ChartCollection : ICollection<Chart>
 		set
 		{
 			value._parent = this;
+			value._parentLevel = _parent;
 			_variants[index] = value;
 		}
 	}
@@ -45,6 +46,7 @@ public class ChartCollection : ICollection<Chart>
 		{
 			var index = _variants.FindIndex(v => v.Name == name);
 			value._parent = this;
+			value._parentLevel = _parent;
 			if (index == -1)
 				_variants.Add(value);
 			else
@@ -87,28 +89,21 @@ public class ChartCollection : ICollection<Chart>
 	}
 
 	/// <inheritdoc/>
-	public bool Remove(Chart item)
-	{
-		item._parent = null;
-		return _variants.Remove(item);
-	}
-
-	/// <inheritdoc/>
-	public IEnumerator<Chart> GetEnumerator()
-	{
-		return _variants.GetEnumerator();
-	}
-
-	/// <inheritdoc/>
-	IEnumerator IEnumerable.GetEnumerator()
-	{
-		return GetEnumerator();
-	}
-
-	/// <inheritdoc/>
 	public void Add(Chart item)
 	{
 		item._parent = this;
+		item._parentLevel = _parent;
 		_variants.Add(item);
 	}
+	/// <inheritdoc/>
+	public bool Remove(Chart item)
+	{
+		item._parent = null;
+		item._parentLevel = null;
+		return _variants.Remove(item);
+	}
+	/// <inheritdoc/>
+	public IEnumerator<Chart> GetEnumerator() => _variants.GetEnumerator();
+	/// <inheritdoc/>
+	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

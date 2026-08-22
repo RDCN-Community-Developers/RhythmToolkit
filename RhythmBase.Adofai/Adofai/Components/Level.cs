@@ -1,6 +1,7 @@
 using RhythmBase.Adofai.Events;
 using RhythmBase.Adofai.Extensions;
 using RhythmBase.Adofai.Utils;
+using RhythmBase.Global.Components;
 using static RhythmBase.Adofai.Constants;
 
 namespace RhythmBase.Adofai.Components;
@@ -10,10 +11,8 @@ namespace RhythmBase.Adofai.Components;
 /// </summary>
 public partial class Level :
     TileCollection,
-    IJsonLevel<Level>,
-    ISingleFileLevel<Level>,
-    IArchiveLevel<Level>,
-    IChart<TickTime>
+    IJsonChart<Level, TickTime>,
+    IArchiveLevel<Level, Level>
 {
     /// <summary>
     /// Level settings.
@@ -83,6 +82,22 @@ public partial class Level :
     public string Filepath { get; internal set; } = string.Empty;
     /// <inheritdoc/>
     public string ResolvedDirectory => Path.GetDirectoryName(ResolvedPath) ?? "";
+    /// <summary>
+    /// Gets or sets the name of the chart (e.g. the file name within a level).
+    /// </summary>
+    public string Name { get; set; } = "main";
+    /// <summary>
+    /// Gets the charts contained in this level, keyed by chart name. An Adofai level contains a single chart.
+    /// </summary>
+    public ChartDictionary<Level> Charts
+    {
+        get
+        {
+            ChartDictionary<Level> dictionary = new();
+            dictionary.Add(Name, this);
+            return dictionary;
+        }
+    }
     /// <summary>  
     /// Adds a tile to the level.  
     /// Sets the parent of the tile to this level before adding it to the base collection.  
