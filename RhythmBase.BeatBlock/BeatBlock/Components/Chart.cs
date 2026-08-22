@@ -12,13 +12,15 @@ namespace RhythmBase.BeatBlock.Components;
 /// </summary>
 /// <remarks>
 /// A BeatBlock chart spans two documents: a <c>level</c> part (an object of shared events) and a
-/// <c>chart</c> part (an array of chart events). Reading and writing therefore operates on the pair of
-/// documents together via <see cref="FromLevelAndChart"/> / <see cref="SaveToLevelAndChart"/>, instead
-/// of the single-file interfaces used by formats where one chart is one file.
+/// <c>chart</c> part (an array of chart events). The single-document members of
+/// <see cref="IJsonChart{TSelf, TBeat}"/> read and write only the <c>chart</c> part, leaving the
+/// <c>level</c> part at the level default. The two-parameter overloads (e.g. <see cref="FromStream(Stream, Stream)"/>)
+/// read and write both documents together.
 /// </remarks>
 public partial class Chart :
 		OrderedEventCollection<IBaseEvent>,
-		IChart<Chart, TickTime>
+		IChart<Chart, TickTime>,
+		IJsonChart<Chart, TickTime>
 {
 	internal bool isDefault = false;
 	/// <summary>
