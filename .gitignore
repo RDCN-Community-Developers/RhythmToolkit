@@ -376,3 +376,4 @@ MigrationBackup/
 .ionide/
 /RhythmBase.Generator/LevelEditorProperties.json
 /nuget.config
+/.kilo
