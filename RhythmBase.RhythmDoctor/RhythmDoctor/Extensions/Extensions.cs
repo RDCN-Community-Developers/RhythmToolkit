@@ -293,21 +293,26 @@ public static partial class Extensions
 	extension(Chart e)
 	{
 		/// <summary>
-		/// Get an instance of the beat associated with the level.
+		/// Get an instance of the beat associated with the chart.
 		/// </summary>
-		/// <param name="tick">Total number of 1-based beats.</param>
+		/// <param name="tick">Total number of 1-based ticks.</param>
 		public TickTime TickOf(float tick) => e.Calculator.TickOf(tick);
 		/// <summary>
-		/// Get an instance of the beat associated with the level.
+		/// Get an instance of the beat associated with the chart.
 		/// </summary>
 		/// <param name="bar">The 1-based bar.</param>
 		/// <param name="beat">The 1-based beat of the bar.</param>
 		public TickTime TickOf(int bar, float beat) => e.Calculator.TickOf(bar, beat);
 		/// <summary>
-		/// Get an instance of the beat associated with the level.
+		/// Get an instance of the beat associated with the chart.
 		/// </summary>
-		/// <param name="timeSpan">Total time span of the beat.</param>
+		/// <param name="timeSpan">Total time span of the tick.</param>
 		public TickTime TickOf(TimeSpan timeSpan) => e.Calculator.TickOf(timeSpan);
+		/// <summary>
+		/// Get an instance of the beat associated with the chart.
+		/// </summary>
+		/// <param name="tick">The tick.</param>
+		public TickTime TickOf(TickTime tick) => tick.WithLink(e.Calculator);
 	}
 
 	extension(Decoration e)
