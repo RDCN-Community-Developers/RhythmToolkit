@@ -9,7 +9,7 @@ using System.Text.Json;
 namespace RhythmBase.RhythmDoctor.Serialization;
 
 [JsonConverterFor(typeof(Chart))]
-internal sealed class LevelConverter : MetadataJsonConverter<Chart>
+internal sealed class ChartConverter : MetadataJsonConverter<Chart>
 {
 	private static readonly SettingsConverter settingsConverter = new();
 	private static readonly RowConverter rowConverter = new();
@@ -37,7 +37,7 @@ internal sealed class LevelConverter : MetadataJsonConverter<Chart>
 		return true;
 	};
 	private static readonly SoundCollectionConverter soundCollectionConverter = new();
-	static LevelConverter()
+	static ChartConverter()
 	{
 		// Legacy fields ignored by newer versions
 		UnhandledFieldRegistry.Ignore<ShowDialogue>("speed");

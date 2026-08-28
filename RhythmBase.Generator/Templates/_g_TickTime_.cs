@@ -18,6 +18,7 @@ public partial struct _g_TickTimeName_ : ITickTime<_g_TickTimeName_>
 	/// components are loaded. Use this property to check whether the instance is in an uninitialized or empty state before
 	/// performing operations that require loaded data.</remarks>
 	[System.Diagnostics.CodeAnalysis.MemberNotNullWhen(false, nameof(_calculator))]
+	[System.Diagnostics.CodeAnalysis.MemberNotNullWhen(false, nameof(BaseChart))]
 	public readonly partial bool IsEmpty { get; }
 	internal static bool MustFromCache { get; } = false;
 	/// <summary>

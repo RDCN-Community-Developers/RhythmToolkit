@@ -1,6 +1,7 @@
 using RhythmBase.RhythmDoctor.Serialization;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
+using RhythmBase.RhythmDoctor.Config;
 
 namespace RhythmBase.RhythmDoctor.Components;
 
@@ -29,14 +30,14 @@ public partial class Chart :
 	/// </summary>
 	/// <remarks>Subscribe to this event to receive notifications whenever an event is added. The event handler
 	/// receives the current level and event arguments containing additional information about the event.</remarks>
-	public event RDEventHandler? OnEventAdded;
+	public event RDEventHandler? EventAdded;
 
 	/// <summary>
 	/// Occurs when an event is removed from the level, providing the associated level and event arguments to subscribers.
 	/// </summary>
 	/// <remarks>Subscribe to this event to perform custom actions when an event is removed from the level. The
 	/// event handler receives the level instance and event arguments that provide context about the removal.</remarks>
-	public event RDEventHandler? OnEventRemoved;
+	public event RDEventHandler? EventRemoved;
 
 	internal List<FloatingText> _floatingTexts = [];
 
@@ -195,19 +196,20 @@ public partial class Chart :
 			return rdlevel;
 		}
 	}
-
+	public void OnEventAdded(RDEventArgs e) => EventAdded?.Invoke(this, e);
+	public void OnEventRemoved(RDEventArgs e) => EventRemoved?.Invoke(this, e);
 	/// <summary>
 	/// Adds an event to the level.
 	/// </summary>
 	/// <param name="item">The event to be added.</param>
-	public override bool Add(IBaseEvent item) => Add(item, BeatChangeStrategy.Default);
+	public override bool Add(IBaseEvent item) => Add(item, GlobalConfig.Strategy);
 
 	/// <summary> 
 	/// Adds an event to the level, with an option to keep the event's position.
 	/// </summary>
 	/// <param name="item">The event to be added.</param>
 	/// <param name="strategy">The strategy to use when adding the event, which may affect how beat changes are handled (default is <see cref="BeatChangeStrategy.Default"/>).</param>
-	public bool Add(IBaseEvent item, BeatChangeStrategy strategy = BeatChangeStrategy.Default)
+	public bool Add(IBaseEvent item, BeatChangeStrategy strategy = GlobalConfig.DefaultStrategy)
 	{
 		bool success = true;
 		// Set the default beat calculator
@@ -234,9 +236,9 @@ public partial class Chart :
 			// Add to the corresponding decoration
 			success &= AddInternal(decoAction);
 		// BPM and CPB
-		else if (item is SetCrotchetsPerBar setCrochetsPerBar)
+		else if (item is SetCrotchetsPerBar setCrochetsPerBar && setCrochetsPerBar.Active)
 			success &= AddSetCrotchetsPerBarInternal(setCrochetsPerBar, strategy);
-		else if (item is BaseBeatsPerMinute baseBeatsPerMinute)
+		else if (item is BaseBeatsPerMinute baseBeatsPerMinute && baseBeatsPerMinute.Active)
 			success &= AddBaseBeatsPerMinuteInternal(baseBeatsPerMinute);
 		// Other events
 		else
@@ -244,7 +246,7 @@ public partial class Chart :
 		if (item is FloatingText floatingText)
 			_floatingTexts.Add(floatingText);
 		if (success)
-			OnEventAdded?.Invoke(this, new RDEventArgs(item));
+			EventAdded?.Invoke(this, new RDEventArgs(item));
 		if (!success)
 			be._tick._calculator = originalCalculator;
 		return success;
@@ -308,7 +310,7 @@ public partial class Chart :
 		if (item is FloatingText floatingText)
 			_floatingTexts.Remove(floatingText);
 		if (success)
-			OnEventRemoved?.Invoke(this, new RDEventArgs(item));
+			EventRemoved?.Invoke(this, new RDEventArgs(item));
 		return success;
 	}
 
@@ -388,7 +390,7 @@ public partial class Chart :
 		{
 			SetCrotchetsPerBar cpb = new() { _tick = new TickTime(Calculator, fix.Tick), _crotchetsPerBar = fix.Cpb - 1 };
 			base.Add(cpb);
-			OnEventAdded?.Invoke(this, new(cpb) { IsAutoPopulated = true, });
+			EventAdded?.Invoke(this, new(cpb) { IsAutoPopulated = true, });
 		}
 
 		return true;
@@ -410,7 +412,7 @@ public partial class Chart :
 		{
 			SetCrotchetsPerBar cpb = new() { _tick = new TickTime(Calculator, fix.Tick), _crotchetsPerBar = fix.Cpb - 1 };
 			base.Add(cpb);
-			OnEventRemoved?.Invoke(this, new(cpb) { IsAutoPopulated = true, });
+			EventRemoved?.Invoke(this, new(cpb) { IsAutoPopulated = true, });
 		}
 
 		return true;

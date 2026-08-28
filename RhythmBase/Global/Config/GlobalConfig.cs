@@ -7,7 +7,7 @@ namespace RhythmBase.Global.Settings;
 /// This static class contains application-wide configuration values and defaults.
 /// Settings declared here are intended to be globally accessible and stable across the runtime.
 /// </remarks>
-public static class GlobalSettings
+public static class GlobalConfig
 {
 	/// <summary>
 	/// Gets or sets the prefix used for naming temporary cache directories created by the application.

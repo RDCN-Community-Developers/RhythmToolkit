@@ -1,5 +1,6 @@
 using RhythmBase.RhythmDoctor.Components;
 using RhythmBase.RhythmDoctor.Serialization;
+using RhythmBase.RhythmDoctor.Utils;
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
@@ -17,6 +18,30 @@ public abstract record class BaseBeatsPerMinute : BaseEvent
 			base.TickTime = value;
 			_ = base.TickTime._calculator;
 			ResetTimeLine();
+		}
+	}
+	/// <inheritdoc/>
+	public override bool Active
+	{
+		get => base.Active;
+		set
+		{
+			if(!_tick.IsEmpty)
+			{
+				OrderedEventCollection<IBaseEvent> b = _tick.BaseChart;
+				if (value && !base.Active)
+				{
+					_tick._calculator.AddBpmAt(new BpmCache(_tick.Tick, _tick.TimeSpan, BeatsPerMinute));
+					b.Add(this);
+				}
+				else if (!value && base.Active)
+				{
+					_tick._calculator.RemoveBpmAt(new BpmCache(_tick.Tick, _tick.TimeSpan, BeatsPerMinute));
+					bool result = b.Remove(this);
+					_tick = _tick.WithoutLink();
+				}
+			}
+			base.Active = value;
 		}
 	}
 	///<inheritdoc/>

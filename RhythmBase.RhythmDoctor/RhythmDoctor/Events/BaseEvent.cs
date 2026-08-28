@@ -64,7 +64,7 @@ public abstract record class BaseEvent : IBaseEvent
 	/// </summary>
 	public ref Condition Condition => ref _condition;
 	///<inheritdoc/>
-	public bool Active { get; set; } = true;
+	public virtual bool Active { get; set; } = true;
 	///<inheritdoc/>
 	public JsonElement this[string propertyName]
 	{

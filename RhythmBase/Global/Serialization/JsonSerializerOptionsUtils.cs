@@ -13,7 +13,7 @@ public static class JsonSerializerOptionsUtils
     /// </summary>
     /// <param name="settings">The level read settings.</param>
     /// <returns>A new <see cref="MetadataJsonSerializerOptions"/> instance.</returns>
-    public static MetadataJsonSerializerOptions GetJsonSerializerOptionsForRead(LevelReadSettings settings)
+    public static MetadataJsonSerializerOptions GetJsonSerializerOptionsForRead(LevelReadConfig settings)
     {
         MetadataJsonSerializerOptions options = new()
 				{
@@ -30,7 +30,7 @@ public static class JsonSerializerOptionsUtils
     /// </summary>
     /// <param name="settings">The level write settings.</param>
     /// <returns>A new <see cref="MetadataJsonSerializerOptions"/> instance.</returns>
-    public static MetadataJsonSerializerOptions GetJsonSerializerOptionsForWrite(LevelWriteSettings settings)
+    public static MetadataJsonSerializerOptions GetJsonSerializerOptionsForWrite(LevelWriteConfig settings)
     {
         MetadataJsonSerializerOptions options = new() { JsonSerializerOptions = new(), WriteAligned = settings.WriteAligned };
         options.JsonSerializerOptions.WriteIndented = settings.WriteIndented;

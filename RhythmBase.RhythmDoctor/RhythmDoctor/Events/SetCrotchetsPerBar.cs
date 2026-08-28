@@ -1,3 +1,7 @@
+using RhythmBase.RhythmDoctor.Components;
+using RhythmBase.RhythmDoctor.Config;
+using RhythmBase.RhythmDoctor.Utils;
+
 namespace RhythmBase.RhythmDoctor.Events;
 
 /// <summary>
@@ -37,6 +41,53 @@ public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 			{
 				TickTime += 0f;
 			}
+		}
+	}
+	/// <inheritdoc/>
+	public override bool Active
+	{
+		get => base.Active;
+		set
+		{
+			if (!_tick.IsEmpty)
+			{
+				OrderedEventCollection<IBaseEvent> b = _tick.BaseChart;
+				if (value && !base.Active)
+				{
+					(int bar, float beat) = _tick;
+					if (beat != 1)
+						throw new InvalidOperationException($"Cannot activate {nameof(SetCrotchetsPerBar)} event at bar {bar} beat {beat}. It must be at the beginning of a bar.");
+					CpbCache cache = new(TickTime.Tick, bar, CrotchetsPerBar);
+					bool extra = _tick._calculator.AddCpbAt(cache, (byte)GlobalConfig.Strategy, out CpbCache fix);
+					b.Add(this);
+					if (extra)
+					{
+						SetCrotchetsPerBar cpb = new() { _tick = new TickTime(_tick._calculator, fix.Tick), _crotchetsPerBar = fix.Cpb - 1 };
+						b.Add(cpb);
+						_tick.BaseChart.OnEventAdded(new(cpb) { IsAutoPopulated = true, });
+					}
+				}
+				else if(!value && base.Active)
+				{
+					var node = _tick.BaseChart.EventsBeatOrder.FindNode(_tick);
+					if (node is null) return;
+					var col = node.Value;
+					if (!col.ContainsType(EventType.SetCrotchetsPerBar)) return;
+					var lastcpb = col.OfType<SetCrotchetsPerBar>().Last();
+					if (lastcpb != this) return;
+					(int bar, _) = _tick;
+					CpbCache cache = new(_tick.Tick, bar, CrotchetsPerBar);
+					bool extra = _tick._calculator.RemoveCpbAt(cache, (byte)GlobalConfig.Strategy, out CpbCache fix);
+					b.Remove(this);
+					if (extra)
+					{
+						SetCrotchetsPerBar cpb = new() { _tick = new TickTime(_tick._calculator, fix.Tick), _crotchetsPerBar = fix.Cpb - 1 };
+						b.Add(cpb);
+						_tick.BaseChart.OnEventRemoved(new(cpb) { IsAutoPopulated = true, });
+					}
+				}
+			}
+			base.Active = value;
 		}
 	}
 	/// <summary>

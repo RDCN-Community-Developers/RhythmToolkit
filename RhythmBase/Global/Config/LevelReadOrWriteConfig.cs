@@ -58,7 +58,7 @@ public class FileReferenceArgs(FileReference Reference) : EventArgs
 /// collection of file references, and arbitrary custom data. Implementations are expected
 /// to honor these settings during import/export operations.
 /// </remarks>
-public class LevelReadOrWriteSettings
+public class LevelReadOrWriteConfig
 {
 	private Dictionary<string, object?> _customData = new();
 	/// <summary>
@@ -140,7 +140,7 @@ public class LevelReadOrWriteSettings
 /// <summary>
 /// Level export settings.
 /// </summary>
-public class LevelWriteSettings : LevelReadOrWriteSettings
+public class LevelWriteConfig : LevelReadOrWriteConfig
 {
 	/// <summary>
 	/// When <c>true</c>, JSON serialization will allow certain characters to remain unescaped (unsafe relaxed escaping).
@@ -185,7 +185,7 @@ public class LevelWriteSettings : LevelReadOrWriteSettings
 /// <summary>
 /// Level import settings.
 /// </summary>
-public class LevelReadSettings : LevelReadOrWriteSettings
+public class LevelReadConfig : LevelReadOrWriteConfig
 {
 	/// <summary>
 	/// Gets or sets the method used to process zip files.

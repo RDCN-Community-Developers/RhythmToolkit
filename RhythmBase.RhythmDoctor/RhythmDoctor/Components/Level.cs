@@ -150,12 +150,12 @@ public partial class Level :
 	/// Occurs when a new event is added to the main chart.
 	/// </summary>
 	[Obsolete(ObsoleteWrapperMessage)]
-	public event RDEventHandler? OnEventAdded { add => MainChart.OnEventAdded += value; remove => MainChart.OnEventAdded -= value; }
+	public event RDEventHandler? OnEventAdded { add => MainChart.EventAdded += value; remove => MainChart.EventAdded -= value; }
 	/// <summary>
 	/// Occurs when an event is removed from the main chart.
 	/// </summary>
 	[Obsolete(ObsoleteWrapperMessage)]
-	public event RDEventHandler? OnEventRemoved { add => MainChart.OnEventRemoved += value; remove => MainChart.OnEventRemoved -= value; }
+	public event RDEventHandler? OnEventRemoved { add => MainChart.EventRemoved += value; remove => MainChart.EventRemoved -= value; }
 	/// <summary>
 	/// Adds an event to the main chart.
 	/// </summary>

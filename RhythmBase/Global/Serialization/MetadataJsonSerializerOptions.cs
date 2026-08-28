@@ -46,12 +46,12 @@ public record class MetadataJsonSerializerOptions
 	/// <summary>
 	/// Gets or sets the level read settings associated with this serialization operation.
 	/// </summary>
-	public LevelReadSettings? ReadSettings { get; set; }
+	public LevelReadConfig? ReadSettings { get; set; }
 
 	/// <summary>
 	/// Gets or sets the level write settings associated with this serialization operation.
 	/// </summary>
-	public LevelWriteSettings? WriteSettings { get; set; }
+	public LevelWriteConfig? WriteSettings { get; set; }
 
 	private readonly List<(Type matchType, string field, Func<object, JsonElement, bool> handler)> _userHandlers = new();
 
@@ -99,7 +99,7 @@ public record class MetadataJsonSerializerOptions
 	/// <summary>
 	/// Copies user handlers from the specified settings instance.
 	/// </summary>
-	internal void CopyUserHandlersFrom(LevelReadSettings settings)
+	internal void CopyUserHandlersFrom(LevelReadConfig settings)
 	{
 		settings.CopyToUserHandlers(_userHandlers);
 	}
