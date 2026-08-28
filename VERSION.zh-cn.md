@@ -15,7 +15,7 @@
 
 ### 20260405 v1.3.11-alpha1
 - 同步 Rhythm Doctor 关卡版本
-- 为 LevelReadSettings 和 LevelWriteSettings 添加自定义序列化接口
+- 为 LevelReadConfig 和 LevelWriteConfig 添加自定义序列化接口
 
 ### 20260330 v1.3.10
 - 修复以下事件模型的异常
@@ -90,7 +90,7 @@
 - 修复以下事件模型的异常
     - NewWindowDance.Tab 默认为 Actions 而不是 Windows
     - WindowResize.Tab 默认为 Actions 而不是 Windows
-- 添加 LevelWriteSettings.EnableUnsafeRelaxedJsonEscaping 方法，用于启用或禁用 html 非安全字符转义
+- 添加 LevelWriteConfig.EnableUnsafeRelaxedJsonEscaping 方法，用于启用或禁用 html 非安全字符转义
 - 修复 RDBeat 比较时缓存失效异常
 - 修复 RDRange 范围异常
 - 修复 TimesExecuted 条件的序列化异常

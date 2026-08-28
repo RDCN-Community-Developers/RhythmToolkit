@@ -11,14 +11,14 @@ partial class Chart
 	/// <summary>
 	/// Loads a single chart from a <c>.rdlevel</c> or <c>.json</c> file.
 	/// </summary>
-	public static Chart FromFile(string filepath, LevelReadSettings? settings = null)
+	public static Chart FromFile(string filepath, LevelReadConfig? settings = null)
 		=> FromFileAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously loads a single chart from a <c>.rdlevel</c> or <c>.json</c> file.
 	/// </summary>
-	public static async Task<Chart> FromFileAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Chart> FromFileAsync(string filepath, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		string extension = Path.GetExtension(filepath);
 		if (extension is not ".rdlevel" and not ".json")
 		{
@@ -38,14 +38,14 @@ partial class Chart
 	/// <summary>
 	/// Saves this chart to a single <c>.rdlevel</c> or <c>.json</c> file.
 	/// </summary>
-	public void SaveToFile(string filepath, LevelWriteSettings? settings = null)
+	public void SaveToFile(string filepath, LevelWriteConfig? settings = null)
 		=> SaveToFileAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously saves this chart to a single <c>.rdlevel</c> or <c>.json</c> file.
 	/// </summary>
-	public async Task SaveToFileAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToFileAsync(string filepath, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings);
 		options.DirectoryName = new FileInfo(filepath).Directory?.FullName;
 		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
@@ -60,28 +60,28 @@ partial class Chart
 	/// <summary>
 	/// Loads a single chart from a stream.
 	/// </summary>
-	public static Chart FromStream(Stream rdlevelStream, LevelReadSettings? settings = null)
+	public static Chart FromStream(Stream rdlevelStream, LevelReadConfig? settings = null)
 		=> FromStreamAsync(rdlevelStream, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously loads a single chart from a stream.
 	/// </summary>
-	public static async Task<Chart> FromStreamAsync(Stream rdlevelStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Chart> FromStreamAsync(Stream rdlevelStream, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
 		return await FileMainEntryConverter.DeserializeMainEntryAsync<Chart>(new StreamDataSource(rdlevelStream), options, cancellationToken);
 	}
 	/// <summary>
 	/// Saves this chart to the specified stream.
 	/// </summary>
-	public void SaveToStream(Stream stream, LevelWriteSettings? settings = null)
+	public void SaveToStream(Stream stream, LevelWriteConfig? settings = null)
 		=> SaveToStreamAsync(stream, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously saves this chart to the specified stream.
 	/// </summary>
-	public Task SaveToStreamAsync(Stream stream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public Task SaveToStreamAsync(Stream stream, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings);
 		FileMainEntryConverter.SerializeMainEntry(this, stream, options);
 		return Task.CompletedTask;
@@ -91,27 +91,27 @@ partial class Chart
 	/// <summary>
 	/// Loads a single chart from a JSON string.
 	/// </summary>
-	public static Chart FromJsonString(string json, LevelReadSettings? settings = null)
+	public static Chart FromJsonString(string json, LevelReadConfig? settings = null)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
 		return FileMainEntryConverter.DeserializeMainEntry<Chart>(new ReadOnlyMemoryDataSource(new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(json))), options);
 	}
 	/// <summary>
 	/// Loads a single chart from a <see cref="JsonDocument"/>.
 	/// </summary>
-	public static Chart FromJsonDocument(JsonDocument jsonDocument, LevelReadSettings? settings = null)
+	public static Chart FromJsonDocument(JsonDocument jsonDocument, LevelReadConfig? settings = null)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
 		return FileMainEntryConverter.DeserializeMainEntry<Chart>(new JsonDocumentDataSource(jsonDocument), options);
 	}
 	/// <summary>
 	/// Serializes this chart to a JSON string.
 	/// </summary>
-	public string ToJsonString(LevelWriteSettings? settings = null)
+	public string ToJsonString(LevelWriteConfig? settings = null)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		using MemoryStream stream = new();
 		FileMainEntryConverter.SerializeMainEntry(this, stream, JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings));
 		stream.Seek(0, SeekOrigin.Begin);
@@ -120,9 +120,9 @@ partial class Chart
 	/// <summary>
 	/// Serializes this chart to a <see cref="JsonDocument"/>.
 	/// </summary>
-	public JsonDocument ToJsonDocument(LevelWriteSettings? settings = null)
+	public JsonDocument ToJsonDocument(LevelWriteConfig? settings = null)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		using MemoryStream stream = new();
 		FileMainEntryConverter.SerializeMainEntry(this, stream, JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings));
 		stream.Seek(0, SeekOrigin.Begin);

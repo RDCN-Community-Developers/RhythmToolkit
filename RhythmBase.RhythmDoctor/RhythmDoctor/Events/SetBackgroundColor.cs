@@ -120,8 +120,8 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the speed of the background scrolling when the content mode is set to tiled.
 	/// </summary>
 	[JsonCondition($"""
-	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase. RhythmDoctor.BackgroundType)}.{nameof(BackgroundType.Image)} &&
-	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.ContentMode)}.{nameof(ContentMode.Tiled)} &&
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(RhythmDoctor.BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(RhythmDoctor.ContentMode)}.{nameof(ContentMode.Tiled)} &&
 	($&.{nameof(ScrollX)} is null || $&.{nameof(ScrollY)} is null)
 	""")]
 	public Point Speed { get; set; } = new(0, 0);
@@ -129,8 +129,8 @@ public record class SetBackgroundColor : BaseEvent, IEaseEvent, IRoomEvent, ICol
 	/// Gets or sets the tiling type for the background.
 	/// </summary>
 	[JsonCondition($"""
-	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.BackgroundType)}.{nameof(BackgroundType.Image)} &&
-	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.ContentMode)}.{nameof(ContentMode.Tiled)}
+	$&.{nameof(BackgroundType)} == RhythmBase.RhythmDoctor.{nameof(RhythmDoctor.BackgroundType)}.{nameof(BackgroundType.Image)} &&
+	$&.{nameof(ContentMode)} == RhythmBase.RhythmDoctor.{nameof(RhythmDoctor.ContentMode)}.{nameof(ContentMode.Tiled)}
 	""")]
 	public TilingType TilingType { get; set; } = TilingType.Scroll;
 	/// <summary>

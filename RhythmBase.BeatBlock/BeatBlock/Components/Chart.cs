@@ -1,7 +1,6 @@
 ﻿using RhythmBase.BeatBlock.Events;
 using RhythmBase.Global.Components;
 using RhythmBase.Global.Serialization;
-using RhythmBase.Global.Settings;
 using System.Diagnostics.CodeAnalysis;
 using static RhythmBase.BeatBlock.Constants;
 

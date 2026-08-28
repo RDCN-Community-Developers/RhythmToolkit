@@ -26,7 +26,7 @@ public record class WindowResize : BaseWindowEvent, IEaseEvent, IRoomEvent
 	/// It can only be Tab.Actions or Tab.Windows. This property is used to determine the tab of this event. The default value is Tab.Windows.
 	/// </remarks>
 	[JsonAlias("tab")]
-	[JsonCondition($"""$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.{nameof(RhythmBase.RhythmDoctor.Tab)}.{nameof(Tab.Windows)}""")]
+	[JsonCondition($"""$&.{nameof(CustomTab)} is RhythmBase.RhythmDoctor.{nameof(RhythmDoctor.Tab)}.{nameof(Tab.Windows)}""")]
 	public Tab CustomTab
 	{
 		get;

@@ -138,8 +138,8 @@ internal sealed class ChartConverter : MetadataJsonConverter<Chart>
 		UnhandledFieldRegistry.Ignore<MaskRoom>("contentMode");
 	}
 
-	internal LevelReadSettings ReadSettings { get; set; } = new LevelReadSettings();
-	internal LevelWriteSettings WriteSettings { get; set; } = new LevelWriteSettings();
+	internal LevelReadConfig ReadSettings { get; set; } = new LevelReadConfig();
+	internal LevelWriteConfig WriteSettings { get; set; } = new LevelWriteConfig();
 	internal string? DirectoryName { get; set; }
 
 	public override Chart? Read(ref Utf8JsonReader reader, Type typeToConvert, MetadataJsonSerializerOptions options)

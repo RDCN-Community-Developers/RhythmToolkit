@@ -1,6 +1,7 @@
 using RhythmBase.RhythmDoctor.Components;
-using RhythmBase.RhythmDoctor.Config;
 using RhythmBase.RhythmDoctor.Utils;
+using RhythmBase.Global;
+using RhythmBase.RhythmDoctor.Extensions;
 
 namespace RhythmBase.RhythmDoctor.Events;
 
@@ -58,7 +59,7 @@ public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 					if (beat != 1)
 						throw new InvalidOperationException($"Cannot activate {nameof(SetCrotchetsPerBar)} event at bar {bar} beat {beat}. It must be at the beginning of a bar.");
 					CpbCache cache = new(TickTime.Tick, bar, CrotchetsPerBar);
-					bool extra = _tick._calculator.AddCpbAt(cache, (byte)GlobalConfig.Strategy, out CpbCache fix);
+					bool extra = _tick._calculator.AddCpbAt(cache, (byte)Config.Strategy, out CpbCache fix);
 					b.Add(this);
 					if (extra)
 					{
@@ -77,7 +78,7 @@ public record class SetCrotchetsPerBar : BaseEvent, IBarBeginningEvent
 					if (lastcpb != this) return;
 					(int bar, _) = _tick;
 					CpbCache cache = new(_tick.Tick, bar, CrotchetsPerBar);
-					bool extra = _tick._calculator.RemoveCpbAt(cache, (byte)GlobalConfig.Strategy, out CpbCache fix);
+					bool extra = _tick._calculator.RemoveCpbAt(cache, (byte)Config.Strategy, out CpbCache fix);
 					b.Remove(this);
 					if (extra)
 					{

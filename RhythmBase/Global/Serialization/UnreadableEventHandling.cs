@@ -1,4 +1,4 @@
-namespace RhythmBase.Global.Settings;
+namespace RhythmBase.Global.Serialization;
 
 /// <summary>
 /// Actions performed on items with exceptions during reads.
@@ -6,11 +6,11 @@ namespace RhythmBase.Global.Settings;
 public enum UnreadableEventHandling
 {
 	/// <summary>
-	/// Stores unreadable events in <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.UnreadableEvents" /> for restoration.
+	/// Stores unreadable events in <see cref="P:RhythmBase.Global.LevelReadOrWriteConfig.UnreadableEvents" /> for restoration.
 	/// </summary>
 	Store,
 	/// <summary>
 	/// An exception will be thrown.
 	/// </summary>
-	ThrowException
+	ThrowException,
 }

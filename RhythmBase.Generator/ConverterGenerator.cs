@@ -739,7 +739,7 @@ public partial class ConverterGenerator : IIncrementalGenerator
 			{
 				string mtpName = multiple ? $"{info.RootClassType.Name}" : "";
 				string src = RenderTemplate(templates["_g_Upgrader_"],
-					("infoRootClassTypeToDisplayString", info.RootClassType.ToDisplayString()),
+					("infoRootClassType", info.RootClassType.ToDisplayString()),
 					("infoClassTypeEnumToDisplayString", info.ClassTypeEnum.ToDisplayString()),
 					("enumSuffix", multiple ? info.ClassTypeEnum.Name : ""),
 					("mtpName", mtpName));

@@ -1,4 +1,4 @@
-﻿namespace RhythmBase.Global.Settings;
+﻿namespace RhythmBase.Global.Serialization;
 
 /// <summary>
 /// Actions performed on inactive items at read or write times.
@@ -11,7 +11,7 @@ public enum InactiveEventsHandling
 	/// </summary>
 	Retain,
 	/// <summary>
-	/// Dumps inactivated events to <see cref="P:RhythmBase.Global.Settings.LevelReadOrWriteSettings.InactiveEvents" /> on reads and writes.
+	/// Dumps inactivated events to <see cref="P:RhythmBase.Global.LevelReadOrWriteConfig.InactiveEvents" /> on reads and writes.
 	/// </summary>
 	Store,
 	/// <summary>

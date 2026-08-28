@@ -1,12 +1,12 @@
 /// <summary>
-/// A JSON converter for <see cref="_g_infoRootClassTypeToDisplayString_"/> that uses metadata-aware serializer options.
+/// A JSON converter for <see cref="_g_infoRootClassType_"/> that uses metadata-aware serializer options.
 /// </summary>
-internal abstract class BackwardCompatible_g_mtpName_MetadataJsonConverter : RhythmBase.Global.Serialization.MetadataJsonConverter<_g_infoRootClassTypeToDisplayString_>
+internal abstract class BackwardCompatible_g_mtpName_MetadataJsonConverter : RhythmBase.Global.Serialization.MetadataJsonConverter<_g_infoRootClassType_>
 {
 	protected class Upgrater
 	{
 		internal int MaxVersion { get; init; }
-		internal required Action<_g_infoRootClassTypeToDisplayString_> UpgrateFunc { get; init; }
+		internal required Action<_g_infoRootClassType_> UpgrateFunc { get; init; }
 		internal required _g_infoClassTypeEnumToDisplayString_ Type { get; init; }
 	}
 	private readonly List<Upgrater> _upgraters = [];
@@ -29,7 +29,7 @@ internal abstract class BackwardCompatible_g_mtpName_MetadataJsonConverter : Rhy
 	/// Versions <b>equal to or lower than</b> this will be affected by this upgrader.
 	/// </param>
 	/// <param name="upgrateAction">The action to perform when upgrading the event.</param>
-	protected void Register<T>(int version, Action<_g_infoRootClassTypeToDisplayString_> upgrateAction) where T : _g_infoRootClassTypeToDisplayString_, new()
+	protected void Register<T>(int version, Action<_g_infoRootClassType_> upgrateAction) where T : _g_infoRootClassType_, new()
 	{
 		var type = EventTypeRegistry.ToEnum_g_enumSuffix_<T>();
 		_maxVersion = int.Max(_maxVersion, version);

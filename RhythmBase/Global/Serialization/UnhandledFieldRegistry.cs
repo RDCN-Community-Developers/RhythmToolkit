@@ -24,7 +24,7 @@ public static class UnhandledFieldRegistry
 
 	/// <summary>
 	/// Gets the configured predicate factory, if any.
-	/// Used by <see cref="Settings.LevelReadConfig"/> to compute matching predicates for user-level handlers.
+	/// Used by <see cref="Serialization.LevelReadConfig"/> to compute matching predicates for user-level handlers.
 	/// </summary>
 	internal static Func<Type, Func<int, bool>>? PredicateFactory => _predicateFactory;
 

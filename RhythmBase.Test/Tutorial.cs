@@ -54,7 +54,7 @@ namespace RhythmBase.Test;
         public void ReadOrWriteLevelWithSettings()
         {
             // Create custom read settings
-          LevelReadSettings settings = new()
+          LevelReadConfig settings = new()
             {
                 // Handling of inactive events
                 InactiveEventsHandling = InactiveEventsHandling.Store,
@@ -69,7 +69,7 @@ namespace RhythmBase.Test;
             };
             // The cache path is required when reading zip level packs
             // Default is the Temp path.
-            GlobalSettings.CachePath = @"your\cache\path";
+            Config.CachePath = @"your\cache\path";
 
             lock (this)
             { using Level _rdlevel1 = Level.FromFile(@"your\level.rdlevel", settings); }
@@ -77,7 +77,7 @@ namespace RhythmBase.Test;
         [TestMethod]
         public void ConvertLevelToJsonDocument()
         {
-            LevelWriteSettings settings = new();
+            LevelWriteConfig settings = new();
 
             JsonDocument jdoc = _rdlevel.ToJsonDocument();
             string json = _rdlevel.ToJsonString(settings);

@@ -13,14 +13,14 @@ partial class Level
 	/// <summary>
 	/// Loads a level from a single chart file (<c>.rdlevel</c> or <c>.json</c>).
 	/// </summary>
-	public static Level FromFile(string filepath, LevelReadSettings? settings = null)
+	public static Level FromFile(string filepath, LevelReadConfig? settings = null)
 		=> FromFileAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously loads a level from a single chart file (<c>.rdlevel</c> or <c>.json</c>).
 	/// </summary>
-	public static async Task<Level> FromFileAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromFileAsync(string filepath, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		Chart main = await Chart.FromFileAsync(filepath, settings, cancellationToken);
 		Level level = new(main)
 		{
@@ -35,15 +35,15 @@ partial class Level
 	/// Saves the main chart of this level to a single chart file. When the level contains other charts,
 	/// they are written as sibling <c>.rdlevel</c> files next to <paramref name="filepath"/>.
 	/// </summary>
-	public void SaveToFile(string filepath, LevelWriteSettings? settings = null)
+	public void SaveToFile(string filepath, LevelWriteConfig? settings = null)
 		=> SaveToFileAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously saves the main chart of this level to a single chart file. When the level contains
 	/// other charts, they are written as sibling <c>.rdlevel</c> files next to <paramref name="filepath"/>.
 	/// </summary>
-	public async Task SaveToFileAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToFileAsync(string filepath, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		await MainChart.SaveToFileAsync(filepath, settings, cancellationToken);
 		string directoryPath = Path.GetDirectoryName(Path.GetFullPath(filepath)) ?? "";
 		if (string.IsNullOrEmpty(directoryPath))
@@ -61,14 +61,14 @@ partial class Level
 	/// Loads a level from a directory containing <c>.rdlevel</c> chart files. The <c>main.rdlevel</c>
 	/// file is loaded as the main chart and all other <c>.rdlevel</c> files are loaded as additional charts.
 	/// </summary>
-	public static Level FromDirectory(string directoryPath, LevelReadSettings? settings = null)
+	public static Level FromDirectory(string directoryPath, LevelReadConfig? settings = null)
 		=> FromDirectoryAsync(directoryPath, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously loads a level from a directory containing <c>.rdlevel</c> chart files.
 	/// </summary>
-	public static async Task<Level> FromDirectoryAsync(string directoryPath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromDirectoryAsync(string directoryPath, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		string mainPath = Path.Combine(directoryPath, ChartNaming.Instance.GetFileName(DefaultChartName));
 		if (!File.Exists(mainPath))
 			throw new FileNotFoundException($"The main chart '{mainPath}' was not found.");
@@ -94,14 +94,14 @@ partial class Level
 	/// <summary>
 	/// Saves all charts contained in this level to the specified directory.
 	/// </summary>
-	public void SaveToDirectory(string directoryPath, LevelWriteSettings? settings = null)
+	public void SaveToDirectory(string directoryPath, LevelWriteConfig? settings = null)
 		=> SaveToDirectoryAsync(directoryPath, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously saves all charts contained in this level to the specified directory.
 	/// </summary>
-	public async Task SaveToDirectoryAsync(string directoryPath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToDirectoryAsync(string directoryPath, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		Directory.CreateDirectory(directoryPath);
 		foreach (var pair in _charts)
 			await pair.Value.SaveToFileAsync(Path.Combine(directoryPath, ChartNaming.Instance.GetFileName(pair.Value.Name)), settings, cancellationToken);
@@ -111,35 +111,35 @@ partial class Level
 	/// <summary>
 	/// Loads a level from a chart stream.
 	/// </summary>
-	public static Level FromStream(Stream rdlevelStream, LevelReadSettings? settings = null)
+	public static Level FromStream(Stream rdlevelStream, LevelReadConfig? settings = null)
 		=> FromStreamAsync(rdlevelStream, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously loads a level from a chart stream.
 	/// </summary>
-	public static async Task<Level> FromStreamAsync(Stream rdlevelStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromStreamAsync(Stream rdlevelStream, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 		=> new(await Chart.FromStreamAsync(rdlevelStream, settings, cancellationToken));
 	/// <summary>
 	/// Saves the main chart of this level to the specified stream.
 	/// </summary>
-	public void SaveToStream(Stream stream, LevelWriteSettings? settings = null)
+	public void SaveToStream(Stream stream, LevelWriteConfig? settings = null)
 		=> SaveToStreamAsync(stream, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously saves the main chart of this level to the specified stream.
 	/// </summary>
-	public Task SaveToStreamAsync(Stream stream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public Task SaveToStreamAsync(Stream stream, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 		=> MainChart.SaveToStreamAsync(stream, settings, cancellationToken);
 	#endregion
 	#region zip
 	/// <summary>
 	/// Loads a level from a ZIP archive containing the main chart and its assets.
 	/// </summary>
-	public static Level FromZip(string filepath, LevelReadSettings? settings = null) => FromZipAsync(filepath, settings).GetAwaiter().GetResult();
+	public static Level FromZip(string filepath, LevelReadConfig? settings = null) => FromZipAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously loads a level from a ZIP archive containing the main chart and its assets.
 	/// </summary>
-	public static async Task<Level> FromZipAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromZipAsync(string filepath, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		string extension = Path.GetExtension(filepath);
 		Chart main;
 		Dictionary<string, Chart> extras = [];
@@ -152,7 +152,7 @@ partial class Level
 		switch (settings.ZipProcessingMode)
 		{
 			case ZipProcessingMode.AllEntries:
-				DirectoryInfo tempDirectory = new(Path.Combine(GlobalSettings.CachePath, "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
+				DirectoryInfo tempDirectory = new(Path.Combine(Global.Config.CachePath, "RhythmBaseTemp_Zip_" + Path.GetRandomFileName()));
 				tempDirectory.Create();
 				try
 				{
@@ -220,14 +220,14 @@ partial class Level
 	/// <summary>
 	/// Asynchronously loads a level from a ZIP stream containing the main chart.
 	/// </summary>
-	public static Task<Level> FromZip(Stream zipStream, LevelReadSettings? settings = null)
+	public static Task<Level> FromZip(Stream zipStream, LevelReadConfig? settings = null)
 		=> FromZipAsync(zipStream, settings);
 	/// <summary>
 	/// Asynchronously loads a level from a ZIP stream containing the main chart.
 	/// </summary>
-	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		Chart main;
 		using (ZipArchive archive = new(zipStream, ZipArchiveMode.Read))
 		{
@@ -241,16 +241,16 @@ partial class Level
 	}
 	/// <summary>
 	/// Saves all charts contained in this level to a ZIP archive at the specified path. Referenced
-	/// charts' assets are additionally packed when <see cref="LevelWriteSettings.PackReferencedCharts"/> is enabled.
+	/// charts' assets are additionally packed when <see cref="LevelWriteConfig.PackReferencedCharts"/> is enabled.
 	/// </summary>
-	public void SaveToZip(string filepath, LevelWriteSettings? settings = null)
+	public void SaveToZip(string filepath, LevelWriteConfig? settings = null)
 		=> SaveToZipAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously saves the level to a ZIP archive at the specified path.
 	/// </summary>
-	public async Task SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToZipAsync(string filepath, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 		if (!directory.Exists)
 			directory.Create();
@@ -260,16 +260,16 @@ partial class Level
 	/// <summary>
 	/// Saves the level to the specified ZIP stream.
 	/// </summary>
-	public void SaveToZip(Stream zipStream, LevelWriteSettings? settings = null)
+	public void SaveToZip(Stream zipStream, LevelWriteConfig? settings = null)
 		=> SaveToZipAsync(zipStream, settings).GetAwaiter().GetResult();
 	/// <summary>
 	/// Asynchronously saves the level to the specified ZIP stream. All charts contained in the level are
 	/// written as entries. Referenced charts' assets are additionally packed only when
-	/// <see cref="LevelWriteSettings.PackReferencedCharts"/> is enabled.
+	/// <see cref="LevelWriteConfig.PackReferencedCharts"/> is enabled.
 	/// </summary>
-	public async Task SaveToZipAsync(Stream zipStream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToZipAsync(Stream zipStream, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		using ZipArchive archive = new(zipStream, ZipArchiveMode.Create, leaveOpen: true);
 		foreach (var pair in _charts)
 		{
@@ -313,30 +313,30 @@ partial class Level
 	/// <summary>
 	/// Loads a level from a JSON string.
 	/// </summary>
-	public static Level FromJsonString(string json, LevelReadSettings? settings = null)
+	public static Level FromJsonString(string json, LevelReadConfig? settings = null)
 		=> new(Chart.FromJsonString(json, settings));
 	/// <summary>
 	/// Loads a level from a <see cref="JsonDocument"/>.
 	/// </summary>
-	public static Level FromJsonDocument(JsonDocument jsonDocument, LevelReadSettings? settings = null)
+	public static Level FromJsonDocument(JsonDocument jsonDocument, LevelReadConfig? settings = null)
 		=> new(Chart.FromJsonDocument(jsonDocument, settings));
 	/// <summary>
 	/// Serializes the main chart of this level to a JSON string.
 	/// </summary>
-	public string ToJsonString(LevelWriteSettings? settings = null)
+	public string ToJsonString(LevelWriteConfig? settings = null)
 		=> MainChart.ToJsonString(settings);
 	/// <summary>
 	/// Serializes the main chart of this level to a <see cref="JsonDocument"/>.
 	/// </summary>
-	public JsonDocument ToJsonDocument(LevelWriteSettings? settings = null)
+	public JsonDocument ToJsonDocument(LevelWriteConfig? settings = null)
 		=> MainChart.ToJsonDocument(settings);
 	#endregion
 	/// <summary>
 	/// Resolves the directory used to locate a chart's referenced assets, giving precedence to
-	/// <paramref name="settings"/>.<see cref="LevelWriteSettings.ResolvedDirectory"/> over the chart's
+	/// <paramref name="settings"/>.<see cref="LevelWriteConfig.ResolvedDirectory"/> over the chart's
 	/// own <see cref="Chart.ResolvedDirectory"/>.
 	/// </summary>
-	private static string ResolveChartDirectory(Chart chart, LevelWriteSettings settings) =>
+	private static string ResolveChartDirectory(Chart chart, LevelWriteConfig settings) =>
 		!string.IsNullOrWhiteSpace(settings.ResolvedDirectory)
 		? settings.ResolvedDirectory
 		: chart.ResolvedDirectory;
@@ -345,7 +345,7 @@ partial class Level
 	/// collection. Each referenced file is loaded only once and shared by all <see cref="GoToLevel"/>
 	/// events, which makes cyclic references between charts safe.
 	/// </summary>
-	private static void LoadReferencedCharts(Level level, LevelReadSettings settings)
+	private static void LoadReferencedCharts(Level level, LevelReadConfig settings)
 	{
 		Queue<Chart> pending = new();
 		pending.Enqueue(level.MainChart);

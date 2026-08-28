@@ -11,8 +11,8 @@ internal class LevelConverter : MetadataJsonConverter<Level>
 	private static readonly SettingsConverter settingsConverter = new();
 	internal string? Filepath { get; set; }
 	internal string? DirectoryName { get; set; }
-	internal LevelReadSettings ReadSettings { get; set; } = new LevelReadSettings();
-	internal LevelWriteSettings WriteSettings { get; set; } = new LevelWriteSettings();
+	internal LevelReadConfig ReadSettings { get; set; } = new LevelReadConfig();
+	internal LevelWriteConfig WriteSettings { get; set; } = new LevelWriteConfig();
 
 	public override Level? Read(ref Utf8JsonReader reader, Type typeToConvert, MetadataJsonSerializerOptions options)
 	{

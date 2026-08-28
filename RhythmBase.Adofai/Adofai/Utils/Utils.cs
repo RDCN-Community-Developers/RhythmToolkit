@@ -14,9 +14,9 @@ public static class Utils
 	/// <summary>
 	/// Creates and configures a <see cref="JsonSerializerOptions"/> instance for serializing and deserializing JSON data.
 	/// </summary>
-	internal static MetadataJsonSerializerOptions GetJsonSerializerOptions(string? filepath = null, LevelReadSettings? settings = null)
+	internal static MetadataJsonSerializerOptions GetJsonSerializerOptions(string? filepath = null, LevelReadConfig? settings = null)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		MetadataJsonSerializerOptions options = new() { JsonSerializerOptions = new() };
 		options.ReadSettings = settings;
 		options.DirectoryName = filepath;
@@ -25,9 +25,9 @@ public static class Utils
 	/// <summary>
 	/// Creates and configures a <see cref="JsonSerializerOptions"/> instance for serializing and deserializing JSON data.
 	/// </summary>
-	internal static MetadataJsonSerializerOptions GetJsonSerializerOptions(string? filepath = null, LevelWriteSettings? settings = null)
+	internal static MetadataJsonSerializerOptions GetJsonSerializerOptions(string? filepath = null, LevelWriteConfig? settings = null)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		MetadataJsonSerializerOptions options = new() { JsonSerializerOptions = new() };
 		options.JsonSerializerOptions.WriteIndented = settings.WriteIndented;
 		options.WriteSettings = settings;

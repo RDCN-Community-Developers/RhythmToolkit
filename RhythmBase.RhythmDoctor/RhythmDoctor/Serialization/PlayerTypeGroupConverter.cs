@@ -15,7 +15,7 @@ internal class PlayerTypeGroupConverter : MetadataJsonConverter<PlayerTypeGroup>
 		while (reader.Read() && reader.TokenType != JsonTokenType.EndArray && i < 16)
 		{
 			JsonException.ThrowIfNotMatch(ref reader, JsonTokenType.String);
-			group[i++] = RhythmBase.Global.Serialization.EnumConverter.TryParse(ref reader, out PlayerType type) ? type : PlayerType.NoChange;
+			group[i++] = EnumConverter.TryParse(ref reader, out PlayerType type) ? type : PlayerType.NoChange;
 		}
 		while (reader.TokenType != JsonTokenType.EndArray)
 			reader.Read();

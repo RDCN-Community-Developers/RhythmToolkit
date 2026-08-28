@@ -1,7 +1,7 @@
 using RhythmBase.RhythmDoctor.Serialization;
 using RhythmBase.RhythmDoctor.Events;
 using RhythmBase.RhythmDoctor.Utils;
-using RhythmBase.RhythmDoctor.Config;
+using RhythmBase.RhythmDoctor.Extensions;
 
 namespace RhythmBase.RhythmDoctor.Components;
 
@@ -202,14 +202,14 @@ public partial class Chart :
 	/// Adds an event to the level.
 	/// </summary>
 	/// <param name="item">The event to be added.</param>
-	public override bool Add(IBaseEvent item) => Add(item, GlobalConfig.Strategy);
+	public override bool Add(IBaseEvent item) => Add(item, Global.Config.Strategy);
 
 	/// <summary> 
 	/// Adds an event to the level, with an option to keep the event's position.
 	/// </summary>
 	/// <param name="item">The event to be added.</param>
 	/// <param name="strategy">The strategy to use when adding the event, which may affect how beat changes are handled (default is <see cref="BeatChangeStrategy.Default"/>).</param>
-	public bool Add(IBaseEvent item, BeatChangeStrategy strategy = GlobalConfig.DefaultStrategy)
+	public bool Add(IBaseEvent item, BeatChangeStrategy strategy = Extensions.Extensions.DefaultStrategy)
 	{
 		bool success = true;
 		// Set the default beat calculator

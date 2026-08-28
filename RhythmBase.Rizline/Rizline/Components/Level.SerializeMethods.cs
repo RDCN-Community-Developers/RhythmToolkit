@@ -1,6 +1,6 @@
 ﻿using RhythmBase.Rizline.Serialization;
 using RhythmBase.Rizline.Events;
-using RhythmBase.Global.Settings;
+using RhythmBase.Global;
 using System.IO.Compression;
 using System.Text.Json;
 
@@ -11,7 +11,7 @@ partial class Level
 	private static readonly JsonReaderOptions _readerOptions = new();
 	private static class FileConverter
 	{
-		public static void DeserializeChart(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, Level level, LevelReadSettings settings)
+		public static void DeserializeChart(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, Level level, LevelReadConfig settings)
 		{
 			var seq = dataSource.GetSequence();
 			Utf8JsonReader reader = seq.IsSingleSegment
@@ -179,7 +179,7 @@ partial class Level
 			throw new JsonException($"{ex.Message}\n  at processed byte position {bytesConsumed}", ex);
 		}
 
-		internal static void WriteChartToStream(Stream stream, NoIndentScope noIndentScope, Chart chart, LevelWriteSettings settings, MetadataJsonSerializerOptions options)
+		internal static void WriteChartToStream(Stream stream, NoIndentScope noIndentScope, Chart chart, LevelWriteConfig settings, MetadataJsonSerializerOptions options)
 		{
 			using Utf8JsonWriter writer = new(stream, new() { Indented = options.JsonSerializerOptions.WriteIndented });
 			writer.WriteStartObject();
@@ -228,10 +228,10 @@ partial class Level
 	}
 	#region zip
 	/// <inheritdoc/>
-	public static Level FromZip(string filepath, LevelReadSettings? settings = null)
+	public static Level FromZip(string filepath, LevelReadConfig? settings = null)
 			=> FromZipAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public static async Task<Level> FromZipAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromZipAsync(string filepath, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
 		string extension = Path.GetExtension(filepath);
 		if (extension is not ".zip" and not ".rlz")
@@ -243,14 +243,14 @@ partial class Level
 		return level;
 	}
 	/// <inheritdoc/>
-	public static Task<Level> FromZip(Stream zipStream, LevelReadSettings? settings = null)
+	public static Task<Level> FromZip(Stream zipStream, LevelReadConfig? settings = null)
 			=> FromZipAsync(zipStream, settings);
 	/// <inheritdoc/>
-	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		DirectoryInfo tempDirectory = new(Path.Combine(
-			GlobalSettings.CachePath, GlobalSettings.CacheDirectoryPrefix + Path.GetRandomFileName()));
+			Config.CachePath, Config.CacheDirectoryPrefix + Path.GetRandomFileName()));
 		tempDirectory.Create();
 		try
 		{
@@ -283,10 +283,10 @@ partial class Level
 		}
 	}
 	/// <inheritdoc/>
-	public void SaveToZip(string filepath, LevelWriteSettings? settings = null)
+	public void SaveToZip(string filepath, LevelWriteConfig? settings = null)
 			=> SaveToZipAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public async Task SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToZipAsync(string filepath, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
 		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 		if (!directory.Exists)
@@ -295,14 +295,14 @@ partial class Level
 		await SaveToZipAsync(stream, settings, cancellationToken);
 	}
 	/// <inheritdoc/>
-	public void SaveToZip(Stream zipStream, LevelWriteSettings? settings = null)
+	public void SaveToZip(Stream zipStream, LevelWriteConfig? settings = null)
 			=> SaveToZipAsync(zipStream, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public async Task SaveToZipAsync(Stream zipStream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToZipAsync(Stream zipStream, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		string tempDir = Path.Combine(
-			GlobalSettings.CachePath, GlobalSettings.CacheDirectoryPrefix + Path.GetRandomFileName());
+			Config.CachePath, Config.CacheDirectoryPrefix + Path.GetRandomFileName());
 		await SaveToDirectoryAsync(tempDir, settings, cancellationToken);
 		try
 		{
@@ -325,12 +325,12 @@ partial class Level
 	#endregion
 	#region dir
 	/// <inheritdoc/>
-	public static Level FromDirectory(string directoryPath, LevelReadSettings? settings = null)
+	public static Level FromDirectory(string directoryPath, LevelReadConfig? settings = null)
 			=> FromDirectoryAsync(directoryPath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public static async Task<Level> FromDirectoryAsync(string directoryPath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromDirectoryAsync(string directoryPath, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		using FileStream metadataFs = new(Path.Combine(directoryPath, "metadata.json"), FileMode.Open, FileAccess.Read);
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
 		Level level = await FileMainEntryConverter.DeserializeMainEntryAsync<Level>(new StreamDataSource(metadataFs), options, cancellationToken);
@@ -350,12 +350,12 @@ partial class Level
 		return level;
 	}
 	/// <inheritdoc/>
-	public void SaveToDirectory(string directoryPath, LevelWriteSettings? settings = null)
+	public void SaveToDirectory(string directoryPath, LevelWriteConfig? settings = null)
 			=> SaveToDirectoryAsync(directoryPath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public async Task SaveToDirectoryAsync(string directoryPath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToDirectoryAsync(string directoryPath, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		if (!Directory.Exists(directoryPath))
 			Directory.CreateDirectory(directoryPath);
 		using FileStream metadataFs = new(Path.Combine(directoryPath, "metadata.json"), FileMode.Create, FileAccess.Write);

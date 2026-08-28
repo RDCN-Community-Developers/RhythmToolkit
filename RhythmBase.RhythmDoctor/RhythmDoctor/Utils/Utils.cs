@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using RhythmBase.Global.Serialization;
 namespace RhythmBase.RhythmDoctor.Utils;
 
 /// <summary>
@@ -16,14 +17,14 @@ public static class Utils
 	/// The file path to associate with the level converter.
 	/// </param>
 	/// <param name="settings">
-	/// The <see cref="LevelReadSettings"/> to use for serialization options. If <c>null</c>, a new instance is used.
+	/// The <see cref="LevelReadConfig"/> to use for serialization options. If <c>null</c>, a new instance is used.
 	/// </param>
 	/// <returns>
 	/// A <see cref="JsonSerializerOptions"/> instance configured with converters, indentation settings, and file path.
 	/// </returns>
-	internal static JsonSerializerOptions GetJsonSerializerOptions(string? dirPath = null, LevelReadSettings? settings = null)
+	internal static JsonSerializerOptions GetJsonSerializerOptions(string? dirPath = null, LevelReadConfig? settings = null)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		JsonSerializerOptions options = new();
 		//LevelConverter levelConverter = new()
 		//{
@@ -40,14 +41,14 @@ public static class Utils
 	/// The file path to associate with the level converter.
 	/// </param>
 	/// <param name="settings">
-	/// The <see cref="LevelWriteSettings"/> to use for serialization options. If <c>null</c>, a new instance is used.
+	/// The <see cref="LevelWriteConfig"/> to use for serialization options. If <c>null</c>, a new instance is used.
 	/// </param>
 	/// <returns>
 	/// A <see cref="JsonSerializerOptions"/> instance configured with converters, indentation settings, and file path.
 	/// </returns>
-	internal static JsonSerializerOptions GetJsonSerializerOptions(string? dirPath = null, LevelWriteSettings? settings = null)
+	internal static JsonSerializerOptions GetJsonSerializerOptions(string? dirPath = null, LevelWriteConfig? settings = null)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		JsonSerializerOptions options = new();
 		options.WriteIndented = settings.WriteIndented;
 		if (settings.EnableUnsafeRelaxedJsonEscaping)

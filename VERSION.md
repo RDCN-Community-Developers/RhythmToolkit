@@ -15,7 +15,7 @@
 
 ### 20260405 v1.3.11-alpha1
 - Synchronized with Rhythm Doctor level version
-- Added custom serialization interfaces for LevelReadSettings and LevelWriteSettings
+- Added custom serialization interfaces for LevelReadConfig and LevelWriteConfig
 
 ### 20260330 v1.3.10
 - Fixed event model anomalies:
@@ -90,7 +90,7 @@
 - Fixed event model anomalies:
     - NewWindowDance.Tab defaulting to Actions instead of Windows
     - WindowResize.Tab defaulting to Actions instead of Windows
-- Added LevelWriteSettings.EnableUnsafeRelaxedJsonEscaping method to enable or disable HTML unsafe character escaping
+- Added LevelWriteConfig.EnableUnsafeRelaxedJsonEscaping method to enable or disable HTML unsafe character escaping
 - Fixed RDBeat comparison cache invalidation exception
 - Fixed RDRange range exception
 - Fixed TimesExecuted condition serialization exception

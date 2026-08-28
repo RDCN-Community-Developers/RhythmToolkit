@@ -85,10 +85,10 @@ public sealed class Test
 	[TestMethod]
 	public void ReadWriteSpeedTest()
 	{
-		GlobalSettings.CachePath = "cache";
+		Config.CachePath = "cache";
 		{
 			List<(double, double)> results = [];
-			LevelReadSettings settings = new()
+			LevelReadConfig settings = new()
 			{
 				InactiveEventsHandling = InactiveEventsHandling.Ignore,
 				UnreadableEventsHandling = UnreadableEventHandling.Store,
@@ -100,7 +100,7 @@ public sealed class Test
 				Console.WriteLine($"Encountered file reference: {e.Reference.Path}");
 			};
 			Console.WriteLine("|Action\t|Read\t|Write|");
-			Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+			Stopwatch sw = Stopwatch.StartNew();
 			for (int i = 0; i < 10; i++)
 			{
 				double readTime, writeTime;
@@ -244,7 +244,7 @@ public sealed class Test
 		level.Add(new WindowResize() { CustomTab = Tab.Actions });
 		level.Add(new WindowResize() { CustomTab = Tab.Windows });
 
-		LevelWriteSettings settings = new()
+		LevelWriteConfig settings = new()
 		{
 
 		};

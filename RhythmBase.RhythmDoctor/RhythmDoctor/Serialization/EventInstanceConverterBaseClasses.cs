@@ -187,7 +187,7 @@ internal partial class RDMemberConverter
 			if (base.Read(ref reader, ref value, options))
 				return true;
 			if (reader.ValueTextEquals("action"u8) && reader.Read())
-			{ if (global::RhythmBase.Global.Serialization.EnumConverter.TryParse(ref reader, out GoToLevelAction enumValue0)) value.Action = enumValue0; else return false; }
+			{ if (EnumConverter.TryParse(ref reader, out GoToLevelAction enumValue0)) value.Action = enumValue0; else return false; }
 			else if (reader.ValueTextEquals("rdlevel"u8) && reader.Read())
 				value.Chart = TypeConverterRegistry.Read<FileReference>(ref reader, options);
 			else if (reader.ValueTextEquals("dontUpdateRestart"u8) && reader.Read())

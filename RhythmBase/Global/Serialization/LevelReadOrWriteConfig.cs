@@ -1,5 +1,5 @@
 using System.Text.Json;
-namespace RhythmBase.Global.Settings;
+namespace RhythmBase.Global.Serialization;
 
 /// <summary>
 /// Controls how ZIP archives are processed during import.
@@ -14,7 +14,7 @@ public enum ZipProcessingMode
 	/// <summary>
 	/// Extract and process all entries recursively.
 	/// </summary>
-	AllEntries
+	AllEntries,
 }
 /// <summary>
 /// Event arguments for an unreadable event that could not be parsed.

@@ -1,9 +1,9 @@
 ﻿using RhythmBase.BeatBlock.Events;
 using RhythmBase.BeatBlock.Serialization;
-using RhythmBase.Global.Settings;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text.Json;
+using RhythmBase.Global;
 
 namespace RhythmBase.BeatBlock.Components;
 
@@ -13,7 +13,7 @@ partial class Level
 	private static readonly JsonReaderOptions _readerOptions = new();
 	internal static class FileConverter
 	{
-		public static void DeserializeLevel(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, Chart variant, LevelReadSettings settings)
+		public static void DeserializeLevel(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, Chart variant, LevelReadConfig settings)
 		{
 			var seq = dataSource.GetSequence();
 			Utf8JsonReader reader = seq.IsSingleSegment
@@ -38,7 +38,7 @@ partial class Level
 			}
 			catch { throw; }
 		}
-		public static void DeserializeChart(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, Chart variant, LevelReadSettings settings)
+		public static void DeserializeChart(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, Chart variant, LevelReadConfig settings)
 		{
 			var seq = dataSource.GetSequence();
 			Utf8JsonReader reader = seq.IsSingleSegment
@@ -56,7 +56,7 @@ partial class Level
 			}
 			catch { throw; }
 		}
-		public static void DeserializeTag(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, TagEventCollection collection, LevelReadSettings settings)
+		public static void DeserializeTag(IJsonDataSource dataSource, MetadataJsonSerializerOptions options, TagEventCollection collection, LevelReadConfig settings)
 		{
 			var seq = dataSource.GetSequence();
 			Utf8JsonReader reader = seq.IsSingleSegment
@@ -74,7 +74,7 @@ partial class Level
 			}
 			catch { throw; }
 		}
-		private static List<IBaseEvent> DeserializeEvents(ref Utf8JsonReader reader, MetadataJsonSerializerOptions options, LevelReadSettings settings)
+		private static List<IBaseEvent> DeserializeEvents(ref Utf8JsonReader reader, MetadataJsonSerializerOptions options, LevelReadConfig settings)
 		{
 			List<IBaseEvent> events = [];
 			JsonException.ThrowIfNotMatch(ref reader, JsonTokenType.StartArray);
@@ -217,12 +217,12 @@ partial class Level
 	}
 	#region dir
 	/// <inheritdoc/>
-	public static Level FromDirectory(string directoryPath, LevelReadSettings? settings = null)
+	public static Level FromDirectory(string directoryPath, LevelReadConfig? settings = null)
 			=> FromDirectoryAsync(directoryPath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public static async Task<Level> FromDirectoryAsync(string directoryPath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromDirectoryAsync(string directoryPath, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForRead(settings);
 		Level? level;
 		string manifestFilePath = Path.Combine(directoryPath, "manifest.json");
@@ -280,12 +280,12 @@ partial class Level
 		return level;
 	}
 	/// <inheritdoc/>
-	public void SaveToDirectory(string directoryPath, LevelWriteSettings? settings = null)
+	public void SaveToDirectory(string directoryPath, LevelWriteConfig? settings = null)
 			=> SaveToDirectoryAsync(directoryPath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public async Task SaveToDirectoryAsync(string directoryPath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToDirectoryAsync(string directoryPath, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		MetadataJsonSerializerOptions options = JsonSerializerOptionsUtils.GetJsonSerializerOptionsForWrite(settings);
 		using NoIndentScope noIndentScope = new(options.JsonSerializerOptions.Encoder, options);
 		string manifestFilePath = Path.Combine(directoryPath, "manifest.json");
@@ -324,10 +324,10 @@ partial class Level
 	#endregion
 	#region zip
 	/// <inheritdoc/>
-	public static Level FromZip(string filepath, LevelReadSettings? settings = null)
+	public static Level FromZip(string filepath, LevelReadConfig? settings = null)
 			=> FromZipAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public static async Task<Level> FromZipAsync(string filepath, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromZipAsync(string filepath, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
 		string extension = Path.GetExtension(filepath);
 		if (extension is not ".zip")
@@ -339,14 +339,14 @@ partial class Level
 		return level;
 	}
 	/// <inheritdoc/>
-	public static Task<Level> FromZip(Stream zipStream, LevelReadSettings? settings = null)
+	public static Task<Level> FromZip(Stream zipStream, LevelReadConfig? settings = null)
 			=> FromZipAsync(zipStream, settings);
 	/// <inheritdoc/>
-	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadSettings? settings = null, CancellationToken cancellationToken = default)
+	public static async Task<Level> FromZipAsync(Stream zipStream, LevelReadConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelReadSettings();
+		settings ??= new LevelReadConfig();
 		DirectoryInfo tempDirectory = new(Path.Combine(
-			GlobalSettings.CachePath, GlobalSettings.CacheDirectoryPrefix + Path.GetRandomFileName()));
+			Config.CachePath, Config.CacheDirectoryPrefix + Path.GetRandomFileName()));
 		tempDirectory.Create();
 		try
 		{
@@ -379,10 +379,10 @@ partial class Level
 		}
 	}
 	/// <inheritdoc/>
-	public void SaveToZip(string filepath, LevelWriteSettings? settings = null)
+	public void SaveToZip(string filepath, LevelWriteConfig? settings = null)
 			=> SaveToZipAsync(filepath, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public async Task SaveToZipAsync(string filepath, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToZipAsync(string filepath, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
 		DirectoryInfo directory = new FileInfo(filepath).Directory ?? new("");
 		if (!directory.Exists)
@@ -391,14 +391,14 @@ partial class Level
 		await SaveToZipAsync(stream, settings, cancellationToken);
 	}
 	/// <inheritdoc/>
-	public void SaveToZip(Stream zipStream, LevelWriteSettings? settings = null)
+	public void SaveToZip(Stream zipStream, LevelWriteConfig? settings = null)
 			=> SaveToZipAsync(zipStream, settings).GetAwaiter().GetResult();
 	/// <inheritdoc/>
-	public async Task SaveToZipAsync(Stream zipStream, LevelWriteSettings? settings = null, CancellationToken cancellationToken = default)
+	public async Task SaveToZipAsync(Stream zipStream, LevelWriteConfig? settings = null, CancellationToken cancellationToken = default)
 	{
-		settings ??= new LevelWriteSettings();
+		settings ??= new LevelWriteConfig();
 		string tempDir = Path.Combine(
-			GlobalSettings.CachePath, GlobalSettings.CacheDirectoryPrefix + Path.GetRandomFileName());
+			Config.CachePath, Config.CacheDirectoryPrefix + Path.GetRandomFileName());
 		await SaveToDirectoryAsync(tempDir, settings, cancellationToken);
 		try
 		{

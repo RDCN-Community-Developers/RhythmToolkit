@@ -608,6 +608,17 @@ public static partial class Extensions
 		}
 	}
 
+	public const BeatChangeStrategy DefaultStrategy = BeatChangeStrategy.Default;
+	private static BeatChangeStrategy _strategy = DefaultStrategy;
+	extension(Global.Config)
+	{
+		public static BeatChangeStrategy Strategy
+		{
+			get => _strategy;
+			set => _strategy = value;
+		}
+	}
+
 	/// <summary>
 	/// Compares this <see cref="BaseEvent"/> instance with another <see cref="BaseEvent"/> instance.
 	/// </summary>
