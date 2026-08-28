@@ -50,30 +50,27 @@ jobs:
       - name: Pack RhythmBase (core)
         run: dotnet pack RhythmBase/RhythmBase.csproj -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
 
-      - name: Pack RhythmBase (base, for local source)
-        run: dotnet pack RhythmBase/RhythmBase.csproj -c Release --no-build -o ./local-pkg
-
       - name: Add local NuGet source
         run: |
           dotnet nuget remove source local || true
-          dotnet nuget add source ${{ github.workspace }}/local-pkg --name local
+          dotnet nuget add source ${{ github.workspace }}/pkg --name local
 
       - name: Restore sub-packages
         run: |
           for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
-            dotnet restore "$PROJ/$PROJ.csproj"
+            dotnet restore "$PROJ/$PROJ.csproj" -p:RhythmBaseVersion=${{ steps.ver.outputs.version }}
           done
 
       - name: Build sub-packages
         run: |
           for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
-            dotnet build "$PROJ/$PROJ.csproj" -c Release --no-restore
+            dotnet build "$PROJ/$PROJ.csproj" -c Release --no-restore -p:RhythmBaseVersion=${{ steps.ver.outputs.version }}
           done
 
       - name: Pack sub-packages
         run: |
           for PROJ in RhythmBase.RhythmDoctor RhythmBase.BeatBlock RhythmBase.Adofai RhythmBase.Rizline; do
-            dotnet pack "$PROJ/$PROJ.csproj" -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }}
+            dotnet pack "$PROJ/$PROJ.csproj" -c Release --no-build -o ./pkg -p:Version=${{ steps.ver.outputs.version }} -p:RhythmBaseVersion=${{ steps.ver.outputs.version }}
           done
 
       - name: NuGet login (OIDC)
